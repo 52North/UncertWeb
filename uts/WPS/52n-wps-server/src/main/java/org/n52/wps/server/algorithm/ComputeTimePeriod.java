@@ -659,7 +659,7 @@ public class ComputeTimePeriod extends AbstractAlgorithm{
 				}
 
 				try {
-					feature = fType.create(properties.toArray());//scheint so korrekt gemaped zu werden TODO: evtl. sicherere methode wählen
+					feature = fType.create(properties.toArray());//scheint so korrekt gemapped zu werden TODO: evtl. sicherere methode wählen
 					collection.add(feature);
 					
 				} catch (IllegalAttributeException e) {
