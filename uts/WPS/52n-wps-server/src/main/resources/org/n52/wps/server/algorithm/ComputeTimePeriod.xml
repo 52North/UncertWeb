@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- -->
+<wps:ProcessDescriptions xmlns:wps="http://www.opengis.net/wps/1.0.0"
+	xmlns:ows="http://www.opengis.net/ows/1.1"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd"
+	service="WPS" version="1.0.0" xml:lang="en-US">
+	<ProcessDescription wps:processVersion="2" storeSupported="true"
+		statusSupported="false">
+		<ows:Identifier>org.n52.wps.server.algorithm.ComputeTimePeriod</ows:Identifier>
+		<ows:Title>ComputeTimePeriod</ows:Title>
+		<ows:Abstract>
+			Uses Austal 2000 to compute a time period of values.
+		</ows:Abstract>
+		<ows:Metadata xlink:title="model" />
+		<DataInputs>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>FEATURES</ows:Identifier>
+				<ows:Title>input features</ows:Title>
+				<ows:Abstract>points</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>text/XML</MimeType>
+							<Schema>
+								http://schemas.opengis.net/gml/2.1.2/feature.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/XML</MimeType>
+							<Schema>
+								http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd
+							</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>PQ</ows:Identifier>
+				<ows:Title>particle value</ows:Title>
+				<ows:Abstract>particle value</ows:Abstract>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:double"></ows:DataType>
+					<ows:AllowedValues>
+						<ows:Value></ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>START_TIME</ows:Identifier>
+				<ows:Title>start time and date</ows:Title>
+				<ows:Abstract>start time and date. server uses CEST.</ows:Abstract>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:dateTime"></ows:DataType>
+					<ows:AllowedValues>
+						<ows:Value></ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>END_TIME</ows:Identifier>
+				<ows:Title>end time and date</ows:Title>
+				<ows:Abstract>end time and date. server uses CEST.</ows:Abstract>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:dateTime"></ows:DataType>
+					<ows:AllowedValues>
+						<ows:Value></ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+		</DataInputs>
+		<ProcessOutputs>
+			<Output>
+				<ows:Identifier>RESULT_ZIP</ows:Identifier>
+				<ows:Title>computed results</ows:Title>
+				<ows:Abstract>results of the computation</ows:Abstract>
+				<ComplexOutput>					
+				<Default>
+						<Format>
+							<MimeType>text/XML</MimeType>
+							<Schema>
+								http://schemas.opengis.net/gml/2.1.2/feature.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/XML</MimeType>
+							<Schema>
+								http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd
+							</Schema>
+						</Format>
+				<Format>
+					<MimeType>application/x-zipped-shp</MimeType>
+				</Format>
+				</Supported>
+				</ComplexOutput>
+			</Output>
+		</ProcessOutputs>
+	</ProcessDescription>
+</wps:ProcessDescriptions>

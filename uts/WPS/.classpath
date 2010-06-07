@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="52n-wps-commons/target/classes" path="52n-wps-commons/src/main/java"/>
+	<classpathentry including="org/n52/wps/io/**|org/n52/wps/util/**" kind="src" output="52n-wps-io/target/classes" path="52n-wps-io/src/main/java"/>
+	<classpathentry excluding="org/n52/wps/server/algorithm/smooth/**" including="org/n52/wps/server/**|org/n52/wps/util/**" kind="src" output="52n-wps-server/target/classes" path="52n-wps-server/src/main/java"/>
+	<classpathentry kind="src" output="52n-wps-unicore/target/classes" path="52n-wps-unicore/src/main/java"/>
+	<classpathentry kind="src" output="52n-wps-unicore/target/test-classes" path="52n-wps-unicore/src/test/java"/>
+	<classpathentry kind="src" output="52n-wps-gridgain/target/classes" path="52n-wps-gridgain/src/main/java"/>
+	<classpathentry kind="src" output="52n-wps-gridgain/target/test-classes" path="52n-wps-gridgain/src/test/java"/>
+	<classpathentry including="org/n52/wps/server/**|org/n52/wps/util/**|org/n52/wps/sextante/**" kind="src" output="52n-wps-sextante/target/classes" path="52n-wps-sextante/src/main/java"/>
+	<classpathentry including="org/n52/wps/server/**|org/n52/wps/util/**|org/n52/wps/ags/**" kind="src" output="52n-wps-ags/target/classes" path="52n-wps-ags/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="52n-wps-ags/target/classes" path="52n-wps-ags/src/main/resources"/>
+	<classpathentry kind="src" output="52n-wps-webadmin/target/classes" path="52n-wps-webadmin/src/main/java"/>
+	<classpathentry including="org/n52/wps/util/**|org/n52/wps/transactional/**" kind="src" output="52n-wps-transactional/target/classes" path="52n-wps-transactional/src/main/java"/>
+	<classpathentry kind="src" output="52n-wps-install-wizard/target/classes" path="52n-wps-install-wizard/src/main/java"/>
+	<classpathentry kind="src" output="52n-wps-client-lib/target/classes" path="52n-wps-client-lib/src/main/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
