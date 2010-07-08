@@ -309,13 +309,13 @@ public class AustalOutputReader {
 			
 		msg("Number of parsed files: " + (noOfFiles-1));
 		
-		try {
-			this.writePointCsv("csvOutput" + "/" + pointscsv);
-			this.writeValueCsv("csvOutput" + "/"+ valscsv);
-		} catch (Exception e) {
-			msg("Input error during parsing csv: " + e.getClass()
-					+ e.getMessage());
-		}
+//		try {
+//			this.writePointCsv("csvOutput" + "/" + pointscsv);
+//			this.writeValueCsv("csvOutput" + "/"+ valscsv);
+//		} catch (Exception e) {
+//			msg("Input error during parsing csv: " + e.getClass()
+//					+ e.getMessage());
+//		}
 		
 		return points;
 	}
