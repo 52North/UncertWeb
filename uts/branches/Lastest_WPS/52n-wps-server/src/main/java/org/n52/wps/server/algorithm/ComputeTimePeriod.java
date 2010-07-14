@@ -60,7 +60,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 
-public class ComputeTimePeriod extends AbstractAlgorithm{
+public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 
 	private static Logger LOGGER = Logger.getLogger(ComputeTimePeriod.class);
 //	private final String inputIDXQ = "XQ";
@@ -73,7 +73,7 @@ public class ComputeTimePeriod extends AbstractAlgorithm{
 	private final String inputIDEndTime = "END_TIME";
 	private final String outputID_1 = "RESULT_1";
 	private final String outputID_2 = "RESULT_2";
-	private final String outputID_ZIP = "RESULT_ZIP";
+	private final String outputID = "RESULT";
 	private final String fileSeparator = System.getProperty("file.separator");
 	private final String lineSeparator = System.getProperty("line.separator");
 	private final String logFileMarkerBeginningEnglish = "File";
@@ -180,7 +180,7 @@ public class ComputeTimePeriod extends AbstractAlgorithm{
 
 			try {
 				URL austal2000FileURL = new URL(
-						"http://localhost:8080/wps/res/" + austal2000FileName);
+						"http://localhost:8080/wps2/res/" + austal2000FileName);
 
 				BufferedReader bufferedReader = new BufferedReader(
 						new InputStreamReader(austal2000FileURL.openStream()));
@@ -400,7 +400,7 @@ public class ComputeTimePeriod extends AbstractAlgorithm{
 			String output = "";
 			
 			try {
-				URL timeperiodFileURL = new URL("http://localhost:8080/wps/res/" + timeperiodFileName);//TODO: make configurable
+				URL timeperiodFileURL = new URL("http://localhost:8080/wps2/res/" + timeperiodFileName);//TODO: make configurable
 				
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(timeperiodFileURL.openStream()));
 				
@@ -592,7 +592,7 @@ public class ComputeTimePeriod extends AbstractAlgorithm{
 
 			FeatureCollection fOut = createFeatureCollection(points);
 
-			result.put("RESULT_ZIP",
+			result.put(outputID,
 					new GTVectorDataBinding(fOut));
 			
 //			// loop through point arrays
@@ -815,21 +815,21 @@ public class ComputeTimePeriod extends AbstractAlgorithm{
 	      return resultingFile;		
 	}
 
-//	@Override
-//	public List<String> getInputIdentifiers() {
-//		List<String> identifierList =  new ArrayList<String>();
-//		identifierList.add(inputIDFeatures);
+	@Override
+	public List<String> getInputIdentifiers() {
+		List<String> identifierList =  new ArrayList<String>();
+		identifierList.add(inputIDFeatures);
 //		identifierList.add(inputIDPQ);
-//		identifierList.add(inputIDStartTime);
-//		identifierList.add(inputIDEndTime);
-//		return identifierList;
-//	}
-//
-//	@Override
-//	public List<String> getOutputIdentifiers() {
-//
-//		List<String> identifierList =  new ArrayList<String>();
-//		identifierList.add(outputID_ZIP);
-//		return identifierList;
-//	}
+		identifierList.add(inputIDStartTime);
+		identifierList.add(inputIDEndTime);
+		return identifierList;
+	}
+
+	@Override
+	public List<String> getOutputIdentifiers() {
+
+		List<String> identifierList =  new ArrayList<String>();
+		identifierList.add(outputID);
+		return identifierList;
+	}
 }

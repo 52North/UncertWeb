@@ -72,7 +72,6 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 					}
 					
 					if(inputClassType.length()>0){
-						
 						if (inputClassType.toLowerCase().equals("date")) {
 
 							literalData.addNewDataType().setReference(
@@ -83,7 +82,6 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 							literalData.addNewDataType().setReference(
 									"xs:" + inputClassType.toLowerCase());
 						}
-						
 					}
 					literalData.addNewAnyValue();				
 				}else if(implementedInterface.equals(IComplexData.class)){

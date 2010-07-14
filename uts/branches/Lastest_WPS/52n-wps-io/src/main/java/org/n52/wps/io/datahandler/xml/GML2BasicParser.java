@@ -168,24 +168,18 @@ public class GML2BasicParser extends AbstractXMLParser implements IStreamablePar
 		//parse
 		FeatureCollection fc = DefaultFeatureCollections.newCollection();
 		try {
-			String filepath = URLDecoder.decode(uri.toASCIIString().replace(
-					"file:/", ""));
-			Object parsedData = parser.parse(new FileInputStream(filepath));
-			if (parsedData instanceof FeatureCollection) {
-				fc = (FeatureCollection) parsedData;
-			} else {
+			String filepath =URLDecoder.decode(uri.toASCIIString().replace("file:/", ""));
+			Object parsedData =  parser.parse( new FileInputStream(filepath));
+			if (((HashMap) parsedData).get("featureMember") instanceof SimpleFeature) {
+				SimpleFeature feature = (SimpleFeature) ((HashMap) parsedData)
+						.get("featureMember");
+				fc.add(feature);
+			} else if (((HashMap) parsedData).get("featureMember") instanceof List) {
 
-				if (((HashMap) parsedData).get("featureMember") instanceof SimpleFeature) {
-					SimpleFeature feature = (SimpleFeature) ((HashMap) parsedData)
-							.get("featureMember");
+				List<SimpleFeature> featureList = ((ArrayList<SimpleFeature>) ((HashMap) parsedData)
+						.get("featureMember"));
+				for (SimpleFeature feature : featureList) {
 					fc.add(feature);
-				} else if (((HashMap) parsedData).get("featureMember") instanceof List) {
-
-					List<SimpleFeature> featureList = ((ArrayList<SimpleFeature>) ((HashMap) parsedData)
-							.get("featureMember"));
-					for (SimpleFeature feature : featureList) {
-						fc.add(feature);
-					}
 				}
 			}
 			
