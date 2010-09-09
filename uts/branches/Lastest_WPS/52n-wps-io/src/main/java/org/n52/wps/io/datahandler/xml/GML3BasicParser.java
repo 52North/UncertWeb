@@ -7,7 +7,7 @@ to the WPS version 0.4.0 (OGC 05-007r4).
  Copyright (C) 2006 by con terra GmbH
 
  Authors: 
-	 Bastian Schäffer, IfGI
+	 Bastian Schï¿½ffer, IfGI
 
  Contact: Albert Remke, con terra GmbH, Martin-Luther-King-Weg 24,
  48155 Muenster, Germany, 52n@conterra.de
@@ -39,6 +39,8 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -94,7 +96,94 @@ public class GML3BasicParser extends AbstractXMLParser implements IStreamablePar
 		super(pReadWPSConfig);
 	}
 
+	private GTVectorDataBinding parseXML(File file) {
+		QName schematypeTuple = determineFeatureTypeSchema(file);
+		if(schematypeTuple == null) {
+			throw new NullPointerException("featureTypeSchema null for file: " + file.getPath());
+		}
+		
+		//create the parser with the gml 2.0 configuration
+		//org.geotools.xml.Configuration configuration = new org.geotools.gml2.GMLConfiguration();
+		
+		String schemaLocation =  schematypeTuple.getLocalPart();
 
+		Configuration configuration = null;
+		if(schemaLocation!= null && schematypeTuple.getNamespaceURI()!=null){
+			SchemaRepository.registerSchemaLocation(schematypeTuple.getNamespaceURI(), schemaLocation);
+			configuration =  new ApplicationSchemaConfiguration(schematypeTuple.getNamespaceURI(), schemaLocation);
+			
+		}else{
+			configuration = new GMLConfiguration();
+        	configuration.getProperties().add(Parser.Properties.IGNORE_SCHEMA_LOCATION );
+        	configuration.getProperties().add(Parser.Properties.PARSE_UNKNOWN_ELEMENTS);
+
+		}
+		
+		org.geotools.xml.Parser parser = new org.geotools.xml.Parser(configuration);
+		
+		//parse
+		FeatureCollection fc = DefaultFeatureCollections.newCollection();
+		try {
+//			String filepath =URLDecoder.decode(uri.toASCIIString().replace("file:/", ""));
+			Object parsedData =  parser.parse( new FileInputStream(file));
+			if(parsedData instanceof FeatureCollection){
+				fc = (FeatureCollection) parsedData;
+				
+					
+				
+			}else{
+				List<SimpleFeature> featureList = ((ArrayList<SimpleFeature>)((HashMap) parsedData).get("featureMember"));
+				if(featureList!=null){
+					for(SimpleFeature feature : featureList){
+						fc.add(feature);
+					}
+				}else{
+					fc = (FeatureCollection) ((HashMap) parsedData).get("FeatureCollection");
+				}
+			}
+		
+		Iterator featureIterator = fc.iterator();
+		while(featureIterator.hasNext()){
+			SimpleFeature feature = (SimpleFeature) featureIterator.next();
+			if(feature.getDefaultGeometry()==null){
+				Collection<org.opengis.feature.Property>properties = feature.getProperties();
+				for(org.opengis.feature.Property property : properties){
+					try{
+						
+						Geometry g = (Geometry)property.getValue();
+						if(g!=null){
+							GeometryAttribute oldGeometryDescriptor = feature.getDefaultGeometryProperty();
+							GeometryType type = new GeometryTypeImpl(property.getName(),(Class)oldGeometryDescriptor.getType().getBinding(),oldGeometryDescriptor.getType().getCoordinateReferenceSystem(),oldGeometryDescriptor.getType().isIdentified(),oldGeometryDescriptor.getType().isAbstract(),oldGeometryDescriptor.getType().getRestrictions(),oldGeometryDescriptor.getType().getSuper(),oldGeometryDescriptor.getType().getDescription());
+																
+							GeometryDescriptor newGeometryDescriptor = new GeometryDescriptorImpl(type,property.getName(),0,1,true,null);
+							Identifier identifier = new GmlObjectIdImpl(feature.getID());
+							GeometryAttributeImpl geo = new GeometryAttributeImpl((Object)g,newGeometryDescriptor, identifier);
+							feature.setDefaultGeometryProperty(geo);
+							feature.setDefaultGeometry(g);
+							
+						}
+					}catch(ClassCastException e){
+						//do nothing
+					}
+					
+				}
+			}
+		}
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} catch (SAXException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
+		GTVectorDataBinding data = new GTVectorDataBinding(fc);
+		
+		return data;
+	}
 
 	public GTVectorDataBinding parseXML(String gml) {
 		File f = null;
@@ -118,7 +207,7 @@ public class GML3BasicParser extends AbstractXMLParser implements IStreamablePar
 				i = sr.read();
 			}
 			fos.close();
-			GTVectorDataBinding data = parseXML(f.toURI());
+			GTVectorDataBinding data = parseXML(f);
 			f.delete();
 			return data;
 		}
@@ -141,7 +230,7 @@ public class GML3BasicParser extends AbstractXMLParser implements IStreamablePar
 				i = stream.read();
 			}
 			fos.close();
-			GTVectorDataBinding data = parseXML(f.toURI());
+			GTVectorDataBinding data = parseXML(f);
 			f.delete();
 			return data;
 		}
@@ -153,92 +242,39 @@ public class GML3BasicParser extends AbstractXMLParser implements IStreamablePar
 	}	
 
 	public GTVectorDataBinding parseXML(URI uri) {
-		QName schematypeTuple = determineFeatureTypeSchema(uri);
-		if(schematypeTuple == null) {
-			throw new NullPointerException("featureTypeSchema null for uri: " + uri.getQuery());
-		}
-		
-		//create the parser with the gml 2.0 configuration
-		//org.geotools.xml.Configuration configuration = new org.geotools.gml2.GMLConfiguration();
-		
-		String schemaLocation =  schematypeTuple.getLocalPart();
-
-		Configuration configuration = null;
-		if(schemaLocation!= null && schematypeTuple.getNamespaceURI()!=null){
-			SchemaRepository.registerSchemaLocation(schematypeTuple.getNamespaceURI(), schemaLocation);
-			configuration =  new ApplicationSchemaConfiguration(schematypeTuple.getNamespaceURI(), schemaLocation);
-		}else{
-			configuration = new GMLConfiguration();
-        	configuration.getProperties().add(Parser.Properties.IGNORE_SCHEMA_LOCATION );
-        	configuration.getProperties().add(Parser.Properties.PARSE_UNKNOWN_ELEMENTS);
-
-		}
-		
-		org.geotools.xml.Parser parser = new org.geotools.xml.Parser(configuration);
-		
-		//parse
-		FeatureCollection fc = DefaultFeatureCollections.newCollection();
-		try {
-			String filepath =URLDecoder.decode(uri.toASCIIString().replace("file:/", ""));
-			Object parsedData =  parser.parse( new FileInputStream(filepath));
-			if(parsedData instanceof FeatureCollection){
-				fc = (FeatureCollection) parsedData;
-				Iterator featureIterator = fc.iterator();
-				while(featureIterator.hasNext()){
-					SimpleFeature feature = (SimpleFeature) featureIterator.next();
-					if(feature.getDefaultGeometry()==null){
-						Collection<org.opengis.feature.Property>properties = feature.getProperties();
-						for(org.opengis.feature.Property property : properties){
-							try{
-								
-								Geometry g = (Geometry)property.getValue();
-								if(g!=null){
-									GeometryAttribute oldGeometryDescriptor = feature.getDefaultGeometryProperty();
-									GeometryType type = new GeometryTypeImpl(property.getName(),(Class)oldGeometryDescriptor.getType().getBinding(),oldGeometryDescriptor.getType().getCoordinateReferenceSystem(),oldGeometryDescriptor.getType().isIdentified(),oldGeometryDescriptor.getType().isAbstract(),oldGeometryDescriptor.getType().getRestrictions(),oldGeometryDescriptor.getType().getSuper(),oldGeometryDescriptor.getType().getDescription());
-																		
-									GeometryDescriptor newGeometryDescriptor = new GeometryDescriptorImpl(type,property.getName(),0,1,true,null);
-									Identifier identifier = new GmlObjectIdImpl(feature.getID());
-									GeometryAttributeImpl geo = new GeometryAttributeImpl((Object)g,newGeometryDescriptor, identifier);
-									feature.setDefaultGeometryProperty(geo);
-									feature.setDefaultGeometry(g);
-									
-								}
-							}catch(ClassCastException e){
-								//do nothing
-							}
-							
-						}
-					}
-					
-				}
-			}else{
-				List<SimpleFeature> featureList = ((ArrayList<SimpleFeature>)((HashMap) parsedData).get("featureMember"));
-				for(SimpleFeature feature : featureList){
-					fc.add(feature);
-				}
+		File f = null;
+		FileOutputStream fos = null;
+		try{
+			f = File.createTempFile("wps", "tmp");
+			fos = new FileOutputStream(f);
+			URL url = uri.toURL();
+			URLConnection connection = url.openConnection();
+			connection.setDoInput(true);
+			connection.setDoOutput(false);
+			InputStream stream = connection.getInputStream();
+			int i = stream.read();
+			while(i != -1){
+				fos.write(i);
+				i = stream.read();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		} catch (SAXException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
+			fos.close();
+			GTVectorDataBinding data = parseXML(f);
+			f.delete();
+			return data;
 		}
-		
-		GTVectorDataBinding data = new GTVectorDataBinding(fc);
-		
-		return data;
+		catch(IOException e) {
+			if (fos != null) try { fos.close(); } catch (Exception e1) { }
+			if (f != null) f.delete();
+			throw new IllegalArgumentException("Error while creating tempFile", e);
+		}
 	}
 	
-	private QName determineFeatureTypeSchema(URI uri) {
+	private QName determineFeatureTypeSchema(File file) {
 		try {
 			GML2Handler handler = new GML2Handler();
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			factory.setNamespaceAware(true);
-			factory.newSAXParser().parse(uri.toASCIIString(), (DefaultHandler)handler); 
+			factory.newSAXParser().parse(new FileInputStream(file), (DefaultHandler)handler); 
 			String schemaUrl = handler.getSchemaUrl(); 
 			String namespaceURI = handler.getNameSpaceURI();
 			return new QName(namespaceURI,schemaUrl);
