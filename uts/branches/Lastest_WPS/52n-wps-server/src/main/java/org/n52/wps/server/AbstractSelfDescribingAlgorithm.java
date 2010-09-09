@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.opengis.ows.x11.DomainMetadataType;
 import net.opengis.wps.x100.ComplexDataCombinationType;
 import net.opengis.wps.x100.ComplexDataCombinationsType;
 import net.opengis.wps.x100.ComplexDataDescriptionType;
@@ -33,11 +34,11 @@ import org.n52.wps.server.oberserpattern.ISubject;
 
 public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm implements ISubject{
 
+	@Override
 	protected ProcessDescriptionType initializeDescription() {
 		ProcessDescriptionsDocument document = ProcessDescriptionsDocument.Factory.newInstance();
 		ProcessDescriptions processDescriptions = document.addNewProcessDescriptions();
 		ProcessDescriptionType processDescription = processDescriptions.addNewProcessDescription();
-		
 		processDescription.setStatusSupported(true);
 		processDescription.setStoreSupported(true);
 		processDescription.setProcessVersion("1.0.0");
@@ -72,18 +73,18 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 					}
 					
 					if(inputClassType.length()>0){
-						if (inputClassType.toLowerCase().equals("date")) {
-
-							literalData.addNewDataType().setReference(
-									"xs:" + inputClassType.toLowerCase() + "Time");
-
-						} else {
-
-							literalData.addNewDataType().setReference(
-									"xs:" + inputClassType.toLowerCase());
+						DomainMetadataType datatype = literalData.addNewDataType();
+						
+						if(inputClassType.toLowerCase().equals("date")){
+							datatype.setReference("xs:"+inputClassType.toLowerCase() + "Time");
+						}else{
+							datatype.setReference("xs:"+inputClassType.toLowerCase());
 						}
+						
+						
+						literalData.addNewAnyValue();		
 					}
-					literalData.addNewAnyValue();				
+							
 				}else if(implementedInterface.equals(IComplexData.class)){
 					SupportedComplexDataInputType complexData = dataInput.addNewComplexData();
 					ComplexDataCombinationType defaultInputFormat = complexData.addNewDefault();
@@ -108,6 +109,7 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 							supportedSchemas = new String[0];
 						}
 						String[] supportedEncodings = parser.getSupportedEncodings();
+						
 						for(int j=0; j<supportedFormats.length;j++){
 							for(int k=0; k<supportedEncodings.length;k++){
 								if(j==0 && k==0 && i == 0){
@@ -118,6 +120,14 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 									for(int t = 0; t<supportedSchemas.length;t++){
 										if(t==0){
 											defaultFormat.setSchema(supportedSchemas[t]);
+										}else{
+											ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
+											supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+											supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+											supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
+											
+											
+										
 										}
 									}
 								}else{
@@ -146,22 +156,23 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 		
 		//3. Outputs
 		ProcessOutputs dataOutputs = processDescription.addNewProcessOutputs();
-		List<String> literaloutputIdentifiers = this.getOutputIdentifiers();
-		for(String identifier : literaloutputIdentifiers){
+		List<String> outputIdentifiers = this.getOutputIdentifiers();
+		for(String identifier : outputIdentifiers){
 			OutputDescriptionType dataOutput = dataOutputs.addNewOutput();
-			SupportedComplexDataType complexData = dataOutput.addNewComplexOutput();
-			ComplexDataCombinationType defaultInputFormat = complexData.addNewDefault();
-			ComplexDataCombinationsType supportedtInputFormat = complexData.addNewSupported();
+			
+			
 			dataOutput.addNewIdentifier().setStringValue(identifier);
 			dataOutput.addNewTitle().setStringValue(identifier);
+			dataOutput.addNewAbstract().setStringValue(identifier);
 			
 			Class outputDataTypeClass = this.getOutputDataType(identifier);
 			Class[] interfaces = outputDataTypeClass.getInterfaces();
 			
 			for(Class implementedInterface : interfaces){
-						
+					
+				
 				if(implementedInterface.equals(ILiteralData.class)){
-					LiteralInputType literalData = (LiteralInputType) dataOutput.addNewLiteralOutput();
+					LiteralOutputType literalData = dataOutput.addNewLiteralOutput();
 					String outputClassType = "";
 					
 					Constructor[] constructors = outputDataTypeClass.getConstructors();
@@ -175,17 +186,24 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 					if(outputClassType.length()>0){
 						literalData.addNewDataType().setReference("xs:"+outputClassType.toLowerCase());
 					}
-					literalData.addNewAnyValue();	}else if(implementedInterface.equals(IComplexData.class)){
-					List<IGenerator> generators = GeneratorFactory.getInstance().getAllGenerators();
-					List<IGenerator> foundGenerators = new ArrayList<IGenerator>();
-					for(IGenerator generator : generators) {
-						Class[] supportedClasses = generator.getSupportedInternalInputDataType();
-						for(Class clazz : supportedClasses){
-							if(clazz.equals(outputDataTypeClass)){
-								foundGenerators.add(generator);
+				
+					
+				}else if(implementedInterface.equals(IComplexData.class)){
+					
+						SupportedComplexDataType complexData = dataOutput.addNewComplexOutput();
+						ComplexDataCombinationType defaultInputFormat = complexData.addNewDefault();
+						ComplexDataCombinationsType supportedtOutputFormat = complexData.addNewSupported();
+						
+						List<IGenerator> generators = GeneratorFactory.getInstance().getAllGenerators();
+						List<IGenerator> foundGenerators = new ArrayList<IGenerator>();
+						for(IGenerator generator : generators) {
+							Class[] supportedClasses = generator.getSupportedInternalInputDataType();
+							for(Class clazz : supportedClasses){
+								if(clazz.equals(outputDataTypeClass)){
+									foundGenerators.add(generator);
+								}
+								
 							}
-							
-						}
 					}
 					
 					for(int i = 0; i<foundGenerators.size(); i++){
@@ -206,11 +224,18 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 									for(int t = 0; t<supportedSchemas.length;t++){
 										if(t==0){
 											defaultFormat.setSchema(supportedSchemas[t]);
+										}else{
+												ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtOutputFormat.addNewFormat();
+												supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+												supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+												supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
+												
+											
 										}
 									}
 								}else{
 									String supportedFormat = supportedFormats[j];
-									ComplexDataDescriptionType supportedCreatedFormat = supportedtInputFormat.addNewFormat();
+									ComplexDataDescriptionType supportedCreatedFormat = supportedtOutputFormat.addNewFormat();
 									supportedCreatedFormat.setMimeType(supportedFormat);
 									supportedCreatedFormat.setEncoding(supportedEncodings[k]);
 									for(int t = 0; t<supportedSchemas.length;t++){
@@ -218,7 +243,7 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 											supportedCreatedFormat.setSchema(supportedSchemas[t]);
 										}
 										if(t>0){
-											ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
+											ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtOutputFormat.addNewFormat();
 											supportedCreatedFormatAdditional.setMimeType(supportedFormat);
 											supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
 											supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
@@ -275,4 +300,10 @@ public abstract class AbstractSelfDescribingAlgorithm extends AbstractAlgorithm 
 	     o.update(this);
 	   }
 	 }
+	 
+	 @Override
+		public List<String> getErrors() {
+			List<String> errors = new ArrayList();
+			return errors;
+		}
 }

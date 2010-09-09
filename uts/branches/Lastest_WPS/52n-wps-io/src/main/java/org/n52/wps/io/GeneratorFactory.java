@@ -40,9 +40,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.n52.wps.GeneratorDocument.Generator;
-
 import org.apache.log4j.Logger;
+import org.n52.wps.GeneratorDocument.Generator;
 import org.n52.wps.io.datahandler.xml.AbstractXMLGenerator;
 import org.n52.wps.io.datahandler.xml.SimpleGMLGenerator;
 
@@ -181,5 +180,7 @@ public class GeneratorFactory {
 	public List<IGenerator> getAllGenerators() {
 		return registeredGenerators;
 	}
+
+	
 	
 }

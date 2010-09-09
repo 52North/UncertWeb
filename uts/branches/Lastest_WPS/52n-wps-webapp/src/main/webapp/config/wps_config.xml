@@ -5,6 +5,15 @@
 <WPSConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://n52.org/wps schema_v1.xsd" xmlns="http://n52.org/wps">
 	<Datahandlers>
 		<ParserList>
+			<Parser name="GML3BasicParser" className="org.n52.wps.io.datahandler.xml.GML3BasicParser">
+				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.0.0/base/feature.xsd</Property>
+				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.0.1/base/feature.xsd</Property>
+				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.1.0/base/feature.xsd</Property>
+				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.1.1/base/feature.xsd</Property>
+				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Property>
+				<Property name="supportedFormat">text/xml</Property>
+				<Property name="supportedEncoding">UTF-8</Property>
+			</Parser>
 			<Parser name="SimpleGMLParser" className="org.n52.wps.io.datahandler.xml.SimpleGMLParser">
 				<Property name="supportedSchema">http://www.opengeospatial.org/gmlpacket.xsd</Property>
 				<Property name="supportedSchema">http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd</Property>
@@ -17,17 +26,6 @@
 				<Property name="supportedSchema">http://schemas.opengis.net/gml/2.1.1/feature.xsd</Property>
 				<Property name="supportedSchema">http://schemas.opengis.net/gml/2.1.2/feature.xsd</Property>
 				<Property name="supportedSchema">http://schemas.opengis.net/gml/2.1.2.1/feature.xsd</Property>
-				<Property name="supportedFormat">text/xml</Property>
-				<Property name="supportedEncoding">UTF-8</Property>
-			</Parser>
-			
-			
-			<Parser name="GML3BasicParser" className="org.n52.wps.io.datahandler.xml.GML3BasicParser">
-				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.0.0/base/feature.xsd</Property>
-				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.0.1/base/feature.xsd</Property>
-				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.1.0/base/feature.xsd</Property>
-				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.1.1/base/feature.xsd</Property>
-				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Property>
 				<Property name="supportedFormat">text/xml</Property>
 				<Property name="supportedEncoding">UTF-8</Property>
 			</Parser>
@@ -66,17 +64,17 @@
 			</Parser>
 		</ParserList>
 		<GeneratorList>
-			<Generator name="SimpleGMLGenerator" className="org.n52.wps.io.datahandler.xml.SimpleGMLGenerator">
-				<Property name="supportedSchema">http://www.opengeospatial.org/gmlpacket.xsd</Property>
-				<Property name="supportedSchema">http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd</Property>
-				<Property name="supportedSchema">http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd</Property>
-				<Property name="supportedFormat">text/xml</Property>
-				<Property name="supportedEncoding">UTF-8</Property>
-			</Generator>
 			<Generator name="GML3BasicGenerator" className="org.n52.wps.io.datahandler.xml.GML3BasicGenerator">
 				<Property name="featureTransformerIncludeBounding">false</Property>
 				<Property name="featureTransformerDecimalPlaces">4</Property>
 				<Property name="supportedSchema">http://schemas.opengis.net/gml/3.1.1/base/feature.xsd</Property>
+				<Property name="supportedFormat">text/xml</Property>
+				<Property name="supportedEncoding">UTF-8</Property>
+			</Generator>
+			<Generator name="SimpleGMLGenerator" className="org.n52.wps.io.datahandler.xml.SimpleGMLGenerator">
+				<Property name="supportedSchema">http://www.opengeospatial.org/gmlpacket.xsd</Property>
+				<Property name="supportedSchema">http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd</Property>
+				<Property name="supportedSchema">http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd</Property>
 				<Property name="supportedFormat">text/xml</Property>
 				<Property name="supportedEncoding">UTF-8</Property>
 			</Generator>
@@ -130,6 +128,8 @@
 			<Property name="Algorithm">org.n52.wps.server.algorithm.SimpleBufferAlgorithm</Property>
 			<Property name="Algorithm">org.n52.wps.server.algorithm.simplify.DouglasPeuckerAlgorithm</Property>
 			<Property name="Algorithm">org.n52.wps.server.algorithm.intersection.IntersectionAlgorithm</Property>
+			<Property name="Algorithm">org.n52.wps.server.algorithm.ComputeTimePeriod</Property>
+			<Property name="Austal_Home">C:\\UncertWeb\\Austal\\HO</Property>
 		</Repository>
 		<!-- 
 		<Repository name="LocalUnicoreAlgorithmRepository"	className="org.n52.wps.unicore.UnicoreAlgorithmRepository">			
@@ -197,7 +197,7 @@
 		
 		 -->
 	</AlgorithmRepositoryList>
-	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="true" webappPath="wps">
+	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="true" webappPath="wps2">
 		<Database/>
 	</Server>
 </WPSConfiguration>

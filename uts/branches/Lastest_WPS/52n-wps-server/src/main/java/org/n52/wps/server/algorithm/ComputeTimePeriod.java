@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -29,7 +30,6 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.referencing.CRS;
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.SchemaRepository;
@@ -40,7 +40,6 @@ import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDoubleBinding;
 import org.n52.wps.io.datahandler.xml.GTHelper;
-import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
 import org.n52.wps.util.StreamGobbler;
@@ -51,14 +50,13 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 
 public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 
@@ -178,6 +176,8 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 			//insert point coordinates in austal2000.txt
 			String output = "";
 
+			int coordinateCount = 0;
+			
 			try {
 				URL austal2000FileURL = new URL(
 						"http://localhost:8080/wps2/res/" + austal2000FileName);
@@ -204,11 +204,12 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 								.getPayload();
 
 						FeatureIterator iterator = featColl.features();//Differentiate between point and line
-
+												
 						while (iterator.hasNext()) {
 
 							SimpleFeature feature = (SimpleFeature) iterator.next();
 
+							
 							if(feature.getDefaultGeometry() instanceof com.vividsolutions.jts.geom.Point){
 							
 							Coordinate coord = ((Geometry)feature.getDefaultGeometry())
@@ -222,11 +223,14 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 								MultiLineString lineString = (MultiLineString) feature
 										.getDefaultGeometry();
 
+
+								coordinateCount = lineString.getCoordinates().length;
+								
 								for (int i = 0; i < lineString.getCoordinates().length; i++) {
 									
 									if(i == 20){
-										break;//TODO: check if we can go higher. corresponding to the count of points
-												//we have to add heigh values in austal2000.txt
+										coordinateCount = 20;
+										break;//TODO: check if we can go higher.
 									}
 									
 									Coordinate coord = lineString
@@ -240,9 +244,12 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 								LineString lineString = (LineString) feature
 										.getDefaultGeometry();
 
+								coordinateCount = lineString.getCoordinates().length;
+								
 								for (int i = 0; i < lineString.getCoordinates().length; i++) {
 									
 									if(i == 20){
+										coordinateCount = 20;
 										break;//TODO: check if we can go higher. corresponding to the count of points
 												//we have to add heigh values in austal2000.txt
 									}
@@ -261,9 +268,16 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 					} else if (line.contains(pointsYMarker)) {
 						line = line.concat(" " + yp);
 					}
-//					else if (line.contains(pointsHMarker)) {
-//						line = line.concat(" " + hp);
-//					} 
+					else if (line.contains(pointsHMarker)) {
+						
+						String hp = "";
+						
+						for (int i = 0; i < coordinateCount; i++) {
+							hp = hp.concat(" 2");//for now just add height of two meters
+						}
+						
+						line = line.concat(" " + hp);
+					} 
 					else if (line.contains(gxMarker)) {
 						gx = Integer.valueOf(line.replace(gxMarker, "").trim());
 					} else if (line.contains(gyMarker)) {
@@ -590,7 +604,7 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 			
 			ArrayList<Point[]> points = austal.createPoints(workDirPath, true);
 
-			FeatureCollection fOut = createFeatureCollection(points);
+			FeatureCollection fOut = createFeatureCollection2(points);
 
 			result.put(outputID,
 					new GTVectorDataBinding(fOut));
@@ -646,9 +660,95 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 		return null;
 	}
 	
+	
+	
+	
+	private FeatureCollection createFeatureCollection2(ArrayList<Point[]> pois) {
+
+		FeatureCollection collection = DefaultFeatureCollections.newCollection();
+
+		SimpleFeatureBuilder featureBuilder; 
+		SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+		
+		String uuid = UUID.randomUUID().toString();
+		
+		String namespace = "http://www.52north.org/"+uuid;
+
+		Name nameType = new NameImpl(namespace, "Feature-"+uuid);
+		
+		typeBuilder.setNamespaceURI(namespace);
+		typeBuilder.setName(nameType);		
+		
+		typeBuilder.add( "GEOMETRY", MultiPoint.class);
+
+		SimpleFeatureType fType = null;
+				
+		SimpleFeature feature = null;
+
+		ArrayList<Value> allValues = pois.get(0)[0].values();//take values from first point...hopefully they are all the same
+		
+		for (Value value : allValues) {
+			typeBuilder.add( "D" +value.TimeStamp().replace(" ", "T").replace(":", "-"), String.class);
+		}
+		
+		fType = typeBuilder.buildFeatureType();
+
+		featureBuilder = new SimpleFeatureBuilder(fType);
+		
+		// loop through point arrays
+		for (int j = 0; j < pois.size(); j++) {
+			Point[] p = pois.get(j);
+			for (int i = 0; i < p.length; i++) {
+				ArrayList<Value> vals = p[i].values();
+				
+				double[] coords = p[i].coordinates();
+				
+				Coordinate coord = new Coordinate(coords[0], coords[1]);
+				
+				Geometry geom1 = geomFactory.createMultiPoint(new Coordinate[]{coord});
+				
+				ArrayList<Object> properties = new ArrayList<Object>(allValues.size());
+				
+				properties.add(geom1);
+				
+				for (int k = 0; k < vals.size(); k++) {			
+					
+					properties.add(vals.get(k).PM10val());					
+				}			
+				
+				try {
+					
+					
+					
+					feature = featureBuilder.buildFeature(p[i].get_fid(), properties.toArray());//scheint so korrekt gemapped zu werden TODO: evtl. sicherere methode wählen
+					
+
+
+					if(i==0 && j == 0){
+						SimpleFeatureType featureType = GTHelper.createFeatureType(feature.getProperties(), geom1, uuid, feature.getFeatureType().getCoordinateReferenceSystem());
+						 QName qname = GTHelper.createGML3SchemaForFeatureType(featureType);
+						 SchemaRepository.registerSchemaLocation(qname.getNamespaceURI(), qname.getLocalPart());
+					}
+					
+					Feature resultFeature = GTHelper.createFeature(p[i].get_fid(), geom1,fType, feature.getProperties());
+					collection.add(resultFeature);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}				
+			}
+
+		}	
+		
+		return collection;
+	}
+	
+	
+	
+	
 	private FeatureCollection createFeatureCollection(ArrayList<Point[]> pois) {
 		
-		SchemaRepository.registerSchemaLocation("http://schemas.opengis.net/gml/", "http://schemas.opengis.net/gml/2.1.2/feature.xsd");
+//		SchemaRepository.registerSchemaLocation("http://schemas.opengis.net/gml/", "http://schemas.opengis.net/gml/2.1.2/feature.xsd");
 		
 		FeatureCollection collection = DefaultFeatureCollections.newCollection();
 		
@@ -665,6 +765,11 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 //			e1.printStackTrace();
 //		}
 		
+		
+		
+		
+		
+		
 		SimpleFeatureBuilder featureBuilder; 
 		SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
 //		typeBuilder.setName("featureMember");
@@ -674,7 +779,7 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 		typeBuilder.setName(nameType);
 		
 		
-		typeBuilder.add( "Point", com.vividsolutions.jts.geom.Point.class);
+		typeBuilder.add( "GEOMETRY", MultiPoint.class);
 		typeBuilder.add( "f_id", String.class);
 		
 //		DefaultFeatureTypeFactory typeFactory = new DefaultFeatureTypeFactory();
@@ -707,7 +812,7 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 //			fType = typeFactory.getFeatureType();
 //		} catch (SchemaException e) {
 //			e.printStackTrace();
-//		}				
+//		}
 		
 		fType = typeBuilder.buildFeatureType();
 		
@@ -715,6 +820,8 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 //		 SchemaRepository.registerSchemaLocation(qname.getNamespaceURI(), qname.getLocalPart());
 		
 		featureBuilder = new SimpleFeatureBuilder(fType);
+		
+		String uuid = UUID.randomUUID().toString();
 		
 		// loop through point arrays
 		for (int j = 0; j < pois.size(); j++) {
@@ -726,7 +833,7 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 				
 				Coordinate coord = new Coordinate(coords[0], coords[1]);
 				
-				Geometry geom1 = geomFactory.createPoint(coord);
+				Geometry geom1 = geomFactory.createMultiPoint(new Coordinate[]{coord});
 				
 				ArrayList<Object> properties = new ArrayList<Object>(allValues.size());
 				
@@ -737,19 +844,32 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 				for (int k = 0; k < vals.size(); k++) {			
 					
 					properties.add(vals.get(k).PM10val());					
-				}
-
+				}			
+				
 				try {
 					
+					
+					
 					feature = featureBuilder.buildFeature(p[i].get_fid(), properties.toArray());//scheint so korrekt gemapped zu werden TODO: evtl. sicherere methode wählen
-					collection.add(feature);
+					
+
+
+					if(i==0 && j == 0){
+						SimpleFeatureType featureType = GTHelper.createFeatureType(feature.getProperties(), geom1, uuid, feature.getFeatureType().getCoordinateReferenceSystem());
+						 QName qname = GTHelper.createGML3SchemaForFeatureType(featureType);
+						 SchemaRepository.registerSchemaLocation(qname.getNamespaceURI(), qname.getLocalPart());
+					}
+					
+					Feature resultFeature = GTHelper.createFeature(p[i].get_fid(), geom1,fType, feature.getProperties());
+					collection.add(resultFeature);
 					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}				
 			}
 
-		}
+		}	
+		
 		return collection;
 	}
 	

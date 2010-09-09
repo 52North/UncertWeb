@@ -96,6 +96,15 @@
 		<servlet-name>retrieveResultServlet</servlet-name>
 		<url-pattern>/RetrieveResultServlet</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>wpsProxy</servlet-name>
+		<servlet-class>org.n52.wps.server.WPSProxy</servlet-class>
+		<!--load-on-startup>1</load-on-startup-->
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>wpsProxy</servlet-name>
+		<url-pattern>/WPSProxy</url-pattern>
+	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>/index.html</welcome-file>
 	</welcome-file-list>
