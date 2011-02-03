@@ -1,5 +1,7 @@
 package org.uncertweb.api.om.sampling;
 
+import org.uncertweb.api.gml.geometry.IGmlGeometry;
+
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -37,10 +39,14 @@ public class SpatialSamplingFeature {
 	 *            sampled feature
 	 * @param shape
 	 *            the feature's geometry
+	 * @throws Exception 
 	 */
 	public SpatialSamplingFeature(String gmlId, String sampledFeature,
-			Geometry shape) {
+			Geometry shape) throws Exception {
 
+		if (!(shape instanceof IGmlGeometry)){
+			throw new Exception("geometry of shape has to implement IGmlGeometry!!");
+		}
 		this.setGmlId(gmlId);
 		this.setSampledFeature(sampledFeature);
 		this.setShape(shape);
@@ -67,9 +73,10 @@ public class SpatialSamplingFeature {
 	 *            sampled feature
 	 * @param shape
 	 *            shape
+	 * @throws Exception 
 	 */
 	public SpatialSamplingFeature(String gmlId, Envelope boundedBy,
-			String sampledFeature, Geometry shape) {
+			String sampledFeature, Geometry shape) throws Exception {
 		this(gmlId, sampledFeature, shape);
 
 		this.setBoundedBy(boundedBy);

@@ -16,6 +16,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.uncertweb.api.gml.geometry.GmlPoint;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
@@ -224,10 +225,11 @@ public class XBObservationEncoderTestCase extends TestCase {
 
 	}
 	
-	public void encodeObsTP(){
+	public void encodeObsTP() throws Exception{
 		Interval phenTime = new Interval(new Date().getTime(),new Date().getTime());
 		GeometryFactory geomFac = new GeometryFactory();
-		Point p = geomFac.createPoint(new Coordinate(1,2));
+		Coordinate[] c = {new Coordinate(1,2)};
+		GmlPoint p = new GmlPoint(geomFac.getCoordinateSequenceFactory().create(c),geomFac, "point1");
 		p.setSRID(4326);
 		SpatialSamplingFeature sf = new SpatialSamplingFeature("sf1","Muenster",p);
 		TimeObject ti = new TimeObject(new DateTime(new Date().getTime()));
