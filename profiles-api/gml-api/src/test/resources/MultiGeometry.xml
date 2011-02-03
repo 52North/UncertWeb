@@ -2,7 +2,7 @@
 <!--============================================================================
 	LineString example; Taken from GML 3.2.1. specification (OGC07-036): "A LineString is a special curve that consists of a single segment with linear interpolation (see D.3.5). It is defined by two or more coordinate tuples, with linear interpolation between them." Note that the spatial reference identifer is contained in the "srsName" attribute in the root element.
 	==============================================================================-->
-<gml:MultiGeometry gml:id="col1" xmlns:gml="http://www.opengis.net/gml/3.2"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml/3.2 ../UncertWeb_GML.xsd">
+<gml:MultiGeometry gml:id="col1" xmlns:gml="http://www.opengis.net/gml/3.2"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://v-mars.uni-muenster.de/uncertweb/schema/profiles/gml/UncertWeb_GML.xsd">
 		<gml:geometryMember>
 			<gml:Point gml:id="UOMlocation">
 				<gml:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">52.87 7.78</gml:pos>
