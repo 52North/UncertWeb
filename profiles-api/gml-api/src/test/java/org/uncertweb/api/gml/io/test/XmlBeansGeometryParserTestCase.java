@@ -7,6 +7,10 @@ import java.io.InputStreamReader;
 
 import junit.framework.TestCase;
 
+import org.uncertweb.api.gml.geometry.GmlLineString;
+import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
+import org.uncertweb.api.gml.geometry.GmlPoint;
+import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
 import org.uncertweb.api.gml.io.XmlBeansGeometryParser;
 
@@ -25,7 +29,7 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class XmlBeansGeometryParserTestCase extends TestCase {
 
-	private final String EXAMPLES_PATH = "src/test/resources";
+	private final String EXAMPLES_PATH = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/gml-api/src/test/resources";
 	private GeometryFactory geomFac;
 	
 	
@@ -45,6 +49,7 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		assertEquals(52.87, ((Point)geom).getX());
 		assertEquals(7.78, ((Point)geom).getY());
 		assertEquals(4326, ((Point)geom).getSRID());
+		assertEquals("UOMlocation",((GmlPoint)geom).getGmlId());
 	}
 
 	
@@ -56,6 +61,7 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		assertEquals("Polygon", geom.getGeometryType());
 		assertEquals(52.79, ((Polygon)geom).getExteriorRing().getCoordinates()[0].x);
 		assertEquals(4326, ((Polygon)geom).getSRID());
+		assertEquals("polygon1",((GmlPolygon)geom).getGmlId());
 	}
 
 	
@@ -66,6 +72,7 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		assertEquals("LineString", geom.getGeometryType());
 		assertEquals(52.79, ((LineString)geom).getCoordinates()[0].x);
 		assertEquals(4326, ((LineString)geom).getSRID());
+		assertEquals("lineString1",((GmlLineString)geom).getGmlId());
 	}
 
 	
@@ -76,6 +83,7 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		assertEquals("GeometryCollection", geom.getGeometryType());
 		assertEquals(52.87, ((GeometryCollection)geom).getGeometryN(0).getCoordinate().x);
 		assertEquals(4326, ((GeometryCollection)geom).getGeometryN(0).getSRID());
+		assertEquals("col1",((GmlMultiGeometry)geom).getGmlId());
 	}
 	
 	
@@ -86,6 +94,7 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		assertEquals("RectifiedGrid", geom.getGeometryType());
 		assertEquals(52.77, ((RectifiedGrid)geom).getOrigin().getCoordinate().x);
 		assertEquals(4326, ((RectifiedGrid)geom).getOrigin().getSRID());
+		assertEquals("grid1",((RectifiedGrid)geom).getGmlId());
 	}
 
 	public void tearDown() {

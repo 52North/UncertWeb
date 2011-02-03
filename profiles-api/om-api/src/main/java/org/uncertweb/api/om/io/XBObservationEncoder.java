@@ -61,6 +61,10 @@ import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.io.XMLEncoder;
 import org.uncertml.x20.AbstractUncertaintyDocument;
 import org.uncertml.x20.AbstractUncertaintyType;
+import org.uncertweb.api.gml.geometry.GmlLineString;
+import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
+import org.uncertweb.api.gml.geometry.GmlPoint;
+import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
 import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
@@ -434,26 +438,26 @@ public class XBObservationEncoder implements IObservationEncoder {
 		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
 
 		XmlObject xb_geometry=null;
-		if (obs.getFeatureOfInterest().getShape() instanceof Point) {
-			xb_geometry = encoder.encodePoint2Doc((Point) obs
+		if (obs.getFeatureOfInterest().getShape() instanceof GmlPoint) {
+			xb_geometry = encoder.encodePoint2Doc((GmlPoint) obs
 					.getFeatureOfInterest().getShape());
 
-		} else if (obs.getFeatureOfInterest().getShape() instanceof Polygon) {
+		} else if (obs.getFeatureOfInterest().getShape() instanceof GmlPolygon) {
 			xb_geometry = encoder
-					.encodePolygon2Doc((Polygon) obs.getFeatureOfInterest()
+					.encodePolygon2Doc((GmlPolygon) obs.getFeatureOfInterest()
 							.getShape());
-		} else if (obs.getFeatureOfInterest().getShape() instanceof LineString) {
+		} else if (obs.getFeatureOfInterest().getShape() instanceof GmlLineString) {
 			xb_geometry = encoder
-					.encodeLineString2Doc((LineString) obs
+					.encodeLineString2Doc((GmlLineString) obs
 							.getFeatureOfInterest().getShape());
 		} else if (obs.getFeatureOfInterest().getShape() instanceof RectifiedGrid) {
 			xb_geometry = encoder
 					.encodeRectifiedGrid2Doc((RectifiedGrid) obs
 							.getFeatureOfInterest().getShape());
 
-		} else if (obs.getFeatureOfInterest().getShape() instanceof GeometryCollection) {
+		} else if (obs.getFeatureOfInterest().getShape() instanceof GmlMultiGeometry) {
 			xb_geometry = encoder
-					.encodeMultiGeometry2Doc((GeometryCollection) obs
+					.encodeMultiGeometry2Doc((GmlMultiGeometry) obs
 							.getFeatureOfInterest().getShape());
 
 		} else {

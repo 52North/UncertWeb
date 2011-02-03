@@ -6,10 +6,15 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.uncertweb.api.gml.geometry.GmlLineString;
+import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
+import org.uncertweb.api.gml.geometry.GmlPoint;
+import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
 import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -34,7 +39,9 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 	
 	public void testPointEncoder() throws Exception {
 		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
-		Point x = geomFac.createPoint(new Coordinate(52.77,8.76));
+		Coordinate[] c = {new Coordinate(52.77,8.76)};
+		GeometryFactory geomFac = new GeometryFactory();
+		GmlPoint x = new GmlPoint(geomFac.getCoordinateSequenceFactory().create(c),geomFac,"point1");
 		x.setSRID(4326);
 		System.out.println(encoder.encodeGeometry(x));
 	}
@@ -57,7 +64,7 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		LinearRing lr = geomFac.createLinearRing(coords);
 		LinearRing interior = geomFac.createLinearRing(coords2);
 		LinearRing[] holes = {interior};
-		Polygon poly = geomFac.createPolygon(lr, holes);
+		GmlPolygon poly = new GmlPolygon(lr, holes,geomFac,"poly1");
 		System.out.println(encoder.encodeGeometry(poly));
 	}
 	
@@ -69,7 +76,7 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		coords[1] = new Coordinate(0.0,1.0);
 		coords[2] = new Coordinate(1.0,1.0);
 		coords[3] = new Coordinate(1.0,0.0);
-		com.vividsolutions.jts.geom.LineString ls = geomFac.createLineString(coords);
+		GmlLineString ls = new GmlLineString(geomFac.getCoordinateSequenceFactory().create(coords),geomFac,"lineString1");
 		ls.setSRID(4326);
 		System.out.println(encoder.encodeGeometry(ls));
 	}
@@ -83,7 +90,8 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		coords[3] = new Coordinate(1.0,0.0);
 		Envelope env = new Envelope();
 		env.init(new Coordinate(1,1), new Coordinate(5,5));
-		Point p = geomFac.createPoint(new Coordinate(52.72,7.82));
+		Coordinate[] c = {new Coordinate(52.72,7.82)};
+		GmlPoint p = new GmlPoint(geomFac.getCoordinateSequenceFactory().create(c),geomFac,"point1");
 		p.setSRID(4326);
 		Collection<Point> offsetVectors = new ArrayList<Point>(2);
 		Point p1 = geomFac.createPoint(new Coordinate(0.52,3.3));
@@ -102,16 +110,22 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 	public void testMultiGeometryEncoder() throws Exception{
 		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
 		Geometry[] geom = new Geometry[3];
-		Point p = geomFac.createPoint(new Coordinate(52.72,7.82));
+		Coordinate[] c={new Coordinate(52.72,7.82)};
+		CoordinateSequence cs = geomFac.getCoordinateSequenceFactory().create(c);
+		GmlPoint p = new GmlPoint(cs,geomFac,"point1");
 		p.setSRID(4326);
 		geom[0]=p;
-		p = geomFac.createPoint(new Coordinate(53.72,8.82));
+		c[0]=new Coordinate(53.72,8.82);
+		cs = geomFac.getCoordinateSequenceFactory().create(c);
+		p = new GmlPoint(cs,geomFac,"point1");
 		p.setSRID(4326);
 		geom[1]=p;
-		p = geomFac.createPoint(new Coordinate(54.72,9.82));
+		c[0]=new Coordinate(54.72,9.82);
+		cs = geomFac.getCoordinateSequenceFactory().create(c);
+		p = new GmlPoint(cs,geomFac,"point1");
 		p.setSRID(4326);
 		geom[2]=p;
-		GeometryCollection geomCol = new GeometryCollection(geom,geomFac);
+		GmlMultiGeometry geomCol = new GmlMultiGeometry(geom,geomFac,"multiGeom1");
 		System.out.println(encoder.encodeGeometry(geomCol));
 	}
 

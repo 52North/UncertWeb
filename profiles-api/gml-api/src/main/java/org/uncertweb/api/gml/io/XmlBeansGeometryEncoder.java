@@ -30,6 +30,10 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.uncertweb.api.gml.UwAbstractFeature;
 import org.uncertweb.api.gml.UwGMLUtil;
+import org.uncertweb.api.gml.geometry.GmlLineString;
+import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
+import org.uncertweb.api.gml.geometry.GmlPoint;
+import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -37,7 +41,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Interface for encoding GML geometries and features in XMLBeans
@@ -51,16 +54,16 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	public String encodeGeometry(Geometry geom) throws XmlException {
 
 		String result = null;
-		if (geom instanceof Point) {
-			result = encodePoint((Point) geom);
-		} else if (geom instanceof Polygon) {
-			result = encodePolygon((Polygon) geom);
-		} else if (geom instanceof LineString) {
-			result = encodeLineString((LineString) geom);
+		if (geom instanceof GmlPoint) {
+			result = encodePoint((GmlPoint) geom);
+		} else if (geom instanceof GmlPolygon) {
+			result = encodePolygon((GmlPolygon) geom);
+		} else if (geom instanceof GmlLineString) {
+			result = encodeLineString((GmlLineString) geom);
 		} else if (geom instanceof RectifiedGrid) {
 			result = encodeRectifiedGrid((RectifiedGrid) geom);
-		} else if (geom instanceof GeometryCollection) {
-			result = encodeMultiGeometry((GeometryCollection) geom);
+		} else if (geom instanceof GmlMultiGeometry) {
+			result = encodeMultiGeometry((GmlMultiGeometry) geom);
 		}
 
 		return result;
@@ -82,7 +85,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * @throws XmlException
 	 * 		If encoding of the multi geometry fails
 	 */
-	private String encodeMultiGeometry(GeometryCollection geom)
+	private String encodeMultiGeometry(GmlMultiGeometry geom)
 			throws XmlException {
 
 		return encodeMultiGeometry2Doc(geom).xmlText(getGMLOptions());
@@ -98,11 +101,12 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * @throws XmlException
 	 * 		If encoding of the multi geometry fails
 	 */
-	public MultiGeometryDocument encodeMultiGeometry2Doc(GeometryCollection geom)
+	public MultiGeometryDocument encodeMultiGeometry2Doc(GmlMultiGeometry geom)
 			throws XmlException {
 		MultiGeometryDocument xb_mgDoc = MultiGeometryDocument.Factory
 				.newInstance();
 		MultiGeometryType xb_mg = xb_mgDoc.addNewMultiGeometry();
+		xb_mg.setId(geom.getGmlId());
 		int num = geom.getNumGeometries();
 		for (int i = 0; i < num; i++) {
 			GeometryPropertyType xb_member = xb_mg.addNewGeometryMember();
@@ -197,7 +201,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * 		Returns GML string representing the line string
 	 * 
 	 */
-	private String encodeLineString(LineString geom) {
+	private String encodeLineString(GmlLineString geom) {
 
 		return encodeLineString2Doc(geom).xmlText(getGMLOptions());
 	}
@@ -211,9 +215,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * 		Returns GML document representing the line string
 	 * 
 	 */
-	public LineStringDocument encodeLineString2Doc(LineString geom) {
+	public LineStringDocument encodeLineString2Doc(GmlLineString geom) {
 		LineStringDocument xb_lsDoc = LineStringDocument.Factory.newInstance();
 		LineStringType xb_ls = xb_lsDoc.addNewLineString();
+		xb_ls.setId(geom.getGmlId());
 		if (geom.getSRID() != 0) {
 			xb_ls.setSrsName(UwGMLUtil.EPSG_URL + geom.getSRID());
 		}
@@ -234,7 +239,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * 		Returns GML string representing the polygon
 	 * 
 	 */
-	private String encodePolygon(Polygon geom) {
+	private String encodePolygon(GmlPolygon geom) {
 
 		return encodePolygon2Doc(geom).xmlText(getGMLOptions());
 	}
@@ -248,9 +253,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * 		Returns GML document representing the polygon
 	 * 
 	 */
-	public PolygonDocument encodePolygon2Doc(Polygon geom) {
+	public PolygonDocument encodePolygon2Doc(GmlPolygon geom) {
 		PolygonDocument xb_pd = PolygonDocument.Factory.newInstance();
 		PolygonType xb_poly = xb_pd.addNewPolygon();
+		xb_poly.setId(geom.getGmlId());
 		xb_poly.setSrsName(UwGMLUtil.EPSG_URL + geom.getSRID());
 
 		// create exterior
@@ -275,7 +281,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * 		Returns GML string representing the point
 	 * 
 	 */
-	private String encodePoint(Point geom) {
+	private String encodePoint(GmlPoint geom) {
 
 		return encodePoint2Doc(geom).xmlText(getGMLOptions());
 	}
@@ -289,9 +295,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * 		Returns GML document representing the point
 	 * 
 	 */
-	public PointDocument encodePoint2Doc(Point geom) {
+	public PointDocument encodePoint2Doc(GmlPoint geom) {
 		PointDocument xb_pd = PointDocument.Factory.newInstance();
 		PointType xb_pt = xb_pd.addNewPoint();
+		xb_pt.setId(geom.getGmlId());
 		DirectPositionType xb_pos = xb_pt.addNewPos();
 		xb_pos.setSrsName(UwGMLUtil.EPSG_URL + geom.getSRID());
 		xb_pos.setStringValue(geom.getCoordinate().x + " "

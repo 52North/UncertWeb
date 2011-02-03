@@ -77,7 +77,7 @@ public class RectifiedGrid extends Geometry {
 	 * georeferenced origin of the grid
 	 * 
 	 */
-	private Point origin;
+	private GmlPoint origin;
 
 	/**
 	 * offset vectors of the grid; are currently implemented as JTS points
@@ -90,7 +90,7 @@ public class RectifiedGrid extends Geometry {
 	 * @param factory
 	 */
 	public RectifiedGrid(String gmlId, Envelope gridEnvelope, List<String> axisLabel,
-			Point origin, Collection<Point> offsetVectors,
+			GmlPoint origin, Collection<Point> offsetVectors,
 			GeometryFactory factory) {
 		super(factory);
 		this.gmlId=gmlId;
@@ -118,11 +118,11 @@ public class RectifiedGrid extends Geometry {
 		this.axisLabels = axisLabels;
 	}
 
-	public Point getOrigin() {
+	public GmlPoint getOrigin() {
 		return origin;
 	}
 
-	public void setOrigin(Point origin) {
+	public void setOrigin(GmlPoint origin) {
 		this.origin = origin;
 	}
 
