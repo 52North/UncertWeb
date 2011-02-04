@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WPSConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://n52.org/wps schema_v1.xsd" xmlns="http://n52.org/wps">
+	<Datahandlers>
+		<ParserList>
+			<Parser name="ObservationCollectionParser" className="org.uncertweb.sta.wps.xml.io.dec.ObservationCollectionParser" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/1.0.0/om.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+			<Parser name="GetObservationRequestParser" className="org.uncertweb.sta.wps.xml.io.dec.GetObservationRequestParser" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+			<Parser name="GetFeatureRequestParser" className="org.uncertweb.sta.wps.xml.io.dec.GetFeatureRequestParser" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/wfs/1.1.0/wfs.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+			<Parser name="ParameterParser" className="org.uncertweb.sta.wps.xml.io.dec.ParameterParser" active="true">
+				<Property name="supportedSchema" active="true">http://www.uncertweb.org/sta/wps/parameter.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+			<Parser name="GML3BasicParser" className="org.n52.wps.io.datahandler.xml.GML3BasicParser" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.2.1/gml.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+			<Parser name="GML2BasicParser" className="org.n52.wps.io.datahandler.xml.GML2BasicParser" active="true">
+				<Property name="supportedSchema" active="false">http://schemas.opengis.net/gml/2.0.0/feature.xsd</Property>
+				<Property name="supportedSchema" active="false">http://schemas.opengis.net/gml/2.1.1/feature.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2/feature.xsd</Property>
+				<Property name="supportedSchema" active="false">http://schemas.opengis.net/gml/2.1.2.1/feature.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+			<Parser name="KMLParser" className="org.n52.wps.io.datahandler.xml.KMLParser" active="false">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd</Property>
+				<Property name="supportedFormat" active="false">application/vnd.google-earth.kml+xml</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+			<Parser name="SimpleGMLParser" className="org.n52.wps.io.datahandler.xml.SimpleGMLParser" active="true">
+				<Property name="supportedSchema" active="false">http://www.opengeospatial.org/gmlpacket.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+		</ParserList>
+		<GeneratorList>
+			<Generator name="ObservationCollectionGenerator" className="org.uncertweb.sta.wps.xml.io.enc.ObservationCollectionGenerator" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/1.0.0/om.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>
+			<Generator name="GetObservationRequestGenerator" className="org.uncertweb.sta.wps.xml.io.enc.GetObservationRequestGenerator" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>
+			<Generator name="GetFeatureRequestGenerator" className="org.uncertweb.sta.wps.xml.io.enc.GetFeatureRequestGenerator" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/wfs/1.1.0/wfs.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>
+			<Generator name="ParameterGenerator" className="org.uncertweb.sta.wps.xml.io.enc.ParameterGenerator" active="true">
+				<Property name="supportedSchema" active="true">http://www.uncertweb.org/sta/wps/parameter.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>
+		</GeneratorList>
+	</Datahandlers>
+	<AlgorithmRepositoryList>
+		<Repository name="STARepository" className="org.uncertweb.sta.wps.testutils.OfflineSTARepository" active="true" />
+	</AlgorithmRepositoryList>
+	<Server hostname="localhost"
+			hostport="8080"
+			includeDataInputsInResponse="false" 
+			computationTimeoutMilliSeconds="5"
+			cacheCapabilites="false" 
+			webappPath="sta-wps">
+		<Database />
+	</Server>
+</WPSConfiguration>
