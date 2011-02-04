@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=intamap-om-1.0.0-SNAPSHOT.jar -DgroupId=org.uncertweb  -DartifactId=intamap-om -Dversion=1.0.0-SNAPSHOT -Dpackaging=jar
