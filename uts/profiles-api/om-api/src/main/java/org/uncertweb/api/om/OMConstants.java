@@ -14,6 +14,8 @@ public class OMConstants {
 	
 	public static final String NS_SAMS = "http://www.opengis.net/samplingSpatial/2.0";
 	public static final String NS_SAMS_PREFIX = "sams";
+	public static final String NS_SA = "http://www.opengis.net/sampling/2.0";
+	public static final String NS_SA_PREFIX = "sa";
 	
 	public static final String NS_XLINK = "http://www.w3.org/1999/xlink";
 	public static final String NS_XLINK_PREFIX = "xlink";
