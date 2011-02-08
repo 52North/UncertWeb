@@ -11,13 +11,19 @@ import net.opengis.gml.x32.DirectPositionType;
 import net.opengis.gml.x32.GeometryPropertyType;
 import net.opengis.gml.x32.GridEnvelopeType;
 import net.opengis.gml.x32.LineStringDocument;
+import net.opengis.gml.x32.LineStringPropertyType;
 import net.opengis.gml.x32.LineStringType;
 import net.opengis.gml.x32.LinearRingType;
 import net.opengis.gml.x32.MultiGeometryDocument;
 import net.opengis.gml.x32.MultiGeometryType;
+import net.opengis.gml.x32.MultiLineStringDocument;
+import net.opengis.gml.x32.MultiPointDocument;
+import net.opengis.gml.x32.MultiPolygonDocument;
 import net.opengis.gml.x32.PointDocument;
+import net.opengis.gml.x32.PointPropertyType;
 import net.opengis.gml.x32.PointType;
 import net.opengis.gml.x32.PolygonDocument;
+import net.opengis.gml.x32.PolygonPropertyType;
 import net.opengis.gml.x32.PolygonType;
 import net.opengis.gml.x32.RectifiedGridDocument;
 import net.opengis.gml.x32.RectifiedGridType;
@@ -27,6 +33,9 @@ import org.apache.xmlbeans.XmlObject;
 import org.uncertweb.api.gml.UwGMLUtil;
 import org.uncertweb.api.gml.geometry.GmlLineString;
 import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
+import org.uncertweb.api.gml.geometry.GmlMultiLineString;
+import org.uncertweb.api.gml.geometry.GmlMultiPoint;
+import org.uncertweb.api.gml.geometry.GmlMultiPolygon;
 import org.uncertweb.api.gml.geometry.GmlPoint;
 import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
@@ -35,10 +44,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * XMLBeans based parser implementation for parsing geometries defined in the
@@ -92,6 +102,24 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		else if (xb_geomObj instanceof RectifiedGridDocument) {
 			geom = parseRectifiedGrid(((RectifiedGridDocument) xb_geomObj)
 					.getRectifiedGrid());
+			return geom;
+		}
+		
+		// geometry is MultiPoint
+		else if (xb_geomObj instanceof MultiPointDocument) {
+			geom = parseMultiPoint((MultiPointDocument) xb_geomObj);
+			return geom;
+		}
+		
+		// geometry is MultiLineString
+		else if (xb_geomObj instanceof MultiLineStringDocument) {
+			geom = parseMultiLineString((MultiLineStringDocument) xb_geomObj);
+			return geom;
+		}
+		
+		// geometry is MultiPolygon
+		else if (xb_geomObj instanceof MultiPolygonDocument) {
+			geom = parseMultiPolygon((MultiPolygonDocument) xb_geomObj);
 			return geom;
 		}
 
@@ -214,8 +242,8 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 
 		// parse limits
 		GridEnvelopeType xb_limits = xb_rgType.getLimits().getGridEnvelope();
-		List highCoords = xb_limits.getHigh();
-		List lowCoords = xb_limits.getLow();
+		List<?> highCoords = xb_limits.getHigh();
+		List<?> lowCoords = xb_limits.getLow();
 		if (highCoords.size() != 2 || lowCoords.size() != 2) {
 			throw new Exception("Grid must have 2-dim coords!");
 		} else {
@@ -227,7 +255,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		}
 
 		// parse axisLabels or axisNames
-		List al = xb_rgType.getAxisLabels2();
+		List<?> al = xb_rgType.getAxisLabels2();
 		String[] an = xb_rgType.getAxisNameArray();
 		axisLabels = new ArrayList<String>();
 		if (al != null) {
@@ -299,6 +327,69 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		}
 		geomCol =new GmlMultiGeometry(geomArray,geomFac,gmlId);
 		return geomCol;
+	}
+	
+	/**
+	 * method for parsing XmlBeans representation of multiLineString into JTS
+	 * geometry
+	 * 
+	 * @param xb_mlsDoc
+	 *            XmlBeans representation of multiLineString
+	 * @return Returns JTS representation of multiLineString
+	 * @throws Exception
+	 * 				if parsing fails
+	 */
+	private Geometry parseMultiLineString(MultiLineStringDocument xb_mlsDoc) throws Exception{
+		GmlMultiLineString mp = null;
+		LineStringPropertyType[] xb_lsArray = xb_mlsDoc.getMultiLineString().getLineStringMemberArray();
+		LineString[] ls = new LineString[xb_lsArray.length];
+		for (int i=0; i<xb_lsArray.length;i++){
+			ls[i]=parseLineString(xb_lsArray[i].getLineString());
+		}
+		mp = new GmlMultiLineString(ls,geomFac,xb_mlsDoc.getMultiLineString().getId());
+		return mp;
+	}
+	
+	/**
+	 * method for parsing XmlBeans representation of multiPoint into JTS
+	 * geometry
+	 * 
+	 * @param xb_mlsDoc
+	 * 				XmlBeans representation of multiPoint
+	 * @return Returns JTS representation of multiPoint
+	 * @throws Exception
+	 * 			if parsing fails
+	 */
+	private Geometry parseMultiPoint(MultiPointDocument xb_mlsDoc) throws Exception{
+		GmlMultiPoint mp = null;
+		PointPropertyType[] xb_lsArray = xb_mlsDoc.getMultiPoint().getPointMemberArray();
+		Point[] ls = new Point[xb_lsArray.length];
+		for (int i=0; i<xb_lsArray.length;i++){
+			ls[i]=parsePoint(xb_lsArray[i].getPoint());
+		}
+		mp = new GmlMultiPoint(ls,geomFac,xb_mlsDoc.getMultiPoint().getId());
+		return mp;
+	}
+	
+	/**
+	 * method for parsing XmlBeans representation of MultiPolygon into JTS
+	 * geometry
+	 * 
+	 * @param xb_mlsDoc
+	 * 				XmlBeans representation of MultiPolygon
+	 * @return Returns JTS representation of MultiPolygon
+	 * @throws Exception
+	 * 			if parsing fails
+	 */
+	private Geometry parseMultiPolygon(MultiPolygonDocument xb_mlsDoc) throws Exception{
+		GmlMultiPolygon mp = null;
+		PolygonPropertyType[] xb_lsArray = xb_mlsDoc.getMultiPolygon().getPolygonMemberArray();
+		Polygon[] ls = new Polygon[xb_lsArray.length];
+		for (int i=0; i<xb_lsArray.length;i++){
+			ls[i]=parsePolygon(xb_lsArray[i].getPolygon());
+		}
+		mp = new GmlMultiPolygon(ls,geomFac,xb_mlsDoc.getMultiPolygon().getId());
+		return mp;
 	}
 
 	/**

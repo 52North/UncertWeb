@@ -12,11 +12,14 @@ import net.opengis.gml.x32.DirectPositionType;
 import net.opengis.gml.x32.GeometryPropertyType;
 import net.opengis.gml.x32.GridEnvelopeType;
 import net.opengis.gml.x32.LineStringDocument;
+import net.opengis.gml.x32.LineStringPropertyType;
 import net.opengis.gml.x32.LineStringType;
 import net.opengis.gml.x32.LinearRingDocument;
 import net.opengis.gml.x32.LinearRingType;
 import net.opengis.gml.x32.MultiGeometryDocument;
 import net.opengis.gml.x32.MultiGeometryType;
+import net.opengis.gml.x32.MultiLineStringDocument;
+import net.opengis.gml.x32.MultiLineStringType;
 import net.opengis.gml.x32.PointDocument;
 import net.opengis.gml.x32.PointType;
 import net.opengis.gml.x32.PolygonDocument;
@@ -32,6 +35,7 @@ import org.uncertweb.api.gml.UwAbstractFeature;
 import org.uncertweb.api.gml.UwGMLUtil;
 import org.uncertweb.api.gml.geometry.GmlLineString;
 import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
+import org.uncertweb.api.gml.geometry.GmlMultiLineString;
 import org.uncertweb.api.gml.geometry.GmlPoint;
 import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
@@ -330,7 +334,25 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		xb_lrType.setPosArray(xb_posList);
 		return xb_lrDoc;
 	}
+	
+	private MultiLineStringDocument encodeMultiLineString(GmlMultiLineString gmlMls){
+		MultiLineStringDocument xb_mlsDoc = MultiLineStringDocument.Factory.newInstance();
+		MultiLineStringType xb_mls = xb_mlsDoc.addNewMultiLineString();
+		//set gml ID
+		xb_mls.setId(gmlMls.getGmlId());
+		
+		int size = gmlMls.getNumGeometries();
+		for (int i=0;i<size;i++){
+			LineStringPropertyType xb_ls = xb_mls.addNewLineStringMember();
+			LineStringDocument xb_lsDoc = encodeLineString2Doc((GmlLineString)gmlMls.getGeometryN(i));
+			xb_ls.set(xb_lsDoc);
+		}
+		return xb_mlsDoc;
+	}
 
+	
+	//TODO add further encoding methods for MultiPoint and MultiPolygon
+	
 	/**
 	 * method returns XmlOptions which are used by XmlBeans for a proper encoding
 	 * 
