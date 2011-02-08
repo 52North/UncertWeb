@@ -1,6 +1,10 @@
 package org.uncertweb.api.om.sampling;
 
+import org.uncertweb.api.gml.geometry.GmlLineString;
+import org.uncertweb.api.gml.geometry.GmlPoint;
+import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.IGmlGeometry;
+import org.uncertweb.api.gml.geometry.RectifiedGrid;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -27,6 +31,9 @@ public class SpatialSamplingFeature {
 	/** reference to the sampled feature (might be a lake for example)*/
 	private String sampledFeature;
 	
+	/**indicates the type of the sampling feature*/
+	private String featureType;
+	
 	/**geometry of the sampling feature*/
 	private Geometry shape;
 
@@ -46,6 +53,18 @@ public class SpatialSamplingFeature {
 
 		if (!(shape instanceof IGmlGeometry)){
 			throw new Exception("geometry of shape has to implement IGmlGeometry!!");
+		}
+		if (shape instanceof GmlPoint){
+			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint";
+		}
+		else if (shape instanceof GmlLineString){
+			this.featureType="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingCurve";
+		}
+		else if (shape instanceof GmlPolygon){
+			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface";
+		}
+		else if (shape instanceof RectifiedGrid){
+			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingGrid";
 		}
 		this.setGmlId(gmlId);
 		this.setSampledFeature(sampledFeature);
@@ -132,5 +151,12 @@ public class SpatialSamplingFeature {
 	 */
 	public void setHref(String href) {
 		this.href = href;
+	}
+
+	/**
+	 * @return the featureType
+	 */
+	public String getFeatureType() {
+		return featureType;
 	}
 }
