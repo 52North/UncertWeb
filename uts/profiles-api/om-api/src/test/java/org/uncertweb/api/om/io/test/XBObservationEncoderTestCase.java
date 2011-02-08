@@ -39,7 +39,7 @@ import com.vividsolutions.jts.geom.Point;
 public class XBObservationEncoderTestCase extends TestCase {
 
 	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api";
-	private String pathToExamples = "/Util/Profiles/OM/examples";
+	private String pathToExamples = "om-api/src/test/resources";
 
 	public void testObservationEncoder() throws Exception {
 
