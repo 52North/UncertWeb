@@ -21,7 +21,6 @@ import net.opengis.om.x20.OMAbstractObservationType;
 import net.opengis.om.x20.OMBooleanObservationDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
 import net.opengis.om.x20.OMMeasurementDocument;
-import net.opengis.om.x20.OMObservationCollectionDocument;
 import net.opengis.om.x20.OMObservationDocument;
 import net.opengis.om.x20.OMObservationPropertyType;
 import net.opengis.om.x20.OMProcessPropertyType;
@@ -57,10 +56,10 @@ import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.DiscreteNumericObservation;
 import org.uncertweb.api.om.observation.Measurement;
-import org.uncertweb.api.om.observation.ObservationCollection;
 import org.uncertweb.api.om.observation.ReferenceObservation;
 import org.uncertweb.api.om.observation.TextObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.result.BooleanResult;
 import org.uncertweb.api.om.result.IntegerResult;
 import org.uncertweb.api.om.result.MeasureResult;
@@ -94,68 +93,68 @@ public class XBObservationParser implements IObservationParser {
 	 *             if parsing of observations fails
 	 */
 	@Override
-	public ObservationCollection parseObservationCollection(String xmlObsCol)
+	public IObservationCollection parseObservationCollection(String xmlObsCol)
 			throws Exception {
 
-		ObservationCollection obsCol = new ObservationCollection();
-		XmlObject xb_obsColDoc = XmlObject.Factory.parse(xmlObsCol);
+//		ObservationCollection obsCol = new ObservationCollection();
+//		XmlObject xb_obsColDoc = XmlObject.Factory.parse(xmlObsCol);
+//
+//		if (xb_obsColDoc instanceof OMObservationCollectionDocument) {
+//
+//			OMObservationPropertyType[] obsMemberArray = ((OMObservationCollectionDocument) xb_obsColDoc)
+//					.getOMObservationCollection().getMemberArray();
+//
+//			for (int i = 0; i < obsMemberArray.length; i++) {
+//
+//				OMObservationDocument xb_obsDoc = null;
+//				OMAbstractObservationType xb_obs = null;
+//
+//				if (obsMemberArray[i].getOMObservation() instanceof UWBooleanObservationType) {
+//					xb_obsDoc = OMBooleanObservationDocument.Factory
+//							.newInstance();
+//					xb_obs = ((OMBooleanObservationDocument) xb_obsDoc)
+//							.addNewOMBooleanObservation();
+//					xb_obs.set(obsMemberArray[i].getOMObservation());
+//
+//				} else if (obsMemberArray[i].getOMObservation() instanceof UWDiscreteNumericObservationType) {
+//					xb_obsDoc = OMDiscreteNumericObservationDocument.Factory
+//							.newInstance();
+//					xb_obs = ((OMDiscreteNumericObservationDocument) xb_obsDoc)
+//							.addNewOMDiscreteNumericObservation();
+//					xb_obs.set(obsMemberArray[i].getOMObservation());
+//
+//				} else if (obsMemberArray[i].getOMObservation() instanceof UWMeasurementType) {
+//					xb_obsDoc = OMMeasurementDocument.Factory.newInstance();
+//					xb_obs = ((OMMeasurementDocument) xb_obsDoc)
+//							.addNewOMMeasurement();
+//					xb_obs.set(obsMemberArray[i].getOMObservation());
+//
+//				} else if (obsMemberArray[i].getOMObservation() instanceof UWReferenceObservationType) {
+//					xb_obsDoc = OMReferenceObservationDocument.Factory
+//							.newInstance();
+//					xb_obs = ((OMReferenceObservationDocument) xb_obsDoc)
+//							.addNewOMReferenceObservation();
+//					xb_obs.set(obsMemberArray[i].getOMObservation());
+//
+//				} else if (obsMemberArray[i].getOMObservation() instanceof UWTextObservationType) {
+//					xb_obsDoc = OMTextObservationDocument.Factory.newInstance();
+//					xb_obs = ((OMTextObservationDocument) xb_obsDoc)
+//							.addNewOMTextObservation();
+//					xb_obs.set(obsMemberArray[i].getOMObservation());
+//
+//				} else if (obsMemberArray[i].getOMObservation() instanceof UWUncertaintyObservationType) {
+//					xb_obsDoc = OMUncertaintyObservationDocument.Factory
+//							.newInstance();
+//					xb_obs = ((OMUncertaintyObservationDocument) xb_obsDoc)
+//							.addNewOMUncertaintyObservation();
+//					xb_obs.set(obsMemberArray[i].getOMObservation());
+//				}
+//
+//				obsCol.getMembers().add(parseObservationDocument(xb_obsDoc));
+//			}
+//		}
 
-		if (xb_obsColDoc instanceof OMObservationCollectionDocument) {
-
-			OMObservationPropertyType[] obsMemberArray = ((OMObservationCollectionDocument) xb_obsColDoc)
-					.getOMObservationCollection().getMemberArray();
-
-			for (int i = 0; i < obsMemberArray.length; i++) {
-
-				OMObservationDocument xb_obsDoc = null;
-				OMAbstractObservationType xb_obs = null;
-
-				if (obsMemberArray[i].getOMObservation() instanceof UWBooleanObservationType) {
-					xb_obsDoc = OMBooleanObservationDocument.Factory
-							.newInstance();
-					xb_obs = ((OMBooleanObservationDocument) xb_obsDoc)
-							.addNewOMBooleanObservation();
-					xb_obs.set(obsMemberArray[i].getOMObservation());
-
-				} else if (obsMemberArray[i].getOMObservation() instanceof UWDiscreteNumericObservationType) {
-					xb_obsDoc = OMDiscreteNumericObservationDocument.Factory
-							.newInstance();
-					xb_obs = ((OMDiscreteNumericObservationDocument) xb_obsDoc)
-							.addNewOMDiscreteNumericObservation();
-					xb_obs.set(obsMemberArray[i].getOMObservation());
-
-				} else if (obsMemberArray[i].getOMObservation() instanceof UWMeasurementType) {
-					xb_obsDoc = OMMeasurementDocument.Factory.newInstance();
-					xb_obs = ((OMMeasurementDocument) xb_obsDoc)
-							.addNewOMMeasurement();
-					xb_obs.set(obsMemberArray[i].getOMObservation());
-
-				} else if (obsMemberArray[i].getOMObservation() instanceof UWReferenceObservationType) {
-					xb_obsDoc = OMReferenceObservationDocument.Factory
-							.newInstance();
-					xb_obs = ((OMReferenceObservationDocument) xb_obsDoc)
-							.addNewOMReferenceObservation();
-					xb_obs.set(obsMemberArray[i].getOMObservation());
-
-				} else if (obsMemberArray[i].getOMObservation() instanceof UWTextObservationType) {
-					xb_obsDoc = OMTextObservationDocument.Factory.newInstance();
-					xb_obs = ((OMTextObservationDocument) xb_obsDoc)
-							.addNewOMTextObservation();
-					xb_obs.set(obsMemberArray[i].getOMObservation());
-
-				} else if (obsMemberArray[i].getOMObservation() instanceof UWUncertaintyObservationType) {
-					xb_obsDoc = OMUncertaintyObservationDocument.Factory
-							.newInstance();
-					xb_obs = ((OMUncertaintyObservationDocument) xb_obsDoc)
-							.addNewOMUncertaintyObservation();
-					xb_obs.set(obsMemberArray[i].getOMObservation());
-				}
-
-				obsCol.getMembers().add(parseObservationDocument(xb_obsDoc));
-			}
-		}
-
-		return obsCol;
+		return null;
 	}
 
 	/**
@@ -184,7 +183,6 @@ public class XBObservationParser implements IObservationParser {
 	 * @throws Exception
 	 *             If parsing of observation fails
 	 */
-	@Override
 	public AbstractObservation parseObservationDocument(
 			OMObservationDocument xb_obsDoc) throws Exception {
 
@@ -518,7 +516,7 @@ public class XBObservationParser implements IObservationParser {
 	 *            time as a string e.g. 1970-01-01T00:00:00Z
 	 * @return time as an Object
 	 */
-	private DateTime parseTimePosition(String timePosition) {
+	public DateTime parseTimePosition(String timePosition) {
 		DateTime dateTime = null;
 
 		DateTimeFormatter dtf = ISODateTimeFormat.dateTimeParser();
@@ -563,7 +561,6 @@ public class XBObservationParser implements IObservationParser {
 	 * @throws Exception
 	 *             if parsing of the feature fails
 	 */
-	@Override
 	public SpatialSamplingFeature parseSamplingFeature(
 			FoiPropertyType xb_featureOfInterest) throws Exception {
 

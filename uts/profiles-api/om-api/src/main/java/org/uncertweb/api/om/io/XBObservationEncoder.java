@@ -4,16 +4,9 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.opengis.gml.x32.AbstractGeometryType;
 import net.opengis.gml.x32.BoundingShapeType;
 import net.opengis.gml.x32.EnvelopeType;
-import net.opengis.gml.x32.LineStringDocument;
 import net.opengis.gml.x32.MeasureType;
-import net.opengis.gml.x32.MultiGeometryDocument;
-import net.opengis.gml.x32.PointDocument;
-import net.opengis.gml.x32.PointType;
-import net.opengis.gml.x32.PolygonDocument;
-import net.opengis.gml.x32.RectifiedGridDocument;
 import net.opengis.gml.x32.ReferenceType;
 import net.opengis.gml.x32.TimeInstantDocument;
 import net.opengis.gml.x32.TimeInstantPropertyType;
@@ -26,14 +19,17 @@ import net.opengis.gml.x32.UncertaintyPropertyType;
 import net.opengis.gml.x32.UnitDefinitionType;
 import net.opengis.om.x20.FoiPropertyType;
 import net.opengis.om.x20.OMAbstractObservationType;
+import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
 import net.opengis.om.x20.OMBooleanObservationDocument;
+import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
+import net.opengis.om.x20.OMMeasurementCollectionDocument;
 import net.opengis.om.x20.OMMeasurementDocument;
-import net.opengis.om.x20.OMObservationCollectionDocument;
 import net.opengis.om.x20.OMObservationDocument;
-import net.opengis.om.x20.OMObservationPropertyType;
+import net.opengis.om.x20.OMReferenceObservationCollectionDocument;
 import net.opengis.om.x20.OMReferenceObservationDocument;
 import net.opengis.om.x20.OMTextObservationDocument;
+import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationDocument;
 import net.opengis.om.x20.UWBooleanObservationType;
 import net.opengis.om.x20.UWDiscreteNumericObservationType;
@@ -41,9 +37,12 @@ import net.opengis.om.x20.UWMeasurementType;
 import net.opengis.om.x20.UWReferenceObservationType;
 import net.opengis.om.x20.UWTextObservationType;
 import net.opengis.om.x20.UWUncertaintyObservationType;
-import net.opengis.om.x20.OMObservationCollectionDocument.OMObservationCollection;
+import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObservationCollection;
+import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscreteNumericObservationCollection;
+import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
+import net.opengis.om.x20.OMReferenceObservationCollectionDocument.OMReferenceObservationCollection;
+import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
-import net.opengis.samplingSpatial.x20.ShapeDocument;
 import net.opengis.samplingSpatial.x20.ShapeType;
 
 import org.apache.xmlbeans.XmlException;
@@ -60,7 +59,6 @@ import org.uncertml.exception.UncertaintyEncoderException;
 import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.io.XMLEncoder;
 import org.uncertml.x20.AbstractUncertaintyDocument;
-import org.uncertml.x20.AbstractUncertaintyType;
 import org.uncertweb.api.gml.geometry.GmlLineString;
 import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
 import org.uncertweb.api.gml.geometry.GmlPoint;
@@ -70,19 +68,19 @@ import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.OMConstants;
 import org.uncertweb.api.om.observation.AbstractObservation;
-import org.uncertweb.api.om.observation.ObservationCollection;
+import org.uncertweb.api.om.observation.BooleanObservation;
+import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
+import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.ReferenceObservationCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.BooleanResult;
 import org.uncertweb.api.om.result.IntegerResult;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.result.ReferenceResult;
 import org.uncertweb.api.om.result.TextResult;
 import org.uncertweb.api.om.result.UncertaintyResult;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * encodes Observations by xmlBeans
@@ -101,7 +99,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * @throws Exception
 	 */
 	@Override
-	public String encodeObservationCollection(ObservationCollection obsCol)
+	public String encodeObservationCollection(IObservationCollection obsCol)
 			throws Exception {
 		return encodeObservationCollectionDocument(obsCol).xmlText(
 				getOMOptions());
@@ -115,29 +113,87 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * @return observation collections's xml document
 	 * @throws Exception
 	 */
-	@Override
-	public OMObservationCollectionDocument encodeObservationCollectionDocument(
-			ObservationCollection obsCol) throws Exception {
-
-		OMObservationCollectionDocument xb_obsColDoc = OMObservationCollectionDocument.Factory
-				.newInstance();
-		OMObservationCollection xb_obsCol = xb_obsColDoc
-				.addNewOMObservationCollection();
-
-		if (obsCol.getMembers() != null && !obsCol.getMembers().isEmpty()) {
-
-			Iterator<AbstractObservation> obsIter = obsCol.getMembers()
-					.iterator();
-			while (obsIter.hasNext()) {
-
-				OMObservationPropertyType xb_obs = xb_obsCol.addNewMember();
-
-				AbstractObservation obs = obsIter.next();
-				xb_obs.set(encodeObservationDocument(obs));
+	public XmlObject encodeObservationCollectionDocument(
+			IObservationCollection obsCol) throws Exception {
+		if (obsCol instanceof BooleanObservationCollection){
+			OMBooleanObservationCollectionDocument result = OMBooleanObservationCollectionDocument.Factory.newInstance();
+			OMBooleanObservationCollection xb_boCol = result.addNewOMBooleanObservationCollection();
+			if (obsCol.getGmlId()!=null){
+				xb_boCol.setId(obsCol.getGmlId());
 			}
+			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol).getMembers().iterator();
+			while (obsIter.hasNext()){
+				UWBooleanObservationType xb_obs = xb_boCol.addNewOMBooleanObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
+				xb_obs.set(xb_boDoc);
+			}
+			return result;
 		}
+		else if (obsCol instanceof MeasurementCollection){
+			OMMeasurementCollectionDocument result = OMMeasurementCollectionDocument.Factory.newInstance();
+			OMMeasurementCollection xb_boCol = result.addNewOMMeasurementCollection();
+			if (obsCol.getGmlId()!=null){
+				xb_boCol.setId(obsCol.getGmlId());
+			}
+			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol).getMembers().iterator();
+			while (obsIter.hasNext()){
+				UWMeasurementType xb_obs = xb_boCol.addNewOMMeasurement();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
+				xb_obs.set(xb_boDoc);
+			}
 
-		return xb_obsColDoc;
+			return result;
+		}
+		
+		else if (obsCol instanceof ReferenceObservationCollection){
+			OMReferenceObservationCollectionDocument result = OMReferenceObservationCollectionDocument.Factory.newInstance();
+			OMReferenceObservationCollection xb_boCol = result.addNewOMReferenceObservationCollection();
+			if (obsCol.getGmlId()!=null){
+				xb_boCol.setId(obsCol.getGmlId());
+			}
+			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol).getMembers().iterator();
+			while (obsIter.hasNext()){
+				UWReferenceObservationType xb_obs = xb_boCol.addNewOMReferenceObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
+				xb_obs.set(xb_boDoc);
+			}
+			return result;
+		}
+		
+		else if (obsCol instanceof UncertaintyObservationCollection){
+			OMUncertaintyObservationCollectionDocument result = OMUncertaintyObservationCollectionDocument.Factory.newInstance();
+			OMUncertaintyObservationCollection xb_boCol = result.addNewOMUncertaintyObservationCollection();
+			if (obsCol.getGmlId()!=null){
+				xb_boCol.setId(obsCol.getGmlId());
+			}
+			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol).getMembers().iterator();
+			while (obsIter.hasNext()){
+				UWUncertaintyObservationType xb_obs = xb_boCol.addNewOMUncertaintyObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
+				xb_obs.set(xb_boDoc);
+			}
+			return result;
+		}
+		
+		else if (obsCol instanceof DiscreteNumericObservationCollection){
+			OMDiscreteNumericObservationCollectionDocument result = OMDiscreteNumericObservationCollectionDocument.Factory.newInstance();
+			OMDiscreteNumericObservationCollection xb_boCol = result.addNewOMDiscreteNumericObservationCollection();
+			if (obsCol.getGmlId()!=null){
+				xb_boCol.setId(obsCol.getGmlId());
+			}
+			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol).getMembers().iterator();
+			while (obsIter.hasNext()){
+				UWDiscreteNumericObservationType xb_obs = xb_boCol.addNewOMDiscreteNumericObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
+				xb_obs.set(xb_boDoc);
+			}
+			return result;
+		}
+		
+		else {
+			throw new Exception("Collection type is not supported by encoder!");
+		}
+		
 	}
 
 	/**
@@ -161,7 +217,6 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * @return observation's xml document
 	 * @throws Exception
 	 */
-	@Override
 	public OMObservationDocument encodeObservationDocument(
 			AbstractObservation obs) throws Exception {
 
@@ -433,7 +488,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 		} else {
 			xb_sfType.setNilSampledFeature();
 		}
-		
+		ReferenceType xb_rt = xb_sfType.addNewType();
+		xb_rt.setHref(obs.getFeatureOfInterest().getFeatureType());
 		ShapeType xb_shape = xb_sfType.addNewShape();
 		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
 
@@ -650,6 +706,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 		lPrefixMap.put(OMConstants.NS_GML, OMConstants.NS_GML_PREFIX);
 		lPrefixMap.put(OMConstants.NS_OM, OMConstants.NS_OM_PREFIX);
 		lPrefixMap.put(OMConstants.NS_SAMS, OMConstants.NS_SAMS_PREFIX);
+		lPrefixMap.put(OMConstants.NS_SA, OMConstants.NS_SA_PREFIX);
 		lPrefixMap.put(OMConstants.NS_XLINK, OMConstants.NS_XLINK_PREFIX);
 		xmlOptions.setSaveSuggestedPrefixes(lPrefixMap);
 		xmlOptions.setSavePrettyPrint();
