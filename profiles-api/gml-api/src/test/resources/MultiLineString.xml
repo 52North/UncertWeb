@@ -4,7 +4,7 @@
 	==============================================================================-->
 <gml:MultiLineString gml:id="col1" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml/3.2 ../UncertWeb_GML.xsd">
 	<gml:lineStringMember>
-		<gml:LineString gml:id="UOMlocation">
+		<gml:LineString gml:id="UOMlocation" srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
 			<gml:pos>52.79 7.87</gml:pos>
 			<gml:pos>52.79 8.87</gml:pos>
 			<gml:pos>53.79 8.87</gml:pos>
@@ -12,7 +12,7 @@
 		</gml:LineString>
 	</gml:lineStringMember>
 	<gml:lineStringMember>
-		<gml:LineString gml:id="ASTlocation">
+		<gml:LineString gml:id="ASTlocation" srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
 			<gml:pos>52.79 7.87</gml:pos>
 			<gml:pos>52.79 8.87</gml:pos>
 			<gml:pos>53.79 8.87</gml:pos>
