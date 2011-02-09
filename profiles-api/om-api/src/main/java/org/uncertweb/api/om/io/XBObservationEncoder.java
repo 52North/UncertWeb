@@ -69,6 +69,7 @@ import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.OMConstants;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
+import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
 import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
@@ -91,12 +92,13 @@ import org.uncertweb.api.om.result.UncertaintyResult;
 public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
-	 * encodes an {@link OMObservationCollectionDocument}
+	 * encodes an observation collection
 	 * 
 	 * @param obsCol
 	 *            observation collection
 	 * @return observation collections's xml document as formatted String
 	 * @throws Exception
+	 * 			if encoding fails
 	 */
 	@Override
 	public String encodeObservationCollection(IObservationCollection obsCol)
@@ -106,15 +108,18 @@ public class XBObservationEncoder implements IObservationEncoder {
 	}
 
 	/**
-	 * encodes an {@link OMObservationCollectionDocument}
+	 * encodes an observation collection
 	 * 
 	 * @param obsCol
-	 *            observation collection
+	 *      observation collection
 	 * @return observation collections's xml document
 	 * @throws Exception
+	 * 		if encoding fails
 	 */
 	public XmlObject encodeObservationCollectionDocument(
 			IObservationCollection obsCol) throws Exception {
+		
+		//BooleanObservation collection
 		if (obsCol instanceof BooleanObservationCollection){
 			OMBooleanObservationCollectionDocument result = OMBooleanObservationCollectionDocument.Factory.newInstance();
 			OMBooleanObservationCollection xb_boCol = result.addNewOMBooleanObservationCollection();
@@ -125,26 +130,27 @@ public class XBObservationEncoder implements IObservationEncoder {
 			while (obsIter.hasNext()){
 				UWBooleanObservationType xb_obs = xb_boCol.addNewOMBooleanObservation();
 				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
-				xb_obs.set(xb_boDoc);
+				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			return result;
 		}
+		//Measurement collection
 		else if (obsCol instanceof MeasurementCollection){
 			OMMeasurementCollectionDocument result = OMMeasurementCollectionDocument.Factory.newInstance();
 			OMMeasurementCollection xb_boCol = result.addNewOMMeasurementCollection();
 			if (obsCol.getGmlId()!=null){
 				xb_boCol.setId(obsCol.getGmlId());
 			}
-			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol).getMembers().iterator();
+			Iterator<Measurement> obsIter = ((MeasurementCollection) obsCol).getMembers().iterator();
 			while (obsIter.hasNext()){
 				UWMeasurementType xb_obs = xb_boCol.addNewOMMeasurement();
 				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
-				xb_obs.set(xb_boDoc);
+				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 
 			return result;
 		}
-		
+		//ReferenceObservation collection
 		else if (obsCol instanceof ReferenceObservationCollection){
 			OMReferenceObservationCollectionDocument result = OMReferenceObservationCollectionDocument.Factory.newInstance();
 			OMReferenceObservationCollection xb_boCol = result.addNewOMReferenceObservationCollection();
@@ -155,11 +161,11 @@ public class XBObservationEncoder implements IObservationEncoder {
 			while (obsIter.hasNext()){
 				UWReferenceObservationType xb_obs = xb_boCol.addNewOMReferenceObservation();
 				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
-				xb_obs.set(xb_boDoc);
+				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			return result;
 		}
-		
+		//UncertaintyObservation collection
 		else if (obsCol instanceof UncertaintyObservationCollection){
 			OMUncertaintyObservationCollectionDocument result = OMUncertaintyObservationCollectionDocument.Factory.newInstance();
 			OMUncertaintyObservationCollection xb_boCol = result.addNewOMUncertaintyObservationCollection();
@@ -170,11 +176,11 @@ public class XBObservationEncoder implements IObservationEncoder {
 			while (obsIter.hasNext()){
 				UWUncertaintyObservationType xb_obs = xb_boCol.addNewOMUncertaintyObservation();
 				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
-				xb_obs.set(xb_boDoc);
+				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			return result;
 		}
-		
+		//DiscreteNumericObservation collection
 		else if (obsCol instanceof DiscreteNumericObservationCollection){
 			OMDiscreteNumericObservationCollectionDocument result = OMDiscreteNumericObservationCollectionDocument.Factory.newInstance();
 			OMDiscreteNumericObservationCollection xb_boCol = result.addNewOMDiscreteNumericObservationCollection();
@@ -185,7 +191,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 			while (obsIter.hasNext()){
 				UWDiscreteNumericObservationType xb_obs = xb_boCol.addNewOMDiscreteNumericObservation();
 				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
-				xb_obs.set(xb_boDoc);
+				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			return result;
 		}

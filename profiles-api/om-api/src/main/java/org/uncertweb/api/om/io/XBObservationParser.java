@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.opengis.gml.x32.AbstractTimePrimitiveType;
 import net.opengis.gml.x32.DirectPositionType;
@@ -18,21 +19,24 @@ import net.opengis.gml.x32.TimePrimitivePropertyType;
 import net.opengis.gml.x32.UncertaintyPropertyType;
 import net.opengis.om.x20.FoiPropertyType;
 import net.opengis.om.x20.OMAbstractObservationType;
-import net.opengis.om.x20.OMBooleanObservationDocument;
-import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
-import net.opengis.om.x20.OMMeasurementDocument;
+import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
+import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
+import net.opengis.om.x20.OMMeasurementCollectionDocument;
 import net.opengis.om.x20.OMObservationDocument;
-import net.opengis.om.x20.OMObservationPropertyType;
 import net.opengis.om.x20.OMProcessPropertyType;
-import net.opengis.om.x20.OMReferenceObservationDocument;
-import net.opengis.om.x20.OMTextObservationDocument;
-import net.opengis.om.x20.OMUncertaintyObservationDocument;
+import net.opengis.om.x20.OMReferenceObservationCollectionDocument;
+import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
 import net.opengis.om.x20.UWBooleanObservationType;
 import net.opengis.om.x20.UWDiscreteNumericObservationType;
 import net.opengis.om.x20.UWMeasurementType;
 import net.opengis.om.x20.UWReferenceObservationType;
 import net.opengis.om.x20.UWTextObservationType;
 import net.opengis.om.x20.UWUncertaintyObservationType;
+import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObservationCollection;
+import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscreteNumericObservationCollection;
+import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
+import net.opengis.om.x20.OMReferenceObservationCollectionDocument.OMReferenceObservationCollection;
+import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 import net.opengis.samplingSpatial.x20.ShapeType;
 
 import org.apache.xmlbeans.XmlObject;
@@ -59,7 +63,12 @@ import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.ReferenceObservation;
 import org.uncertweb.api.om.observation.TextObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
+import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
+import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.ReferenceObservationCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.BooleanResult;
 import org.uncertweb.api.om.result.IntegerResult;
 import org.uncertweb.api.om.result.MeasureResult;
@@ -84,7 +93,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 public class XBObservationParser implements IObservationParser {
 
 	/**
-	 * parses an {@link OMObservationCollectionDocument}
+	 * parses an observation collection
 	 * 
 	 * @param xmlObsCol
 	 *            String containing an XML encoded observation collection
@@ -96,65 +105,87 @@ public class XBObservationParser implements IObservationParser {
 	public IObservationCollection parseObservationCollection(String xmlObsCol)
 			throws Exception {
 
-//		ObservationCollection obsCol = new ObservationCollection();
-//		XmlObject xb_obsColDoc = XmlObject.Factory.parse(xmlObsCol);
-//
-//		if (xb_obsColDoc instanceof OMObservationCollectionDocument) {
-//
-//			OMObservationPropertyType[] obsMemberArray = ((OMObservationCollectionDocument) xb_obsColDoc)
-//					.getOMObservationCollection().getMemberArray();
-//
-//			for (int i = 0; i < obsMemberArray.length; i++) {
-//
-//				OMObservationDocument xb_obsDoc = null;
-//				OMAbstractObservationType xb_obs = null;
-//
-//				if (obsMemberArray[i].getOMObservation() instanceof UWBooleanObservationType) {
-//					xb_obsDoc = OMBooleanObservationDocument.Factory
-//							.newInstance();
-//					xb_obs = ((OMBooleanObservationDocument) xb_obsDoc)
-//							.addNewOMBooleanObservation();
-//					xb_obs.set(obsMemberArray[i].getOMObservation());
-//
-//				} else if (obsMemberArray[i].getOMObservation() instanceof UWDiscreteNumericObservationType) {
-//					xb_obsDoc = OMDiscreteNumericObservationDocument.Factory
-//							.newInstance();
-//					xb_obs = ((OMDiscreteNumericObservationDocument) xb_obsDoc)
-//							.addNewOMDiscreteNumericObservation();
-//					xb_obs.set(obsMemberArray[i].getOMObservation());
-//
-//				} else if (obsMemberArray[i].getOMObservation() instanceof UWMeasurementType) {
-//					xb_obsDoc = OMMeasurementDocument.Factory.newInstance();
-//					xb_obs = ((OMMeasurementDocument) xb_obsDoc)
-//							.addNewOMMeasurement();
-//					xb_obs.set(obsMemberArray[i].getOMObservation());
-//
-//				} else if (obsMemberArray[i].getOMObservation() instanceof UWReferenceObservationType) {
-//					xb_obsDoc = OMReferenceObservationDocument.Factory
-//							.newInstance();
-//					xb_obs = ((OMReferenceObservationDocument) xb_obsDoc)
-//							.addNewOMReferenceObservation();
-//					xb_obs.set(obsMemberArray[i].getOMObservation());
-//
-//				} else if (obsMemberArray[i].getOMObservation() instanceof UWTextObservationType) {
-//					xb_obsDoc = OMTextObservationDocument.Factory.newInstance();
-//					xb_obs = ((OMTextObservationDocument) xb_obsDoc)
-//							.addNewOMTextObservation();
-//					xb_obs.set(obsMemberArray[i].getOMObservation());
-//
-//				} else if (obsMemberArray[i].getOMObservation() instanceof UWUncertaintyObservationType) {
-//					xb_obsDoc = OMUncertaintyObservationDocument.Factory
-//							.newInstance();
-//					xb_obs = ((OMUncertaintyObservationDocument) xb_obsDoc)
-//							.addNewOMUncertaintyObservation();
-//					xb_obs.set(obsMemberArray[i].getOMObservation());
-//				}
-//
-//				obsCol.getMembers().add(parseObservationDocument(xb_obsDoc));
-//			}
-//		}
+		XmlObject xb_obsColDoc = XmlObject.Factory.parse(xmlObsCol);
 
-		return null;
+		//Measurement collection
+		if (xb_obsColDoc instanceof OMMeasurementCollectionDocument) {
+			OMMeasurementCollection xb_ocType = ((OMMeasurementCollectionDocument)xb_obsColDoc).getOMMeasurementCollection();
+			UWMeasurementType[] xb_obsArray = xb_ocType.getOMMeasurementArray();
+			List<Measurement> obsList = new ArrayList<Measurement>(xb_obsArray.length);
+			for (UWMeasurementType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				Measurement obs = (Measurement)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			MeasurementCollection oc = new MeasurementCollection(obsList);
+			return oc;
+		}
+		//BooleanObservation collection
+		else if (xb_obsColDoc instanceof OMBooleanObservationCollectionDocument){
+			OMBooleanObservationCollection xb_ocType = ((OMBooleanObservationCollectionDocument)xb_obsColDoc).getOMBooleanObservationCollection();
+			UWBooleanObservationType[] xb_obsArray = xb_ocType.getOMBooleanObservationArray();
+			List<BooleanObservation> obsList = new ArrayList<BooleanObservation>(xb_obsArray.length);
+			for (UWBooleanObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				BooleanObservation obs = (BooleanObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			BooleanObservationCollection oc = new BooleanObservationCollection(obsList);
+			return oc;
+		}
+		//DiscreteNumericObservation collection
+		else if (xb_obsColDoc instanceof OMDiscreteNumericObservationCollectionDocument){
+			OMDiscreteNumericObservationCollection xb_ocType = ((OMDiscreteNumericObservationCollectionDocument)xb_obsColDoc).getOMDiscreteNumericObservationCollection();
+			UWDiscreteNumericObservationType[] xb_obsArray = xb_ocType.getOMDiscreteNumericObservationArray();
+			List<DiscreteNumericObservation> obsList = new ArrayList<DiscreteNumericObservation>(xb_obsArray.length);
+			for (UWDiscreteNumericObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				DiscreteNumericObservation obs = (DiscreteNumericObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			DiscreteNumericObservationCollection oc = new DiscreteNumericObservationCollection(obsList);
+			return oc;
+		}
+		//UncertaintyObservation collection
+		else if (xb_obsColDoc instanceof OMUncertaintyObservationCollectionDocument){
+			OMUncertaintyObservationCollection xb_ocType = ((OMUncertaintyObservationCollectionDocument)xb_obsColDoc).getOMUncertaintyObservationCollection();
+			UWUncertaintyObservationType[] xb_obsArray = xb_ocType.getOMUncertaintyObservationArray();
+			List<UncertaintyObservation> obsList = new ArrayList<UncertaintyObservation>(xb_obsArray.length);
+			for (UWUncertaintyObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				UncertaintyObservation obs = (UncertaintyObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			UncertaintyObservationCollection oc = new UncertaintyObservationCollection(obsList);
+			return oc;
+		}
+		//ReferenceObservation collection
+		else if (xb_obsColDoc instanceof OMReferenceObservationCollectionDocument){
+			OMReferenceObservationCollection xb_ocType = ((OMReferenceObservationCollectionDocument)xb_obsColDoc).getOMReferenceObservationCollection();
+			UWReferenceObservationType[] xb_obsArray = xb_ocType.getOMReferenceObservationArray();
+			List<ReferenceObservation> obsList = new ArrayList<ReferenceObservation>(xb_obsArray.length);
+			for (UWReferenceObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				ReferenceObservation obs = (ReferenceObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			ReferenceObservationCollection oc = new ReferenceObservationCollection(obsList);
+			return oc;
+		}
+		else {
+			throw new Exception("ObservationCollection type" + xb_obsColDoc.getClass() + "is not supported by this parser!");
+		}
+
 	}
 
 	/**
@@ -240,9 +271,9 @@ public class XBObservationParser implements IObservationParser {
 			}
 
 			// parse result and build observation
-			if (xb_obsDoc instanceof OMMeasurementDocument) {
-				MeasureType xb_measureType = ((OMMeasurementDocument) xb_obsDoc)
-						.getOMMeasurement().getResult();
+			if (xb_obsType instanceof UWMeasurementType) {
+				MeasureType xb_measureType = ((UWMeasurementType)xb_obsType)
+						.getResult();
 				double value = xb_measureType.getDoubleValue();
 				String uom = xb_measureType.getUom();
 
@@ -251,20 +282,18 @@ public class XBObservationParser implements IObservationParser {
 						resultTime, validTime, procedure, observedProperty,
 						featureOfInterest, resultQuality, result);
 
-			} else if (xb_obsDoc instanceof OMTextObservationDocument) {
+			} else if (xb_obsType instanceof UWTextObservationType) {
 
-				String value = ((OMTextObservationDocument) xb_obsDoc)
-						.getOMTextObservation().getResult();
+				String value = ((UWTextObservationType)xb_obsType).getResult();
 
 				TextResult result = new TextResult(value);
 				obs = new TextObservation(gmlId, boundedBy, phenomenonTime,
 						resultTime, validTime, procedure, observedProperty,
 						featureOfInterest, resultQuality, result);
 
-			} else if (xb_obsDoc instanceof OMUncertaintyObservationDocument) {
+			} else if (xb_obsType instanceof UWUncertaintyObservationType) {
 
-				UncertaintyPropertyType xb_uncPropType = ((OMUncertaintyObservationDocument) xb_obsDoc)
-						.getOMUncertaintyObservation().getResult();
+				UncertaintyPropertyType xb_uncPropType = ((UWUncertaintyObservationType) xb_obsType).getResult();
 
 				System.out.println(xb_uncPropType.toString());
 				XMLParser uncertaintyParser = new XMLParser();
@@ -276,10 +305,9 @@ public class XBObservationParser implements IObservationParser {
 						observedProperty, featureOfInterest, resultQuality,
 						result);
 
-			} else if (xb_obsDoc instanceof OMDiscreteNumericObservationDocument) {
+			} else if (xb_obsType instanceof UWDiscreteNumericObservationType) {
 
-				BigInteger value = ((OMDiscreteNumericObservationDocument) xb_obsDoc)
-						.getOMDiscreteNumericObservation().getResult();
+				BigInteger value = ((UWDiscreteNumericObservationType) xb_obsType).getResult();
 
 				IntegerResult result = new IntegerResult(value);
 				obs = new DiscreteNumericObservation(gmlId, boundedBy,
@@ -287,20 +315,18 @@ public class XBObservationParser implements IObservationParser {
 						observedProperty, featureOfInterest, resultQuality,
 						result);
 
-			} else if (xb_obsDoc instanceof OMBooleanObservationDocument) {
+			} else if (xb_obsType instanceof UWBooleanObservationType) {
 
-				boolean value = ((OMBooleanObservationDocument) xb_obsDoc)
-						.getOMBooleanObservation().getResult();
+				boolean value = ((UWBooleanObservationType)xb_obsType).getResult();
 
 				BooleanResult result = new BooleanResult(value);
 				obs = new BooleanObservation(gmlId, boundedBy, phenomenonTime,
 						resultTime, validTime, procedure, observedProperty,
 						featureOfInterest, resultQuality, result);
 
-			} else if (xb_obsDoc instanceof OMReferenceObservationDocument) {
+			} else if (xb_obsType instanceof UWReferenceObservationType) {
 
-				ReferenceType xb_referenceType = ((OMReferenceObservationDocument) xb_obsDoc)
-						.getOMReferenceObservation().getResult();
+				ReferenceType xb_referenceType = ((UWReferenceObservationType)xb_obsType).getResult();
 				String type = xb_referenceType.getType();
 				String href = xb_referenceType.getHref();
 				String role = xb_referenceType.getRole();
