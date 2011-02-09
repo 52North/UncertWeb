@@ -13,8 +13,10 @@ import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.GaussianDistribution;
 import org.uncertml.statistic.Probability;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
+import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.result.UncertaintyResult;
 
@@ -29,141 +31,35 @@ import com.vividsolutions.jts.geom.Point;
 public class XBObservationParserTestCase extends TestCase {
 
 	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api";
-	private String pathToExamples = "/Util/Profiles/OM/examples";
+	private String pathToExamples = "om-api/src/test/resources";
 	
 	
 	public void testObservationParser() throws Exception {
 		point_TimeInstant_Double();
-//		obsCol_Point_TimeInstant_Double();
+		obsCol_Measurement();
 		point_TimeInstant_Uncertainty();
 		point_TimeInstant_FOIref();
 	}
 
-//	private void obsCol_Point_TimeInstant_Double() throws Exception {
-//
-//		// read XML example file
-//		String xmlString;
-//		try {
-//		 xmlString = readXmlFile(pathToExamples
-//				+ "/ObsCol_Point_TimeInstant_double.xml");
-//		}
-//		catch (IOException ioe){
-//			xmlString = readXmlFile(localPath + pathToExamples
-//					+ "/ObsCol_Point_TimeInstant_double.xml");
-//		}
-//		
-//
-//		XBObservationParser parser = new XBObservationParser();
-//		ObservationCollection obsCol = parser
-//				.parseObservationCollection(xmlString);
-//
-//		// test collection
-//		assertEquals(true, obsCol.getMembers() != null);
-//		assertEquals(2, obsCol.getMembers().size());
-//
-//		AbstractObservation obs1 = (AbstractObservation) obsCol.getMembers()
-//				.toArray()[0];
-//		AbstractObservation obs2 = (AbstractObservation) obsCol.getMembers()
-//				.toArray()[1];
-//
-//		// test observations (copied from point_TimeInstant_Double())
-//
-//		// test obs1
-//		// test id;
-//		assertEquals("obsTest1", obs1.getGmlId());
-//
-//		// test boundedBy (optional parameter)
-//
-//		// test phenomenonTime
-//		assertEquals("ot1t", obs1.getPhenomenonTime().getId());
-//
-//		DateTimeFormatter format = ISODateTimeFormat.dateTime();
-//		assertEquals("2005-01-11T16:22:25.000+01:00",
-//				format.print(obs1.getPhenomenonTime().getDateTime()).toString());
-//
-//		// test resultTime
-//		assertEquals("#ot1t", obs1.getResultTime().getHref());
-//
-//		// test validTime (optional parameter)
-//
-//		// test procedure
-//		assertEquals("http://www.example.org/register/process/scales34.xml",
-//				obs1.getProcedure().toString());
-//
-//		// test observedProperty
-//		assertEquals("urn:ogc:def:phenomenon:OGC:temperature", obs1
-//				.getObservedProperty().toString());
-//
-//		// test featureOfInterest
-//		assertEquals("SamplingTrajectory1", obs1.getFeatureOfInterest()
-//				.getGmlId());
-//
-//		Point shape = (Point) obs1.getFeatureOfInterest().getShape();
-//		assertEquals("Point", shape.getGeometryType());
-//		assertEquals(52.87, shape.getX());
-//		assertEquals(7.78, shape.getY());
-//		assertEquals(4326, shape.getSRID());
-//
-//		// test resultQuality (optional parameter)
-//		DQ_UncertaintyResult uncertainty =  obs1.getResultQuality()[0];
-//		IUncertainty uValue = uncertainty.getValues()[0];
-//		assertEquals("degC",uncertainty.getValueUnit().getIdentifier());
-//		assertEquals("org.uncertml.distribution.continuous.GaussianDistribution",uValue.getClass().getName());
-//		assertEquals(29.564,((GaussianDistribution)uValue).getMean().get(0));
-//		assertEquals(7.45,((GaussianDistribution)uValue).getVariance().get(0));
-//		// test result
-//		assertEquals("degC",
-//				((MeasureResult) obs1.getResult()).getUnitOfMeasurement());
-//		assertEquals(36.0, ((MeasureResult) obs1.getResult()).getMeasureValue());
-//
-//		// test obs2
-//		// test id;
-//		assertEquals("obsTest2", obs2.getGmlId());
-//
-//		// test boundedBy (optional parameter)
-//
-//		// test phenomenonTime
-//		assertEquals("ot2t", obs2.getPhenomenonTime().getId());
-//
-//		format = ISODateTimeFormat.dateTime();
-//		assertEquals("2005-01-11T16:23:25.000+01:00",
-//				format.print(obs2.getPhenomenonTime().getDateTime()).toString());
-//
-//		// test resultTime
-//		assertEquals("#ot2t", obs2.getResultTime().getHref());
-//
-//		// test validTime (optional parameter)
-//
-//		// test procedure
-//		assertEquals("http://www.example.org/register/process/scales34.xml",
-//				obs2.getProcedure().toString());
-//
-//		// test observedProperty
-//		assertEquals("urn:ogc:def:phenomenon:OGC:temperature", obs2
-//				.getObservedProperty().toString());
-//
-//		// test featureOfInterest
-//		assertEquals("SamplingTrajectory2", obs2.getFeatureOfInterest()
-//				.getGmlId());
-//
-//		shape = (Point) obs2.getFeatureOfInterest().getShape();
-//		assertEquals("Point", shape.getGeometryType());
-//		assertEquals(52.87, shape.getX());
-//		assertEquals(7.78, shape.getY());
-//		assertEquals(4326, shape.getSRID());
-//
-//		// test resultQuality (optional parameter)
-//		uncertainty =  obs2.getResultQuality()[0];
-//		uValue = uncertainty.getValues()[0];
-//		assertEquals("degC",uncertainty.getValueUnit().getIdentifier());
-//		assertEquals("org.uncertml.distribution.continuous.GaussianDistribution",uValue.getClass().getName());
-//		assertEquals(29.564,((GaussianDistribution)uValue).getMean().get(0));
-//		assertEquals(7.45,((GaussianDistribution)uValue).getVariance().get(0));
-//		// test result
-//		assertEquals("degC",
-//				((MeasureResult) obs2.getResult()).getUnitOfMeasurement());
-//		assertEquals(32.0, ((MeasureResult) obs2.getResult()).getMeasureValue());
-//	}
+	private void obsCol_Measurement() throws Exception {
+
+		// read XML example file
+		String xmlString;
+		try {
+		 xmlString = readXmlFile(pathToExamples
+				+ "/ObsCol_Measurements.xml");
+		}
+		catch (IOException ioe){
+			xmlString = readXmlFile(localPath + pathToExamples
+					+ "/ObsCol_Measurement.xml");
+		}
+		XBObservationParser parser = new XBObservationParser();
+		IObservationCollection oc = parser.parseObservationCollection(xmlString);
+		XBObservationEncoder encoder = new XBObservationEncoder();
+		System.out.println(encoder.encodeObservationCollection(oc));
+	}
+		
+
 
 	private void point_TimeInstant_Double() throws Exception {
 
