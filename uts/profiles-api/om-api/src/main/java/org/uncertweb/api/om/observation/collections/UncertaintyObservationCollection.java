@@ -2,6 +2,9 @@ package org.uncertweb.api.om.observation.collections;
 
 import java.util.List;
 
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.Measurement;
+import org.uncertweb.api.om.observation.ReferenceObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 
 /**
@@ -38,5 +41,18 @@ public class UncertaintyObservationCollection implements IObservationCollection 
 	@Override
 	public String getGmlId() {
 		return gmlId;
+	}
+
+	@Override
+	public void addObservation(AbstractObservation obs) throws Exception {
+		if (!(obs instanceof UncertaintyObservation)){
+			throw new Exception("Only UncertaintyObservation could be added to UncertaintyObservationCollection!");
+		}
+		this.members.add((UncertaintyObservation)obs);
+	}
+
+	@Override
+	public List<? extends AbstractObservation> getObservations() {
+		return members;
 	}
 }

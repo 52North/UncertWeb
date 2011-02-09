@@ -1,7 +1,10 @@
 package org.uncertweb.api.om.observation.collections;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.ReferenceObservation;
 
 /**
@@ -17,6 +20,14 @@ public class ReferenceObservationCollection implements IObservationCollection {
 	
 	/**members of collection*/
 	private List<ReferenceObservation> members;
+	
+	/**
+	 * constructor creates empty collection
+	 * 
+	 */
+	public ReferenceObservationCollection(){
+		this.members = new ArrayList<ReferenceObservation>();
+	}
 	
 	/**
 	 * constructor
@@ -38,5 +49,18 @@ public class ReferenceObservationCollection implements IObservationCollection {
 	@Override
 	public String getGmlId() {
 		return gmlId;
+	}
+
+	@Override
+	public void addObservation(AbstractObservation obs) throws Exception {
+		if (!(obs instanceof ReferenceObservation)){
+			throw new Exception("Only ReferenceObservation could be added to ReferenceObservationCollection!");
+		}
+		this.members.add((ReferenceObservation)obs);
+	}
+
+	@Override
+	public List<? extends AbstractObservation> getObservations() {
+		return members;
 	}
 }

@@ -2,7 +2,10 @@ package org.uncertweb.api.om.observation.collections;
 
 import java.util.List;
 
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.DiscreteNumericObservation;
+import org.uncertweb.api.om.observation.ReferenceObservation;
 
 public class DiscreteNumericObservationCollection implements
 		IObservationCollection {
@@ -34,5 +37,18 @@ public class DiscreteNumericObservationCollection implements
 	@Override
 	public String getGmlId() {
 		return gmlId;
+	}
+
+	@Override
+	public void addObservation(AbstractObservation obs) throws Exception {
+		if (!(obs instanceof DiscreteNumericObservation)){
+			throw new Exception("Only DiscreteNumericObservation could be added to DiscreteNumericObservationCollection!");
+		}	
+		this.members.add((DiscreteNumericObservation)obs);
+	}
+
+	@Override
+	public List<? extends AbstractObservation> getObservations() {
+		return members;
 	}
 }
