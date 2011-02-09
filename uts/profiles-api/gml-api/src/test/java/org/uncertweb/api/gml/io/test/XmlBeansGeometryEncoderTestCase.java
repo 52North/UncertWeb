@@ -7,10 +7,11 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.uncertweb.api.gml.geometry.GmlLineString;
-import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
 import org.uncertweb.api.gml.geometry.GmlPoint;
 import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiGeometry;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiPoint;
 import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -109,7 +110,7 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 	
 	public void testMultiGeometryEncoder() throws Exception{
 		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
-		Geometry[] geom = new Geometry[3];
+		Point[] geom = new Point[3];
 		Coordinate[] c={new Coordinate(52.72,7.82)};
 		CoordinateSequence cs = geomFac.getCoordinateSequenceFactory().create(c);
 		GmlPoint p = new GmlPoint(cs,geomFac,"point1");
@@ -125,7 +126,7 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		p = new GmlPoint(cs,geomFac,"point1");
 		p.setSRID(4326);
 		geom[2]=p;
-		GmlMultiGeometry geomCol = new GmlMultiGeometry(geom,geomFac,"multiGeom1");
+		GmlMultiPoint geomCol = new GmlMultiPoint(geom,geomFac,"multiGeom1");
 		System.out.println(encoder.encodeGeometry(geomCol));
 	}
 

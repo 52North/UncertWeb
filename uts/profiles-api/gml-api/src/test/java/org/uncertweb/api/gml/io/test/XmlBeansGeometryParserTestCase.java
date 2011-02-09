@@ -8,10 +8,11 @@ import java.io.InputStreamReader;
 import junit.framework.TestCase;
 
 import org.uncertweb.api.gml.geometry.GmlLineString;
-import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
 import org.uncertweb.api.gml.geometry.GmlPoint;
 import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiGeometry;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiLineString;
 import org.uncertweb.api.gml.io.XmlBeansGeometryParser;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -76,14 +77,12 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 	}
 
 	
-	public void testMultiGeometryParser() throws Exception {
-		String xmlString = readXmlFile(EXAMPLES_PATH + "/MultiGeometry.xml");
+	public void testMultiLineStringParser() throws Exception {
+		String xmlString = readXmlFile(EXAMPLES_PATH + "/MultiLineString.xml");
 		XmlBeansGeometryParser parser = new XmlBeansGeometryParser(geomFac);
 		Geometry geom = parser.parseUwGeometry(xmlString);
-		assertEquals("GeometryCollection", geom.getGeometryType());
-		assertEquals(52.87, ((GeometryCollection)geom).getGeometryN(0).getCoordinate().x);
-		assertEquals(4326, ((GeometryCollection)geom).getGeometryN(0).getSRID());
-		assertEquals("col1",((GmlMultiGeometry)geom).getGmlId());
+		assertEquals("MultiLineString", geom.getGeometryType());
+		assertEquals("col1",((GmlMultiLineString)geom).getGmlId());
 	}
 	
 	
