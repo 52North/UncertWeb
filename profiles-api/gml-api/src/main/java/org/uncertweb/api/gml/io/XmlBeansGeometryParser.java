@@ -32,13 +32,13 @@ import net.opengis.gml.x32.VectorType;
 import org.apache.xmlbeans.XmlObject;
 import org.uncertweb.api.gml.UwGMLUtil;
 import org.uncertweb.api.gml.geometry.GmlLineString;
-import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
-import org.uncertweb.api.gml.geometry.GmlMultiLineString;
-import org.uncertweb.api.gml.geometry.GmlMultiPoint;
-import org.uncertweb.api.gml.geometry.GmlMultiPolygon;
 import org.uncertweb.api.gml.geometry.GmlPoint;
 import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiGeometry;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiLineString;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiPoint;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiPolygon;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -341,12 +341,14 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 */
 	private Geometry parseMultiLineString(MultiLineStringDocument xb_mlsDoc) throws Exception{
 		GmlMultiLineString mp = null;
+		String gmlId = xb_mlsDoc.getMultiLineString().getId();
 		LineStringPropertyType[] xb_lsArray = xb_mlsDoc.getMultiLineString().getLineStringMemberArray();
 		LineString[] ls = new LineString[xb_lsArray.length];
 		for (int i=0; i<xb_lsArray.length;i++){
 			ls[i]=parseLineString(xb_lsArray[i].getLineString());
 		}
 		mp = new GmlMultiLineString(ls,geomFac,xb_mlsDoc.getMultiLineString().getId());
+		mp.setGmlId(gmlId);
 		return mp;
 	}
 	
@@ -362,12 +364,14 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 */
 	private Geometry parseMultiPoint(MultiPointDocument xb_mlsDoc) throws Exception{
 		GmlMultiPoint mp = null;
+		String gmlId = xb_mlsDoc.getMultiPoint().getId();
 		PointPropertyType[] xb_lsArray = xb_mlsDoc.getMultiPoint().getPointMemberArray();
 		Point[] ls = new Point[xb_lsArray.length];
 		for (int i=0; i<xb_lsArray.length;i++){
 			ls[i]=parsePoint(xb_lsArray[i].getPoint());
 		}
 		mp = new GmlMultiPoint(ls,geomFac,xb_mlsDoc.getMultiPoint().getId());
+		mp.setGmlID(gmlId);
 		return mp;
 	}
 	
@@ -383,12 +387,14 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 */
 	private Geometry parseMultiPolygon(MultiPolygonDocument xb_mlsDoc) throws Exception{
 		GmlMultiPolygon mp = null;
+		String gmlId = xb_mlsDoc.getMultiPolygon().getId();
 		PolygonPropertyType[] xb_lsArray = xb_mlsDoc.getMultiPolygon().getPolygonMemberArray();
 		Polygon[] ls = new Polygon[xb_lsArray.length];
 		for (int i=0; i<xb_lsArray.length;i++){
 			ls[i]=parsePolygon(xb_lsArray[i].getPolygon());
 		}
 		mp = new GmlMultiPolygon(ls,geomFac,xb_mlsDoc.getMultiPolygon().getId());
+		mp.setGmlId(gmlId);
 		return mp;
 	}
 
@@ -404,12 +410,14 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 */
 	private int parseSrs(String srsName) throws Exception {
 		int epsgCode = 0;
-		if (srsName.startsWith(UwGMLUtil.EPSG_URL)) {
-			epsgCode = Integer
-					.parseInt(srsName.replace(UwGMLUtil.EPSG_URL, ""));
-		} else {
-			throw new Exception("SrsName has to start with URL of EPSG Code: "
-					+ UwGMLUtil.EPSG_URL + "!");
+		if (srsName!=null){
+			if (srsName.startsWith(UwGMLUtil.EPSG_URL)) {
+				epsgCode = Integer
+						.parseInt(srsName.replace(UwGMLUtil.EPSG_URL, ""));
+			} else {
+				throw new Exception("SrsName has to start with URL of EPSG Code: "
+						+ UwGMLUtil.EPSG_URL + "!");
+			}
 		}
 		return epsgCode;
 	}

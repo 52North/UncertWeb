@@ -9,40 +9,42 @@ import java.util.Map;
 
 import net.opengis.gml.x32.AbstractRingPropertyType;
 import net.opengis.gml.x32.DirectPositionType;
-import net.opengis.gml.x32.GeometryPropertyType;
 import net.opengis.gml.x32.GridEnvelopeType;
 import net.opengis.gml.x32.LineStringDocument;
 import net.opengis.gml.x32.LineStringPropertyType;
 import net.opengis.gml.x32.LineStringType;
 import net.opengis.gml.x32.LinearRingDocument;
 import net.opengis.gml.x32.LinearRingType;
-import net.opengis.gml.x32.MultiGeometryDocument;
-import net.opengis.gml.x32.MultiGeometryType;
 import net.opengis.gml.x32.MultiLineStringDocument;
 import net.opengis.gml.x32.MultiLineStringType;
+import net.opengis.gml.x32.MultiPointDocument;
+import net.opengis.gml.x32.MultiPointType;
+import net.opengis.gml.x32.MultiPolygonDocument;
+import net.opengis.gml.x32.MultiPolygonType;
 import net.opengis.gml.x32.PointDocument;
+import net.opengis.gml.x32.PointPropertyType;
 import net.opengis.gml.x32.PointType;
 import net.opengis.gml.x32.PolygonDocument;
+import net.opengis.gml.x32.PolygonPropertyType;
 import net.opengis.gml.x32.PolygonType;
 import net.opengis.gml.x32.RectifiedGridDocument;
 import net.opengis.gml.x32.RectifiedGridType;
 import net.opengis.gml.x32.VectorType;
 
 import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.uncertweb.api.gml.UwAbstractFeature;
 import org.uncertweb.api.gml.UwGMLUtil;
 import org.uncertweb.api.gml.geometry.GmlLineString;
-import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
-import org.uncertweb.api.gml.geometry.GmlMultiLineString;
 import org.uncertweb.api.gml.geometry.GmlPoint;
 import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiLineString;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiPoint;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiPolygon;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
@@ -66,8 +68,13 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 			result = encodeLineString((GmlLineString) geom);
 		} else if (geom instanceof RectifiedGrid) {
 			result = encodeRectifiedGrid((RectifiedGrid) geom);
-		} else if (geom instanceof GmlMultiGeometry) {
-			result = encodeMultiGeometry((GmlMultiGeometry) geom);
+		} else if (geom instanceof GmlMultiPoint) {
+			result = encodeMultiPoint((GmlMultiPoint) geom);
+		}else if (geom instanceof GmlMultiLineString) {
+			result = encodeMultiLineString((GmlMultiLineString) geom);
+		}
+		else if (geom instanceof GmlMultiPolygon) {
+			result = encodeMultiPolygon((GmlMultiPolygon) geom);
 		}
 
 		return result;
@@ -79,48 +86,8 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		return null;
 	}
 
-	/**
-	 * helper method for encoding multi geometry
-	 * 
-	 * @param geom
-	 * 		JTS representatioin of multigeometry
-	 * @return
-	 * 		Returns GML string representing the multigeometry
-	 * @throws XmlException
-	 * 		If encoding of the multi geometry fails
-	 */
-	private String encodeMultiGeometry(GmlMultiGeometry geom)
-			throws XmlException {
 
-		return encodeMultiGeometry2Doc(geom).xmlText(getGMLOptions());
-	}
 	
-	/**
-	 * helper method for encoding multi geometry
-	 * 
-	 * @param geom
-	 * 		JTS representatioin of multigeometry
-	 * @return
-	 * 		Returns GML document representing the multigeometry
-	 * @throws XmlException
-	 * 		If encoding of the multi geometry fails
-	 */
-	public MultiGeometryDocument encodeMultiGeometry2Doc(GmlMultiGeometry geom)
-			throws XmlException {
-		MultiGeometryDocument xb_mgDoc = MultiGeometryDocument.Factory
-				.newInstance();
-		MultiGeometryType xb_mg = xb_mgDoc.addNewMultiGeometry();
-		xb_mg.setId(geom.getGmlId());
-		int num = geom.getNumGeometries();
-		for (int i = 0; i < num; i++) {
-			GeometryPropertyType xb_member = xb_mg.addNewGeometryMember();
-			XmlObject xb_geom = XmlObject.Factory.parse(encodeGeometry(geom
-					.getGeometryN(i)));
-			xb_member.set(xb_geom);
-		}
-		return xb_mgDoc;
-	}
-
 	/**
 	 * helper method for encoding rectified grid
 	 * 
@@ -335,7 +302,27 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		return xb_lrDoc;
 	}
 	
-	private MultiLineStringDocument encodeMultiLineString(GmlMultiLineString gmlMls){
+	/**
+	 * helper mehtod for encoding MultiLineString
+	 * 
+	 * @param gmlMls
+	 * 			JTS representation of MultiLineString
+	 * @return
+	 *			XML String of MultiLineString
+	 */
+	private String encodeMultiLineString(GmlMultiLineString gmlMls){
+		return encodeMultiLineString2Doc(gmlMls).xmlText(getGMLOptions());
+	}
+	
+	/**
+	 * helper mehtod for encoding MultiLineString
+	 * 
+	 * @param gmlMls
+	 * 			JTS representation of MultiLineString
+	 * @return
+	 *			XMLBeans representation of MultiLineString
+	 */
+	public MultiLineStringDocument encodeMultiLineString2Doc(GmlMultiLineString gmlMls){
 		MultiLineStringDocument xb_mlsDoc = MultiLineStringDocument.Factory.newInstance();
 		MultiLineStringType xb_mls = xb_mlsDoc.addNewMultiLineString();
 		//set gml ID
@@ -350,6 +337,75 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		return xb_mlsDoc;
 	}
 
+	/**
+	 * helper method for encoding MultiPoint
+	 * 
+	 * @param gmlMls
+	 * 			JTS representation of MultiPoint
+	 * @return
+	 *			XML String of MultiPoint
+	 */
+	private String encodeMultiPoint(GmlMultiPoint geom) {
+		return encodeMultiPoint2Doc(geom).xmlText(getGMLOptions());
+	}
+	
+	/**
+	 * helper method for encoding MultiPoint
+	 * 
+	 * @param gmlMls
+	 * 			JTS representation of MultiPoint
+	 * @return
+	 *			XMLBeans representation of MultiPoint
+	 */
+	public MultiPointDocument encodeMultiPoint2Doc(GmlMultiPoint gmlMls){
+		MultiPointDocument xb_mlsDoc = MultiPointDocument.Factory.newInstance();
+		MultiPointType xb_mls = xb_mlsDoc.addNewMultiPoint();
+		//set gml ID
+		xb_mls.setId(gmlMls.getGmlId());
+		
+		int size = gmlMls.getNumGeometries();
+		for (int i=0;i<size;i++){
+			PointPropertyType xb_ls = xb_mls.addNewPointMember();
+			PointDocument xb_lsDoc = encodePoint2Doc((GmlPoint)gmlMls.getGeometryN(i));
+			xb_ls.set(xb_lsDoc);
+		}
+		return xb_mlsDoc;
+	}
+	
+	/**
+	 * helper method for encoding MultiPolygon
+	 * 
+	 * @param gmlMls
+	 * 			JTS representation of MultiPolygon
+	 * @return
+	 *			XML String of MultiPolygon
+	 */
+	private String encodeMultiPolygon(GmlMultiPolygon geom) {
+		return encodeMultiPolygon2Doc(geom).xmlText(getGMLOptions());
+	}
+	
+	/**
+	 * helper method for encoding MultiPolygon
+	 * 
+	 * @param gmlMls
+	 * 			JTS representation of MultiPolygon
+	 * @return
+	 *			XMLBeans representation of MultiPolygon
+	 */
+	public MultiPolygonDocument encodeMultiPolygon2Doc(GmlMultiPolygon gmlMls){
+		MultiPolygonDocument xb_mlsDoc = MultiPolygonDocument.Factory.newInstance();
+		MultiPolygonType xb_mls = xb_mlsDoc.addNewMultiPolygon();
+		//set gml ID
+		xb_mls.setId(gmlMls.getGmlId());
+		
+		int size = gmlMls.getNumGeometries();
+		for (int i=0;i<size;i++){
+			PolygonPropertyType xb_ls = xb_mls.addNewPolygonMember();
+			PolygonDocument xb_lsDoc = encodePolygon2Doc((GmlPolygon)gmlMls.getGeometryN(i));
+			xb_ls.set(xb_lsDoc);
+		}
+		return xb_mlsDoc;
+	}
 	
 	//TODO add further encoding methods for MultiPoint and MultiPolygon
 	
