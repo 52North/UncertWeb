@@ -2,7 +2,9 @@ package org.uncertweb.api.om.observation.collections;
 
 import java.util.List;
 
+import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
+import org.uncertweb.api.om.observation.ReferenceObservation;
 
 public class BooleanObservationCollection implements IObservationCollection{
 	
@@ -35,6 +37,23 @@ public class BooleanObservationCollection implements IObservationCollection{
 	 * @return the members
 	 */
 	public List<BooleanObservation> getMembers() {
+		return members;
+	}
+
+
+
+	@Override
+	public void addObservation(AbstractObservation obs) throws Exception {
+		if (!(obs instanceof BooleanObservation)){
+			throw new Exception("Only BooleanObservation could be added to BooleanObservationCollection!");
+		}
+		this.members.add((BooleanObservation)obs);
+	}
+
+
+
+	@Override
+	public List<? extends AbstractObservation> getObservations() {
 		return members;
 	}
 
