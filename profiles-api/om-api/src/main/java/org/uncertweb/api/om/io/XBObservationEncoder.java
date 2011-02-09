@@ -60,10 +60,13 @@ import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.io.XMLEncoder;
 import org.uncertml.x20.AbstractUncertaintyDocument;
 import org.uncertweb.api.gml.geometry.GmlLineString;
-import org.uncertweb.api.gml.geometry.GmlMultiGeometry;
 import org.uncertweb.api.gml.geometry.GmlPoint;
 import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiGeometry;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiLineString;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiPoint;
+import org.uncertweb.api.gml.geometry.collections.GmlMultiPolygon;
 import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.OMConstants;
@@ -517,9 +520,21 @@ public class XBObservationEncoder implements IObservationEncoder {
 					.encodeRectifiedGrid2Doc((RectifiedGrid) obs
 							.getFeatureOfInterest().getShape());
 
-		} else if (obs.getFeatureOfInterest().getShape() instanceof GmlMultiGeometry) {
+		} else if (obs.getFeatureOfInterest().getShape() instanceof GmlMultiPoint) {
 			xb_geometry = encoder
-					.encodeMultiGeometry2Doc((GmlMultiGeometry) obs
+					.encodeMultiPoint2Doc((GmlMultiPoint) obs
+							.getFeatureOfInterest().getShape());
+
+		} 
+		else if (obs.getFeatureOfInterest().getShape() instanceof GmlMultiLineString) {
+			xb_geometry = encoder
+					.encodeMultiLineString2Doc((GmlMultiLineString) obs
+							.getFeatureOfInterest().getShape());
+
+		}
+		else if (obs.getFeatureOfInterest().getShape() instanceof GmlMultiPolygon) {
+			xb_geometry = encoder
+					.encodeMultiPolygon2Doc((GmlMultiPolygon) obs
 							.getFeatureOfInterest().getShape());
 
 		} else {
