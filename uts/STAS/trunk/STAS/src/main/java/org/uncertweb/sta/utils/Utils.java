@@ -9,6 +9,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +42,6 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	private static Properties processProps = null;
 	
 	public static final DecimalFormat NUMBER_FORMAT = new DecimalFormat("0.########", new DecimalFormatSymbols(Locale.US));
-	private static final Random random = new Random();
 	
 	/**
 	 * Formats the time elapsed since @ start}
@@ -81,7 +81,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 			try {
 				InputStream is = Utils.class.getResourceAsStream(PROPERTIES_FILE);
 				if (is == null)
-					throw new FileNotFoundException("Coimmon Properties not found.");
+					throw new FileNotFoundException("Common Properties not found.");
 				props.load(is);
 			} catch (IOException e) {
 				log.error("Failed to load common properties", e);
@@ -129,6 +129,28 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
             System.getProperties().remove(Constants.CONNECTION_TIMEOUT_PROPERTY);
             System.getProperties().remove(Constants.READ_TIMEOUT_PROPERTY);
         }		
+	}
+	
+	public static String buildGetRequest(String url, Map<?,?> props) {
+		StringBuilder sb = new StringBuilder(url);
+		if (!url.endsWith("?") && !props.isEmpty()) {
+			sb.append("?");
+		}
+		boolean first = true;
+		for (Map.Entry<?,?> e : props.entrySet()) {
+			if (!first) {
+				sb.append("&");
+			} else {
+				first = false;
+			}
+			sb.append(e.getKey().toString());
+			sb.append(e.getValue().toString());
+		}
+		return sb.toString();
+	}
+	
+	public static InputStream sendGetRequest(String url, Map<?,?> props) throws IOException {
+		return sendGetRequest(buildGetRequest(url, props));
 	}
 	
 	public static InputStream sendGetRequest(String url) throws IOException {
@@ -247,31 +269,22 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	
 	
 	public static String getDescribeSensorUrl(String url, String sensorId) {
-		return new StringBuilder(url)
-			.append("?").append("request")
-			.append("=").append(Constants.SOS_DESCRIBE_SENSOR_OPERATION)
-			.append("&").append("service")
-			.append("=").append(Constants.SOS_SERVICE_NAME)
-			.append("&").append("version")
-			.append("=").append(Constants.SOS_SERVICE_VERSION)
-			.append("&").append("outputFormat")
-			.append("=").append(Constants.SOS_SENSOR_OUTPUT_FORMAT)
-			.append("&").append("procedure")
-			.append("=").append(sensorId).toString();
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put("request", Constants.SOS_DESCRIBE_SENSOR_OPERATION);
+		props.put("service", Constants.SOS_SERVICE_NAME);
+		props.put("version", Constants.SOS_SERVICE_VERSION);
+		props.put("outputFormat", Constants.SOS_SENSOR_OUTPUT_FORMAT);
+		props.put("procedure", sensorId);
+		return buildGetRequest(url, props);
 	}
 	
 	public static String getObservationByIdUrl(String url, List<String> observationIds) {
-		StringBuilder sb = new StringBuilder(url)
-			.append("?").append("request")
-			.append("=").append(Constants.SOS_GET_OBSERVATION_BY_ID_OPERATION)
-			.append("&").append("service")
-			.append("=").append(Constants.SOS_SERVICE_NAME)
-			.append("&").append("version")
-			.append("=").append(Constants.SOS_SERVICE_VERSION)
-			.append("&").append("outputFormat")
-			.append("=").append(Constants.SOS_SENSOR_OUTPUT_FORMAT)
-			.append("&").append("ObservationId")
-			.append("=");
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put("request", Constants.SOS_GET_OBSERVATION_BY_ID_OPERATION);
+		props.put("service", Constants.SOS_SERVICE_NAME);
+		props.put("version", Constants.SOS_SERVICE_VERSION);
+		props.put("outputFormat", Constants.SOS_SENSOR_OUTPUT_FORMAT);
+		StringBuilder sb = new StringBuilder();
 		int size = observationIds.size(), i = 1;
 		for (String s : observationIds) {
 			sb.append(s.trim());
@@ -280,14 +293,17 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 			}
 			i++;
 		}
-		return sb.toString();
+		props.put("ObservationId", sb.toString());
+		return buildGetRequest(url, props);
 	}
-	
+
+	private static final Random random = new Random();
 	public static double randomBetween(double min, double max) {
 		return Math.min(min, max) + random.nextDouble() * Math.abs(max-min);
 	}
 
 	public static String generateRandomProcessUrn() {
-		return Constants.URN_AGGREGATED_PROCESS_PREFIX + RandomStringGenerator.getInstance().generate(20, true, true, true, false);
+		return Constants.URN_AGGREGATED_PROCESS_PREFIX 
+				+ RandomStringGenerator.getInstance().generate(20);
 	}
 }

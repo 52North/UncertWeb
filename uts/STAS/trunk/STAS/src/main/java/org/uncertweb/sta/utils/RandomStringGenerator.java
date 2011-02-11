@@ -56,7 +56,7 @@ public class RandomStringGenerator {
 	}
 
 	public String generate(int length) {
-		return generate(length,true,true,true,false);
+		return generate(length, true, true, true, false);
 	}
 	
 	public String generate(int length, boolean digits, boolean uppercase,
