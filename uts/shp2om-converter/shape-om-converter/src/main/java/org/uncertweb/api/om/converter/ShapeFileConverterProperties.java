@@ -5,14 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
 import org.uncertweb.api.om.TimeObject;
-import org.uncertweb.api.om.io.XBObservationParser;
 
 /**
  * 
- * 
+ * class encapsulates properties read from shp2om.props file
  * 
  * @author staschc
  * 

@@ -5,8 +5,25 @@ import org.joda.time.Interval;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.io.XBObservationParser;
 
+/**
+ * Util class which contains some helper methods which are used in several classes
+ * 
+ * @author staschc
+ *
+ */
 public class ShapeFileConverterUtil {
 	
+	/**
+	 * parses a timestring which can contain either just one single ISO 8601 String or two comma-seperated time strings
+	 *
+	 * 
+	 * @param phenTime
+	 * 			timestring which can contain either just one single ISO 8601 String or two comma-seperated time strings
+	 * @return 
+	 * 			represents the timeobject which has been parsed
+	 * @throws Exception
+	 * 			if timestring contains more than two time strings or if phenTime is empty string
+	 */
 	public static  TimeObject parsePhenTime(String phenTime) throws Exception{
 		if (phenTime!=null&&!phenTime.equals("")){
 			XBObservationParser xbParser = new XBObservationParser();

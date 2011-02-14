@@ -2,7 +2,6 @@ package org.uncertweb.api.om.converter;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
@@ -16,7 +15,6 @@ import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.uncertml.distribution.multivariate.MultivariateGaussianDistribution;
-import org.uncertml.io.XMLEncoder;
 import org.uncertml.statistic.CovarianceMatrix;
 import org.uncertweb.api.gml.geometry.GmlLineString;
 import org.uncertweb.api.gml.geometry.collections.GmlMultiLineString;
