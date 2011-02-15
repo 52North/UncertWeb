@@ -1,4 +1,4 @@
-package org.uncertweb.sta.wps;
+package org.uncertweb.sta.wps.om;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -1,19 +1,25 @@
 package org.uncertweb.sta.wps;
 
-import static org.uncertweb.sta.utils.Constants.GROUP_BY_OBSERVED_PROPERTY_INPUT_ID;
+import static org.uncertweb.intamap.utils.Constants.NULL_URN;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_SPATIAL_GROUPING_METHOD;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD;
+import static org.uncertweb.sta.utils.Constants.DESTINATION_SOS_URL_INPUT_DESCRIPTION;
+import static org.uncertweb.sta.utils.Constants.DESTINATION_SOS_URL_INPUT_ID;
+import static org.uncertweb.sta.utils.Constants.DESTINATION_SOS_URL_INPUT_TITLE;
 import static org.uncertweb.sta.utils.Constants.GROUP_BY_OBSERVED_PROPERTY_INPUT_DESCRIPTION;
+import static org.uncertweb.sta.utils.Constants.GROUP_BY_OBSERVED_PROPERTY_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.GROUP_BY_OBSERVED_PROPERTY_INPUT_TITLE;
-import static org.uncertweb.sta.utils.Constants.NULL_URN;
+import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_OUTPUT_DESCRIPTION;
 import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_OUTPUT_ID;
 import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_OUTPUT_TITLE;
-import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_OUTPUT_DESCRIPTION;
 import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_DESCRIPTION;
 import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID;
 import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_TITLE;
 import static org.uncertweb.sta.utils.Constants.PROCESS_DESCRIPTION;
-import static org.uncertweb.sta.utils.Constants.DESTINATION_SOS_URL_INPUT_DESCRIPTION;
-import static org.uncertweb.sta.utils.Constants.DESTINATION_SOS_URL_INPUT_ID;
-import static org.uncertweb.sta.utils.Constants.DESTINATION_SOS_URL_INPUT_TITLE;
 import static org.uncertweb.sta.utils.Constants.SOURCE_SOS_REQUEST_INPUT_DESCRIPTION;
 import static org.uncertweb.sta.utils.Constants.SOURCE_SOS_REQUEST_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.SOURCE_SOS_REQUEST_INPUT_TITLE;
@@ -55,7 +61,6 @@ import org.uncertweb.intamap.om.ISamplingFeature;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationCollection;
 import org.uncertweb.intamap.om.ObservationTime;
-import org.uncertweb.sta.wps.OriginAwareObservation;
 import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.method.MethodFactory;
@@ -67,6 +72,8 @@ import org.uncertweb.sta.wps.method.grouping.spatial.NoSpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.spatial.SpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.temporal.NoTemporalGrouping;
 import org.uncertweb.sta.wps.method.grouping.temporal.TemporalGrouping;
+import org.uncertweb.sta.wps.om.OriginAwareObservation;
+import org.uncertweb.sta.wps.sos.SOSRequestBuilder;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
 
@@ -276,9 +283,18 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 		String destinationUrl = (String) Utils.getSingleParam(SOS_DESTINATION_URL, inputs);
 		if (destinationUrl != null) {
 			SOSRequestBuilder sos = new SOSRequestBuilder();
+			
+			Map<String,String> meta = new HashMap<String, String>();
+			meta.put(PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY, String.valueOf(groupByObservedProperty));
+			meta.put(PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION, String.valueOf(temporalBeforeSpatial));
+			meta.put(PROPERTY_NAME_SPATIAL_GROUPING_METHOD, this.sg.getName());
+			meta.put(PROPERTY_NAME_TEMPORAL_GROUPING_METHOD, this.tg.getName() );
+			meta.put(PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD, spatialAggregationMethod.getClass().getName());
+			meta.put(PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD, temporalAggregationMethod.getClass().getName());
+			
 			GetObservationRequestBinding b;
 			try {
-				b = sos.registerAggregatedObservations(result, destinationUrl, process);
+				b = sos.registerAggregatedObservations(result, destinationUrl, process, meta);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

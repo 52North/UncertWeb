@@ -25,7 +25,7 @@ import org.uncertweb.intamap.om.ISamplingFeature;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationTimeInstant;
 import org.uncertweb.intamap.om.ObservationTimeInterval;
-import org.uncertweb.sta.wps.OriginAwareObservation;
+import org.uncertweb.sta.wps.om.OriginAwareObservation;
 import org.uncertweb.intamap.om.SamplingPoint;
 import org.uncertweb.intamap.om.SamplingSurface;
 import org.uncertweb.intamap.utils.Namespace;

@@ -111,12 +111,24 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	public static final String SOS_SENSOR_OUTPUT_FORMAT = get("sos.sensorOutputFormat");
 	public static final String SOS_OBSERVATION_OUTPUT_FORMAT = get("sos.observationOutputFormat");
 	public static final String SOS_GET_OBSERVATION_BY_ID_OPERATION = get("sos.getObservationById");
+	public static final String URN_AGGREGATED_PROCESS_PREFIX = get("urn.prefix.process.aggregation");
 	
 	public static final QName OBSERVATION_RESULT_MODEL = new QName(Namespace.OM.URI, "Observation", "om");
 	public static final QName MEASUREMENT_RESULT_MODEL = new QName(Namespace.OM.URI, "Measurement", "om");
 	
 	public static final String AGGREGATION_OFFERING_ID = get("sos.aggregationOffering.id");
 	public static final String AGGREGATION_OFFERING_NAME = get("sos.aggregationOffering.name");
+
+	public static final String CAPS_PROPERTY_PREFIX = "urn:ogc:def:property:STAS::";
+	public static final String PROPERTY_NAME_SPATIAL_GROUPING_METHOD = "spatialGroupingMethod";
+	public static final String PROPERTY_NAME_TEMPORAL_GROUPING_METHOD = "temporalGroupingMethod";
+	public static final String PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD = "spatialAggregationMethod";
+	public static final String PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD = "temporalAggregationMethod";
+	public static final String PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION = "temporalBeforeSpatialAggregation";
+	public static final String PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY = "groupedByObservedProperty";
+	public static final String SENSOR_DESCRIPTION = "Virtual process for aggregated observations.";
+
+	
 	
 	private Constants(){ super(); }
 
