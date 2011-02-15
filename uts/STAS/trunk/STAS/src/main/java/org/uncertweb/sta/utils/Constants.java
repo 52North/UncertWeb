@@ -126,6 +126,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	public static final String PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD = "temporalAggregationMethod";
 	public static final String PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION = "temporalBeforeSpatialAggregation";
 	public static final String PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY = "groupedByObservedProperty";
+	public static final String PROPERTY_NAME_TIME_OF_AGGREGATION = "timeOfAggregation";
 	public static final String SENSOR_DESCRIPTION = "Virtual process for aggregated observations.";
 
 	

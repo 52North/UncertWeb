@@ -8,7 +8,7 @@
             <sml:IdentifierList>
               <sml:identifier>
                 <sml:Term definition="urn:ogc:def:identifier:OGC:1.0:uniqueID">
-                  <sml:value>urn:ogc:object:sensor:STAS::X4nd9ZY9ixRL4onJIjml</sml:value>
+                  <sml:value>urn:ogc:object:sensor:STAS::bHGmL5W98m8puZPBKlB3</sml:value>
                 </sml:Term>
               </sml:identifier>
             </sml:IdentifierList>
@@ -55,6 +55,11 @@
                 <swe:Boolean definition="urn:ogc:def:property:STAS::groupedByObservedProperty">
                   <swe:value>true</swe:value>
                 </swe:Boolean>
+              </swe:field>
+              <swe:field name="timeOfAggregation">
+                <swe:Time definition="urn:ogc:def:property:STAS::timeOfAggregation">
+                  <swe:value>2011-02-15T03:25:44.861Z</swe:value>
+                </swe:Time>
               </swe:field>
             </swe:DataRecord>
           </sml:capabilities>

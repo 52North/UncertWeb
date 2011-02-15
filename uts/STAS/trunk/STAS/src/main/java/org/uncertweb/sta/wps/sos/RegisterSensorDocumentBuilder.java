@@ -36,6 +36,7 @@ import net.opengis.swe.x101.DataRecordType;
 import net.opengis.swe.x101.PositionType;
 import net.opengis.swe.x101.QuantityDocument.Quantity;
 import net.opengis.swe.x101.TextDocument.Text;
+import net.opengis.swe.x101.TimeDocument.Time;
 import net.opengis.swe.x101.VectorType;
 import net.opengis.swe.x101.VectorType.Coordinate;
 
@@ -297,5 +298,12 @@ public class RegisterSensorDocumentBuilder {
         Boolean gbopBoolean = gbopField.addNewBoolean();
         gbopBoolean.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY);
         gbopBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY)));
+        
+        // time of aggregation
+        DataComponentPropertyType toaField = dataRecord.addNewField();
+        toaField.setName(Constants.PROPERTY_NAME_TIME_OF_AGGREGATION);
+        Time toaTime = toaField.addNewTime();
+        toaTime.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TIME_OF_AGGREGATION);
+        toaTime.setValue(TimeUtils.format(new DateTime()));
 	}
 }
