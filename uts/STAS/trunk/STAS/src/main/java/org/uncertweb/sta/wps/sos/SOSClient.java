@@ -20,9 +20,9 @@ import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 
-public class SOSRequestBuilder {
+public class SOSClient {
 	
-	private static final Logger log = LoggerFactory.getLogger(SOSRequestBuilder.class);
+	protected static final Logger log = LoggerFactory.getLogger(SOSClient.class);
 	
 	public GetObservationRequestBinding registerAggregatedObservations(List<Observation> obs, String url, String process, Map<String,String> meta) throws IOException {
 		RegisterSensorDocument regSenDoc = RegisterSensorDocumentBuilder.getInstance().build(process, obs, meta);
@@ -42,7 +42,7 @@ public class SOSRequestBuilder {
 		return new GetObservationRequestBinding(getObsDoc);
 	}
 
-	private void sendPostRequests(String url, XmlObject doc) throws IOException {
+	protected void sendPostRequests(String url, XmlObject doc) throws IOException {
 		try {
 			XmlObject xml = XmlObject.Factory.parse(Utils.sendPostRequest(url, doc.xmlText()));
 

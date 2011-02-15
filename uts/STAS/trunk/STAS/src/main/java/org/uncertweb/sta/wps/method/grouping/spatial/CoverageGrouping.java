@@ -122,6 +122,7 @@ public class CoverageGrouping extends SpatialGrouping {
 
 	@SuppressWarnings("unchecked")
 	private FeatureCollection<FeatureType,Feature> getFeatureCollection() {
+		long start = System.currentTimeMillis();
 		String wfsUrl = (String) getAdditionalInput(WFS_URL);
 		GetFeatureDocument wfsReq = (GetFeatureDocument) getAdditionalInput(WFS_REQUEST);
 		FeatureCollection<FeatureType,Feature> paramPolColl = 
@@ -143,15 +144,16 @@ public class CoverageGrouping extends SpatialGrouping {
 				throw new RuntimeException(e);
 			}
 		}
+		FeatureCollection<FeatureType, Feature> result = null;
 		if (paramPolColl != null) {
 			if (requestPolColl != null) {
 				paramPolColl.addAll(requestPolColl);
 			}
-			return paramPolColl;
+			result = paramPolColl;
 		} else if (requestPolColl != null) {
-			return requestPolColl;
+			result = requestPolColl;
 		}
-		
-		return null;
+		log.info("Fetching of FeatureCollection took {}", Utils.timeElapsed(start));
+		return result;
 	}
 }

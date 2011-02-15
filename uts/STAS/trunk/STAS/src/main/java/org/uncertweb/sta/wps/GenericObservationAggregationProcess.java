@@ -73,7 +73,7 @@ import org.uncertweb.sta.wps.method.grouping.spatial.SpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.temporal.NoTemporalGrouping;
 import org.uncertweb.sta.wps.method.grouping.temporal.TemporalGrouping;
 import org.uncertweb.sta.wps.om.OriginAwareObservation;
-import org.uncertweb.sta.wps.sos.SOSRequestBuilder;
+import org.uncertweb.sta.wps.sos.SOSClient;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
 
@@ -84,10 +84,10 @@ import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
  */
 public class GenericObservationAggregationProcess extends ExtendedSelfDescribingAlgorithm {
 
-	private static final AggregationMethod DEFAULT_SPATIAL_AGGREGATION_METHOD = new ArithmeticMeanAggregation();
-	private static final AggregationMethod DEFAULT_TEMPORAL_AGGREGATION_METHOD = new ArithmeticMeanAggregation();
-	private static final Boolean GROUP_BY_OBSERVED_PROPERTY_DEFAULT = true;
-	private static final boolean TEMPORAL_BEFORE_SPATIAL_GROUPING_DEFAULT = false;
+	protected static final AggregationMethod DEFAULT_SPATIAL_AGGREGATION_METHOD = new ArithmeticMeanAggregation();
+	protected static final AggregationMethod DEFAULT_TEMPORAL_AGGREGATION_METHOD = new ArithmeticMeanAggregation();
+	protected static final Boolean GROUP_BY_OBSERVED_PROPERTY_DEFAULT = true;
+	protected static final boolean TEMPORAL_BEFORE_SPATIAL_GROUPING_DEFAULT = false;
 
 	protected static final ProcessInput SOS_URL = new ProcessInput(
 			SOURCE_SOS_URL_INPUT_ID, SOURCE_SOS_URL_INPUT_TITLE,
@@ -137,15 +137,15 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 			OBSERVATION_COLLECTION_REFERENCE_OUTPUT_DESCRIPTION,
 			GetObservationRequestBinding.class);
 
-	private static final Logger log = LoggerFactory.getLogger(GenericObservationAggregationProcess.class);
+	protected static final Logger log = LoggerFactory.getLogger(GenericObservationAggregationProcess.class);
 
-	private Class<? extends SpatialGrouping> sg;
-	private Class<? extends TemporalGrouping> tg;
-	private String identifier, title;
-	private Set<ProcessInput> commonInputs;
-	private Set<ProcessInput> tgInputs;
-	private Set<ProcessInput> sgInputs;
-	private static long observationIdCount = 0;
+	protected Class<? extends SpatialGrouping> sg;
+	protected Class<? extends TemporalGrouping> tg;
+	protected String identifier, title;
+	protected Set<ProcessInput> commonInputs;
+	protected Set<ProcessInput> tgInputs;
+	protected Set<ProcessInput> sgInputs;
+	protected static long observationIdCount = 0;
 	
 	/**
 	 * constructor
@@ -261,9 +261,9 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 
 		String sosUrl = getSOSUrl(inputs);
 		int i = sosUrl.lastIndexOf('?');
-		if (i > 0)
+		if (i > 0) {
 			sosUrl = sosUrl.substring(0, i);
-		
+		}
 		for (Entry<String, List<Observation>> e : obs.entrySet()) {
 			if (temporalBeforeSpatial) {
 				List<Observation> firstResult = doTemporalAggregation(process, sosUrl, temporalAggregationMethod, e.getKey(), tgInputMap, e.getValue());
@@ -275,6 +275,8 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 			
 		}
 		
+		log.info("Output: Generated {} Observations in {}.", result.size(), Utils.timeElapsed(start));
+		
 		/* Outputs */
 		Map<String, IData> response = new HashMap<String, IData>();
 		response.put(AGGREGATED_OBSERVATIONS.getIdentifier(),
@@ -282,7 +284,10 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 
 		String destinationUrl = (String) Utils.getSingleParam(SOS_DESTINATION_URL, inputs);
 		if (destinationUrl != null) {
-			SOSRequestBuilder sos = new SOSRequestBuilder();
+			long insertStart = System.currentTimeMillis();
+			
+			log.info("Inserting Observations into SOS: {}", destinationUrl);
+			SOSClient sos = new SOSClient();
 			
 			Map<String,String> meta = new HashMap<String, String>();
 			meta.put(PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY, String.valueOf(groupByObservedProperty));
@@ -298,10 +303,12 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
+			log.info("Registered {} Observations in {}.", result.size(), Utils.timeElapsed(insertStart));
+
 			response.put(AGGREGATED_OBSERVATIONS_REFERENCE.getIdentifier(), b);
 		}
 
-		log.info("Output: Generated {} Observations in {}.", result.size(), Utils.timeElapsed(start));
+		log.info("Served Request in {}.", Utils.timeElapsed(start));
 
 		return response;
 	}
@@ -309,20 +316,24 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 	protected List<Observation> doTemporalAggregation(String process,
 			String sourceUrl, AggregationMethod m, String obsProp,
 			Map<ProcessInput, List<IData>> inputs, List<Observation> obs) {
+		long start = System.currentTimeMillis();
 		List<Observation> result = new LinkedList<Observation>();
 		/* only process observations with equal FeatureOfInterest */
+
 		for (ObservationMapping<ISamplingFeature> fMap : new NoSpatialGrouping(obs)) {
 			TemporalGrouping temporalMethod = newTemporalGrouping(fMap.getObservations(), inputs);
 			for (ObservationMapping<ObservationTime> tMap : temporalMethod) {
 				result.add(aggregate(process, sourceUrl, m, obsProp, fMap.getKey(), tMap.getKey(), tMap.getObservations()));
 			}
 		}
+		log.info("Temporal aggregation took {}", Utils.timeElapsed(start));
 		return result;
 	}
 	
 	protected List<Observation> doSpatialAggregation(String process,
 			String sourceUrl, AggregationMethod m, String obsProp,
 			Map<ProcessInput, List<IData>> inputs, List<Observation> obs) {
+		long start = System.currentTimeMillis();
 		List<Observation> result = new LinkedList<Observation>();
 		/* only process observations with equal ObservationTime */
 		for (ObservationMapping<ObservationTime> tMap : new NoTemporalGrouping(obs)) {
@@ -331,6 +342,7 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 				result.add(aggregate(process, sourceUrl, m, obsProp, fMap.getKey(), tMap.getKey(), fMap.getObservations()));
 			}
 		}
+		log.info("Spatial aggregation took {}", Utils.timeElapsed(start));
 		return result;
 	}
 	
@@ -348,7 +360,7 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 	 *         be aggregated
 	 */
 	protected ObservationCollection getObservationCollection(Map<String, List<IData>> inputs) {
-		
+		long start = System.currentTimeMillis();
 		//extract relevant parameters
 		String sosUrl = getSOSUrl(inputs);
 		GetObservationDocument sosReq = (GetObservationDocument) Utils
@@ -370,7 +382,9 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 				// URL encoded request
 				is = Utils.sendGetRequest(sosUrl);
 			}
-			return ((ObservationCollectionBinding) p.parseXML(is)).getPayload();
+			ObservationCollection b = ((ObservationCollectionBinding) p.parseXML(is)).getPayload();
+			log.info("Fetching of ObservationCollection took {}", Utils.timeElapsed(start));
+			return b;
 		} catch (Exception e) {
 			log.error("Error while retrieving ObservationCollection from " + sosUrl, e);
 			throw new RuntimeException(e);
