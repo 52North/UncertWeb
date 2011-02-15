@@ -17,7 +17,7 @@ public class ProcessDescriptionTest {
 		for (IAlgorithm a : ProcessTester.getRepository().getAlgorithms()) {
 			String id = a.getDescription().getIdentifier().getStringValue();
 			Assert.assertTrue(id, a.processDescriptionIsValid());
-			log.info("{}'s ProcessDescription is valid, {}.",id);
+			log.info("{}'s ProcessDescription is valid.",id);
 //			a.getDescription().save(new File("/home/auti/"+id+".xml"), STANamespace.defaultOptions());
 		}
 	}

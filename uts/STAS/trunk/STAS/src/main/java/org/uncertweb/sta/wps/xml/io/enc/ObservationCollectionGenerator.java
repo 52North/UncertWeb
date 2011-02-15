@@ -73,7 +73,7 @@ public class ObservationCollectionGenerator extends AbstractXMLGenerator
 		ObservationGenerator og = new ObservationGenerator();
 		for (Observation o : oc) {
 			ObservationDocument oDoc = og.generateXML(o);
-			xboc.addNewMember().addNewObservation().set(oDoc);
+			xboc.addNewMember().set(oDoc);
 		}
 		return doc;
 	}

@@ -1,6 +1,5 @@
 package org.uncertweb.sta.utils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -19,6 +18,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
+import org.n52.wps.io.IOHandler;
 import org.n52.wps.io.data.IData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +31,10 @@ import org.uncertweb.sta.wps.method.grouping.GroupingMethod;
  */
 public class Utils extends org.uncertweb.intamap.utils.Utils {
 	private static final Logger log = LoggerFactory.getLogger(Utils.class);
-	private static final String PROPERTIES_FILE = "/sta.properties";
-	private static final String PROCESS_PROPERTIES_FILE = "/process.properties";
 
 	private static final String MIME_TYPE_HTTP_HEADER = "Content-Type";
 	private static final String POST_HTTP_METHOD = "POST";
 	private static final String GET_HTTP_METHOD = "GET";
-	
-	private static Properties props = null;
-	private static Properties processProps = null;
 	
 	public static final DecimalFormat NUMBER_FORMAT = new DecimalFormat("0.########", new DecimalFormatSymbols(Locale.US));
 	
@@ -61,53 +56,6 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 		return (int) Math.floor(sec / 60) + " m " + (int) (sec % 60) + " s";
 	}
 	
-	static String get(String key) {
-		if (key.startsWith("process"))
-			return getProcessProperty(key);
-		else return getCommonProperty(key);
-	}
-
-	/**
-	 * Loads a configuration property.
-	 * 
-	 * @param key
-	 *            the property key
-	 * @return the property
-	 */
-	public static String getCommonProperty(String key) {
-		if (props == null) {
-			log.info("Loading Common Properties");
-			props = new Properties();
-			try {
-				InputStream is = Utils.class.getResourceAsStream(PROPERTIES_FILE);
-				if (is == null)
-					throw new FileNotFoundException("Common Properties not found.");
-				props.load(is);
-			} catch (IOException e) {
-				log.error("Failed to load common properties", e);
-				throw new RuntimeException(e);
-			}
-		}
-		return props.getProperty(key);
-	}
-	
-	private static String getProcessProperty(String key) {
-		if (processProps == null) {
-			log.info("Loading Process Properties");
-			processProps = new Properties();
-			try {
-				InputStream is = Utils.class.getResourceAsStream(PROCESS_PROPERTIES_FILE);
-				if (is == null)
-					throw new FileNotFoundException("Process Properties not found.");
-				processProps.load(is);
-			} catch (IOException e) {
-				log.error("Failed to load Process properties", e);
-				throw new RuntimeException(e);
-			}
-		}
-		return processProps.getProperty(key);
-	}
-	
 	public static InputStream sendPostRequest(String url, String request) throws IOException {
         OutputStreamWriter wr = null;
         Properties systemProperties = System.getProperties();
@@ -117,7 +65,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod(POST_HTTP_METHOD);
-            conn.setRequestProperty(MIME_TYPE_HTTP_HEADER, Constants.XML_MIME_TYPE);
+            conn.setRequestProperty(MIME_TYPE_HTTP_HEADER, IOHandler.DEFAULT_MIMETYPE);
             log.debug("Sending Request...");
             wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write(request);
@@ -132,6 +80,9 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	}
 	
 	public static String buildGetRequest(String url, Map<?,?> props) {
+		if (url == null || props == null) {
+			throw new NullPointerException();
+		}
 		StringBuilder sb = new StringBuilder(url);
 		if (!url.endsWith("?") && !props.isEmpty()) {
 			sb.append("?");
@@ -143,8 +94,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 			} else {
 				first = false;
 			}
-			sb.append(e.getKey().toString());
-			sb.append(e.getValue().toString());
+			sb.append(e.getKey()).append("=").append(e.getValue());
 		}
 		return sb.toString();
 	}
@@ -264,7 +214,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	}
 	
 	public static String getMethodDescription(GroupingMethod<?> gm) {
-		return get("process.aggregation.vector." + gm.getClass().getName() + ".description");
+		return Constants.get("process.aggregation.vector." + gm.getClass().getName() + ".description");
 	}
 	
 	
@@ -294,6 +244,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 			i++;
 		}
 		props.put("ObservationId", sb.toString());
+//		log.info("ObservationId's: {}",sb.toString());
 		return buildGetRequest(url, props);
 	}
 

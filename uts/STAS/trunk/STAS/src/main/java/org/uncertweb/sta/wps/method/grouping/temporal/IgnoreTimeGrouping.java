@@ -28,10 +28,10 @@ public class IgnoreTimeGrouping extends TemporalGrouping {
 				}
 			} else {
 				ObservationTimeInstant time = (ObservationTimeInstant) o.getObservationTime();
-				if (start == null || time.getDateTime().isBefore(start)) {
+				if (start == null || time.isBefore(start)) {
 					start = time.getDateTime();
 				}
-				if (end == null || time.getDateTime().isAfter(end)) {
+				if (end == null || time.isAfter(end)) {
 					end = time.getDateTime();
 				}
 			}

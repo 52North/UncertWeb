@@ -1,12 +1,27 @@
 package org.uncertweb.sta.utils;
 
-import static org.uncertweb.sta.utils.Utils.get;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import javax.xml.namespace.QName;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.uncertweb.intamap.utils.Namespace;
 
 /**
  * @author Christian Autermann
  */
 public class Constants extends org.uncertweb.intamap.utils.Constants {
-	private Constants(){ super(); }
+	
+	private static final Logger log = LoggerFactory.getLogger(Constants.class);
+	private static final String PROPERTIES_FILE = "/sta.properties";
+	private static final String PROCESS_PROPERTIES_FILE = "/process.properties";
+	private static Properties props = null;
+	private static Properties processProps = null;
+
 	/*
 	 * Connection Settings
 	 */
@@ -90,9 +105,6 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
     /*
 	 * Various
 	 */
-	public static final String XML_MIME_TYPE = get("mime.xml");
-	public static final String UTF8_ENCODING = get("encoding.utf8");
-	
 	public static final String SOS_SERVICE_NAME = get("sos.service");
 	public static final String SOS_SERVICE_VERSION = get("sos.version");
 	public static final String SOS_DESCRIBE_SENSOR_OPERATION = get("sos.describeSensor");
@@ -100,7 +112,70 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	public static final String SOS_OBSERVATION_OUTPUT_FORMAT = get("sos.observationOutputFormat");
 	public static final String SOS_GET_OBSERVATION_BY_ID_OPERATION = get("sos.getObservationById");
 	
+	public static final QName OBSERVATION_RESULT_MODEL = new QName(Namespace.OM.URI, "Observation", "om");
+	public static final QName MEASUREMENT_RESULT_MODEL = new QName(Namespace.OM.URI, "Measurement", "om");
+	
 	public static final String AGGREGATION_OFFERING_ID = get("sos.aggregationOffering.id");
 	public static final String AGGREGATION_OFFERING_NAME = get("sos.aggregationOffering.name");
+	
+	private Constants(){ super(); }
 
+	
+	static String get(String key) {
+		String prop = null;
+		if (key.startsWith("process"))
+			prop = getProcessProperty(key);
+		else {
+			prop = getCommonProperty(key);
+		}
+		if (prop == null) {
+			log.warn("Property '{}' not set." , key);
+		}
+		return prop;
+	}
+
+	/**
+	 * Loads a configuration property.
+	 * 
+	 * @param key
+	 *            the property key
+	 * @return the property
+	 */
+	public static String getCommonProperty(String key) {
+		if (props == null) {
+			log.info("Loading Common Properties");
+			props = new Properties();
+			try {
+				InputStream is = Constants.class.getResourceAsStream(PROPERTIES_FILE);
+				if (is == null)
+					throw new FileNotFoundException("Common Properties not found.");
+				props.load(is);
+			} catch (IOException e) {
+				log.error("Failed to load common properties", e);
+				throw new RuntimeException(e);
+			}
+		}
+		return props.getProperty(key);
+	}
+	
+	private static String getProcessProperty(String key) {
+		if (processProps == null) {
+			log.info("Loading Process Properties");
+			processProps = new Properties();
+			try {
+				InputStream is = Constants.class.getResourceAsStream(PROCESS_PROPERTIES_FILE);
+				if (is == null)
+					throw new FileNotFoundException("Process Properties not found.");
+				processProps.load(is);
+			} catch (IOException e) {
+				log.error("Failed to load Process properties", e);
+				throw new RuntimeException(e);
+			}
+		}
+		return processProps.getProperty(key);
+	}
+
+	public static void main(String[] args) {
+		new Constants();
+	}
 }

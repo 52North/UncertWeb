@@ -23,7 +23,7 @@ public class TimeRangeMethodTest {
 	
 	@Before
 	public void setUp() {
-		p = ProcessTester.getInstance();
+		p = new ProcessTester();
 	}
 	 
 	@Test(timeout=ONE_MINUTE)

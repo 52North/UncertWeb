@@ -1,4 +1,5 @@
 package org.uncertweb.sta.wps.testutils;
+
 import static org.uncertweb.intamap.utils.Namespace.GML;
 import static org.uncertweb.intamap.utils.Namespace.OM;
 import static org.uncertweb.intamap.utils.Namespace.SOS;
@@ -13,12 +14,12 @@ import static org.uncertweb.sta.utils.Constants.SPATIAL_AGGREGATION_METHOD_INPUT
 import static org.uncertweb.sta.utils.Constants.TEMPORAL_AGGREGATION_METHOD_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.TIME_RANGE_INPUT_ID;
-import static org.uncertweb.sta.utils.Constants.UTF8_ENCODING;
 import static org.uncertweb.sta.utils.Constants.WFS_REQUEST_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.WFS_URL_INPUT_ID;
-import static org.uncertweb.sta.utils.Constants.XML_MIME_TYPE;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,6 +30,7 @@ import net.opengis.wfs.GetFeatureDocument;
 import net.opengis.wps.x100.DocumentOutputDefinitionType;
 import net.opengis.wps.x100.ExecuteDocument;
 import net.opengis.wps.x100.ExecuteResponseDocument;
+import net.opengis.wps.x100.OutputDataType;
 import net.opengis.wps.x100.ProcessDescriptionType;
 
 import org.apache.geronimo.mail.util.StringBufferOutputStream;
@@ -37,10 +39,9 @@ import org.apache.xmlbeans.XmlObject;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
 import org.joda.time.Period;
-import org.n52.wps.client.ExecuteRequestBuilder;
-import org.n52.wps.client.ExecuteResponseAnalyser;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.GeneratorFactory;
+import org.n52.wps.io.IOHandler;
 import org.n52.wps.io.IStreamableGenerator;
 import org.n52.wps.io.ParserFactory;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
@@ -52,6 +53,7 @@ import org.n52.wps.server.handler.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.ObservationCollection;
+import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
@@ -62,14 +64,12 @@ import org.uncertweb.sta.wps.method.grouping.temporal.TemporalGrouping;
 import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
+import org.uncertweb.sta.wps.xml.io.dec.GetObservationRequestParser;
 
 public class ProcessTester {
 
 	private static final String CONFIG_PATH = ProcessTester.class.getResource("/wps_config/wps_config.xml").getFile();
-	private static final String OFFLINE_CONFIG_PATH = ProcessTester.class.getResource("/test_wps_config.xml").getFile();
-	private static final String WFS_REQ_SCHEMA = WFS.SCHEMA;
-	private static final String FC_SCHEMA = GML.SCHEMA;
-	private static final String SOS_REQ_SCHEMA = SOS.SCHEMA;
+//	private static final String OFFLINE_CONFIG_PATH = ProcessTester.class.getResource("/test_wps_config.xml").getFile();
 	private static final Logger log = LoggerFactory.getLogger(ProcessTester.class);
 	
 	static {
@@ -85,36 +85,14 @@ public class ProcessTester {
 		GeneratorFactory.initialize(WPSConfig.getInstance().getRegisteredGenerator());
 	}
 
-	private ProcessTester() {}
-	private static ProcessTester pt = null;
-	public static ProcessTester getInstance() {
-		if (pt == null) {
-			pt = new ProcessTester();
-		}
-		return pt;
-	}
-	
 	public ObservationCollection getObservationCollection() {
 		return oc;
-	}
-	
-	private boolean offline = false;
-	public void setOffline(boolean offline) {
-		if (this.offline != offline) {
-			this.offline = offline;
-			try {
-				WPSConfig.forceInitialization((offline) ? OFFLINE_CONFIG_PATH : CONFIG_PATH);
-			} catch (XmlException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
 	}
 	
 	private static STARepository sta;
 	private static AbstractXMLParser gmlParser;
 	private static AbstractXMLParser omParser;
+	private static AbstractXMLParser getObsParser= null;
 	private static IStreamableGenerator omGenerator;
 
 	private IAlgorithm process;
@@ -274,11 +252,11 @@ public class ProcessTester {
 		fc = testNull(fc);
 	}
 	
-	public void execute() {
-		execute(null);
+	public ProcessTester execute() {
+		return execute(null);
 	}
 	
-	public void execute(String wpsUrl) {
+	public ProcessTester execute(String wpsUrl) {
 		ProcessDescriptionType desc = getSelectedAlgorithm().getDescription();
 		ExecuteRequestBuilder eb = new ExecuteRequestBuilder(desc);
 		if (p != null) {
@@ -310,7 +288,7 @@ public class ProcessTester {
 		}
 		if (wfsRequest != null) {
 			log.info("Adding '{}' Parameter", WFS_REQUEST_INPUT_ID);
-			eb.addComplexData(WFS_REQUEST_INPUT_ID, new GetFeatureRequestBinding(wfsRequest), WFS_REQ_SCHEMA, UTF8_ENCODING, XML_MIME_TYPE);
+			eb.addComplexData(WFS_REQUEST_INPUT_ID, new GetFeatureRequestBinding(wfsRequest), WFS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
 		if (sosSrcUrl != null) {	
 			log.info("Adding '{}' Parameter", SOURCE_SOS_URL_INPUT_ID);
@@ -318,17 +296,15 @@ public class ProcessTester {
 		}
 		if (sosRequest != null) {
 			log.info("Adding '{}' Parameter", SOURCE_SOS_REQUEST_INPUT_ID);
-			eb.addComplexData(SOURCE_SOS_REQUEST_INPUT_ID, new GetObservationRequestBinding(sosRequest), SOS_REQ_SCHEMA, UTF8_ENCODING, XML_MIME_TYPE);
+			eb.addComplexData(SOURCE_SOS_REQUEST_INPUT_ID, new GetObservationRequestBinding(sosRequest), SOS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
 		if (fc != null) {
 			log.info("Adding '{}' Parameter", FEATURE_COLLECTION_INPUT_ID);
-			eb.addComplexData(FEATURE_COLLECTION_INPUT_ID, new GTVectorDataBinding(fc), FC_SCHEMA, UTF8_ENCODING, XML_MIME_TYPE);
+			eb.addComplexData(FEATURE_COLLECTION_INPUT_ID, new GTVectorDataBinding(fc), GML.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
 		
 		ExecuteDocument exec = eb.getExecute();
 	
-		//TODO outputs...
-		
 		DocumentOutputDefinitionType dodt = exec.getExecute().addNewResponseForm().addNewResponseDocument().addNewOutput();
 		dodt.addNewIdentifier().setStringValue(Constants.OBSERVATION_COLLECTION_OUTPUT_ID);
 		
@@ -337,11 +313,7 @@ public class ProcessTester {
 			dodt.addNewIdentifier().setStringValue(Constants.OBSERVATION_COLLECTION_OUTPUT_ID);	
 		}
 		
-		if (!exec.validate()) {
-			log.error("Invalid request:\n{}", exec.xmlText(defaultOptions()));
-			throw new RuntimeException("Invalid Request");
-			
-		}
+		log.info("Sending Execute request:\n{}",exec.xmlText(Namespace.defaultOptions()));
 		
 		try {
 			XmlObject res = null;
@@ -355,16 +327,16 @@ public class ProcessTester {
 				res = XmlObject.Factory.parse(Utils.sendPostRequest(wpsUrl, exec.xmlText()));
 			}
 			if (res instanceof ExecuteResponseDocument) {
-				ExecuteResponseAnalyser ers = new ExecuteResponseAnalyser((ExecuteResponseDocument) res, desc);
-				try {
-					ocOutput = ((ObservationCollectionBinding) ers.getComplexData(Constants.OBSERVATION_COLLECTION_OUTPUT_ID)).getPayload();
-				} catch (IllegalArgumentException e) {
-					/* ignore if it was not requested */
-				}
-				try {
-					refOutput = ((GetObservationRequestBinding) ers.getComplexData(Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID)).getPayload();
-				} catch (IllegalArgumentException e) {
-					/* ignore if it was not requested */
+//				log.info("Got response.\n{}",res.xmlText(Namespace.defaultOptions()));
+				ExecuteResponseDocument resp = (ExecuteResponseDocument) res;
+				
+				for (OutputDataType odt : resp.getExecuteResponse().getProcessOutputs().getOutputArray()) {
+					if (odt.getIdentifier().getStringValue().equals(Constants.OBSERVATION_COLLECTION_OUTPUT_ID)) {
+						ocOutput = (ObservationCollection) getOMParser().parseXML(odt.getData().getComplexData().newInputStream()).getPayload();
+					} else if (odt.getIdentifier().getStringValue().equals(Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID)) {
+						refOutput = (GetObservationDocument) new GetObservationRequestParser().parseXML(odt.getData().getComplexData().newInputStream()).getPayload();
+					}
+					
 				}
 			} else if (res instanceof ExceptionReport) {
 				throw new RuntimeException(res.xmlText(defaultOptions()));
@@ -376,6 +348,7 @@ public class ProcessTester {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		return this;
 	}
 	
 	public GetObservationDocument getReferenceOutput() {
@@ -398,7 +371,7 @@ public class ProcessTester {
 
 	public static IAlgorithmRepository getRepository() {
 		if (sta == null) {
-			sta = new OfflineRepository();
+			sta = new STARepository();
 		}
 		return sta;
 	}
@@ -411,7 +384,7 @@ public class ProcessTester {
 		if (omGenerator == null) {
 			omGenerator = (IStreamableGenerator) GeneratorFactory.getInstance()
 					.getGenerator(OM.SCHEMA,
-							Constants.XML_MIME_TYPE, Constants.UTF8_ENCODING,
+							IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING,
 							ObservationCollectionBinding.class);
 		}
 		return omGenerator;
@@ -422,18 +395,27 @@ public class ProcessTester {
 			gmlParser = (AbstractXMLParser) ParserFactory
 					.getInstance()
 					.getParser(
-							"http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd",
-							Constants.XML_MIME_TYPE, Constants.UTF8_ENCODING,
+							WFS.SCHEMA,
+							IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING,
 							GTVectorDataBinding.class);
 		}
 		return gmlParser;
 	}
 
+	public static AbstractXMLParser getGetObsParser() {
+		if (getObsParser == null) {
+			getObsParser = (AbstractXMLParser) ParserFactory.getInstance()
+					.getParser(SOS.SCHEMA, IOHandler.DEFAULT_MIMETYPE,
+							IOHandler.DEFAULT_ENCODING,
+							GetObservationRequestBinding.class);
+		}
+		return getObsParser;
+	}
+	
 	public static AbstractXMLParser getOMParser() {
 		if (omParser == null) {
 			omParser = (AbstractXMLParser) ParserFactory.getInstance()
-					.getParser(OM.SCHEMA, Constants.XML_MIME_TYPE,
-							Constants.UTF8_ENCODING,
+					.getParser(OM.SCHEMA, IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING,
 							ObservationCollectionBinding.class);
 		}
 		return omParser;
@@ -446,8 +428,8 @@ public class ProcessTester {
 		System.out.println(XmlObject.Factory.parse(sb.toString()).xmlText(
 				defaultOptions()));
 	}
-	public static void main(String[] args) {
-		ProcessTester pt = new ProcessTester();
-		pt.setOffline(true);
+	
+	public static void print(ObservationCollection oc, String filename) throws FileNotFoundException {
+		getOMGenerator().writeToStream(new ObservationCollectionBinding(oc), new FileOutputStream(filename));
 	}
 }

@@ -24,7 +24,7 @@ public class AggregationMethodTest {
 	
 	@Before
 	public void setUp() {
-		p = ProcessTester.getInstance();
+		p = new ProcessTester();
 		p.selectAlgorithm(IgnoreSpatialGrouping.class, IgnoreTimeGrouping.class);
 //		p.observationCollection(buildOC());
 	}

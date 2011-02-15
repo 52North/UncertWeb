@@ -29,8 +29,6 @@ import static org.uncertweb.sta.utils.Constants.TEMPORAL_AGGREGATION_METHOD_INPU
 import static org.uncertweb.sta.utils.Constants.TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_DESC;
 import static org.uncertweb.sta.utils.Constants.TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_TITLE;
-import static org.uncertweb.sta.utils.Constants.UTF8_ENCODING;
-import static org.uncertweb.sta.utils.Constants.XML_MIME_TYPE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +42,7 @@ import java.util.Set;
 
 import net.opengis.sos.x10.GetObservationDocument;
 
+import org.n52.wps.io.IOHandler;
 import org.n52.wps.io.ParserFactory;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
@@ -345,7 +344,7 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 		}
 		AbstractXMLParser p = (AbstractXMLParser) ParserFactory
 			.getInstance().getParser(Namespace.OM.SCHEMA,
-					XML_MIME_TYPE, UTF8_ENCODING,
+					IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING,
 					ObservationCollectionBinding.class);
 		try {
 			InputStream is = null;

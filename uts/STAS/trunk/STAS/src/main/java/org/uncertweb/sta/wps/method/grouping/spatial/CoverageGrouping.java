@@ -3,14 +3,12 @@ package org.uncertweb.sta.wps.method.grouping.spatial;
 import static org.uncertweb.sta.utils.Constants.FEATURE_COLLECTION_INPUT_DESCRIPTION;
 import static org.uncertweb.sta.utils.Constants.FEATURE_COLLECTION_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.FEATURE_COLLECTION_INPUT_TITLE;
-import static org.uncertweb.sta.utils.Constants.UTF8_ENCODING;
 import static org.uncertweb.sta.utils.Constants.WFS_REQUEST_INPUT_DESCRIPTION;
 import static org.uncertweb.sta.utils.Constants.WFS_REQUEST_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.WFS_REQUEST_INPUT_TITLE;
 import static org.uncertweb.sta.utils.Constants.WFS_URL_INPUT_DESC;
 import static org.uncertweb.sta.utils.Constants.WFS_URL_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.WFS_URL_INPUT_TITLE;
-import static org.uncertweb.sta.utils.Constants.XML_MIME_TYPE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +20,7 @@ import net.opengis.wfs.GetFeatureDocument;
 
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.n52.wps.io.IOHandler;
 import org.n52.wps.io.IParser;
 import org.n52.wps.io.ParserFactory;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
@@ -130,14 +129,14 @@ public class CoverageGrouping extends SpatialGrouping {
 		FeatureCollection<FeatureType,Feature> requestPolColl = null;
 		if (wfsUrl != null && wfsReq != null) {
 			IParser p = ParserFactory.getInstance().getParser(
-					Namespace.GML.SCHEMA, XML_MIME_TYPE, UTF8_ENCODING,
+					Namespace.GML.SCHEMA, IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING,
 					GTVectorDataBinding.class);
 			if (p == null) {
 				throw new NullPointerException("No Parser found to parser FeatureCollection.");
 			}
 			try {
 				InputStream wfsResponse = Utils.sendPostRequest(wfsUrl, wfsReq.xmlText());
-				requestPolColl = ((GTVectorDataBinding) p.parse(wfsResponse, XML_MIME_TYPE)).getPayload();
+				requestPolColl = ((GTVectorDataBinding) p.parse(wfsResponse, IOHandler.DEFAULT_MIMETYPE)).getPayload();
 			} catch (IOException e) {
 				log.error("Error while retrieving FeatureCollection from "
 						+ wfsUrl, e);

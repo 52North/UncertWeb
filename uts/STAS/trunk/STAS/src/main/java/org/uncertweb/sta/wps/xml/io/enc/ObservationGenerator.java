@@ -19,6 +19,8 @@ import net.opengis.sampling.x10.SamplingPointType;
 import net.opengis.sampling.x10.SamplingSurfaceType;
 
 import org.apache.xmlbeans.XmlCursor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.ISamplingFeature;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationTimeInstant;
@@ -37,13 +39,15 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class ObservationGenerator {
 
+	private static final Logger log = LoggerFactory.getLogger(ObservationGenerator.class);
+	
 	public ObservationDocument generateXML(Observation o) {
 		ObservationDocument doc = ObservationDocument.Factory.newInstance();
 		
 		MeasurementType m = (MeasurementType) doc.addNewObservation()
 				.substitute(new QName(Namespace.OM.URI, "Measurement"),
 						MeasurementType.type);
-		if (o.getId()!=null)
+		if (o.getId() != null)
 			m.setId(o.getId());
 		generateProcedure(o, m);
 		generateMetaData(o, m);
@@ -64,7 +68,7 @@ public class ObservationGenerator {
 		}
 		MetaDataPropertyType md = m.addNewMetaDataProperty();
 		md.setTitle("Provenance");
-//		md.setRole("Provenance"); FIXME which one?
+		md.setRole("Provenance"); //FIXME which one?
 		md.setHref(Utils.getObservationByIdUrl(oao.getSourceUrl(), obsIds));
 	}
 
@@ -74,8 +78,7 @@ public class ObservationGenerator {
 		if (f != null) {
 			FeaturePropertyType fpt = m.addNewFeatureOfInterest();
 			if (f instanceof SamplingPoint) {
-				SamplingPointType spt = (SamplingPointType) fpt.addNewFeature()
-						.changeType(SamplingPointType.type);
+				SamplingPointType spt = SamplingPointType.Factory.newInstance(); 
 				SamplingPoint sp = (SamplingPoint) f;
 
 				if (sp.getName() != null) { 
@@ -98,6 +101,7 @@ public class ObservationGenerator {
 				dpt.setStringValue(sp.getLocation().getCoordinate().x + " "
 						+ sp.getLocation().getCoordinate().y);
 
+				fpt.addNewFeature().set(spt);
 				XmlCursor c = fpt.newCursor();
 				c.toChild(new QName(Namespace.GML.URI, "_Feature"));
 				c.setName(new QName(Namespace.SA.URI, "SamplingPoint"));
@@ -201,10 +205,8 @@ public class ObservationGenerator {
 	}
 
 	private static void generateResultTime(Observation o, MeasurementType m) {
-		
-		
 		if (o.getObservationTime() != null) {
-			
+			log.debug("Got ObservationTime: {}: {}",o.getObservationTime().getClass().getName(), o.getObservationTime());
 			AbstractTimeObjectType atot = m.addNewSamplingTime().addNewTimeObject();
 			if (o.getObservationTime() instanceof ObservationTimeInterval) {
 				TimePeriodType tpt = (TimePeriodType) atot.substitute(
@@ -220,6 +222,8 @@ public class ObservationGenerator {
 				tit.addNewTimePosition().setStringValue(TimeUtils.format(
 						((ObservationTimeInstant) o.getObservationTime()).getDateTime()));
 			}
+		} else {
+			throw new NullPointerException("ObservationTime is null.");
 		}
 	}
 
