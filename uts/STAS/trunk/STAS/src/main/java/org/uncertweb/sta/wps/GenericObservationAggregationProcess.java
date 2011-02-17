@@ -14,12 +14,12 @@ import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_REFERENCE
 import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID;
 import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_TITLE;
 import static org.uncertweb.sta.utils.Constants.PROCESS_DESCRIPTION;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_SPATIAL_GROUPING_METHOD;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD;
+import static org.uncertweb.sta.utils.Constants.PARAMETER_NAME_GROUPED_BY_OBSERVED_PROPERTY;
+import static org.uncertweb.sta.utils.Constants.PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD;
+import static org.uncertweb.sta.utils.Constants.PARAMETER_NAME_SPATIAL_GROUPING_METHOD;
+import static org.uncertweb.sta.utils.Constants.PARAMETER_NAME_TEMPORAL_AGGREGATION_METHOD;
+import static org.uncertweb.sta.utils.Constants.PARAMETER_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION;
+import static org.uncertweb.sta.utils.Constants.PARAMETER_NAME_TEMPORAL_GROUPING_METHOD;
 import static org.uncertweb.sta.utils.Constants.SOURCE_SOS_REQUEST_INPUT_DESCRIPTION;
 import static org.uncertweb.sta.utils.Constants.SOURCE_SOS_REQUEST_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.SOURCE_SOS_REQUEST_INPUT_TITLE;
@@ -286,12 +286,12 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 			SOSClient sos = new SOSClient();
 			
 			Map<String,String> meta = new HashMap<String, String>();
-			meta.put(PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY, String.valueOf(groupByObservedProperty));
-			meta.put(PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION, String.valueOf(temporalBeforeSpatial));
-			meta.put(PROPERTY_NAME_SPATIAL_GROUPING_METHOD, this.sg.getName());
-			meta.put(PROPERTY_NAME_TEMPORAL_GROUPING_METHOD, this.tg.getName() );
-			meta.put(PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD, spatialAggregationMethod.getClass().getName());
-			meta.put(PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD, temporalAggregationMethod.getClass().getName());
+			meta.put(PARAMETER_NAME_GROUPED_BY_OBSERVED_PROPERTY, String.valueOf(groupByObservedProperty));
+			meta.put(PARAMETER_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION, String.valueOf(temporalBeforeSpatial));
+			meta.put(PARAMETER_NAME_SPATIAL_GROUPING_METHOD, this.sg.getName());
+			meta.put(PARAMETER_NAME_TEMPORAL_GROUPING_METHOD, this.tg.getName() );
+			meta.put(PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD, spatialAggregationMethod.getClass().getName());
+			meta.put(PARAMETER_NAME_TEMPORAL_AGGREGATION_METHOD, temporalAggregationMethod.getClass().getName());
 			
 			GetObservationRequestBinding b;
 			try {

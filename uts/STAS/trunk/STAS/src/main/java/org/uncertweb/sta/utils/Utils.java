@@ -66,7 +66,6 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
             conn.setDoOutput(true);
             conn.setRequestMethod(POST_HTTP_METHOD);
             conn.setRequestProperty(MIME_TYPE_HTTP_HEADER, IOHandler.DEFAULT_MIMETYPE);
-            log.debug("Sending Request...");
             wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write(request);
             wr.flush();

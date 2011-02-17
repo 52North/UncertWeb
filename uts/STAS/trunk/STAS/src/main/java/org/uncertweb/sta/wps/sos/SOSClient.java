@@ -27,7 +27,12 @@ public class SOSClient {
 		RegisterSensorDocument regSenDoc = RegisterSensorDocumentBuilder.getInstance().build(process, obs, meta);
 //		log.debug("RegisterSensor Request:\n{}", regSenDoc.xmlText(defaultOptions()));
 		log.info("Sending RegisterSensor request.");
-		sendPostRequests(url, regSenDoc);
+		try {
+			sendPostRequests(url, regSenDoc);
+		} catch(Throwable e) {
+			log.warn("Can not register Sensor.");
+//			throw new RuntimeException(e);
+		}
 		boolean printed =false;
 		log.info("Sending RegisterSensor requests.");
 		for (Observation o : obs) {
@@ -36,11 +41,16 @@ public class SOSClient {
 				printed = true;
 //				log.debug("InstertObservation:\n{}", insObsDoc.xmlText(defaultOptions()));
 			}
-			sendPostRequests(url, insObsDoc);
+			try {
+				sendPostRequests(url, insObsDoc);
+			} catch(Throwable e) {
+				log.warn("Can not insert Observation.");
+//				throw new RuntimeException(e);
+			}
 		}
 		log.info("Generating GetObservation request.");
 		GetObservationDocument getObsDoc = GetObservationDocumentBuilder.getInstance().build(process, obs);
-//		log.debug("GetObservation Request:\n{}", getObsDoc.xmlText(defaultOptions()));
+//		log.debug("GetObservation Request:\n{}", getObsDoc.xmlText(Namespace.defaultOptions()));
 		return new GetObservationRequestBinding(getObsDoc);
 	}
 

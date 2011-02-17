@@ -2,8 +2,6 @@ package org.uncertweb.sta.wps;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.uncertweb.intamap.om.ObservationCollection;
-import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.wps.method.aggregation.ArithmeticMeanAggregation;
 import org.uncertweb.sta.wps.method.grouping.spatial.NoSpatialGrouping;
@@ -20,9 +18,6 @@ public class NoSpatialIgnoreTimeTest {
 	private static final String SOURCE_SOS = "http://giv-uw.uni-muenster.de:8080/AQE/sos";
 	private static final String DESTINATION_SOS = "http://localhost:8080/sos/sos";
 	
-	
-	private static final String PRINT_FILE = "/home/auti/response.xml";
-	
 	@Test
 	public void test() throws Exception {
 		ProcessTester t = new ProcessTester();
@@ -37,14 +32,12 @@ public class NoSpatialIgnoreTimeTest {
 		t.setSosRequest(OFFERING, OBSERVED_PROPERTY, b, e);
 
 		
-		ObservationCollection oc = t.execute().getOutput();
-		System.out.println(t.getReferenceOutput().xmlText(Namespace.defaultOptions()));
-		ProcessTester.print(oc, PRINT_FILE);
+		t.execute();
+		t.getOutput();
+		t.getReferenceOutput();
 	}
 
 	public static void main(String[] args) throws Exception {
-		try { new NoSpatialIgnoreTimeTest().test(); }
-		catch (Throwable t) {t.printStackTrace();}
 		try { new NoSpatialIgnoreTimeTest().test(); }
 		catch (Throwable t) {t.printStackTrace();}
 		System.exit(0);

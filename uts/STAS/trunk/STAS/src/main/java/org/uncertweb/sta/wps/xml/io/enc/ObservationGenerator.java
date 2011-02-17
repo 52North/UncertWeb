@@ -19,19 +19,17 @@ import net.opengis.sampling.x10.SamplingPointType;
 import net.opengis.sampling.x10.SamplingSurfaceType;
 
 import org.apache.xmlbeans.XmlCursor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.ISamplingFeature;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationTimeInstant;
 import org.uncertweb.intamap.om.ObservationTimeInterval;
-import org.uncertweb.sta.wps.om.OriginAwareObservation;
 import org.uncertweb.intamap.om.SamplingPoint;
 import org.uncertweb.intamap.om.SamplingSurface;
 import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
+import org.uncertweb.sta.wps.om.OriginAwareObservation;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -39,7 +37,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class ObservationGenerator {
 
-	private static final Logger log = LoggerFactory.getLogger(ObservationGenerator.class);
+//	private static final Logger log = LoggerFactory.getLogger(ObservationGenerator.class);
 	
 	public ObservationDocument generateXML(Observation o) {
 		ObservationDocument doc = ObservationDocument.Factory.newInstance();
@@ -206,7 +204,7 @@ public class ObservationGenerator {
 
 	private static void generateResultTime(Observation o, MeasurementType m) {
 		if (o.getObservationTime() != null) {
-			log.debug("Got ObservationTime: {}: {}",o.getObservationTime().getClass().getName(), o.getObservationTime());
+//			log.debug("Got ObservationTime: {}: {}",o.getObservationTime().getClass().getName(), o.getObservationTime());
 			AbstractTimeObjectType atot = m.addNewSamplingTime().addNewTimeObject();
 			if (o.getObservationTime() instanceof ObservationTimeInterval) {
 				TimePeriodType tpt = (TimePeriodType) atot.substitute(

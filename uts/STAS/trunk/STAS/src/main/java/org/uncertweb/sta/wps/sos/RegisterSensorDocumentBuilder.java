@@ -20,10 +20,10 @@ import net.opengis.sensorML.x101.IdentificationDocument.Identification.Identifie
 import net.opengis.sensorML.x101.InputsDocument.Inputs.InputList;
 import net.opengis.sensorML.x101.IoComponentPropertyType;
 import net.opengis.sensorML.x101.OutputsDocument.Outputs.OutputList;
-import net.opengis.sensorML.x101.PositionDocument.Position;
+import net.opengis.sensorML.x101.ParametersDocument.Parameters.ParameterList;
+import net.opengis.sensorML.x101.ProcessModelType;
 import net.opengis.sensorML.x101.SensorMLDocument;
 import net.opengis.sensorML.x101.SensorMLDocument.SensorML;
-import net.opengis.sensorML.x101.SystemType;
 import net.opengis.sensorML.x101.TermDocument.Term;
 import net.opengis.sos.x10.ObservationTemplateDocument.ObservationTemplate;
 import net.opengis.sos.x10.RegisterSensorDocument;
@@ -33,29 +33,22 @@ import net.opengis.swe.x101.AbstractDataRecordType;
 import net.opengis.swe.x101.BooleanDocument.Boolean;
 import net.opengis.swe.x101.DataComponentPropertyType;
 import net.opengis.swe.x101.DataRecordType;
-import net.opengis.swe.x101.PositionType;
 import net.opengis.swe.x101.QuantityDocument.Quantity;
 import net.opengis.swe.x101.TextDocument.Text;
 import net.opengis.swe.x101.TimeDocument.Time;
-import net.opengis.swe.x101.VectorType;
-import net.opengis.swe.x101.VectorType.Coordinate;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationTimeInstant;
 import org.uncertweb.intamap.om.ObservationTimeInterval;
-import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.om.OriginAwareObservation;
 
 public class RegisterSensorDocumentBuilder {
-	protected static final Logger log = LoggerFactory.getLogger(RegisterSensorDocumentBuilder.class);
 	
     protected static final String COORD_NAME_LAT = "latitude";
     protected static final String COORD_NAME_LON = "longitude";
@@ -86,8 +79,53 @@ public class RegisterSensorDocumentBuilder {
 		regSen.setVersion(Constants.SOS_SERVICE_VERSION);
 		buildSensorDescription(regSen, process, obs, meta);
 		buildObservationTemplate(regSen);
-		log.debug(regSenDoc.xmlText(Namespace.defaultOptions()));
 		return regSenDoc;
+	}
+	
+	protected void buildParameters(ProcessModelType pmt, Map<String,String> meta) {
+		ParameterList pl = pmt.addNewParameters().addNewParameterList();
+		
+	    // spatial grouping method
+        DataComponentPropertyType sgmField = pl.addNewParameter();
+        sgmField.setName(Constants.PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD);
+        Text sgmText = sgmField.addNewText();
+        sgmText.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_SPATIAL_GROUPING_METHOD);
+        sgmText.setValue(meta.get(Constants.PARAMETER_NAME_SPATIAL_GROUPING_METHOD));
+    
+        // temporal grouping method
+        DataComponentPropertyType tgmField = pl.addNewParameter();
+        tgmField.setName(Constants.PARAMETER_NAME_TEMPORAL_GROUPING_METHOD);
+        Text tgmText = tgmField.addNewText();
+        tgmText.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_TEMPORAL_GROUPING_METHOD);
+        tgmText.setValue(meta.get(Constants.PARAMETER_NAME_TEMPORAL_GROUPING_METHOD));
+        
+        // spatial aggregation method
+        DataComponentPropertyType samField = pl.addNewParameter();
+        samField.setName(Constants.PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD);
+        Text samText = samField.addNewText();
+        samText.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD);
+        samText.setValue(meta.get(Constants.PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD));
+        
+        // temporal aggregation method
+        DataComponentPropertyType tamField = pl.addNewParameter();
+        tamField.setName(Constants.PARAMETER_NAME_TEMPORAL_AGGREGATION_METHOD);
+        Text tamText = tamField.addNewText();
+        tamText.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_TEMPORAL_AGGREGATION_METHOD);
+        tamText.setValue(meta.get(Constants.PARAMETER_NAME_TEMPORAL_AGGREGATION_METHOD));
+        
+        // temporal before spatial
+        DataComponentPropertyType tbsField = pl.addNewParameter();
+        tbsField.setName(Constants.PARAMETER_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
+        Boolean tbsBoolean = tbsField.addNewBoolean();
+        tbsBoolean.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
+        tbsBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PARAMETER_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION)));
+     
+        // grouped by observed property
+        DataComponentPropertyType gbopField = pl.addNewParameter();
+        gbopField.setName(Constants.PARAMETER_NAME_GROUPED_BY_OBSERVED_PROPERTY);
+        Boolean gbopBoolean = gbopField.addNewBoolean();
+        gbopBoolean.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_GROUPED_BY_OBSERVED_PROPERTY);
+        gbopBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PARAMETER_NAME_GROUPED_BY_OBSERVED_PROPERTY)));
 	}
 	
 	protected void buildSensorDescription(RegisterSensor regSen,
@@ -96,67 +134,68 @@ public class RegisterSensorDocumentBuilder {
 		SensorMLDocument smlDocument = SensorMLDocument.Factory.newInstance();
 		SensorML sml = smlDocument.addNewSensorML();
 		sml.setVersion(SML_VERSION);
-		SystemType systemType = (SystemType) sml.addNewMember().addNewProcess()
-				.substitute(qualify(SML, "System"), SystemType.type);
-//		ProcessModelType processModelType = (ProcessModelType) sml.addNewMember().addNewProcess().substitute(qualify(SML, "ProcessModel"), ProcessModelType.type);
+//		SystemType systemType = (SystemType) sml.addNewMember().addNewProcess()
+//				.substitute(qualify(SML, "System"), SystemType.type);
+		ProcessModelType processModelType = (ProcessModelType) sml.addNewMember().addNewProcess().substitute(qualify(SML, "ProcessModel"), ProcessModelType.type);
+		buildParameters(processModelType, meta);
 		
 		/* unique id */
-		IdentifierList idenList = systemType.addNewIdentification().addNewIdentifierList();
+		IdentifierList idenList = processModelType.addNewIdentification().addNewIdentifierList();
 		Identifier ident = idenList.addNewIdentifier();
 		Term term = ident.addNewTerm();
 		term.setDefinition(Constants.URN_UNIQUE_ID_DEFINITION);
 		term.setValue(process);
 
-		systemType.addNewDescription().setStringValue(Constants.SENSOR_DESCRIPTION);
-		buildValidTime(systemType, obs);
-		buildCapabilities(systemType, meta);
-		buildPosition(systemType);
+		processModelType.addNewDescription().setStringValue(Constants.SENSOR_DESCRIPTION);
+		buildValidTime(processModelType, obs);
+		buildCapabilities(processModelType);
+//		buildPosition(systemType);
 		/* TODO additional SensorML information
 		 * build keywords 
 		 * build contact: no idea... maybe provided as an additional input? 
 		 */
 		
-		buildInputOutputLists(systemType,obs);
+		buildInputOutputLists(processModelType, obs);
 		description.set(smlDocument);
 	}
     
-	protected void buildPosition(SystemType systemType) {
-		//FIXME real position 
-		Position position = systemType.addNewPosition();
-		position.setName("sensorPosition");
-		PositionType positionType = (PositionType) position.addNewProcess()
-				.substitute(qualify(SWE, "Position"), PositionType.type);
-		positionType.setReferenceFrame(EPSG_4326_REFERENCE_SYSTEM_DEFINITION);
-		positionType.setFixed(true);
-		VectorType vector = positionType.addNewLocation().addNewVector();
+//	protected void buildPosition(SystemType systemType) {
+//		//FIXME real position 
+//		Position position = systemType.addNewPosition();
+//		position.setName("sensorPosition");
+//		PositionType positionType = (PositionType) position.addNewProcess()
+//				.substitute(qualify(SWE, "Position"), PositionType.type);
+//		positionType.setReferenceFrame(EPSG_4326_REFERENCE_SYSTEM_DEFINITION);
+//		positionType.setFixed(true);
+//		VectorType vector = positionType.addNewLocation().addNewVector();
+//
+//		/* Latitude */
+//		Coordinate coordLatitude = vector.addNewCoordinate();
+//		coordLatitude.setName(COORD_NAME_LAT);
+//		Quantity quantityLatitude = coordLatitude.addNewQuantity();
+//		quantityLatitude.setAxisID(QUANTITY_AXIS_ID_LAT);
+//		quantityLatitude.addNewUom().setCode(COORDINATE_UOM);
+//		quantityLatitude.setValue(lat);
+//
+//		/* Longitude */
+//		Coordinate coordLongitude = vector.addNewCoordinate();
+//		coordLongitude.setName(COORD_NAME_LON);
+//		Quantity quantityLongitude = coordLongitude.addNewQuantity();
+//		quantityLongitude.setAxisID(QUANTITY_AXIS_ID_LON);
+//		quantityLongitude.addNewUom().setCode(COORDINATE_UOM);
+//		quantityLongitude.setValue(lon);
+//
+//		/* Altitude */
+//		Coordinate coordAltitude = vector.addNewCoordinate();
+//		coordAltitude.setName(COORD_NAME_ALTITUDE);
+//		Quantity quantityAltitude = coordAltitude.addNewQuantity();
+//		quantityAltitude.setAxisID(QUANTITY_AXIS_ID_ALTITUDE);
+//		quantityAltitude.addNewUom().setCode(METER_UOM);
+//		quantityAltitude.setValue(alt);
+//	}
 
-		/* Latitude */
-		Coordinate coordLatitude = vector.addNewCoordinate();
-		coordLatitude.setName(COORD_NAME_LAT);
-		Quantity quantityLatitude = coordLatitude.addNewQuantity();
-		quantityLatitude.setAxisID(QUANTITY_AXIS_ID_LAT);
-		quantityLatitude.addNewUom().setCode(COORDINATE_UOM);
-		quantityLatitude.setValue(lat);
 
-		/* Longitude */
-		Coordinate coordLongitude = vector.addNewCoordinate();
-		coordLongitude.setName(COORD_NAME_LON);
-		Quantity quantityLongitude = coordLongitude.addNewQuantity();
-		quantityLongitude.setAxisID(QUANTITY_AXIS_ID_LON);
-		quantityLongitude.addNewUom().setCode(COORDINATE_UOM);
-		quantityLongitude.setValue(lon);
-
-		/* Altitude */
-		Coordinate coordAltitude = vector.addNewCoordinate();
-		coordAltitude.setName(COORD_NAME_ALTITUDE);
-		Quantity quantityAltitude = coordAltitude.addNewQuantity();
-		quantityAltitude.setAxisID(QUANTITY_AXIS_ID_ALTITUDE);
-		quantityAltitude.addNewUom().setCode(METER_UOM);
-		quantityAltitude.setValue(alt);
-	}
-
-
-	protected void buildInputOutputLists(SystemType systemType, List<Observation> obs) {
+	protected void buildInputOutputLists(ProcessModelType systemType, List<Observation> obs) {
 		InputList inputList = systemType.addNewInputs().addNewInputList();
 		OutputList outputList = systemType.addNewOutputs().addNewOutputList();
 		
@@ -210,7 +249,7 @@ public class RegisterSensorDocumentBuilder {
 		
 	}
 
-	protected void buildValidTime(SystemType systemType, List<Observation> obs) {
+	protected void buildValidTime(ProcessModelType systemType, List<Observation> obs) {
 		DateTime start = null, end = null;
 		for (Observation o : obs) {
 			if (o.getObservationTime() instanceof ObservationTimeInstant) {
@@ -250,7 +289,7 @@ public class RegisterSensorDocumentBuilder {
 		resultCursor.dispose();
 	}
 
-	protected void buildCapabilities(SystemType systemType, Map<String,String> meta) {
+	protected void buildCapabilities(ProcessModelType systemType) {
 		Capabilities capabilities = systemType.addNewCapabilities();
 		AbstractDataRecordType abstractDataRecord = capabilities.addNewAbstractDataRecord();
 		DataRecordType dataRecord = (DataRecordType) abstractDataRecord
@@ -269,53 +308,53 @@ public class RegisterSensorDocumentBuilder {
         statusBoolean.setDefinition(Constants.URN_IS_ACTIVE);
         statusBoolean.setValue(false);
         
-        // spatial grouping method
-        DataComponentPropertyType sgmField = dataRecord.addNewField();
-        sgmField.setName(Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD);
-        Text sgmText = sgmField.addNewText();
-        sgmText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_SPATIAL_GROUPING_METHOD);
-        sgmText.setValue(meta.get(Constants.PROPERTY_NAME_SPATIAL_GROUPING_METHOD));
-    
-        // temporal grouping method
-        DataComponentPropertyType tgmField = dataRecord.addNewField();
-        tgmField.setName(Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD);
-        Text tgmText = tgmField.addNewText();
-        tgmText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD);
-        tgmText.setValue(meta.get(Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD));
-        
-        // spatial aggregation method
-        DataComponentPropertyType samField = dataRecord.addNewField();
-        samField.setName(Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD);
-        Text samText = samField.addNewText();
-        samText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD);
-        samText.setValue(meta.get(Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD));
-        
-        // temporal aggregation method
-        DataComponentPropertyType tamField = dataRecord.addNewField();
-        tamField.setName(Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD);
-        Text tamText = tamField.addNewText();
-        tamText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD);
-        tamText.setValue(meta.get(Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD));
-        
-        // temporal before spatial
-        DataComponentPropertyType tbsField = dataRecord.addNewField();
-        tbsField.setName(Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
-        Boolean tbsBoolean = tbsField.addNewBoolean();
-        tbsBoolean.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
-        tbsBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION)));
-     
-        // grouped by observed property
-        DataComponentPropertyType gbopField = dataRecord.addNewField();
-        gbopField.setName(Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY);
-        Boolean gbopBoolean = gbopField.addNewBoolean();
-        gbopBoolean.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY);
-        gbopBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY)));
-        
+//        // spatial grouping method
+//        DataComponentPropertyType sgmField = dataRecord.addNewField();
+//        sgmField.setName(Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD);
+//        Text sgmText = sgmField.addNewText();
+//        sgmText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_SPATIAL_GROUPING_METHOD);
+//        sgmText.setValue(meta.get(Constants.PROPERTY_NAME_SPATIAL_GROUPING_METHOD));
+//    
+//        // temporal grouping method
+//        DataComponentPropertyType tgmField = dataRecord.addNewField();
+//        tgmField.setName(Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD);
+//        Text tgmText = tgmField.addNewText();
+//        tgmText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD);
+//        tgmText.setValue(meta.get(Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD));
+//        
+//        // spatial aggregation method
+//        DataComponentPropertyType samField = dataRecord.addNewField();
+//        samField.setName(Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD);
+//        Text samText = samField.addNewText();
+//        samText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD);
+//        samText.setValue(meta.get(Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD));
+//        
+//        // temporal aggregation method
+//        DataComponentPropertyType tamField = dataRecord.addNewField();
+//        tamField.setName(Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD);
+//        Text tamText = tamField.addNewText();
+//        tamText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD);
+//        tamText.setValue(meta.get(Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD));
+//        
+//        // temporal before spatial
+//        DataComponentPropertyType tbsField = dataRecord.addNewField();
+//        tbsField.setName(Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
+//        Boolean tbsBoolean = tbsField.addNewBoolean();
+//        tbsBoolean.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
+//        tbsBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION)));
+//     
+//        // grouped by observed property
+//        DataComponentPropertyType gbopField = dataRecord.addNewField();
+//        gbopField.setName(Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY);
+//        Boolean gbopBoolean = gbopField.addNewBoolean();
+//        gbopBoolean.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY);
+//        gbopBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY)));
+//        
         // time of aggregation
         DataComponentPropertyType toaField = dataRecord.addNewField();
         toaField.setName(Constants.PROPERTY_NAME_TIME_OF_AGGREGATION);
         Time toaTime = toaField.addNewTime();
-        toaTime.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TIME_OF_AGGREGATION);
+        toaTime.setDefinition(Constants.CAPS_PROPERTY_URN_PREFIX + Constants.PROPERTY_NAME_TIME_OF_AGGREGATION);
         toaTime.setValue(TimeUtils.format(new DateTime()));
 	}
 }

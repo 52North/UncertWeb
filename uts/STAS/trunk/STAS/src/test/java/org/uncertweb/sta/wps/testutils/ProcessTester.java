@@ -1,8 +1,7 @@
 package org.uncertweb.sta.wps.testutils;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -41,6 +40,8 @@ import org.n52.wps.server.ExceptionReport;
 import org.n52.wps.server.IAlgorithm;
 import org.n52.wps.server.IAlgorithmRepository;
 import org.n52.wps.server.handler.RequestHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.ObservationCollection;
 import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.intamap.utils.TimeUtils;
@@ -59,7 +60,7 @@ public class ProcessTester {
 
 	private static final String CONFIG_PATH = ProcessTester.class.getResource("/wps_config/wps_config.xml").getFile();
 //	private static final String OFFLINE_CONFIG_PATH = ProcessTester.class.getResource("/test_wps_config.xml").getFile();
-//	private static final Logger log = LoggerFactory.getLogger(ProcessTester.class);
+	protected static final Logger log = LoggerFactory.getLogger(ProcessTester.class);
 	
 	static {
 //		Logging.GEOTOOLS.forceMonolineConsoleOutput();
@@ -144,9 +145,9 @@ public class ProcessTester {
 				Namespace.defaultOptions()));
 	}
 	
-	public static void print(ObservationCollection oc, String filename) throws FileNotFoundException {
-		getOMGenerator().writeToStream(new ObservationCollectionBinding(oc), new FileOutputStream(filename));
-	}
+//	public static void print(ObservationCollection oc, String filename) throws FileNotFoundException {
+//		getOMGenerator().writeToStream(new ObservationCollectionBinding(oc), new FileOutputStream(filename));
+//	}
 
 	private IAlgorithm process;
 	
@@ -384,7 +385,7 @@ public class ProcessTester {
 		
 		if (sosDestUrl != null) {
 			dodt = exec.getExecute().getResponseForm().getResponseDocument().addNewOutput();
-			dodt.addNewIdentifier().setStringValue(Constants.OBSERVATION_COLLECTION_OUTPUT_ID);	
+			dodt.addNewIdentifier().setStringValue(Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID);	
 		}
 		
 //		log.info("Sending Execute request:\n{}",exec.xmlText(Namespace.defaultOptions()));
@@ -400,14 +401,20 @@ public class ProcessTester {
 				// execute remote
 				res = XmlObject.Factory.parse(Utils.sendPostRequest(wpsUrl, exec.xmlText()));
 			}
+			
+			exec.save(new File("/home/auti/request.xml"), Namespace.defaultOptions());
+			res.save(new File("/home/auti/response.xml"), Namespace.defaultOptions());
+			
 			if (res instanceof ExecuteResponseDocument) {
 //				log.info("Got response.\n{}",res.xmlText(Namespace.defaultOptions()));
 				ExecuteResponseDocument resp = (ExecuteResponseDocument) res;
 				
 				for (OutputDataType odt : resp.getExecuteResponse().getProcessOutputs().getOutputArray()) {
 					if (odt.getIdentifier().getStringValue().equals(Constants.OBSERVATION_COLLECTION_OUTPUT_ID)) {
+						log.info("Got '{}'-Output.", Constants.OBSERVATION_COLLECTION_OUTPUT_ID);
 						ocOutput = (ObservationCollection) getOMParser().parseXML(odt.getData().getComplexData().newInputStream()).getPayload();
 					} else if (odt.getIdentifier().getStringValue().equals(Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID)) {
+						log.info("Got '{}'-Output.", Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID);
 						refOutput = (GetObservationDocument) new GetObservationRequestParser().parseXML(odt.getData().getComplexData().newInputStream()).getPayload();
 					}
 					
