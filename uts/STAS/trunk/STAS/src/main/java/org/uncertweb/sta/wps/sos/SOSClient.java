@@ -1,5 +1,4 @@
 package org.uncertweb.sta.wps.sos;
-import static org.uncertweb.intamap.utils.Namespace.defaultOptions;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -26,19 +25,22 @@ public class SOSClient {
 	
 	public GetObservationRequestBinding registerAggregatedObservations(List<Observation> obs, String url, String process, Map<String,String> meta) throws IOException {
 		RegisterSensorDocument regSenDoc = RegisterSensorDocumentBuilder.getInstance().build(process, obs, meta);
-		log.debug("RegisterSensor Request:\n{}", regSenDoc.xmlText(defaultOptions()));
+//		log.debug("RegisterSensor Request:\n{}", regSenDoc.xmlText(defaultOptions()));
+		log.info("Sending RegisterSensor request.");
 		sendPostRequests(url, regSenDoc);
 		boolean printed =false;
+		log.info("Sending RegisterSensor requests.");
 		for (Observation o : obs) {
 			InsertObservationDocument insObsDoc = InsertObservationDocumentBuilder.getInstance().build(o);
 			if (!printed) {
 				printed = true;
-				log.debug("InstertObservation:\n{}", insObsDoc.xmlText(defaultOptions()));
+//				log.debug("InstertObservation:\n{}", insObsDoc.xmlText(defaultOptions()));
 			}
 			sendPostRequests(url, insObsDoc);
 		}
+		log.info("Generating GetObservation request.");
 		GetObservationDocument getObsDoc = GetObservationDocumentBuilder.getInstance().build(process, obs);
-		log.debug("GetObservation Request:\n{}", getObsDoc.xmlText(defaultOptions()));
+//		log.debug("GetObservation Request:\n{}", getObsDoc.xmlText(defaultOptions()));
 		return new GetObservationRequestBinding(getObsDoc);
 	}
 

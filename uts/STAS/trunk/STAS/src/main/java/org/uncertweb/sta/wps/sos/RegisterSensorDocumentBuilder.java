@@ -43,15 +43,19 @@ import net.opengis.swe.x101.VectorType.Coordinate;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationTimeInstant;
 import org.uncertweb.intamap.om.ObservationTimeInterval;
+import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.om.OriginAwareObservation;
 
 public class RegisterSensorDocumentBuilder {
+	protected static final Logger log = LoggerFactory.getLogger(RegisterSensorDocumentBuilder.class);
 	
     protected static final String COORD_NAME_LAT = "latitude";
     protected static final String COORD_NAME_LON = "longitude";
@@ -82,6 +86,7 @@ public class RegisterSensorDocumentBuilder {
 		regSen.setVersion(Constants.SOS_SERVICE_VERSION);
 		buildSensorDescription(regSen, process, obs, meta);
 		buildObservationTemplate(regSen);
+		log.debug(regSenDoc.xmlText(Namespace.defaultOptions()));
 		return regSenDoc;
 	}
 	
@@ -93,6 +98,8 @@ public class RegisterSensorDocumentBuilder {
 		sml.setVersion(SML_VERSION);
 		SystemType systemType = (SystemType) sml.addNewMember().addNewProcess()
 				.substitute(qualify(SML, "System"), SystemType.type);
+//		ProcessModelType processModelType = (ProcessModelType) sml.addNewMember().addNewProcess().substitute(qualify(SML, "ProcessModel"), ProcessModelType.type);
+		
 		/* unique id */
 		IdentifierList idenList = systemType.addNewIdentification().addNewIdentifierList();
 		Identifier ident = idenList.addNewIdentifier();
@@ -116,6 +123,7 @@ public class RegisterSensorDocumentBuilder {
 	protected void buildPosition(SystemType systemType) {
 		//FIXME real position 
 		Position position = systemType.addNewPosition();
+		position.setName("sensorPosition");
 		PositionType positionType = (PositionType) position.addNewProcess()
 				.substitute(qualify(SWE, "Position"), PositionType.type);
 		positionType.setReferenceFrame(EPSG_4326_REFERENCE_SYSTEM_DEFINITION);
@@ -169,8 +177,10 @@ public class RegisterSensorDocumentBuilder {
 		}
 		
         /* inputs */
+		int j = 0;
 		for (String s : processes) {
 			IoComponentPropertyType ioComp = inputList.addNewInput();
+			ioComp.setName("inputSensor" + String.valueOf(j++));
 			ioComp.setHref(Utils.getDescribeSensorUrl(url, s));
 		}
 
@@ -196,6 +206,8 @@ public class RegisterSensorDocumentBuilder {
 			cursor.insertElementWithText(Constants.ELEMENT_NAME_ID, Constants.AGGREGATION_OFFERING_ID);
 			cursor.insertElementWithText(Constants.ELEMENT_NAME_NAME, Constants.AGGREGATION_OFFERING_NAME);
 		}
+		
+		
 	}
 
 	protected void buildValidTime(SystemType systemType, List<Observation> obs) {

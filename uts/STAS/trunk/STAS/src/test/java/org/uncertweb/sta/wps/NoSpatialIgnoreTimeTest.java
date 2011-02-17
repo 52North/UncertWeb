@@ -14,7 +14,7 @@ import org.uncertweb.sta.wps.testutils.ProcessTester;
 public class NoSpatialIgnoreTimeTest {
 
 	private static final String BEGIN_DATE = "2001-01-01T00:00:00.000+00:00";
-	private static final String DURATION = "P2D";
+	private static final String DURATION = "PT2H";
 	private static final String OFFERING = "PM10";
 	private static final String OBSERVED_PROPERTY = "http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[PM10]";
 	private static final String SOURCE_SOS = "http://giv-uw.uni-muenster.de:8080/AQE/sos";
@@ -43,6 +43,10 @@ public class NoSpatialIgnoreTimeTest {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new NoSpatialIgnoreTimeTest().test();
+		try { new NoSpatialIgnoreTimeTest().test(); }
+		catch (Throwable t) {t.printStackTrace();}
+		try { new NoSpatialIgnoreTimeTest().test(); }
+		catch (Throwable t) {t.printStackTrace();}
+		System.exit(0);
 	}
 }

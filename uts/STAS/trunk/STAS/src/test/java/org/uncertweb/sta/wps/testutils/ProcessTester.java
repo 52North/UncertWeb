@@ -13,9 +13,9 @@ import javax.xml.namespace.QName;
 import net.opengis.gml.TimePeriodType;
 import net.opengis.ogc.BinaryTemporalOpType;
 import net.opengis.sos.x10.GetObservationDocument;
-import net.opengis.sos.x10.ResponseModeType;
 import net.opengis.sos.x10.GetObservationDocument.GetObservation;
 import net.opengis.sos.x10.GetObservationDocument.GetObservation.EventTime;
+import net.opengis.sos.x10.ResponseModeType;
 import net.opengis.wfs.GetFeatureDocument;
 import net.opengis.wps.x100.DocumentOutputDefinitionType;
 import net.opengis.wps.x100.ExecuteDocument;
@@ -28,7 +28,6 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.util.logging.Logging;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.n52.wps.commons.WPSConfig;
@@ -42,8 +41,6 @@ import org.n52.wps.server.ExceptionReport;
 import org.n52.wps.server.IAlgorithm;
 import org.n52.wps.server.IAlgorithmRepository;
 import org.n52.wps.server.handler.RequestHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.ObservationCollection;
 import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.intamap.utils.TimeUtils;
@@ -62,10 +59,10 @@ public class ProcessTester {
 
 	private static final String CONFIG_PATH = ProcessTester.class.getResource("/wps_config/wps_config.xml").getFile();
 //	private static final String OFFLINE_CONFIG_PATH = ProcessTester.class.getResource("/test_wps_config.xml").getFile();
-	private static final Logger log = LoggerFactory.getLogger(ProcessTester.class);
+//	private static final Logger log = LoggerFactory.getLogger(ProcessTester.class);
 	
 	static {
-		Logging.GEOTOOLS.forceMonolineConsoleOutput();
+//		Logging.GEOTOOLS.forceMonolineConsoleOutput();
 		try {
 			WPSConfig.forceInitialization(CONFIG_PATH);
 		} catch (XmlException e) {
@@ -350,43 +347,33 @@ public class ProcessTester {
 			eb.addLiteralData(Constants.TIME_RANGE_INPUT_ID, TimeUtils.format(p));
 		}
 		if (wfsUrl != null) {
-			log.info("Adding '{}' Parameter", Constants.WFS_URL_INPUT_ID);
 			eb.addLiteralData(Constants.WFS_URL_INPUT_ID, wfsUrl.toExternalForm());
 		}
 		if (sosDestUrl != null) {
-			log.info("Adding '{}' Parameter", Constants.DESTINATION_SOS_URL_INPUT_ID);
 			eb.addLiteralData(Constants.DESTINATION_SOS_URL_INPUT_ID, sosDestUrl.toExternalForm());
 		}
 		if (temporalAM != null) {
-			log.info("Adding '{}' Parameter", Constants.TEMPORAL_AGGREGATION_METHOD_INPUT_ID);
 			eb.addLiteralData(Constants.TEMPORAL_AGGREGATION_METHOD_INPUT_ID, temporalAM.getName());
 		}
 		if (spatialAM != null) {
-			log.info("Adding '{}' Parameter", Constants.SPATIAL_AGGREGATION_METHOD_INPUT_ID);
 			eb.addLiteralData(Constants.SPATIAL_AGGREGATION_METHOD_INPUT_ID, spatialAM.getName());
 		}
 		if (groupByObservedProperty != null) {
-			log.info("Adding '{}' Parameter", Constants.GROUP_BY_OBSERVED_PROPERTY_INPUT_ID);
 			eb.addLiteralData(Constants.GROUP_BY_OBSERVED_PROPERTY_INPUT_ID, groupByObservedProperty.toString());
 		}
 		if (temporalBeforeSpatial != null) {
-			log.info("Adding '{}' Parameter", Constants.TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_ID);
 			eb.addLiteralData(Constants.TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_ID, temporalBeforeSpatial.toString());
 		}
 		if (wfsRequest != null) {
-			log.info("Adding '{}' Parameter", Constants.WFS_REQUEST_INPUT_ID);
 			eb.addComplexData(Constants.WFS_REQUEST_INPUT_ID, new GetFeatureRequestBinding(wfsRequest), Namespace.WFS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
 		if (sosSrcUrl != null) {	
-			log.info("Adding '{}' Parameter", Constants.SOURCE_SOS_URL_INPUT_ID);
 			eb.addLiteralData(Constants.SOURCE_SOS_URL_INPUT_ID, sosSrcUrl.toExternalForm());
 		}
 		if (sosRequest != null) {
-			log.info("Adding '{}' Parameter", Constants.SOURCE_SOS_REQUEST_INPUT_ID);
 			eb.addComplexData(Constants.SOURCE_SOS_REQUEST_INPUT_ID, new GetObservationRequestBinding(sosRequest), Namespace.SOS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
 		if (fc != null) {
-			log.info("Adding '{}' Parameter", Constants.FEATURE_COLLECTION_INPUT_ID);
 			eb.addComplexData(Constants.FEATURE_COLLECTION_INPUT_ID, new GTVectorDataBinding(fc), Namespace.GML.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
 		
@@ -400,7 +387,7 @@ public class ProcessTester {
 			dodt.addNewIdentifier().setStringValue(Constants.OBSERVATION_COLLECTION_OUTPUT_ID);	
 		}
 		
-		log.info("Sending Execute request:\n{}",exec.xmlText(Namespace.defaultOptions()));
+//		log.info("Sending Execute request:\n{}",exec.xmlText(Namespace.defaultOptions()));
 		
 		try {
 			XmlObject res = null;

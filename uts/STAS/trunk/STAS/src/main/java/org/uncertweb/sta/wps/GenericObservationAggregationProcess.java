@@ -1,12 +1,6 @@
 package org.uncertweb.sta.wps;
 
 import static org.uncertweb.intamap.utils.Constants.NULL_URN;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_SPATIAL_GROUPING_METHOD;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION;
-import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD;
 import static org.uncertweb.sta.utils.Constants.DESTINATION_SOS_URL_INPUT_DESCRIPTION;
 import static org.uncertweb.sta.utils.Constants.DESTINATION_SOS_URL_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.DESTINATION_SOS_URL_INPUT_TITLE;
@@ -20,6 +14,12 @@ import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_REFERENCE
 import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID;
 import static org.uncertweb.sta.utils.Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_TITLE;
 import static org.uncertweb.sta.utils.Constants.PROCESS_DESCRIPTION;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_SPATIAL_GROUPING_METHOD;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION;
+import static org.uncertweb.sta.utils.Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD;
 import static org.uncertweb.sta.utils.Constants.SOURCE_SOS_REQUEST_INPUT_DESCRIPTION;
 import static org.uncertweb.sta.utils.Constants.SOURCE_SOS_REQUEST_INPUT_ID;
 import static org.uncertweb.sta.utils.Constants.SOURCE_SOS_REQUEST_INPUT_TITLE;
@@ -37,7 +37,6 @@ import static org.uncertweb.sta.utils.Constants.TEMPORAL_BEFORE_SPATIAL_GROUPING
 import static org.uncertweb.sta.utils.Constants.TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_TITLE;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -48,12 +47,9 @@ import java.util.Set;
 
 import net.opengis.sos.x10.GetObservationDocument;
 
-import org.n52.wps.io.IOHandler;
-import org.n52.wps.io.ParserFactory;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.n52.wps.io.datahandler.xml.AbstractXMLParser;
 import org.n52.wps.server.AlgorithmParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +57,6 @@ import org.uncertweb.intamap.om.ISamplingFeature;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationCollection;
 import org.uncertweb.intamap.om.ObservationTime;
-import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.method.MethodFactory;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
@@ -73,6 +68,7 @@ import org.uncertweb.sta.wps.method.grouping.spatial.SpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.temporal.NoTemporalGrouping;
 import org.uncertweb.sta.wps.method.grouping.temporal.TemporalGrouping;
 import org.uncertweb.sta.wps.om.OriginAwareObservation;
+import org.uncertweb.sta.wps.sos.GetObservationRequestCache;
 import org.uncertweb.sta.wps.sos.SOSClient;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
@@ -360,35 +356,13 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 	 *         be aggregated
 	 */
 	protected ObservationCollection getObservationCollection(Map<String, List<IData>> inputs) {
-		long start = System.currentTimeMillis();
 		//extract relevant parameters
 		String sosUrl = getSOSUrl(inputs);
-		GetObservationDocument sosReq = (GetObservationDocument) Utils
-				.getSingleParam(SOS_REQUEST, inputs);
-		
-		//observations have to be queried from SOS
+		GetObservationDocument sosReq = (GetObservationDocument) Utils.getSingleParam(SOS_REQUEST, inputs);
 		if (sosUrl == null) {
 			throw new AlgorithmParameterException("No Source SOS Url.");
 		}
-		AbstractXMLParser p = (AbstractXMLParser) ParserFactory
-			.getInstance().getParser(Namespace.OM.SCHEMA,
-					IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING,
-					ObservationCollectionBinding.class);
-		try {
-			InputStream is = null;
-			if (sosReq != null) {
-				is = Utils.sendPostRequest(sosUrl, sosReq.xmlText());
-			} else {
-				// URL encoded request
-				is = Utils.sendGetRequest(sosUrl);
-			}
-			ObservationCollection b = ((ObservationCollectionBinding) p.parseXML(is)).getPayload();
-			log.info("Fetching of ObservationCollection took {}", Utils.timeElapsed(start));
-			return b;
-		} catch (Exception e) {
-			log.error("Error while retrieving ObservationCollection from " + sosUrl, e);
-			throw new RuntimeException(e);
-		}
+		return GetObservationRequestCache.getInstance().getObservationCollection(sosUrl, sosReq, false);
 	}
 	
 	protected String getSOSUrl(Map<String, List<IData>> inputs) {

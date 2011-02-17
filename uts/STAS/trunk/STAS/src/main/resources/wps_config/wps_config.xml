@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<WPSConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://n52.org/wps schema_v1.xsd" xmlns="http://n52.org/wps">
+<WPSConfiguration xmlns="http://n52.org/wps">
 	<Datahandlers>
 		<ParserList>
 			<Parser name="ObservationCollectionParser" className="org.uncertweb.sta.wps.xml.io.dec.ObservationCollectionParser" active="true">
@@ -81,7 +80,7 @@
 			includeDataInputsInResponse="false" 
 			computationTimeoutMilliSeconds="5"
 			cacheCapabilites="false" 
-			webappPath="sta-wps">
+			webappPath="stas">
 		<Database />
 	</Server>
 </WPSConfiguration>
