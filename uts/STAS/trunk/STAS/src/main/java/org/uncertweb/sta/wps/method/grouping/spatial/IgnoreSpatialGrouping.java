@@ -27,9 +27,8 @@ public class IgnoreSpatialGrouping extends SpatialGrouping {
 
 		List<Observation> obs = getObservations();
 		ISamplingFeature f = null;
-		int size = obs.size();
-
-		switch (size) {
+		log.info("Calculating Convex Hull for {} Observations.", obs.size());
+		switch (obs.size()) {
 		case 0:
 			return new LinkedList<ObservationMapping<ISamplingFeature>>()
 					.iterator();

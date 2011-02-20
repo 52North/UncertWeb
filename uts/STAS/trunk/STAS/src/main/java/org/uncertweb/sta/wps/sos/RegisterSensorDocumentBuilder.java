@@ -14,6 +14,9 @@ import java.util.Map;
 import net.opengis.gml.MetaDataPropertyType;
 import net.opengis.gml.TimePeriodType;
 import net.opengis.om.x10.MeasurementType;
+import net.opengis.sensorML.x101.AbstractComponentType;
+import net.opengis.sensorML.x101.AbstractProcessType;
+import net.opengis.sensorML.x101.AbstractPureProcessType;
 import net.opengis.sensorML.x101.CapabilitiesDocument.Capabilities;
 import net.opengis.sensorML.x101.IdentificationDocument.Identification.IdentifierList;
 import net.opengis.sensorML.x101.IdentificationDocument.Identification.IdentifierList.Identifier;
@@ -21,9 +24,10 @@ import net.opengis.sensorML.x101.InputsDocument.Inputs.InputList;
 import net.opengis.sensorML.x101.IoComponentPropertyType;
 import net.opengis.sensorML.x101.OutputsDocument.Outputs.OutputList;
 import net.opengis.sensorML.x101.ParametersDocument.Parameters.ParameterList;
-import net.opengis.sensorML.x101.ProcessModelType;
+import net.opengis.sensorML.x101.PositionDocument.Position;
 import net.opengis.sensorML.x101.SensorMLDocument;
 import net.opengis.sensorML.x101.SensorMLDocument.SensorML;
+import net.opengis.sensorML.x101.SystemType;
 import net.opengis.sensorML.x101.TermDocument.Term;
 import net.opengis.sos.x10.ObservationTemplateDocument.ObservationTemplate;
 import net.opengis.sos.x10.RegisterSensorDocument;
@@ -33,9 +37,12 @@ import net.opengis.swe.x101.AbstractDataRecordType;
 import net.opengis.swe.x101.BooleanDocument.Boolean;
 import net.opengis.swe.x101.DataComponentPropertyType;
 import net.opengis.swe.x101.DataRecordType;
+import net.opengis.swe.x101.PositionType;
 import net.opengis.swe.x101.QuantityDocument.Quantity;
 import net.opengis.swe.x101.TextDocument.Text;
 import net.opengis.swe.x101.TimeDocument.Time;
+import net.opengis.swe.x101.VectorType;
+import net.opengis.swe.x101.VectorType.Coordinate;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
@@ -82,7 +89,7 @@ public class RegisterSensorDocumentBuilder {
 		return regSenDoc;
 	}
 	
-	protected void buildParameters(ProcessModelType pmt, Map<String,String> meta) {
+	protected void buildParameters(AbstractPureProcessType pmt, Map<String,String> meta) {
 		ParameterList pl = pmt.addNewParameters().addNewParameterList();
 		
 	    // spatial grouping method
@@ -134,70 +141,80 @@ public class RegisterSensorDocumentBuilder {
 		SensorMLDocument smlDocument = SensorMLDocument.Factory.newInstance();
 		SensorML sml = smlDocument.addNewSensorML();
 		sml.setVersion(SML_VERSION);
-//		SystemType systemType = (SystemType) sml.addNewMember().addNewProcess()
-//				.substitute(qualify(SML, "System"), SystemType.type);
-		ProcessModelType processModelType = (ProcessModelType) sml.addNewMember().addNewProcess().substitute(qualify(SML, "ProcessModel"), ProcessModelType.type);
-		buildParameters(processModelType, meta);
+		
+		SystemType processType = (SystemType) sml.addNewMember().addNewProcess().substitute(qualify(SML, "System"), SystemType.type);
+		buildPosition(processType);
+
+//		ProcessModelType processType = (ProcessModelType) sml.addNewMember().addNewProcess().substitute(qualify(SML, "ProcessModel"), ProcessModelType.type);
+//		buildParameters(processType, meta);
 		
 		/* unique id */
-		IdentifierList idenList = processModelType.addNewIdentification().addNewIdentifierList();
+		IdentifierList idenList = processType.addNewIdentification().addNewIdentifierList();
 		Identifier ident = idenList.addNewIdentifier();
 		Term term = ident.addNewTerm();
 		term.setDefinition(Constants.URN_UNIQUE_ID_DEFINITION);
 		term.setValue(process);
 
-		processModelType.addNewDescription().setStringValue(Constants.SENSOR_DESCRIPTION);
-		buildValidTime(processModelType, obs);
-		buildCapabilities(processModelType);
-//		buildPosition(systemType);
+		processType.addNewDescription().setStringValue(Constants.SENSOR_DESCRIPTION);
+		buildValidTime(processType, obs);
+		buildCapabilities(processType);
 		/* TODO additional SensorML information
 		 * build keywords 
 		 * build contact: no idea... maybe provided as an additional input? 
 		 */
 		
-		buildInputOutputLists(processModelType, obs);
+		buildInputOutputLists(processType, obs);
 		description.set(smlDocument);
 	}
     
-//	protected void buildPosition(SystemType systemType) {
-//		//FIXME real position 
-//		Position position = systemType.addNewPosition();
-//		position.setName("sensorPosition");
-//		PositionType positionType = (PositionType) position.addNewProcess()
-//				.substitute(qualify(SWE, "Position"), PositionType.type);
-//		positionType.setReferenceFrame(EPSG_4326_REFERENCE_SYSTEM_DEFINITION);
-//		positionType.setFixed(true);
-//		VectorType vector = positionType.addNewLocation().addNewVector();
-//
-//		/* Latitude */
-//		Coordinate coordLatitude = vector.addNewCoordinate();
-//		coordLatitude.setName(COORD_NAME_LAT);
-//		Quantity quantityLatitude = coordLatitude.addNewQuantity();
-//		quantityLatitude.setAxisID(QUANTITY_AXIS_ID_LAT);
-//		quantityLatitude.addNewUom().setCode(COORDINATE_UOM);
-//		quantityLatitude.setValue(lat);
-//
-//		/* Longitude */
-//		Coordinate coordLongitude = vector.addNewCoordinate();
-//		coordLongitude.setName(COORD_NAME_LON);
-//		Quantity quantityLongitude = coordLongitude.addNewQuantity();
-//		quantityLongitude.setAxisID(QUANTITY_AXIS_ID_LON);
-//		quantityLongitude.addNewUom().setCode(COORDINATE_UOM);
-//		quantityLongitude.setValue(lon);
-//
-//		/* Altitude */
-//		Coordinate coordAltitude = vector.addNewCoordinate();
-//		coordAltitude.setName(COORD_NAME_ALTITUDE);
-//		Quantity quantityAltitude = coordAltitude.addNewQuantity();
-//		quantityAltitude.setAxisID(QUANTITY_AXIS_ID_ALTITUDE);
-//		quantityAltitude.addNewUom().setCode(METER_UOM);
-//		quantityAltitude.setValue(alt);
-//	}
+	protected void buildPosition(SystemType systemType) {
+		//FIXME real position 
+		Position position = systemType.addNewPosition();
+		position.setName("sensorPosition");
+		PositionType positionType = (PositionType) position.addNewProcess()
+				.substitute(qualify(SWE, "Position"), PositionType.type);
+		positionType.setReferenceFrame(EPSG_4326_REFERENCE_SYSTEM_DEFINITION);
+		positionType.setFixed(true);
+		VectorType vector = positionType.addNewLocation().addNewVector();
+
+		/* Latitude */
+		Coordinate coordLatitude = vector.addNewCoordinate();
+		coordLatitude.setName(COORD_NAME_LAT);
+		Quantity quantityLatitude = coordLatitude.addNewQuantity();
+		quantityLatitude.setAxisID(QUANTITY_AXIS_ID_LAT);
+		quantityLatitude.addNewUom().setCode(COORDINATE_UOM);
+		quantityLatitude.setValue(lat);
+
+		/* Longitude */
+		Coordinate coordLongitude = vector.addNewCoordinate();
+		coordLongitude.setName(COORD_NAME_LON);
+		Quantity quantityLongitude = coordLongitude.addNewQuantity();
+		quantityLongitude.setAxisID(QUANTITY_AXIS_ID_LON);
+		quantityLongitude.addNewUom().setCode(COORDINATE_UOM);
+		quantityLongitude.setValue(lon);
+
+		/* Altitude */
+		Coordinate coordAltitude = vector.addNewCoordinate();
+		coordAltitude.setName(COORD_NAME_ALTITUDE);
+		Quantity quantityAltitude = coordAltitude.addNewQuantity();
+		quantityAltitude.setAxisID(QUANTITY_AXIS_ID_ALTITUDE);
+		quantityAltitude.addNewUom().setCode(METER_UOM);
+		quantityAltitude.setValue(alt);
+	}
 
 
-	protected void buildInputOutputLists(ProcessModelType systemType, List<Observation> obs) {
-		InputList inputList = systemType.addNewInputs().addNewInputList();
-		OutputList outputList = systemType.addNewOutputs().addNewOutputList();
+	protected void buildInputOutputLists(XmlObject systemType, List<Observation> obs) {
+		InputList inputList = null;
+		OutputList outputList = null;
+		if (systemType instanceof AbstractPureProcessType) {
+			 inputList = ((AbstractPureProcessType) systemType).addNewInputs().addNewInputList();
+			 outputList = ((AbstractPureProcessType) systemType).addNewOutputs().addNewOutputList();
+		} else if (systemType instanceof AbstractComponentType){
+			 inputList = ((AbstractComponentType) systemType).addNewInputs().addNewInputList();
+			 outputList = ((AbstractComponentType) systemType).addNewOutputs().addNewOutputList();
+		} else {
+			throw new RuntimeException("Can only handle AbstractComponentType and AbstractPureProcessType");
+		}
 		
 		HashSet<String> processes = new HashSet<String>();
 		
@@ -249,7 +266,7 @@ public class RegisterSensorDocumentBuilder {
 		
 	}
 
-	protected void buildValidTime(ProcessModelType systemType, List<Observation> obs) {
+	protected void buildValidTime(AbstractProcessType systemType, List<Observation> obs) {
 		DateTime start = null, end = null;
 		for (Observation o : obs) {
 			if (o.getObservationTime() instanceof ObservationTimeInstant) {
@@ -289,7 +306,7 @@ public class RegisterSensorDocumentBuilder {
 		resultCursor.dispose();
 	}
 
-	protected void buildCapabilities(ProcessModelType systemType) {
+	protected void buildCapabilities(AbstractProcessType systemType) {
 		Capabilities capabilities = systemType.addNewCapabilities();
 		AbstractDataRecordType abstractDataRecord = capabilities.addNewAbstractDataRecord();
 		DataRecordType dataRecord = (DataRecordType) abstractDataRecord

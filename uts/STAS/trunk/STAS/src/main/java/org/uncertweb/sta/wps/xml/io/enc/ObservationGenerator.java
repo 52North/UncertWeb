@@ -96,8 +96,8 @@ public class ObservationGenerator {
 						.addNewPos();
 				dpt.setSrsName(Constants.URN_EPSG_SRS_PREFIX
 						+ sp.getLocation().getSRID());
-				dpt.setStringValue(sp.getLocation().getCoordinate().x + " "
-						+ sp.getLocation().getCoordinate().y);
+				dpt.setStringValue(sp.getLocation().getCoordinate().y + " "
+						+ sp.getLocation().getCoordinate().x);
 
 				fpt.addNewFeature().set(spt);
 				XmlCursor c = fpt.newCursor();
@@ -139,8 +139,8 @@ public class ObservationGenerator {
 					.substitute(new QName(Namespace.GML.URI, "Polygon"),
 							PolygonType.type);
 			Polygon p = (Polygon) geom;
-			pt.setSrsName(Constants.URN_EPSG_SRS_PREFIX
-					+ String.valueOf(p.getSRID()));
+			//TODO
+			pt.setSrsName(Constants.URN_EPSG_SRS_PREFIX	+ ((p.getSRID() != 0) ? String.valueOf(p.getSRID()) : "4326"));
 			((LinearRingType) pt
 					.addNewExterior()
 					.addNewRing()
@@ -168,10 +168,11 @@ public class ObservationGenerator {
 	}
 
 	private static String generateCoordinates(Coordinate[] c) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < c.length; i++) {
-			buf.append(Utils.NUMBER_FORMAT.format(c[i].x)).append(" ")
-					.append(Utils.NUMBER_FORMAT.format(c[i].y)).append(" ");
+			buf.append(Utils.NUMBER_FORMAT.format(c[i].y)).append(" ")
+					.append(Utils.NUMBER_FORMAT.format(c[i].x)).append(" ");
+			if (i < c.length-1) buf.append(",");
 		}
 		return buf.toString();
 	}

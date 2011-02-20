@@ -16,6 +16,7 @@ import org.n52.wps.server.ExceptionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.Observation;
+import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 
@@ -31,7 +32,7 @@ public class SOSClient {
 			sendPostRequests(url, regSenDoc);
 		} catch(Throwable e) {
 			log.warn("Can not register Sensor.");
-//			throw new RuntimeException(e);
+			throw new RuntimeException(e);
 		}
 		boolean printed =false;
 		log.info("Sending RegisterSensor requests.");
@@ -39,13 +40,13 @@ public class SOSClient {
 			InsertObservationDocument insObsDoc = InsertObservationDocumentBuilder.getInstance().build(o);
 			if (!printed) {
 				printed = true;
-//				log.debug("InstertObservation:\n{}", insObsDoc.xmlText(defaultOptions()));
+				log.debug("InstertObservation:\n{}", insObsDoc.xmlText(Namespace.defaultOptions()));
 			}
 			try {
 				sendPostRequests(url, insObsDoc);
 			} catch(Throwable e) {
 				log.warn("Can not insert Observation.");
-//				throw new RuntimeException(e);
+				throw new RuntimeException(e);
 			}
 		}
 		log.info("Generating GetObservation request.");

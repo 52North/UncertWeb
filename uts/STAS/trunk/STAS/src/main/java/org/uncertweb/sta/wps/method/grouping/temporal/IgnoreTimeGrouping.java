@@ -17,6 +17,7 @@ public class IgnoreTimeGrouping extends TemporalGrouping {
 	@Override
 	public Iterator<ObservationMapping<ObservationTime>> iterator() {
 		DateTime start = null, end = null;
+		log.info("Calculating TimeRange for {} Observations.", getObservations().size());
 		for (Observation o : getObservations()) {
 			if (o.getObservationTime() instanceof ObservationTimeInterval) {
 				ObservationTimeInterval time = (ObservationTimeInterval) o.getObservationTime();

@@ -1,6 +1,7 @@
 package org.uncertweb.sta.wps.method.grouping.temporal;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -10,29 +11,48 @@ import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.ProcessInput;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 
+
 public class NoTemporalGrouping extends TemporalGrouping {
 
 	private class MappingIterator implements Iterator<ObservationMapping<ObservationTime>> {
 
-		private Iterator<Observation> observations = getObservations().iterator();
-
+		private Iterator<LinkedList<Observation>> i = null;
+		
+		public MappingIterator() {
+			LinkedList<LinkedList<Observation>>	list = new LinkedList<LinkedList<Observation>>();
+			for (Observation o : getObservations()) {
+				/* due some mystery in HashMap we have to do it this way... */
+				LinkedList<Observation> toAddTo = null;
+				for (LinkedList<Observation> lo : list) {
+					if (lo.element().getObservationTime().hashCode() == o.getObservationTime().hashCode()) {
+						toAddTo = lo;
+					}
+				}
+				if (toAddTo == null) {
+					toAddTo = new LinkedList<Observation>();
+					list.add(toAddTo);
+				}
+				toAddTo.add(o);
+			}
+			log.info("Got {} distinct ObservationTimes.", list.size());
+			i = list.iterator();
+		}
+		
 		@Override
 		public boolean hasNext() {
-			return observations.hasNext();
+			return i.hasNext();
 		}
 
 		@Override
 		public ObservationMapping<ObservationTime> next() {
-			Observation o = observations.next();
-			return new ObservationMapping<ObservationTime>(o.getObservationTime(),
-												Utils.mutableSingletonList(o));
+			LinkedList<Observation> list = i.next();
+			return new ObservationMapping<ObservationTime>(list.element().getObservationTime(), list);
 		}
 
 		@Override
 		public void remove() {
-			observations.remove();
+			throw new UnsupportedOperationException();
 		}
-
 	}
 
 	@Override
@@ -46,6 +66,7 @@ public class NoTemporalGrouping extends TemporalGrouping {
 	}
 	
 	public NoTemporalGrouping(){}
+	
 	public NoTemporalGrouping(List<Observation> obs) {
 		setInputs(obs, null);
 	}

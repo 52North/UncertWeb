@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.n52.wps.io.data.IData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.ProcessInput;
@@ -16,6 +18,7 @@ public abstract class GroupingMethod<T> implements Iterable<ObservationMapping<T
 	private List<Observation> observations;
 	private String description = Utils.getMethodDescription(this);
 	private Map<ProcessInput, List<IData>> additionalInputs;
+	protected static final Logger log = LoggerFactory.getLogger(GroupingMethod.class);
 	
 	public void setInputs(List<Observation> observations, Map<ProcessInput, List<IData>> additionalInputs) {
 		this.observations = observations;

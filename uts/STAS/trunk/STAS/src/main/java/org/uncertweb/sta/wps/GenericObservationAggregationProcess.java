@@ -260,6 +260,7 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 		if (i > 0) {
 			sosUrl = sosUrl.substring(0, i);
 		}
+		
 		for (Entry<String, List<Observation>> e : obs.entrySet()) {
 			if (temporalBeforeSpatial) {
 				List<Observation> firstResult = doTemporalAggregation(process, sosUrl, temporalAggregationMethod, e.getKey(), tgInputMap, e.getValue());
