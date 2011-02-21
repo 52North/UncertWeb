@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.xmlbeans.XmlException;
 import org.joda.time.DateTime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationCollection;
@@ -21,12 +22,12 @@ public class TimeRangeMethodTest {
 	private static final long ONE_MINUTE = 1000 * 60;
 	private ProcessTester p = null;
 	
-	@Before
+	@Ignore@Before
 	public void setUp() {
 		p = new ProcessTester();
 	}
 	 
-	@Test(timeout=ONE_MINUTE)
+	@Ignore@Test(timeout=ONE_MINUTE)
 	public void bigObsColl() throws XmlException {
 		p.setSpatialAggregationMethod(MedianAggregation.class);
 		p.setTemporalAggregationMethod(MedianAggregation.class);

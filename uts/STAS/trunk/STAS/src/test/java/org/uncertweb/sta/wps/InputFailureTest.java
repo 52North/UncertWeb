@@ -1,6 +1,7 @@
 package org.uncertweb.sta.wps;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.n52.wps.server.AlgorithmParameterException;
 import org.uncertweb.sta.wps.method.grouping.spatial.IgnoreSpatialGrouping;
@@ -15,7 +16,7 @@ public class InputFailureTest {
 		p = new ProcessTester();
 	}
 	
-	@Test(expected=AlgorithmParameterException.class)
+	@Ignore@Test(expected=AlgorithmParameterException.class)
 	public void noObservationCollection() {
 		p.selectAlgorithm(IgnoreSpatialGrouping.class, IgnoreTimeGrouping.class);
 		p.execute();

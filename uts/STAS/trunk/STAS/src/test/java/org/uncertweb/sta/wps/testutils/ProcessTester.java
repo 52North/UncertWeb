@@ -170,8 +170,9 @@ public class ProcessTester {
 	private FeatureCollection<?, ?> fc;
 
 	/* outputs */
-	private ObservationCollection ocOutput = null;
-	private GetObservationDocument refOutput = null;
+	
+	private XmlObject ocOutput = null;
+	private XmlObject refOutput = null;
 	
 	public void reset() {
 		p = null;
@@ -412,10 +413,10 @@ public class ProcessTester {
 				for (OutputDataType odt : resp.getExecuteResponse().getProcessOutputs().getOutputArray()) {
 					if (odt.getIdentifier().getStringValue().equals(Constants.OBSERVATION_COLLECTION_OUTPUT_ID)) {
 						log.info("Got '{}'-Output.", Constants.OBSERVATION_COLLECTION_OUTPUT_ID);
-						ocOutput = (ObservationCollection) getOMParser().parseXML(odt.getData().getComplexData().newInputStream()).getPayload();
+						ocOutput = odt.getData().getComplexData();
 					} else if (odt.getIdentifier().getStringValue().equals(Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID)) {
 						log.info("Got '{}'-Output.", Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID);
-						refOutput = (GetObservationDocument) new GetObservationRequestParser().parseXML(odt.getData().getComplexData().newInputStream()).getPayload();
+						refOutput = odt.getData().getComplexData();
 					}
 					
 				}
@@ -434,12 +435,12 @@ public class ProcessTester {
 	
 	public GetObservationDocument getReferenceOutput() {
 		if (refOutput == null) throw new RuntimeException("Not yet executed.");
-		return refOutput;
+		return (GetObservationDocument) new GetObservationRequestParser().parseXML(refOutput.newInputStream()).getPayload();
 	}
 
 	public ObservationCollection getOutput() {
 		if (ocOutput == null) throw new RuntimeException("Not yet executed.");
-		return ocOutput;
+		return (ObservationCollection) getOMParser().parseXML(ocOutput.newInputStream()).getPayload();
 	}
 	
 	private <T> T testNull(T t) {
