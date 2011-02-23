@@ -132,6 +132,7 @@ public class ComputeTimePeriod extends AbstractSelfDescribingAlgorithm{
 	public Class getOutputDataType(String id) {
 		return GTVectorDataBinding.class;
 //		return GenericFileDataBinding.class;
+		
 	}
 
 	@Override
