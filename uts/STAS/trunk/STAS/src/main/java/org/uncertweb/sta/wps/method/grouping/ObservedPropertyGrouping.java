@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.sta.utils.Utils;
-import org.uncertweb.sta.wps.ProcessInput;
+import org.uncertweb.sta.wps.IProcessInput;
 
 public class ObservedPropertyGrouping extends GroupingMethod<String> {
 	
@@ -35,7 +35,7 @@ public class ObservedPropertyGrouping extends GroupingMethod<String> {
 	}
 
 	@Override
-	public Set<ProcessInput> getAdditionalInputDeclarations() {
+	public Set<IProcessInput<?>> getAdditionalInputDeclarations() {
 		return Utils.set();
 	}
 

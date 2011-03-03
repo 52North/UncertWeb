@@ -9,7 +9,7 @@ import java.util.Set;
 import org.uncertweb.intamap.om.ISamplingFeature;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.sta.utils.Utils;
-import org.uncertweb.sta.wps.ProcessInput;
+import org.uncertweb.sta.wps.IProcessInput;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 
 public class NoSpatialGrouping extends SpatialGrouping {
@@ -65,7 +65,7 @@ public class NoSpatialGrouping extends SpatialGrouping {
 	}
 
 	@Override
-	public Set<ProcessInput> getAdditionalInputDeclarations() {
+	public Set<IProcessInput<?>> getAdditionalInputDeclarations() {
 		return Utils.set();
 	}
 

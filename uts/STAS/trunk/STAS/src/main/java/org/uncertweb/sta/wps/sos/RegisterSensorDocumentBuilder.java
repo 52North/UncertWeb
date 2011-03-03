@@ -82,8 +82,8 @@ public class RegisterSensorDocumentBuilder {
 	public RegisterSensorDocument build(String process, List<Observation> obs, Map<String,String> meta) {
 		RegisterSensorDocument regSenDoc = RegisterSensorDocument.Factory.newInstance();
 		RegisterSensor regSen = regSenDoc.addNewRegisterSensor();
-		regSen.setService(Constants.SOS_SERVICE_NAME);
-		regSen.setVersion(Constants.SOS_SERVICE_VERSION);
+		regSen.setService(Constants.Sos.SERVICE_NAME);
+		regSen.setVersion(Constants.Sos.SERVICE_VERSION);
 		buildSensorDescription(regSen, process, obs, meta);
 		buildObservationTemplate(regSen);
 		return regSenDoc;
@@ -94,45 +94,51 @@ public class RegisterSensorDocumentBuilder {
 		
 	    // spatial grouping method
         DataComponentPropertyType sgmField = pl.addNewParameter();
-        sgmField.setName(Constants.PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD);
+        sgmField.setName(Constants.Sos.ProcessDescription.Parameter.SPATIAL_AGGREGATION_METHOD);
         Text sgmText = sgmField.addNewText();
-        sgmText.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_SPATIAL_GROUPING_METHOD);
-        sgmText.setValue(meta.get(Constants.PARAMETER_NAME_SPATIAL_GROUPING_METHOD));
+        sgmText.setDefinition(Constants.Sos.ProcessDescription.Parameter.URN_PREFIX 
+        		+ Constants.Sos.ProcessDescription.Parameter.SPATIAL_GROUPING_METHOD);
+        sgmText.setValue(meta.get(Constants.Sos.ProcessDescription.Parameter.SPATIAL_GROUPING_METHOD));
     
         // temporal grouping method
         DataComponentPropertyType tgmField = pl.addNewParameter();
-        tgmField.setName(Constants.PARAMETER_NAME_TEMPORAL_GROUPING_METHOD);
+        tgmField.setName(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_GROUPING_METHOD);
         Text tgmText = tgmField.addNewText();
-        tgmText.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_TEMPORAL_GROUPING_METHOD);
-        tgmText.setValue(meta.get(Constants.PARAMETER_NAME_TEMPORAL_GROUPING_METHOD));
+        tgmText.setDefinition(Constants.Sos.ProcessDescription.Parameter.URN_PREFIX 
+        		+ Constants.Sos.ProcessDescription.Parameter.TEMPORAL_GROUPING_METHOD);
+        tgmText.setValue(meta.get(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_GROUPING_METHOD));
         
         // spatial aggregation method
         DataComponentPropertyType samField = pl.addNewParameter();
-        samField.setName(Constants.PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD);
+        samField.setName(Constants.Sos.ProcessDescription.Parameter.SPATIAL_AGGREGATION_METHOD);
         Text samText = samField.addNewText();
-        samText.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD);
-        samText.setValue(meta.get(Constants.PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD));
+        samText.setDefinition(Constants.Sos.ProcessDescription.Parameter.URN_PREFIX 
+        		+ Constants.Sos.ProcessDescription.Parameter.SPATIAL_AGGREGATION_METHOD);
+        samText.setValue(meta.get(Constants.Sos.ProcessDescription.Parameter.SPATIAL_AGGREGATION_METHOD));
         
         // temporal aggregation method
         DataComponentPropertyType tamField = pl.addNewParameter();
-        tamField.setName(Constants.PARAMETER_NAME_TEMPORAL_AGGREGATION_METHOD);
+        tamField.setName(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_AGGREGATION_METHOD);
         Text tamText = tamField.addNewText();
-        tamText.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_TEMPORAL_AGGREGATION_METHOD);
-        tamText.setValue(meta.get(Constants.PARAMETER_NAME_TEMPORAL_AGGREGATION_METHOD));
+        tamText.setDefinition(Constants.Sos.ProcessDescription.Parameter.URN_PREFIX 
+        		+ Constants.Sos.ProcessDescription.Parameter.TEMPORAL_AGGREGATION_METHOD);
+        tamText.setValue(meta.get(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_AGGREGATION_METHOD));
         
         // temporal before spatial
         DataComponentPropertyType tbsField = pl.addNewParameter();
-        tbsField.setName(Constants.PARAMETER_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
+        tbsField.setName(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
         Boolean tbsBoolean = tbsField.addNewBoolean();
-        tbsBoolean.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
-        tbsBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PARAMETER_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION)));
+        tbsBoolean.setDefinition(Constants.Sos.ProcessDescription.Parameter.URN_PREFIX 
+        		+ Constants.Sos.ProcessDescription.Parameter.TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
+        tbsBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_BEFORE_SPATIAL_AGGREGATION)));
      
         // grouped by observed property
         DataComponentPropertyType gbopField = pl.addNewParameter();
-        gbopField.setName(Constants.PARAMETER_NAME_GROUPED_BY_OBSERVED_PROPERTY);
+        gbopField.setName(Constants.Sos.ProcessDescription.Parameter.GROUPED_BY_OBSERVED_PROPERTY);
         Boolean gbopBoolean = gbopField.addNewBoolean();
-        gbopBoolean.setDefinition(Constants.PARAMETER_URN_PREFIX + Constants.PARAMETER_NAME_GROUPED_BY_OBSERVED_PROPERTY);
-        gbopBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PARAMETER_NAME_GROUPED_BY_OBSERVED_PROPERTY)));
+        gbopBoolean.setDefinition(Constants.Sos.ProcessDescription.Parameter.URN_PREFIX 
+        		+ Constants.Sos.ProcessDescription.Parameter.GROUPED_BY_OBSERVED_PROPERTY);
+        gbopBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.Sos.ProcessDescription.Parameter.GROUPED_BY_OBSERVED_PROPERTY)));
 	}
 	
 	protected void buildSensorDescription(RegisterSensor regSen,
@@ -155,7 +161,7 @@ public class RegisterSensorDocumentBuilder {
 		term.setDefinition(Constants.URN_UNIQUE_ID_DEFINITION);
 		term.setValue(process);
 
-		processType.addNewDescription().setStringValue(Constants.SENSOR_DESCRIPTION);
+		processType.addNewDescription().setStringValue(Constants.Sos.ProcessDescription.SENSOR_DESCRIPTION);
 		buildValidTime(processType, obs);
 		buildCapabilities(processType);
 		/* TODO additional SensorML information
@@ -237,7 +243,7 @@ public class RegisterSensorDocumentBuilder {
 		for (String s : processes) {
 			IoComponentPropertyType ioComp = inputList.addNewInput();
 			ioComp.setName("inputSensor" + String.valueOf(j++));
-			ioComp.setHref(Utils.getDescribeSensorUrl(url, s));
+			ioComp.setHref(getDescribeSensorUrl(url, s));
 		}
 
 		HashMap<String, String> obsProps = new HashMap<String, String>();
@@ -259,13 +265,22 @@ public class RegisterSensorDocumentBuilder {
 			XmlCursor cursor = metaDataProperty.newCursor();
 			cursor.toNextToken();
 			cursor.beginElement(Constants.ELEMENT_NAME_OFFERING);
-			cursor.insertElementWithText(Constants.ELEMENT_NAME_ID, Constants.AGGREGATION_OFFERING_ID);
-			cursor.insertElementWithText(Constants.ELEMENT_NAME_NAME, Constants.AGGREGATION_OFFERING_NAME);
+			cursor.insertElementWithText(Constants.ELEMENT_NAME_ID, Constants.Sos.AGGREGATION_OFFERING_ID);
+			cursor.insertElementWithText(Constants.ELEMENT_NAME_NAME, Constants.Sos.AGGREGATION_OFFERING_NAME);
 		}
-		
-		
 	}
-
+	
+	public static String getDescribeSensorUrl(String url, String sensorId) {
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put(Constants.Sos.Parameter.REQUEST, Constants.Sos.Operation.DESCRIBE_SENSOR);
+		props.put(Constants.Sos.Parameter.SERVICE, Constants.Sos.SERVICE_NAME);
+		props.put(Constants.Sos.Parameter.VERSION, Constants.Sos.SERVICE_VERSION);
+		props.put(Constants.Sos.Parameter.OUTPUT_FORMAT, Constants.Sos.SENSOR_OUTPUT_FORMAT);
+		props.put(Constants.Sos.Parameter.PROCEDURE, sensorId);
+		return Utils.buildGetRequest(url, props);
+	}
+	
+	
 	protected void buildValidTime(AbstractProcessType systemType, List<Observation> obs) {
 		DateTime start = null, end = null;
 		for (Observation o : obs) {
@@ -369,9 +384,9 @@ public class RegisterSensorDocumentBuilder {
 //        
         // time of aggregation
         DataComponentPropertyType toaField = dataRecord.addNewField();
-        toaField.setName(Constants.PROPERTY_NAME_TIME_OF_AGGREGATION);
+        toaField.setName(Constants.Sos.ProcessDescription.Capabilities.TIME_OF_AGGREGATION);
         Time toaTime = toaField.addNewTime();
-        toaTime.setDefinition(Constants.CAPS_PROPERTY_URN_PREFIX + Constants.PROPERTY_NAME_TIME_OF_AGGREGATION);
+        toaTime.setDefinition(Constants.Sos.ProcessDescription.Capabilities.URN_PREFIX + Constants.Sos.ProcessDescription.Capabilities.TIME_OF_AGGREGATION);
         toaTime.setValue(TimeUtils.format(new DateTime()));
 	}
 }

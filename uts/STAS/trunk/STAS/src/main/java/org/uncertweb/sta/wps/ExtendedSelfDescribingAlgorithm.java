@@ -42,9 +42,11 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 	
 	@Override
 	public Class<? extends IData> getInputDataType(String identifier) {
-		for (ProcessInput input : getInputs()) {
-			if (input.getIdentifier().equals(identifier)) {
-				return input.getBindingClass();
+		for (IProcessInput<?> inputs : getInputs()) {
+			for (SingleProcessInput<?> input : inputs.getProcessInputs()) {
+				if (input.getId().equals(identifier)) {
+					return input.getBindingClass();
+				}
 			}
 		}
 		throw new RuntimeException("Invalid input identifier: " + identifier);
@@ -53,7 +55,7 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 	@Override
 	public Class<? extends IData> getOutputDataType(String identifier) {
 		for (ProcessOutput output : getOutputs()) {
-			if (output.getIdentifier().equals(identifier)) {
+			if (output.getId().equals(identifier)) {
 				return output.getBindingClass();
 			}
 		}
@@ -72,7 +74,7 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 		return this.getClass().getName();
 	}
 
-	protected abstract Set<ProcessInput> getInputs();
+	protected abstract Set<IProcessInput<?>> getInputs();
 
 	protected abstract Set<ProcessOutput> getOutputs();
 
@@ -92,124 +94,124 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 		}
 
 		// 2. Inputs
-		Set<ProcessInput> inputs = this.getInputs();
+		Set<IProcessInput<?>> allInputs = this.getInputs();
 		DataInputs dataInputs = null;
-		if (!inputs.isEmpty()) {
+		if (!allInputs.isEmpty()) {
 			dataInputs = processDescription.addNewDataInputs();
 		}
-
-		for (ProcessInput input : inputs) {
-			InputDescriptionType dataInput = dataInputs.addNewInput();
-			dataInput.setMinOccurs(input.getMinOccurs());
-			dataInput.setMaxOccurs(input.getMaxOccurs());
-			dataInput.addNewIdentifier().setStringValue(input.getIdentifier());
-			dataInput.addNewTitle().setStringValue(input.getTitle());
-			if (input.getDescription() != null) {
-				dataInput.addNewAbstract().setStringValue(input.getDescription());
-			}
-			Class<? extends IData> inputDataTypeClass = input.getBindingClass();
-			Class<?>[] interfaces = inputDataTypeClass.getInterfaces();
-			for (Class<?> implementedInterface : interfaces) {
-				if (implementedInterface.equals(ILiteralData.class)) {
-					LiteralInputType literalData = dataInput.addNewLiteralData();
-					String inputClassType = "";
-					Constructor<?>[] constructors = inputDataTypeClass.getConstructors();
-					for (Constructor<?> constructor : constructors) {
-						Class<?>[] parameters = constructor.getParameterTypes();
-						if (parameters.length == 1) {
-							inputClassType = parameters[0].getSimpleName();
-						}
-					}
-					if (inputClassType.length() > 0) {
-						DomainMetadataType datatype = literalData.addNewDataType();
-						datatype.setReference("xs:" + inputClassType.toLowerCase());
-						AllowedValues vals = input.getAllowedValues();
-						if (vals == null) {
-							if (inputDataTypeClass.equals(LiteralBooleanBinding.class)) {
-								AllowedValues av = literalData.addNewAllowedValues();
-								av.addNewValue().setStringValue(String.valueOf(true));
-								av.addNewValue().setStringValue(String.valueOf(false));
-							} else {
-								literalData.addNewAnyValue();
+		for (IProcessInput<?> inputs : allInputs) {
+			for (SingleProcessInput<?> input : inputs.getProcessInputs()) {
+				InputDescriptionType dataInput = dataInputs.addNewInput();
+				dataInput.setMinOccurs(input.getMinOccurs());
+				dataInput.setMaxOccurs(input.getMaxOccurs());
+				dataInput.addNewIdentifier().setStringValue(input.getId());
+				dataInput.addNewTitle().setStringValue(input.getTitle());
+				if (input.getDescription() != null) {
+					dataInput.addNewAbstract().setStringValue(input.getDescription());
+				}
+				Class<? extends IData> inputDataTypeClass = input.getBindingClass();
+				Class<?>[] interfaces = inputDataTypeClass.getInterfaces();
+				for (Class<?> implementedInterface : interfaces) {
+					if (implementedInterface.equals(ILiteralData.class)) {
+						LiteralInputType literalData = dataInput.addNewLiteralData();
+						String inputClassType = "";
+						Constructor<?>[] constructors = inputDataTypeClass.getConstructors();
+						for (Constructor<?> constructor : constructors) {
+							Class<?>[] parameters = constructor.getParameterTypes();
+							if (parameters.length == 1) {
+								inputClassType = parameters[0].getSimpleName();
 							}
-						} else {
-							literalData.setAllowedValues(vals);
 						}
-						if (input.getDefaultValue() != null) {
-							literalData.setDefaultValue(input.getDefaultValue());
-						}
-					}
-				} else if (implementedInterface.equals(IComplexData.class)) {
-					SupportedComplexDataInputType complexData = dataInput.addNewComplexData();
-					ComplexDataCombinationType defaultInputFormat = complexData.addNewDefault();
-					ComplexDataCombinationsType supportedtInputFormat = complexData.addNewSupported();
-					List<IParser> parsers = ParserFactory.getInstance().getAllParsers();
-					List<IParser> foundParsers = new ArrayList<IParser>();
-					for (IParser parser : parsers) {
-						Class<?>[] supportedClasses = parser.getSupportedInternalOutputDataType();
-						for (Class<?> clazz : supportedClasses) {
-							if (clazz.equals(inputDataTypeClass)) {
-								foundParsers.add(parser);
-							}
-
-						}
-					}
-					for (int i = 0; i < foundParsers.size(); i++) {
-						IParser parser = foundParsers.get(i);
-						String[] supportedFormats = parser.getSupportedFormats();
-						String[] supportedSchemas = parser.getSupportedSchemas();
-						if (supportedSchemas == null) {
-							supportedSchemas = new String[0];
-						}
-						String[] supportedEncodings = parser.getSupportedEncodings();
-						for (int j = 0; j < supportedFormats.length; j++) {
-							for (int k = 0; k < supportedEncodings.length; k++) {
-								if (j == 0 && k == 0 && i == 0) {
-									String supportedFormat = supportedFormats[j];
-									ComplexDataDescriptionType defaultFormat = defaultInputFormat.addNewFormat();
-									defaultFormat.setMimeType(supportedFormat);
-									defaultFormat.setEncoding(supportedEncodings[k]);
-									for (int t = 0; t < supportedSchemas.length; t++) {
-										if (t == 0) {
-											defaultFormat.setSchema(supportedSchemas[t]);
-										} else {
-											ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
-											supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
-											supportedCreatedFormatAdditional.setMimeType(supportedFormat);
-											supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
-										}
-									}
+						if (inputClassType.length() > 0) {
+							DomainMetadataType datatype = literalData.addNewDataType();
+							datatype.setReference("xs:" + inputClassType.toLowerCase());
+							AllowedValues vals = input.getAllowedValues();
+							if (vals == null) {
+								if (inputDataTypeClass.equals(LiteralBooleanBinding.class)) {
+									AllowedValues av = literalData.addNewAllowedValues();
+									av.addNewValue().setStringValue(String.valueOf(true));
+									av.addNewValue().setStringValue(String.valueOf(false));
 								} else {
-									String supportedFormat = supportedFormats[j];
-									ComplexDataDescriptionType supportedCreatedFormat = supportedtInputFormat.addNewFormat();
-									supportedCreatedFormat.setMimeType(supportedFormat);
-									supportedCreatedFormat.setEncoding(supportedEncodings[k]);
-									for (int t = 0; t < supportedSchemas.length; t++) {
-										if (t == 0) {
-											supportedCreatedFormat.setSchema(supportedSchemas[t]);
+									literalData.addNewAnyValue();
+								}
+							} else {
+								literalData.setAllowedValues(vals);
+							}
+							if (input.getDefaultValue() != null) {
+								literalData.setDefaultValue(String.valueOf(input.getDefaultValue()));
+							}
+						}
+					} else if (implementedInterface.equals(IComplexData.class)) {
+						SupportedComplexDataInputType complexData = dataInput.addNewComplexData();
+						ComplexDataCombinationType defaultInputFormat = complexData.addNewDefault();
+						ComplexDataCombinationsType supportedtInputFormat = complexData.addNewSupported();
+						List<IParser> parsers = ParserFactory.getInstance().getAllParsers();
+						List<IParser> foundParsers = new ArrayList<IParser>();
+						for (IParser parser : parsers) {
+							Class<?>[] supportedClasses = parser.getSupportedInternalOutputDataType();
+							for (Class<?> clazz : supportedClasses) {
+								if (clazz.equals(inputDataTypeClass)) {
+									foundParsers.add(parser);
+								}
+							}
+						}
+						for (int i = 0; i < foundParsers.size(); i++) {
+							IParser parser = foundParsers.get(i);
+							String[] supportedFormats = parser.getSupportedFormats();
+							String[] supportedSchemas = parser.getSupportedSchemas();
+							if (supportedSchemas == null) {
+								supportedSchemas = new String[0];
+							}
+							String[] supportedEncodings = parser.getSupportedEncodings();
+							for (int j = 0; j < supportedFormats.length; j++) {
+								for (int k = 0; k < supportedEncodings.length; k++) {
+									if (j == 0 && k == 0 && i == 0) {
+										String supportedFormat = supportedFormats[j];
+										ComplexDataDescriptionType defaultFormat = defaultInputFormat.addNewFormat();
+										defaultFormat.setMimeType(supportedFormat);
+										defaultFormat.setEncoding(supportedEncodings[k]);
+										for (int t = 0; t < supportedSchemas.length; t++) {
+											if (t == 0) {
+												defaultFormat.setSchema(supportedSchemas[t]);
+											} else {
+												ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
+												supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+												supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+												supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
+											}
 										}
-										if (t > 0) {
-											ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
-											supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
-											supportedCreatedFormatAdditional.setMimeType(supportedFormat);
-											supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
+									} else {
+										String supportedFormat = supportedFormats[j];
+										ComplexDataDescriptionType supportedCreatedFormat = supportedtInputFormat.addNewFormat();
+										supportedCreatedFormat.setMimeType(supportedFormat);
+										supportedCreatedFormat.setEncoding(supportedEncodings[k]);
+										for (int t = 0; t < supportedSchemas.length; t++) {
+											if (t == 0) {
+												supportedCreatedFormat.setSchema(supportedSchemas[t]);
+											}
+											if (t > 0) {
+												ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
+												supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+												supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+												supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
+											}
 										}
 									}
-								}
-								if (supportedFormats.length == 1 && supportedEncodings.length == 1) {
-									String supportedFormat = supportedFormats[j];
-									ComplexDataDescriptionType supportedCreatedFormat = supportedtInputFormat.addNewFormat();
-									supportedCreatedFormat.setMimeType(supportedFormat);
-									supportedCreatedFormat.setEncoding(supportedEncodings[k]);
-									for (int t = 0; t < supportedSchemas.length; t++) {
-										if (t == 0) {
-											supportedCreatedFormat.setSchema(supportedSchemas[t]);
-										}
-										if (t > 0) {
-											ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
-											supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
-											supportedCreatedFormatAdditional.setMimeType(supportedFormat);
-											supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
+									if (supportedFormats.length == 1 && supportedEncodings.length == 1) {
+										String supportedFormat = supportedFormats[j];
+										ComplexDataDescriptionType supportedCreatedFormat = supportedtInputFormat.addNewFormat();
+										supportedCreatedFormat.setMimeType(supportedFormat);
+										supportedCreatedFormat.setEncoding(supportedEncodings[k]);
+										for (int t = 0; t < supportedSchemas.length; t++) {
+											if (t == 0) {
+												supportedCreatedFormat.setSchema(supportedSchemas[t]);
+											}
+											if (t > 0) {
+												ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
+												supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+												supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+												supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
+											}
 										}
 									}
 								}
@@ -229,7 +231,7 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 		for (ProcessOutput output : outputs) {
 			OutputDescriptionType dataOutput = dataOutputs.addNewOutput();
 
-			dataOutput.addNewIdentifier().setStringValue(output.getIdentifier());
+			dataOutput.addNewIdentifier().setStringValue(output.getId());
 			dataOutput.addNewTitle().setStringValue(output.getTitle());
 			if (output.getDescription() != null) {
 				dataOutput.addNewAbstract().setStringValue(output.getDescription());
@@ -307,8 +309,7 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 										}
 									}
 								}
-								if (supportedFormats.length == 1
-										&& supportedEncodings.length == 1) {
+								if (supportedFormats.length == 1 && supportedEncodings.length == 1) {
 									String supportedFormat = supportedFormats[j];
 									ComplexDataDescriptionType supportedCreatedFormat = supportedtOutputFormat.addNewFormat();
 									supportedCreatedFormat.setMimeType(supportedFormat);

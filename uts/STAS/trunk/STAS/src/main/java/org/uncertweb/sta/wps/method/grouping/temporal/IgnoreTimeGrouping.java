@@ -9,7 +9,7 @@ import org.uncertweb.intamap.om.ObservationTime;
 import org.uncertweb.intamap.om.ObservationTimeInstant;
 import org.uncertweb.intamap.om.ObservationTimeInterval;
 import org.uncertweb.sta.utils.Utils;
-import org.uncertweb.sta.wps.ProcessInput;
+import org.uncertweb.sta.wps.IProcessInput;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 
 public class IgnoreTimeGrouping extends TemporalGrouping {
@@ -43,7 +43,7 @@ public class IgnoreTimeGrouping extends TemporalGrouping {
 	}
 
 	@Override
-	public Set<ProcessInput> getAdditionalInputDeclarations() {
+	public Set<IProcessInput<?>> getAdditionalInputDeclarations() {
 		return Utils.set();
 	}
 

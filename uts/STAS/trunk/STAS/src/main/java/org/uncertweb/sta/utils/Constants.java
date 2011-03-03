@@ -7,14 +7,151 @@ import java.util.Properties;
 
 import javax.xml.namespace.QName;
 
+import net.opengis.sos.x10.GetObservationDocument;
+import net.opengis.wfs.GetFeatureDocument;
+
+import org.geotools.feature.FeatureCollection;
+import org.joda.time.Period;
+import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
+import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
+import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.intamap.om.ObservationCollection;
 import org.uncertweb.intamap.utils.Namespace;
+import org.uncertweb.sta.wps.ClassProcessInputHandler;
+import org.uncertweb.sta.wps.CompositeProcessInput;
+import org.uncertweb.sta.wps.IProcessInput;
+import org.uncertweb.sta.wps.PeriodProcessInputHandler;
+import org.uncertweb.sta.wps.ProcessOutput;
+import org.uncertweb.sta.wps.SOSProcessInputHandler;
+import org.uncertweb.sta.wps.SingleProcessInput;
+import org.uncertweb.sta.wps.WFSProcessInputHandler;
+import org.uncertweb.sta.wps.method.MethodFactory;
+import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
+import org.uncertweb.sta.wps.method.aggregation.ArithmeticMeanAggregation;
+import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
+import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
+import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
 
 /**
  * @author Christian Autermann
  */
 public class Constants extends org.uncertweb.intamap.utils.Constants {
+	
+	public static interface Process {
+		
+		public static final String DESCRIPTION = get("process.description");
+
+		public static interface Inputs {
+		
+			public static interface Defaults {
+				public static final Class<? extends AggregationMethod> SPATIAL_AGGREGATION_METHOD = ArithmeticMeanAggregation.class;
+				public static final Class<? extends AggregationMethod> TEMPORAL_AGGREGATION_METHOD = ArithmeticMeanAggregation.class;
+				public static final boolean GROUP_BY_OBSERVED_PROPERTY = true;
+				public static final boolean TEMPORAL_BEFORE_SPATIAL_GROUPING = false;
+			}
+			
+			public static interface Common {
+			
+				public static final SingleProcessInput<String> SOS_URL = new SingleProcessInput<String>(
+						get("process.input.sos.source.url.id"),
+						get("process.input.sos.source.url.title"),
+						get("process.input.sos.source.url.desc"),
+						LiteralStringBinding.class, 0, 1, null, null);
+				
+				public static final SingleProcessInput<String> SOS_DESTINATION_URL = new SingleProcessInput<String>(
+						get("process.input.sos.destination.url.id"), get("process.input.sos.destination.url.title"), get("process.input.sos.destination.url.desc"),
+						LiteralStringBinding.class, 0, 1, null, null);
+				
+				public static final SingleProcessInput<Class<?>> SPATIAL_AGGREGATION_METHOD = new SingleProcessInput<Class<?>>(
+						get("process.input.aggregationMethod.spatial.id"), get("process.input.aggregationMethod.spatial.title"), get("process.input.aggregationMethod.spatial.desc"),
+						LiteralStringBinding.class, 0, 1, 
+						MethodFactory.getInstance().getAggregationMethods(),
+						Inputs.Defaults.SPATIAL_AGGREGATION_METHOD, new ClassProcessInputHandler());
+				
+				public static final SingleProcessInput<Class<?>> TEMPORAL_AGGREGATION_METHOD = new SingleProcessInput<Class<?>>(
+						get("process.input.aggregationMethod.temporal.id"),
+						get("process.input.aggregationMethod.temporal.title"),
+						get("process.input.aggregationMethod.temporal.desc"),
+						LiteralStringBinding.class, 0, 1,
+						MethodFactory.getInstance().getAggregationMethods(),
+						Inputs.Defaults.TEMPORAL_AGGREGATION_METHOD, new ClassProcessInputHandler());
+				
+				public static final SingleProcessInput<Boolean> TEMPORAL_BEFORE_SPATIAL_GROUPING = new SingleProcessInput<Boolean>(
+						get("process.input.temporalBeforeSpatial.id"),
+						get("process.input.temporalBeforeSpatial.title"),
+						get("process.input.temporalBeforeSpatial.desc"),
+						LiteralBooleanBinding.class, 0, 1, null,
+						Inputs.Defaults.TEMPORAL_BEFORE_SPATIAL_GROUPING);
+				
+				public static final SingleProcessInput<Boolean> GROUP_BY_OBSERVED_PROPERTY = new SingleProcessInput<Boolean>(
+						get("process.input.groupingMethod.obsProp.id"),
+						get("process.input.groupingMethod.obsProp.title"),
+						get("process.input.groupingMethod.obsProp.desc"),
+						LiteralBooleanBinding.class, 0, 1, null,
+						Inputs.Defaults.GROUP_BY_OBSERVED_PROPERTY);
+				
+				public static final SingleProcessInput<GetObservationDocument> SOS_REQUEST = new SingleProcessInput<GetObservationDocument>(
+						get("process.input.sos.request.id"), get("process.input.sos.request.title"), get("process.input.sos.request.desc"),
+						GetObservationRequestBinding.class, 0, 1, null, null);
+				public static final IProcessInput<ObservationCollection> OBSERVATION_COLLECTION_INPUT 
+				= new CompositeProcessInput<ObservationCollection>("ObservationCollectionCompositeInput", 
+						new SOSProcessInputHandler(), Inputs.Common.SOS_URL, Inputs.Common.SOS_REQUEST);
+			}
+			
+			public static final SingleProcessInput<FeatureCollection<FeatureType, Feature>> FEATURE_COLLECTION = new SingleProcessInput<FeatureCollection<FeatureType, Feature>>(
+					get("process.input.featureCollection.id"),
+					get("process.input.featureCollection.title"),
+					get("process.input.featureCollection.desc"),
+					GTVectorDataBinding.class, 0, 1, null, null);
+			
+			public static final SingleProcessInput<String> WFS_URL = new SingleProcessInput<String>(
+					get("process.input.wfs.url.id"),
+					get("process.input.wfs.url.title"),
+					get("process.input.wfs.url.desc"),
+					LiteralStringBinding.class, 0, 1, null, null);
+			
+			public static final SingleProcessInput<GetFeatureDocument> WFS_REQUEST = new SingleProcessInput<GetFeatureDocument>(
+					get("process.input.wfs.request.id"),
+					get("process.input.wfs.request.title"),
+					get("process.input.wfs.request.desc"),
+					GetFeatureRequestBinding.class, 0, 1, null, null);
+	
+			public static final SingleProcessInput<Period> TIME_RANGE = new SingleProcessInput<Period>(
+					get("process.input.timeRange.id"),
+					get("process.input.timeRange.title"),
+					get("process.input.timeRange.desc"),
+					LiteralStringBinding.class, 1, 1, null, null, new PeriodProcessInputHandler());
+			
+			public static final IProcessInput<FeatureCollection<FeatureType, Feature>> FEATURE_COLLECTION_INPUT 
+					= new CompositeProcessInput<FeatureCollection<FeatureType, Feature>>("FeatureCollectionCompositeInput",
+						new WFSProcessInputHandler(), Constants.Process.Inputs.FEATURE_COLLECTION,
+							Constants.Process.Inputs.WFS_URL, Constants.Process.Inputs.WFS_REQUEST);
+		}
+		
+		public static interface Outputs {
+			
+			public static final ProcessOutput AGGREGATED_OBSERVATIONS = new ProcessOutput(
+					get("process.output.aggregatedObservations.id"),
+					get("process.output.aggregatedObservations.title"),
+					get("process.output.aggregatedObservations.desc"),
+					ObservationCollectionBinding.class);
+			
+			public static final ProcessOutput AGGREGATED_OBSERVATIONS_REFERENCE = new ProcessOutput(
+					get("process.output.aggregatedObservationsReference.id"),
+					get("process.output.aggregatedObservationsReference.title"),
+					get("process.output.aggregatedObservationsReference.desc"),
+					GetObservationRequestBinding.class);
+		}
+	}
+	
+	
+
+	
+
 	
 	private static final Logger log = LoggerFactory.getLogger(Constants.class);
 	private static final String PROPERTIES_FILE = "/sta.properties";
@@ -30,121 +167,77 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	public static final int CONNECTION_TIMEOUT = Integer.parseInt(get(CONNECTION_TIMEOUT_PROPERTY));
 	public static final int READ_TIMEOUT = Integer.parseInt(get(READ_TIMEOUT_PROPERTY));
 
-	/*
-	 * Process
-	 */
-	public static final String PROCESS_DESCRIPTION = get("process.aggregation.vector.description");
-
-	/*
-	 * Process Inputs
-	 */
-	public static final String SOURCE_SOS_URL_INPUT_ID = get("process.aggregation.vector.input.sos.source.url.identifier");
-	public static final String SOURCE_SOS_URL_INPUT_TITLE = get("process.aggregation.vector.input.sos.source.url.title");
-	public static final String SOURCE_SOS_URL_INPUT_DESCRIPTION = get("process.aggregation.vector.input.sos.source.url.description");
+	public static final String STAS_VERSION = "1.0.0";
 	
-	public static final String DESTINATION_SOS_URL_INPUT_ID = get("process.aggregation.vector.input.sos.destination.url.identifier");
-	public static final String DESTINATION_SOS_URL_INPUT_TITLE = get("process.aggregation.vector.input.sos.destination.url.title");
-	public static final String DESTINATION_SOS_URL_INPUT_DESCRIPTION = get("process.aggregation.vector.input.sos.destination.url.description");
-
-	public static final String SPATIAL_AGGREGATION_METHOD_INPUT_ID = get("process.aggregation.vector.input.aggregationMethod.spatial.identifier");
-	public static final String SPATIAL_AGGREGATION_METHOD_INPUT_TITLE = get("process.aggregation.vector.input.aggregationMethod.spatial.title");
-	public static final String SPATIAL_AGGREGATION_METHOD_INPUT_DESCRIPTION = get("process.aggregation.vector.input.aggregationMethod.spatial.description");
-
-	public static final String TEMPORAL_AGGREGATION_METHOD_INPUT_ID = get("process.aggregation.vector.input.aggregationMethod.temporal.identifier");
-	public static final String TEMPORAL_AGGREGATION_METHOD_INPUT_TITLE = get("process.aggregation.vector.input.aggregationMethod.temporal.title");
-	public static final String TEMPORAL_AGGREGATION_METHOD_INPUT_DESCRIPTION = get("process.aggregation.vector.input.aggregationMethod.temporal.description");
 	
-	public static final String SPATIAL_GROUPING_METHOD_INPUT_ID = get("process.aggregation.vector.input.groupingMethod.spatial.identifier");
-	public static final String SPATIAL_GROUPING_METHOD_INPUT_TITLE = get("process.aggregation.vector.input.groupingMethod.spatial.title");
-	public static final String SPATIAL_GROUPING_METHOD_INPUT_DESCRIPTION = get("process.aggregation.vector.input.groupingMethod.spatial.description");
-
-	public static final String TEMPORAL_GROUPING_METHOD_INPUT_ID = get("process.aggregation.vector.input.groupingMethod.temporal.identifier");
-	public static final String TEMPORAL_GROUPING_METHOD_INPUT_TITLE = get("process.aggregation.vector.input.groupingMethod.temporal.title");
-	public static final String TEMPORAL_GROUPING_METHOD_INPUT_DESC = get("process.aggregation.vector.input.groupingMethod.temporal.description");
 	
-	public static final String GROUP_BY_OBSERVED_PROPERTY_INPUT_ID = get("process.aggregation.vector.input.groupingMethod.obsProp.identifier");
-	public static final String GROUP_BY_OBSERVED_PROPERTY_INPUT_TITLE = get("process.aggregation.vector.input.groupingMethod.obsProp.title");
-	public static final String GROUP_BY_OBSERVED_PROPERTY_INPUT_DESCRIPTION = get("process.aggregation.vector.input.groupingMethod.obsProp.description");
+	public static interface Sos {
+		
+		public static final QName OBSERVATION_RESULT_MODEL = new QName(Namespace.OM.URI, "Observation", "om");
+		public static final QName MEASUREMENT_RESULT_MODEL = new QName(Namespace.OM.URI, "Measurement", "om");
+		
+		public static final String AGGREGATION_OFFERING_ID = "AGGREGATION";
+		public static final String AGGREGATION_OFFERING_NAME = AGGREGATION_OFFERING_ID;
+		
+		public static final String SERVICE_NAME = "SOS";
+		public static final String SERVICE_VERSION = "1.0.0";
+		public static final String SENSOR_OUTPUT_FORMAT = "text/xml;subtype=\"sensorML/1.0.1\"";
+		public static final String OBSERVATION_OUTPUT_FORMAT = "text/xml;subtype=\"om/1.0.0\"";
+		
+		public static interface Operation {
+			public static final String DESCRIBE_SENSOR = "DescribeSensor";
+			public static final String GET_OBSERVATION_BY_ID = "GetObservationById";
+		}
+		
+		public static interface Parameter {
+			public static final String REQUEST = "request";
+			public static final String SERVICE = "service";
+			public static final String VERSION = "version";
+			public static final String OUTPUT_FORMAT = "outputFormat";
+			public static final String PROCEDURE = "procedure";
+			public static final String OBSERVATION_ID = "ObservationId";
+			
+			
+		}
+		public static interface URN {
+			public static final String AGGREGATED_PROCESS = "urn:ogc:object:sensor:STAS:" + STAS_VERSION + ":";
+		}
+		
+		public static interface ProcessDescription {
+			public static final String SENSOR_DESCRIPTION = "Virtual process for aggregated observations.";
+			
+			
+			public static interface Parameter {
+				public static final String URN_PREFIX = "urn:ogc:def:parameter:STAS:" + STAS_VERSION + ":";
+				public static final String SPATIAL_GROUPING_METHOD = "spatialGroupingMethod";
+				public static final String TEMPORAL_GROUPING_METHOD = "temporalGroupingMethod";
+				public static final String SPATIAL_AGGREGATION_METHOD = "spatialAggregationMethod";
+				public static final String TEMPORAL_AGGREGATION_METHOD = "temporalAggregationMethod";
+				public static final String TEMPORAL_BEFORE_SPATIAL_AGGREGATION = "temporalBeforeSpatialAggregation";
+				public static final String GROUPED_BY_OBSERVED_PROPERTY = "groupedByObservedProperty";
+			}
+			
+			public static interface Capabilities {
+				public static final String URN_PREFIX = "urn:ogc:def:property:STAS:" + STAS_VERSION + ":";
+				public static final String TIME_OF_AGGREGATION = "timeOfAggregation";
+			}
+		}
+	}
 	
-	public static final String TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_ID = get("process.aggregation.vector.input.temporalBeforeSpatial.identifier");
-	public static final String TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_TITLE = get("process.aggregation.vector.input.temporalBeforeSpatial.title");
-	public static final String TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_DESC = get("process.aggregation.vector.input.temporalBeforeSpatial.description");
 	
-	public static final String SOURCE_SOS_REQUEST_INPUT_ID = get("process.aggregation.vector.input.sos.request.identifier");
-	public static final String SOURCE_SOS_REQUEST_INPUT_TITLE = get("process.aggregation.vector.input.sos.request.title");
-	public static final String SOURCE_SOS_REQUEST_INPUT_DESCRIPTION = get("process.aggregation.vector.input.sos.request.description");
 	
-	public static final String WFS_URL_INPUT_ID = get("process.aggregation.vector.input.wfs.url.identifier");
-	public static final String WFS_URL_INPUT_TITLE = get("process.aggregation.vector.input.wfs.url.title");
-	public static final String WFS_URL_INPUT_DESC = get("process.aggregation.vector.input.wfs.url.description");
-	
-	public static final String WFS_REQUEST_INPUT_ID = get("process.aggregation.vector.input.wfs.request.identifier");
-	public static final String WFS_REQUEST_INPUT_TITLE = get("process.aggregation.vector.input.wfs.request.title");
-	public static final String WFS_REQUEST_INPUT_DESCRIPTION = get("process.aggregation.vector.input.wfs.request.description");
-	
-	public static final String FEATURE_COLLECTION_INPUT_ID = get("process.aggregation.vector.input.featureCollection.identifier");
-	public static final String FEATURE_COLLECTION_INPUT_TITLE = get("process.aggregation.vector.input.featureCollection.title");
-	public static final String FEATURE_COLLECTION_INPUT_DESCRIPTION = get("process.aggregation.vector.input.featureCollection.description");
-	
-	public static final String TIME_RANGE_INPUT_ID = get("process.aggregation.vector.input.timeRange.identifier");
-	public static final String TIME_RANGE_INPUT_TITLE = get("process.aggregation.vector.input.timeRange.title");
-	public static final String TIME_RANGE_INPUT_DESCRIPTION = get("process.aggregation.vector.input.timeRange.description");
-
-	
-	/*
-	 * Process Output
-	 */
-	public static final String OBSERVATION_COLLECTION_OUTPUT_ID = get("process.aggregation.vector.output.aggregatedObservations.identifier");
-	public static final String OBSERVATION_COLLECTION_OUTPUT_TITLE = get("process.aggregation.vector.output.aggregatedObservations.title");
-	public static final String OBSERVATION_COLLECTION_OUTPUT_DESCRIPTION = get("process.aggregation.vector.output.aggregatedObservations.description");
-
-	public static final String OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID = get("process.aggregation.vector.output.aggregatedObservationsReference.identifier");
-	public static final String OBSERVATION_COLLECTION_REFERENCE_OUTPUT_TITLE = get("process.aggregation.vector.output.aggregatedObservationsReference.title");
-	public static final String OBSERVATION_COLLECTION_REFERENCE_OUTPUT_DESCRIPTION = get("process.aggregation.vector.output.aggregatedObservationsReference.description");
-
-    /*
-	 * Various
-	 */
-	public static final String SOS_SERVICE_NAME = get("sos.service");
-	public static final String SOS_SERVICE_VERSION = get("sos.version");
-	public static final String SOS_DESCRIBE_SENSOR_OPERATION = get("sos.describeSensor");
-	public static final String SOS_SENSOR_OUTPUT_FORMAT = get("sos.sensorOutputFormat");
-	public static final String SOS_OBSERVATION_OUTPUT_FORMAT = get("sos.observationOutputFormat");
-	public static final String SOS_GET_OBSERVATION_BY_ID_OPERATION = get("sos.getObservationById");
-	public static final String URN_AGGREGATED_PROCESS_PREFIX = get("urn.prefix.process.aggregation");
-	
-	public static final QName OBSERVATION_RESULT_MODEL = new QName(Namespace.OM.URI, "Observation", "om");
-	public static final QName MEASUREMENT_RESULT_MODEL = new QName(Namespace.OM.URI, "Measurement", "om");
-	
-	public static final String AGGREGATION_OFFERING_ID = get("sos.aggregationOffering.id");
-	public static final String AGGREGATION_OFFERING_NAME = get("sos.aggregationOffering.name");
-
-	public static final String PARAMETER_URN_PREFIX = "urn:ogc:def:parameter:STAS::";
-	public static final String CAPS_PROPERTY_URN_PREFIX = "urn:ogc:def:property:STAS::";
-	
-	public static final String PARAMETER_NAME_SPATIAL_GROUPING_METHOD = "spatialGroupingMethod";
-	public static final String PARAMETER_NAME_TEMPORAL_GROUPING_METHOD = "temporalGroupingMethod";
-	public static final String PARAMETER_NAME_SPATIAL_AGGREGATION_METHOD = "spatialAggregationMethod";
-	public static final String PARAMETER_NAME_TEMPORAL_AGGREGATION_METHOD = "temporalAggregationMethod";
-	public static final String PARAMETER_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION = "temporalBeforeSpatialAggregation";
-	public static final String PARAMETER_NAME_GROUPED_BY_OBSERVED_PROPERTY = "groupedByObservedProperty";
-	public static final String PROPERTY_NAME_TIME_OF_AGGREGATION = "timeOfAggregation";
-	public static final String SENSOR_DESCRIPTION = "Virtual process for aggregated observations.";
 	public static final int MAX_CACHED_REQUESTS = 20;
 
-	
-	
 	private Constants(){ super(); }
 
-	
 	static String get(String key) {
 		String prop = null;
-		if (key.startsWith("process"))
+		if (key.startsWith("process")) {
 			prop = getProcessProperty(key);
-		else {
+		} else {
 			prop = getCommonProperty(key);
 		}
-		if (prop == null) {
+		if (prop == null || prop.trim().equals("")) {
 			log.warn("Property '{}' not set." , key);
 		}
 		return prop;

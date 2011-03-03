@@ -1,6 +1,8 @@
 package org.uncertweb.sta.wps.xml.io.enc;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -67,7 +69,26 @@ public class ObservationGenerator {
 		MetaDataPropertyType md = m.addNewMetaDataProperty();
 		md.setTitle("Provenance");
 		md.setRole("Provenance"); //FIXME which one?
-		md.setHref(Utils.getObservationByIdUrl(oao.getSourceUrl(), obsIds));
+		md.setHref(getObservationByIdUrl(oao.getSourceUrl(), obsIds));
+	}
+	
+	public static String getObservationByIdUrl(String url, List<String> observationIds) {
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put(Constants.Sos.Parameter.REQUEST, Constants.Sos.Operation.GET_OBSERVATION_BY_ID);
+		props.put(Constants.Sos.Parameter.SERVICE, Constants.Sos.SERVICE_NAME);
+		props.put(Constants.Sos.Parameter.VERSION, Constants.Sos.SERVICE_VERSION);
+		props.put(Constants.Sos.Parameter.OUTPUT_FORMAT, Constants.Sos.SENSOR_OUTPUT_FORMAT);
+		StringBuilder sb = new StringBuilder();
+		int size = observationIds.size(), i = 1;
+		for (String s : observationIds) {
+			sb.append(s.trim());
+			if (size != i) {
+				sb.append(",");
+			}
+			i++;
+		}
+		props.put(Constants.Sos.Parameter.OBSERVATION_ID, sb.toString());
+		return Utils.buildGetRequest(url, props);
 	}
 
 	private static void generateFeatureOfInterest(Observation o,

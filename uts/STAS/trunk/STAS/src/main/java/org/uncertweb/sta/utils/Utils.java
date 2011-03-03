@@ -8,7 +8,6 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,10 +18,8 @@ import java.util.Random;
 import java.util.Set;
 
 import org.n52.wps.io.IOHandler;
-import org.n52.wps.io.data.IData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uncertweb.sta.wps.ProcessInput;
 import org.uncertweb.sta.wps.method.grouping.GroupingMethod;
 
 
@@ -196,64 +193,16 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 		return set;
 	}
 	
-	public static Object getSingleParam(ProcessInput input, Map<String, List<IData>> inputs) {
-		List<IData> dataList = inputs.get(input.getIdentifier());
-		if (dataList != null) {
-			switch (dataList.size()) {
-			case 0:
-				return null;
-			case 1:
-				return dataList.get(0).getPayload();
-			default:
-				throw new RuntimeException("Not more then one input expected: "
-						+ input.getIdentifier());
-			}
-		}
-		return null;
+	public static String getMethodDescription(Class<? extends GroupingMethod<?>> gm) {
+		return Constants.get("process." + gm.getName() + ".desc");
 	}
 	
-	public static String getMethodDescription(GroupingMethod<?> gm) {
-		return Constants.get("process.aggregation.vector." + gm.getClass().getName() + ".description");
-	}
-	
-	
-	public static String getDescribeSensorUrl(String url, String sensorId) {
-		HashMap<String, String> props = new HashMap<String, String>();
-		props.put("request", Constants.SOS_DESCRIBE_SENSOR_OPERATION);
-		props.put("service", Constants.SOS_SERVICE_NAME);
-		props.put("version", Constants.SOS_SERVICE_VERSION);
-		props.put("outputFormat", Constants.SOS_SENSOR_OUTPUT_FORMAT);
-		props.put("procedure", sensorId);
-		return buildGetRequest(url, props);
-	}
-	
-	public static String getObservationByIdUrl(String url, List<String> observationIds) {
-		HashMap<String, String> props = new HashMap<String, String>();
-		props.put("request", Constants.SOS_GET_OBSERVATION_BY_ID_OPERATION);
-		props.put("service", Constants.SOS_SERVICE_NAME);
-		props.put("version", Constants.SOS_SERVICE_VERSION);
-		props.put("outputFormat", Constants.SOS_SENSOR_OUTPUT_FORMAT);
-		StringBuilder sb = new StringBuilder();
-		int size = observationIds.size(), i = 1;
-		for (String s : observationIds) {
-			sb.append(s.trim());
-			if (size != i) {
-				sb.append(",");
-			}
-			i++;
-		}
-		props.put("ObservationId", sb.toString());
-//		log.info("ObservationId's: {}",sb.toString());
-		return buildGetRequest(url, props);
-	}
-
 	private static final Random random = new Random();
 	public static double randomBetween(double min, double max) {
 		return Math.min(min, max) + random.nextDouble() * Math.abs(max-min);
 	}
 
 	public static String generateRandomProcessUrn() {
-		return Constants.URN_AGGREGATED_PROCESS_PREFIX 
-				+ RandomStringGenerator.getInstance().generate(20);
+		return Constants.Sos.URN.AGGREGATED_PROCESS + RandomStringGenerator.getInstance().generate(20);
 	}
 }

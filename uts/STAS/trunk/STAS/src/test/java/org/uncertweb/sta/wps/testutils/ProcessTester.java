@@ -231,10 +231,10 @@ public class ProcessTester {
 		GetObservationDocument request = GetObservationDocument.Factory.newInstance();
 		GetObservation getObs = request.addNewGetObservation();
 		getObs.setOffering(offering);
-		getObs.setService(Constants.SOS_SERVICE_NAME);
-		getObs.setVersion(Constants.SOS_SERVICE_VERSION);
-		getObs.setResultModel(Constants.MEASUREMENT_RESULT_MODEL);
-		getObs.setResponseFormat(Constants.SOS_OBSERVATION_OUTPUT_FORMAT);
+		getObs.setService(Constants.Sos.SERVICE_NAME);
+		getObs.setVersion(Constants.Sos.SERVICE_VERSION);
+		getObs.setResultModel(Constants.Sos.MEASUREMENT_RESULT_MODEL);
+		getObs.setResponseFormat(Constants.Sos.OBSERVATION_OUTPUT_FORMAT);
 		getObs.setResponseMode(ResponseModeType.INLINE);
 		getObs.addNewObservedProperty().setStringValue(obsProp);
 		BinaryTemporalOpType btot = BinaryTemporalOpType.Factory.newInstance();
@@ -346,47 +346,47 @@ public class ProcessTester {
 		ProcessDescriptionType desc = getSelectedAlgorithm().getDescription();
 		ExecuteRequestBuilder eb = new ExecuteRequestBuilder(desc);
 		if (p != null) {
-			eb.addLiteralData(Constants.TIME_RANGE_INPUT_ID, TimeUtils.format(p));
+			eb.addLiteralData(Constants.Process.Inputs.TIME_RANGE.getId(), TimeUtils.format(p));
 		}
 		if (wfsUrl != null) {
-			eb.addLiteralData(Constants.WFS_URL_INPUT_ID, wfsUrl.toExternalForm());
+			eb.addLiteralData(Constants.Process.Inputs.WFS_URL.getId(), wfsUrl.toExternalForm());
 		}
 		if (sosDestUrl != null) {
-			eb.addLiteralData(Constants.DESTINATION_SOS_URL_INPUT_ID, sosDestUrl.toExternalForm());
+			eb.addLiteralData(Constants.Process.Inputs.Common.SOS_DESTINATION_URL.getId(), sosDestUrl.toExternalForm());
 		}
 		if (temporalAM != null) {
-			eb.addLiteralData(Constants.TEMPORAL_AGGREGATION_METHOD_INPUT_ID, temporalAM.getName());
+			eb.addLiteralData(Constants.Process.Inputs.Common.TEMPORAL_AGGREGATION_METHOD.getId(), temporalAM.getName());
 		}
 		if (spatialAM != null) {
-			eb.addLiteralData(Constants.SPATIAL_AGGREGATION_METHOD_INPUT_ID, spatialAM.getName());
+			eb.addLiteralData(Constants.Process.Inputs.Common.SPATIAL_AGGREGATION_METHOD.getId(), spatialAM.getName());
 		}
 		if (groupByObservedProperty != null) {
-			eb.addLiteralData(Constants.GROUP_BY_OBSERVED_PROPERTY_INPUT_ID, groupByObservedProperty.toString());
+			eb.addLiteralData(Constants.Process.Inputs.Common.GROUP_BY_OBSERVED_PROPERTY.getId(), groupByObservedProperty.toString());
 		}
 		if (temporalBeforeSpatial != null) {
-			eb.addLiteralData(Constants.TEMPORAL_BEFORE_SPATIAL_GROUPING_INPUT_ID, temporalBeforeSpatial.toString());
+			eb.addLiteralData(Constants.Process.Inputs.Common.TEMPORAL_BEFORE_SPATIAL_GROUPING.getId(), temporalBeforeSpatial.toString());
 		}
 		if (wfsRequest != null) {
-			eb.addComplexData(Constants.WFS_REQUEST_INPUT_ID, new GetFeatureRequestBinding(wfsRequest), Namespace.WFS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
+			eb.addComplexData(Constants.Process.Inputs.WFS_REQUEST.getId(), new GetFeatureRequestBinding(wfsRequest), Namespace.WFS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
 		if (sosSrcUrl != null) {	
-			eb.addLiteralData(Constants.SOURCE_SOS_URL_INPUT_ID, sosSrcUrl.toExternalForm());
+			eb.addLiteralData(Constants.Process.Inputs.Common.SOS_URL.getId(), sosSrcUrl.toExternalForm());
 		}
 		if (sosRequest != null) {
-			eb.addComplexData(Constants.SOURCE_SOS_REQUEST_INPUT_ID, new GetObservationRequestBinding(sosRequest), Namespace.SOS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
+			eb.addComplexData(Constants.Process.Inputs.Common.SOS_REQUEST.getId(), new GetObservationRequestBinding(sosRequest), Namespace.SOS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
 		if (fc != null) {
-			eb.addComplexData(Constants.FEATURE_COLLECTION_INPUT_ID, new GTVectorDataBinding(fc), Namespace.GML.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
+			eb.addComplexData(Constants.Process.Inputs.FEATURE_COLLECTION.getId(), new GTVectorDataBinding(fc), Namespace.GML.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
 		
 		ExecuteDocument exec = eb.getExecute();
 	
 		DocumentOutputDefinitionType dodt = exec.getExecute().addNewResponseForm().addNewResponseDocument().addNewOutput();
-		dodt.addNewIdentifier().setStringValue(Constants.OBSERVATION_COLLECTION_OUTPUT_ID);
+		dodt.addNewIdentifier().setStringValue(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS.getId());
 		
 		if (sosDestUrl != null) {
 			dodt = exec.getExecute().getResponseForm().getResponseDocument().addNewOutput();
-			dodt.addNewIdentifier().setStringValue(Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID);	
+			dodt.addNewIdentifier().setStringValue(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE.getId());	
 		}
 		
 //		log.info("Sending Execute request:\n{}",exec.xmlText(Namespace.defaultOptions()));
@@ -411,11 +411,10 @@ public class ProcessTester {
 				ExecuteResponseDocument resp = (ExecuteResponseDocument) res;
 				
 				for (OutputDataType odt : resp.getExecuteResponse().getProcessOutputs().getOutputArray()) {
-					if (odt.getIdentifier().getStringValue().equals(Constants.OBSERVATION_COLLECTION_OUTPUT_ID)) {
-						log.info("Got '{}'-Output.", Constants.OBSERVATION_COLLECTION_OUTPUT_ID);
+					log.info("Got '{}'-Output.", odt.getIdentifier().getStringValue());
+					if (odt.getIdentifier().getStringValue().equals(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS.getId())) {
 						ocOutput = odt.getData().getComplexData();
-					} else if (odt.getIdentifier().getStringValue().equals(Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID)) {
-						log.info("Got '{}'-Output.", Constants.OBSERVATION_COLLECTION_REFERENCE_OUTPUT_ID);
+					} else if (odt.getIdentifier().getStringValue().equals(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE.getId())) {
 						refOutput = odt.getData().getComplexData();
 					}
 					

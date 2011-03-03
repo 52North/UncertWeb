@@ -1,6 +1,7 @@
 package org.uncertweb.sta.wps.method.grouping.temporal;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,26 +10,20 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.Period;
-import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.n52.wps.server.AlgorithmParameterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationTime;
 import org.uncertweb.intamap.om.ObservationTimeInstant;
 import org.uncertweb.intamap.om.ObservationTimeInterval;
-import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.utils.Constants;
-import org.uncertweb.sta.utils.Utils;
-import org.uncertweb.sta.wps.ProcessInput;
+import org.uncertweb.sta.wps.IProcessInput;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 
 public class TimeRangeGrouping extends TemporalGrouping {
 
-//	private static final Logger log = LoggerFactory.getLogger(TimeRangeGrouping.class);
+	protected static final Logger log = LoggerFactory.getLogger(TimeRangeGrouping.class);
 	
-	protected static final ProcessInput TIME_RANGE = new ProcessInput(
-			Constants.TIME_RANGE_INPUT_ID, Constants.TIME_RANGE_INPUT_TITLE,
-			Constants.TIME_RANGE_INPUT_DESCRIPTION, LiteralStringBinding.class, 1, 1);
-
 	private class TimeRangeMappingIterator implements Iterator<ObservationMapping<ObservationTime>> {
 
 		private Iterator<Observation> iter;
@@ -38,12 +33,8 @@ public class TimeRangeGrouping extends TemporalGrouping {
 		public TimeRangeMappingIterator() {
 			List<Observation> observations = getObservations();
 			Collections.sort(observations, new ObservationTimeComparator());
-			String  parameter = (String) getAdditionalInput(TIME_RANGE); 
+			Period p = (Period) getInputs().get(Constants.Process.Inputs.TIME_RANGE);
 
-			if (parameter == null || parameter.trim().isEmpty()) {
-				throw new AlgorithmParameterException("Parameter \"" + TIME_RANGE.getIdentifier() + "\" not found.");
-			}
-			
 			iter = observations.iterator();
 			if (iter.hasNext()) { 
 				o = iter.next();
@@ -53,7 +44,6 @@ public class TimeRangeGrouping extends TemporalGrouping {
 				} else {
 					begin = ((ObservationTimeInstant) o.getObservationTime()).getDateTime();
 				}
-				Period p = TimeUtils.parsePeriod(parameter).toPeriod();
 				ci = new Interval(begin, p);
 			}
 		}
@@ -97,9 +87,11 @@ public class TimeRangeGrouping extends TemporalGrouping {
 		return new TimeRangeMappingIterator();
 	}
 
+	
 	@Override
-	public Set<ProcessInput> getAdditionalInputDeclarations() {
-		return Utils.set(TIME_RANGE);
+	public Set<IProcessInput<?>> getAdditionalInputDeclarations() {
+		HashSet<IProcessInput<?>> set = new HashSet<IProcessInput<?>>();
+		set.add(Constants.Process.Inputs.TIME_RANGE);
+		return set;
 	}
-
 }

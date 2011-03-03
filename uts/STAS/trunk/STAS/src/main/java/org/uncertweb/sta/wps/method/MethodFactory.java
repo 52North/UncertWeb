@@ -50,36 +50,6 @@ public class MethodFactory {
 		return aggregationMethods;
 	}
 	
-	public AggregationMethod getAggregationMethod(String name) {
-		if (name == null)
-			throw new NullPointerException("No AggregationMethod submitted");
-		try {
-			return (AggregationMethod) Class.forName(name).newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException("Can not instantiate AggregationMethod " + name, e);
-		}
-	}
-
-	public TemporalGrouping getTemporalGroupingMethod(String name) {
-		if (name == null)
-			throw new NullPointerException("No GroupingMethod submitted");
-		try {
-			return (TemporalGrouping) Class.forName(name).newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException("Can not instantiate TemporalGroupingMethod " + name, e);
-		}
-	}
-
-	public SpatialGrouping getSpatialGroupingMethod(String name) {
-		if (name == null)
-			throw new NullPointerException("No GroupingMethod submitted");
-		try {
-			return (SpatialGrouping) Class.forName(name).newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException("Can not instantiate SpatialGroupingMethod " + name, e);
-		}
-	}
-
 	private void loadMethods() {
 		temporalMethods = new HashSet<String>();
 		spatialMethods = new HashSet<String>();

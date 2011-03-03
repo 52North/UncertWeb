@@ -20,12 +20,12 @@ public class ProcessOutput {
 		this.title = title;
 	}
 
-	public String getIdentifier() {
+	public String getId() {
 		return this.identifier;
 	}
 
 	public String getTitle() {
-		return title == null ? getIdentifier() : title;
+		return title == null ? getId() : title;
 	}
 
 	public Class<? extends IData> getBindingClass() {

@@ -26,11 +26,11 @@ public class GetObservationDocumentBuilder {
 	public GetObservationDocument build(String process, List<Observation> obs) {
 		GetObservationDocument getObsDoc = GetObservationDocument.Factory.newInstance();
 		GetObservation getObs = getObsDoc.addNewGetObservation();
-		getObs.setService(Constants.SOS_SERVICE_NAME);
-		getObs.setVersion(Constants.SOS_SERVICE_VERSION);
-		getObs.setResultModel(Constants.MEASUREMENT_RESULT_MODEL);
-		getObs.setOffering(Constants.AGGREGATION_OFFERING_ID);
-		getObs.setResponseFormat(Constants.SOS_OBSERVATION_OUTPUT_FORMAT);
+		getObs.setService(Constants.Sos.SERVICE_NAME);
+		getObs.setVersion(Constants.Sos.SERVICE_VERSION);
+		getObs.setResultModel(Constants.Sos.MEASUREMENT_RESULT_MODEL);
+		getObs.setOffering(Constants.Sos.AGGREGATION_OFFERING_ID);
+		getObs.setResponseFormat(Constants.Sos.OBSERVATION_OUTPUT_FORMAT);
 		getObs.setResponseMode(ResponseModeType.INLINE);
 		getObs.addNewProcedure().setStringValue(process);
 		

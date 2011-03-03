@@ -12,7 +12,7 @@ import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.SamplingSurface;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
-import org.uncertweb.sta.wps.ProcessInput;
+import org.uncertweb.sta.wps.IProcessInput;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -58,7 +58,7 @@ public class IgnoreSpatialGrouping extends SpatialGrouping {
 	}
 	
 	@Override
-	public Set<ProcessInput> getAdditionalInputDeclarations() {
+	public Set<IProcessInput<?>> getAdditionalInputDeclarations() {
 		return Utils.set();
 	}
 
