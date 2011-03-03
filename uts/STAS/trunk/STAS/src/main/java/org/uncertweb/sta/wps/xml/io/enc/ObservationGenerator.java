@@ -6,13 +6,16 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import net.opengis.gml.AbstractSurfaceType;
 import net.opengis.gml.AbstractTimeObjectType;
+import net.opengis.gml.CompositeSurfaceType;
 import net.opengis.gml.DirectPositionType;
 import net.opengis.gml.FeaturePropertyType;
 import net.opengis.gml.LinearRingType;
 import net.opengis.gml.MeasureType;
 import net.opengis.gml.MetaDataPropertyType;
 import net.opengis.gml.PolygonType;
+import net.opengis.gml.SurfacePropertyType;
 import net.opengis.gml.TimeInstantType;
 import net.opengis.gml.TimePeriodType;
 import net.opengis.om.x10.MeasurementType;
@@ -21,6 +24,8 @@ import net.opengis.sampling.x10.SamplingPointType;
 import net.opengis.sampling.x10.SamplingSurfaceType;
 
 import org.apache.xmlbeans.XmlCursor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.om.ISamplingFeature;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationTimeInstant;
@@ -35,11 +40,12 @@ import org.uncertweb.sta.wps.om.OriginAwareObservation;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class ObservationGenerator {
 
-//	private static final Logger log = LoggerFactory.getLogger(ObservationGenerator.class);
+	protected static final Logger log = LoggerFactory.getLogger(ObservationGenerator.class);
 	
 	public ObservationDocument generateXML(Observation o) {
 		ObservationDocument doc = ObservationDocument.Factory.newInstance();
@@ -59,7 +65,7 @@ public class ObservationGenerator {
 	}
 	
 
-	private void generateMetaData(Observation o, MeasurementType m) {
+	protected void generateMetaData(Observation o, MeasurementType m) {
 		if (!(o instanceof OriginAwareObservation)) return;
 		OriginAwareObservation oao = (OriginAwareObservation) o;
 		LinkedList<String> obsIds = new LinkedList<String>();
@@ -68,7 +74,7 @@ public class ObservationGenerator {
 		}
 		MetaDataPropertyType md = m.addNewMetaDataProperty();
 		md.setTitle("Provenance");
-		md.setRole("Provenance"); //FIXME which one?
+		md.setRole("Provenance");
 		md.setHref(getObservationByIdUrl(oao.getSourceUrl(), obsIds));
 	}
 	
@@ -91,7 +97,7 @@ public class ObservationGenerator {
 		return Utils.buildGetRequest(url, props);
 	}
 
-	private static void generateFeatureOfInterest(Observation o,
+	protected static void generateFeatureOfInterest(Observation o,
 			MeasurementType m) {
 		ISamplingFeature f = o.getFeatureOfInterest();
 		if (f != null) {
@@ -115,10 +121,14 @@ public class ObservationGenerator {
 
 				DirectPositionType dpt = spt.addNewPosition().addNewPoint()
 						.addNewPos();
-				dpt.setSrsName(Constants.URN_EPSG_SRS_PREFIX
-						+ sp.getLocation().getSRID());
-				dpt.setStringValue(sp.getLocation().getCoordinate().y + " "
-						+ sp.getLocation().getCoordinate().x);
+				dpt.setSrsName(Constants.URN_EPSG_SRS_PREFIX + sp.getLocation().getSRID());
+				
+				if (Utils.switchCoordinates(sp.getLocation().getSRID())) {
+					dpt.setStringValue(sp.getLocation().getCoordinate().x + " " + sp.getLocation().getCoordinate().y);
+				} else {
+					dpt.setStringValue(sp.getLocation().getCoordinate().y + " " + sp.getLocation().getCoordinate().x);
+					
+				}
 
 				fpt.addNewFeature().set(spt);
 				XmlCursor c = fpt.newCursor();
@@ -139,7 +149,7 @@ public class ObservationGenerator {
 				if (ss.getSampledFeature() != null) {
 					sst.addNewSampledFeature().setHref(ss.getSampledFeature());
 				} else {
-					sst.addNewSampledFeature().setHref("");
+					sst.addNewSampledFeature().setHref(Constants.NULL_URN);
 				}
 				generateShape(ss.getLocation(), sst);
 
@@ -152,66 +162,104 @@ public class ObservationGenerator {
 		}
 	}
 
-	private static void generateShape(Geometry geom, SamplingSurfaceType sst) {
+	protected static void generateShape(Geometry geom, SamplingSurfaceType sst) {
+		
 		if (geom instanceof Polygon) {
-			PolygonType pt = (PolygonType) sst
-					.addNewShape()
-					.addNewSurface()
-					.substitute(new QName(Namespace.GML.URI, "Polygon"),
-							PolygonType.type);
-			Polygon p = (Polygon) geom;
-			//TODO
-			pt.setSrsName(Constants.URN_EPSG_SRS_PREFIX	+ ((p.getSRID() != 0) ? String.valueOf(p.getSRID()) : "4326"));
-			((LinearRingType) pt
-					.addNewExterior()
-					.addNewRing()
-					.substitute(new QName(Namespace.GML.URI, "LinearRing"),
-							LinearRingType.type)).addNewCoordinates()
-					.setStringValue(
-							generateCoordinates(p.getExteriorRing()
-									.getCoordinates()));
-			for (int i = 0; i < p.getNumInteriorRing(); i++) {
-				((LinearRingType) pt
-						.addNewInterior()
-						.addNewRing()
-						.substitute(
-								new QName(Namespace.GML.URI, "LinearRing"),
-								LinearRingType.type)).addNewCoordinates()
-						.setStringValue(
-								generateCoordinates(p.getInteriorRingN(i)
-										.getCoordinates()));
+			
+			generatePolygon((Polygon) geom, sst.addNewShape().addNewSurface());
+	
+		} else if (geom instanceof MultiPolygon) {
+			
+			if (geom.getNumGeometries() == 1) {
+				generateShape(geom.getGeometryN(0), sst);
+				return;
 			}
+			
+			/* TODO currently not supported by 52N SOS */
+			log.warn("SOS does not support CompositeSurfaces; creating only the biggest Polygon.");
+			double area = -1;
+			Geometry biggest = null;
+			for (int i = 0; i < geom.getNumGeometries(); i++) {
+				double a = geom.getGeometryN(i).getArea();
+				if (a > area || biggest == null) {
+					area = a;
+					biggest = geom.getGeometryN(i);
+					log.info("Area: {}", a);
+				}
+			}
+			generateShape(biggest, sst);
+
+//			generateMultiPolygon((MultiPolygon) geom, sst.addNewShape());
+
 		} else {
-			// TODO Multipolygon
-			throw new RuntimeException(
-					"Surfaces other than a basic polygon are not yet implemented.");
+			throw new RuntimeException("Not yet implemented: " + geom.getClass());
 		}
 	}
+	
+	protected static void generateMultiPolygon(MultiPolygon mp, SurfacePropertyType spt) {
+		CompositeSurfaceType cst = (CompositeSurfaceType) spt.addNewSurface()
+				.changeType(CompositeSurfaceType.type);
+		for (int i = 0; i < mp.getNumGeometries(); i++) {
+			SurfacePropertyType spm = cst.addNewSurfaceMember();
+			generatePolygon((Polygon) mp.getGeometryN(i), spm.addNewSurface());
+		}
+		XmlCursor c = spt.newCursor();
+		c.toChild(new QName(Namespace.GML.URI, "_Surface"));
+		c.setName(new QName(Namespace.GML.URI, "CompositeSurface"));
+		c.dispose();
+	}
 
-	private static String generateCoordinates(Coordinate[] c) {
+	protected static void generatePolygon(Polygon p, AbstractSurfaceType ast) {
+		
+		PolygonType pt = (PolygonType) ast.substitute(new QName(Namespace.GML.URI, "Polygon"), PolygonType.type);
+		
+		int srs = p.getSRID();
+		if (srs == 0) {
+			//TODO GeoTools parser does not set SRID
+			log.warn("SRID not set on Polygon. Defaulting to '4326'");
+			srs = 4326;
+		}
+		pt.setSrsName(Constants.URN_EPSG_SRS_PREFIX	+ srs);
+		
+		LinearRingType outer = (LinearRingType) pt.addNewExterior().addNewRing()
+				.substitute(new QName(Namespace.GML.URI, "LinearRing"), LinearRingType.type);
+		outer.addNewCoordinates().setStringValue(generateCoordinates(srs, p.getExteriorRing().getCoordinates()));
+		
+		for (int i = 0; i < p.getNumInteriorRing(); i++) {
+			LinearRingType inner = (LinearRingType) pt.addNewInterior().addNewRing()
+					.substitute(new QName(Namespace.GML.URI, "LinearRing"), LinearRingType.type);
+			inner.addNewCoordinates().setStringValue(generateCoordinates(srs, p.getInteriorRingN(i).getCoordinates()));
+		}
+	}
+	
+	protected static String generateCoordinates(int epsg, Coordinate[] c) {
 		StringBuilder buf = new StringBuilder();
+		boolean swap = Utils.switchCoordinates(epsg);
 		for (int i = 0; i < c.length; i++) {
-			buf.append(Utils.NUMBER_FORMAT.format(c[i].y)).append(" ")
-					.append(Utils.NUMBER_FORMAT.format(c[i].x)).append(" ");
+			if (swap) {
+				buf.append(Utils.NUMBER_FORMAT.format(c[i].x)).append(" ").append(Utils.NUMBER_FORMAT.format(c[i].y));
+			} else {
+				buf.append(Utils.NUMBER_FORMAT.format(c[i].y)).append(" ").append(Utils.NUMBER_FORMAT.format(c[i].x));
+			}
 			if (i < c.length-1) buf.append(",");
 		}
 		return buf.toString();
 	}
 
-	private static void generateProcedure(Observation o, MeasurementType m) {
+	protected static void generateProcedure(Observation o, MeasurementType m) {
 		if (o.getSensorModel() != null) {
 			m.addNewProcedure().setHref(o.getSensorModel());
 		}
 	}
 
-	private static void generateObservedProperty(Observation o,
+	protected static void generateObservedProperty(Observation o,
 			MeasurementType m) {
 		if (o.getObservedProperty() != null) {
 			m.addNewObservedProperty().setHref(o.getObservedProperty());
 		}
 	}
 
-	private static void generateResult(Observation o, MeasurementType m) {
+	protected static void generateResult(Observation o, MeasurementType m) {
 		if (!new Double(o.getResult()).equals(Double.NaN)) {
 			MeasureType xbresult = MeasureType.Factory.newInstance();
 			xbresult.setStringValue(Utils.NUMBER_FORMAT.format(o.getResult()));
@@ -224,7 +272,7 @@ public class ObservationGenerator {
 		}
 	}
 
-	private static void generateResultTime(Observation o, MeasurementType m) {
+	protected static void generateResultTime(Observation o, MeasurementType m) {
 		if (o.getObservationTime() != null) {
 //			log.debug("Got ObservationTime: {}: {}",o.getObservationTime().getClass().getName(), o.getObservationTime());
 			AbstractTimeObjectType atot = m.addNewSamplingTime().addNewTimeObject();

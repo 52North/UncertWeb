@@ -48,28 +48,36 @@ public class CoverageGrouping extends SpatialGrouping {
 		if (features == null) {
 			throw new AlgorithmParameterException("No FeatureCollection found.");
 		}
+		
+		log.info("Grouping {} Observations.",this.getObservations().size());
 		return new LazyMappingIterator(features);
 	}
 
 	protected ObservationMapping<ISamplingFeature> map(Feature feature) {
 		SimpleFeature f = (SimpleFeature) feature;
 		if (f.getDefaultGeometry() == null) {
-			throw new NullPointerException(
-					"defaultGeometry is null in feature with Id: " + f.getID());
+			throw new NullPointerException("defaultGeometry is null in feature with Id: " + f.getID());
 		}
 		if (!(f.getDefaultGeometry() instanceof Geometry)) {
 			// if the parser failed, it will be a string...
-			log.warn("Can not handle Geometry of class {}.", f
-					.getDefaultGeometry().getClass().getCanonicalName());
+			log.warn("Can not handle Geometry of class {}.", f.getDefaultGeometry().getClass().getCanonicalName());
 			return null;
 		}
 		Geometry geom = (Geometry) f.getDefaultGeometry();
 		LinkedList<Observation> result = new LinkedList<Observation>();
-		for (Observation o : getObservations()) {
-			if (geom.contains(o.getObservationLocation())) {
-				result.add(o);
+		if (!this.getObservations().isEmpty()) {
+			int srid = getObservations().get(0).getSRID();
+			geom.setSRID(srid); /* FIXME enable SRID parsing in WPS Parser class */
+			for (Observation o : getObservations()) {
+				log.debug("{}: Observation Geom: {}",geom.contains(o.getFeatureOfInterest().getLocation()), o.getFeatureOfInterest().getLocation());
+				
+				if (geom.contains(o.getFeatureOfInterest().getLocation())) {
+					result.add(o);
+				}
 			}
 		}
+		log.info("Feature-SRID: {}; Observation-SRID: {}", geom.getSRID(),getObservations().get(0).getSRID());
+		log.info("{} Observations for Feature: {}", result.size(), geom);
 		return new ObservationMapping<ISamplingFeature>(
 				new SamplingSurface((Geometry) f.getDefaultGeometry(), null,
 						f.getID(), (f.getName() == null) ? f.getID() : f

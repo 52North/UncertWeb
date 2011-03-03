@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import net.opengis.wps.x100.ProcessDescriptionType;
+
 import org.n52.wps.server.IAlgorithm;
 import org.n52.wps.server.IAlgorithmRepository;
 import org.n52.wps.server.request.ExecuteRequest;
@@ -90,9 +92,13 @@ public class STARepository implements IAlgorithmRepository {
 	}
 
 	@Override
-	public IAlgorithm getAlgorithm(String processID,
-			ExecuteRequest executeRequest) {
+	public IAlgorithm getAlgorithm(String processID, ExecuteRequest executeRequest) {
 		return instantiate(processID);
+	}
+
+	@Override
+	public ProcessDescriptionType getProcessDescription(String arg0) {
+		return instantiate(arg0).getDescription();
 	}
 
 }
