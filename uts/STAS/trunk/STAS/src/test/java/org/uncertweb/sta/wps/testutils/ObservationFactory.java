@@ -53,8 +53,7 @@ public class ObservationFactory {
 		ISamplingFeature f = new SamplingPoint(lat, lon, SAMPLED_FEATURE, foiId, foiId);
 		f.getLocation().setSRID(SRID);
 		observationCount++;
-		return new Observation(id, result, f, null, obsProp, process, SRID,
-				new ObservationTimeInstant(time), UOM);
+		return new Observation(id, result, f, null, obsProp, process, new ObservationTimeInstant(time), UOM);
 	}
 	
 	public Observation createObservation(String process, DateTime time, double result, double lat, double lon) {
@@ -89,7 +88,7 @@ public class ObservationFactory {
 			ISamplingFeature f = new SamplingPoint(Utils.randomBetween(latMin, latMax), Utils.randomBetween(lonMin, lonMax), Constants.NULL_URN, foiId, foiId);
 			f.getLocation().setSRID(SRID);
 			for (int o = 0; o < obsPerFoi; o++) {
-				obs.add(new Observation("o_" + obsId++, Utils.randomBetween(0.0, 100.0), f, null, obsProp, process, SRID,
+				obs.add(new Observation("o_" + obsId++, Utils.randomBetween(0.0, 100.0), f, null, obsProp, process,
 						new ObservationTimeInstant(begin.plusMinutes(o)), "m"));
 			}
 		}

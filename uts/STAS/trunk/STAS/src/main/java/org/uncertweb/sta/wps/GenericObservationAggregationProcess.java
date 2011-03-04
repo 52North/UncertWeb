@@ -320,7 +320,6 @@ public class GenericObservationAggregationProcess extends ExtendedSelfDescribing
 		double aggregatedValue = method.aggregate(obs);
 		return new OriginAwareObservation("ao_"
 				+ String.valueOf(observationIdCount++), aggregatedValue, f,
-				null, observedProperty, process, f.getLocation().getSRID(),
-				time, uom, sourceObservations, sourceUrl);
+				null, observedProperty, process, time, uom, sourceObservations, sourceUrl);
 	}
 }

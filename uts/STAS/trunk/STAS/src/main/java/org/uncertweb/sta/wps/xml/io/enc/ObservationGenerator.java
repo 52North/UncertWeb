@@ -172,24 +172,9 @@ public class ObservationGenerator {
 			
 			if (geom.getNumGeometries() == 1) {
 				generateShape(geom.getGeometryN(0), sst);
-				return;
 			}
 			
-			/* TODO currently not supported by 52N SOS */
-			log.warn("SOS does not support CompositeSurfaces; creating only the biggest Polygon.");
-			double area = -1;
-			Geometry biggest = null;
-			for (int i = 0; i < geom.getNumGeometries(); i++) {
-				double a = geom.getGeometryN(i).getArea();
-				if (a > area || biggest == null) {
-					area = a;
-					biggest = geom.getGeometryN(i);
-					log.info("Area: {}", a);
-				}
-			}
-			generateShape(biggest, sst);
-
-//			generateMultiPolygon((MultiPolygon) geom, sst.addNewShape());
+			generateMultiPolygon((MultiPolygon) geom, sst.addNewShape());
 
 		} else {
 			throw new RuntimeException("Not yet implemented: " + geom.getClass());

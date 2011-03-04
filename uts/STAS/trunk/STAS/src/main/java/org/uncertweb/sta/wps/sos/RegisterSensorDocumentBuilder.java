@@ -63,7 +63,7 @@ public class RegisterSensorDocumentBuilder {
     protected static final String QUANTITY_AXIS_ID_LON = "x";
     protected static final String QUANTITY_AXIS_ID_ALTITUDE = "z";
     protected static final String COORD_NAME_ALTITUDE = "altitude";
-    protected static final String EPSG_4326_REFERENCE_SYSTEM_DEFINITION = "urn:ogc:def:crs:EPSG:4326";
+    protected static final String EPSG_4326_REFERENCE_SYSTEM_DEFINITION = Constants.URN_EPSG_SRS_PREFIX + "4326";
     protected static final String COORDINATE_UOM = "degree";
     protected static final String METER_UOM = "m";	
     protected static final double lat = 0, lon = 0, alt = 0;

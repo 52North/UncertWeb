@@ -19,10 +19,11 @@ public class OriginAwareObservation extends Observation {
 
 	public OriginAwareObservation(String id, double result,
 			ISamplingFeature location, Uncertainty observationError,
-			String observedProperty, String sensor, int srid,
-			ObservationTime observationTime, String uom,Collection<Observation> obs, String sourceUrl) {
+			String observedProperty, String sensor,
+			ObservationTime observationTime, String uom,
+			Collection<Observation> obs, String sourceUrl) {
 		super(id, result, location, observationError, observedProperty, sensor,
-				srid, observationTime, uom);
+				observationTime, uom);
 		this.setSourceObservations(obs);
 		this.setSourceUrl(sourceUrl);
 	}

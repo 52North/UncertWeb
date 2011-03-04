@@ -148,11 +148,6 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 		}
 	}
 	
-	
-
-	
-
-	
 	private static final Logger log = LoggerFactory.getLogger(Constants.class);
 	private static final String PROPERTIES_FILE = "/sta.properties";
 	private static final String PROCESS_PROPERTIES_FILE = "/process.properties";
