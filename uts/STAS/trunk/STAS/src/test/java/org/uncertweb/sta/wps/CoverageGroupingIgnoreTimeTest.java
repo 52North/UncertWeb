@@ -29,7 +29,7 @@ public class CoverageGroupingIgnoreTimeTest {
 		try {
 			InputStream is = CoverageGroupingIgnoreTimeTest.class.getResourceAsStream(WFS_REQUEST_LOCATION);
 			if (is == null)
-				throw new NullPointerException();Minor changes because of change of default SRS-URN-Prefix in 52N SOS.
+				throw new NullPointerException();
 			GetFeatureDocument doc = GetFeatureDocument.Factory.parse(is);
 			return doc;
 		} catch (Exception e) {
