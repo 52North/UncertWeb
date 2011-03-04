@@ -16,7 +16,6 @@ public class NoSpatialIgnoreTimeTest {
 	private static final String OFFERING = "O3";
 	private static final String OBSERVED_PROPERTY = "http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[" + OFFERING + "]";
 	private static final String SOURCE_SOS = "http://giv-uw.uni-muenster.de:8080/AQE/sos";
-	@SuppressWarnings("unused")
 	private static final String DESTINATION_SOS = "http://giv-uw.uni-muenster.de:8080/STAS-SOS/sos";
 	
 	@Test
