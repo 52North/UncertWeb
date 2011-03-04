@@ -21,7 +21,7 @@ public class CoverageGroupingIgnoreTimeTest {
 	private static final String OBSERVED_PROPERTY = "http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[" + OFFERING + "]";
 	private static final String SOURCE_SOS = "http://giv-uw.uni-muenster.de:8080/AQE/sos";
 	private static final String DESTINATION_SOS = "http://giv-uw.uni-muenster.de:8080/STAS-SOS/sos";
-	private static final String WFS_URL = "http://localhost:8080/geoserver/wfs/GetFeature";
+	private static final String WFS_URL = "http://giv-uw.uni-muenster.de:8080/geoserver/wfs/GetFeature";
 	private static final String WFS_REQUEST_LOCATION = "/example-wfs-request.xml";
 
 	private static GetFeatureDocument getWFSRequest() {
