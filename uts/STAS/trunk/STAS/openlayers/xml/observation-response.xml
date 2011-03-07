@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<om:ObservationCollection gml:id="oc_0" xsi:schemaLocation="http://www.opengis.net/om/1.0 http://schemas.opengis.net/om/1.0.0/om.xsd http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd" xmlns:om="http://www.opengis.net/om/1.0" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:swe="http://www.opengis.net/swe/1.0.1" xmlns:sa="http://www.opengis.net/sampling/1.0">
+  <om:member>
+    <om:Observation gml:id="ot_40315898">
+      <om:samplingTime>
+        <gml:TimePeriod xsi:type="gml:TimePeriodType">
+          <gml:beginPosition>2001-01-01T03:00:00.000+01:00</gml:beginPosition>
+          <gml:endPosition>2001-01-01T03:00:00.000+01:00</gml:endPosition>
+        </gml:TimePeriod>
+      </om:samplingTime>
+      <om:procedure xlink:href="urn:ogc:object:feature:Sensor:EEA:airbase:4.0:DETH042"/>
+      <om:observedProperty>
+        <swe:CompositePhenomenon gml:id="cpid0" dimension="1">
+          <gml:name>resultComponents</gml:name>
+          <swe:component xlink:href="urn:ogc:data:time:iso8601"/>
+          <swe:component xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+        </swe:CompositePhenomenon>
+      </om:observedProperty>
+      <om:featureOfInterest>
+        <gml:FeatureCollection>
+          <gml:featureMember>
+            <sa:SamplingPoint gml:id="foi_DETH042" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
+              <gml:name>foi_DETH042</gml:name>
+              <sa:sampledFeature xlink:href="urn:ogc:def:nil:OGC:unknown"/>
+              <sa:position>
+                <gml:Point>
+                  <gml:pos srsName="urn:ogc:def:crs:EPSG:4326">51.336666 10.867189</gml:pos>
+                </gml:Point>
+              </sa:position>
+            </sa:SamplingPoint>
+          </gml:featureMember>
+        </gml:FeatureCollection>
+      </om:featureOfInterest>
+      <om:result>
+        <swe:DataArray>
+          <swe:elementCount>
+            <swe:Count>
+              <swe:value>1</swe:value>
+            </swe:Count>
+          </swe:elementCount>
+          <swe:elementType name="Components">
+            <swe:DataRecord>
+              <swe:field name="Time">
+                <swe:Time definition="urn:ogc:data:time:iso8601"/>
+              </swe:field>
+              <swe:field name="feature">
+                <swe:Text definition="urn:ogc:data:feature"/>
+              </swe:field>
+              <swe:field name="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]">
+                <swe:Quantity definition="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]">
+                  <swe:uom code="µg/m3"/>
+                </swe:Quantity>
+              </swe:field>
+            </swe:DataRecord>
+          </swe:elementType>
+          <swe:encoding>
+            <swe:TextBlock decimalSeparator="." tokenSeparator="," blockSeparator=";"/>
+          </swe:encoding>
+          <swe:values>2001-01-01T03:00:00.000+01:00,foi_DETH042,41.902;</swe:values>
+        </swe:DataArray>
+      </om:result>
+    </om:Observation>
+  </om:member>
+  <om:member>
+    <om:Observation gml:id="ot_34649808">
+      <om:samplingTime>
+        <gml:TimePeriod xsi:type="gml:TimePeriodType">
+          <gml:beginPosition>2001-01-01T03:00:00.000+01:00</gml:beginPosition>
+          <gml:endPosition>2001-01-01T04:00:00.000+01:00</gml:endPosition>
+        </gml:TimePeriod>
+      </om:samplingTime>
+      <om:procedure xlink:href="urn:ogc:object:feature:Sensor:EEA:airbase:4.0:DESN020"/>
+      <om:observedProperty>
+        <swe:CompositePhenomenon gml:id="cpid1" dimension="1">
+          <gml:name>resultComponents</gml:name>
+          <swe:component xlink:href="urn:ogc:data:time:iso8601"/>
+          <swe:component xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+        </swe:CompositePhenomenon>
+      </om:observedProperty>
+      <om:featureOfInterest>
+        <gml:FeatureCollection>
+          <gml:featureMember>
+            <sa:SamplingPoint gml:id="foi_DESN020" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
+              <gml:name>foi_DESN020</gml:name>
+              <sa:sampledFeature xlink:href="urn:ogc:def:nil:OGC:unknown"/>
+              <sa:position>
+                <gml:Point>
+                  <gml:pos srsName="urn:ogc:def:crs:EPSG:4326">51.16 14.973955</gml:pos>
+                </gml:Point>
+              </sa:position>
+            </sa:SamplingPoint>
+          </gml:featureMember>
+        </gml:FeatureCollection>
+      </om:featureOfInterest>
+      <om:result>
+        <swe:DataArray>
+          <swe:elementCount>
+            <swe:Count>
+              <swe:value>2</swe:value>
+            </swe:Count>
+          </swe:elementCount>
+          <swe:elementType name="Components">
+            <swe:DataRecord>
+              <swe:field name="Time">
+                <swe:Time definition="urn:ogc:data:time:iso8601"/>
+              </swe:field>
+              <swe:field name="feature">
+                <swe:Text definition="urn:ogc:data:feature"/>
+              </swe:field>
+              <swe:field name="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]">
+                <swe:Quantity definition="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]">
+                  <swe:uom code="µg/m3"/>
+                </swe:Quantity>
+              </swe:field>
+            </swe:DataRecord>
+          </swe:elementType>
+          <swe:encoding>
+            <swe:TextBlock decimalSeparator="." tokenSeparator="," blockSeparator=";"/>
+          </swe:encoding>
+          <swe:values>2001-01-01T03:00:00.000+01:00,foi_DESN020,38.0;2001-01-01T04:00:00.000+01:00,foi_DESN020,43.0;</swe:values>
+        </swe:DataArray>
+      </om:result>
+    </om:Observation>
+  </om:member>
+  <om:member>
+    <om:Measurement gml:id="ot_3464980123213">
+      <om:samplingTime>
+        <gml:TimeInstant>
+          <gml:timePosition>2001-01-01T03:00:00.000+01:00</gml:timePosition>
+        </gml:TimeInstant>
+      </om:samplingTime>
+      <om:procedure xlink:href="urn:ogc:object:feature:Sensor:EEA:airbase:4.0:DESN020"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:featureOfInterest>
+        <sa:SamplingPoint gml:id="foi_DESN020">
+         <gml:name>foi_DESN020</gml:name>
+         <sa:sampledFeature xlink:href="urn:ogc:def:nil:OGC:unknown"/>
+          <sa:position>
+            <gml:Point>
+              <gml:pos srsName="urn:ogc:def:crs:EPSG:4326">51.16 14.973955</gml:pos>
+            </gml:Point>
+          </sa:position>
+        </sa:SamplingPoint>
+      </om:featureOfInterest>
+      <om:result uom="µg/m3">43.0</om:result>
+    </om:Measurement>
+  </om:member>
+</om:ObservationCollection>

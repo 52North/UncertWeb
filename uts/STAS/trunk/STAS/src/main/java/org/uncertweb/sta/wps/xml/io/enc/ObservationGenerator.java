@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ *                   48155 Muenster, Germany                  info@52north.org
+ *
+ * Author: Christian Autermann
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later 
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
+ * Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package org.uncertweb.sta.wps.xml.io.enc;
 
 import java.util.HashMap;
@@ -43,10 +64,24 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
+/**
+ * Generator for {@link ObservationDocument}s.
+ * 
+ * @author Christian Autermann <autermann@uni-muenster.de>
+ */
 public class ObservationGenerator {
 
+	/**
+	 * The Logger.
+	 */
 	protected static final Logger log = LoggerFactory.getLogger(ObservationGenerator.class);
 	
+	/**
+	 * Generates a {@link ObservationDocument}.
+	 * 
+	 * @param o
+	 *            the {@code Observation}
+	 */
 	public ObservationDocument generateXML(Observation o) {
 		ObservationDocument doc = ObservationDocument.Factory.newInstance();
 		
@@ -64,7 +99,14 @@ public class ObservationGenerator {
 		return doc;
 	}
 	
-
+	/**
+	 * Generates the Metadata.
+	 * 
+	 * @param o
+	 *            the {@code Observation}
+	 * @param m
+	 *            the XmlBean within the Metadata is generated.
+	 */
 	protected void generateMetaData(Observation o, MeasurementType m) {
 		if (!(o instanceof OriginAwareObservation)) return;
 		OriginAwareObservation oao = (OriginAwareObservation) o;
@@ -77,8 +119,17 @@ public class ObservationGenerator {
 		md.setRole("Provenance");
 		md.setHref(getObservationByIdUrl(oao.getSourceUrl(), obsIds));
 	}
-	
-	public static String getObservationByIdUrl(String url, List<String> observationIds) {
+
+	/**
+	 * Generates GetObservationById GET request for the give observation Id's.
+	 * 
+	 * @param url
+	 *            the base URL
+	 * @param observationIds
+	 *            the Id's of the {@link Observation}s
+	 * @return the generated request
+	 */
+	protected String getObservationByIdUrl(String url, List<String> observationIds) {
 		HashMap<String, String> props = new HashMap<String, String>();
 		props.put(Constants.Sos.Parameter.REQUEST, Constants.Sos.Operation.GET_OBSERVATION_BY_ID);
 		props.put(Constants.Sos.Parameter.SERVICE, Constants.Sos.SERVICE_NAME);
@@ -97,6 +148,14 @@ public class ObservationGenerator {
 		return Utils.buildGetRequest(url, props);
 	}
 
+	/**
+	 * Generates the FeatureOfInterest.
+	 * 
+	 * @param o
+	 *            the {@code Observation}
+	 * @param m
+	 *            the XmlBean within the FeatureOfInterest is generated.
+	 */
 	protected static void generateFeatureOfInterest(Observation o,
 			MeasurementType m) {
 		ISamplingFeature f = o.getFeatureOfInterest();
@@ -162,25 +221,36 @@ public class ObservationGenerator {
 		}
 	}
 
+	/**
+	 * Generates a sampling surface. Currently {@link Polygon} and
+	 * {@link MultiPolygon} are supported.
+	 * 
+	 * @param geom
+	 *            the {@code Geometry}
+	 * @param sst
+	 *            the XmlBean in which the surface will generated
+	 */
 	protected static void generateShape(Geometry geom, SamplingSurfaceType sst) {
-		
 		if (geom instanceof Polygon) {
-			
 			generatePolygon((Polygon) geom, sst.addNewShape().addNewSurface());
-	
 		} else if (geom instanceof MultiPolygon) {
-			
 			if (geom.getNumGeometries() == 1) {
 				generateShape(geom.getGeometryN(0), sst);
 			}
-			
 			generateMultiPolygon((MultiPolygon) geom, sst.addNewShape());
-
 		} else {
 			throw new RuntimeException("Not yet implemented: " + geom.getClass());
 		}
 	}
 	
+	/**
+	 * Generates the {@code MultiPolygon} (encoded as an {@code CompositeSurfaceType}).
+	 * 
+	 * @param p
+	 *            the {@code MultiPolygon} 
+	 * @param spt
+	 *            the XmlBean which will be substituted
+	 */
 	protected static void generateMultiPolygon(MultiPolygon mp, SurfacePropertyType spt) {
 		CompositeSurfaceType cst = (CompositeSurfaceType) spt.addNewSurface()
 				.changeType(CompositeSurfaceType.type);
@@ -194,6 +264,14 @@ public class ObservationGenerator {
 		c.dispose();
 	}
 
+	/**
+	 * Generates the Polygon.
+	 * 
+	 * @param p
+	 *            the {@code Polygon} 
+	 * @param ast
+	 *            the XmlBean which will be substituted
+	 */
 	protected static void generatePolygon(Polygon p, AbstractSurfaceType ast) {
 		
 		PolygonType pt = (PolygonType) ast.substitute(new QName(Namespace.GML.URI, "Polygon"), PolygonType.type);
@@ -217,6 +295,16 @@ public class ObservationGenerator {
 		}
 	}
 	
+	/**
+	 * Generates a coordinate string.
+	 * 
+	 * @param epsg
+	 *            the EPSG id of the SRS
+	 * @param c
+	 *            the coordinate array
+	 * @return the coordinate string
+	 * @see Utils#switchCoordinates(int)
+	 */
 	protected static String generateCoordinates(int epsg, Coordinate[] c) {
 		StringBuilder buf = new StringBuilder();
 		boolean swap = Utils.switchCoordinates(epsg);
@@ -231,12 +319,28 @@ public class ObservationGenerator {
 		return buf.toString();
 	}
 
+	/**
+	 * Generates the Procedure.
+	 * 
+	 * @param o
+	 *            the {@code Observation}
+	 * @param m
+	 *            the XmlBean within the Procedure is generated.
+	 */
 	protected static void generateProcedure(Observation o, MeasurementType m) {
 		if (o.getSensorModel() != null) {
 			m.addNewProcedure().setHref(o.getSensorModel());
 		}
 	}
 
+	/**
+	 * Generates the ObservedProperty.
+	 * 
+	 * @param o
+	 *            the {@code Observation}
+	 * @param m
+	 *            the XmlBean within the ObservedProperty is generated.
+	 */
 	protected static void generateObservedProperty(Observation o,
 			MeasurementType m) {
 		if (o.getObservedProperty() != null) {
@@ -244,6 +348,14 @@ public class ObservationGenerator {
 		}
 	}
 
+	/**
+	 * Generates the Result.
+	 * 
+	 * @param o
+	 *            the {@code Observation}
+	 * @param m
+	 *            the XmlBean within the Result is generated.
+	 */
 	protected static void generateResult(Observation o, MeasurementType m) {
 		if (!new Double(o.getResult()).equals(Double.NaN)) {
 			MeasureType xbresult = MeasureType.Factory.newInstance();
@@ -257,9 +369,16 @@ public class ObservationGenerator {
 		}
 	}
 
+	/**
+	 * Generates the SamplingTime.
+	 * 
+	 * @param o
+	 *            the {@code Observation}
+	 * @param m
+	 *            the XmlBean within the SamplingTime is generated.
+	 */
 	protected static void generateResultTime(Observation o, MeasurementType m) {
 		if (o.getObservationTime() != null) {
-//			log.debug("Got ObservationTime: {}: {}",o.getObservationTime().getClass().getName(), o.getObservationTime());
 			AbstractTimeObjectType atot = m.addNewSamplingTime().addNewTimeObject();
 			if (o.getObservationTime() instanceof ObservationTimeInterval) {
 				TimePeriodType tpt = (TimePeriodType) atot.substitute(

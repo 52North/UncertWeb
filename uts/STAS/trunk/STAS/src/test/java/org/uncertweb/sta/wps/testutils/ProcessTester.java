@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ *                   48155 Muenster, Germany                  info@52north.org
+ *
+ * Author: Christian Autermann
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later 
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
+ * Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package org.uncertweb.sta.wps.testutils;
 
 import java.io.ByteArrayOutputStream;
@@ -49,13 +70,18 @@ import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.STARepository;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
-import org.uncertweb.sta.wps.method.grouping.spatial.SpatialGrouping;
-import org.uncertweb.sta.wps.method.grouping.temporal.TemporalGrouping;
+import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
+import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
 import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
 import org.uncertweb.sta.wps.xml.io.dec.GetObservationRequestParser;
 
+/**
+ * TODO JavaDoc
+ * 
+ * @author Christian Autermann <autermann@uni-muenster.de>
+ */
 public class ProcessTester {
 
 	private static final String CONFIG_PATH = ProcessTester.class.getResource("/wps_config/wps_config.xml").getFile();
@@ -196,9 +222,8 @@ public class ProcessTester {
 
 	public void selectAlgorithm(Class<? extends SpatialGrouping> sg,
 			Class<? extends TemporalGrouping> tg) {
-		String sgN = sg.getName(), tgN = tg.getName();
-		selectAlgorithm(sgN.substring(sgN.lastIndexOf('.') + 1, sgN.length())
-				+ "." + tgN.substring(tgN.lastIndexOf('.') + 1, tgN.length()));
+		String sgN = sg.getSimpleName(), tgN = tg.getSimpleName();
+		selectAlgorithm(sgN+":"+tgN);
 	}
 
 	public IAlgorithm getSelectedAlgorithm() {
@@ -387,6 +412,9 @@ public class ProcessTester {
 		if (sosDestUrl != null) {
 			dodt = exec.getExecute().getResponseForm().getResponseDocument().addNewOutput();
 			dodt.addNewIdentifier().setStringValue(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE.getId());	
+
+			dodt = exec.getExecute().getResponseForm().getResponseDocument().addNewOutput();
+			dodt.addNewIdentifier().setStringValue(Constants.Process.Outputs.VISUALIZATION_LINK.getId());	
 		}
 		
 //		log.info("Sending Execute request:\n{}",exec.xmlText(Namespace.defaultOptions()));
@@ -416,6 +444,8 @@ public class ProcessTester {
 						ocOutput = odt.getData().getComplexData();
 					} else if (odt.getIdentifier().getStringValue().equals(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE.getId())) {
 						refOutput = odt.getData().getComplexData();
+					} else if (odt.getIdentifier().getStringValue().equals(Constants.Process.Outputs.VISUALIZATION_LINK.getId())) {
+						log.info("VisualizationLink: {}", odt.getData().getLiteralData().getStringValue());
 					}
 					
 				}

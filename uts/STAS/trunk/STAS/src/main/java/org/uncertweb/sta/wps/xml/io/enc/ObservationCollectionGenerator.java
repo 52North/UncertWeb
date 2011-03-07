@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ *                   48155 Muenster, Germany                  info@52north.org
+ *
+ * Author: Christian Autermann
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later 
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
+ * Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package org.uncertweb.sta.wps.xml.io.enc;
 
 import static org.uncertweb.intamap.utils.Namespace.defaultOptions;
@@ -22,13 +43,16 @@ import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
 import org.w3c.dom.Node;
 
 /**
- * @author Christian Autermann
+ * Generator for {@link ObservationCollectionDocument}s.
+ * 
+ * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class ObservationCollectionGenerator extends AbstractXMLGenerator
 		implements IStreamableGenerator {
 
-//	private static final Logger log = LoggerFactory.getLogger(ObservationCollectionGenerator.class);
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public OutputStream generate(IData arg0) {
 		LargeBufferStream baos = new LargeBufferStream();
@@ -36,16 +60,31 @@ public class ObservationCollectionGenerator extends AbstractXMLGenerator
 		return baos;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Class<?>[] getSupportedInternalInputDataType() {
 		return new Class<?>[] { ObservationCollectionBinding.class };
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Node generateXML(IData arg0, String arg1) {
 		return generateXML(arg0).getDomNode();
 	}
 
+	/**
+	 * Writes the given {@code IData} (which should be a
+	 * {@link ObservationCollectionBinding}) to a {@code Writer}.
+	 * 
+	 * @param data
+	 *            the data
+	 * @param writer
+	 *            the writer
+	 */
 	public void write(IData coll, Writer writer) {
 		ObservationCollectionDocument xml = generateXML(coll);
 		try {
@@ -60,15 +99,28 @@ public class ObservationCollectionGenerator extends AbstractXMLGenerator
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void writeToStream(IData coll, OutputStream os) {
 		OutputStreamWriter w = new OutputStreamWriter(os);
 		write(coll, w);
 	}
 
+	/**
+	 * Generates an {@code ObservationCollectionDocument} out of the given
+	 * {@code IData} (which should be a {@link ObservationCollectionBinding}).
+	 * 
+	 * @param om
+	 *            the {@code IData}
+	 * @return the generated XmlBean
+	 */
 	public ObservationCollectionDocument generateXML(IData om) {
-		ObservationCollection oc = ((ObservationCollectionBinding) om).getPayload();
-		ObservationCollectionDocument doc = ObservationCollectionDocument.Factory.newInstance();
+		ObservationCollection oc = ((ObservationCollectionBinding) om)
+				.getPayload();
+		ObservationCollectionDocument doc = ObservationCollectionDocument.Factory
+				.newInstance();
 		ObservationCollectionType xboc = doc.addNewObservationCollection();
 		ObservationGenerator og = new ObservationGenerator();
 		for (Observation o : oc) {

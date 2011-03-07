@@ -1,4 +1,26 @@
+/*
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ *                   48155 Muenster, Germany                  info@52north.org
+ *
+ * Author: Christian Autermann
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later 
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
+ * Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package org.uncertweb.sta.wps.sos;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +42,17 @@ import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 
+/**
+ * TODO JavaDoc
+ * 
+ * @author Christian Autermann <autermann@uni-muenster.de>
+ */
 public class SOSClient {
 	
 	protected static final Logger log = LoggerFactory.getLogger(SOSClient.class);
 	
-	public GetObservationRequestBinding registerAggregatedObservations(List<Observation> obs, String url, String process, Map<String,String> meta) throws IOException {
-		RegisterSensorDocument regSenDoc = RegisterSensorDocumentBuilder.getInstance().build(process, obs, meta);
+	public GetObservationRequestBinding registerAggregatedObservations(List<Observation> obs, String url, String process, Map<String, Object> meta) throws IOException {
+		RegisterSensorDocument regSenDoc = RegisterSensorBuilder.getInstance().build(process, obs, meta);
 //		log.debug("RegisterSensor Request:\n{}", regSenDoc.xmlText(defaultOptions()));
 		log.info("Sending RegisterSensor request.");
 		try {
@@ -37,7 +64,7 @@ public class SOSClient {
 		boolean printed =false;
 		log.info("Sending RegisterSensor requests.");
 		for (Observation o : obs) {
-			InsertObservationDocument insObsDoc = InsertObservationDocumentBuilder.getInstance().build(o);
+			InsertObservationDocument insObsDoc = InsertObservationBuilder.getInstance().build(o);
 			if (!printed) {
 				printed = true;
 				log.debug("InstertObservation:\n{}", insObsDoc.xmlText(Namespace.defaultOptions()));
@@ -50,7 +77,7 @@ public class SOSClient {
 			}
 		}
 		log.info("Generating GetObservation request.");
-		GetObservationDocument getObsDoc = GetObservationDocumentBuilder.getInstance().build(process, obs);
+		GetObservationDocument getObsDoc = GetObservationBuilder.getInstance().build(process, obs);
 //		log.debug("GetObservation Request:\n{}", getObsDoc.xmlText(Namespace.defaultOptions()));
 		return new GetObservationRequestBinding(getObsDoc);
 	}

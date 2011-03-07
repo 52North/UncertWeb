@@ -1,0 +1,79 @@
+@CHARSET "UTF-8";
+@import url("resultTable.css");
+@import url("layerSwitcher.css");
+@import url("scaleBar.css");
+
+html, body, input, div, p {
+	padding:0px;
+	margin: 0px;
+}
+
+body, html, a {
+	font-family: Helvetica,Arial,sans-serif; 
+	color: #4F4F4F;
+}
+
+body { overflow: hidden; }
+
+.olLayerGoogleCopyright, .minimizeDiv { display: none; }
+
+h2 {
+	margin-top: 0.5em;
+	margin-bottom:0.5em;
+}
+
+h2, input {
+	font-size: 1em;
+	font-weight: bold;
+}
+
+input { border: 1px solid #B6B6B6; }
+
+.slider-value, input {
+	vertical-align: middle;
+	color: #4F4F4F;
+}
+
+.slider-value, #threshold input, #intervals input{ float: right;  text-align: right; }
+
+#map {
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	z-index: 0;
+	position: relative;			
+}
+
+#menu {
+	left: 20px;
+	top: 20px;
+	position: absolute;
+	z-index: 500;
+}
+
+.credits { margin: 5px; }
+.dialog { margin: 5px; padding: 5px; display: none;}
+
+.failMessage {
+	font-family: monospace;
+	margin: 1em;
+}
+
+#sosUrl { width: 100%; }
+
+.editorBorder {
+	border: 1px solid #B6B6B6;
+	padding: 0px;
+}
+
+.CodeMirror-line-numbers {
+	width: 2.2em;
+	color: #4F4F4F;
+	background-color: #F4F4F4;
+	text-align: right;
+	border-right: 1px solid #B6B6B6;
+	padding-right: .3em;
+	font-size: 1.3em;
+	font-family: monospace;
+	padding-top: .4em;
+}

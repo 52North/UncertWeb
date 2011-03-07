@@ -8,9 +8,7 @@ done:
 -implement flag which indicates whether spatial aggregation should be executed first
 -metadata property for provenance information
 -testing "framework"
-
-OpenLayers
 -SOS Extension angucken
 -WFS Extension angucken, wie wird GML Layer erzeugt?
--Farbskalen für Featureattribute
+-Farbskalen fï¿½r Featureattribute
 

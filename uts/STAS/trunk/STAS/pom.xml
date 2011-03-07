@@ -162,12 +162,6 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		<!--<dependency>
-			<groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-client-lib</artifactId>
-			<version>${wps.version}</version>
-			<scope>test</scope>
-		</dependency>-->
 
 	</dependencies>
 	<repositories>
@@ -255,6 +249,11 @@
 							<directory>src/main/resources/wps_config</directory>
 							<filtering>true</filtering>
 							<targetPath>config</targetPath>
+						</resource>
+						<resource>
+							<directory>openlayers</directory>
+							<filtering>false</filtering>
+							<targetPath>olc</targetPath>
 						</resource>
 					</webResources>
 					<overlays>

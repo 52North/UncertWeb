@@ -1,0 +1,24 @@
+.resultTable {
+	border-collapse:collapse;
+	font-size: 0.9em;
+	vertical-align: middle;
+	text-align: center;
+}
+.resultTable th {
+	border-bottom: 1px solid #B6B6B6;
+}
+
+.resultTable td, .resultTable th {
+	padding: 5px;
+	border-left: 1px solid #B6B6B6;
+}
+
+.resultTable td:first-child, .resultTable th:first-child { border-left: none; }
+
+.resultTable .scaleIndicator {
+	display: inline-block;
+	height: 1 em;
+	width: 1 em;
+	border: 1px solid black;
+}
+

@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ *                   48155 Muenster, Germany                  info@52north.org
+ *
+ * Author: Christian Autermann
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later 
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
+ * Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package org.uncertweb.sta.wps.xml.io.enc;
 
 import java.io.BufferedWriter;
@@ -16,15 +37,17 @@ import org.n52.wps.io.datahandler.xml.AbstractXMLGenerator;
 import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
 import org.w3c.dom.Node;
 
-
 /**
+ * Generator for {@link GetFeatureDocument}s.
  * 
- * @author Christian Autermann
- * 
+ * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class GetFeatureRequestGenerator extends AbstractXMLGenerator implements
 		IStreamableGenerator {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public OutputStream generate(IData arg0) {
 		LargeBufferStream baos = new LargeBufferStream();
@@ -32,22 +55,33 @@ public class GetFeatureRequestGenerator extends AbstractXMLGenerator implements
 		return baos;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Class<?>[] getSupportedInternalInputDataType() {
 		return new Class<?>[] { GetFeatureRequestBinding.class };
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Node generateXML(IData data, String arg1) {
-		return generateXML(data).getDomNode();
+		return ((GetFeatureRequestBinding) data).getPayload().getDomNode();
 	}
 
-	private GetFeatureDocument generateXML(IData data) {
-		return ((GetFeatureRequestBinding) data).getPayload();
-	}
-
+	/**
+	 * Writes the given {@code IData} (which should be a
+	 * {@link GetFeatureRequestBinding}) to a {@code Writer}.
+	 * 
+	 * @param data
+	 *            the data
+	 * @param writer
+	 *            the writer
+	 */
 	public void write(IData data, Writer writer) {
-		GetFeatureDocument xml = generateXML(data);
+		GetFeatureDocument xml = ((GetFeatureRequestBinding) data).getPayload();
 		try {
 			BufferedWriter bufferedWriter = new BufferedWriter(writer);
 			bufferedWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -58,6 +92,9 @@ public class GetFeatureRequestGenerator extends AbstractXMLGenerator implements
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void writeToStream(IData coll, OutputStream os) {
 		OutputStreamWriter w = new OutputStreamWriter(os);
