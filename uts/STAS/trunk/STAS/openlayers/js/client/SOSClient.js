@@ -52,7 +52,7 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			failure: this.failCallback
          });
     },
-	generateFeatures: function(resp) {
+	generateFeatures: function (resp) {
 		this.statusCallback("Parsing response");
 		var obs;
 		try {
@@ -78,7 +78,7 @@ OpenLayers.SOSClient = OpenLayers.Class({
 				throw e;
 			}
 		}
-		if (!obs || obs.length == 0) {
+		if (!obs || obs.length === 0) {
 			this.failCallback("Response does not offer any observations.");
 			return;
 		}
@@ -102,12 +102,12 @@ OpenLayers.SOSClient = OpenLayers.Class({
 		for (key in mapping) {
 			var attributes;
 			var count = mapping[key].values.length;
-			if (count == 1) {
+			if (count === 1) {
 				attributes = mapping[key].values[0];
 				attributes.isMultiFeature = false;
 			} else {
 				/* sort values by time */
-				mapping[key].values.sort(function(a, b) {
+				mapping[key].values.sort(function (a, b) {
 					var time1, time2;
 					if (a.samplingTime.timeInstant) {
 						if (b.samplingTime.timeInstant) {
@@ -144,7 +144,7 @@ OpenLayers.SOSClient = OpenLayers.Class({
 		}
 		this.generateLayer();
 	},
-	generateLayer: function() {
+	generateLayer: function () {
 		this.statusCallback("Generating layer");
     	this.layer = new OpenLayers.Layer.Vector("SOS Request " + this.id, {
 			styleMap: new OpenLayers.StyleMap({
@@ -165,7 +165,7 @@ OpenLayers.SOSClient = OpenLayers.Class({
 		this.ctrl.activate();
 		this.readyCallback();
     },
-	updateForNewScale: function() {
+	updateForNewScale: function () {
 		if (this.layer) {
 			this.layer.styleMap = new OpenLayers.StyleMap({
 				default: this.scalebar.getStyle(),
@@ -178,7 +178,7 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			}
 		}
 	},
-	onFeatureUnselect: function(feature) {
+	onFeatureUnselect: function (feature) {
 		if (feature.popup) {
 			feature.popup.hide();
 			this.map.removePopup(feature.popup);
@@ -186,8 +186,8 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			feature.popup = null;
 		}
 	},
-	onFeatureSelect: function(feature) {
-		writeValueLine = function(scale, attr) {
+	onFeatureSelect: function (feature) {
+		writeValueLine = function (scale, attr) {
 			var html = '<tr><td>';
 			if (attr.samplingTime.timeInstant) {
 				html += attr.samplingTime.timeInstant.timePosition

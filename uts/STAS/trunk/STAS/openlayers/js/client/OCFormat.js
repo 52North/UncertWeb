@@ -28,7 +28,7 @@
  *
  */
 OpenLayers.Geometry.Polygon = OpenLayers.Class(OpenLayers.Geometry.Polygon, {
-	transform: function(from, to) {
+	transform: function (from, to) {
 		for (var i = 0; i < this.components.length; i++) {
 			this.components[i].transform(from, to);			
 		}
@@ -36,15 +36,14 @@ OpenLayers.Geometry.Polygon = OpenLayers.Class(OpenLayers.Geometry.Polygon, {
 });
 
 OpenLayers.Geometry.MultiPolygon = OpenLayers.Class(OpenLayers.Geometry.MultiPolygon, {
-	transform: function(from, to) {
+	transform: function (from, to) {
 		for (var i = 0; i < this.components.length; i++) {
 			this.components[i].transform(from, to);			
 		}
 	}
 });
 
-OpenLayers.Format.ObservationCollection = OpenLayers.Class(
-		OpenLayers.Format.XML, {
+OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format.XML, {
 	CLASS_NAME: "OpenLayers.Format.ObservationCollection",
 	VERSION: "1.0.0",
 	namespaces: {
@@ -56,10 +55,9 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
         ogc: "http://www.opengis.net/ogc",
         om: "http://www.opengis.net/om/1.0",
         xlink: "http://www.w3.org/1999/xlink",
-        xsi: "http://www.w3.org/2001/XMLSchema-instance",
+        xsi: "http://www.w3.org/2001/XMLSchema-instance"
     },
-    schemaLocation: "http://www.opengis.net/sos/1.0" 
-			+ " http://schemas.opengis.net/sos/1.0.0/sosAll.xsd",
+    schemaLocation: "http://www.opengis.net/sos/1.0" + " http://schemas.opengis.net/sos/1.0.0/sosAll.xsd",
     defaultPrefix: "sos",
     regExes: {
         trimSpace: (/^\s*|\s*$/g),
@@ -67,20 +65,20 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
         splitSpace: (/\s+/),
         trimComma: (/\s*,\s*/g),
 		splitComma: (/,/),
-		splitColon: (/:/),
+		splitColon: (/:/)
     },
-    initialize: function(options) {
+    initialize: function (options) {
         OpenLayers.Format.XML.prototype.initialize.apply(this, [options]);
     },
-    read: function(data, destinationProjection) {
-        if(typeof data == "string") {
+    read: function (data, destinationProjection) {
+        if (typeof data === "string") {
             
-			if (data.replace(this.regExes.trimSpace,"") === "")
+			if (data.replace(this.regExes.trimSpace, "") === "") {
 				throw "Can not parse empty response.";
+			}
 			data = OpenLayers.Format.XML.prototype.read.apply(this, [data]);
-
         }
-        if(data && data.nodeType == 9) {
+        if (data && data.nodeType === 9) {
             data = data.documentElement;
         }
         var info = {};
@@ -94,8 +92,7 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
 			}
 			for (var i = 0; i < info.measurements.length; i++) {
 				for (var j = 0; j < info.measurements[i].fois.length; j++) {
-					for (var k = 0; k < info.measurements[i].fois[j].features
-																.length; k++) {
+					for (var k = 0; k < info.measurements[i].fois[j].features.length; k++) {
 						info.measurements[i].fois[j].features[k]
 							.geometry.transform(this.externalProjection, 
 									destinationProjection);
@@ -104,8 +101,7 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
 			}
 			for (var i = 0; i < info.observations.length; i++) {
 				for (var j = 0; j < info.observations[i].fois.length; j++) {
-					for (var k = 0; k < info.observations[i].fois[j].features
-																.length; k++) {
+					for (var k = 0; k < info.observations[i].fois[j].features.length; k++) {
 						info.observations[i].fois[j].features[k]
 							.geometry.transform(this.externalProjection, 
 									destinationProjection);
@@ -133,55 +129,55 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
     readers: {
 		"ows": OpenLayers.Format.ExceptionReport.prototype.readers.ows,
 		"swe": {
-			"DataArray": function(node,obj){
+			"DataArray": function (node,obj){
 				this.readChildNodes(node,obj);
 			},
-			"elementCount": function(node,obj){
+			"elementCount": function (node,obj){
 				/* do nothing */
 			},
-			"Count": function(node,obj){
+			"Count": function (node,obj){
 				/* do nothing */
 			},
-			"value": function(node,obj){
+			"value": function (node,obj){
 				/* do nothing */
 			},
-			"elementType": function(node,obj){
+			"elementType": function (node,obj){
 				this.readChildNodes(node,obj);
 			},
-			"DataRecord": function(node,obj){
+			"DataRecord": function (node,obj){
 				var fields = [];
 				obj.fields = fields;
 				this.readChildNodes(node,fields);
 			},
-			"field": function(node,fields){
+			"field": function (node,fields){
 				var field = {name: node.getAttribute("name")};
 				fields.push(field);
 				this.readChildNodes(node,field);
 			},
-			"Time": function(node,obj){
+			"Time": function (node,obj){
 				obj.definition = node.getAttribute("definition");
 			},
-			"Text": function(node,obj){
+			"Text": function (node,obj){
 				obj.definition = node.getAttribute("definition");	
 			},
-			"Quantity": function(node,obj){
+			"Quantity": function (node,obj){
 				obj.definition = node.getAttribute("definition");
 				this.readChildNodes(node, obj);
 			},
-			"uom": function(node,obj){
+			"uom": function (node,obj){
 				obj.uom = node.getAttribute("code");
 			},
-			"encoding": function(node,obj){
+			"encoding": function (node,obj){
 				var encoding = {};
 				obj.encoding = encoding;
 				this.readChildNodes(node,encoding);
 			},
-			"TextBlock": function(node,obj){
+			"TextBlock": function (node,obj){
 				obj.decimalSeperator = node.getAttribute("decimalSeperator") || '.';
 				obj.tokenSeperator = node.getAttribute("tokenSeperator") || ",";
 				obj.blockSeperator = node.getAttribute("blockSeperator") || ";";
 			},
-			"values": function(node, result){
+			"values": function (node, result){
 				var valueBlocks = this.getChildValue(node).replace(
 						this.regExes.trimSpace,"").replace(
 						new RegExp(result.encoding.blockSeperator+"$"),"")
@@ -200,7 +196,7 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
 					}
 				}
 				function isValid(value){
-					return (!value || value == 0)
+					return (!value || value === 0)
 				}
 				if (isValid(timeField) && isValid(foiField) 
 						&& isValid(phenField)) {
@@ -229,7 +225,7 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
 			}
 		},
 		"sa": {
-			"SamplingPoint": function(node, obj) {
+			"SamplingPoint": function (node, obj) {
                 if (!obj.attributes) {
                     var feature = {attributes: {}};
                     obj.features.push(feature);
@@ -239,7 +235,7 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
 						this.namespaces.gml, "id");
                 this.readChildNodes(node, obj);
             },
-			"SamplingSurface": function(node, obj) {
+			"SamplingSurface": function (node, obj) {
 				if (!obj.attributes) {
                     var feature = {attributes: {}};
                     obj.features.push(feature);
@@ -249,7 +245,7 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
 						this.namespaces.gml, "id");
 				this.readChildNodes(node, obj);
 			},
-			"shape": function(node, obj) {
+			"shape": function (node, obj) {
 				this.readChildNodes(node, obj);
 			},
 			"position": function (node, obj) {
@@ -257,7 +253,7 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
             }
         },
 		"gml": OpenLayers.Util.applyDefaults({
-			"coordinates": function(node, obj) {
+			"coordinates": function (node, obj) {
                 var str = this.getChildValue(node);
 				str = str.replace(this.regExes.trimSpace, "");
                 str = str.replace(this.regExes.trimComma, ",");
@@ -271,43 +267,43 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
 				}
 				obj.points = points;
             },
-			"CompositeSurface": function(node, obj) {
+			"CompositeSurface": function (node, obj) {
 				OpenLayers.Format.GML.v3.prototype.readers.gml.MultiPolygon.apply(this, [node,obj]);
 			},
-			"TimeInstant": function(node, samplingTime) {
+			"TimeInstant": function (node, samplingTime) {
                var timeInstant = {};
                 samplingTime.timeInstant = timeInstant;
                 this.readChildNodes(node, timeInstant);
             },
-			"TimePeriod": function(node, samplingTime) {
+			"TimePeriod": function (node, samplingTime) {
 				var timePeriod = {};
 				samplingTime.timePeriod = timePeriod;
 				this.readChildNodes(node, timePeriod);
 			},
-			"timePosition": function(node, timeInstant) {
+			"timePosition": function (node, timeInstant) {
                 timeInstant.timePosition = OpenLayers.Date.parse(
 						this.getChildValue(node));
             },
-			"beginPosition": function(node, timePeriod) {
+			"beginPosition": function (node, timePeriod) {
                 timePeriod.beginPosition = OpenLayers.Date.parse(
 						this.getChildValue(node));
 			},
-			"endPosition": function(node, timePeriod) {
+			"endPosition": function (node, timePeriod) {
                 timePeriod.endPosition = OpenLayers.Date.parse(
 						this.getChildValue(node));
 			},
-			"FeatureCollection": function(node, obj) {
+			"FeatureCollection": function (node, obj) {
                 this.readChildNodes(node, obj);
             },
-			"featureMember": function(node, obj) {
+			"featureMember": function (node, obj) {
                 var feature = {attributes: {}};
                 obj.features.push(feature);
                 this.readChildNodes(node, feature);
             },
-			"name": function(node, obj) {
+			"name": function (node, obj) {
                 obj.attributes.name = this.getChildValue(node);
             },
-			"pos": function(node, obj) {
+			"pos": function (node, obj) {
 				var attr = node.getAttribute("srsName");
 				if (attr) {
 					var splittedSrsName = attr.split(this.regExes.splitColon);
@@ -316,7 +312,7 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
 				}
              	OpenLayers.Format.GML.v3.prototype.readers.gml.pos.apply(this, [node, obj]);
             },
-			"Polygon": function(node, obj) {
+			"Polygon": function (node, obj) {
 				var attr = node.getAttribute("srsName");
 				if (attr) {
 					var splittedSrsName = attr.split(this.regExes.splitColon);
@@ -328,41 +324,41 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
             },
         }, OpenLayers.Format.GML.v3.prototype.readers.gml),
 		"om": {
-			"ObservationCollection": function(node, obj) {
+			"ObservationCollection": function (node, obj) {
                 obj.id = this.getAttributeNS(node, this.namespaces.gml, "id");
 				obj.measurements = [];
 				obj.observations = []
                 this.readChildNodes(node, obj);
             },
-			"member": function(node, observationCollection) {
+			"member": function (node, observationCollection) {
                 this.readChildNodes(node, observationCollection);
             },
-			"Measurement": function(node, observationCollection) {
+			"Measurement": function (node, observationCollection) {
                 var measurement = {};
                 observationCollection.measurements.push(measurement);
                 this.readChildNodes(node, measurement);
             },
-			"Observation": function(node, observationCollection) {
+			"Observation": function (node, observationCollection) {
                 var observation = {};
                 observationCollection.observations.push(observation);
                 this.readChildNodes(node, observation);
             },
-			"samplingTime": function(node, measurement) {
+			"samplingTime": function (node, measurement) {
                 var samplingTime = {};
                 measurement.samplingTime = samplingTime;
                 this.readChildNodes(node, samplingTime);
             },
-			"observedProperty": function(node, measurement) {
+			"observedProperty": function (node, measurement) {
                 measurement.observedProperty = this.getAttributeNS(node, 
 						this.namespaces.xlink, "href");
                 this.readChildNodes(node, measurement);
             },
-			"procedure": function(node, measurement) {
+			"procedure": function (node, measurement) {
                 measurement.procedure = this.getAttributeNS(node, 
 						this.namespaces.xlink, "href");
                 this.readChildNodes(node, measurement);
             },
-			"featureOfInterest": function(node, observation) {
+			"featureOfInterest": function (node, observation) {
                 var foi = {features: []};
                 observation.fois = [];
                 observation.fois.push(foi);
@@ -376,7 +372,7 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
                 }
                 foi.features = features;
             },
-			"result": function(node, measurement) {
+			"result": function (node, measurement) {
                 var result = {};
                 measurement.result = result;
 				var uom = node.getAttribute("uom");
@@ -389,7 +385,7 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(
             }
         }
 	},
-    write: function(options) {/* we don't need to write any xml */},
+    write: function (options) {/* we don't need to write any xml */},
 	writers: {/* we don't need to write any xml */}
 });
 

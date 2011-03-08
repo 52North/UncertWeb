@@ -53,7 +53,6 @@ import org.uncertweb.sta.wps.api.ProcessOutput;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
 import org.uncertweb.sta.wps.method.MethodFactory;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
-import org.uncertweb.sta.wps.method.aggregation.impl.ArithmeticMeanAggregation;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
 import org.uncertweb.sta.wps.method.grouping.impl.CoverageGrouping;
@@ -69,6 +68,11 @@ import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class Constants extends org.uncertweb.intamap.utils.Constants {
+
+	/**
+	 * The Logger.
+	 */
+	protected static final Logger log = LoggerFactory.getLogger(Constants.class);
 
 	/**
 	 * {@link GenericObservationAggregationProcess} related constants.
@@ -94,25 +98,24 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 				 * The default {@link AggregationMethod} used for spatial
 				 * aggregation.
 				 */
-				public static final Class<? extends AggregationMethod> SPATIAL_AGGREGATION_METHOD = ArithmeticMeanAggregation.class;
+				public static final Class<? extends AggregationMethod> SPATIAL_AGGREGATION_METHOD = getMethodClass("stas.default.aggregationMethod.spatial");
 
 				/**
 				 * The default {@link AggregationMethod} used for temporal
 				 * aggregation.
 				 */
-				public static final Class<? extends AggregationMethod> TEMPORAL_AGGREGATION_METHOD = ArithmeticMeanAggregation.class;
-
+				public static final Class<? extends AggregationMethod> TEMPORAL_AGGREGATION_METHOD = getMethodClass("stas.default.aggregationMethod.temporal");
 				/**
 				 * Indicates if observations will be grouped by ObservedProperty
 				 * by default.
 				 */
-				public static final boolean GROUP_BY_OBSERVED_PROPERTY = true;
+				public static final boolean GROUP_BY_OBSERVED_PROPERTY = getBool("stas.default.groupByObsercedProperty");
 
 				/**
 				 * Indicates if temporal aggregation should take place before
 				 * spatial aggregation.
 				 */
-				public static final boolean TEMPORAL_BEFORE_SPATIAL_GROUPING = false;
+				public static final boolean TEMPORAL_BEFORE_SPATIAL_GROUPING = getBool("stas.default.temporalBeforeSpatialGrouping");
 			}
 
 			/**
@@ -336,18 +339,19 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 			/**
 			 * Timeout for connecting.
 			 */
-			public static final int CONNECTION = Integer.parseInt(get(Property.CONNECTION));
+			public static final int CONNECTION = getInt(Property.CONNECTION);
 			
 			/**
-			 * Timout for reading.
+			 * Timeout for reading.
 			 */
-			public static final int READ = Integer.parseInt(get(Property.READ));
+			public static final int READ = getInt(Property.READ);
 		}
 
 		/**
 		 * HTTP header.
 		 */
 		public static interface Header {
+			
 			/**
 			 * Content-Type header.
 			 */
@@ -365,7 +369,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 			 */
 			public static final String GET = "GET";
 
-			/**
+			/** 
 			 * POST method.
 			 */
 			public static final String POST = "POST";
@@ -395,7 +399,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	/**
 	 * STAS version that will be inserted in URN's
 	 */
-	public static final String STAS_VERSION = "1.0.0";
+	public static final String STAS_VERSION = get("stas.version");
 
 	/**
 	 * SOS related constants.
@@ -405,46 +409,44 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 		/**
 		 * Indicates that we want an <om:Observation>
 		 */
-		public static final QName OBSERVATION_RESULT_MODEL = new QName(
-				Namespace.OM.URI, "Observation", "om");
+		public static final QName OBSERVATION_RESULT_MODEL = new QName(Namespace.OM.URI, "Observation", "om");
 
 		/**
 		 * Indicates that we want an <om:Measurement>
 		 */
-		public static final QName MEASUREMENT_RESULT_MODEL = new QName(
-				Namespace.OM.URI, "Measurement", "om");
+		public static final QName MEASUREMENT_RESULT_MODEL = new QName(Namespace.OM.URI, "Measurement", "om");
 
 		/**
 		 * The offering id for which the aggregated observations will be
 		 * registered.
 		 */
-		public static final String AGGREGATION_OFFERING_ID = "AGGREGATION";
+		public static final String AGGREGATION_OFFERING_ID = get("stas.sos.offeringId");
 
 		/**
 		 * The offering name for which the aggregated observations will be
 		 * registered.
 		 */
-		public static final String AGGREGATION_OFFERING_NAME = AGGREGATION_OFFERING_ID;
+		public static final String AGGREGATION_OFFERING_NAME = get("stas.sos.offeringName");
 
 		/**
 		 * The service type of the SOS: "SOS".
 		 */
-		public static final String SERVICE_NAME = "SOS";
+		public static final String SERVICE_NAME = get("stas.sos.service.name");
 
 		/**
 		 * The service version used for SOS requests.
 		 */
-		public static final String SERVICE_VERSION = "1.0.0";
+		public static final String SERVICE_VERSION = get("stas.sos.service.version");
 
 		/**
 		 * SensorML 1.0.1 output format.
 		 */
-		public static final String SENSOR_OUTPUT_FORMAT = "text/xml;subtype=\"sensorML/1.0.1\"";
+		public static final String SENSOR_OUTPUT_FORMAT = get("stas.sos.ourputFormat.sensor");
 
 		/**
 		 * O&M 1.0.0 output format.
 		 */
-		public static final String OBSERVATION_OUTPUT_FORMAT = "text/xml;subtype=\"om/1.0.0\"";
+		public static final String OBSERVATION_OUTPUT_FORMAT = get("stas.sos.outputFormat.observation");
 
 		/**
 		 * SOS operations.
@@ -550,8 +552,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 			 * 
 			 * @see Constants#STAS_VERSION
 			 */
-			public static final String AGGREGATED_PROCESS = "urn:ogc:object:sensor:STAS:"
-					+ STAS_VERSION + ":";
+			public static final String AGGREGATED_PROCESS = get("stas.sos.urn.process") + STAS_VERSION + ":";
 		}
 
 		/**
@@ -562,7 +563,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 			/**
 			 * Overall description of the process.
 			 */
-			public static final String SENSOR_DESCRIPTION = "Virtual process for aggregated observations.";
+			public static final String SENSOR_DESCRIPTION = get("stas.sos.sensorDescription");
 
 			/**
 			 * Parameter names of used inputs.
@@ -574,43 +575,42 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 				 * 
 				 * @see Constants#STAS_VERSION
 				 */
-				public static final String URN_PREFIX = "urn:ogc:def:parameter:STAS:"
-						+ STAS_VERSION + ":";
+				public static final String URN_PREFIX = get("stas.sos.urn.param") + STAS_VERSION + ":";
 
 				/**
 				 * Parameter to indicate which {@link SpatialGrouping} was used.
 				 */
-				public static final String SPATIAL_GROUPING_METHOD = "spatialGroupingMethod";
+				public static final String SPATIAL_GROUPING_METHOD = get("stas.sos.param.spatialGroupingMethod");
 
 				/**
 				 * Parameter to indicate which {@link TemporalGrouping} was
 				 * used.
 				 */
-				public static final String TEMPORAL_GROUPING_METHOD = "temporalGroupingMethod";
+				public static final String TEMPORAL_GROUPING_METHOD = get("stas.sos.param.temporalGroupingMethod");
 
 				/**
 				 * Parameter to indicate which {@link AggregationMethod} was
 				 * used for spatial aggregation.
 				 */
-				public static final String SPATIAL_AGGREGATION_METHOD = "spatialAggregationMethod";
+				public static final String SPATIAL_AGGREGATION_METHOD = get("stas.sos.param.spatialAggregationMethod");
 
 				/**
 				 * Parameter to indicate which {@link AggregationMethod} was
 				 * used for temporal aggregation.
 				 */
-				public static final String TEMPORAL_AGGREGATION_METHOD = "temporalAggregationMethod";
+				public static final String TEMPORAL_AGGREGATION_METHOD = get("stas.sos.param.temporalAggregationMethod");
 
 				/**
 				 * Parameter to indicate if the the process grouped first
 				 * temporally.
 				 */
-				public static final String TEMPORAL_BEFORE_SPATIAL_AGGREGATION = "temporalBeforeSpatialAggregation";
+				public static final String TEMPORAL_BEFORE_SPATIAL_AGGREGATION = get("stas.sos.param.temporalBeforeSpatialAggregation");
 
 				/**
 				 * Parameter to indicate if the observation were grouped by
 				 * ObservedProperty.
 				 */
-				public static final String GROUPED_BY_OBSERVED_PROPERTY = "groupedByObservedProperty";
+				public static final String GROUPED_BY_OBSERVED_PROPERTY = get("stas.sos.param.groupedByObservedProperty");
 			}
 
 			/**
@@ -622,13 +622,12 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 				 * 
 				 * @see Constants#STAS_VERSION
 				 */
-				public static final String URN_PREFIX = "urn:ogc:def:property:STAS:"
-						+ STAS_VERSION + ":";
+				public static final String URN_PREFIX = get("stas.sos.urn.caps") + STAS_VERSION + ":";
 
 				/**
 				 * Property to indicate the time of aggregation.
 				 */
-				public static final String TIME_OF_AGGREGATION = "timeOfAggregation";
+				public static final String TIME_OF_AGGREGATION = get("stas.sos.caps.timeOfAggregation");
 			}
 		}
 	}
@@ -638,12 +637,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	 * 
 	 * @see GetObservationRequestCache
 	 */
-	public static final int MAX_CACHED_REQUESTS = 20;
-	
-	/**
-	 * The Logger.
-	 */
-	protected static final Logger log = LoggerFactory.getLogger(Constants.class);
+	public static final int MAX_CACHED_REQUESTS = getInt("stas.requestCache.max");
 	
 	/**
 	 * Configuration files.
@@ -665,15 +659,32 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 		 */
 		public static final String PROCESS_PROPERTIES = "/process.properties";
 		
-		/**
-		 * The directory name in which GetObservation requests are saved.
-		 */
-		public static final String REQUEST_SAVE_DIRECTORY_NAME = "requests";
+	}
+	
+	/**
+	 * Constants for the OpenLayers Client.
+	 */
+	public static interface OpenLayersClient {
 		
 		/**
 		 * The directory that contains the OpenLayers client.
 		 */
-		public static final String OLC_PATH = "olc";
+		public static final String PATH = get("stas.olc.path");
+		
+		/**
+		 * The directory name in which GetObservation requests are saved.
+		 */
+		public static final String REQUEST_SAVE_DIRECTORY = get("stas.olc.requestPath");
+		
+		/**
+		 * Parameter for the SOS URL.
+		 */
+		public static final String URL_PARAMETER = get("stas.olc.param.url");
+		
+		/**
+		 * Parameter for the SOS request.
+		 */
+		public static final String REQUEST_PARAMETER = get("stas.olc.param.request");
 	}
 	
 	/**
@@ -712,6 +723,53 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 		}
 		return prop;
 	}
+	
+	/**
+	 * Loads a boolean configuration property.
+	 * 
+	 * @param key
+	 *            the property key
+	 * @return the property
+	 */
+	static boolean getBool(String key) {
+		String s = get(key);
+		if (s == null) {
+			throw new RuntimeException("Can not parse property: {}" + key);
+		}
+		return Boolean.parseBoolean(key);
+	}
+	
+	/**
+	 * Loads a integer configuration property.
+	 * 
+	 * @param key
+	 *            the property key
+	 * @return the property
+	 */
+	static int getInt(String key) {
+		String s = get(key);
+		if (s == null) {
+			throw new RuntimeException("Can not parse property: {}" + key);
+		}
+		return Integer.parseInt(s);
+	}
+	
+	/**
+	 * Loads a {@code Class<? extends AggregationMethod>} configuration property.
+	 * 
+	 * @param key
+	 *            the property key
+	 * @return the property
+	 */
+	static Class<? extends AggregationMethod> getMethodClass(String key) {
+		String s = get(key);
+		if (s == null) {
+			throw new RuntimeException("Can not parse property: {}" + key);
+		}
+		return MethodFactory.getInstance().getMethodForName(s);
+	}
+	
+	
 
 	/**
 	 * Loads a property from {@link Constants#COMMON_PROPERTIES}
@@ -726,8 +784,9 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 			props = new Properties();
 			try {
 				InputStream is = Constants.class.getResourceAsStream(Files.COMMON_PROPERTIES);
-				if (is == null)
+				if (is == null) {
 					throw new FileNotFoundException("Common Properties not found.");
+				}
 				props.load(is);
 			} catch (IOException e) {
 				log.error("Failed to load common properties", e);
@@ -750,8 +809,9 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 			processProps = new Properties();
 			try {
 				InputStream is = Constants.class.getResourceAsStream(Files.PROCESS_PROPERTIES);
-				if (is == null)
+				if (is == null) {
 					throw new FileNotFoundException("Process Properties not found.");
+				}
 				processProps.load(is);
 			} catch (IOException e) {
 				log.error("Failed to load Process properties", e);

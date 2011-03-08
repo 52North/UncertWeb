@@ -53,8 +53,7 @@ public class SOSClient {
 	
 	public GetObservationRequestBinding registerAggregatedObservations(List<Observation> obs, String url, String process, Map<String, Object> meta) throws IOException {
 		RegisterSensorDocument regSenDoc = RegisterSensorBuilder.getInstance().build(process, obs, meta);
-//		log.debug("RegisterSensor Request:\n{}", regSenDoc.xmlText(defaultOptions()));
-		log.info("Sending RegisterSensor request.");
+		log.info("Sending RegisterSensor request:\n{}",regSenDoc.xmlText(Namespace.defaultOptions()));
 		try {
 			sendPostRequests(url, regSenDoc);
 		} catch(Throwable e) {
@@ -78,7 +77,6 @@ public class SOSClient {
 		}
 		log.info("Generating GetObservation request.");
 		GetObservationDocument getObsDoc = GetObservationBuilder.getInstance().build(process, obs);
-//		log.debug("GetObservation Request:\n{}", getObsDoc.xmlText(Namespace.defaultOptions()));
 		return new GetObservationRequestBinding(getObsDoc);
 	}
 

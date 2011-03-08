@@ -23,17 +23,15 @@ OpenLayers.Color = {
 	RGB: OpenLayers.Class({
 		CLASS_NAME: "OpenLayers.Color.RGB",
 		HEX_DIGITS: '0123456789ABCDEF',
-		initialize: function(red, green, blue) {
+		initialize: function (red, green, blue) {
 			this.r = red;
 			this.g = green;
 			this.b = blue;
 		},
-		toHex: function() {
-			return '#' + this.hexify(this.r) 
-					   + this.hexify(this.g) 
-					   + this.hexify(this.b);
+		toHex: function () {
+			return '#' + this.hexify(this.r) + this.hexify(this.g) + this.hexify(this.b);
 		},
-		hexify: function(number) {
+		hexify: function (number) {
 			var lsd = number % 16;
 			var msd = (number - lsd) / 16;	
 			return this.HEX_DIGITS.charAt(msd) + this.HEX_DIGITS.charAt(lsd);
@@ -41,31 +39,32 @@ OpenLayers.Color = {
 	}),
 	HSV: OpenLayers.Class({
 		CLASS_NAME: "OpenLayers.Color.HSV",
-		initialize: function(hue,sat,val) {
+		initialize: function (hue, sat, val) {
 			this.h = hue;
 			this.s = sat;
 			this.v = val;
 		},
-		toRGB: function() {
+		toRGB: function () {
 			var h = this.h / 360;
 			var s = this.s / 100;
 			var v = this.v / 100;
 			var r, g, b;
-			if (s == 0) {
+			if (s === 0) {
 				r = g = b = v;
 			} else {
-				h6 = h*6;
+				var h6, i, x, y, z;
+				h6 = h * 6;
 				i = Math.floor(h6);
-				a = v*(1-s);
-				b = v*(1-s*(h6-i));
-				c = v*(1-s*(1-(h6-i)));
+				x = v * (1 - s);
+				y = v * (1 - s * (h6 - i));
+				z = v * (1 - s * (1 - (h6 - i)));
 				switch (i) {
-					case 0: r=v; g=c; b=a; break;
-					case 1: r=b; g=v; b=a; break;
-					case 2: r=a; g=v; b=c; break;
-					case 3: r=a; g=b; b=v; break;
-					case 4: r=c; g=a; b=v; break;
-					case 5: r=v; g=a; b=b; break;
+				case 0: r = v; g = z; b = x; break;
+				case 1: r = y; g = v; b = x; break;
+				case 2: r = x; g = v; b = z; break;
+				case 3: r = x; g = y; b = v; break;
+				case 4: r = z; g = x; b = v; break;
+				case 5: r = v; g = x; b = y; break;
 				}
 			}
 			return new OpenLayers.Color.RGB(r * 255, g * 255, b * 255);

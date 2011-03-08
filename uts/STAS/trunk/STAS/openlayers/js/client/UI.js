@@ -1,4 +1,4 @@
-/*
+c/*
  * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
  *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
  *                   48155 Muenster, Germany                  info@52north.org
@@ -30,7 +30,7 @@ const initIntervals = 10;
 const maxIntervals = 20;
 const minIntervals = 2;
 
-$(function(){
+$(function (){
 	OpenLayers.ImgPath = "img/";
 
 	var editor;
@@ -42,14 +42,14 @@ $(function(){
 	var mapControls;
 
 	/* load default url & request and init editor */
-	(function() {	
+	(function () {	
 		$("#sosUrl").val("http://giv-uw.uni-muenster.de:8080/STAS-SOS/sos");
 		//$("#sosUrl").val("http://giv-uw.uni-muenster.de:8080/AQE/sos");
 		//$("#sosUrl").val("http://localhost:8080/sos/sos");
 		OpenLayers.Request.GET({
 			url: "xml/stas-example.xml",
 			//url: "xml/aqe-example.xml",
-			callback: function(r) {
+			callback: function (r) {
 				$("#sosRequest").val(r.responseText);
 				editor = CodeMirror.fromTextArea("sosRequest", {
 					height: "370px",
@@ -63,23 +63,23 @@ $(function(){
 	})();
 
 	dialog = {
-		error: function(e) {
+		error: function (e) {
 			$("<div></div>").html('The SOS request failed: <p class="failMessage">' + e + "</p>").dialog({
 				title: "Error", width: 600, buttons: {
-					"Ok": function() { $(this).dialog("close"); } 
+					"Ok": function () { $(this).dialog("close"); } 
 				},
-				close: function(e,ui) { dialog.issue.dialog("close"); },
-				open: function(e,ui) {	$(this).parent().children().children('.ui-dialog-titlebar-close').hide(); }
+				close: function (e,ui) { dialog.issue.dialog("close"); },
+				open: function (e,ui) {	$(this).parent().children().children('.ui-dialog-titlebar-close').hide(); }
 			});
 		},
 		layer: $("#layerDialog").dialog({
 			title: "Layer Settings",
 			autoOpen: false,
-			close: function() {
+			close: function () {
 				mapControls.layer.minimizeControl();
 				$("#layerButton").button("enable");
 			},
-			open: function() {
+			open: function () {
 				mapControls.layer.maximizeControl();
 				$("#layerButton").button("disable");
 			}
@@ -87,14 +87,14 @@ $(function(){
 		scale: $("#scaleDialog").dialog({
 			title: "Scale Settings",
 			autoOpen: false,
-			close: function() { $("#scaleButton").button("enable"); },
-			open: function() { $("#scaleButton").button("disable"); }
+			close: function () { $("#scaleButton").button("enable"); },
+			open: function () { $("#scaleButton").button("disable"); }
 		}),
 		about: $("#aboutDialog").dialog({
 			title: "OpenLayers SOS Client",
 			autoOpen: false,
-			close: function() { $("#aboutButton").button("enable"); },
-			open: function() { $("#aboutButton").button("disable"); }
+			close: function () { $("#aboutButton").button("enable"); },
+			open: function () { $("#aboutButton").button("disable"); }
 		}),
 		issue : $("#issueDialog").dialog({
 			title: "Issue SOS Request",
@@ -102,42 +102,42 @@ $(function(){
 			modal: true,
 			autoOpen: false,
 			buttons: {
-				"OK": function(e, ui) {
+				"OK": function (e, ui) {
 					$(".ui-dialog-buttonpane button", ui).button("disable");
 					try {
 						clients.push(new OpenLayers.SOSClient({
 							map: map, scalebar: scaleBar,
 							url: $("#sosUrl").val(),
 							request: editor.getCode(),
-							readyCallback: function(){ dialog.issue.dialog("close"); },
-							statusCallback: function(stat) {},
+							readyCallback: function (){ dialog.issue.dialog("close"); },
+							statusCallback: function (stat) {},
 							failCallback: dialog.error
 						}));
 					} catch(e) {
 						dialog.error(e);
 					}
 				},
-				"Cancel": function() { dialog.issue.dialog("close"); }
+				"Cancel": function () { dialog.issue.dialog("close"); }
 			},
-			close: function(e,ui) {
+			close: function (e, ui) {
 				$("#issueButton").button("enable");
 				$(this).parent().children(".ui-dialog-buttonpane").children().children("button").button("enable");
 			},
-			open: function(e,ui) {
+			open: function (e, ui) {
 				$(this).parent().children().children('.ui-dialog-titlebar-close').hide();
 				$("#issueButton").button("disable");
 			}
 		})
 	};
 
-	(function() {
+	(function () {
 		var ll1 = new OpenLayers.LonLat( 5.8669, 47.2708).transform(PROJ4326, PROJMERC);
 		var ll2 = new OpenLayers.LonLat(15.0436, 55.0591).transform(PROJ4326, PROJMERC);
 		bounds = new OpenLayers.Bounds(ll1.lon, ll1.lat, ll2.lon, ll2.lat);
 	})();
 
 	/* init sliders */
-	(function() {
+	(function () {
 		var thresholdInput = false;
 		var intervalsInput = false;
 
@@ -145,7 +145,7 @@ $(function(){
 			if (!intervalsInput) {
 				intervalsInput = true;
 				$("#intervals").html('<input size="4" value="' + $("#intervals span").html() + '"/>');
-				$("#intervals input").change(function(){
+				$("#intervals input").change(function (){
 					if ($("#intervals input").val() > maxIntervals) { $("#intervals input").val(maxIntervals); }
 					if ($("#intervals input").val() < minIntervals) { $("#intervals input").val(minIntervals); }
 					$("#intervalSlider").slider("value", $("#intervals input").val());
@@ -161,7 +161,7 @@ $(function(){
 			if (!thresholdInput) {
 				thresholdInput = true;
 				$("#threshold").html('<input size="4" value="' + $("#threshold span").html() + '"/>');
-				$("#threshold input").change(function() {
+				$("#threshold input").change(function () {
 					if ($("#threshold input").val() > maxThreshold) { $("#threshold input").val(maxThreshold); }
 					if ($("#threshold input").val() < minThreshold) { $("#threshold input").val(minThreshold); }
 					$("#thresholdSlider").slider("value", $("#threshold input").val());
@@ -176,13 +176,13 @@ $(function(){
 
 		function updateLegend() { 
 			scaleBar.writeLegend(); 
-			$.each(clients, function(i,c){ c.updateForNewScale(); }); 
+			$.each(clients, function (i,c){ c.updateForNewScale(); }); 
 		}
 
 		$("#thresholdSlider").slider({ animate: true, 
 			value: initThreshold, min: minThreshold, max: maxThreshold,
 			change: updateLegend,
-			slide: function(e, ui) { 
+			slide: function (e, ui) { 
 				updateLegend();
 				if (thresholdInput) { $("#threshold input").val(ui.value); }
 				else { $("#threshold span").html(ui.value); }
@@ -191,7 +191,7 @@ $(function(){
 		$("#intervalSlider").slider({ animate: true, 
 			value: initIntervals, min: minIntervals, max: maxIntervals,
 			change: updateLegend,
-			slide: function(e, ui) { 
+			slide: function (e, ui) { 
 				updateLegend();
 				if (intervalsInput) { $("#intervals input").val(ui.value); } 
 				else { $("#intervals span").html(ui.value); }
@@ -207,13 +207,13 @@ $(function(){
 	/* init scalebar */
 	scaleBar = new OpenLayers.ScaleBar({
 		width: 800, height: 27,
-		setLegendHtml: function(html) { $("#scale").html(html); },
-		getNumIntervals: function() { return parseInt($("#intervalSlider").slider("value")); },	
-		getThreshold: function() {	return parseFloat($("#thresholdSlider").slider("value")); }
+		setLegendHtml: function (html) { $("#scale").html(html); },
+		getNumIntervals: function () { return parseInt($("#intervalSlider").slider("value")); },	
+		getThreshold: function () {	return parseFloat($("#thresholdSlider").slider("value")); }
 	});
 
 	/* init map */
-	(function() {
+	(function () {
 		map = new OpenLayers.Map({
 			div: "map",
 			units: "m",
@@ -231,37 +231,37 @@ $(function(){
 				new OpenLayers.Layer.Google("Google Hybrid", {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20})
 			]
 		});
-		$.each(map.layers, function(l){ l.animationEnabled = true; });
+		$.each(map.layers, function (l){ l.animationEnabled = true; });
 		mapControls = {
 			mouse: new OpenLayers.Control.MouseDefaults(),
 			zoomin: new OpenLayers.Control.ZoomBox({ title:"Zoom in box", out: false }),
 			zoomout: new OpenLayers.Control.ZoomBox({ title:"Zoom out box", out: true }),
 			layer: new OpenLayers.Control.LayerSwitcher({ div: $("#layerSwitcher").get()[0], roundedCorner: false })
 		};
-		$.each(mapControls, function(k,v) { map.addControl(v); });
+		$.each(mapControls, function (k,v) { map.addControl(v); });
 		map.zoomToExtent(bounds);
 	})();
 	
 	/* create and bind menu */
-	(function() {
+	(function () {
 		function icon(icon) { return { text: false, icons: {primary: icon} } }
-		$("#issueButton").button().click(function() { dialog.issue.dialog("open"); });
-		$("#scaleButton").button().click(function() { dialog.scale.dialog("open"); });
-		$("#layerButton").button().click(function() { dialog.layer.dialog("open"); });
-		$("#aboutButton").button(icon("ui-icon-help")).click(function() { dialog.about.dialog("open"); });
-		$("#resetZoomButton").button(icon("ui-icon-arrow-4-diag")).click(function(){ 
+		$("#issueButton").button().click(function () { dialog.issue.dialog("open"); });
+		$("#scaleButton").button().click(function () { dialog.scale.dialog("open"); });
+		$("#layerButton").button().click(function () { dialog.layer.dialog("open"); });
+		$("#aboutButton").button(icon("ui-icon-help")).click(function () { dialog.about.dialog("open"); });
+		$("#resetZoomButton").button(icon("ui-icon-arrow-4-diag")).click(function (){ 
 			map.zoomToExtent(bounds); });
-		$("#navigate").button(icon("ui-icon-arrow-4")).click(function(){ 
+		$("#navigate").button(icon("ui-icon-arrow-4")).click(function (){ 
 			mapControls.zoomin.deactivate(); mapControls.zoomout.deactivate(); });
-		$("#zoomin").button(icon("ui-icon-zoomin")).click(function(){
+		$("#zoomin").button(icon("ui-icon-zoomin")).click(function (){
 			mapControls.zoomin.activate(); mapControls.zoomout.deactivate(); });
-		$("#zoomout").button(icon("ui-icon-zoomout")).click(function(){
+		$("#zoomout").button(icon("ui-icon-zoomout")).click(function (){
 			mapControls.zoomout.activate(); mapControls.zoomin.deactivate(); });
 		$("#controlMethod").buttonset();
 	})();
 
 	//check if we got an request as parameter
-	(function() {
+	(function () {
 		var parameters = {};
 		var str = document.location.search.substr(1, document.location.search.length);
 		if (str != '') {
@@ -279,13 +279,13 @@ $(function(){
 			try {
 				OpenLayers.Request.GET({
 					url: parameters['request'],
-					success: function(r) {
+					success: function (r) {
 						clients.push(new OpenLayers.SOSClient({
 							map: map, scalebar: scaleBar,
 							url: parameters['url'],
 							request: r.responseText,
-							readyCallback: function() {},
-							statusCallback: function(stat) {},
+							readyCallback: function () {},
+							statusCallback: function (stat) {},
 							failCallback: dialog.error
 						}));
 					}

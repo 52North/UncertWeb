@@ -160,4 +160,22 @@ public class MethodFactory {
 				&& !Modifier.isAbstract(modifiers)
 				&& interfase.isAssignableFrom(test);
 	}
+
+	/**
+	 * Creates the class for the given {@link AggregationMethod} class name.
+	 * 
+	 * @param name
+	 *            the class name
+	 * @return the class
+	 */
+	@SuppressWarnings("unchecked")
+	public Class<? extends AggregationMethod> getMethodForName(String name) {
+		try {
+			return (Class<? extends AggregationMethod>) Class.forName(name);
+		} catch (ClassCastException e) {
+			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

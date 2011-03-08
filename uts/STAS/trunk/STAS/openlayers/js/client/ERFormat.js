@@ -26,14 +26,14 @@ OpenLayers.Format.ExceptionReport = OpenLayers.Class(OpenLayers.Format.XML, {
 				+ " http://schemas.opengis.net/ows/1.1.0/owsAll.xsd",
     defaultPrefix: "ows",
     regExes: { trimSpace: (/^\s*|\s*$/g) },
-    initialize: function(options) {
+    initialize: function (options) {
         OpenLayers.Format.XML.prototype.initialize.apply(this, [options]);
     },
-    read: function(data, destinationProjection) {
-        if (typeof data == "string") {
+    read: function (data, destinationProjection) {
+        if (typeof data === "string") {
             data = OpenLayers.Format.XML.prototype.read.apply(this, [data]);
         }
-        if (data && data.nodeType == 9) {
+        if (data && data.nodeType === 9) {
             data = data.documentElement;
         }
         var info = {};
@@ -42,14 +42,14 @@ OpenLayers.Format.ExceptionReport = OpenLayers.Class(OpenLayers.Format.XML, {
     },
     readers: {
 		"ows": {
-			"ExceptionReport": function(node, obj) {
+			"ExceptionReport": function (node, obj) {
 				obj.exceptions = [];
 				obj.version = node.getAttribute("version");
 				this.readChildNodes(node, obj);	
 			},
-			"Exception": function(node, report) {
+			"Exception": function (node, report) {
 				var ex = { exceptionTexts: [] };
-				ex.exceptionCode = node.getAttribute("exceptionCode")
+				ex.exceptionCode = node.getAttribute("exceptionCode");
 				var locator = node.getAttribute("locator");
 				if (locator) {
 					ex.locator = locator;	
@@ -57,12 +57,12 @@ OpenLayers.Format.ExceptionReport = OpenLayers.Class(OpenLayers.Format.XML, {
 				report.exceptions.push(ex);
 				this.readChildNodes(node, ex);
 			},
-			"ExceptionText": function(node, exception) {
-				 exception.exceptionTexts.push(this.getChildValue(node));
+			"ExceptionText": function (node, exception) {
+				exception.exceptionTexts.push(this.getChildValue(node));
 			}
         }
 	},
-    write: function() {/* we don't need to write any xml */},
+    write: function () {/* we don't need to write any xml */},
 	writers: {/* we don't need to write any xml */}
 });
 

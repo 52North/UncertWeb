@@ -52,39 +52,39 @@ import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.sta.wps.method.grouping.GroupingMethod;
 
-
 /**
  * Utilities class.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class Utils extends org.uncertweb.intamap.utils.Utils {
-	
+
 	/**
 	 * The Logger.
 	 */
 	protected static final Logger log = LoggerFactory.getLogger(Utils.class);
-	
+
 	/**
 	 * The common {@link NumberFormat} this service uses.
 	 */
-	public static final DecimalFormat NUMBER_FORMAT = new DecimalFormat("0.########", new DecimalFormatSymbols(Locale.US));
+	public static final DecimalFormat NUMBER_FORMAT = new DecimalFormat(
+			"0.########", new DecimalFormatSymbols(Locale.US));
 
 	/**
 	 * RNG.
 	 */
 	private static final Random random = new Random();
-	
+
 	/**
-	 * TODO
+	 * The directory in which {@link GetObservationDocument} request are saved.
 	 */
 	private static File requestDirectory = null;
-	/**
-	 * TODO
-	 */
-	private static String olcUrl = null;
-
 	
+	/**
+	 * The URL of the integrated OpenLayers Client.
+	 */
+	private static String baseUrl = null;
+
 	/**
 	 * Formats the time elapsed since {@code start}.
 	 * 
@@ -117,28 +117,35 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	 * @see Constants.Http.Timeout#CONNECTION
 	 * @see Constants.Http.Timeout#READ
 	 */
-	public static InputStream sendPostRequest(String url, String request) throws IOException {
-        OutputStreamWriter wr = null;
-        Properties systemProperties = System.getProperties();
-        systemProperties.setProperty(Constants.Http.Timeout.Property.CONNECTION, String.valueOf(Constants.Http.Timeout.CONNECTION));
-        systemProperties.setProperty(Constants.Http.Timeout.Property.READ, String.valueOf(Constants.Http.Timeout.READ));
-        try {
-            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestMethod(Constants.Http.Method.POST);
-            conn.setRequestProperty(Constants.Http.Header.CONTENT_TYPE, IOHandler.DEFAULT_MIMETYPE);
-            wr = new OutputStreamWriter(conn.getOutputStream());
-            wr.write(request);
-            wr.flush();
-            return conn.getInputStream();
-        } finally {
-            if (wr != null)
-                wr.close();
-            System.getProperties().remove(Constants.Http.Timeout.Property.CONNECTION);
-            System.getProperties().remove(Constants.Http.Timeout.Property.READ);
-        }		
+	public static InputStream sendPostRequest(String url, String request)
+			throws IOException {
+		OutputStreamWriter wr = null;
+		Properties systemProperties = System.getProperties();
+		systemProperties.setProperty(
+				Constants.Http.Timeout.Property.CONNECTION,
+				String.valueOf(Constants.Http.Timeout.CONNECTION));
+		systemProperties.setProperty(Constants.Http.Timeout.Property.READ,
+				String.valueOf(Constants.Http.Timeout.READ));
+		try {
+			HttpURLConnection conn = (HttpURLConnection) new URL(url)
+					.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestMethod(Constants.Http.Method.POST);
+			conn.setRequestProperty(Constants.Http.Header.CONTENT_TYPE,
+					IOHandler.DEFAULT_MIMETYPE);
+			wr = new OutputStreamWriter(conn.getOutputStream());
+			wr.write(request);
+			wr.flush();
+			return conn.getInputStream();
+		} finally {
+			if (wr != null)
+				wr.close();
+			System.getProperties().remove(
+					Constants.Http.Timeout.Property.CONNECTION);
+			System.getProperties().remove(Constants.Http.Timeout.Property.READ);
+		}
 	}
-	
+
 	/**
 	 * Builds a URL from a given URL and a set of parameters. {@code url} can or
 	 * can not end with an '?'.
@@ -149,7 +156,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	 *            a key-value parameter set
 	 * @return the complete URL
 	 */
-	public static String buildGetRequest(String url, Map<?,?> props) {
+	public static String buildGetRequest(String url, Map<?, ?> props) {
 		if (url == null || props == null) {
 			throw new NullPointerException();
 		}
@@ -158,7 +165,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 			sb.append("?");
 		}
 		boolean first = true;
-		for (Map.Entry<?,?> e : props.entrySet()) {
+		for (Map.Entry<?, ?> e : props.entrySet()) {
 			if (!first) {
 				sb.append("&");
 			} else {
@@ -168,7 +175,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Shortcut for
 	 * 
@@ -186,10 +193,11 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	 * @see #sendGetRequest(String)
 	 * @see #buildGetRequest(String, Map)
 	 */
-	public static InputStream sendGetRequest(String url, Map<?,?> props) throws IOException {
+	public static InputStream sendGetRequest(String url, Map<?, ?> props)
+			throws IOException {
 		return sendGetRequest(buildGetRequest(url, props));
 	}
-	
+
 	/**
 	 * Sends an HTTP GET request to the specified URL.
 	 * 
@@ -204,17 +212,22 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	 */
 	public static InputStream sendGetRequest(String url) throws IOException {
 		Properties systemProperties = System.getProperties();
-        systemProperties.setProperty(Constants.Http.Timeout.Property.CONNECTION, String.valueOf(Constants.Http.Timeout.CONNECTION));
-        systemProperties.setProperty(Constants.Http.Timeout.Property.READ, String.valueOf(Constants.Http.Timeout.READ));
-        try {
-            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-            conn.setRequestMethod(Constants.Http.Method.GET);
-            log.debug("Sending Request...");
-            return conn.getInputStream();
-        } finally {
-            System.getProperties().remove(Constants.Http.Timeout.Property.CONNECTION);
-            System.getProperties().remove(Constants.Http.Timeout.Property.READ);
-        }
+		systemProperties.setProperty(
+				Constants.Http.Timeout.Property.CONNECTION,
+				String.valueOf(Constants.Http.Timeout.CONNECTION));
+		systemProperties.setProperty(Constants.Http.Timeout.Property.READ,
+				String.valueOf(Constants.Http.Timeout.READ));
+		try {
+			HttpURLConnection conn = (HttpURLConnection) new URL(url)
+					.openConnection();
+			conn.setRequestMethod(Constants.Http.Method.GET);
+			log.debug("Sending Request...");
+			return conn.getInputStream();
+		} finally {
+			System.getProperties().remove(
+					Constants.Http.Timeout.Property.CONNECTION);
+			System.getProperties().remove(Constants.Http.Timeout.Property.READ);
+		}
 	}
 
 	/**
@@ -232,20 +245,20 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 		l.add(t);
 		return l;
 	}
-	
+
 	/**
 	 * Helper method for creating a {@link Collection}.
-	 *  
-	 * @param <T> 
-	 * 			type of elements in collection
+	 * 
+	 * @param <T>
+	 *            type of elements in collection
 	 * @param ts
-	 * 			elements of collection
+	 *            elements of collection
 	 * @return collection
 	 */
 	public static <T> Collection<T> collection(T... ts) {
 		return list(ts);
 	}
-	
+
 	/**
 	 * Helper method for creating a {@link Set}.
 	 * 
@@ -264,7 +277,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 		}
 		return set;
 	}
-	
+
 	/**
 	 * Helper method for creating a {@link List}.
 	 * 
@@ -283,7 +296,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 		}
 		return list;
 	}
-	
+
 	/**
 	 * Helper method to merge multiple {@link Set}s.
 	 * 
@@ -303,7 +316,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 		}
 		return set;
 	}
-	
+
 	/**
 	 * Fetches the description of a {@link GroupingMethod} from the properties.
 	 * 
@@ -311,10 +324,11 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	 *            the {@link Class} of the {@code GroupingMethod}
 	 * @return the description
 	 */
-	public static String getMethodDescription(Class<? extends GroupingMethod<?>> gm) {
+	public static String getMethodDescription(
+			Class<? extends GroupingMethod<?>> gm) {
 		return Constants.get("process." + gm.getName() + ".desc");
 	}
-	
+
 	/**
 	 * Generates a random {@code double} between {@code min} and {@code max}.
 	 * 
@@ -325,54 +339,65 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	 * @return a random {@code double} between {@code min} and {@code max}.
 	 */
 	public static double randomBetween(double min, double max) {
-		return Math.min(min, max) + random.nextDouble() * Math.abs(max-min);
+		return Math.min(min, max) + random.nextDouble() * Math.abs(max - min);
 	}
-	
+
 	/**
+	 * Saves a {@link GetObservationDocument} request and returns a link to the
+	 * integrated OpenLayers client visualizing the aggregated observations.
 	 * 
 	 * @param url
+	 *            the URL of the source SOS
 	 * @param getObsDoc
-	 * @return
+	 *            the request
+	 * @return the URL of the OpenLayers client
 	 * @throws IOException
+	 *             if an IO error occurs
 	 */
-	public static String getClientUrlForRequest(String process, String url, GetObservationDocument getObsDoc) throws IOException {
-		Map<String,String> params = new HashMap<String, String>();
-		params.put("url", url);
-		params.put("request", "../" + saveGetObservationRequest(process, getObsDoc));
-		if (olcUrl == null) {
+	public static String getClientUrlForRequest(String process, String url,
+			GetObservationDocument getObsDoc) throws IOException {
+		if (baseUrl == null) {
 			Server server = WPSConfig.getInstance().getWPSConfig().getServer();
-			olcUrl = "http://" + server.getHostname() + ":"
-				   			   + server.getHostport() + "/"
-				   			   + server.getWebappPath() + "/" 
-				   			   + Constants.Files.OLC_PATH;
+			baseUrl = "http://" + server.getHostname() + ":"
+								+ server.getHostport() + "/" 
+								+ server.getWebappPath() + "/";
 		}
-		return buildGetRequest(olcUrl, params);
+		String requestPath = saveGetObservationRequest(process, getObsDoc);
+		Map<String, String> params = new HashMap<String, String>();
+		params.put(Constants.OpenLayersClient.URL_PARAMETER, url);
+		params.put(Constants.OpenLayersClient.REQUEST_PARAMETER, baseUrl + requestPath);
+		return buildGetRequest(baseUrl + Constants.OpenLayersClient.PATH, params);
 	}
-	
+
 	/**
-	 * TODO
+	 * Saves a {@link GetObservationDocument} request. The process id is used as
+	 * the filename.
+	 * 
 	 * @param getObsDoc
-	 * @return
+	 *            the request
+	 * @return the path relative to the STAS' root
 	 * @throws IOException
+	 *             if an IO error occurs
 	 */
-	public static String saveGetObservationRequest(String process, GetObservationDocument getObsDoc) throws IOException {
+	protected static String saveGetObservationRequest(String process,
+			GetObservationDocument getObsDoc) throws IOException {
 		if (requestDirectory == null) {
-			String domain = Constants.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+			String domain = Constants.class.getProtectionDomain()
+					.getCodeSource().getLocation().getFile();
 			int index = domain.indexOf("WEB-INF");
 			String parentDir = null;
-			
-			if(index < 0){
+			if (index < 0) {
 				log.warn("Could not find web app directory. Using java.io.tmpdir.");
 				parentDir = System.getProperty("java.io.tmpdir");
 			} else {
 				parentDir = domain.substring(0, index);
 			}
-			
-			if(!parentDir.endsWith(File.separator)){
+
+			if (!parentDir.endsWith(File.separator)) {
 				parentDir = parentDir + File.separator;
 			}
-			
-			String dirName = parentDir + Constants.Files.REQUEST_SAVE_DIRECTORY_NAME;
+
+			String dirName = parentDir + Constants.OpenLayersClient.REQUEST_SAVE_DIRECTORY;
 			File reqDir = new File(dirName);
 			if (!reqDir.exists() && !reqDir.mkdir()) {
 				throw new RuntimeException("Could not create request directory: " + dirName);
@@ -386,14 +411,16 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 				requestDirectory = reqDir;
 			}
 		}
-		
-		File f = new File(requestDirectory.getPath() + File.separator + process + ".xml");
+
+		File f = new File(requestDirectory.getPath() + File.separator + process
+				+ ".xml");
 		if (!f.createNewFile()) {
-			throw new RuntimeException("Could not create new file: " + f.getAbsolutePath());
+			throw new RuntimeException("Could not create new file: "
+					+ f.getAbsolutePath());
 		}
 		getObsDoc.save(f, Namespace.defaultOptions());
 		f.deleteOnExit();
-		return Constants.Files.REQUEST_SAVE_DIRECTORY_NAME + "/" + f.getName();
+		return Constants.OpenLayersClient.REQUEST_SAVE_DIRECTORY + "/" + f.getName();
 	}
-	
+
 }

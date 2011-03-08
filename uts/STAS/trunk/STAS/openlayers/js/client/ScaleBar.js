@@ -47,11 +47,11 @@ OpenLayers.ScaleBar = OpenLayers.Class({
 	/* actual valid values */
 	threshold: null,
 	numIntervals: null,
-	initialize : function(options) {
+	initialize: function (options) {
 		OpenLayers.Util.extend(this, options);
 		this.writeLegend();
 	},
-	getColorForResultValue: function(value) {
+	getColorForResultValue: function (value) {
 		var result;
 		if (this.getNumIntervals() <= 1) {
 			result = new OpenLayers.Color.RGB(0,0,0).toHex();
@@ -65,12 +65,12 @@ OpenLayers.ScaleBar = OpenLayers.Class({
 		}
 		return result;
 	},
-	getIntervalNumForResultValue: function(value) {
+	getIntervalNumForResultValue: function (value) {
 		return Math.floor(value/(this.getThreshold()
 					/(this.getNumIntervals()-1)));
 	},
 
-	writeLegend: function() {
+	writeLegend: function () {
 		var threshold = this.getThreshold();
 		var numIntervals = this.getNumIntervals();	
 		if (threshold != this.threshold || numIntervals != this.numIntervals) {
@@ -95,7 +95,7 @@ OpenLayers.ScaleBar = OpenLayers.Class({
 		}
 	},
 
-	getStyle: function() {
+	getStyle: function () {
 		var threshold = this.getThreshold();
 		var numIntervals = this.getNumIntervals();	
 		if (!this.style || threshold != this.threshold || numIntervals != this.numIntervals) {
@@ -121,7 +121,7 @@ OpenLayers.ScaleBar = OpenLayers.Class({
 		}
 		return this.style;
 	},
-	getRule: function(color, lower, upper, multi) {
+	getRule: function (color, lower, upper, multi) {
 		var filters = [];
 		if (upper) {
 			filters.push(new OpenLayers.Filter.Comparison({
