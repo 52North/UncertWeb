@@ -25,7 +25,6 @@ import static org.uncertweb.intamap.utils.Namespace.OM;
 import static org.uncertweb.intamap.utils.Namespace.SML;
 import static org.uncertweb.intamap.utils.Namespace.SML_VERSION;
 import static org.uncertweb.intamap.utils.Namespace.SWE;
-import static org.uncertweb.intamap.utils.Namespace.qualify;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -162,7 +161,7 @@ public class RegisterSensorBuilder {
 		SensorML sml = smlDocument.addNewSensorML();
 		sml.setVersion(SML_VERSION);
 		
-		SystemType processType = (SystemType) sml.addNewMember().addNewProcess().substitute(qualify(SML, "System"), SystemType.type);
+		SystemType processType = (SystemType) sml.addNewMember().addNewProcess().substitute(SML.q("System"), SystemType.type);
 		buildPosition(processType);
 
 //		ProcessModelType processType = (ProcessModelType) sml.addNewMember().addNewProcess().substitute(qualify(SML, "ProcessModel"), ProcessModelType.type);
@@ -191,7 +190,7 @@ public class RegisterSensorBuilder {
 		Position position = systemType.addNewPosition();
 		position.setName("sensorPosition");
 		PositionType positionType = (PositionType) position.addNewProcess()
-				.substitute(qualify(SWE, "Position"), PositionType.type);
+				.substitute(SWE.q("Position"), PositionType.type);
 		positionType.setReferenceFrame(EPSG_4326_REFERENCE_SYSTEM_DEFINITION);
 		positionType.setFixed(true);
 		VectorType vector = positionType.addNewLocation().addNewVector();
@@ -320,7 +319,7 @@ public class RegisterSensorBuilder {
 	protected void buildObservationTemplate(RegisterSensor regSen) {
 		ObservationTemplate template = regSen.addNewObservationTemplate();
 		MeasurementType measurementType = (MeasurementType) template
-				.addNewObservation().substitute(qualify(OM, "Measurement"),
+				.addNewObservation().substitute(OM.q("Measurement"),
 						MeasurementType.type);
 		measurementType.addNewSamplingTime();
 		measurementType.addNewProcedure();
@@ -338,7 +337,7 @@ public class RegisterSensorBuilder {
 		Capabilities capabilities = systemType.addNewCapabilities();
 		AbstractDataRecordType abstractDataRecord = capabilities.addNewAbstractDataRecord();
 		DataRecordType dataRecord = (DataRecordType) abstractDataRecord
-				.substitute(qualify(SWE, "DataRecord"), DataRecordType.type);
+				.substitute(SWE.q("DataRecord"), DataRecordType.type);
 		dataRecord.setDefinition(Constants.URN_CAPABILITIES_DEFINITION);
 		
 

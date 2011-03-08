@@ -21,11 +21,13 @@
  */
 package org.uncertweb.sta.wps.xml.io.enc;
 
+import static org.uncertweb.intamap.utils.Namespace.GML;
+import static org.uncertweb.intamap.utils.Namespace.OM;
+import static org.uncertweb.intamap.utils.Namespace.SA;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.xml.namespace.QName;
 
 import net.opengis.gml.AbstractSurfaceType;
 import net.opengis.gml.AbstractTimeObjectType;
@@ -53,7 +55,6 @@ import org.uncertweb.intamap.om.ObservationTimeInstant;
 import org.uncertweb.intamap.om.ObservationTimeInterval;
 import org.uncertweb.intamap.om.SamplingPoint;
 import org.uncertweb.intamap.om.SamplingSurface;
-import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
@@ -86,8 +87,7 @@ public class ObservationGenerator {
 		ObservationDocument doc = ObservationDocument.Factory.newInstance();
 		
 		MeasurementType m = (MeasurementType) doc.addNewObservation()
-				.substitute(new QName(Namespace.OM.URI, "Measurement"),
-						MeasurementType.type);
+				.substitute(OM.q("Measurement"), MeasurementType.type);
 		if (o.getId() != null)
 			m.setId(o.getId());
 		generateProcedure(o, m);
@@ -191,8 +191,8 @@ public class ObservationGenerator {
 
 				fpt.addNewFeature().set(spt);
 				XmlCursor c = fpt.newCursor();
-				c.toChild(new QName(Namespace.GML.URI, "_Feature"));
-				c.setName(new QName(Namespace.SA.URI, "SamplingPoint"));
+				c.toChild(GML.q("_Feature"));
+				c.setName(SA.q("SamplingPoint"));
 				c.dispose();
 
 			} else if (f instanceof SamplingSurface) {
@@ -213,8 +213,8 @@ public class ObservationGenerator {
 				generateShape(ss.getLocation(), sst);
 
 				XmlCursor c = fpt.newCursor();
-				c.toChild(new QName(Namespace.GML.URI, "_Feature"));
-				c.setName(new QName(Namespace.SA.URI, "SamplingSurface"));
+				c.toChild(GML.q("_Feature"));
+				c.setName(SA.q("SamplingSurface"));
 				c.dispose();
 
 			}
@@ -259,8 +259,8 @@ public class ObservationGenerator {
 			generatePolygon((Polygon) mp.getGeometryN(i), spm.addNewSurface());
 		}
 		XmlCursor c = spt.newCursor();
-		c.toChild(new QName(Namespace.GML.URI, "_Surface"));
-		c.setName(new QName(Namespace.GML.URI, "CompositeSurface"));
+		c.toChild(GML.q("_Surface"));
+		c.setName(GML.q("CompositeSurface"));
 		c.dispose();
 	}
 
@@ -274,7 +274,7 @@ public class ObservationGenerator {
 	 */
 	protected static void generatePolygon(Polygon p, AbstractSurfaceType ast) {
 		
-		PolygonType pt = (PolygonType) ast.substitute(new QName(Namespace.GML.URI, "Polygon"), PolygonType.type);
+		PolygonType pt = (PolygonType) ast.substitute(GML.q("Polygon"), PolygonType.type);
 		
 		int srs = p.getSRID();
 		if (srs == 0) {
@@ -285,12 +285,12 @@ public class ObservationGenerator {
 		pt.setSrsName(Constants.URN_EPSG_SRS_PREFIX	+ srs);
 		
 		LinearRingType outer = (LinearRingType) pt.addNewExterior().addNewRing()
-				.substitute(new QName(Namespace.GML.URI, "LinearRing"), LinearRingType.type);
+				.substitute(GML.q("LinearRing"), LinearRingType.type);
 		outer.addNewCoordinates().setStringValue(generateCoordinates(srs, p.getExteriorRing().getCoordinates()));
 		
 		for (int i = 0; i < p.getNumInteriorRing(); i++) {
 			LinearRingType inner = (LinearRingType) pt.addNewInterior().addNewRing()
-					.substitute(new QName(Namespace.GML.URI, "LinearRing"), LinearRingType.type);
+					.substitute(GML.q("LinearRing"), LinearRingType.type);
 			inner.addNewCoordinates().setStringValue(generateCoordinates(srs, p.getInteriorRingN(i).getCoordinates()));
 		}
 	}
@@ -382,15 +382,13 @@ public class ObservationGenerator {
 			AbstractTimeObjectType atot = m.addNewSamplingTime().addNewTimeObject();
 			if (o.getObservationTime() instanceof ObservationTimeInterval) {
 				TimePeriodType tpt = (TimePeriodType) atot.substitute(
-						new QName(Namespace.GML.URI, "TimePeriod"),
-						TimePeriodType.type);
+						GML.q("TimePeriod"), TimePeriodType.type);
 				ObservationTimeInterval time = (ObservationTimeInterval) o.getObservationTime();
 				tpt.addNewBeginPosition().setStringValue(TimeUtils.format(time.getStart()));
 				tpt.addNewEndPosition().setStringValue(TimeUtils.format(time.getEnd()));
 			} if (o.getObservationTime() instanceof ObservationTimeInstant) {
 				TimeInstantType tit = (TimeInstantType) atot.substitute(
-						new QName(Namespace.GML.URI, "TimeInstant"),
-						TimeInstantType.type);
+						GML.q("TimeInstant"), TimeInstantType.type);
 				tit.addNewTimePosition().setStringValue(TimeUtils.format(
 						((ObservationTimeInstant) o.getObservationTime()).getDateTime()));
 			}

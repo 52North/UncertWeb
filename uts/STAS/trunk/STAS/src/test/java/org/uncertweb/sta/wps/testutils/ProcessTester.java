@@ -85,7 +85,6 @@ import org.uncertweb.sta.wps.xml.io.dec.GetObservationRequestParser;
 public class ProcessTester {
 
 	private static final String CONFIG_PATH = ProcessTester.class.getResource("/wps_config/wps_config.xml").getFile();
-//	private static final String OFFLINE_CONFIG_PATH = ProcessTester.class.getResource("/test_wps_config.xml").getFile();
 	protected static final Logger log = LoggerFactory.getLogger(ProcessTester.class);
 	
 	static {

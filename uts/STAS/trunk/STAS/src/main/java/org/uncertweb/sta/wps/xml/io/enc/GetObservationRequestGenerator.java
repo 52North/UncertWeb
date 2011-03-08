@@ -85,7 +85,6 @@ public class GetObservationRequestGenerator extends AbstractXMLGenerator impleme
 		GetObservationDocument xml = ((GetObservationRequestBinding) data).getPayload();
 		try {
 			BufferedWriter bufferedWriter = new BufferedWriter(writer);
-			bufferedWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 			xml.save(bufferedWriter, new XmlOptions().setSavePrettyPrint());
 			bufferedWriter.close();
 		} catch (IOException e) {
