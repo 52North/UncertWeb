@@ -1,4 +1,4 @@
-package org.n52.wps.util.austal2;
+package org.n52.wps.util.austal;
 
 import java.util.ArrayList;
 
