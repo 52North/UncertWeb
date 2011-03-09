@@ -348,9 +348,8 @@ div.olControlSaveFeaturesItemInactive {
 
 /**
  * Layer switcher
- */
 .olControlLayerSwitcher {
-/*  position: absolute;
+	position: absolute;
     top: 25px;
     right: 0px;
     width: 20em;

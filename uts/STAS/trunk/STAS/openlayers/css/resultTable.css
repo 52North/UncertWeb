@@ -22,3 +22,13 @@
 	border: 1px solid black;
 }
 
+.bubblePlot {
+	width: 95%;
+	height: 95%;
+}
+
+.bubble {
+	margin: 10px;
+	width: 400px;
+	height: 250px;
+}

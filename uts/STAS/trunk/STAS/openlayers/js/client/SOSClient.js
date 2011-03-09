@@ -68,7 +68,7 @@ OpenLayers.SOSClient = OpenLayers.Class({
 				var message = ""; 
 				for (var i = 0; i < e.exceptions.length; i++) {
 					message += e.exceptions[i].exceptionCode +": ";
-					for (var j=0;j<e.exceptions[i].exceptionTexts.length;j++) {
+					for (var j = 0; j < e.exceptions[i].exceptionTexts.length; j++) {
 						message += e.exceptions[i].exceptionTexts[j] + "\n";
 					}
 				}
@@ -186,22 +186,22 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			feature.popup = null;
 		}
 	},
+/*
 	onFeatureSelect: function (feature) {
 		writeValueLine = function (scale, attr) {
 			var html = '<tr><td>';
 			if (attr.samplingTime.timeInstant) {
-				html += attr.samplingTime.timeInstant.timePosition
-					.toISOString();
+				html += attr.samplingTime.timeInstant.timePosition.toISOString();
 			} else if (attr.samplingTime.timePeriod) {
 				html += attr.samplingTime.timePeriod.beginPosition.toISOString()
-					+ " - " 
-					+ attr.samplingTime.timePeriod.endPosition.toISOString();
+					 + " - " 
+					 + attr.samplingTime.timePeriod.endPosition.toISOString();
 			} else {
 				html += "Unknown SamplingTime Format";
 			}
 			html += '</td><td>';
 			html += '<span class="scaleIndicator" style="background-color:' 
-				+ scale.getColorForResultValue(attr.resultValue) + '">&#160;&#160;&#160;&#160;</span>';
+				 + scale.getColorForResultValue(attr.resultValue) + '">&#160;&#160;&#160;&#160;</span>';
 			html += " " + attr.resultValue.toFixed(2) + " " + attr.uom;
 			html +=	"</td></tr>";
 			return html;
@@ -211,21 +211,121 @@ OpenLayers.SOSClient = OpenLayers.Class({
 		html += '<tr><th>Time</th><th>Value</th></tr>';
 		if (feature.attributes.isMultiFeature) {
 			for (var i = 0;i < feature.attributes.values.length; i++) {
-				html += writeValueLine(this.scalebar, 
-						feature.attributes.values[i]);
+				html += writeValueLine(this.scalebar, feature.attributes.values[i]);
 			}
 		} else {
 			html += writeValueLine(this.scalebar, feature.attributes);
 		}
 		html += "</table>";
-		var ctrls = this.map.getControlsByClass(
-				"OpenLayers.Control.SelectFeature");
+		var ctrls = this.map.getControlsByClass("OpenLayers.Control.SelectFeature");
 		feature.popup = new OpenLayers.Popup.FramedCloud("Feature",
 			feature.geometry.getBounds().getCenterLonLat(),
 			null, html, null, false, null);
 		feature.popup.panMapIfOutOfView = true;
 		this.selectedFeature = feature;
 		this.map.addPopup(feature.popup, true);
+	},
+*/
+	onFeatureSelect: function (feature) {
+		function random(min, max) {
+			return (min + parseInt(Math.random() * (max - min + 1)));
+		}
+		function getValue(attr) {
+			var time;
+			var value;
+			var sd;
+			
+			if (attr.samplingTime.timeInstant) {
+				time = attr.samplingTime.timeInstant.timePosition.getTime();
+			} else if (attr.samplingTime.timePeriod) {
+				time = [attr.samplingTime.timePeriod.beginPosition.getTime(),
+						attr.samplingTime.timePeriod.endPosition.getTime()];
+			} else {
+				throw "Unknown SamplingTime Format";
+			}
+			value = attr.resultValue;
+			sd = random(1,3);
+			return [time,value,sd];
+		}
+
+		var values = [];
+		if (feature.attributes.isMultiFeature) {
+			for (var i = 0;i < feature.attributes.values.length; i++) {
+				values.push(getValue(feature.attributes.values[i]));
+			}
+		} else {
+			values.push(getValue(feature.attributes));
+		}
+
+		var id = "plot" + new Date().getTime();
+		var html = "<div class='bubble'><h2>" + feature.attributes.id + "</h2>";
+		html += '<div id="' + id + '" class="bubblePlot"></div></div>';
+		
+
+		var ctrls = this.map.getControlsByClass("OpenLayers.Control.SelectFeature");
+		feature.popup = new OpenLayers.Popup.FramedCloud("Feature",
+			feature.geometry.getBounds().getCenterLonLat(),
+			null, html, null, false, null);
+		feature.popup.panMapIfOutOfView = true;
+		this.selectedFeature = feature;
+		this.map.addPopup(feature.popup, true);
+		this.draw(id,values,2.4);
+	},
+	draw: function(id, v, timesInterval) {
+		var u = [], l = [], m = [];
+		for (var i = 0; i < v.length; i++) {
+			if (typeof(v[i][0]) === "number") {
+				if (v[i][2]) {
+					l.push([v[i][0], v[i][1] - timesInterval * v[i][2]]);
+					u.push([v[i][0], v[i][1] + timesInterval * v[i][2]]);
+				}
+				m.push([v[i][0], v[i][1]]);
+			} else {
+				if (v[i][2]) {
+					l.push([v[i][0][0], v[i][1] - timesInterval * v[i][2]]);
+					l.push([v[i][0][1], v[i][1] - timesInterval * v[i][2]]);
+					u.push([v[i][0][0], v[i][1] + timesInterval * v[i][2]]);
+					u.push([v[i][0][1], v[i][1] + timesInterval * v[i][2]]);
+				}
+				m.push([v[i][0][0], v[i][1]]);
+				m.push([v[i][0][1], v[i][1]]);
+			}
+		}
+		l.sort(function(a, b) {
+			return ((a[0] > b[0]) ? -1 : ((a[0] < b[0]) ? 1 : 0)); 
+		}); 
+		var scale = this.scalebar;
+		function raw(plot, ctx) {
+			var data = plot.getData()[1].data;
+			for (var j = 0; j < data.length; j++) {
+				var x = plot.getPlotOffset().left + plot.getAxes().xaxis.p2c(data[j][0]);
+				var y = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(data[j][1]);
+				ctx.lineWidth = 0;
+				ctx.beginPath();
+				ctx.arc(x, y, 3, 0, Math.PI * 2, true);
+				ctx.closePath();            
+				ctx.fillStyle = scale.getColorForResultValue(data[j][1]);
+				ctx.fill();
+			}    
+		}  
+		$.plot($('#' + id), [{ 
+				color: "red", 
+				data:u.concat(l), 
+				lines: { fill: true } 
+			},{ 
+				color: "black",
+				points: { show: true },
+				data:m
+			}], {
+				xaxis: { mode: "time" }, 
+				lines: { show: true },
+				grid: {
+					hoverable: true,
+					mouseActiveRadius: 25
+				},
+				hooks: { draw: [raw] }
+			}
+		);
 	},
 	destroy: function () {
 		this.map.removeLayer(this.layer);

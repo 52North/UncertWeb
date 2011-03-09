@@ -7,7 +7,7 @@
 			<ogc:PropertyName>om:SamplingTime</ogc:PropertyName>
 			<gml:TimePeriod>
 				<gml:beginPosition>2001-01-01T01:30:00.000Z</gml:beginPosition>
-				<gml:endPosition>2001-01-01T03:30:00.000Z</gml:endPosition>
+				<gml:endPosition>2001-01-01T09:30:00.000Z</gml:endPosition>
 			</gml:TimePeriod>
 		</ogc:TM_Equals>
 	</sos:eventTime>
