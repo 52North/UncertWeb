@@ -69,6 +69,11 @@
 			<artifactId>52n-wps-io</artifactId>
 			<version>${wps.version}</version>
 		</dependency>
+    <dependency>
+    	<groupId>org.uncertml</groupId>
+    	<artifactId>uncertml-api-with-dependencies</artifactId>
+    	<version>2.0</version>
+    </dependency>
 
 			<dependency> <groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-webapp</artifactId>
@@ -105,7 +110,6 @@
 			<groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-client-lib</artifactId>
 			<version>${wps.version}</version>
-			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

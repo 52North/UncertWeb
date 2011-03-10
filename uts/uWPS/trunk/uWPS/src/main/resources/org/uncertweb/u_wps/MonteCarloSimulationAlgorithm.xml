@@ -56,6 +56,16 @@
 					</Supported>
 				</ComplexData>
 			</Input>
+			<!--Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>ProcessExecuteRequest</ows:Identifier>
+				<ows:Title></ows:Title>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AllowedValues>
+						<ows:Value/>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input-->
 			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>ServiceURL</ows:Identifier>
 				<ows:Title></ows:Title>
