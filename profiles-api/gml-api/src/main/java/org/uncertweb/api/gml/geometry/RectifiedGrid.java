@@ -121,7 +121,7 @@ public class RectifiedGrid extends Geometry {
 		return origin;
 	}
 
-	public void setOrigin(GmlPoint origin) {
+	public void setOrigin(Point origin) {
 		this.origin = origin;
 	}
 

@@ -58,7 +58,7 @@ public class GmlGeometryFactory {
 		Coordinate[] coords = new Coordinate[1];
 		coords[0] = new Coordinate(x,y);
 		CoordinateSequence coordSequence = coordSeqFac.create(coords);
-		GmlPoint point = new GmlPoint(coordSequence, new GeometryFactory());
+		Point point = new GeometryFactory().createPoint(coordSequence);
 		point.setSRID(epsgCode);
 		return point;
 	}
@@ -118,7 +118,7 @@ public class GmlGeometryFactory {
 	 * @return Returns the rectified grid
 	 */
 	public RectifiedGrid createRectifiedGrid(Envelope gridEnvelope, List<String> axisLabel,
-			GmlPoint origin, Collection<Point> offsetVectors){
+			Point origin, Collection<Point> offsetVectors){
 		RectifiedGrid grid = new RectifiedGrid(gridEnvelope,axisLabel,origin,offsetVectors,new GeometryFactory());
 		return grid;
 	}
