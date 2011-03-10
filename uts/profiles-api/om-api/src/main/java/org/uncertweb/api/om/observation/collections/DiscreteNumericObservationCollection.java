@@ -1,12 +1,18 @@
 package org.uncertweb.api.om.observation.collections;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
-import org.uncertweb.api.om.observation.BooleanObservation;
+import org.uncertweb.api.om.observation.CategoryObservation;
 import org.uncertweb.api.om.observation.DiscreteNumericObservation;
-import org.uncertweb.api.om.observation.ReferenceObservation;
 
+/**
+ * Collection for DiscreteNumericObservation
+ * 
+ * @author staschc
+ *
+ */
 public class DiscreteNumericObservationCollection implements
 		IObservationCollection {
 	
@@ -15,6 +21,14 @@ public class DiscreteNumericObservationCollection implements
 
 	/** members of collection */
 	private List<DiscreteNumericObservation> members;
+	
+	/**
+	 * contructor; initializes members list
+	 * 
+	 */
+	public DiscreteNumericObservationCollection(){
+		this.members = new ArrayList<DiscreteNumericObservation>();
+	}
 
 	/**
 	 * constructor

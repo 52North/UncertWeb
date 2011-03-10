@@ -1,5 +1,6 @@
 package org.uncertweb.api.om.io;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -59,20 +60,14 @@ import org.uncertml.exception.UncertaintyEncoderException;
 import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.io.XMLEncoder;
 import org.uncertml.x20.AbstractUncertaintyDocument;
-import org.uncertweb.api.gml.geometry.GmlLineString;
-import org.uncertweb.api.gml.geometry.GmlPoint;
-import org.uncertweb.api.gml.geometry.GmlPolygon;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
-import org.uncertweb.api.gml.geometry.collections.GmlMultiGeometry;
-import org.uncertweb.api.gml.geometry.collections.GmlMultiLineString;
-import org.uncertweb.api.gml.geometry.collections.GmlMultiPoint;
-import org.uncertweb.api.gml.geometry.collections.GmlMultiPolygon;
 import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.OMConstants;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.Measurement;
+import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
 import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
@@ -86,6 +81,13 @@ import org.uncertweb.api.om.result.ReferenceResult;
 import org.uncertweb.api.om.result.TextResult;
 import org.uncertweb.api.om.result.UncertaintyResult;
 
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+
 /**
  * encodes Observations by xmlBeans
  * 
@@ -94,6 +96,44 @@ import org.uncertweb.api.om.result.UncertaintyResult;
  */
 public class XBObservationEncoder implements IObservationEncoder {
 
+	// ////////////////////////////////////////////
+	// counters used for generating gml IDs
+	/**id counter for temporal elements; is resetted to 0, if encoding of a new observation collection starts.*/
+	private int timeIdCounter = 0;
+	
+	/**id counter for sampling features; only if the gml:identifier subelement of a sampling feature is equal, the gml:id is used for referencing the same feature*/
+	private int sfIdCounter = 0;
+	
+	/**id counter for observations; used to generate observation IDs*/
+	private int obsIdCounter = 0;
+
+	// maps used for caching information about already encoded geometries
+	
+	/**
+	 * map which stores TimeStrings as keys and gml IDs used for encoding these strings as values;
+	 * the timestrings are created in the following manner: if it is a single timestamp, this is used as string;
+	 * if the time is a time period, the string of the start date and the string of the end date are merged to one string
+	 * 
+	 * This map is used to check, whether a timeinstant or timeperiod with the same values has already been encoded in an observation or 
+	 * observation collection.
+	 */
+	private HashMap<String, String> gmlID4TimeStrings;
+	
+	/**
+	 * map which contains the identifiers of sampling features as keys and the gmlId as values
+	 * 
+	 * This map is used to check whether a feature has already been encoded in an observation or
+	 * observation collection.
+	 */
+	private HashMap<String, String> gmlID4sfIdentifier;
+
+	/**
+	 * boolean that indicates whether a collection is currrently encoded or not;
+	 * this flag is used in the encodeObservation operation. This can either be invoked externally for
+	 * encoding just one observation or internally for encoding members of an observation collection.
+	 */
+	private boolean isCol;
+
 	/**
 	 * encodes an observation collection
 	 * 
@@ -101,11 +141,11 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 *            observation collection
 	 * @return observation collections's xml document as formatted String
 	 * @throws Exception
-	 * 			if encoding fails
+	 *             if encoding fails
 	 */
 	@Override
-	public String encodeObservationCollection(IObservationCollection obsCol)
-			throws Exception {
+	public synchronized String encodeObservationCollection(
+			IObservationCollection obsCol) throws Exception {
 		return encodeObservationCollectionDocument(obsCol).xmlText(
 				getOMOptions());
 	}
@@ -114,95 +154,131 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * encodes an observation collection
 	 * 
 	 * @param obsCol
-	 *      observation collection
+	 *            observation collection
 	 * @return observation collections's xml document
 	 * @throws Exception
-	 * 		if encoding fails
+	 *             if encoding fails
 	 */
-	public XmlObject encodeObservationCollectionDocument(
+	public synchronized XmlObject encodeObservationCollectionDocument(
 			IObservationCollection obsCol) throws Exception {
-		
-		//BooleanObservation collection
-		if (obsCol instanceof BooleanObservationCollection){
-			OMBooleanObservationCollectionDocument result = OMBooleanObservationCollectionDocument.Factory.newInstance();
-			OMBooleanObservationCollection xb_boCol = result.addNewOMBooleanObservationCollection();
-			if (obsCol.getGmlId()!=null){
-				xb_boCol.setId(obsCol.getGmlId());
-			}
-			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol).getMembers().iterator();
-			while (obsIter.hasNext()){
-				UWBooleanObservationType xb_obs = xb_boCol.addNewOMBooleanObservation();
-				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
-				xb_obs.set(xb_boDoc.getOMObservation());
-			}
-			return result;
-		}
-		//Measurement collection
-		else if (obsCol instanceof MeasurementCollection){
-			OMMeasurementCollectionDocument result = OMMeasurementCollectionDocument.Factory.newInstance();
-			OMMeasurementCollection xb_boCol = result.addNewOMMeasurementCollection();
-			if (obsCol.getGmlId()!=null){
-				xb_boCol.setId(obsCol.getGmlId());
-			}
-			Iterator<Measurement> obsIter = ((MeasurementCollection) obsCol).getMembers().iterator();
-			while (obsIter.hasNext()){
-				UWMeasurementType xb_obs = xb_boCol.addNewOMMeasurement();
-				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
-				xb_obs.set(xb_boDoc.getOMObservation());
-			}
+		this.isCol = true;
+		this.timeIdCounter = 0;
+		this.sfIdCounter = 0;
+		this.obsIdCounter = 0;
+		this.gmlID4TimeStrings = new HashMap<String, String>();
+		this.gmlID4sfIdentifier = new HashMap<String, String>();
 
-			return result;
-		}
-		//ReferenceObservation collection
-		else if (obsCol instanceof ReferenceObservationCollection){
-			OMReferenceObservationCollectionDocument result = OMReferenceObservationCollectionDocument.Factory.newInstance();
-			OMReferenceObservationCollection xb_boCol = result.addNewOMReferenceObservationCollection();
-			if (obsCol.getGmlId()!=null){
+		// BooleanObservation collection
+		if (obsCol instanceof BooleanObservationCollection) {
+			OMBooleanObservationCollectionDocument result = OMBooleanObservationCollectionDocument.Factory
+					.newInstance();
+			OMBooleanObservationCollection xb_boCol = result
+					.addNewOMBooleanObservationCollection();
+			if (obsCol.getGmlId() != null) {
 				xb_boCol.setId(obsCol.getGmlId());
 			}
-			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol).getMembers().iterator();
-			while (obsIter.hasNext()){
-				UWReferenceObservationType xb_obs = xb_boCol.addNewOMReferenceObservation();
-				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
+			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol)
+					.getMembers().iterator();
+			while (obsIter.hasNext()) {
+				UWBooleanObservationType xb_obs = xb_boCol
+						.addNewOMBooleanObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
+						.next());
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
+			reset();
 			return result;
 		}
-		//UncertaintyObservation collection
-		else if (obsCol instanceof UncertaintyObservationCollection){
-			OMUncertaintyObservationCollectionDocument result = OMUncertaintyObservationCollectionDocument.Factory.newInstance();
-			OMUncertaintyObservationCollection xb_boCol = result.addNewOMUncertaintyObservationCollection();
-			if (obsCol.getGmlId()!=null){
+		// Measurement collection
+		else if (obsCol instanceof MeasurementCollection) {
+			OMMeasurementCollectionDocument result = OMMeasurementCollectionDocument.Factory
+					.newInstance();
+			OMMeasurementCollection xb_boCol = result
+					.addNewOMMeasurementCollection();
+			if (obsCol.getGmlId() != null) {
 				xb_boCol.setId(obsCol.getGmlId());
 			}
-			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol).getMembers().iterator();
-			while (obsIter.hasNext()){
-				UWUncertaintyObservationType xb_obs = xb_boCol.addNewOMUncertaintyObservation();
-				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
+			Iterator<Measurement> obsIter = ((MeasurementCollection) obsCol)
+					.getMembers().iterator();
+			while (obsIter.hasNext()) {
+				UWMeasurementType xb_obs = xb_boCol.addNewOMMeasurement();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
+						.next());
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
+			reset();
 			return result;
 		}
-		//DiscreteNumericObservation collection
-		else if (obsCol instanceof DiscreteNumericObservationCollection){
-			OMDiscreteNumericObservationCollectionDocument result = OMDiscreteNumericObservationCollectionDocument.Factory.newInstance();
-			OMDiscreteNumericObservationCollection xb_boCol = result.addNewOMDiscreteNumericObservationCollection();
-			if (obsCol.getGmlId()!=null){
+		// ReferenceObservation collection
+		else if (obsCol instanceof ReferenceObservationCollection) {
+			OMReferenceObservationCollectionDocument result = OMReferenceObservationCollectionDocument.Factory
+					.newInstance();
+			OMReferenceObservationCollection xb_boCol = result
+					.addNewOMReferenceObservationCollection();
+			if (obsCol.getGmlId() != null) {
 				xb_boCol.setId(obsCol.getGmlId());
 			}
-			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol).getMembers().iterator();
-			while (obsIter.hasNext()){
-				UWDiscreteNumericObservationType xb_obs = xb_boCol.addNewOMDiscreteNumericObservation();
-				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter.next());
+			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol)
+					.getMembers().iterator();
+			while (obsIter.hasNext()) {
+				UWReferenceObservationType xb_obs = xb_boCol
+						.addNewOMReferenceObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
+						.next());
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
+			reset();
 			return result;
 		}
-		
+		// UncertaintyObservation collection
+		else if (obsCol instanceof UncertaintyObservationCollection) {
+			OMUncertaintyObservationCollectionDocument result = OMUncertaintyObservationCollectionDocument.Factory
+					.newInstance();
+			OMUncertaintyObservationCollection xb_boCol = result
+					.addNewOMUncertaintyObservationCollection();
+			if (obsCol.getGmlId() != null) {
+				xb_boCol.setId(obsCol.getGmlId());
+			}
+			Iterator<UncertaintyObservation> obsIter = ((UncertaintyObservationCollection) obsCol)
+					.getMembers().iterator();
+			while (obsIter.hasNext()) {
+				UWUncertaintyObservationType xb_obs = xb_boCol
+						.addNewOMUncertaintyObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
+						.next());
+				xb_obs.set(xb_boDoc.getOMObservation());
+			}
+			reset();
+			return result;
+		}
+		// DiscreteNumericObservation collection
+		else if (obsCol instanceof DiscreteNumericObservationCollection) {
+			OMDiscreteNumericObservationCollectionDocument result = OMDiscreteNumericObservationCollectionDocument.Factory
+					.newInstance();
+			OMDiscreteNumericObservationCollection xb_boCol = result
+					.addNewOMDiscreteNumericObservationCollection();
+			if (obsCol.getGmlId() != null) {
+				xb_boCol.setId(obsCol.getGmlId());
+			}
+			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol)
+					.getMembers().iterator();
+			while (obsIter.hasNext()) {
+				UWDiscreteNumericObservationType xb_obs = xb_boCol
+						.addNewOMDiscreteNumericObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
+						.next());
+				xb_obs.set(xb_boDoc.getOMObservation());
+			}
+			reset();
+			return result;
+		}
+
+		// TODO add CategoryObservationCollection
+
 		else {
 			throw new Exception("Collection type is not supported by encoder!");
 		}
-		
+
 	}
 
 	/**
@@ -214,7 +290,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * @throws Exception
 	 */
 	@Override
-	public String encodeObservation(AbstractObservation obs) throws Exception {
+	public synchronized String encodeObservation(AbstractObservation obs)
+			throws Exception {
 		return encodeObservationDocument(obs).xmlText(getOMOptions());
 	}
 
@@ -226,8 +303,14 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * @return observation's xml document
 	 * @throws Exception
 	 */
-	public OMObservationDocument encodeObservationDocument(
+	public synchronized OMObservationDocument encodeObservationDocument(
 			AbstractObservation obs) throws Exception {
+
+		// initialize maps for IDs and timestrings
+		if (!this.isCol) {
+			this.gmlID4TimeStrings = new HashMap<String, String>();
+			this.gmlID4sfIdentifier = new HashMap<String, String>();
+		}
 
 		// define observation type
 		OMObservationDocument xb_obsDoc = null;
@@ -271,7 +354,14 @@ public class XBObservationEncoder implements IObservationEncoder {
 		}
 
 		// encode id
-		xb_obs.setId(obs.getGmlId());
+		// xb_obs.setId(obs.getGmlId());
+		xb_obs.setId("o_" + obsIdCounter);
+		obsIdCounter++;
+
+		// add identifier
+		if (obs.getIdentifier() != null) {
+			xb_obs.addNewIdentifier().setStringValue(obs.getIdentifier());
+		}
 
 		// encode boundedBy (optional parameter)
 		if (obs.getBoundedBy() != null) {
@@ -307,6 +397,9 @@ public class XBObservationEncoder implements IObservationEncoder {
 		// encode result
 		encodeResult(xb_obs, obs);
 
+		if (!this.isCol) {
+			reset();
+		}
 		return xb_obsDoc;
 	}
 
@@ -341,43 +434,107 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 		TimePrimitivePropertyType xb_phenTime = xb_observation
 				.addNewPhenomenonTime();
+
+		// phenomenon time is time instant
 		if (obs.getPhenomenonTime().getDateTime() != null) {
+			String timeString = obs.getPhenomenonTime().getDateTime()
+					.toString();
+			if (this.gmlID4TimeStrings.containsKey(timeString)) {
+				xb_phenTime.setHref("#"
+						+ this.gmlID4TimeStrings.get(timeString));
+			} else {
+				TimeInstantDocument xb_tiDoc = TimeInstantDocument.Factory
+						.newInstance();
+				TimeInstantType xb_timeInstant = xb_tiDoc.addNewTimeInstant();
 
-			TimeInstantDocument xb_tiDoc = TimeInstantDocument.Factory
-					.newInstance();
-			TimeInstantType xb_timeInstant = xb_tiDoc.addNewTimeInstant();
+				xb_timeInstant.addNewTimePosition().setStringValue(
+						obs.getPhenomenonTime().getDateTime().toString());
+				// TODO use DateTimeFormatter? .toString(String pattern)
 
-			xb_timeInstant.addNewTimePosition().setStringValue(
-					obs.getPhenomenonTime().getDateTime().toString());
-			// TODO use DateTimeFormatter? .toString(String pattern)
+				if (obs.getPhenomenonTime().getId() != null) {
+					xb_timeInstant.setId(obs.getResultTime().getId());
+					this.gmlID4TimeStrings.put(obs.getPhenomenonTime()
+							.getDateTime().toString(), obs.getPhenomenonTime()
+							.getId());
+				} else {
+					xb_timeInstant.setId("t" + timeIdCounter);
+					this.gmlID4TimeStrings.put(obs.getPhenomenonTime()
+							.getDateTime().toString(), "t" + timeIdCounter);
+					timeIdCounter++;
+				}
+				xb_phenTime.set(xb_tiDoc);
+			}
+		}
 
-			xb_timeInstant.setId(obs.getPhenomenonTime().getId());
+		// phenomenon time is time period
+		else if (obs.getPhenomenonTime().getInterval() != null) {
 
-			xb_phenTime.set(xb_tiDoc);
+			String startString = obs.getPhenomenonTime().getInterval()
+					.getStart().toString();
+			String endString = obs.getPhenomenonTime().getInterval().getEnd()
+					.toString();
+			String key = startString + endString;
 
-		} else if (obs.getPhenomenonTime().getInterval() != null) {
-			TimePeriodDocument xb_tpDoc = TimePeriodDocument.Factory.newInstance();
+			// check whether time period has been already encoded
+			if (this.gmlID4TimeStrings.containsKey(key)) {
+				String ref = "#" + this.gmlID4TimeStrings.get(key);
+				xb_phenTime.setHref(ref);
+				return;
+			}
 
-			TimePeriodType xb_timePeriod = xb_tpDoc.addNewTimePeriod();
-			xb_timePeriod
-					.addNewBegin()
-					.addNewTimeInstant()
-					.addNewTimePosition()
-					.setStringValue(
-							obs.getPhenomenonTime().getInterval().getStart()
-									.toString());
-			// TODO use DateTimeFormatter? .toString(String pattern)
-			xb_timePeriod
-					.addNewEnd()
-					.addNewTimeInstant()
-					.addNewTimePosition()
-					.setStringValue(
-							obs.getPhenomenonTime().getInterval().getEnd()
-									.toString());
-			// TODO use DateTimeFormatter? .toString(String pattern)
+			// time period has to be encoded as new element
+			else {
+				String gmlID = obs.getPhenomenonTime().getId();
 
-			xb_timePeriod.setId(obs.getPhenomenonTime().getId());
-			xb_phenTime.set(xb_tpDoc);
+				if (gmlID == null) {
+					gmlID = "t" + this.timeIdCounter;
+					timeIdCounter++;
+				}
+
+				TimePeriodDocument xb_tpDoc = TimePeriodDocument.Factory
+						.newInstance();
+
+				TimePeriodType xb_timePeriod = xb_tpDoc.addNewTimePeriod();
+
+				// encode start
+				TimeInstantPropertyType xb_tiStart = xb_timePeriod
+						.addNewBegin();
+
+				if (this.gmlID4TimeStrings.containsKey(startString)) {
+					xb_tiStart.setHref("#"
+							+ this.gmlID4TimeStrings.get(startString));
+				} else {
+					String gmlId = "t" + this.timeIdCounter;
+					this.timeIdCounter++;
+					TimeInstantType xb_ti = xb_tiStart.addNewTimeInstant();
+					xb_ti.addNewTimePosition().setStringValue(startString);
+					xb_ti.setId(gmlId);
+					this.gmlID4TimeStrings.put(startString, gmlId);
+				}
+
+				// encode end
+				TimeInstantPropertyType xb_tiEnd = xb_timePeriod.addNewEnd();
+				if (this.gmlID4TimeStrings.containsKey(endString)) {
+					xb_tiEnd.setHref("#"
+							+ this.gmlID4TimeStrings.get(endString));
+				} else {
+					String gmlId = "t" + this.timeIdCounter;
+					this.timeIdCounter++;
+					TimeInstantType xb_ti = xb_tiEnd.addNewTimeInstant();
+					xb_ti.addNewTimePosition().setStringValue(startString);
+					xb_ti.setId(gmlId);
+					this.gmlID4TimeStrings.put(startString, gmlId);
+				}
+
+				if (gmlID == null) {
+					gmlID = "t" + this.timeIdCounter;
+					this.timeIdCounter++;
+				}
+				xb_timePeriod.setId(gmlID);
+				this.gmlID4TimeStrings.put(key, gmlID);
+				xb_phenTime.set(xb_tpDoc);
+				return;
+			}
 
 		} else if (obs.getPhenomenonTime().getHref() != null) {
 
@@ -402,14 +559,105 @@ public class XBObservationEncoder implements IObservationEncoder {
 		TimeInstantPropertyType xb_resultTime = xb_observation
 				.addNewResultTime();
 
+		// result time is time instant
 		if (obs.getResultTime().getDateTime() != null) {
-			TimeInstantType xb_timeInstant = xb_resultTime.addNewTimeInstant();
+			String timeString = obs.getResultTime().getDateTime().toString();
+			if (this.gmlID4TimeStrings.containsKey(timeString)) {
+				xb_resultTime.setHref("#"
+						+ this.gmlID4TimeStrings.get(timeString));
+			} else {
+				TimeInstantDocument xb_tiDoc = TimeInstantDocument.Factory
+						.newInstance();
+				TimeInstantType xb_timeInstant = xb_tiDoc.addNewTimeInstant();
 
-			xb_timeInstant.addNewTimePosition().setStringValue(
-					obs.getResultTime().getDateTime().toString());
-			// TODO use DateTimeFormatter? .toString(String pattern)
+				xb_timeInstant.addNewTimePosition().setStringValue(
+						obs.getResultTime().getDateTime().toString());
+				// TODO use DateTimeFormatter? .toString(String pattern)
 
-			xb_timeInstant.setId(obs.getResultTime().getId());
+				if (obs.getResultTime().getId() != null) {
+					xb_timeInstant.setId(obs.getResultTime().getId());
+					this.gmlID4TimeStrings.put(obs.getResultTime()
+							.getDateTime().toString(), obs.getResultTime()
+							.getId());
+				} else {
+					xb_timeInstant.setId("t" + timeIdCounter);
+					this.gmlID4TimeStrings.put(obs.getResultTime()
+							.getDateTime().toString(), "t" + timeIdCounter);
+					timeIdCounter++;
+				}
+				xb_resultTime.set(xb_tiDoc);
+			}
+		}
+
+		// phenomenon time is time period
+		else if (obs.getResultTime().getInterval() != null) {
+
+			String startString = obs.getResultTime().getInterval().getStart()
+					.toString();
+			String endString = obs.getResultTime().getInterval().getEnd()
+					.toString();
+			String key = startString + endString;
+
+			// check whether time period has been already encoded
+			if (this.gmlID4TimeStrings.containsKey(key)) {
+				String ref = "#" + this.gmlID4TimeStrings.get(key);
+				xb_resultTime.setHref(ref);
+				return;
+			}
+
+			// time period has to be encoded as new element
+			else {
+				String gmlID = obs.getResultTime().getId();
+
+				if (gmlID == null) {
+					gmlID = "t" + this.timeIdCounter;
+					timeIdCounter++;
+				}
+
+				TimePeriodDocument xb_tpDoc = TimePeriodDocument.Factory
+						.newInstance();
+
+				TimePeriodType xb_timePeriod = xb_tpDoc.addNewTimePeriod();
+
+				// encode start
+				TimeInstantPropertyType xb_tiStart = xb_timePeriod
+						.addNewBegin();
+
+				if (this.gmlID4TimeStrings.containsKey(startString)) {
+					xb_tiStart.setHref("#"
+							+ this.gmlID4TimeStrings.get(startString));
+				} else {
+					String gmlId = "t" + this.timeIdCounter;
+					this.timeIdCounter++;
+					TimeInstantType xb_ti = xb_tiStart.addNewTimeInstant();
+					xb_ti.addNewTimePosition().setStringValue(startString);
+					xb_ti.setId(gmlId);
+					this.gmlID4TimeStrings.put(startString, gmlId);
+				}
+
+				// encode end
+				TimeInstantPropertyType xb_tiEnd = xb_timePeriod.addNewEnd();
+				if (this.gmlID4TimeStrings.containsKey(endString)) {
+					xb_tiEnd.setHref("#"
+							+ this.gmlID4TimeStrings.get(endString));
+				} else {
+					String gmlId = "pt" + this.timeIdCounter;
+					this.timeIdCounter++;
+					TimeInstantType xb_ti = xb_tiEnd.addNewTimeInstant();
+					xb_ti.addNewTimePosition().setStringValue(startString);
+					xb_ti.setId(gmlId);
+					this.gmlID4TimeStrings.put(startString, gmlId);
+				}
+
+				if (gmlID == null) {
+					gmlID = "pt" + this.timeIdCounter;
+					this.timeIdCounter++;
+				}
+				xb_timePeriod.setId(gmlID);
+				this.gmlID4TimeStrings.put(key, gmlID);
+				xb_resultTime.set(xb_tpDoc);
+				return;
+			}
 
 		} else if (obs.getResultTime().getHref() != null) {
 
@@ -417,7 +665,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 		} else {
 			throw new Exception(
-					"ResultTime has to be an instant, or a reference to another time property.");
+					"PhenomenonTime has to be an instant, an interval, or a reference to another time property.");
 		}
 	}
 
@@ -433,26 +681,72 @@ public class XBObservationEncoder implements IObservationEncoder {
 		TimePeriodPropertyType xb_validTime = xb_observation.addNewValidTime();
 		if (obs.getValidTime().getInterval() != null) {
 
-			TimePeriodType xb_timePeriod = xb_validTime.addNewTimePeriod();
+			String startString = obs.getValidTime().getInterval().getStart()
+					.toString();
+			String endString = obs.getValidTime().getInterval().getEnd()
+					.toString();
+			String key = startString + endString;
 
-			xb_timePeriod
-					.addNewBegin()
-					.addNewTimeInstant()
-					.addNewTimePosition()
-					.setStringValue(
-							obs.getValidTime().getInterval().getStart()
-									.toString());
-			// TODO use DateTimeFormatter? .toString(String pattern)
-			xb_timePeriod
-					.addNewEnd()
-					.addNewTimeInstant()
-					.addNewTimePosition()
-					.setStringValue(
-							obs.getValidTime().getInterval().getEnd()
-									.toString());
-			// TODO use DateTimeFormatter? .toString(String pattern)
+			// check whether time period has been already encoded
+			if (this.gmlID4TimeStrings.containsKey(key)) {
+				String ref = "#" + this.gmlID4TimeStrings.get(key);
+				xb_validTime.setHref(ref);
+				return;
+			}
 
-			xb_timePeriod.setId(obs.getValidTime().getId());
+			// time period has to be encoded as new element
+			else {
+				String gmlID = obs.getValidTime().getId();
+
+				if (gmlID == null) {
+					gmlID = "t" + this.timeIdCounter;
+					timeIdCounter++;
+				}
+
+				TimePeriodDocument xb_tpDoc = TimePeriodDocument.Factory
+						.newInstance();
+
+				TimePeriodType xb_timePeriod = xb_tpDoc.addNewTimePeriod();
+
+				// encode start
+				TimeInstantPropertyType xb_tiStart = xb_timePeriod
+						.addNewBegin();
+
+				if (this.gmlID4TimeStrings.containsKey(startString)) {
+					xb_tiStart.setHref("#"
+							+ this.gmlID4TimeStrings.get(startString));
+				} else {
+					String gmlId = "t" + this.timeIdCounter;
+					this.timeIdCounter++;
+					TimeInstantType xb_ti = xb_tiStart.addNewTimeInstant();
+					xb_ti.addNewTimePosition().setStringValue(startString);
+					xb_ti.setId(gmlId);
+					this.gmlID4TimeStrings.put(startString, gmlId);
+				}
+
+				// encode end
+				TimeInstantPropertyType xb_tiEnd = xb_timePeriod.addNewEnd();
+				if (this.gmlID4TimeStrings.containsKey(endString)) {
+					xb_tiEnd.setHref("#"
+							+ this.gmlID4TimeStrings.get(endString));
+				} else {
+					String gmlId = "pt" + this.timeIdCounter;
+					this.timeIdCounter++;
+					TimeInstantType xb_ti = xb_tiEnd.addNewTimeInstant();
+					xb_ti.addNewTimePosition().setStringValue(startString);
+					xb_ti.setId(gmlId);
+					this.gmlID4TimeStrings.put(startString, gmlId);
+				}
+
+				if (gmlID == null) {
+					gmlID = "pt" + this.timeIdCounter;
+					this.timeIdCounter++;
+				}
+				xb_timePeriod.setId(gmlID);
+				this.gmlID4TimeStrings.put(key, gmlID);
+				xb_validTime.set(xb_tpDoc);
+				return;
+			}
 
 		} else if (obs.getValidTime().getHref() != null) {
 
@@ -460,7 +754,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 		} else {
 			throw new Exception(
-					"ValidTime has to be an interval, or a reference to another time property.");
+					"PhenomenonTime has to be an instant, an interval, or a reference to another time property.");
 		}
 	}
 
@@ -475,74 +769,89 @@ public class XBObservationEncoder implements IObservationEncoder {
 			OMAbstractObservationType xb_observation, AbstractObservation obs)
 			throws Exception {
 
-		FoiPropertyType xb_foi = xb_observation
-				.addNewFeatureOfInterest();
-		
-		if (obs.getFeatureOfInterest().getHref()!=null&&!obs.getFeatureOfInterest().equals("")){
+		FoiPropertyType xb_foi = xb_observation.addNewFeatureOfInterest();
+
+		//feature has is externally referenced
+		if (obs.getFeatureOfInterest().getHref() != null
+				&& !obs.getFeatureOfInterest().equals("")) {
 			xb_foi.setHref(obs.getFeatureOfInterest().getHref());
 		}
-		
+
 		else {
-			SFSpatialSamplingFeatureType xb_sfType = xb_foi.addNewSFSpatialSamplingFeature();
-		xb_sfType.setId(obs.getFeatureOfInterest().getGmlId());
 
-		if (obs.getFeatureOfInterest().getBoundedBy() != null) {
-			// TODO add boundedBy
-		}
+			// if identifier of feature is set, check whether foi has been
+			// already encoded
+			String identifier = obs.getFeatureOfInterest().getIdentifier();
+			if (identifier != null && !identifier.equals("")) {
+				if (this.gmlID4sfIdentifier.containsKey(identifier)) {
+					xb_foi.setHref("#" + this.gmlID4sfIdentifier);
+					return;
+				}
+			}
 
-		if (obs.getFeatureOfInterest().getSampledFeature() != null
-				&& obs.getFeatureOfInterest().getSampledFeature() != "") {
-			xb_sfType.addNewSampledFeature().setHref(
-					obs.getFeatureOfInterest().getSampledFeature());
-		} else {
-			xb_sfType.setNilSampledFeature();
-		}
-		ReferenceType xb_rt = xb_sfType.addNewType();
-		xb_rt.setHref(obs.getFeatureOfInterest().getFeatureType());
-		ShapeType xb_shape = xb_sfType.addNewShape();
-		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
+			//if feature has not been implemented, encode the feature.
+			SFSpatialSamplingFeatureType xb_sfType = xb_foi
+					.addNewSFSpatialSamplingFeature();
+			String gmlId = "sf" + this.sfIdCounter;
+			this.sfIdCounter++;
+			xb_sfType.setId(gmlId);
+			
 
-		XmlObject xb_geometry=null;
-		if (obs.getFeatureOfInterest().getShape() instanceof GmlPoint) {
-			xb_geometry = encoder.encodePoint2Doc((GmlPoint) obs
-					.getFeatureOfInterest().getShape());
+			if (obs.getFeatureOfInterest().getBoundedBy() != null) {
+				// TODO add boundedBy
+			}
 
-		} else if (obs.getFeatureOfInterest().getShape() instanceof GmlPolygon) {
-			xb_geometry = encoder
-					.encodePolygon2Doc((GmlPolygon) obs.getFeatureOfInterest()
-							.getShape());
-		} else if (obs.getFeatureOfInterest().getShape() instanceof GmlLineString) {
-			xb_geometry = encoder
-					.encodeLineString2Doc((GmlLineString) obs
-							.getFeatureOfInterest().getShape());
-		} else if (obs.getFeatureOfInterest().getShape() instanceof RectifiedGrid) {
-			xb_geometry = encoder
-					.encodeRectifiedGrid2Doc((RectifiedGrid) obs
-							.getFeatureOfInterest().getShape());
+			if (obs.getFeatureOfInterest().getSampledFeature() != null
+					&& obs.getFeatureOfInterest().getSampledFeature() != "") {
+				xb_sfType.addNewSampledFeature().setHref(
+						obs.getFeatureOfInterest().getSampledFeature());
+			} else {
+				xb_sfType.setNilSampledFeature();
+			}
+			ReferenceType xb_rt = xb_sfType.addNewType();
+			xb_rt.setHref(obs.getFeatureOfInterest().getFeatureType());
+			ShapeType xb_shape = xb_sfType.addNewShape();
+			XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
 
-		} else if (obs.getFeatureOfInterest().getShape() instanceof GmlMultiPoint) {
-			xb_geometry = encoder
-					.encodeMultiPoint2Doc((GmlMultiPoint) obs
-							.getFeatureOfInterest().getShape());
+			XmlObject xb_geometry = null;
+			if (obs.getFeatureOfInterest().getShape() instanceof Point) {
+				xb_geometry = encoder.encodePoint2Doc((Point) obs
+						.getFeatureOfInterest().getShape());
 
-		} 
-		else if (obs.getFeatureOfInterest().getShape() instanceof GmlMultiLineString) {
-			xb_geometry = encoder
-					.encodeMultiLineString2Doc((GmlMultiLineString) obs
-							.getFeatureOfInterest().getShape());
+			} else if (obs.getFeatureOfInterest().getShape() instanceof Polygon) {
+				xb_geometry = encoder.encodePolygon2Doc((Polygon) obs
+						.getFeatureOfInterest().getShape());
+			} else if (obs.getFeatureOfInterest().getShape() instanceof LineString) {
+				xb_geometry = encoder.encodeLineString2Doc((LineString) obs
+						.getFeatureOfInterest().getShape());
+			} else if (obs.getFeatureOfInterest().getShape() instanceof RectifiedGrid) {
+				xb_geometry = encoder
+						.encodeRectifiedGrid2Doc((RectifiedGrid) obs
+								.getFeatureOfInterest().getShape());
 
-		}
-		else if (obs.getFeatureOfInterest().getShape() instanceof GmlMultiPolygon) {
-			xb_geometry = encoder
-					.encodeMultiPolygon2Doc((GmlMultiPolygon) obs
-							.getFeatureOfInterest().getShape());
+			} else if (obs.getFeatureOfInterest().getShape() instanceof MultiPoint) {
+				xb_geometry = encoder.encodeMultiPoint2Doc((MultiPoint) obs
+						.getFeatureOfInterest().getShape());
 
-		} else {
-			throw new Exception(
-					"Geometry type is not supported by UncertWeb GML profile!");
-		}
-		xb_shape.set(xb_geometry);
-		
+			} else if (obs.getFeatureOfInterest().getShape() instanceof MultiLineString) {
+				xb_geometry = encoder
+						.encodeMultiLineString2Doc((MultiLineString) obs
+								.getFeatureOfInterest().getShape());
+
+			} else if (obs.getFeatureOfInterest().getShape() instanceof MultiPolygon) {
+				xb_geometry = encoder
+						.encodeMultiPolygon2Doc((MultiPolygon) obs
+								.getFeatureOfInterest().getShape());
+
+			} else {
+				throw new Exception(
+						"Geometry type is not supported by UncertWeb GML profile!");
+			}
+			xb_shape.set(xb_geometry);
+			if (identifier != null) {
+				xb_sfType.addNewIdentifier().setStringValue(identifier);
+				this.gmlID4sfIdentifier.put(identifier, gmlId);
+			}
 		}
 	}
 
@@ -551,16 +860,16 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * 
 	 * @param xb_observation
 	 * @param obs
-	 * @throws UncertaintyEncoderException 
-	 * @throws UnsupportedUncertaintyTypeException 
-	 * @throws XmlException 
+	 * @throws UncertaintyEncoderException
+	 * @throws UnsupportedUncertaintyTypeException
+	 * @throws XmlException
 	 */
 	private void encodeResultQuality(OMAbstractObservationType xb_observation,
-			AbstractObservation obs) throws XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
+			AbstractObservation obs) throws XmlException,
+			UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
 
 		for (DQ_UncertaintyResult resultObject : obs.getResultQuality()) {
 
-			
 			DQUncertaintyResultDocument xb_dqURDoc = DQUncertaintyResultDocument.Factory
 					.newInstance();
 			DQUncertaintyResultType xb_dqUncRes = xb_dqURDoc
@@ -572,20 +881,21 @@ public class XBObservationEncoder implements IObservationEncoder {
 			if (resultObject.getUuid() != null) {
 				xb_dqUncRes.setUuid(resultObject.getUuid());
 			}
-			//add value unit
+			// add value unit
 			if (resultObject.getValueUnit() != null) {
-				UnitDefinitionType xb_vu = xb_dqUncRes.addNewValueUnit().addNewUnitDefinition();
+				UnitDefinitionType xb_vu = xb_dqUncRes.addNewValueUnit()
+						.addNewUnitDefinition();
 				xb_vu.setId(resultObject.getValueUnit().getGmlId());
-				xb_vu.addNewIdentifier().setStringValue(resultObject.getValueUnit().getIdentifier());
+				xb_vu.addNewIdentifier().setStringValue(
+						resultObject.getValueUnit().getIdentifier());
 			}
-			//encode uncertainty value
+			// encode uncertainty value
 			IUncertainty[] valueArray = resultObject.getValues();
-			for (int i=0;i<valueArray.length;i++) {
-				IUncertainty value =valueArray[i];
-				Value xb_value = xb_dqUncRes.addNewValue();//Value.Factory.newInstance();
+			for (int i = 0; i < valueArray.length; i++) {
+				IUncertainty value = valueArray[i];
+				Value xb_value = xb_dqUncRes.addNewValue();// Value.Factory.newInstance();
 				xb_value.set(encodeUncertainty(value));
 			}
-			
 
 			DQQuantitativeAttributeAccuracyDocument xb_dqQAADoc = DQQuantitativeAttributeAccuracyDocument.Factory
 					.newInstance();
@@ -604,18 +914,19 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * helper method for encoding result property
 	 * 
 	 * @param xb_observation
-	 * 			XmlBeans object to which the result should be written
+	 *            XmlBeans object to which the result should be written
 	 * @param obs
-	 * 			observation whose result should be encoded
-	 * @throws UncertaintyEncoderException 
-	 * 			if uncertainty cannot be encoded
+	 *            observation whose result should be encoded
+	 * @throws UncertaintyEncoderException
+	 *             if uncertainty cannot be encoded
 	 * @throws UnsupportedUncertaintyTypeException
-	 * 			if type of uncertainty is not supported by UncertML API 
-	 * @throws XmlException 
-	 * 			if encoding fails
+	 *             if type of uncertainty is not supported by UncertML API
+	 * @throws XmlException
+	 *             if encoding fails
 	 */
 	private void encodeResult(OMAbstractObservationType xb_obs,
-			AbstractObservation obs) throws XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
+			AbstractObservation obs) throws XmlException,
+			UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
 
 		if (obs.getResult() instanceof BooleanResult
 				&& xb_obs instanceof UWBooleanObservationType) {
@@ -656,12 +967,14 @@ public class XBObservationEncoder implements IObservationEncoder {
 			UncertaintyResult resultObject = (UncertaintyResult) obs
 					.getResult();
 
-			//encode UOM attribute, if UOM is set
-			if (resultObject.getUnitOfMeasurement()!=null&&!resultObject.getUnitOfMeasurement().equals("")){
+			// encode UOM attribute, if UOM is set
+			if (resultObject.getUnitOfMeasurement() != null
+					&& !resultObject.getUnitOfMeasurement().equals("")) {
 				xb_uncResult.setUom(resultObject.getUnitOfMeasurement());
 			}
-			xb_uncResult.addNewAbstractUncertainty().set(encodeUncertainty(
-					(IUncertainty)resultObject.getUncertaintyValue()));
+			xb_uncResult.addNewAbstractUncertainty();
+			xb_uncResult.set(encodeUncertainty((IUncertainty) resultObject
+					.getUncertaintyValue()));
 
 		} else if (obs.getResult() instanceof ReferenceResult
 				&& xb_obs instanceof UWReferenceObservationType) {
@@ -678,6 +991,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 			xb_refResult.setShow(refObject.getShow());
 			xb_refResult.setActuate(refObject.getActuate());
 		}
+
+		// TODO add CategoryObservation
 	}
 
 	/**
@@ -694,23 +1009,38 @@ public class XBObservationEncoder implements IObservationEncoder {
 		String posString = x + " " + y;
 		return posString;
 	}
-	
+
 	/**
 	 * helper method used to encode uncertainty in UncertML
 	 * 
 	 * @param uncertainty
-	 * 			uncertainty which should be encoded in UncertML XML
+	 *            uncertainty which should be encoded in UncertML XML
 	 * @return String representing the uncertainty encoded as UncertML XML
 	 * @throws XmlException
-	 * 			if encoding fails
+	 *             if encoding fails
 	 * @throws UnsupportedUncertaintyTypeException
-	 * 			if uncertainty 
+	 *             if uncertainty
 	 * @throws UncertaintyEncoderException
 	 */
-	private AbstractUncertaintyDocument encodeUncertainty(IUncertainty uncertainty) throws XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException{
+	private AbstractUncertaintyDocument encodeUncertainty(
+			IUncertainty uncertainty) throws XmlException,
+			UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
 		XMLEncoder unEncoder = new XMLEncoder();
-		AbstractUncertaintyDocument object = AbstractUncertaintyDocument.Factory.parse(unEncoder.encode(uncertainty));
+		AbstractUncertaintyDocument object = AbstractUncertaintyDocument.Factory
+				.parse(unEncoder.encode(uncertainty));
 		return object;
+	}
+
+	/**
+	 * helper methods for resetting member variables used for gml ID encoding
+	 * 
+	 */
+	private void reset() {
+		this.gmlID4TimeStrings = null;
+		this.gmlID4sfIdentifier = null;
+		this.isCol = false;
+		this.obsIdCounter = 0;
+		this.timeIdCounter = 0;
 	}
 
 	/**
@@ -733,5 +1063,6 @@ public class XBObservationEncoder implements IObservationEncoder {
 		xmlOptions.setSavePrettyPrint();
 		return xmlOptions;
 	}
+
 
 }

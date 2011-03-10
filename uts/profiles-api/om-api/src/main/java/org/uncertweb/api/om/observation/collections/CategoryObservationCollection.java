@@ -4,29 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
-import org.uncertweb.api.om.observation.BooleanObservation;
-
+import org.uncertweb.api.om.observation.CategoryObservation;
 
 /**
- * collection for BooleanObservations
+ * collection for CategoryObservations
  * 
  * @author staschc
  *
  */
-public class BooleanObservationCollection implements IObservationCollection{
+public class CategoryObservationCollection implements IObservationCollection{
 	
 	/**gml Id of collection*/
 	private String gmlId;
 	
 	/**members of collection*/
-	private List<BooleanObservation> members;
+	private List<CategoryObservation> members;
 	
 	/**
 	 * contructor; initializes members list
 	 * 
 	 */
-	public BooleanObservationCollection(){
-		this.members = new ArrayList<BooleanObservation>();
+	public CategoryObservationCollection(){
+		this.members = new ArrayList<CategoryObservation>();
 	}
 	
 	/**
@@ -35,9 +34,10 @@ public class BooleanObservationCollection implements IObservationCollection{
 	 * @param members
 	 * 			members of collection
 	 */
-	public BooleanObservationCollection(List<BooleanObservation> members){
+	public CategoryObservationCollection(List<CategoryObservation> members){
 		this.members = members;
 	}
+	
 	
 	
 	@Override
@@ -50,18 +50,18 @@ public class BooleanObservationCollection implements IObservationCollection{
 	/**
 	 * @return the members
 	 */
-	public List<BooleanObservation> getMembers() {
+	public List<CategoryObservation> getMembers() {
 		return members;
 	}
 
 
 
 	@Override
-	public void addObservation(AbstractObservation obs) throws Exception {
-		if (!(obs instanceof BooleanObservation)){
-			throw new Exception("Only BooleanObservation could be added to BooleanObservationCollection!");
+	public void addObservation(AbstractObservation obs) throws IllegalArgumentException {
+		if (!(obs instanceof CategoryObservation)){
+			throw new IllegalArgumentException("Only CategoryObservation could be added to CategoryObservationCollection!");
 		}
-		this.members.add((BooleanObservation)obs);
+		this.members.add((CategoryObservation)obs);
 	}
 
 

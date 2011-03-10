@@ -1,11 +1,10 @@
 package org.uncertweb.api.om.observation.collections;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
-import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.Measurement;
-import org.uncertweb.api.om.observation.ReferenceObservation;
 
 /**
  * collection of O&M measurements
@@ -20,6 +19,14 @@ public class MeasurementCollection implements IObservationCollection{
 	
 	/**members of collection*/
 	private List<Measurement> members;
+	
+	/**
+	 * constructor creates an empty collection; add method can be used to fill the collection
+	 * 
+	 */
+	public MeasurementCollection(){
+		members = new ArrayList<Measurement>();
+	}
 	
 	/**
 	 * constructor
