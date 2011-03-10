@@ -16,8 +16,6 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.uncertml.distribution.multivariate.MultivariateGaussianDistribution;
 import org.uncertml.statistic.CovarianceMatrix;
-import org.uncertweb.api.gml.geometry.GmlLineString;
-import org.uncertweb.api.gml.geometry.collections.GmlMultiLineString;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -286,18 +284,17 @@ public class ShapeFileConverter {
 	private SpatialSamplingFeature createSamplingFeature(String id,
 			Geometry geom) throws Exception {
 		SpatialSamplingFeature sf = null;
+		int srid = geom.getSRID();
 		if (geom instanceof MultiLineString) {
 			MultiLineString mls = (MultiLineString) geom;
 			int size = mls.getNumGeometries();
-			GmlLineString[] lsArray = new GmlLineString[size];
+			LineString[] lsArray = new LineString[size];
 			for (int i = 0; i < size; i++) {
-				lsArray[i] = new GmlLineString(((LineString) mls
-						.getGeometryN(i)).getCoordinateSequence(),
-						new GeometryFactory(), id + "ls_" + multiGeomCounter);
+				lsArray[i] = new GeometryFactory().createLineString(((LineString) mls
+						.getGeometryN(i)).getCoordinateSequence());
 				multiGeomCounter++;
 			}
-			GmlMultiLineString gmlLineString = new GmlMultiLineString(lsArray,
-					new GeometryFactory(), "mls_" + id);
+			MultiLineString gmlLineString =  new GeometryFactory().createMultiLineString(lsArray);
 			sf = new SpatialSamplingFeature("sf" + id, null, gmlLineString);
 		}
 		// TODO add further geometry types
