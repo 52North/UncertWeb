@@ -30,7 +30,7 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class XBObservationParserTestCase extends TestCase {
 
-	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api";
+	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/";
 	private String pathToExamples = "om-api/src/test/resources";
 	
 	
@@ -51,7 +51,7 @@ public class XBObservationParserTestCase extends TestCase {
 		}
 		catch (IOException ioe){
 			xmlString = readXmlFile(localPath + pathToExamples
-					+ "/ObsCol_Measurement.xml");
+					+ "/ObsCol_Measurements.xml");
 		}
 		XBObservationParser parser = new XBObservationParser();
 		IObservationCollection oc = parser.parseObservationCollection(xmlString);
@@ -78,7 +78,7 @@ public class XBObservationParserTestCase extends TestCase {
 		AbstractObservation obs = parser.parseObservation(xmlString);
 
 		// test id;
-		assertEquals("obsTest1", obs.getGmlId());
+		assertEquals("obsTest1", obs.getIdentifier());
 
 		// test boundedBy (optional parameter)
 
@@ -104,7 +104,7 @@ public class XBObservationParserTestCase extends TestCase {
 
 		// test featureOfInterest
 		assertEquals("SamplingPoint1", obs.getFeatureOfInterest()
-				.getGmlId());
+				.getIdentifier());
 
 		Point shape = (Point) obs.getFeatureOfInterest().getShape();
 		assertEquals("Point", shape.getGeometryType());
@@ -144,7 +144,7 @@ public class XBObservationParserTestCase extends TestCase {
 		AbstractObservation obs = parser.parseObservation(xmlString);
 
 		// test id;
-		assertEquals("obsTest1", obs.getGmlId());
+		assertEquals("obsTest1", obs.getIdentifier());
 
 		// test boundedBy (optional parameter)
 
@@ -170,7 +170,7 @@ public class XBObservationParserTestCase extends TestCase {
 
 		// test featureOfInterest
 		assertEquals("SamplingPoint1", obs.getFeatureOfInterest()
-				.getGmlId());
+				.getIdentifier());
 
 		Point shape = (Point) obs.getFeatureOfInterest().getShape();
 		assertEquals("Point", shape.getGeometryType());
@@ -203,7 +203,7 @@ public class XBObservationParserTestCase extends TestCase {
 		AbstractObservation obs = parser.parseObservation(xmlString);
 
 		// test id;
-		assertEquals("http://myFeature.org/features/SamplingPoint1", obs.getFeatureOfInterest().getHref());
+		assertEquals("http://localhost:8080/sta-wps/SamplingPoint.xml", obs.getFeatureOfInterest().getHref());
 
 	}
 
