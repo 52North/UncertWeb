@@ -32,3 +32,12 @@
 	width: 400px;
 	height: 250px;
 }
+
+#tooltip {
+	font-size: small;
+	border: 1px solid #B6B6B6;
+	color: white;
+	padding: 5px;
+	background-color: black;
+	opacity: 0.80;
+}

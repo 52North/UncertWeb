@@ -173,8 +173,8 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			});
 			this.layer.redraw();
 			if (this.selectedFeature && this.selectedFeature.popup 
-					&& this.selectedFeature.popup.visible()) {
-				this.onFeatureSelect(this.selectedFeature);
+					&& this.selectedFeature.popup.visible() && this.plot) {
+				this.plot.triggerRedrawOverlay();
 			}
 		}
 	},
@@ -248,20 +248,20 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			return [time,value,sd];
 		}
 
-		var values = [];
+		var values = [], uom;
 		if (feature.attributes.isMultiFeature) {
 			for (var i = 0;i < feature.attributes.values.length; i++) {
+				if (!uom) uom = feature.attributes.values[i].uom;
 				values.push(getValue(feature.attributes.values[i]));
 			}
 		} else {
+			if (!uom) uom = feature.attributes.uom;
 			values.push(getValue(feature.attributes));
 		}
 
 		var id = "plot" + new Date().getTime();
 		var html = "<div class='bubble'><h2>" + feature.attributes.id + "</h2>";
 		html += '<div id="' + id + '" class="bubblePlot"></div></div>';
-		
-
 		var ctrls = this.map.getControlsByClass("OpenLayers.Control.SelectFeature");
 		feature.popup = new OpenLayers.Popup.FramedCloud("Feature",
 			feature.geometry.getBounds().getCenterLonLat(),
@@ -269,9 +269,9 @@ OpenLayers.SOSClient = OpenLayers.Class({
 		feature.popup.panMapIfOutOfView = true;
 		this.selectedFeature = feature;
 		this.map.addPopup(feature.popup, true);
-		this.draw(id,values,2.4);
+		this.draw(id,values,uom,2.4);
 	},
-	draw: function(id, v, timesInterval) {
+	draw: function(id, v, uom, timesInterval) {
 		var u = [], l = [], m = [];
 		for (var i = 0; i < v.length; i++) {
 			if (typeof(v[i][0]) === "number") {
@@ -308,7 +308,7 @@ OpenLayers.SOSClient = OpenLayers.Class({
 				ctx.fill();
 			}    
 		}  
-		$.plot($('#' + id), [{ 
+		this.plot = $.plot($('#' + id), [{ 
 				color: "red", 
 				data:u.concat(l), 
 				lines: { fill: true } 
@@ -317,15 +317,39 @@ OpenLayers.SOSClient = OpenLayers.Class({
 				points: { show: true },
 				data:m
 			}], {
-				xaxis: { mode: "time" }, 
+				xaxis: { mode: "time", color: "#B6B6B6" },
+				yaxis: { color: "#B6B6B6" }, 
 				lines: { show: true },
 				grid: {
+					color: "#B6B6B6",
 					hoverable: true,
 					mouseActiveRadius: 25
 				},
 				hooks: { draw: [raw] }
 			}
 		);
+		var previous;
+        $('#'+id).bind("plothover", function(event, pos, item) {
+            $("#x").text(pos.x.toFixed(2));
+            $("#y").text(pos.y.toFixed(2));
+            if (item) {
+                if (previous != item.datapoint) {
+                    previous = item.datapoint;
+                    $("#tooltip").remove();
+                    var text = item.datapoint[1] + " " + uom;
+                    var color = item.series.color;
+					$('<div id="tooltip">' + text + '</div>').css( {
+			            position: 'absolute',
+			            display: 'none',
+			            top: item.pageY + 15,
+			            left: item.pageX + 5,
+			        }).appendTo("body").show();
+                }
+            } else {
+                $("#tooltip").remove();
+				previous = null;
+            }
+        });
 	},
 	destroy: function () {
 		this.map.removeLayer(this.layer);
