@@ -17,7 +17,7 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public abstract class AbstractObservation {
 
-	private String gmlId;
+	private String identifier;
 	private Envelope boundedBy;
 	private TimeObject phenomenonTime;
 	private TimeObject resultTime;
@@ -37,8 +37,8 @@ public abstract class AbstractObservation {
 	/**
 	 * Constructor with mandatory attributes
 	 * 
-	 * @param gmlId
-	 *            gml id attribute
+	 * @param identifier
+	 *            observation identifier
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -52,11 +52,11 @@ public abstract class AbstractObservation {
 	 * @param result
 	 *            result
 	 */
-	public AbstractObservation(String gmlId, TimeObject phenomenonTime, TimeObject resultTime,
+	public AbstractObservation(String identifier, TimeObject phenomenonTime, TimeObject resultTime,
 			URI procedure, URI observedProperty,
 			SpatialSamplingFeature featureOfInterest) {
 
-		this.gmlId = gmlId;
+		this.identifier = identifier;
 		this.phenomenonTime = phenomenonTime;
 		this.resultTime = resultTime;
 		this.procedure = procedure;
@@ -88,11 +88,11 @@ public abstract class AbstractObservation {
 	 * @param resultQuality
 	 * 			  (optional) result qualities as UncertaintyResults
 	 */
-	public AbstractObservation(String gmlId, Envelope boundedBy, TimeObject phenomenonTime,
+	public AbstractObservation(String identifier, Envelope boundedBy, TimeObject phenomenonTime,
 			TimeObject resultTime, TimeObject validTime, URI procedure,
 			URI observedProperty, SpatialSamplingFeature featureOfInterest,
 			DQ_UncertaintyResult[] resultQuality) {
-		this(gmlId, phenomenonTime, resultTime, procedure, observedProperty,
+		this(identifier, phenomenonTime, resultTime, procedure, observedProperty,
 				featureOfInterest);
 
 		this.boundedBy = boundedBy;
@@ -121,15 +121,15 @@ public abstract class AbstractObservation {
 	/**
 	 * @return the gmlId
 	 */
-	public String getGmlId() {
-		return gmlId;
+	public String getIdentifier() {
+		return identifier;
 	}
 
 	/**
 	 * @param gmlId the gmlId to set
 	 */
-	public void setGmlId(String gmlId) {
-		this.gmlId = gmlId;
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 
 	/**

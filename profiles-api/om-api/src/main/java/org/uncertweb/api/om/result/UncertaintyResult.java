@@ -6,16 +6,18 @@ import org.uncertml.IUncertainty;
  * Result representing an uncertainty value including unit of measurement
  * (optional)
  * 
- * @author Kiesow
+ * @author Kiesow, staschc
  * 
  */
 public class UncertaintyResult implements IResult {
 
-	// TODO restrict value to AbstractUncertainty, redirect generic getter and
-	// setter
+	/**uncertainty value of the observation*/
 	private IUncertainty value;
+	
+	/** UCUM code of the unit of measure (optional)*/
 	private String uom;
 
+	
 	/**
 	 * Constructor
 	 * 

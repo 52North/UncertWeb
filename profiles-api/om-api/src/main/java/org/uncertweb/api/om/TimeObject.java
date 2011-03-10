@@ -30,8 +30,9 @@ public class TimeObject {
 	 * @param dateTime
 	 *            a point of time
 	 */
-	public TimeObject(DateTime dateTime) {
+	public TimeObject(String id, DateTime dateTime) {
 		this.dateTime = dateTime;
+		this.id=id;
 	}
 
 	/**
@@ -40,8 +41,9 @@ public class TimeObject {
 	 * @param timePeriod
 	 *            a period of time
 	 */
-	public TimeObject(Interval interval) {
+	public TimeObject(String id, Interval interval) {
 		this.interval = interval;
+		this.id=id;
 	}
 	
 	/**
@@ -80,7 +82,6 @@ public class TimeObject {
 	 * @param dateTime
 	 */
 	public void setDateTime(DateTime dateTime) {
-		reset();
 		this.dateTime = dateTime;
 	}
 
@@ -94,7 +95,6 @@ public class TimeObject {
 	 * @param interval
 	 */
 	public void setInterval(Interval interval) {
-		reset();
 		this.interval = interval;
 	}
 	
@@ -108,18 +108,9 @@ public class TimeObject {
 	 * @param href
 	 */
 	public void setHref(String href) {
-		reset();
-		this.id = null;
 		this.href = href;
 	}
-
-	/**
-	 * helper method to set all attributes null
-	 */
-	private void reset() {
-		this.dateTime = null;
-		this.interval = null;
-		this.href = null;
-	}
+	
+	
 
 }

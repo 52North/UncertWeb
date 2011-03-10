@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
-import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.ReferenceObservation;
 
 /**

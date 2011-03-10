@@ -1,12 +1,20 @@
 package org.uncertweb.api.om.io;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import net.opengis.gml.x32.AbstractTimePrimitiveType;
+import net.opengis.gml.x32.CodeWithAuthorityType;
 import net.opengis.gml.x32.DirectPositionType;
 import net.opengis.gml.x32.EnvelopeType;
 import net.opengis.gml.x32.MeasureType;
@@ -37,8 +45,11 @@ import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscr
 import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
 import net.opengis.om.x20.OMReferenceObservationCollectionDocument.OMReferenceObservationCollection;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
+import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureDocument;
+import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
 import net.opengis.samplingSpatial.x20.ShapeType;
 
+import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.isotc211.x2005.gco.UnitOfMeasurePropertyType;
 import org.isotc211.x2005.gmd.DQElementPropertyType;
@@ -91,7 +102,22 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * 
  */
 public class XBObservationParser implements IObservationParser {
+	
+	private HashMap<String, SpatialSamplingFeature> featureCache;
+	private HashMap<String, TimeObject> timeCache;
+	private XmlBeansGeometryParser parser;
+	
 
+	/**
+	 * constructor initializes the caches for time and featureOfInterest elements
+	 * 
+	 */
+	public XBObservationParser(){
+		featureCache = new HashMap<String, SpatialSamplingFeature>();
+		timeCache = new HashMap<String, TimeObject>();
+		parser = new XmlBeansGeometryParser();
+	}
+	
 	/**
 	 * parses an observation collection
 	 * 
@@ -102,9 +128,12 @@ public class XBObservationParser implements IObservationParser {
 	 *             if parsing of observations fails
 	 */
 	@Override
-	public IObservationCollection parseObservationCollection(String xmlObsCol)
+	public synchronized IObservationCollection parseObservationCollection(String xmlObsCol)
 			throws Exception {
 
+		featureCache = new HashMap<String, SpatialSamplingFeature>();
+		timeCache = new HashMap<String, TimeObject>();
+		
 		XmlObject xb_obsColDoc = XmlObject.Factory.parse(xmlObsCol);
 
 		//Measurement collection
@@ -198,8 +227,11 @@ public class XBObservationParser implements IObservationParser {
 	 *             If parsing of observation fails.
 	 */
 	@Override
-	public AbstractObservation parseObservation(String xmlObs) throws Exception {
+	public synchronized AbstractObservation parseObservation(String xmlObs) throws Exception {
 
+		featureCache = new HashMap<String, SpatialSamplingFeature>();
+		timeCache = new HashMap<String, TimeObject>();
+		
 		XmlObject xb_obsDoc = XmlObject.Factory.parse(xmlObs);
 
 		return parseObservationDocument((OMObservationDocument) xb_obsDoc);
@@ -214,7 +246,7 @@ public class XBObservationParser implements IObservationParser {
 	 * @throws Exception
 	 *             If parsing of observation fails
 	 */
-	public AbstractObservation parseObservationDocument(
+	public synchronized AbstractObservation parseObservationDocument(
 			OMObservationDocument xb_obsDoc) throws Exception {
 
 		AbstractObservation obs = null;
@@ -225,6 +257,12 @@ public class XBObservationParser implements IObservationParser {
 
 			// parse id
 			String gmlId = xb_obsType.getId();
+			
+			CodeWithAuthorityType xb_identifier = xb_obsType.getIdentifier();
+			String identifier = null;
+			if (xb_identifier!=null){
+				identifier = xb_identifier.getStringValue();
+			}
 
 			// parse boundedBy (optional parameter)
 			Envelope boundedBy = null;
@@ -278,7 +316,7 @@ public class XBObservationParser implements IObservationParser {
 				String uom = xb_measureType.getUom();
 
 				MeasureResult result = new MeasureResult(value, uom);
-				obs = new Measurement(gmlId, boundedBy, phenomenonTime,
+				obs = new Measurement(identifier, boundedBy, phenomenonTime,
 						resultTime, validTime, procedure, observedProperty,
 						featureOfInterest, resultQuality, result);
 
@@ -287,7 +325,7 @@ public class XBObservationParser implements IObservationParser {
 				String value = ((UWTextObservationType)xb_obsType).getResult();
 
 				TextResult result = new TextResult(value);
-				obs = new TextObservation(gmlId, boundedBy, phenomenonTime,
+				obs = new TextObservation(identifier, boundedBy, phenomenonTime,
 						resultTime, validTime, procedure, observedProperty,
 						featureOfInterest, resultQuality, result);
 
@@ -300,7 +338,7 @@ public class XBObservationParser implements IObservationParser {
 				IUncertainty uncertainty = uncertaintyParser
 						.parse(xb_uncPropType.toString());
 				UncertaintyResult result = new UncertaintyResult(uncertainty);
-				obs = new UncertaintyObservation(gmlId, boundedBy,
+				obs = new UncertaintyObservation(identifier, boundedBy,
 						phenomenonTime, resultTime, validTime, procedure,
 						observedProperty, featureOfInterest, resultQuality,
 						result);
@@ -310,7 +348,7 @@ public class XBObservationParser implements IObservationParser {
 				BigInteger value = ((UWDiscreteNumericObservationType) xb_obsType).getResult();
 
 				IntegerResult result = new IntegerResult(value);
-				obs = new DiscreteNumericObservation(gmlId, boundedBy,
+				obs = new DiscreteNumericObservation(identifier, boundedBy,
 						phenomenonTime, resultTime, validTime, procedure,
 						observedProperty, featureOfInterest, resultQuality,
 						result);
@@ -320,7 +358,7 @@ public class XBObservationParser implements IObservationParser {
 				boolean value = ((UWBooleanObservationType)xb_obsType).getResult();
 
 				BooleanResult result = new BooleanResult(value);
-				obs = new BooleanObservation(gmlId, boundedBy, phenomenonTime,
+				obs = new BooleanObservation(identifier, boundedBy, phenomenonTime,
 						resultTime, validTime, procedure, observedProperty,
 						featureOfInterest, resultQuality, result);
 
@@ -337,7 +375,7 @@ public class XBObservationParser implements IObservationParser {
 
 				ReferenceResult result = new ReferenceResult(type, href, role,
 						arcrole, title, show, actuate);
-				obs = new ReferenceObservation(gmlId, boundedBy,
+				obs = new ReferenceObservation(identifier, boundedBy,
 						phenomenonTime, resultTime, validTime, procedure,
 						observedProperty, featureOfInterest, resultQuality,
 						result);
@@ -461,7 +499,8 @@ public class XBObservationParser implements IObservationParser {
 
 					dateTime = parseTimePosition(((TimeInstantType) xb_absTp)
 							.getTimePosition().getStringValue());
-					timeObject = new TimeObject(dateTime);
+					timeObject = new TimeObject(xb_absTp.getId(),dateTime);
+					this.timeCache.put(xb_absTp.getId(),timeObject);
 
 				} else if (xb_absTp instanceof TimePeriodType) {
 
@@ -472,13 +511,13 @@ public class XBObservationParser implements IObservationParser {
 
 					interval = new Interval(beginTime.getMillis(), endTime
 							.getMillis());
-					timeObject = new TimeObject(interval);
-
+					timeObject = new TimeObject(xb_absTp.getId(),interval);
+					this.timeCache.put(xb_absTp.getId(), timeObject);
 				}
-				timeObject.setId(xb_absTp.getId());
 
 			} else {
-				timeObject = new TimeObject(href);
+				timeObject = getTimeObject4Href(href);
+				timeObject.setHref(href);
 			}
 
 		} else if (xb_absTimeObj instanceof TimeInstantPropertyType) {
@@ -489,11 +528,12 @@ public class XBObservationParser implements IObservationParser {
 				dateTime = parseTimePosition(xb_tipt.getTimeInstant()
 						.getTimePosition().getStringValue());
 
-				timeObject = new TimeObject(dateTime);
-				timeObject.setId(xb_tipt.getTimeInstant().getId());
+				timeObject = new TimeObject(xb_tipt.getTimeInstant().getId(),dateTime);
+				this.timeCache.put(xb_tipt.getTimeInstant().getId(), timeObject);
 
 			} else {
-				timeObject = new TimeObject(href);
+				timeObject = getTimeObject4Href(href);
+				timeObject.setHref(href);
 			}
 		} else if (xb_absTimeObj instanceof TimePeriodPropertyType) {
 
@@ -508,11 +548,11 @@ public class XBObservationParser implements IObservationParser {
 
 				interval = new Interval(beginTime.getMillis(), endTime
 						.getMillis());
-				timeObject = new TimeObject(interval);
-				timeObject.setId(xb_tppt.getTimePeriod().getId());
-
+				timeObject = new TimeObject(xb_tppt.getTimePeriod().getId(),interval);
+				this.timeCache.put(xb_tppt.getTimePeriod().getId(), timeObject);
 			} else {
-				timeObject = new TimeObject(href);
+				timeObject = getTimeObject4Href(href);
+				timeObject.setHref(href);
 			}
 		}
 
@@ -565,7 +605,7 @@ public class XBObservationParser implements IObservationParser {
 
 		// get shape geometry
 		GeometryFactory geomFac = new GeometryFactory();
-		XmlBeansGeometryParser parser = new XmlBeansGeometryParser(geomFac);
+		XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
 
 		DirectPositionType xb_upperCorner = env.getUpperCorner();
 		Coordinate upperCoord = parser.parsePositionString(xb_upperCorner
@@ -587,21 +627,29 @@ public class XBObservationParser implements IObservationParser {
 	 * @throws Exception
 	 *             if parsing of the feature fails
 	 */
-	public SpatialSamplingFeature parseSamplingFeature(
+	public synchronized SpatialSamplingFeature parseSamplingFeature(
 			FoiPropertyType xb_featureOfInterest) throws Exception {
 
 		SpatialSamplingFeature ssf = null;
 
 		// if reference is set, create SamplingFeature and set reference
 		if (xb_featureOfInterest.isSetHref()) {
-			return new SpatialSamplingFeature(xb_featureOfInterest.getHref());
+			return getSamplingFeature4Href(xb_featureOfInterest.getHref());
+			//return new SpatialSamplingFeature(xb_featureOfInterest.getHref());
 		}
 
 		// FOI is encoded inline, so parse the feature
 		else {
-			// get id
-			String id = xb_featureOfInterest.getSFSpatialSamplingFeature()
-					.getId();
+			
+			String gmlId = xb_featureOfInterest.getSFSpatialSamplingFeature().getId();
+			// get identifier
+			//TODO add parsing of code space
+			String identifier = null;
+			if (xb_featureOfInterest.getSFSpatialSamplingFeature()
+					.getIdentifier()!=null){
+				identifier = xb_featureOfInterest.getSFSpatialSamplingFeature()
+				.getIdentifier().getStringValue();
+			}
 
 			// TODO add boundedBy, location
 
@@ -617,17 +665,149 @@ public class XBObservationParser implements IObservationParser {
 			}
 
 			// get shape geometry
-			GeometryFactory geomFac = new GeometryFactory();
-			XmlBeansGeometryParser parser = new XmlBeansGeometryParser(geomFac);
+			XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
 
 			ShapeType geomString = xb_featureOfInterest
 					.getSFSpatialSamplingFeature().getShape();
 			Geometry shape = parser.parseUwGeometry(geomString.toString());
 
-			ssf = new SpatialSamplingFeature(id, sampledFeature, shape);
-
+			ssf = new SpatialSamplingFeature(identifier, sampledFeature, shape);
+			this.featureCache.put(gmlId, ssf);
 			return ssf;
 		}
 	}
+	
+	/**
+	 * helper method which returns a spatialSamplingFeature for a reference contained in the xlink:href attribute of the featureOfInterest
+	 *
+	 * 
+	 * @param href
+	 * 			value of the xlink:href attribute
+	 * @return Returns spatial sampling feature which is referenced
+	 * @throws Exception 
+	 * 			if geometry of feature cannot be parsed
+	 */
+	private SpatialSamplingFeature getSamplingFeature4Href(String href) throws Exception {
+		SpatialSamplingFeature ssf = null;
+		if	(!href.startsWith("#")){
+			URL hrefUrl = new URL(href);
+			
+			if (this.featureCache.containsKey(href)){
+				ssf = this.featureCache.get(href);
+			}
+			else {
+				String xmlString = null;
+				try {
+					xmlString = readTextFromStream(hrefUrl.openStream());
+				} catch (IOException e) {
+					throw new IllegalArgumentException("Error while resolving URI to featureOfInterest element" + e.getMessage());
+				}
+				if (xmlString!=null&&!(xmlString.equals(""))){
+					try {
+						XmlObject object = XmlObject.Factory.parse(xmlString);
+						if (object instanceof SFSpatialSamplingFeatureDocument){
+							ssf = parseSamplingFeatureDocument(((SFSpatialSamplingFeatureDocument)object).getSFSpatialSamplingFeature());
+							ssf.setHref(href);
+							this.featureCache.put(href, ssf);						}
+					} catch (XmlException e) {
+						throw new IllegalArgumentException("Error while resolving URI to featureOfInterest element" + e.getMessage());
+					}
+				}
+			}
+		}
+		else {
+			String gmlId = href.replace("#", "");
+			ssf = this.featureCache.get(gmlId);
+			if (ssf==null){
+				throw new IllegalArgumentException("Feature of interest with reference " + gmlId + " could not be resolved in document!");
+			}
+			
+		}
+		return ssf;
+	}
+
+	/**
+	 * helper method for parsing XmlBeans representation of SamplingFeature to internal representation
+	 * 
+	 * @param xb_sfType
+	 * 			XmlBeans representation of SamplingFeature		
+	 * @return Returns internal representation of SamplingFeature
+	 * @throws Exception
+	 * 			if geometry of feature cannot be parsed
+	 */
+	private SpatialSamplingFeature parseSamplingFeatureDocument(
+			SFSpatialSamplingFeatureType xb_sfType) throws Exception {
+		// get id
+		String identifier = xb_sfType.getIdentifier().getStringValue();
+
+		// TODO add boundedBy, location
+
+		// get id of the sampled feature
+		String sampledFeature = null;
+
+		if (!(xb_sfType.getSampledFeature().getAbstractFeature() == null)) {
+
+			sampledFeature = xb_sfType.getSampledFeature()
+					.getAbstractFeature().getId();
+		}
+
+		// get shape geometry
+		XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
+
+		ShapeType geomString = xb_sfType.getShape();
+		Geometry shape = parser.parseUwGeometry(geomString.toString());
+
+		return new SpatialSamplingFeature(identifier, sampledFeature, shape);
+		
+	}
+
+	/**
+	 * helper method which returns a TimeObject from the cache
+	 * 
+	 * @param href
+	 * 			value of xlink:href attribute carrying the reference to the time object
+	 * @return Returns the timeObject
+	 * @throws IllegalArgumentException
+	 * 			if the reference could not be resolved in the document or if the reference is pointing to an external
+	 * 			document which is currently not supported 
+	 */
+	private TimeObject getTimeObject4Href(String href) throws IllegalArgumentException{
+		if	(!href.startsWith("#")){
+			throw new IllegalArgumentException("External references for time objects are currently not supported!");
+		}
+		String gmlId = href.replace("#", "");
+		TimeObject timeObject = this.timeCache.get(gmlId);
+		if (timeObject==null){
+			throw new IllegalArgumentException("Time object with reference " + gmlId + " could not be resolved in document!");
+		}
+		return timeObject;
+	}
+	
+	/**
+	 * helper method for reading strings from inputstream
+	 * 
+	 * @param in
+	 * 			input stream from which text should be read
+	 * @return Returns string that is read from stream
+	 * @throws IOException
+	 * 			if string could not be read
+	 */
+	 private String readTextFromStream(InputStream in) throws IOException {
+	        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	        String line;
+	        StringBuffer sb = new StringBuffer();
+	        for (int i=0; (line = br.readLine()) != null; i++) {
+	            
+	            // if not first line --> append "\n"
+	            if (i > 0) {
+	                sb.append("\n");
+	            }
+	            
+	            sb.append(line);
+	        }
+	        br.close();
+
+	        return sb.toString();
+	    }
 
 }

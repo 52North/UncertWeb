@@ -1,10 +1,9 @@
 package org.uncertweb.api.om.observation.collections;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
-import org.uncertweb.api.om.observation.Measurement;
-import org.uncertweb.api.om.observation.ReferenceObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 
 /**
@@ -31,6 +30,15 @@ public class UncertaintyObservationCollection implements IObservationCollection 
 		this.members = members;
 	}
 	
+	/**
+	 * constructor; initializes collection and members array; members have to be added
+	 * using the add(UncertaintyObs) method
+	 * 
+	 */
+	public UncertaintyObservationCollection() {
+		this.members = new ArrayList<UncertaintyObservation>();
+	}
+
 	/**
 	 * @return the members
 	 */
