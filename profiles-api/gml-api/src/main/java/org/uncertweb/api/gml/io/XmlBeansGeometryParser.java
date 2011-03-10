@@ -5,17 +5,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import net.opengis.gml.x32.AbstractGeometryType;
 import net.opengis.gml.x32.AbstractRingPropertyType;
 import net.opengis.gml.x32.DirectPositionType;
-import net.opengis.gml.x32.GeometryPropertyType;
 import net.opengis.gml.x32.GridEnvelopeType;
 import net.opengis.gml.x32.LineStringDocument;
 import net.opengis.gml.x32.LineStringPropertyType;
 import net.opengis.gml.x32.LineStringType;
 import net.opengis.gml.x32.LinearRingType;
-import net.opengis.gml.x32.MultiGeometryDocument;
-import net.opengis.gml.x32.MultiGeometryType;
 import net.opengis.gml.x32.MultiLineStringDocument;
 import net.opengis.gml.x32.MultiPointDocument;
 import net.opengis.gml.x32.MultiPolygonDocument;
@@ -31,22 +27,18 @@ import net.opengis.gml.x32.VectorType;
 
 import org.apache.xmlbeans.XmlObject;
 import org.uncertweb.api.gml.UwGMLUtil;
-import org.uncertweb.api.gml.geometry.GmlLineString;
-import org.uncertweb.api.gml.geometry.GmlPoint;
-import org.uncertweb.api.gml.geometry.GmlPolygon;
+import org.uncertweb.api.gml.geometry.GmlGeometryFactory;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
-import org.uncertweb.api.gml.geometry.collections.GmlMultiGeometry;
-import org.uncertweb.api.gml.geometry.collections.GmlMultiLineString;
-import org.uncertweb.api.gml.geometry.collections.GmlMultiPoint;
-import org.uncertweb.api.gml.geometry.collections.GmlMultiPolygon;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -61,15 +53,17 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 
 	/** factory used to create JTS geometries */
 	private GeometryFactory geomFac;
+	
+	/**UncertWeb geometry factory*/
+	private GmlGeometryFactory factory;
 
 	/**
-	 * constructor
+	 * constructor; initializes GeometryFactory
 	 * 
-	 * @param geomFacp
-	 *            factory used to create JTS geometries
 	 */
-	public XmlBeansGeometryParser(GeometryFactory geomFacp) {
-		this.geomFac = geomFacp;
+	public XmlBeansGeometryParser() {
+		this.geomFac = new GeometryFactory();
+		this.factory = new GmlGeometryFactory();
 	}
 
 	// TODO maybe add explicit exception handling in this method
@@ -123,12 +117,6 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 			return geom;
 		}
 
-		// geometry is MultiGeometry
-		else if (xb_geomObj instanceof MultiGeometryDocument) {
-			geom = parseMultiGeometry((MultiGeometryDocument) xb_geomObj);
-			return geom;
-		}
-
 		else
 			throw new Exception(
 					"Geometry type is not supported by UncertWeb GML profile!");
@@ -145,19 +133,14 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 *             If position is not 2-dim or the srsName is not starting with
 	 *             correct EPSG code URL
 	 */
-	private GmlPoint parsePoint(PointType xb_pointType) throws Exception {
-		GeometryFactory geomFac = new GeometryFactory();
-		GmlPoint point = null;
+	private Point parsePoint(PointType xb_pointType) throws Exception {
+		Point point = null;
 
-		String gmlId = xb_pointType.getId();
 		DirectPositionType xb_pos = xb_pointType.getPos();
 		int epsgCode = parseSrs(xb_pos.getSrsName());
 
 		Coordinate pointCoords = parsePositionString(xb_pos.getStringValue());
-		Coordinate[] coords = {pointCoords};
-		CoordinateSequence cs = geomFac.getCoordinateSequenceFactory().create(coords);
-		point = new GmlPoint(cs,geomFac,gmlId);
-		point.setSRID(epsgCode);
+		point = factory.createPoint(pointCoords.x, pointCoords.y, epsgCode);
 		return point;
 	}
 
@@ -168,11 +151,10 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @return
 	 * @throws Exception
 	 */
-	private GmlPolygon parsePolygon(PolygonType xb_polyType) throws Exception {
+	private Polygon parsePolygon(PolygonType xb_polyType) throws Exception {
 		GeometryFactory geomFac = new GeometryFactory();
-		GmlPolygon poly = null;
+		Polygon poly = null;
 
-		String gmlId = xb_polyType.getId();
 		int srid = parseSrs(xb_polyType.getSrsName());
 
 		// parse exterior ring
@@ -190,7 +172,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 			holes[i] = parseLinearRing(xb_interior);
 		}
 
-		poly = new GmlPolygon(shell, holes, geomFac, gmlId);
+		poly = geomFac.createPolygon(shell, holes);
 		poly.setSRID(srid);
 		return poly;
 	}
@@ -205,10 +187,9 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @throws Exception
 	 *             if parsing of the postions or of the srsName fails
 	 */
-	private GmlLineString parseLineString(LineStringType xb_lsType) throws Exception {
+	private LineString parseLineString(LineStringType xb_lsType) throws Exception {
 		GeometryFactory geomFac = new GeometryFactory();
-		String gmlId = xb_lsType.getId();
-		GmlLineString lineString = null;
+		LineString lineString = null;
 		int srid = parseSrs(xb_lsType.getSrsName());
 		DirectPositionType[] xb_posArray = xb_lsType.getPosArray();
 		Coordinate[] coordinates = new Coordinate[xb_posArray.length];
@@ -216,8 +197,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 			coordinates[i] = parsePositionString(xb_posArray[i]
 					.getStringValue());
 		}
-		CoordinateSequence cs = geomFac.getCoordinateSequenceFactory().create(coordinates);
-		lineString = new GmlLineString(cs,geomFac,gmlId);
+		lineString = geomFac.createLineString(coordinates);
 		lineString.setSRID(srid);
 		return lineString;
 	}
@@ -234,10 +214,9 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	private RectifiedGrid parseRectifiedGrid(RectifiedGridType xb_rgType)
 			throws Exception {
 		RectifiedGrid rg = null;
-		String gmlId=xb_rgType.getId();
 		Envelope gridEnv = null;
 		List<String> axisLabels = null;
-		GmlPoint origin = null;
+		Point origin = null;
 		Collection<Point> offsetVectors;
 
 		// parse limits
@@ -289,45 +268,45 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 			offsetVectors.add(p);
 		}
 		
-		rg= new RectifiedGrid(gmlId,gridEnv,axisLabels,origin,offsetVectors,geomFac);
+		rg= new RectifiedGrid(gridEnv,axisLabels,origin,offsetVectors,geomFac);
 		
 		return rg;
 	}
 
-	/**
-	 * method for parsing XmlBeans representation of multiGeometry into JTS
-	 * geometry
-	 * 
-	 * @param xb_mgDoc
-	 *            XmlBeans representation of multiGeometry
-	 * @return Returns JTS representation of multiGeometry
-	 * @throws Exception
-	 */
-	private Geometry parseMultiGeometry(MultiGeometryDocument xb_mgDoc)
-			throws Exception {
-		GmlMultiGeometry geomCol = null;
-		MultiGeometryType xb_mg = xb_mgDoc.getMultiGeometry();
-		String gmlId = xb_mg.getId();
-		GeometryPropertyType[] xb_members = xb_mg.getGeometryMemberArray();
-		Geometry[] geomArray = new Geometry[xb_members.length];
-		for (int i = 0; i < xb_members.length; i++) {
-			AbstractGeometryType xb_absGeom = xb_members[i]
-					.getAbstractGeometry();
-			if (xb_absGeom instanceof PointType) {
-				geomArray[i] = parsePoint((PointType) xb_absGeom);
-			} else if (xb_absGeom instanceof PolygonType) {
-				geomArray[i] = parsePolygon((PolygonType) xb_absGeom);
-			} else if (xb_absGeom instanceof LineStringType) {
-				geomArray[i] = parseLineString((LineStringType) xb_absGeom);
-			} else if (xb_absGeom instanceof RectifiedGridType) {
-				geomArray[i] = parseRectifiedGrid((RectifiedGridType) xb_absGeom);
-			}
-			// TODO else throw Exception
-
-		}
-		geomCol =new GmlMultiGeometry(geomArray,geomFac,gmlId);
-		return geomCol;
-	}
+//	/**
+//	 * method for parsing XmlBeans representation of multiGeometry into JTS
+//	 * geometry
+//	 * 
+//	 * @param xb_mgDoc
+//	 *            XmlBeans representation of multiGeometry
+//	 * @return Returns JTS representation of multiGeometry
+//	 * @throws Exception
+//	 */
+//	private Geometry parseMultiGeometry(MultiGeometryDocument xb_mgDoc)
+//			throws Exception {
+//		MultiGeometry geomCol = null;
+//		MultiGeometryType xb_mg = xb_mgDoc.getMultiGeometry();
+//		String gmlId = xb_mg.getId();
+//		GeometryPropertyType[] xb_members = xb_mg.getGeometryMemberArray();
+//		Geometry[] geomArray = new Geometry[xb_members.length];
+//		for (int i = 0; i < xb_members.length; i++) {
+//			AbstractGeometryType xb_absGeom = xb_members[i]
+//					.getAbstractGeometry();
+//			if (xb_absGeom instanceof PointType) {
+//				geomArray[i] = parsePoint((PointType) xb_absGeom);
+//			} else if (xb_absGeom instanceof PolygonType) {
+//				geomArray[i] = parsePolygon((PolygonType) xb_absGeom);
+//			} else if (xb_absGeom instanceof LineStringType) {
+//				geomArray[i] = parseLineString((LineStringType) xb_absGeom);
+//			} else if (xb_absGeom instanceof RectifiedGridType) {
+//				geomArray[i] = parseRectifiedGrid((RectifiedGridType) xb_absGeom);
+//			}
+//			// TODO else throw Exception
+//
+//		}
+//		geomCol =new GmlMultiGeometry(geomArray,geomFac,gmlId);
+//		return geomCol;
+//	}
 	
 	/**
 	 * method for parsing XmlBeans representation of multiLineString into JTS
@@ -340,15 +319,14 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * 				if parsing fails
 	 */
 	private Geometry parseMultiLineString(MultiLineStringDocument xb_mlsDoc) throws Exception{
-		GmlMultiLineString mp = null;
-		String gmlId = xb_mlsDoc.getMultiLineString().getId();
+		MultiLineString mp = null;
+		int srid = parseSrs(xb_mlsDoc.getMultiLineString().getSrsName());
 		LineStringPropertyType[] xb_lsArray = xb_mlsDoc.getMultiLineString().getLineStringMemberArray();
 		LineString[] ls = new LineString[xb_lsArray.length];
 		for (int i=0; i<xb_lsArray.length;i++){
 			ls[i]=parseLineString(xb_lsArray[i].getLineString());
 		}
-		mp = new GmlMultiLineString(ls,geomFac,xb_mlsDoc.getMultiLineString().getId());
-		mp.setGmlId(gmlId);
+		mp = factory.createMultiLineString(ls, srid);
 		return mp;
 	}
 	
@@ -363,15 +341,14 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * 			if parsing fails
 	 */
 	private Geometry parseMultiPoint(MultiPointDocument xb_mlsDoc) throws Exception{
-		GmlMultiPoint mp = null;
-		String gmlId = xb_mlsDoc.getMultiPoint().getId();
+		MultiPoint mp = null;
+		int srid = parseSrs(xb_mlsDoc.getMultiPoint().getSrsName());
 		PointPropertyType[] xb_lsArray = xb_mlsDoc.getMultiPoint().getPointMemberArray();
 		Point[] ls = new Point[xb_lsArray.length];
 		for (int i=0; i<xb_lsArray.length;i++){
 			ls[i]=parsePoint(xb_lsArray[i].getPoint());
 		}
-		mp = new GmlMultiPoint(ls,geomFac,xb_mlsDoc.getMultiPoint().getId());
-		mp.setGmlID(gmlId);
+		mp = factory.createMultiPoint(ls, srid); 
 		return mp;
 	}
 	
@@ -386,15 +363,14 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * 			if parsing fails
 	 */
 	private Geometry parseMultiPolygon(MultiPolygonDocument xb_mlsDoc) throws Exception{
-		GmlMultiPolygon mp = null;
-		String gmlId = xb_mlsDoc.getMultiPolygon().getId();
+		MultiPolygon mp = null;
+		int srid = parseSrs(xb_mlsDoc.getMultiPolygon().getSrsName());
 		PolygonPropertyType[] xb_lsArray = xb_mlsDoc.getMultiPolygon().getPolygonMemberArray();
 		Polygon[] ls = new Polygon[xb_lsArray.length];
 		for (int i=0; i<xb_lsArray.length;i++){
 			ls[i]=parsePolygon(xb_lsArray[i].getPolygon());
 		}
-		mp = new GmlMultiPolygon(ls,geomFac,xb_mlsDoc.getMultiPolygon().getId());
-		mp.setGmlId(gmlId);
+		mp = factory.createMultiPolygon(ls, srid);
 		return mp;
 	}
 
