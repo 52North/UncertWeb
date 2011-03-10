@@ -188,8 +188,10 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format.XML
 				}
 				for (var i = 0; i < result.fields.length; i++){
 					switch(result.fields[i].definition) {
+						case "http://www.opengis.net/def/property/OGC/0/SamplingTime":
 						case "urn:ogc:data:time:iso8601": 
 								  timeField = i; break;
+						case "http://www.opengis.net/def/property/OGC/0/FeatureOfInterest":
 						case "urn:ogc:data:feature": 
 								  foiField = i; break;
 						default: phenField = i; 

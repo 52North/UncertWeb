@@ -44,19 +44,32 @@ OpenLayers.SOSClient = OpenLayers.Class({
         OpenLayers.Util.extend(this, options);
 		this.id = sosClientId++;
 		this.statusCallback("Sending Request");
-    	OpenLayers.Request.POST({
-         	url: this.url,
-         	data: this.request,
-         	scope: this,
-         	success: this.generateFeatures,
-			failure: this.failCallback
-         });
+		if (this.url) {
+			if (this.request) {
+				OpenLayers.Request.POST({
+					url: this.url,
+					data: this.request,
+					scope: this,
+					success: this.generateFeatures,
+					failure: this.failCallback
+				});
+			} else {
+				OpenLayers.Request.GET({
+					url: this.url,
+					success: this.generateFeatures,
+					failure: this.failCallback
+				});
+			}
+		} else if (this.oc) {
+			this.generateFeatures(this.oc);
+		}
     },
-	generateFeatures: function (resp) {
+	generateFeatures: function (r) {
 		this.statusCallback("Parsing response");
 		var obs;
 		try {
-			obs = this.getObsFormat.read(resp.responseText, 
+			obs = this.getObsFormat.read(
+					(r.responseXML) ? r.responseXML : (r.responseText) ? r.responseText : r, 
 					this.map.getProjectionObject());
 		} catch(e) {
 			if (!e) {
@@ -143,6 +156,7 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			this.features.push(mapping[key].feature);
 		}
 		this.generateLayer();
+		if (this.oc) delete this.oc;
 	},
 	generateLayer: function () {
 		this.statusCallback("Generating layer");
@@ -174,7 +188,7 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			this.layer.redraw();
 			if (this.selectedFeature && this.selectedFeature.popup 
 					&& this.selectedFeature.popup.visible() && this.plot) {
-				this.plot.triggerRedrawOverlay();
+				this.onFeatureSelect(this.selectedFeature);
 			}
 		}
 	},
@@ -186,46 +200,6 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			feature.popup = null;
 		}
 	},
-/*
-	onFeatureSelect: function (feature) {
-		writeValueLine = function (scale, attr) {
-			var html = '<tr><td>';
-			if (attr.samplingTime.timeInstant) {
-				html += attr.samplingTime.timeInstant.timePosition.toISOString();
-			} else if (attr.samplingTime.timePeriod) {
-				html += attr.samplingTime.timePeriod.beginPosition.toISOString()
-					 + " - " 
-					 + attr.samplingTime.timePeriod.endPosition.toISOString();
-			} else {
-				html += "Unknown SamplingTime Format";
-			}
-			html += '</td><td>';
-			html += '<span class="scaleIndicator" style="background-color:' 
-				 + scale.getColorForResultValue(attr.resultValue) + '">&#160;&#160;&#160;&#160;</span>';
-			html += " " + attr.resultValue.toFixed(2) + " " + attr.uom;
-			html +=	"</td></tr>";
-			return html;
-		};
-		var html = "<h2>" + feature.attributes.id + "</h2>";
-		html += '<table class="resultTable">';
-		html += '<tr><th>Time</th><th>Value</th></tr>';
-		if (feature.attributes.isMultiFeature) {
-			for (var i = 0;i < feature.attributes.values.length; i++) {
-				html += writeValueLine(this.scalebar, feature.attributes.values[i]);
-			}
-		} else {
-			html += writeValueLine(this.scalebar, feature.attributes);
-		}
-		html += "</table>";
-		var ctrls = this.map.getControlsByClass("OpenLayers.Control.SelectFeature");
-		feature.popup = new OpenLayers.Popup.FramedCloud("Feature",
-			feature.geometry.getBounds().getCenterLonLat(),
-			null, html, null, false, null);
-		feature.popup.panMapIfOutOfView = true;
-		this.selectedFeature = feature;
-		this.map.addPopup(feature.popup, true);
-	},
-*/
 	onFeatureSelect: function (feature) {
 		function random(min, max) {
 			return (min + parseInt(Math.random() * (max - min + 1)));
@@ -291,9 +265,12 @@ OpenLayers.SOSClient = OpenLayers.Class({
 				m.push([v[i][0][1], v[i][1]]);
 			}
 		}
-		l.sort(function(a, b) {
-			return ((a[0] > b[0]) ? -1 : ((a[0] < b[0]) ? 1 : 0)); 
-		}); 
+		if (l.length > 0) {
+			l.sort(function(a, b) {
+				return ((a[0] > b[0]) ? -1 : ((a[0] < b[0]) ? 1 : 0)); 
+			});
+			l.push(u[0]);
+		}
 		var scale = this.scalebar;
 		function raw(plot, ctx) {
 			var data = plot.getData()[1].data;
@@ -306,14 +283,14 @@ OpenLayers.SOSClient = OpenLayers.Class({
 				ctx.closePath();            
 				ctx.fillStyle = scale.getColorForResultValue(data[j][1]);
 				ctx.fill();
-			}    
+			} 
 		}  
 		this.plot = $.plot($('#' + id), [{ 
 				color: "red", 
-				data:u.concat(l), 
+				data: u.concat(l), 
 				lines: { fill: true } 
 			},{ 
-				color: "black",
+				color: "#4F4F4F",
 				points: { show: true },
 				data:m
 			}], {
@@ -337,7 +314,6 @@ OpenLayers.SOSClient = OpenLayers.Class({
                     previous = item.datapoint;
                     $("#tooltip").remove();
                     var text = item.datapoint[1] + " " + uom;
-                    var color = item.series.color;
 					$('<div id="tooltip">' + text + '</div>').css( {
 			            position: 'absolute',
 			            display: 'none',

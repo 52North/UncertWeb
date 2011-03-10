@@ -47,8 +47,8 @@ $(function (){
 		//$("#sosUrl").val("http://giv-uw.uni-muenster.de:8080/AQE/sos");
 		//$("#sosUrl").val("http://localhost:8080/sos/sos");
 		OpenLayers.Request.GET({
-			url: "xml/stas-example.xml",
-			//url: "xml/aqe-example.xml",
+			url: "xml/req/stas.xml",
+			//url: "xml/req/aqe.xml",
 			callback: function (r) {
 				$("#sosRequest").val(r.responseText);
 				editor = CodeMirror.fromTextArea("sosRequest", {
@@ -293,6 +293,25 @@ $(function (){
 			} catch(e) {
 				dialog.error(e);
 			}
+		}
+		if (parameters['oc']) {
+			try {
+				OpenLayers.Request.GET({
+					url: parameters['oc'],
+					success: function (r) {
+						clients.push(new OpenLayers.SOSClient({
+							map: map, scalebar: scaleBar,
+							oc: (r.responseXML)? r.responseXML : r.responseText,
+							readyCallback: function () {},
+							statusCallback: function (stat) {},
+							failCallback: dialog.error
+						}));
+					}
+				});
+			} catch(e) {
+				dialog.error(e);
+			}
+			
 		}
 	})();
 });

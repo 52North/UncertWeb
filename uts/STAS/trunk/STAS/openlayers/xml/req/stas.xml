@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:GetObservation service="SOS" version="1.0.0" xmlns:sos="http://www.opengis.net/sos/1.0" xmlns:om="http://www.opengis.net/om/1.0">
+	<sos:offering>AGGREGATION</sos:offering>
+	<sos:procedure>urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r</sos:procedure>
+	<sos:observedProperty>http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]</sos:observedProperty>
+	<sos:responseFormat>text/xml;subtype="om/1.0.0"</sos:responseFormat>
+	<sos:resultModel>om:Measurement</sos:resultModel>
+	<sos:responseMode>inline</sos:responseMode>
+</sos:GetObservation>
