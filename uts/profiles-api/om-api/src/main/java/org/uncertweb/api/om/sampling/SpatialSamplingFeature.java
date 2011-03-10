@@ -1,13 +1,13 @@
 package org.uncertweb.api.om.sampling;
 
-import org.uncertweb.api.gml.geometry.GmlLineString;
-import org.uncertweb.api.gml.geometry.GmlPoint;
-import org.uncertweb.api.gml.geometry.GmlPolygon;
-import org.uncertweb.api.gml.geometry.IGmlGeometry;
+
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Class representing a spatial sampling feature primarily used for features of
@@ -22,8 +22,8 @@ public class SpatialSamplingFeature {
 	/**reference to sampling feature*/
 	private String href;
 	
-	/**gml ID of feature*/
-	private String gmlId;
+	/**identifier of feature (optional)*/
+	private String identifer;
 	
 	/**envelope of the sampling feature*/
 	private Envelope boundedBy;
@@ -40,33 +40,30 @@ public class SpatialSamplingFeature {
 	/**
 	 * Constructor with mandatory attributes
 	 * 
-	 * @param gmlId
-	 *            gml id
+	 * @param identifier
+	 *            identifier of the feature
 	 * @param sampledFeature
 	 *            sampled feature
 	 * @param shape
 	 *            the feature's geometry
 	 * @throws Exception 
 	 */
-	public SpatialSamplingFeature(String gmlId, String sampledFeature,
-			Geometry shape) throws Exception {
+	public SpatialSamplingFeature(String identifier, String sampledFeature,
+			Geometry shape) throws IllegalArgumentException {
 
-		if (!(shape instanceof IGmlGeometry)){
-			throw new Exception("geometry of shape has to implement IGmlGeometry!!");
-		}
-		if (shape instanceof GmlPoint){
+		if (shape instanceof Point){
 			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint";
 		}
-		else if (shape instanceof GmlLineString){
+		else if (shape instanceof LineString){
 			this.featureType="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingCurve";
 		}
-		else if (shape instanceof GmlPolygon){
+		else if (shape instanceof Polygon){
 			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface";
 		}
 		else if (shape instanceof RectifiedGrid){
 			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingGrid";
 		}
-		this.setGmlId(gmlId);
+		this.setIdentifier(identifier);
 		this.setSampledFeature(sampledFeature);
 		this.setShape(shape);
 	}
@@ -106,13 +103,17 @@ public class SpatialSamplingFeature {
 	 * 
 	 * @return Returns gml id of the feature
 	 */
-	public String getGmlId() {
-		return gmlId;
+	public String getIdentifier() {
+		return identifer;
 	}
 
-	
-	public void setGmlId(String gmlId) {
-		this.gmlId = gmlId;
+	/**
+	 *	sets the identifier of the sampling feature 
+	 * 
+	 * @param identifier
+	 */
+	public void setIdentifier(String identifier) {
+		this.identifer = identifier;
 	}
 
 	public Envelope getBoundedBy() {
