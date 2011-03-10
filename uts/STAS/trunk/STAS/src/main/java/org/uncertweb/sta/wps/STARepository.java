@@ -180,7 +180,7 @@ public class STARepository implements IAlgorithmRepository {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+//	@Override
 	public ProcessDescriptionType getProcessDescription(String arg0) {
 		return instantiate(arg0).getDescription();
 	}
