@@ -430,8 +430,8 @@ public class ProcessTester {
 				res = XmlObject.Factory.parse(Utils.sendPostRequest(wpsUrl, exec.xmlText()));
 			}
 			
-			exec.save(new File("/home/auti/request.xml"), Namespace.defaultOptions());
-			res.save(new File("/home/auti/response.xml"), Namespace.defaultOptions());
+			exec.save(new File("src/test/request.xml"), Namespace.defaultOptions());
+			res.save(new File("src/test/response.xml"), Namespace.defaultOptions());
 			
 			if (res instanceof ExecuteResponseDocument) {
 //				log.info("Got response.\n{}",res.xmlText(Namespace.defaultOptions()));
