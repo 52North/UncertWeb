@@ -2,7 +2,6 @@ package org.n52.wps.io.datahandler.xml;
 
 import java.io.OutputStream;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.IOUtils;

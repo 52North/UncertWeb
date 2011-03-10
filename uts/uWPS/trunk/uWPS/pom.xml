@@ -206,7 +206,6 @@
 							</includes>
 						</overlay>
 						<overlay>
-							<!-- thats the sta-wps -->
 						</overlay>
 						<overlay>
 							<!-- include needed libraries -->

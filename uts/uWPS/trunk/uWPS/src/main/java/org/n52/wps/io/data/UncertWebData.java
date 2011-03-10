@@ -14,7 +14,7 @@ import org.uncertml.IUncertainty;
 
 public class UncertWebData {
 
-//	private static Logger LOGGER = Logger.getLogger(UncertWebData.class);
+	private static Logger LOGGER = Logger.getLogger(UncertWebData.class);
 	private HashMap<String, Object> uncertaintyTypesValuesMap;
 	private String mimeType;
 	private String fileExtension;
