@@ -27,23 +27,6 @@
  * for the full text of the license.
  *
  */
-OpenLayers.Geometry.Polygon = OpenLayers.Class(OpenLayers.Geometry.Polygon, {
-	transform: function (from, to) {
-		for (var i = 0; i < this.components.length; i++) {
-			this.components[i].transform(from, to);			
-		}
-	}
-});
-
-OpenLayers.Geometry.MultiPolygon = OpenLayers.Class(OpenLayers.Geometry
-																.MultiPolygon, {
-	transform: function (from, to) {
-		for (var i = 0; i < this.components.length; i++) {
-			this.components[i].transform(from, to);			
-		}
-	}
-});
-
 OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 																		.XML, {
 	CLASS_NAME: "OpenLayers.Format.ObservationCollection",
@@ -57,11 +40,19 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
         ogc: "http://www.opengis.net/ogc",
         om: "http://www.opengis.net/om/1.0",
         xlink: "http://www.w3.org/1999/xlink",
-        xsi: "http://www.w3.org/2001/XMLSchema-instance"
+        xsi: "http://www.w3.org/2001/XMLSchema-instance",
+
+        om2: "http://www.opengis.net/om/2.0",
+		gml3: "http://www.opengis.net/gml/3.2",
+		un2: "http://www.uncertml.org/2.0",
+		sas: "http://www.opengis.net/samplingSpatial/2.0",
+		sa2: "http://www.opengis.net/sampling/2.0"
+
     },
     schemaLocation: "http://www.opengis.net/sos/1.0" 
 						+ " http://schemas.opengis.net/sos/1.0.0/sosAll.xsd",
     defaultPrefix: "sos",
+
     regExes: {
         trimSpace: (/^\s*|\s*$/g),
         removeSpace: (/\s*/g),

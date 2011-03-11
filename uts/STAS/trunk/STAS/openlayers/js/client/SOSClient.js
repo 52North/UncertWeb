@@ -32,12 +32,15 @@ OpenLayers.SOSClient = OpenLayers.Class({
     CLASS_NAME: "OpenLayers.SOSClient",
 	id: null,
 	url: null,
+	request: null,
+	oc: null,
+	geojson: null,
 	map: null,
 	statusCallback: null,
 	readyCallback: null,
 	failCallback: null,
-	request: null,
 	getObsFormat: new OpenLayers.Format.ObservationCollection(),
+	geoJsonFormat: new OpenLayers.Format.GeoJSON(),
 	foiFeatureMapping: null,
 	scalebar: null,
 	initialize: function (options) {
@@ -45,7 +48,7 @@ OpenLayers.SOSClient = OpenLayers.Class({
 		this.id = sosClientId++;
 		this.statusCallback("Sending Request");
 		if (this.url) {
-			if (this.request) {
+			if (this.request && this.request.trim() !== "") {
 				OpenLayers.Request.POST({
 					url: this.url,
 					data: this.request,
@@ -62,6 +65,21 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			}
 		} else if (this.oc) {
 			this.generateFeatures(this.oc);
+		} else if (this.geojson) {
+
+			this.features = this.geoJsonFormat.read(this.geojson);
+
+			for (var i = 0; i < this.features.length; i++) {
+				console.log(PROJ4326);
+				this.features[i].geometry.transform(new OpenLayers.Projection("EPSG:3035"), 
+													this.map.getProjectionObject());
+				this.features[i].attributes.resultValue = this.features[i].attributes.q0_99;
+				this.features[i].attributes.samplingTime =  {timeInstant: {timePosition: new Date()}}; //TODO
+				this.features[i].attributes.uom = "unknown";
+				this.features[i].attributes.isMultiFeature = false;
+			}
+			console.log(this.features);
+			this.generateLayer();
 		}
     },
 	generateFeatures: function (r) {
@@ -275,41 +293,32 @@ OpenLayers.SOSClient = OpenLayers.Class({
 			l.push(u[0]);
 		}
 		var scale = this.scalebar;
-		function raw(plot, ctx) {
-			var data = plot.getData()[1].data;
-			for (var j = 0; j < data.length; j++) {
-				var x = plot.getPlotOffset().left + plot.getAxes()
-														.xaxis.p2c(data[j][0]);
-				var y = plot.getPlotOffset().top + plot.getAxes()
-														.yaxis.p2c(data[j][1]);
-				ctx.lineWidth = 0;
-				ctx.beginPath();
-				ctx.arc(x, y, 3, 0, Math.PI * 2, true);
-				ctx.closePath();            
-				ctx.fillStyle = scale.getColorForResultValue(data[j][1]);
-				ctx.fill();
-			} 
-		}  
-		this.plot = $.plot($('#' + id), [{ 
-				color: "red", 
-				data: u.concat(l), 
-				lines: { fill: true } 
-			},{ 
-				color: "#4F4F4F",
-				points: { show: true },
-				data:m
-			}], {
-				xaxis: { mode: "time", color: "#B6B6B6" },
+		this.plot = $.plot($('#' + id), [
+				{ color: "#FF0000", data: u.concat(l), lines: { fill: true } },
+				{ color: "#4F4F4F", points: { show: true }, data:m }
+			], 
+			{
+				xaxis: { color: "#B6B6B6", mode: "time" },
 				yaxis: { color: "#B6B6B6" }, 
+				grid: { color: "#B6B6B6", hoverable: true, mouseActiveRadius: 25 },
 				lines: { show: true },
-				grid: {
-					color: "#B6B6B6",
-					hoverable: true,
-					mouseActiveRadius: 25
-				},
-				hooks: { draw: [raw] }
+				hooks: { draw: [function(plot, ctx) {
+					var data = plot.getData()[1].data;
+					for (var j = 0; j < data.length; j++) {
+						var x = plot.getPlotOffset().left + plot.getAxes()
+														.xaxis.p2c(data[j][0]);
+						var y = plot.getPlotOffset().top + plot.getAxes()
+														.yaxis.p2c(data[j][1]);
+						ctx.lineWidth = 0;
+						ctx.beginPath();
+						ctx.arc(x, y, 3, 0, Math.PI * 2, true);
+						ctx.closePath();            
+						ctx.fillStyle = scale.getColorForResultValue(data[j][1]);
+						ctx.fill();
+					} 
+				}]
 			}
-		);
+		});
 		var previous;
         $('#'+id).bind("plothover", function(event, pos, item) {
             $("#x").text(pos.x.toFixed(2));

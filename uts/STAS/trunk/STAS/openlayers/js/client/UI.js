@@ -349,5 +349,27 @@ $(function (){
 			}
 			
 		}
+		if (parameters['json']) {
+			OpenLayers.Request.GET({
+				url: parameters['json'],
+				callback: function(r) {
+					clients.push(new OpenLayers.SOSClient({
+						map: map, scalebar: scaleBar,
+						geojson: r.responseText,
+						readyCallback: function () {},
+						statusCallback: function (stat) {},
+						failCallback: dialog.error
+					}));
+				}
+			});
+		}
 	})();
+
+	
+	
+	
+	
+	
+
+
 });
