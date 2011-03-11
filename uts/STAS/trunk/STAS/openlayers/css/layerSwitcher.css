@@ -1,24 +1,27 @@
 .olControlLayerSwitcher {
-    width: 20em;
+	width: 20em;
 	height: 10em;
-    font-weight: bold;
-    margin-top: 3px;
-    margin-left: 3px;
-    margin-bottom: 3px;
-    font-size: smaller;
-    color: white;
+	font-weight: bold;
+	margin-top: 3px;
+	margin-left: 3px;
+	margin-bottom: 3px;
+	font-size: smaller;
+	color: white;
 }
 
 .olControlLayerSwitcher .layersDiv {
-    padding-top: 5px;
-    padding-left: 10px;
-    padding-bottom: 5px;
-    padding-right: 75px;
-    background-color: darkblue;
-    width: 100%;
-    height: 100%;
+	padding-top: 5px;
+	padding-left: 10px;
+	padding-bottom: 5px;
+	padding-right: 75px;
+	width: 100%;
+	height: 100%;
 }
-.baseLayersDiv, .dataLayersDiv { font-size: .8em, color #4F4F4F; }
+
+.baseLayersDiv, .dataLayersDiv { 
+	font-size: .8em;
+	color #4F4F4F; 
+}
 
 .baseLbl, .dataLbl {
 	margin-top: 0.5em;
@@ -26,8 +29,12 @@
 	font-weight: bold;
 }
 
+.baseLayersDiv input, .dataLayersDiv input, labelSpan { 
+	margin: 5px; 
+}
 
-.baseLayersDiv input, .dataLayersDiv input, labelSpan { margin: 5px; }
-.baseLayersDiv span, .dataLayersDiv span { font-size: .9em; vertical-align: middle !important; }
- 
+.baseLayersDiv span, .dataLayersDiv span { 
+	font-size: .9em; 
+	vertical-align: middle !important; 
+}
 

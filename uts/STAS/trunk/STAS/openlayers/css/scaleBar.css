@@ -32,6 +32,7 @@
 	border-top-left-radius: 3px;
 	border-bottom-left-radius: 3px;
 }
+
 #scale span:last-child {
 	border-right: 1px solid #B6B6B6;
 	-webkit-border-top-right-radius: 3px;
@@ -41,3 +42,4 @@
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 3px;
 }
+

@@ -4,6 +4,7 @@
 	vertical-align: middle;
 	text-align: center;
 }
+
 .resultTable th {
 	border-bottom: 1px solid #B6B6B6;
 }
@@ -13,7 +14,9 @@
 	border-left: 1px solid #B6B6B6;
 }
 
-.resultTable td:first-child, .resultTable th:first-child { border-left: none; }
+.resultTable td:first-child, .resultTable th:first-child { 
+	border-left: none;
+}
 
 .resultTable .scaleIndicator {
 	display: inline-block;
@@ -41,3 +44,4 @@
 	background-color: black;
 	opacity: 0.80;
 }
+

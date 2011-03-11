@@ -83,13 +83,18 @@ OpenLayers.ScaleBar = OpenLayers.Class({
 
 			for (var i = 0; i < (numIntervals-1); i++) {
 					value = i*(threshold/(numIntervals-1));
-					html += '<span style="width:' + width + 'px; height:'+this.height+'; background-color:' + this.getColorForResultValue(value) + ';">&ensp;' + value.toFixed(1) + '</span>';
+					html += '<span style="width:' + width + 'px;'
+									   + 'height:' + this.height + ';'
+									   + 'background-color:' 
+									   + this.getColorForResultValue(value) + ';'
+									   + '">&ensp;' + value.toFixed(1) 
+																	+ '</span>';
 			}
 			takenSize = (numIntervals-1) * width;
-			html += '<span style="width:' + (this.width-takenSize) + 'px; height:'+this.height+'; background-color:' + this.getColorForResultValue(threshold) + ';">&ensp;' + threshold.toFixed(1)+'</span>';
-
-
-
+			html += '<span style="width:' + (this.width-takenSize) + 'px;'
+				+ 'height:' + this.height + ';'
+				+ 'background-color:' + this.getColorForResultValue(threshold) 
+				+ ';">&ensp;' + threshold.toFixed(1)+'</span>';
 			this.setLegendHtml(html);
 			this.style = null; /* regenerate style */
 		}
@@ -98,7 +103,8 @@ OpenLayers.ScaleBar = OpenLayers.Class({
 	getStyle: function () {
 		var threshold = this.getThreshold();
 		var numIntervals = this.getNumIntervals();	
-		if (!this.style || threshold != this.threshold || numIntervals != this.numIntervals) {
+		if (!this.style || threshold != this.threshold 
+						|| numIntervals != this.numIntervals) {
 			this.threshold = threshold;
 			this.numIntervals = numIntervals;
 			this.style = new OpenLayers.Style();

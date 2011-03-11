@@ -64,12 +64,15 @@ $(function (){
 
 	dialog = {
 		error: function (e) {
-			$("<div></div>").html('The SOS request failed: <p class="failMessage">' + e + "</p>").dialog({
+			$("<div></div>").html(
+						'The SOS request failed: <p class="failMessage">' + e 
+								+ "</p>").dialog({
 				title: "Error", width: 600, buttons: {
 					"Ok": function () { $(this).dialog("close"); } 
 				},
 				close: function (e,ui) { dialog.issue.dialog("close"); },
-				open: function (e,ui) {	$(this).parent().children().children('.ui-dialog-titlebar-close').hide(); }
+				open: function (e,ui) {	$(this).parent().children().children(
+										'.ui-dialog-titlebar-close').hide(); }
 			});
 		},
 		layer: $("#layerDialog").dialog({
@@ -109,7 +112,8 @@ $(function (){
 							map: map, scalebar: scaleBar,
 							url: $("#sosUrl").val(),
 							request: editor.getCode(),
-							readyCallback: function (){ dialog.issue.dialog("close"); },
+							readyCallback: function () { 
+								dialog.issue.dialog("close"); },
 							statusCallback: function (stat) {},
 							failCallback: dialog.error
 						}));
@@ -121,18 +125,22 @@ $(function (){
 			},
 			close: function (e, ui) {
 				$("#issueButton").button("enable");
-				$(this).parent().children(".ui-dialog-buttonpane").children().children("button").button("enable");
+				$(this).parent().children(".ui-dialog-buttonpane").children()
+							.children("button").button("enable");
 			},
 			open: function (e, ui) {
-				$(this).parent().children().children('.ui-dialog-titlebar-close').hide();
+				$(this).parent().children().children(
+						'.ui-dialog-titlebar-close').hide();
 				$("#issueButton").button("disable");
 			}
 		})
 	};
 
 	(function () {
-		var ll1 = new OpenLayers.LonLat( 5.8669, 47.2708).transform(PROJ4326, PROJMERC);
-		var ll2 = new OpenLayers.LonLat(15.0436, 55.0591).transform(PROJ4326, PROJMERC);
+		var ll1 = new OpenLayers.LonLat( 5.8669, 47.2708)
+								.transform(PROJ4326, PROJMERC);
+		var ll2 = new OpenLayers.LonLat(15.0436, 55.0591)
+								.transform(PROJ4326, PROJMERC);
 		bounds = new OpenLayers.Bounds(ll1.lon, ll1.lat, ll2.lon, ll2.lat);
 	})();
 
@@ -144,33 +152,45 @@ $(function (){
 		function toggleIntervalsInput(){
 			if (!intervalsInput) {
 				intervalsInput = true;
-				$("#intervals").html('<input size="4" value="' + $("#intervals span").html() + '"/>');
+				$("#intervals").html('<input size="4" value="' 
+							+ $("#intervals span").html() + '"/>');
 				$("#intervals input").change(function (){
-					if ($("#intervals input").val() > maxIntervals) { $("#intervals input").val(maxIntervals); }
-					if ($("#intervals input").val() < minIntervals) { $("#intervals input").val(minIntervals); }
-					$("#intervalSlider").slider("value", $("#intervals input").val());
+					if ($("#intervals input").val() > maxIntervals) { 
+						$("#intervals input").val(maxIntervals); }
+					if ($("#intervals input").val() < minIntervals) { 
+						$("#intervals input").val(minIntervals); }
+					$("#intervalSlider").slider("value", 
+							$("#intervals input").val());
 					toggleIntervalsInput();
 				}).focusout(toggleIntervalsInput);
 			} else {
 				intervalsInput = false;
-				$("#intervals").html('<span>' + $("#intervals input").val() + '</span>');
-				$("#intervals span").click(toggleIntervalsInput).addClass("slider-value");
+				$("#intervals").html('<span>' + $("#intervals input").val() 
+																+ '</span>');
+				$("#intervals span").click(toggleIntervalsInput).addClass(
+						"slider-value");
 			}
 		}
 		function toggleThresholdInput(){
 			if (!thresholdInput) {
 				thresholdInput = true;
-				$("#threshold").html('<input size="4" value="' + $("#threshold span").html() + '"/>');
+				$("#threshold").html('<input size="4" value="' 
+						+ $("#threshold span").html() + '"/>');
 				$("#threshold input").change(function () {
-					if ($("#threshold input").val() > maxThreshold) { $("#threshold input").val(maxThreshold); }
-					if ($("#threshold input").val() < minThreshold) { $("#threshold input").val(minThreshold); }
-					$("#thresholdSlider").slider("value", $("#threshold input").val());
+					if ($("#threshold input").val() > maxThreshold) { 
+						$("#threshold input").val(maxThreshold); }
+					if ($("#threshold input").val() < minThreshold) { 
+						$("#threshold input").val(minThreshold); }
+					$("#thresholdSlider").slider("value", 
+							$("#threshold input").val());
 					toggleThresholdInput();
 				}).focusout(toggleThresholdInput);
 			} else {
 				thresholdInput = false;
-				$("#threshold").html('<span>' + $("#threshold input").val() + '</span>');
-				$("#threshold span").click(toggleThresholdInput).addClass("slider-value");
+				$("#threshold").html('<span>' + $("#threshold input").val() 
+																+ '</span>');
+				$("#threshold span").click(toggleThresholdInput)
+									.addClass("slider-value");
 			}
 		}
 
@@ -198,9 +218,11 @@ $(function (){
 			}
 		});
 		
-		$("#threshold").html('<span class="slider-value">' + initThreshold + '</span');
+		$("#threshold").html('<span class="slider-value">' 
+								+ initThreshold + '</span');
 		$("#threshold span").click(toggleThresholdInput);
-		$("#intervals").html('<span class="slider-value">' + initIntervals + '</span');
+		$("#intervals").html('<span class="slider-value">' 
+								+ initIntervals + '</span');
 		$("#intervals span").click(toggleIntervalsInput);
 	})();
 
@@ -208,8 +230,10 @@ $(function (){
 	scaleBar = new OpenLayers.ScaleBar({
 		width: 800, height: 27,
 		setLegendHtml: function (html) { $("#scale").html(html); },
-		getNumIntervals: function () { return parseInt($("#intervalSlider").slider("value")); },	
-		getThreshold: function () {	return parseFloat($("#thresholdSlider").slider("value")); }
+		getNumIntervals: function () { 
+			return parseInt($("#intervalSlider").slider("value")); },	
+		getThreshold: function () {	
+			return parseFloat($("#thresholdSlider").slider("value")); }
 	});
 
 	/* init map */
@@ -225,18 +249,25 @@ $(function (){
 				new OpenLayers.Layer.OSM.Mapnik("OpenStreetMap Mapnik"),
 				new OpenLayers.Layer.OSM.Osmarender("OpenStreetMap Osmarender"),
 				new OpenLayers.Layer.OSM.CycleMap("OpenStreetMap CycleMap"),
-				new OpenLayers.Layer.Google("Google Physical", {type: google.maps.MapTypeId.TERRAIN}),
-				new OpenLayers.Layer.Google("Google Satellite", {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}),
-				new OpenLayers.Layer.Google("Google Streets", {numZoomLevels: 20}),
-				new OpenLayers.Layer.Google("Google Hybrid", {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20})
+				new OpenLayers.Layer.Google("Google Physical", {
+					type: google.maps.MapTypeId.TERRAIN}),
+				new OpenLayers.Layer.Google("Google Satellite", {
+					type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}),
+				new OpenLayers.Layer.Google("Google Streets", {
+					numZoomLevels: 20}),
+				new OpenLayers.Layer.Google("Google Hybrid", {
+					type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20})
 			]
 		});
 		$.each(map.layers, function (l){ l.animationEnabled = true; });
 		mapControls = {
 			mouse: new OpenLayers.Control.MouseDefaults(),
-			zoomin: new OpenLayers.Control.ZoomBox({ title:"Zoom in box", out: false }),
-			zoomout: new OpenLayers.Control.ZoomBox({ title:"Zoom out box", out: true }),
-			layer: new OpenLayers.Control.LayerSwitcher({ div: $("#layerSwitcher").get()[0], roundedCorner: false })
+			zoomin: new OpenLayers.Control.ZoomBox({
+				title:"Zoom in box", out: false }),
+			zoomout: new OpenLayers.Control.ZoomBox({ 
+				title:"Zoom out box", out: true }),
+			layer: new OpenLayers.Control.LayerSwitcher({ 
+				div: $("#layerSwitcher").get()[0], roundedCorner: false })
 		};
 		$.each(mapControls, function (k,v) { map.addControl(v); });
 		map.zoomToExtent(bounds);
@@ -245,17 +276,21 @@ $(function (){
 	/* create and bind menu */
 	(function () {
 		function icon(icon) { return { text: false, icons: {primary: icon} } }
-		$("#issueButton").button().click(function () { dialog.issue.dialog("open"); });
-		$("#scaleButton").button().click(function () { dialog.scale.dialog("open"); });
-		$("#layerButton").button().click(function () { dialog.layer.dialog("open"); });
-		$("#aboutButton").button(icon("ui-icon-help")).click(function () { dialog.about.dialog("open"); });
-		$("#resetZoomButton").button(icon("ui-icon-arrow-4-diag")).click(function (){ 
-			map.zoomToExtent(bounds); });
-		$("#navigate").button(icon("ui-icon-arrow-4")).click(function (){ 
-			mapControls.zoomin.deactivate(); mapControls.zoomout.deactivate(); });
-		$("#zoomin").button(icon("ui-icon-zoomin")).click(function (){
+		$("#issueButton").button().click(function () { 
+			dialog.issue.dialog("open"); });
+		$("#scaleButton").button().click(function () { 
+			dialog.scale.dialog("open"); });
+		$("#layerButton").button().click(function () { 
+			dialog.layer.dialog("open"); });
+		$("#aboutButton").button(icon("ui-icon-help")).click(function () { 
+			dialog.about.dialog("open"); });
+		$("#resetZoomButton").button(icon("ui-icon-arrow-4-diag")).click(
+			function (){ map.zoomToExtent(bounds); });
+		$("#navigate").button(icon("ui-icon-arrow-4")).click(function () { 
+			mapControls.zoomin.deactivate();mapControls.zoomout.deactivate();});
+		$("#zoomin").button(icon("ui-icon-zoomin")).click(function () {
 			mapControls.zoomin.activate(); mapControls.zoomout.deactivate(); });
-		$("#zoomout").button(icon("ui-icon-zoomout")).click(function (){
+		$("#zoomout").button(icon("ui-icon-zoomout")).click(function () {
 			mapControls.zoomout.activate(); mapControls.zoomin.deactivate(); });
 		$("#controlMethod").buttonset();
 	})();
@@ -263,7 +298,8 @@ $(function (){
 	//check if we got an request as parameter
 	(function () {
 		var parameters = {};
-		var str = document.location.search.substr(1, document.location.search.length);
+		var str = document.location.search.substr(1, 
+				 		document.location.search.length);
 		if (str != '') {
 			params = str.split('&');
 			for (var i = 0; i < params.length; i++) {

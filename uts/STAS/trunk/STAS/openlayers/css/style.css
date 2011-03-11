@@ -9,13 +9,17 @@ html, body, input, div, p {
 }
 
 body, html, a {
-	font-family: Helvetica,Arial,sans-serif; 
+	font-family: Helvetica,Arial,sans-serif;
 	color: #4F4F4F;
 }
 
-body { overflow: hidden; }
+body {
+	overflow: hidden;
+}
 
-.olLayerGoogleCopyright, .minimizeDiv { display: none; }
+.olLayerGoogleCopyright, .minimizeDiv {
+	display: none;
+}
 
 h2 {
 	margin-top: 0.5em;
@@ -27,21 +31,26 @@ h2, input {
 	font-weight: bold;
 }
 
-input { border: 1px solid #B6B6B6; }
+input {
+	border: 1px solid #B6B6B6;
+}
 
 .slider-value, input {
 	vertical-align: middle;
 	color: #4F4F4F;
 }
 
-.slider-value, #threshold input, #intervals input{ float: right;  text-align: right; }
+.slider-value, #threshold input, #intervals input{
+	float: right;
+	text-align: right;
+}
 
 #map {
 	width: 100%;
 	height: 100%;
 	top: 0px;
 	z-index: 0;
-	position: relative;			
+	position: relative;
 }
 
 #menu {
@@ -51,15 +60,24 @@ input { border: 1px solid #B6B6B6; }
 	z-index: 500;
 }
 
-.credits { margin: 5px; }
-.dialog { margin: 5px; padding: 5px; display: none;}
+.credits {
+	margin: 5px;
+}
+
+.dialog {
+	margin: 5px;
+	padding: 5px;
+	display: none;
+}
 
 .failMessage {
 	font-family: monospace;
 	margin: 1em;
 }
 
-#sosUrl { width: 100%; }
+#sosUrl {
+	width: 100%;
+}
 
 .editorBorder {
 	border: 1px solid #B6B6B6;
@@ -77,3 +95,4 @@ input { border: 1px solid #B6B6B6; }
 	font-family: monospace;
 	padding-top: .4em;
 }
+

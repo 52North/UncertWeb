@@ -69,7 +69,8 @@ OpenLayers.SOSClient = OpenLayers.Class({
 		var obs;
 		try {
 			obs = this.getObsFormat.read(
-					(r.responseXML) ? r.responseXML : (r.responseText) ? r.responseText : r, 
+					(r.responseXML) ? r.responseXML : (r.responseText) ? 
+															r.responseText : r, 
 					this.map.getProjectionObject());
 		} catch(e) {
 			if (!e) {
@@ -81,7 +82,8 @@ OpenLayers.SOSClient = OpenLayers.Class({
 				var message = ""; 
 				for (var i = 0; i < e.exceptions.length; i++) {
 					message += e.exceptions[i].exceptionCode +": ";
-					for (var j = 0; j < e.exceptions[i].exceptionTexts.length; j++) {
+					for (var j = 0; j < e.exceptions[i].exceptionTexts.length; 
+																		j++) {
 						message += e.exceptions[i].exceptionTexts[j] + "\n";
 					}
 				}
@@ -236,7 +238,8 @@ OpenLayers.SOSClient = OpenLayers.Class({
 		var id = "plot" + new Date().getTime();
 		var html = "<div class='bubble'><h2>" + feature.attributes.id + "</h2>";
 		html += '<div id="' + id + '" class="bubblePlot"></div></div>';
-		var ctrls = this.map.getControlsByClass("OpenLayers.Control.SelectFeature");
+		var ctrls = this.map.getControlsByClass(
+											"OpenLayers.Control.SelectFeature");
 		feature.popup = new OpenLayers.Popup.FramedCloud("Feature",
 			feature.geometry.getBounds().getCenterLonLat(),
 			null, html, null, false, null);
@@ -275,8 +278,10 @@ OpenLayers.SOSClient = OpenLayers.Class({
 		function raw(plot, ctx) {
 			var data = plot.getData()[1].data;
 			for (var j = 0; j < data.length; j++) {
-				var x = plot.getPlotOffset().left + plot.getAxes().xaxis.p2c(data[j][0]);
-				var y = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(data[j][1]);
+				var x = plot.getPlotOffset().left + plot.getAxes()
+														.xaxis.p2c(data[j][0]);
+				var y = plot.getPlotOffset().top + plot.getAxes()
+														.yaxis.p2c(data[j][1]);
 				ctx.lineWidth = 0;
 				ctx.beginPath();
 				ctx.arc(x, y, 3, 0, Math.PI * 2, true);

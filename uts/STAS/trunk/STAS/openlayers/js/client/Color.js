@@ -29,7 +29,9 @@ OpenLayers.Color = {
 			this.b = blue;
 		},
 		toHex: function () {
-			return '#' + this.hexify(this.r) + this.hexify(this.g) + this.hexify(this.b);
+			return '#' + this.hexify(this.r) 
+					   + this.hexify(this.g) 
+					   + this.hexify(this.b);
 		},
 		hexify: function (number) {
 			var lsd = number % 16;

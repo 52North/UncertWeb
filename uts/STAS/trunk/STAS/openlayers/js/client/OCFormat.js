@@ -35,7 +35,8 @@ OpenLayers.Geometry.Polygon = OpenLayers.Class(OpenLayers.Geometry.Polygon, {
 	}
 });
 
-OpenLayers.Geometry.MultiPolygon = OpenLayers.Class(OpenLayers.Geometry.MultiPolygon, {
+OpenLayers.Geometry.MultiPolygon = OpenLayers.Class(OpenLayers.Geometry
+																.MultiPolygon, {
 	transform: function (from, to) {
 		for (var i = 0; i < this.components.length; i++) {
 			this.components[i].transform(from, to);			
@@ -43,7 +44,8 @@ OpenLayers.Geometry.MultiPolygon = OpenLayers.Class(OpenLayers.Geometry.MultiPol
 	}
 });
 
-OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format.XML, {
+OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
+																		.XML, {
 	CLASS_NAME: "OpenLayers.Format.ObservationCollection",
 	VERSION: "1.0.0",
 	namespaces: {
@@ -57,7 +59,8 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format.XML
         xlink: "http://www.w3.org/1999/xlink",
         xsi: "http://www.w3.org/2001/XMLSchema-instance"
     },
-    schemaLocation: "http://www.opengis.net/sos/1.0" + " http://schemas.opengis.net/sos/1.0.0/sosAll.xsd",
+    schemaLocation: "http://www.opengis.net/sos/1.0" 
+						+ " http://schemas.opengis.net/sos/1.0.0/sosAll.xsd",
     defaultPrefix: "sos",
     regExes: {
         trimSpace: (/^\s*|\s*$/g),
@@ -92,7 +95,8 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format.XML
 			}
 			for (var i = 0; i < info.measurements.length; i++) {
 				for (var j = 0; j < info.measurements[i].fois.length; j++) {
-					for (var k = 0; k < info.measurements[i].fois[j].features.length; k++) {
+					for (var k = 0; k < info.measurements[i].fois[j]
+														.features.length; k++) {
 						info.measurements[i].fois[j].features[k]
 							.geometry.transform(this.externalProjection, 
 									destinationProjection);
@@ -101,7 +105,8 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format.XML
 			}
 			for (var i = 0; i < info.observations.length; i++) {
 				for (var j = 0; j < info.observations[i].fois.length; j++) {
-					for (var k = 0; k < info.observations[i].fois[j].features.length; k++) {
+					for (var k = 0; k < info.observations[i].fois[j]
+														.features.length; k++) {
 						info.observations[i].fois[j].features[k]
 							.geometry.transform(this.externalProjection, 
 									destinationProjection);
@@ -173,15 +178,15 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format.XML
 				this.readChildNodes(node,encoding);
 			},
 			"TextBlock": function (node,obj){
-				obj.decimalSeperator = node.getAttribute("decimalSeperator") || '.';
-				obj.tokenSeperator = node.getAttribute("tokenSeperator") || ",";
-				obj.blockSeperator = node.getAttribute("blockSeperator") || ";";
+				obj.dSeperator = node.getAttribute("decimalSeperator") || '.';
+				obj.tSeperator = node.getAttribute("tokenSeperator") || ",";
+				obj.bSeperator = node.getAttribute("blockSeperator") || ";";
 			},
 			"values": function (node, result){
-				var valueBlocks = this.getChildValue(node).replace(
-						this.regExes.trimSpace,"").replace(
-						new RegExp(result.encoding.blockSeperator+"$"),"")
-					.split(new RegExp(result.encoding.blockSeperator));
+				var valueBlocks = this.getChildValue(node)
+						.replace(this.regExes.trimSpace, "")
+						.replace(new RegExp(result.encoding.bSeperator+"$"),"")
+						.split(new RegExp(result.encoding.bSeperator));
 				var timeField, phenField, foiField;
 				if (result.fields.length != 3) {
 					throw "Unsupported Field Format";
@@ -208,8 +213,8 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format.XML
 				}
 				result.values = [];
 				for (var i = 0; i < valueBlocks.length; i++) {
-					var tokens = valueBlocks[i].split(
-							new RegExp(result.encoding.tokenSeperator));
+					var tokens = valueBlocks[i]
+								.split(new RegExp(result.encoding.tSeperator));
 					result.values.push({ 
 						samplingTime: {
 							timeInstant:{
@@ -265,12 +270,15 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format.XML
                 var points = new Array(numPoints);
 				for(var i = 0; i < numPoints; ++i) {
 					coords = pointList[i].split(this.regExes.splitSpace);
-					points[i] = new OpenLayers.Geometry.Point(coords[1], coords[0], coords[2]);
+					points[i] = new OpenLayers.Geometry.Point(coords[1], 
+															  coords[0], 
+															  coords[2]);
 				}
 				obj.points = points;
             },
 			"CompositeSurface": function (node, obj) {
-				OpenLayers.Format.GML.v3.prototype.readers.gml.MultiPolygon.apply(this, [node,obj]);
+				OpenLayers.Format.GML.v3.prototype.readers.gml.MultiPolygon
+						.apply(this, [node,obj]);
 			},
 			"TimeInstant": function (node, samplingTime) {
                var timeInstant = {};
@@ -312,7 +320,8 @@ OpenLayers.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format.XML
 	                this.externalProjection = new OpenLayers.Projection(
 							"EPSG:"+splittedSrsName[splittedSrsName.length-1]);
 				}
-             	OpenLayers.Format.GML.v3.prototype.readers.gml.pos.apply(this, [node, obj]);
+             	OpenLayers.Format.GML.v3.prototype.readers.gml.pos.apply(
+						this, [node, obj]);
             },
 			"Polygon": function (node, obj) {
 				var attr = node.getAttribute("srsName");
