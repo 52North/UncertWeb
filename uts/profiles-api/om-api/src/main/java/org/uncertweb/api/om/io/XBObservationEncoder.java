@@ -380,7 +380,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 		}
 
 		// encode procedure
-		xb_obs.addNewProcedure().setHref(obs.getProcedure().toString());
+		xb_obs.addNewProcedure().setHref(obs.getProcedure().toASCIIString());
 
 		// encode observedProperty
 		xb_obs.addNewObservedProperty().setHref(
@@ -451,17 +451,10 @@ public class XBObservationEncoder implements IObservationEncoder {
 						obs.getPhenomenonTime().getDateTime().toString());
 				// TODO use DateTimeFormatter? .toString(String pattern)
 
-				if (obs.getPhenomenonTime().getId() != null) {
-					xb_timeInstant.setId(obs.getResultTime().getId());
-					this.gmlID4TimeStrings.put(obs.getPhenomenonTime()
-							.getDateTime().toString(), obs.getPhenomenonTime()
-							.getId());
-				} else {
-					xb_timeInstant.setId("t" + timeIdCounter);
+				xb_timeInstant.setId("t" + timeIdCounter);
 					this.gmlID4TimeStrings.put(obs.getPhenomenonTime()
 							.getDateTime().toString(), "t" + timeIdCounter);
 					timeIdCounter++;
-				}
 				xb_phenTime.set(xb_tiDoc);
 			}
 		}
@@ -484,12 +477,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			// time period has to be encoded as new element
 			else {
-				String gmlID = obs.getPhenomenonTime().getId();
-
-				if (gmlID == null) {
-					gmlID = "t" + this.timeIdCounter;
+					String gmlID = "t" + this.timeIdCounter;
 					timeIdCounter++;
-				}
 
 				TimePeriodDocument xb_tpDoc = TimePeriodDocument.Factory
 						.newInstance();
@@ -521,7 +510,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 					String gmlId = "t" + this.timeIdCounter;
 					this.timeIdCounter++;
 					TimeInstantType xb_ti = xb_tiEnd.addNewTimeInstant();
-					xb_ti.addNewTimePosition().setStringValue(startString);
+					xb_ti.addNewTimePosition().setStringValue(endString);
 					xb_ti.setId(gmlId);
 					this.gmlID4TimeStrings.put(startString, gmlId);
 				}
@@ -538,7 +527,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 		} else if (obs.getPhenomenonTime().getHref() != null) {
 
-			xb_phenTime.setHref(obs.getPhenomenonTime().getHref());
+			xb_phenTime.setHref(obs.getPhenomenonTime().getHref().toASCIIString());
 
 		} else {
 			throw new Exception(
@@ -574,17 +563,10 @@ public class XBObservationEncoder implements IObservationEncoder {
 						obs.getResultTime().getDateTime().toString());
 				// TODO use DateTimeFormatter? .toString(String pattern)
 
-				if (obs.getResultTime().getId() != null) {
-					xb_timeInstant.setId(obs.getResultTime().getId());
-					this.gmlID4TimeStrings.put(obs.getResultTime()
-							.getDateTime().toString(), obs.getResultTime()
-							.getId());
-				} else {
-					xb_timeInstant.setId("t" + timeIdCounter);
+				xb_timeInstant.setId("t" + timeIdCounter);
 					this.gmlID4TimeStrings.put(obs.getResultTime()
 							.getDateTime().toString(), "t" + timeIdCounter);
 					timeIdCounter++;
-				}
 				xb_resultTime.set(xb_tiDoc);
 			}
 		}
@@ -607,12 +589,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			// time period has to be encoded as new element
 			else {
-				String gmlID = obs.getResultTime().getId();
-
-				if (gmlID == null) {
-					gmlID = "t" + this.timeIdCounter;
-					timeIdCounter++;
-				}
+				String gmlID = "t" + this.timeIdCounter;
+				timeIdCounter++;
 
 				TimePeriodDocument xb_tpDoc = TimePeriodDocument.Factory
 						.newInstance();
@@ -661,7 +639,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 		} else if (obs.getResultTime().getHref() != null) {
 
-			xb_resultTime.setHref(obs.getResultTime().getHref());
+			xb_resultTime.setHref(obs.getResultTime().getHref().toASCIIString());
 
 		} else {
 			throw new Exception(
@@ -696,12 +674,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			// time period has to be encoded as new element
 			else {
-				String gmlID = obs.getValidTime().getId();
-
-				if (gmlID == null) {
-					gmlID = "t" + this.timeIdCounter;
-					timeIdCounter++;
-				}
+				String gmlID = "t" + this.timeIdCounter;
+				timeIdCounter++;
 
 				TimePeriodDocument xb_tpDoc = TimePeriodDocument.Factory
 						.newInstance();
@@ -750,7 +724,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 		} else if (obs.getValidTime().getHref() != null) {
 
-			xb_validTime.setHref(obs.getValidTime().getHref());
+			xb_validTime.setHref(obs.getValidTime().getHref().toASCIIString());
 
 		} else {
 			throw new Exception(
@@ -762,7 +736,9 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * helper method for encoding featureOfInterest property
 	 * 
 	 * @param xb_observation
+	 * 			XMLBeans representation whose feature should be encoded
 	 * @param obs
+	 * 			observation which should be encoded
 	 * @throws Exception
 	 */
 	private void encodeFeatureOfInterest(
@@ -774,7 +750,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 		//feature has is externally referenced
 		if (obs.getFeatureOfInterest().getHref() != null
 				&& !obs.getFeatureOfInterest().equals("")) {
-			xb_foi.setHref(obs.getFeatureOfInterest().getHref());
+			xb_foi.setHref(obs.getFeatureOfInterest().getHref().toASCIIString());
 		}
 
 		else {

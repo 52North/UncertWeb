@@ -83,14 +83,13 @@ public class XBObservationParserTestCase extends TestCase {
 		// test boundedBy (optional parameter)
 
 		// test phenomenonTime
-		assertEquals("ot1t", obs.getPhenomenonTime().getId());
-
+	
 		DateTimeFormatter format = ISODateTimeFormat.dateTime();
 		assertEquals("2005-01-11T16:22:25.000+01:00",
 				format.print(obs.getPhenomenonTime().getDateTime()).toString());
 
-		// test resultTime
-		assertEquals("#ot1t", obs.getResultTime().getHref());
+//		// test resultTime
+//		assertEquals("#ot1t", obs.getResultTime().getHref());
 
 		// test validTime (optional parameter)
 
@@ -103,9 +102,7 @@ public class XBObservationParserTestCase extends TestCase {
 				.getObservedProperty().toString());
 
 		// test featureOfInterest
-		assertEquals("SamplingPoint1", obs.getFeatureOfInterest()
-				.getIdentifier());
-
+	
 		Point shape = (Point) obs.getFeatureOfInterest().getShape();
 		assertEquals("Point", shape.getGeometryType());
 		assertEquals(52.87, shape.getX());
@@ -149,14 +146,12 @@ public class XBObservationParserTestCase extends TestCase {
 		// test boundedBy (optional parameter)
 
 		// test phenomenonTime
-		assertEquals("ot1t", obs.getPhenomenonTime().getId());
-
 		DateTimeFormatter format = ISODateTimeFormat.dateTime();
 		assertEquals("2005-01-11T16:22:25.000+01:00",
 				format.print(obs.getPhenomenonTime().getDateTime()).toString());
 
 		// test resultTime
-		assertEquals("#ot1t", obs.getResultTime().getHref());
+//		assertEquals("#ot1t", obs.getResultTime().getHref());
 
 		// test validTime (optional parameter)
 
@@ -203,7 +198,7 @@ public class XBObservationParserTestCase extends TestCase {
 		AbstractObservation obs = parser.parseObservation(xmlString);
 
 		// test id;
-		assertEquals("http://localhost:8080/sta-wps/SamplingPoint.xml", obs.getFeatureOfInterest().getHref());
+		assertEquals("http://localhost:8080/sta-wps/SamplingPoint.xml", obs.getFeatureOfInterest().getHref().toASCIIString());
 
 	}
 

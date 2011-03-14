@@ -1,6 +1,8 @@
 package org.uncertweb.api.om.sampling;
 
 
+import java.net.URI;
+
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -20,7 +22,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class SpatialSamplingFeature {
 
 	/**reference to sampling feature*/
-	private String href;
+	private URI href;
 	
 	/**identifier of feature (optional)*/
 	private String identifer;
@@ -74,7 +76,7 @@ public class SpatialSamplingFeature {
 	 * @param href
 	 * 			reference to the SamplingFeature
 	 */
-	public SpatialSamplingFeature(String href){
+	public SpatialSamplingFeature(URI href){
 		this.href = href;
 	}
 
@@ -143,14 +145,14 @@ public class SpatialSamplingFeature {
 	/**
 	 * @return the href
 	 */
-	public String getHref() {
+	public URI getHref() {
 		return href;
 	}
 
 	/**
 	 * @param href the href to set
 	 */
-	public void setHref(String href) {
+	public void setHref(URI href) {
 		this.href = href;
 	}
 

@@ -12,7 +12,6 @@ import junit.framework.TestCase;
 import net.opengis.om.x20.OMObservationDocument;
 
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.uncertweb.api.gml.geometry.GmlGeometryFactory;
@@ -26,7 +25,6 @@ import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
 /**
@@ -48,6 +46,11 @@ public class XBObservationEncoderTestCase extends TestCase {
 		encode_Point_TimeInstant_FOIref();
 	}
 
+	/**
+	 * gests encoding of observation collection containing measurements
+	 * 
+	 * @throws Exception
+	 */
 	private void obsCol_Point_TimeInstant_Double() throws Exception {
 
 		// read XML example file
@@ -90,17 +93,10 @@ public class XBObservationEncoderTestCase extends TestCase {
 		// test boundedBy (optional parameter)
 
 		// test phenomenonTime
-		assertEquals(obs1.getPhenomenonTime().getId(),obs2.getPhenomenonTime().getId());
-
+		
 		assertEquals(obs1.getPhenomenonTime().getDateTime().toString(),
 				obs2.getPhenomenonTime().getDateTime().toString());
 
-		// test resultTime
-		// in this case resultTime references phenomenonTime
-		assertEquals(obs1.getResultTime().getHref(), obs2.getResultTime()
-				.getHref());
-
-		// test validTime (optional parameter)
 
 		// test procedure
 		assertEquals(obs1.getProcedure().toString(), obs2.getProcedure()
@@ -130,6 +126,12 @@ public class XBObservationEncoderTestCase extends TestCase {
 
 	}
 
+	/**
+	 * tests encoding of observation with double result and time instants in time properties
+	 * 
+	 * @throws Exception
+	 * 			if encoding fails
+	 */
 	private void point_TimeInstant_DoubleTest() throws Exception {
 
 		// read XML example file
@@ -163,9 +165,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 		// test boundedBy (optional parameter)
 
 		// test phenomenonTime
-		assertEquals(obs.getPhenomenonTime().getId(),obs2.getPhenomenonTime().getId());
-
-		DateTimeFormatter format = ISODateTimeFormat.dateTime();
+		
 		assertEquals(obs.getPhenomenonTime().getDateTime(),
 				obs2.getPhenomenonTime().getDateTime());
 
@@ -221,19 +221,17 @@ public class XBObservationEncoderTestCase extends TestCase {
 		OMObservationDocument encodedObs = encoder.encodeObservationDocument(obs);
 		System.out.println(encoder.encodeObservation(obs));
 		// test id;
-		assertEquals(obs.getFeatureOfInterest().getHref(), encodedObs.getOMObservation().getFeatureOfInterest().getHref());
+		assertEquals(obs.getFeatureOfInterest().getHref().toASCIIString(), encodedObs.getOMObservation().getFeatureOfInterest().getHref());
 
 	}
 	
 	public void encodeObsTP() throws Exception{
-		Interval phenTime = new Interval(new Date().getTime(),new Date().getTime());
-		GeometryFactory geomFac = new GeometryFactory();
-		Coordinate[] c = {new Coordinate(1,2)};
-		Point p = new GmlGeometryFactory().createPoint(1, 2, 4326);
+		TimeObject phenTime = new TimeObject("2005-01-11T16:22:25.000+01:00","2005-01-12T16:22:25.000+01:00");
+		Point p = new GmlGeometryFactory().createPoint(52.72, 8.72, 4326);
 		SpatialSamplingFeature sf = new SpatialSamplingFeature("sf1","Muenster",p);
-		TimeObject ti = new TimeObject(null,new DateTime(new Date().getTime()));
+		TimeObject ti = new TimeObject(new DateTime(new Date().getTime()));
 		try {
-			Measurement meas = new Measurement("o_1",null,new TimeObject(null,phenTime),ti,new TimeObject(null,phenTime),new URI("sensor1"),new URI("phen1"),sf,null,new MeasureResult(2.45,"cm"));
+			Measurement meas = new Measurement("o_1",null,phenTime,ti,phenTime,new URI("sensor1"),new URI("phen1"),sf,null,new MeasureResult(2.45,"cm"));
 			XBObservationEncoder ecnoder = new XBObservationEncoder();
 			System.out.println(ecnoder.encodeObservation(meas));
 		} catch (URISyntaxException e) {
