@@ -738,7 +738,10 @@ public class XBObservationParser implements IObservationParser {
 	private SpatialSamplingFeature parseSamplingFeatureDocument(
 			SFSpatialSamplingFeatureType xb_sfType) throws Exception {
 		// get id
-		String identifier = xb_sfType.getIdentifier().getStringValue();
+		String identifier = null;
+		if (xb_sfType.getIdentifier()!=null){
+			identifier = xb_sfType.getIdentifier().getStringValue();
+		}
 
 		// TODO add boundedBy, location
 
