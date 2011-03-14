@@ -1,7 +1,13 @@
 package org.uncertweb.api.om;
 
+import java.net.URI;
+
+import net.opengis.gml.x32.TimePeriodType;
+
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * Wrapper to hold one representation of time exclusively, e.g. a time instant
@@ -12,8 +18,6 @@ import org.joda.time.Interval;
  */
 public class TimeObject {
 
-	/** gml:id of time object; if href attribute is set, this attribute is null */
-	private String id;
 	
 	/** timeInstant of time object; if href attribute is set, this attribute is null */
 	private DateTime dateTime;
@@ -22,17 +26,41 @@ public class TimeObject {
 	private Interval interval;
 	
 	/**reference; usually is null; if not, other properties are null*/
-	private String href;
+	private URI href;
 
+	/**
+	 * constructor for time instant with ISO 8601 string
+	 * 
+	 * @param iso8601time
+	 * 			ISO 8601 string of time instant
+	 */
+	public TimeObject(String iso8601time){
+		this.dateTime = parseTimePosition(iso8601time);
+	}
+	
+	/**
+	 * constructor for time period with ISO 8601 strings
+	 * 
+	 * @param beginIso8601String
+	 * 			ISO 8601 string of begin instant
+	 * @param endIso8601String
+	 * 			ISO 8601 string of end instant
+	 */
+	public TimeObject(String beginIso8601String, String endIso8601String){
+		DateTime beginTime = parseTimePosition(beginIso8601String);
+		DateTime endTime = parseTimePosition(endIso8601String);
+		this.interval = new Interval(beginTime.getMillis(), endTime
+				.getMillis());
+	}
+	
 	/**
 	 * Constructor
 	 * 
 	 * @param dateTime
 	 *            a point of time
 	 */
-	public TimeObject(String id, DateTime dateTime) {
+	public TimeObject(DateTime dateTime) {
 		this.dateTime = dateTime;
-		this.id=id;
 	}
 
 	/**
@@ -41,9 +69,8 @@ public class TimeObject {
 	 * @param timePeriod
 	 *            a period of time
 	 */
-	public TimeObject(String id, Interval interval) {
+	public TimeObject(Interval interval) {
 		this.interval = interval;
-		this.id=id;
 	}
 	
 	/**
@@ -52,26 +79,11 @@ public class TimeObject {
 	 * @param href
 	 *            reference to another time property
 	 */
-	public TimeObject(String href) {
+	public TimeObject(URI href) {
 		this.href = href;
 	}
 
 	// getters and setters
-	
-	public String getId() {
-		return id;
-	}
-	
-	/**
-	 * sets a new id and deletes the reference
-	 * 
-	 * @param id
-	 */
-	public void setId(String id) {
-		this.href = null;
-		this.id = id;
-	}
-
 	public DateTime getDateTime() {
 		return dateTime;
 	}
@@ -98,7 +110,7 @@ public class TimeObject {
 		this.interval = interval;
 	}
 	
-	public String getHref() {
+	public URI getHref() {
 		return href;
 	}
 
@@ -107,8 +119,24 @@ public class TimeObject {
 	 * 
 	 * @param href
 	 */
-	public void setHref(String href) {
+	public void setHref(URI href) {
 		this.href = href;
+	}
+	
+	/**
+	 * helper method for parsing timePosition to DateTime
+	 * 
+	 * @param timePosition
+	 *            time as a string e.g. 1970-01-01T00:00:00Z
+	 * @return time as an Object
+	 */
+	private DateTime parseTimePosition(String timePosition) {
+		DateTime dateTime = null;
+
+		DateTimeFormatter dtf = ISODateTimeFormat.dateTimeParser();
+		dateTime = dtf.withOffsetParsed().parseDateTime(timePosition);
+
+		return dateTime;
 	}
 	
 	
