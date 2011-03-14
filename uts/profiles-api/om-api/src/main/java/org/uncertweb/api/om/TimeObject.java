@@ -2,8 +2,6 @@ package org.uncertweb.api.om;
 
 import java.net.URI;
 
-import net.opengis.gml.x32.TimePeriodType;
-
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormatter;

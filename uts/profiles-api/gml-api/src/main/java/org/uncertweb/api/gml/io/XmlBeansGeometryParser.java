@@ -25,6 +25,7 @@ import net.opengis.gml.x32.RectifiedGridDocument;
 import net.opengis.gml.x32.RectifiedGridType;
 import net.opengis.gml.x32.VectorType;
 
+import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.uncertweb.api.gml.UwGMLUtil;
 import org.uncertweb.api.gml.geometry.GmlGeometryFactory;
@@ -68,7 +69,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 
 	// TODO maybe add explicit exception handling in this method
 	@Override
-	public Geometry parseUwGeometry(String geometryXml) throws Exception {
+	public Geometry parseUwGeometry(String geometryXml) throws IllegalArgumentException, XmlException {
 
 		Geometry geom = null;
 		XmlObject xb_geomObj = XmlObject.Factory.parse(geometryXml);
@@ -118,7 +119,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		}
 
 		else
-			throw new Exception(
+			throw new IllegalArgumentException(
 					"Geometry type is not supported by UncertWeb GML profile!");
 	}
 
@@ -129,11 +130,11 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 *            XmlBeans representation of point defined in UncertWeb GML
 	 *            profile
 	 * @return Returns JTS representation of point
-	 * @throws Exception
+	 * @throws IllegalArgumentException
 	 *             If position is not 2-dim or the srsName is not starting with
 	 *             correct EPSG code URL
 	 */
-	private Point parsePoint(PointType xb_pointType) throws Exception {
+	private Point parsePoint(PointType xb_pointType) throws IllegalArgumentException {
 		Point point = null;
 
 		DirectPositionType xb_pos = xb_pointType.getPos();
@@ -149,9 +150,9 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * 
 	 * @param xb_polyDoc
 	 * @return
-	 * @throws Exception
+	 * @throws IllegalArgumentException
 	 */
-	private Polygon parsePolygon(PolygonType xb_polyType) throws Exception {
+	private Polygon parsePolygon(PolygonType xb_polyType) throws IllegalArgumentException {
 		GeometryFactory geomFac = new GeometryFactory();
 		Polygon poly = null;
 
@@ -184,10 +185,10 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @param xb_lsType
 	 *            XMLBeans representation of line string
 	 * @return Returns JTS LineString
-	 * @throws Exception
+	 * @throws IllegalArgumentException
 	 *             if parsing of the postions or of the srsName fails
 	 */
-	private LineString parseLineString(LineStringType xb_lsType) throws Exception {
+	private LineString parseLineString(LineStringType xb_lsType) throws IllegalArgumentException {
 		GeometryFactory geomFac = new GeometryFactory();
 		LineString lineString = null;
 		int srid = parseSrs(xb_lsType.getSrsName());
@@ -209,10 +210,10 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @param xb_rgType
 	 *            XmlBeans representation of rectified grid
 	 * @return Returns JTS representation of Rectified grid
-	 * @throws Exception
+	 * @throws IllegalArgumentException
 	 */
 	private RectifiedGrid parseRectifiedGrid(RectifiedGridType xb_rgType)
-			throws Exception {
+			throws IllegalArgumentException {
 		RectifiedGrid rg = null;
 		Envelope gridEnv = null;
 		List<String> axisLabels = null;
@@ -224,7 +225,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		List<?> highCoords = xb_limits.getHigh();
 		List<?> lowCoords = xb_limits.getLow();
 		if (highCoords.size() != 2 || lowCoords.size() != 2) {
-			throw new Exception("Grid must have 2-dim coords!");
+			throw new IllegalArgumentException("Grid must have 2-dim coords!");
 		} else {
 			Coordinate high = new Coordinate(((BigInteger)highCoords.get(0)).doubleValue(),
 					((BigInteger)highCoords.get(0)).doubleValue());
@@ -239,7 +240,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		axisLabels = new ArrayList<String>();
 		if (al != null) {
 			if (al.size() != 2) {
-				throw new Exception(
+				throw new IllegalArgumentException(
 						"Grid must have 2-dim coords and thus 2 axis labels. There are more than 2 axis labels defined!");
 			} 
 			axisLabels.add((String) al.get(0));
@@ -248,7 +249,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		}
 		else {
 			if (an.length != 2) {
-				throw new Exception(
+				throw new IllegalArgumentException(
 						"Grid must have 2-dim coords and thus 2 axis names. There are more than 2 axis labels defined!");
 			}
 			axisLabels.add(an[0]);	
@@ -273,40 +274,6 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		return rg;
 	}
 
-//	/**
-//	 * method for parsing XmlBeans representation of multiGeometry into JTS
-//	 * geometry
-//	 * 
-//	 * @param xb_mgDoc
-//	 *            XmlBeans representation of multiGeometry
-//	 * @return Returns JTS representation of multiGeometry
-//	 * @throws Exception
-//	 */
-//	private Geometry parseMultiGeometry(MultiGeometryDocument xb_mgDoc)
-//			throws Exception {
-//		MultiGeometry geomCol = null;
-//		MultiGeometryType xb_mg = xb_mgDoc.getMultiGeometry();
-//		String gmlId = xb_mg.getId();
-//		GeometryPropertyType[] xb_members = xb_mg.getGeometryMemberArray();
-//		Geometry[] geomArray = new Geometry[xb_members.length];
-//		for (int i = 0; i < xb_members.length; i++) {
-//			AbstractGeometryType xb_absGeom = xb_members[i]
-//					.getAbstractGeometry();
-//			if (xb_absGeom instanceof PointType) {
-//				geomArray[i] = parsePoint((PointType) xb_absGeom);
-//			} else if (xb_absGeom instanceof PolygonType) {
-//				geomArray[i] = parsePolygon((PolygonType) xb_absGeom);
-//			} else if (xb_absGeom instanceof LineStringType) {
-//				geomArray[i] = parseLineString((LineStringType) xb_absGeom);
-//			} else if (xb_absGeom instanceof RectifiedGridType) {
-//				geomArray[i] = parseRectifiedGrid((RectifiedGridType) xb_absGeom);
-//			}
-//			// TODO else throw Exception
-//
-//		}
-//		geomCol =new GmlMultiGeometry(geomArray,geomFac,gmlId);
-//		return geomCol;
-//	}
 	
 	/**
 	 * method for parsing XmlBeans representation of multiLineString into JTS
@@ -315,10 +282,10 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @param xb_mlsDoc
 	 *            XmlBeans representation of multiLineString
 	 * @return Returns JTS representation of multiLineString
-	 * @throws Exception
+	 * @throws IllegalArgumentException
 	 * 				if parsing fails
 	 */
-	private Geometry parseMultiLineString(MultiLineStringDocument xb_mlsDoc) throws Exception{
+	private Geometry parseMultiLineString(MultiLineStringDocument xb_mlsDoc) throws IllegalArgumentException{
 		MultiLineString mp = null;
 		int srid = parseSrs(xb_mlsDoc.getMultiLineString().getSrsName());
 		LineStringPropertyType[] xb_lsArray = xb_mlsDoc.getMultiLineString().getLineStringMemberArray();
@@ -337,10 +304,10 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @param xb_mlsDoc
 	 * 				XmlBeans representation of multiPoint
 	 * @return Returns JTS representation of multiPoint
-	 * @throws Exception
+	 * @throws IllegalArgumentException
 	 * 			if parsing fails
 	 */
-	private Geometry parseMultiPoint(MultiPointDocument xb_mlsDoc) throws Exception{
+	private Geometry parseMultiPoint(MultiPointDocument xb_mlsDoc) throws IllegalArgumentException{
 		MultiPoint mp = null;
 		int srid = parseSrs(xb_mlsDoc.getMultiPoint().getSrsName());
 		PointPropertyType[] xb_lsArray = xb_mlsDoc.getMultiPoint().getPointMemberArray();
@@ -359,10 +326,10 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @param xb_mlsDoc
 	 * 				XmlBeans representation of MultiPolygon
 	 * @return Returns JTS representation of MultiPolygon
-	 * @throws Exception
+	 * @throws IllegalArgumentException
 	 * 			if parsing fails
 	 */
-	private Geometry parseMultiPolygon(MultiPolygonDocument xb_mlsDoc) throws Exception{
+	private Geometry parseMultiPolygon(MultiPolygonDocument xb_mlsDoc) throws IllegalArgumentException{
 		MultiPolygon mp = null;
 		int srid = parseSrs(xb_mlsDoc.getMultiPolygon().getSrsName());
 		PolygonPropertyType[] xb_lsArray = xb_mlsDoc.getMultiPolygon().getPolygonMemberArray();
@@ -381,17 +348,17 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 *            String representing the EPSG Code with OGC conform EPSG URL as
 	 *            prefix
 	 * @return Returns int representing the EPSG code
-	 * @throws Exception
+	 * @throws IllegalArgumentException
 	 *             if srsName does not start with EPSG URL
 	 */
-	private int parseSrs(String srsName) throws Exception {
+	private int parseSrs(String srsName) throws IllegalArgumentException {
 		int epsgCode = 0;
 		if (srsName!=null){
 			if (srsName.startsWith(UwGMLUtil.EPSG_URL)) {
 				epsgCode = Integer
 						.parseInt(srsName.replace(UwGMLUtil.EPSG_URL, ""));
 			} else {
-				throw new Exception("SrsName has to start with URL of EPSG Code: "
+				throw new IllegalArgumentException("SrsName has to start with URL of EPSG Code: "
 						+ UwGMLUtil.EPSG_URL + "!");
 			}
 		}
@@ -407,14 +374,14 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @param position
 	 *            position string contained in XML document
 	 * @return Returns JTS Coordinate
-	 * @throws Exception
+	 * @throws IllegalArgumentException
 	 *             if position is not 2-dim.
 	 */
-	public Coordinate parsePositionString(String position) throws Exception {
+	public Coordinate parsePositionString(String position) throws IllegalArgumentException {
 		Coordinate coord = new Coordinate();
 		String[] coords = position.split(" ");
 		if (coords.length != 2) {
-			throw new Exception("Only 2-dimensional points are supported");
+			throw new IllegalArgumentException("Only 2-dimensional points are supported");
 		}
 		coord.x = Double.parseDouble(coords[0]);
 		coord.y = Double.parseDouble(coords[1]);
@@ -422,14 +389,16 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	}
 
 	/**
-	 * 
+	 * helper method for parsing an XMLBeans representation of  linear ring to a JTS representation
 	 * 
 	 * @param xb_lrType
-	 * @return
-	 * @throws Exception
+	 * 			XMLBeans representation of  linear ring
+	 * @return JTS representation of linear ring
+	 * @throws IllegalArgumentException
+	 * 			if parsing of linear ring fails
 	 */
 	private LinearRing parseLinearRing(LinearRingType xb_lrType)
-			throws Exception {
+			throws IllegalArgumentException {
 		DirectPositionType[] xb_posArray = xb_lrType.getPosArray();
 		Coordinate[] coords = new Coordinate[xb_posArray.length];
 		for (int i = 0; i < xb_posArray.length; i++) {
