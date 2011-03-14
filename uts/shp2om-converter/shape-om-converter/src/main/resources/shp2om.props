@@ -67,5 +67,5 @@ UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.COVARIANCE=PM10_COVAR
 PHENTIME=2010-01-22T14:55:02.000+02
 
 PROCPREFIX=http://www.uncertweb.org/sensors/
-PHENPREFIX=http://www.uncertweb.org/phenomena/
+PHENPREFIX=http://www.uncertweb.org/phenomenon/
 FOIIDPREFIX=http://www.uncertweb.org/features/
