@@ -1,0 +1,9 @@
+org.uncertweb.api.gml
+org.uncertweb.api.gml.geometry
+org.uncertweb.api.gml.io
+org.uncertweb.api.om
+org.uncertweb.api.om.io
+org.uncertweb.api.om.observation
+org.uncertweb.api.om.observation.collections
+org.uncertweb.api.om.result
+org.uncertweb.api.om.sampling
