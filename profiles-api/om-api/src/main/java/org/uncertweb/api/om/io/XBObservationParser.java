@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -93,7 +94,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * parses an {@link Observation} and it's {@link SpatialSamplingFeature}
+ * implementation of Observation parser with XmlBeans; can be used to encode and parse observations
+ * encoded in XML according the UncertWeb O&M profile
  * 
  * @author Kiesow, staschc
  * 
@@ -119,12 +121,19 @@ public class XBObservationParser implements IObservationParser {
 	 * @param xmlObsCol
 	 *            String containing an XML encoded observation collection
 	 * @return POJO observation collection
-	 * @throws Exception
-	 *             if parsing of observations fails
+	 * @throws URISyntaxException
+	 * 			if xlinks could not be resolved or are malformed 
+	 * @throws XmlException
+	 * 			if parsing of geometries fails 
+	 * @throws MalformedURLException 
+	 * 			if xlinks could not be resolved or are malformed
+	 * @throws IllegalArgumentException 
+	 * 			If parsing of observation fails
+	 * @throws UncertaintyParserException 
+				if parsing of uncertainty fails
 	 */
 	@Override
-	public synchronized IObservationCollection parseObservationCollection(String xmlObsCol)
-			throws Exception {
+	public synchronized IObservationCollection parseObservationCollection(String xmlObsCol) throws XmlException, IllegalArgumentException, MalformedURLException, URISyntaxException, UncertaintyParserException {
 
 		featureCache = new HashMap<String, SpatialSamplingFeature>();
 		timeCache = new HashMap<String, TimeObject>();
@@ -207,7 +216,7 @@ public class XBObservationParser implements IObservationParser {
 			return oc;
 		}
 		else {
-			throw new Exception("ObservationCollection type" + xb_obsColDoc.getClass() + "is not supported by this parser!");
+			throw new IllegalArgumentException("ObservationCollection type" + xb_obsColDoc.getClass() + "is not supported by this parser!");
 		}
 
 	}
@@ -218,11 +227,19 @@ public class XBObservationParser implements IObservationParser {
 	 * @param xmlObs
 	 *            xml observation document's string
 	 * @return POJO observation
-	 * @throws Exception
-	 *             If parsing of observation fails.
+	 * @throws URISyntaxException
+	 * 			if xlinks could not be resolved or are malformed 
+	 * @throws XmlException
+	 * 			if parsing of geometries fails 
+	 * @throws MalformedURLException 
+	 * 			if xlinks could not be resolved or are malformed
+	 * @throws IllegalArgumentException 
+	 * 			If parsing of observation fails
+	 * @throws UncertaintyParserException 
+				if parsing of uncertainty fails
 	 */
 	@Override
-	public synchronized AbstractObservation parseObservation(String xmlObs) throws Exception {
+	public synchronized AbstractObservation parseObservation(String xmlObs) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException, UncertaintyParserException {
 
 		featureCache = new HashMap<String, SpatialSamplingFeature>();
 		timeCache = new HashMap<String, TimeObject>();
@@ -238,11 +255,19 @@ public class XBObservationParser implements IObservationParser {
 	 * @param xb_obsDoc
 	 *            XMLBeans observation document
 	 * @return POJO observation
-	 * @throws Exception
-	 *             If parsing of observation fails
+	 * @throws URISyntaxException
+	 * 			if xlinks could not be resolved or are malformed 
+	 * @throws XmlException
+	 * 			if parsing of geometries fails 
+	 * @throws MalformedURLException 
+	 * 			if xlinks could not be resolved or are malformed
+	 * @throws IllegalArgumentException 
+	 * 			If parsing of observation fails
+	 * @throws UncertaintyParserException 
+				if parsing of uncertainty fails
 	 */
 	public synchronized AbstractObservation parseObservationDocument(
-			OMObservationDocument xb_obsDoc) throws Exception {
+			OMObservationDocument xb_obsDoc) throws URISyntaxException, IllegalArgumentException, MalformedURLException, XmlException, UncertaintyParserException {
 
 		AbstractObservation obs = null;
 
@@ -559,7 +584,7 @@ public class XBObservationParser implements IObservationParser {
 	 * @throws Exception
 	 *             if parsing of envelope fails
 	 */
-	private Envelope parseEnvelope(EnvelopeType env) throws Exception {
+	private Envelope parseEnvelope(EnvelopeType env){
 
 		// get shape geometry
 		XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
@@ -581,11 +606,17 @@ public class XBObservationParser implements IObservationParser {
 	 * @param xb_featureOfInterest
 	 *            XmlBeans representation of SamplingFeature
 	 * @return Returns POJO representation of sampling feature
-	 * @throws Exception
+	 * @throws URISyntaxException
+	 * 			if xlinks cannot be resolved or are malformed 
+	 * @throws MalformedURLException 
+	 * 			if xlinks cannot be resolved or are malformed
+	 * @throws IllegalArgumentException 
 	 *             if parsing of the feature fails
+	 * @throws XmlException 
+	 * 			if parsing of the geometry fails
 	 */
 	public synchronized SpatialSamplingFeature parseSamplingFeature(
-			FoiPropertyType xb_featureOfInterest) throws Exception {
+			FoiPropertyType xb_featureOfInterest) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException {
 
 		SpatialSamplingFeature ssf = null;
 
@@ -641,10 +672,12 @@ public class XBObservationParser implements IObservationParser {
 	 * @param href
 	 * 			value of the xlink:href attribute
 	 * @return Returns spatial sampling feature which is referenced
-	 * @throws Exception 
-	 * 			if geometry of feature cannot be parsed
+	 * @throws URISyntaxException 
+	 * 			if xlinks cannot be resolved or are malformed
+	 * @throws MalformedURLException
+	 * 			if xlinks cannot be resolved or are malformed 
 	 */
-	private SpatialSamplingFeature getSamplingFeature4Href(String href) throws Exception {
+	private SpatialSamplingFeature getSamplingFeature4Href(String href) throws IllegalArgumentException, URISyntaxException, MalformedURLException {
 		SpatialSamplingFeature ssf = null;
 		if	(!href.startsWith("#")){
 			URL hrefUrl = new URL(href);
@@ -689,11 +722,13 @@ public class XBObservationParser implements IObservationParser {
 	 * @param xb_sfType
 	 * 			XmlBeans representation of SamplingFeature		
 	 * @return Returns internal representation of SamplingFeature
-	 * @throws Exception
+	 * @throws XmlException 
+	 * 			if geometry of feature cannot be parsed
+	 * @throws IllegalArgumentException 
 	 * 			if geometry of feature cannot be parsed
 	 */
 	private SpatialSamplingFeature parseSamplingFeatureDocument(
-			SFSpatialSamplingFeatureType xb_sfType) throws Exception {
+			SFSpatialSamplingFeatureType xb_sfType) throws IllegalArgumentException, XmlException  {
 		// get id
 		String identifier = null;
 		if (xb_sfType.getIdentifier()!=null){

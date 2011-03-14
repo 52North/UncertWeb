@@ -1,5 +1,7 @@
 package org.uncertweb.api.gml.io;
 
+import org.apache.xmlbeans.XmlException;
+
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -17,9 +19,10 @@ public interface IGeometryParser {
 	 * 				String containing UncertWeb GML geometries encoded as XML
 	 * @return
 	 * 				Returns JTS geometry containing the geometry or geometries
-	 * @throws Exception
+	 * @throws XmlException 
+	 * @throws IllegalArgumentException 
 	 * 				if the parsing fails
 	 */
-	public Geometry parseUwGeometry(String geometryXml) throws Exception;
+	public Geometry parseUwGeometry(String geometryXml) throws IllegalArgumentException, XmlException ;
 	
 }
