@@ -208,7 +208,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 		String xmlString;
 		try {
 			 xmlString = readXmlFile(pathToExamples
-					+ "//Obs_Point_TimeInstant_double_SFref.xml");
+					+ "/Obs_Point_TimeInstant_double_SFref.xml");
 			}
 			catch (IOException ioe){
 				xmlString = readXmlFile(localPath + pathToExamples
