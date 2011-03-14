@@ -130,8 +130,8 @@ public class ShapeFileConverter {
 		}
 		
 		Object[] rowObjects;
-		String procID = props.getProcId();
-		String obsProp = props.getObsProps().get(0);
+		String procID = props.getProcPrefix()+props.getProcId();
+		String obsProp = props.getObsPropsPrefix()+props.getObsProps().get(0);
 		String uncertaintyType = props.getUncertaintyType();
 
 	      while( (rowObjects = reader.nextRecord()) != null) {
@@ -149,7 +149,7 @@ public class ShapeFileConverter {
 	    	  		CovarianceMatrix cm = createCovarianceMatrix(meanDoubles.length,covariances);
 	    	  		MultivariateGaussianDistribution mgd = new MultivariateGaussianDistribution(meanDoubles,cm);
 	    	  		UncertaintyResult ur = new UncertaintyResult(mgd);
-	    	  		UncertaintyObservation obs = new UncertaintyObservation("o_"+counter,to,to,new URI(obsProp),new URI(procID),ssf,ur);
+	    	  		UncertaintyObservation obs = new UncertaintyObservation("o_"+counter,to,to,new URI(obsProp),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
 	    	  	
