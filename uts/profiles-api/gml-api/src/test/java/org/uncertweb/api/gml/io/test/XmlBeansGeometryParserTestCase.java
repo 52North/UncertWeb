@@ -83,7 +83,6 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		assertEquals("RectifiedGrid", geom.getGeometryType());
 		assertEquals(52.77, ((RectifiedGrid)geom).getOrigin().getCoordinate().x);
 		assertEquals(4326, ((RectifiedGrid)geom).getOrigin().getSRID());
-		assertEquals("grid1",((RectifiedGrid)geom).getGmlId());
 	}
 
 	public void tearDown() {
