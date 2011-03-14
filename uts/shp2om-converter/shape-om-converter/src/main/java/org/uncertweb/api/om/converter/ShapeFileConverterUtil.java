@@ -26,18 +26,14 @@ public class ShapeFileConverterUtil {
 	 */
 	public static  TimeObject parsePhenTime(String phenTime) throws Exception{
 		if (phenTime!=null&&!phenTime.equals("")){
-			XBObservationParser xbParser = new XBObservationParser();
 			TimeObject to = null;
 			String[] times = phenTime.split(",");
 			if (times.length==1){
-				DateTime timePosition = xbParser.parseTimePosition(times[0]);
-				to = new TimeObject(null,timePosition);
+				to = new TimeObject(times[0]);
 				return to;
 			}
 			else if (times.length==2){
-				DateTime beginPosition = xbParser.parseTimePosition(times[0]);
-				DateTime endPosition = xbParser.parseTimePosition(times[1]);
-				to = new TimeObject(null,new Interval(beginPosition,endPosition));
+				to = new TimeObject(times[0],times[1]);
 				return to;
 			}
 			else {
