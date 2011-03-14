@@ -36,6 +36,7 @@
 	==============================================================-->
 	<om:featureOfInterest>
 		<sams:SF_SpatialSamplingFeature gml:id="SamplingPoint1">
+			<gml:identifier>SamplingPoint1</gml:identifier>
 			<sf:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint "/>
 			<sf:sampledFeature xsi:nil="true"/>
 			<sams:shape>
