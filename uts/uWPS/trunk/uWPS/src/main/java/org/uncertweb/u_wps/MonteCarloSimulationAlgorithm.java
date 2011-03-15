@@ -10,6 +10,7 @@ import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.InputType;
 import net.opengis.wps.x100.OutputDataType;
 
+import org.apache.log4j.Logger;
 import org.n52.wps.client.WPSClientException;
 import org.n52.wps.client.WPSClientSession;
 import org.n52.wps.io.data.GenericFileData;
@@ -33,6 +34,7 @@ import org.uncertml.distribution.continuous.GaussianDistribution;
  */
 public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
 
+	private static Logger LOGGER = Logger.getLogger(MonteCarloSimulationAlgorithm.class);
 	private String inputIDIdentifierSimulatedProcess = "IdentifierSimulatedProcess";
 	private String inputIDUncertainProcessInputs = "UncertainProcessInputs";
 	private String inputIDProcessExecuteRequest = "ProcessExecuteRequest";
@@ -187,9 +189,9 @@ public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
 			//execute Monte Carlo
 			InputType inType = execDoc.getExecute().getDataInputs().getInputArray(0);
 		
-			ArrayList<Double> realisations = new ArrayList<Double>();
+			ArrayList<Double> realisations = new ArrayList<Double>(numberOfRealisations);
 			
-			for (int i = 0; i < numberOfRealisations - 1; i++) {				
+			for (int i = 0; i < numberOfRealisations; i++) {				
 				
 				inType.getData().getLiteralData().setStringValue("" + samples[i]);
 				
@@ -201,6 +203,8 @@ public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
 				
 				realisations.add(output);
 			}
+			
+			LOGGER.debug(realisations.size());
 			
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -39,6 +39,8 @@ public class UncertWebData {
 		this.mimeType = mimeType;
 		this.fileExtension = GenericFileDataConstants.mimeTypeFileTypeLUT().get(mimeType);
 		
+		LOGGER.debug(mimeType);
+		
 		InputStream is = null;
 		
 		if (GenericFileDataConstants.getIncludeFilesByMimeType(mimeType) != null){
