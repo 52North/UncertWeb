@@ -3,11 +3,11 @@
   <parent>
     <artifactId>profiles-api</artifactId>
     <groupId>org.uncertweb</groupId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
   </parent>
   <groupId>org.uncertweb</groupId>
   <artifactId>gml-api</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.3-SNAPSHOT</version>
   <dependencies>
     <dependency>
       <groupId>org.uncertweb</groupId>
