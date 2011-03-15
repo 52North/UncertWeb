@@ -1,22 +1,35 @@
 package org.uncertweb.u_wps;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import net.opengis.wps.x100.ComplexDataType;
+import net.opengis.wps.x100.DocumentOutputDefinitionType;
 import net.opengis.wps.x100.ExecuteDocument;
 import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.InputType;
 import net.opengis.wps.x100.OutputDataType;
+import net.opengis.wps.x100.ResponseFormType;
+import net.opengis.wps.x100.ExecuteDocument.Execute;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlObject;
 import org.n52.wps.client.WPSClientException;
 import org.n52.wps.client.WPSClientSession;
-import org.n52.wps.io.data.GenericFileData;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.UncertWebData;
-import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.complex.PlainStringBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
@@ -24,6 +37,11 @@ import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.GaussianDistribution;
+import org.uncertml.io.XMLEncoder;
+import org.uncertml.io.XMLParser;
+import org.uncertml.sample.Realisation;
+import org.uncertml.sample.SamplingMethod;
+import org.w3c.dom.Node;
 
 
 /**
@@ -204,17 +222,76 @@ public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
 				realisations.add(output);
 			}
 			
-			LOGGER.debug(realisations.size());
+			LOGGER.debug(realisations.size());		
+			
+			/*
+			 * TODO: transform realisations to distribution again using UTS
+			 * 
+			 */
+			
+			Realisation rplus = new Realisation(realisations, SamplingMethod.RANDOM);
+			
+			/*
+			 * Create execute document 
+			 */
+			
+			ExecuteDocument utsExecDoc2 = ExecuteDocument.Factory.newInstance();
+			
+			Execute exc = utsExecDoc2.addNewExecute();
+			
+			exc.addNewIdentifier().setStringValue("org.uncertweb.wps.Realisations2Distribution");
+			
+			InputType inType1 = exc.addNewDataInputs().addNewInput();
+			
+			inType1.addNewIdentifier().setStringValue("realisations");
+			
+			ComplexDataType cData1 = inType1.addNewData().addNewComplexData();
+						
+			cData1.set(XmlObject.Factory.parse(new  XMLEncoder().encode(rplus)));
+			
+			cData1.setSchema("http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd");
+			
+			cData1.setEncoding("UTF-8");
+			
+			cData1.setMimeType("text/xml");			
+			
+			ResponseFormType rForm = exc.addNewResponseForm();
+			
+			DocumentOutputDefinitionType output1 = rForm.addNewResponseDocument().addNewOutput();
+			
+			output1.addNewIdentifier().setStringValue("output_distribution");
+			
+			output1.setMimeType("text/xml");
+			
+			output1.setSchema("http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd");
+						
+			ExecuteResponseDocument response1 = (ExecuteResponseDocument)session.execute("http://localhost:8080/uts/WebProcessingService", utsExecDoc2);
+			
+			OutputDataType outType1 = response1.getExecuteResponse().getProcessOutputs().getOutputArray(0);
+			
+			try {
+				
+				String s = nodeToString(outType1.getData().getComplexData().getDomNode().getFirstChild());
+				
+				IUncertainty uncertainty = new XMLParser().parse(s);
+				
+				UncertWebData uwd = new UncertWebData(uncertainty);
+				
+				Map<String, IData> result = new HashMap<String, IData>(1);
+				
+				result.put("UncertainProcessOutputs", new UncertWebDataBinding(uwd));
+				
+				return result;
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Error while creating ExecuteDocument.");
 		} 
-		
-		/*
-		 * TODO: transform realisations to distribution again using UTS
-		 * 
-		 */
 		
 		return null;
 	}
@@ -232,6 +309,15 @@ public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
 		}	
 		
 		return firstInputData;
+	}
+	
+	private String nodeToString(Node node) throws TransformerFactoryConfigurationError, TransformerException {
+		StringWriter stringWriter = new StringWriter();
+		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		transformer.transform(new DOMSource(node), new StreamResult(stringWriter));
+		
+		return stringWriter.toString();
 	}
 
 }
