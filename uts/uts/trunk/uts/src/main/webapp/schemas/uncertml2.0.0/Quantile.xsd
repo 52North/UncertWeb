@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:un="http://www.uncertml.org/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" targetNamespace="http://www.uncertml.org/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+	<xs:simpleType name="doubleArray">
+		<xs:list itemType="xs:double"/>
+	</xs:simpleType>
+	<xs:attributeGroup name="XlinkAttributeGroup">
+		<xs:attribute ref="xlink:href" use="optional"/>
+	</xs:attributeGroup>
+	<xs:complexType name="ContinuousValuesType">
+		<xs:simpleContent>
+			<xs:extension base="un:doubleArray">
+				<xs:attributeGroup ref="un:XlinkAttributeGroup"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="AbstractUncertainty" type="un:AbstractUncertaintyType" abstract="true"/>
+	<xs:complexType name="AbstractUncertaintyType" abstract="true">
+		<xs:attribute name="id" type="xs:ID"/>
+	</xs:complexType>
+	<xs:element name="AbstractSummaryStatistic" type="un:AbstractSummaryStatisticType" abstract="true" substitutionGroup="un:AbstractUncertainty"/>
+	<xs:complexType name="AbstractSummaryStatisticType" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="un:AbstractUncertaintyType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Quantile" type="un:QuantileType" substitutionGroup="un:AbstractSummaryStatistic"/>
+	<xs:complexType name="QuantileType">
+		<xs:complexContent>
+			<xs:extension base="un:AbstractSummaryStatisticType">
+				<xs:sequence minOccurs="0">
+					<xs:element name="values" type="un:ContinuousValuesType"/>
+				</xs:sequence>
+				<xs:attribute name="level">
+					<xs:simpleType>
+						<xs:restriction base="xs:double">
+							<xs:minInclusive value="0.0"/>
+							<xs:maxInclusive value="1.0"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>
