@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<om:OM_UncertaintyObservationCollection xmlns:om="http://www.opengis.net/om/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:sa="http://www.opengis.net/sampling/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/om/2.0 http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd">
+  <om:OM_UncertaintyObservation gml:id="o_0">
+    <om:phenomenonTime>
+      <gml:TimeInstant gml:id="t0">
+        <gml:timePosition>2010-01-22T14:55:02.000+02:00</gml:timePosition>
+      </gml:TimeInstant>
+    </om:phenomenonTime>
+    <om:resultTime xlink:href="#t0"/>
+    <om:procedure xlink:href="http://www.uncertweb.org/phenomenon/PM10_total"/>
+    <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/PM10_total"/>
+    <om:featureOfInterest>
+      <sams:SF_SpatialSamplingFeature gml:id="sf0">
+        <sa:type xlink:href=""/>
+        <sa:sampledFeature xsi:nil="true"/>
+        <sams:shape>
+          <gml:MultiLineString gml:id="g0">
+            <gml:lineStringMember>
+              <gml:LineString gml:id="g1">
+                <gml:pos>3397499.2250925214 5752217.519862129</gml:pos>
+                <gml:pos>3397533.721110907 5752253.128932143</gml:pos>
+                <gml:pos>3397574.2943997066 5752290.48912186</gml:pos>
+                <gml:pos>3397606.462574296 5752318.187378165</gml:pos>
+                <gml:pos>3397628.186147106 5752335.3069503335</gml:pos>
+                <gml:pos>3397648.8281844757 5752350.469419348</gml:pos>
+                <gml:pos>3397672.5088546355 5752366.507449599</gml:pos>
+                <gml:pos>3397702.349178348 5752386.294896821</gml:pos>
+                <gml:pos>3397774.143154312 5752428.372879227</gml:pos>
+                <gml:pos>3397789.4598990907 5752435.748131653</gml:pos>
+                <gml:pos>3397818.095094382 5752450.581021927</gml:pos>
+                <gml:pos>3397867.0839497675 5752473.582327321</gml:pos>
+                <gml:pos>3397928.186123235 5752499.086720697</gml:pos>
+                <gml:pos>3397999.485704568 5752529.1748742275</gml:pos>
+                <gml:pos>3398344.5395757197 5752669.077886183</gml:pos>
+                <gml:pos>3398391.324064551 5752687.165750681</gml:pos>
+                <gml:pos>3398413.7583583803 5752697.250018042</gml:pos>
+                <gml:pos>3398441.2295590867 5752708.127447226</gml:pos>
+                <gml:pos>3398468.7831481416 5752721.003158277</gml:pos>
+                <gml:pos>3398502.4963715286 5752737.628259979</gml:pos>
+                <gml:pos>3398536.291982529 5752756.251640181</gml:pos>
+                <gml:pos>3398569.0884476705 5752774.916209944</gml:pos>
+                <gml:pos>3398603.048835546 5752797.536144485</gml:pos>
+                <gml:pos>3398636.0512749613 5752821.196409043</gml:pos>
+                <gml:pos>3398657.774781111 5752838.315835113</gml:pos>
+                <gml:pos>3398678.5403414546 5752856.475595217</gml:pos>
+                <gml:pos>3398710.914403545 5752889.169308437</gml:pos>
+                <gml:pos>3398732.9674811726 5752914.281849472</gml:pos>
+                <gml:pos>3398756.349275503 5752947.346316085</gml:pos>
+                <gml:pos>3398756.3904723814 5752948.345457085</gml:pos>
+                <gml:pos>3398776.692453068 5752979.535225157</gml:pos>
+                <gml:pos>3398795.9952959395 5753010.766184066</gml:pos>
+                <gml:pos>3398824.48599256 5753070.642636906</gml:pos>
+                <gml:pos>3398847.352640919 5753139.758524219</gml:pos>
+                <gml:pos>3398856.993682523 5753179.394560409</gml:pos>
+                <gml:pos>3398864.6776491012 5753220.112129793</gml:pos>
+                <gml:pos>3398868.1178716524 5753254.999647577</gml:pos>
+                <gml:pos>3398870.8061516397 5753295.923205191</gml:pos>
+                <gml:pos>3398873.000054415 5753324.85707744</gml:pos>
+                <gml:pos>3398873.412042433 5753334.848481132</gml:pos>
+                <gml:pos>3398873.9064287217 5753346.838165521</gml:pos>
+                <gml:pos>3398874.689208502 5753365.821832378</gml:pos>
+                <gml:pos>3398871.9283975163 5753493.042252343</gml:pos>
+                <gml:pos>3398872.2579947053 5753501.035375205</gml:pos>
+                <gml:pos>3398871.6913629356 5753560.108255594</gml:pos>
+                <gml:pos>3398869.9091718947 5753735.328620343</gml:pos>
+                <gml:pos>3398870.2799798013 5753744.320883431</gml:pos>
+                <gml:pos>3398864.8001291705 5753999.760895507</gml:pos>
+                <gml:pos>3398865.047342435 5754005.75573756</gml:pos>
+                <gml:pos>3398864.8722476256 5754025.779746653</gml:pos>
+                <gml:pos>3398865.243068776 5754034.7720097</gml:pos>
+              </gml:LineString>
+            </gml:lineStringMember>
+          </gml:MultiLineString>
+        </sams:shape>
+      </sams:SF_SpatialSamplingFeature>
+    </om:featureOfInterest>
+    <om:result>
+      <un:MultivariateGaussianDistribution xmlns:un="http://www.uncertml.org/2.0">
+        <un:mean>132.52 384.23</un:mean>
+        <un:covarianceMatrix dimension="2">
+          <un:values>66.26 32.3 232.2 232.2</un:values>
+        </un:covarianceMatrix>
+      </un:MultivariateGaussianDistribution>
+    </om:result>
+  </om:OM_UncertaintyObservation>
+  <om:OM_UncertaintyObservation gml:id="o_1">
+    <om:phenomenonTime>
+      <gml:TimeInstant gml:id="t1">
+        <gml:timePosition>2010-01-22T15:55:02.000+02:00</gml:timePosition>
+      </gml:TimeInstant>
+    </om:phenomenonTime>
+    <om:resultTime xlink:href="#t1"/>
+    <om:procedure xlink:href="http://www.uncertweb.org/phenomenon/PM10_total"/>
+    <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/PM10_total"/>
+    <om:featureOfInterest>
+      <sams:SF_SpatialSamplingFeature gml:id="sf1">
+        <sa:type xlink:href=""/>
+        <sa:sampledFeature xsi:nil="true"/>
+        <sams:shape>
+          <gml:MultiLineString gml:id="g2">
+            <gml:lineStringMember>
+              <gml:LineString gml:id="g3">
+                <gml:pos>3404375.988318778 5746051.243281115</gml:pos>
+                <gml:pos>3404376.860169614 5746145.283406132</gml:pos>
+                <gml:pos>3404377.9303791304 5746171.260348892</gml:pos>
+                <gml:pos>3404378.9594299705 5746196.238178274</gml:pos>
+                <gml:pos>3404384.643532795 5746237.037168832</gml:pos>
+                <gml:pos>3404391.955407775 5746268.761814327</gml:pos>
+                <gml:pos>3404396.5692976327 5746283.583860615</gml:pos>
+                <gml:pos>3404399.8547747163 5746290.454164404</gml:pos>
+                <gml:pos>3404405.4677790734 5746305.235046974</gml:pos>
+                <gml:pos>3404412.079897391 5746319.974766006</gml:pos>
+                <gml:pos>3404428.754267337 5746360.320954502</gml:pos>
+                <gml:pos>3404442.3489795662 5746398.792400049</gml:pos>
+                <gml:pos>3404450.495338489 5746426.4794163685</gml:pos>
+                <gml:pos>3404465.912445074 5746484.891944026</gml:pos>
+                <gml:pos>3404488.353341303 5746568.0352944415</gml:pos>
+                <gml:pos>3404526.046780976 5746705.594670743</gml:pos>
+                <gml:pos>3404563.657979867 5746841.155772077</gml:pos>
+                <gml:pos>3404583.730301173 5746915.389366795</gml:pos>
+                <gml:pos>3404593.164000896 5746950.028961626</gml:pos>
+                <gml:pos>3404614.2766388543 5747025.22048062</gml:pos>
+                <gml:pos>3404623.545690872 5747055.863617837</gml:pos>
+                <gml:pos>3404641.1258630725 5747118.190162415</gml:pos>
+                <gml:pos>3404643.5357542904 5747128.098946333</gml:pos>
+                <gml:pos>3404645.945645983 5747138.007730019</gml:pos>
+                <gml:pos>3404647.315259537 5747146.958568653</gml:pos>
+                <gml:pos>3404649.6839852 5747155.8682402335</gml:pos>
+                <gml:pos>3404652.340880245 5747171.771693452</gml:pos>
+                <gml:pos>3404655.203612102 5747192.670704645</gml:pos>
+                <gml:pos>3404658.6015205593 5747226.558166807</gml:pos>
+                <gml:pos>3404677.918718179 5747403.906018028</gml:pos>
+                <gml:pos>3404682.9744687015 5747453.738089254</gml:pos>
+                <gml:pos>3404691.0988425147 5747529.464718868</gml:pos>
+                <gml:pos>3404694.373301517 5747560.3548360085</gml:pos>
+                <gml:pos>3404701.128080492 5747627.130624535</gml:pos>
+                <gml:pos>3404702.580054741 5747638.079680534</gml:pos>
+                <gml:pos>3404704.9377583507 5747671.009186734</gml:pos>
+                <gml:pos>3404720.5360828303 5747879.535263477</gml:pos>
+                <gml:pos>3404726.2396798767 5747969.372935059</gml:pos>
+                <gml:pos>3404727.515985032 5748000.345383333</gml:pos>
+                <gml:pos>3404734.6414565886 5748076.113149544</gml:pos>
+                <gml:pos>3404740.7788310666 5748127.902243397</gml:pos>
+                <gml:pos>3404750.7369957375 5748199.550039891</gml:pos>
+                <gml:pos>3404751.8486475307 5748226.526039292</gml:pos>
+                <gml:pos>3404752.960303014 5748253.502038471</gml:pos>
+                <gml:pos>3404750.734280626 5748296.628505331</gml:pos>
+                <gml:pos>3404749.1889585983 5748307.70107277</gml:pos>
+                <gml:pos>3404747.849501366 5748323.76919588</gml:pos>
+              </gml:LineString>
+            </gml:lineStringMember>
+          </gml:MultiLineString>
+        </sams:shape>
+      </sams:SF_SpatialSamplingFeature>
+    </om:featureOfInterest>
+    <om:result>
+      <un:MultivariateGaussianDistribution xmlns:un="http://www.uncertml.org/2.0">
+        <un:mean>133.52 384.23</un:mean>
+        <un:covarianceMatrix dimension="2">
+          <un:values>67.26 32.3 232.2 232.2</un:values>
+        </un:covarianceMatrix>
+      </un:MultivariateGaussianDistribution>
+    </om:result>
+  </om:OM_UncertaintyObservation>
+  <om:OM_UncertaintyObservation gml:id="o_2">
+    <om:phenomenonTime>
+      <gml:TimeInstant gml:id="t2">
+        <gml:timePosition>2010-01-22T16:55:02.000+02:00</gml:timePosition>
+      </gml:TimeInstant>
+    </om:phenomenonTime>
+    <om:resultTime xlink:href="#t2"/>
+    <om:procedure xlink:href="http://www.uncertweb.org/phenomenon/PM10_total"/>
+    <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/PM10_total"/>
+    <om:featureOfInterest>
+      <sams:SF_SpatialSamplingFeature gml:id="sf2">
+        <sa:type xlink:href=""/>
+        <sa:sampledFeature xsi:nil="true"/>
+        <sams:shape>
+          <gml:MultiLineString gml:id="g4">
+            <gml:lineStringMember>
+              <gml:LineString gml:id="g5">
+                <gml:pos>3400175.7513762508 5749310.847289848</gml:pos>
+                <gml:pos>3400185.2789019956 5749323.465428799</gml:pos>
+                <gml:pos>3400196.763517832 5749335.002075613</gml:pos>
+                <gml:pos>3400212.3270266703 5749348.372275131</gml:pos>
+                <gml:pos>3400228.807312033 5749359.703026167</gml:pos>
+                <gml:pos>3400243.1246146886 5749367.119597187</gml:pos>
+                <gml:pos>3400257.3595593777 5749372.5378995985</gml:pos>
+                <gml:pos>3400272.634815525 5749378.914156253</gml:pos>
+                <gml:pos>3400297.942585145 5749385.877758757</gml:pos>
+                <gml:pos>3400338.484424849 5749398.2184789255</gml:pos>
+                <gml:pos>3400350.6799183083 5749402.72000058</gml:pos>
+                <gml:pos>3400369.0761042773 5749411.970114962</gml:pos>
+                <gml:pos>3400387.4722890016 5749421.220227591</gml:pos>
+                <gml:pos>3400400.749270778 5749427.678833838</gml:pos>
+                <gml:pos>3400420.1857651984 5749437.886897477</gml:pos>
+                <gml:pos>3400579.797738646 5749522.384012138</gml:pos>
+                <gml:pos>3400741.4490643954 5749607.797759871</gml:pos>
+                <gml:pos>3400758.804913358 5749616.089884841</gml:pos>
+                <gml:pos>3400793.516607842 5749632.67413033</gml:pos>
+                <gml:pos>3400838.5078656278 5749655.840485838</gml:pos>
+                <gml:pos>3400846.7068117163 5749660.506699661</gml:pos>
+                <gml:pos>3401033.7480341564 5749754.882002544</gml:pos>
+                <gml:pos>3401039.866354192 5749757.632308991</gml:pos>
+                <gml:pos>3401043.986414628 5749760.464976257</gml:pos>
+                <gml:pos>3401065.462304112 5749771.589741367</gml:pos>
+                <gml:pos>3401086.938191938 5749782.7145040175</gml:pos>
+                <gml:pos>3401106.4569999557 5749794.920754941</gml:pos>
+                <gml:pos>3401165.0957789654 5749833.537751291</gml:pos>
+                <gml:pos>3401183.656634513 5749846.7843021825</gml:pos>
+                <gml:pos>3401201.259541324 5749861.071160473</gml:pos>
+                <gml:pos>3401217.863318818 5749875.3991972655</gml:pos>
+                <gml:pos>3401241.872808713 5749899.430250871</gml:pos>
+                <gml:pos>3401245.0761007983 5749904.302350818</gml:pos>
+                <gml:pos>3401256.5606909567 5749915.8389012525</gml:pos>
+                <gml:pos>3401267.0873338925 5749928.415760249</gml:pos>
+                <gml:pos>3401276.6148485653 5749941.033799295</gml:pos>
+                <gml:pos>3401285.184416579 5749954.692147075</gml:pos>
+                <gml:pos>3401293.7951667197 5749969.349622122</gml:pos>
+                <gml:pos>3401302.405917601 5749984.007095905</gml:pos>
+                <gml:pos>3401310.0587225473 5749999.704878461</gml:pos>
+                <gml:pos>3401313.385561217 5750007.574360151</gml:pos>
+                <gml:pos>3401325.487880918 5750034.097824814</gml:pos>
+                <gml:pos>3401338.537390594 5750083.601235098</gml:pos>
+                <gml:pos>3401341.1121969554 5750097.506665598</gml:pos>
+                <gml:pos>3401345.1391374506 5750122.361323383</gml:pos>
+                <gml:pos>3401348.166952868 5750147.2571626445</gml:pos>
+                <gml:pos>3401352.0184234637 5750192.135563807</gml:pos>
+                <gml:pos>3401359.4026663834 5750249.879079904</gml:pos>
+                <gml:pos>3401363.1825274783 5750268.738964313</gml:pos>
+                <gml:pos>3401367.0035734577 5750288.597976074</gml:pos>
+                <gml:pos>3401371.7001996944 5750305.418419822</gml:pos>
+                <gml:pos>3401376.438010584 5750323.237990788</gml:pos>
+                <gml:pos>3401382.1337675466 5750340.017249566</gml:pos>
+                <gml:pos>3401390.2396167354 5750366.705419603</gml:pos>
+                <gml:pos>3401409.1192382853 5750411.965179392</gml:pos>
+                <gml:pos>3401411.2822289937 5750415.879323085</gml:pos>
+                <gml:pos>3401485.6369395126 5750592.9629491065</gml:pos>
+                <gml:pos>3401565.6875740793 5750786.825675473</gml:pos>
+                <gml:pos>3401613.5923421565 5750904.949902793</gml:pos>
+                <gml:pos>3401639.1258117957 5750965.94846881</gml:pos>
+                <gml:pos>3401649.0652427957 5750988.557700449</gml:pos>
+                <gml:pos>3401659.9626156506 5751010.126616598</gml:pos>
+                <gml:pos>3401678.2245572577 5751040.399359787</gml:pos>
+                <gml:pos>3401688.792438233 5751053.97525931</gml:pos>
+                <gml:pos>3401699.3191325543 5751066.552031106</gml:pos>
+                <gml:pos>3401708.8055138057 5751078.170862449</gml:pos>
+                <gml:pos>3401718.2507081456 5751088.790566501</gml:pos>
+                <gml:pos>3401728.7362159737 5751100.36820845</gml:pos>
+                <gml:pos>3401915.652493026 5751288.824238702</gml:pos>
+                <gml:pos>3401934.4193208753 5751307.066228234</gml:pos>
+                <gml:pos>3401940.661200728 5751312.813848964</gml:pos>
+              </gml:LineString>
+            </gml:lineStringMember>
+          </gml:MultiLineString>
+        </sams:shape>
+      </sams:SF_SpatialSamplingFeature>
+    </om:featureOfInterest>
+    <om:result>
+      <un:MultivariateGaussianDistribution xmlns:un="http://www.uncertml.org/2.0">
+        <un:mean>134.52 384.23</un:mean>
+        <un:covarianceMatrix dimension="2">
+          <un:values>68.26 32.3 232.2 232.2</un:values>
+        </un:covarianceMatrix>
+      </un:MultivariateGaussianDistribution>
+    </om:result>
+  </om:OM_UncertaintyObservation>
+  <om:OM_UncertaintyObservation gml:id="o_3">
+    <om:phenomenonTime>
+      <gml:TimeInstant gml:id="t3">
+        <gml:timePosition>2010-01-22T17:55:02.000+02:00</gml:timePosition>
+      </gml:TimeInstant>
+    </om:phenomenonTime>
+    <om:resultTime xlink:href="#t3"/>
+    <om:procedure xlink:href="http://www.uncertweb.org/phenomenon/PM10_total"/>
+    <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/PM10_total"/>
+    <om:featureOfInterest>
+      <sams:SF_SpatialSamplingFeature gml:id="sf3">
+        <sa:type xlink:href=""/>
+        <sa:sampledFeature xsi:nil="true"/>
+        <sams:shape>
+          <gml:MultiLineString gml:id="g6">
+            <gml:lineStringMember>
+              <gml:LineString gml:id="g7">
+                <gml:pos>3401940.661200728 5751312.813848964</gml:pos>
+                <gml:pos>3401945.9451438617 5751319.601782637</gml:pos>
+                <gml:pos>3401965.7110967045 5751337.8025780395</gml:pos>
+                <gml:pos>3402000.1238124454 5751371.41272662</gml:pos>
+                <gml:pos>3402009.5690092654 5751382.032401</gml:pos>
+                <gml:pos>3402019.9721421828 5751391.611761073</gml:pos>
+                <gml:pos>3402029.458527905 5751403.230557993</gml:pos>
+                <gml:pos>3402037.945789353 5751414.8905425845</gml:pos>
+                <gml:pos>3402060.4925804827 5751451.99230608</gml:pos>
+                <gml:pos>3402076.756306378 5751482.347325847</gml:pos>
+                <gml:pos>3402092.5151831037 5751524.73302088</gml:pos>
+                <gml:pos>3402098.5405391264 5751549.505179537</gml:pos>
+                <gml:pos>3402104.6070876927 5751575.27646092</gml:pos>
+                <gml:pos>3402117.069713412 5751634.812012002</gml:pos>
+                <gml:pos>3402148.5558788287 5751791.643849906</gml:pos>
+                <gml:pos>3402167.1263451492 5751877.949764019</gml:pos>
+                <gml:pos>3402177.9720646036 5751922.539613933</gml:pos>
+                <gml:pos>3402181.4637323283 5751934.405524944</gml:pos>
+                <gml:pos>3402191.568015455 5751961.011142284</gml:pos>
+                <gml:pos>3402208.2025355618 5752000.358213902</gml:pos>
+                <gml:pos>3402232.28403828 5752050.40729385</gml:pos>
+              </gml:LineString>
+            </gml:lineStringMember>
+          </gml:MultiLineString>
+        </sams:shape>
+      </sams:SF_SpatialSamplingFeature>
+    </om:featureOfInterest>
+    <om:result>
+      <un:MultivariateGaussianDistribution xmlns:un="http://www.uncertml.org/2.0">
+        <un:mean>135.52 384.23</un:mean>
+        <un:covarianceMatrix dimension="2">
+          <un:values>69.26 32.3 232.2 232.2</un:values>
+        </un:covarianceMatrix>
+      </un:MultivariateGaussianDistribution>
+    </om:result>
+  </om:OM_UncertaintyObservation>
+</om:OM_UncertaintyObservationCollection>
