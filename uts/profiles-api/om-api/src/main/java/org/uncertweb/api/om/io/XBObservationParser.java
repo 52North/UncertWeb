@@ -62,6 +62,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.uncertml.IUncertainty;
 import org.uncertml.exception.UncertaintyParserException;
 import org.uncertml.io.XMLParser;
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.io.XmlBeansGeometryParser;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
@@ -277,9 +278,11 @@ public class XBObservationParser implements IObservationParser {
 
 			
 			CodeWithAuthorityType xb_identifier = xb_obsType.getIdentifier();
-			String identifier = null;
+			Identifier identifier = null;
 			if (xb_identifier!=null){
-				identifier = xb_identifier.getStringValue();
+				String id = xb_identifier.getStringValue();
+				URI codeSpace = new URI(xb_identifier.getCodeSpace());
+				identifier = new Identifier(codeSpace, id);
 			}
 
 			// parse boundedBy (optional parameter)
@@ -632,11 +635,13 @@ public class XBObservationParser implements IObservationParser {
 			String gmlId = xb_featureOfInterest.getSFSpatialSamplingFeature().getId();
 			// get identifier
 			//TODO add parsing of code space
-			String identifier = null;
+			Identifier identifier = null;
 			if (xb_featureOfInterest.getSFSpatialSamplingFeature()
 					.getIdentifier()!=null){
-				identifier = xb_featureOfInterest.getSFSpatialSamplingFeature()
-				.getIdentifier().getStringValue();
+				CodeWithAuthorityType xb_identifier = xb_featureOfInterest.getSFSpatialSamplingFeature().getIdentifier();
+				String idString = xb_identifier.getStringValue();
+				URI codeSpace = new URI(xb_identifier.getCodeSpace());
+				identifier = new Identifier(codeSpace,idString);
 			}
 
 			// TODO add boundedBy, location
@@ -726,13 +731,17 @@ public class XBObservationParser implements IObservationParser {
 	 * 			if geometry of feature cannot be parsed
 	 * @throws IllegalArgumentException 
 	 * 			if geometry of feature cannot be parsed
+	 * @throws URISyntaxException 
 	 */
 	private SpatialSamplingFeature parseSamplingFeatureDocument(
-			SFSpatialSamplingFeatureType xb_sfType) throws IllegalArgumentException, XmlException  {
+			SFSpatialSamplingFeatureType xb_sfType) throws IllegalArgumentException, XmlException, URISyntaxException  {
 		// get id
-		String identifier = null;
+		Identifier identifier = null;
 		if (xb_sfType.getIdentifier()!=null){
-			identifier = xb_sfType.getIdentifier().getStringValue();
+			CodeWithAuthorityType xb_identifier = xb_sfType.getIdentifier();
+			String idString = xb_identifier.getStringValue();
+			URI codeSpace = new URI(xb_identifier.getCodeSpace());
+			identifier = new Identifier(codeSpace,idString);
 		}
 
 		// TODO add boundedBy, location
