@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.opengis.gml.x32.BoundingShapeType;
+import net.opengis.gml.x32.CodeWithAuthorityType;
 import net.opengis.gml.x32.EnvelopeType;
 import net.opengis.gml.x32.MeasureType;
 import net.opengis.gml.x32.ReferenceType;
@@ -60,6 +61,7 @@ import org.uncertml.exception.UncertaintyEncoderException;
 import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.io.XMLEncoder;
 import org.uncertml.x20.AbstractUncertaintyDocument;
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
 import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
@@ -106,6 +108,10 @@ public class XBObservationEncoder implements IObservationEncoder {
 	
 	/**id counter for observations; used to generate observation IDs*/
 	private int obsIdCounter = 0;
+	
+	/**encoder for geometries*/
+	private XmlBeansGeometryEncoder encoder;
+
 
 	// maps used for caching information about already encoded geometries
 	
@@ -133,6 +139,14 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * encoding just one observation or internally for encoding members of an observation collection.
 	 */
 	private boolean isCol;
+	
+	/**
+	 * constructor initializes geometry encoded
+	 * 
+	 */
+	public XBObservationEncoder(){
+		encoder = new XmlBeansGeometryEncoder();
+	}
 
 	/**
 	 * encodes an observation collection
@@ -388,7 +402,9 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 		// add identifier
 		if (obs.getIdentifier() != null) {
-			xb_obs.addNewIdentifier().setStringValue(obs.getIdentifier());
+			CodeWithAuthorityType xb_id = xb_obs.addNewIdentifier();
+			xb_id.setCodeSpace(obs.getIdentifier().getCodeSpace().toString());
+			xb_id.setStringValue(obs.getIdentifier().getIdentifier());
 		}
 
 		// encode boundedBy (optional parameter)
@@ -797,9 +813,9 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			// if identifier of feature is set, check whether foi has been
 			// already encoded
-			String identifier = obs.getFeatureOfInterest().getIdentifier();
+			Identifier identifier = obs.getFeatureOfInterest().getIdentifier();
 			if (identifier != null && !identifier.equals("")) {
-				if (this.gmlID4sfIdentifier.containsKey(identifier)) {
+				if (this.gmlID4sfIdentifier.containsKey(identifier.getCodeSpace().toString()+identifier.getIdentifier())) {
 					xb_foi.setHref("#" + this.gmlID4sfIdentifier);
 					return;
 				}
@@ -827,8 +843,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 			ReferenceType xb_rt = xb_sfType.addNewType();
 			xb_rt.setHref(obs.getFeatureOfInterest().getFeatureType());
 			ShapeType xb_shape = xb_sfType.addNewShape();
-			XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
-
+			
 			XmlObject xb_geometry = null;
 			if (obs.getFeatureOfInterest().getShape() instanceof Point) {
 				xb_geometry = encoder.encodePoint2Doc((Point) obs
@@ -865,8 +880,10 @@ public class XBObservationEncoder implements IObservationEncoder {
 			}
 			xb_shape.set(xb_geometry);
 			if (identifier != null) {
-				xb_sfType.addNewIdentifier().setStringValue(identifier);
-				this.gmlID4sfIdentifier.put(identifier, gmlId);
+				CodeWithAuthorityType xb_identifier = xb_sfType.addNewIdentifier();
+				xb_identifier.setStringValue(identifier.getIdentifier());
+				xb_identifier.setCodeSpace(identifier.getCodeSpace().toString());
+				this.gmlID4sfIdentifier.put(identifier.getCodeSpace().toString()+identifier.getIdentifier(), gmlId);
 			}
 		}
 	}
@@ -1063,6 +1080,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 		this.isCol = false;
 		this.obsIdCounter = 0;
 		this.timeIdCounter = 0;
+		this.encoder.resetCounter();
 	}
 
 	/**
