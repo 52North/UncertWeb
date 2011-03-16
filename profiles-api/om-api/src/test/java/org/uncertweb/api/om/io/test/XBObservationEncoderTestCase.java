@@ -14,6 +14,7 @@ import net.opengis.om.x20.OMObservationDocument;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.geometry.GmlGeometryFactory;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.io.XBObservationEncoder;
@@ -35,15 +36,15 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class XBObservationEncoderTestCase extends TestCase {
 
-	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/";
+	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api";
 	private String pathToExamples = "om-api/src/test/resources";
-
+	
 	public void testObservationEncoder() throws Exception {
 
 		point_TimeInstant_DoubleTest();
 		obsCol_Point_TimeInstant_Double();
 		encodeObsTP();
-		encode_Point_TimeInstant_FOIref();
+		//encode_Point_TimeInstant_FOIref();
 	}
 
 	/**
@@ -160,7 +161,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 		AbstractObservation obs2 = parser.parseObservation(xmlString);
 
 		// test id
-		assertEquals(obs.getIdentifier(), obs2.getIdentifier());
+		assertEquals(obs.getIdentifier().getIdentifier(), obs2.getIdentifier().getIdentifier());
 
 		// test boundedBy (optional parameter)
 
@@ -226,14 +227,21 @@ public class XBObservationEncoderTestCase extends TestCase {
 	}
 	
 	public void encodeObsTP() throws Exception{
-		TimeObject phenTime = new TimeObject("2005-01-11T16:22:25.000+01:00","2005-01-12T16:22:25.000+01:00");
-		Point p = new GmlGeometryFactory().createPoint(52.72, 8.72, 4326);
-		SpatialSamplingFeature sf = new SpatialSamplingFeature("sf1","Muenster",p);
-		TimeObject ti = new TimeObject(new DateTime(new Date().getTime()));
 		try {
-			Measurement meas = new Measurement("o_1",null,phenTime,ti,phenTime,new URI("sensor1"),new URI("phen1"),sf,null,new MeasureResult(2.45,"cm"));
-			XBObservationEncoder ecnoder = new XBObservationEncoder();
-			System.out.println(ecnoder.encodeObservation(meas));
+		//create temporal elements
+		TimeObject phenomenonTime = new TimeObject("2005-01-11T16:22:25.000+01:00","2005-01-12T16:22:25.000+01:00");
+		TimeObject resultTime = new TimeObject("2005-01-12T16:22:25.000+01:00");
+		TimeObject validTime = new TimeObject("2005-01-13T16:22:25.000+01:00","2005-01-14T16:22:25.000+01:00");
+		
+		//create spatial feature
+		Point p = new GmlGeometryFactory().createPoint(52.72, 8.72, 4326);
+		SpatialSamplingFeature sf = new SpatialSamplingFeature("Muenster",p);
+		
+		//optional identifier
+		Identifier id = new Identifier(new URI("http://www.uncertweb.org"),"o_1");
+		Measurement meas = new Measurement(id,null,phenomenonTime,resultTime,validTime,new URI("sensor1"),new URI("phen1"),sf,null,new MeasureResult(2.45,"cm"));
+		XBObservationEncoder encoder = new XBObservationEncoder();
+		System.out.println(encoder.encodeObservation(meas));
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
