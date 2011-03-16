@@ -149,7 +149,7 @@ public class ShapeFileConverter {
 	    	  		CovarianceMatrix cm = createCovarianceMatrix(meanDoubles.length,covariances);
 	    	  		MultivariateGaussianDistribution mgd = new MultivariateGaussianDistribution(meanDoubles,cm);
 	    	  		UncertaintyResult ur = new UncertaintyResult(mgd);
-	    	  		UncertaintyObservation obs = new UncertaintyObservation("o_"+counter,to,to,new URI(obsProp),new URI(obsProp),ssf,ur);
+	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(obsProp),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
 	    	  	
@@ -254,7 +254,7 @@ public class ShapeFileConverter {
 					double numericResult = ((Double) value).doubleValue();
 					MeasureResult meas = new MeasureResult(numericResult, props
 							.getUom());
-					AbstractObservation obs = new Measurement("o" + counter,
+					AbstractObservation obs = new Measurement(
 							to, to, new URI(procID), new URI(props
 									.getObsPropsPrefix()
 									+ attName), sf, meas);
@@ -295,7 +295,7 @@ public class ShapeFileConverter {
 				multiGeomCounter++;
 			}
 			MultiLineString gmlLineString =  new GeometryFactory().createMultiLineString(lsArray);
-			sf = new SpatialSamplingFeature("sf" + id, null, gmlLineString);
+			sf = new SpatialSamplingFeature(null, gmlLineString);
 		}
 		// TODO add further geometry types
 		return sf;
