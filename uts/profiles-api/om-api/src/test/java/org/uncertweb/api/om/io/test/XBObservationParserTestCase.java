@@ -78,7 +78,7 @@ public class XBObservationParserTestCase extends TestCase {
 		AbstractObservation obs = parser.parseObservation(xmlString);
 
 		// test id;
-		assertEquals("obsTest1", obs.getIdentifier());
+		assertEquals("obsTest1", obs.getIdentifier().getIdentifier());
 
 		// test boundedBy (optional parameter)
 
@@ -141,7 +141,7 @@ public class XBObservationParserTestCase extends TestCase {
 		AbstractObservation obs = parser.parseObservation(xmlString);
 
 		// test id;
-		assertEquals("obsTest1", obs.getIdentifier());
+		assertEquals("obsTest1", obs.getIdentifier().getIdentifier());
 
 		// test boundedBy (optional parameter)
 
@@ -165,7 +165,7 @@ public class XBObservationParserTestCase extends TestCase {
 
 		// test featureOfInterest
 		assertEquals("SamplingPoint1", obs.getFeatureOfInterest()
-				.getIdentifier());
+				.getIdentifier().getIdentifier());
 
 		Point shape = (Point) obs.getFeatureOfInterest().getShape();
 		assertEquals("Point", shape.getGeometryType());
@@ -198,7 +198,7 @@ public class XBObservationParserTestCase extends TestCase {
 		AbstractObservation obs = parser.parseObservation(xmlString);
 
 		// test id;
-		assertEquals("http://localhost:8080/sta-wps/SamplingPoint.xml", obs.getFeatureOfInterest().getHref().toASCIIString());
+		assertEquals("http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Sampling/Examples/SamplingPoint.xml", obs.getFeatureOfInterest().getHref().toASCIIString());
 
 	}
 
