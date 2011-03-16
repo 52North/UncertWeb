@@ -2,6 +2,7 @@ package org.uncertweb.api.om.observation;
 
 import java.net.URI;
 
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.result.IResult;
@@ -17,14 +18,14 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public abstract class AbstractObservation {
 
-	private String identifier;
-	private Envelope boundedBy;
-	private TimeObject phenomenonTime;
-	private TimeObject resultTime;
-	private TimeObject validTime;
-	private URI procedure;
-	private URI observedProperty;
-	private SpatialSamplingFeature featureOfInterest;
+	protected Identifier identifier;
+	protected Envelope boundedBy;
+	protected TimeObject phenomenonTime;
+	protected TimeObject resultTime;
+	protected TimeObject validTime;
+	protected URI procedure;
+	protected URI observedProperty;
+	protected SpatialSamplingFeature featureOfInterest;
 
 	/**
 	 * Data quality uncertainty result is an optional property of an
@@ -34,11 +35,11 @@ public abstract class AbstractObservation {
 	 */
 	private DQ_UncertaintyResult[] resultQuality;
 
+	
+	
 	/**
 	 * Constructor with mandatory attributes
 	 * 
-	 * @param identifier
-	 *            observation identifier
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -52,11 +53,10 @@ public abstract class AbstractObservation {
 	 * @param result
 	 *            result
 	 */
-	public AbstractObservation(String identifier, TimeObject phenomenonTime, TimeObject resultTime,
+	public AbstractObservation(TimeObject phenomenonTime, TimeObject resultTime,
 			URI procedure, URI observedProperty,
 			SpatialSamplingFeature featureOfInterest) {
 
-		this.identifier = identifier;
 		this.phenomenonTime = phenomenonTime;
 		this.resultTime = resultTime;
 		this.procedure = procedure;
@@ -67,8 +67,8 @@ public abstract class AbstractObservation {
 	/**
 	 * Constructor
 	 * 
-	 * @param gmlId
-	 *            gml id attribute
+	 * @param identifier
+	 *            identifier of observation
 	 * @param boundedBy
 	 *            (optional) spatial and temporal extent
 	 * @param phenomenonTime
@@ -88,13 +88,13 @@ public abstract class AbstractObservation {
 	 * @param resultQuality
 	 * 			  (optional) result qualities as UncertaintyResults
 	 */
-	public AbstractObservation(String identifier, Envelope boundedBy, TimeObject phenomenonTime,
+	public AbstractObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
 			TimeObject resultTime, TimeObject validTime, URI procedure,
 			URI observedProperty, SpatialSamplingFeature featureOfInterest,
 			DQ_UncertaintyResult[] resultQuality) {
-		this(identifier, phenomenonTime, resultTime, procedure, observedProperty,
+		this(phenomenonTime, resultTime, procedure, observedProperty,
 				featureOfInterest);
-
+		this.identifier = identifier;
 		this.boundedBy = boundedBy;
 		this.validTime = validTime;
 		this.resultQuality = resultQuality;
@@ -114,21 +114,21 @@ public abstract class AbstractObservation {
 	 * @throws Exception
 	 * 			if the type of the result does not match the type defined by the Observation type
 	 */
-	public abstract void setResult(IResult result) throws Exception;
+	public abstract void setResult(IResult result) throws IllegalArgumentException;
 
 	///////////////////////////////////////////////////
 	// getters and setters
 	/**
 	 * @return the gmlId
 	 */
-	public String getIdentifier() {
+	public Identifier getIdentifier() {
 		return identifier;
 	}
 
 	/**
 	 * @param gmlId the gmlId to set
 	 */
-	public void setIdentifier(String identifier) {
+	public void setIdentifier(Identifier identifier) {
 		this.identifier = identifier;
 	}
 
