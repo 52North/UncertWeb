@@ -2,6 +2,7 @@ package org.uncertweb.api.om.observation;
 
 import java.net.URI;
 
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.result.IResult;
@@ -25,8 +26,6 @@ public class UncertaintyObservation extends AbstractObservation{
 	/**
 	 * Constructor with mandatory attributes
 	 * 
-	 * @param gmlId
-	 *            gml id attribute
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -40,22 +39,17 @@ public class UncertaintyObservation extends AbstractObservation{
 	 * @param result
 	 *            result
 	 */
-	public UncertaintyObservation(String gmlId, TimeObject phenomenonTime, TimeObject resultTime,
+	public UncertaintyObservation(TimeObject phenomenonTime, TimeObject resultTime,
 			URI procedure, URI observedProperty,
 			SpatialSamplingFeature featureOfInterest, UncertaintyResult result){
-		super(gmlId,phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		try {
-			setResult(result);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
+		setResult(result);
 	}
 
 	/**
 	 * Constructor
 	 * 
-	 * @param gmlId
+	 * @param identifier
 	 *            gml id attribute
 	 * @param boundedBy
 	 *            (optional) spatial and temporal extent
@@ -77,21 +71,16 @@ public class UncertaintyObservation extends AbstractObservation{
 	 * 			  (optional) result qualities as UncertaintyResults
 	 * @throws Exception 
 	 */
-	public UncertaintyObservation(String gmlId, Envelope boundedBy, TimeObject phenomenonTime,
+	public UncertaintyObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
 			TimeObject resultTime, TimeObject validTime, URI procedure,
 			URI observedProperty, SpatialSamplingFeature featureOfInterest,
 			DQ_UncertaintyResult[] resultQuality, UncertaintyResult result){
-		super(gmlId,phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-
+		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
+		setIdentifier(identifier);
 		setBoundedBy(boundedBy);
 		setValidTime(validTime);
 		setResultQuality(resultQuality);
-		try {
-			setResult(result);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		setResult(result);
 	}
 
 	@Override
@@ -100,11 +89,11 @@ public class UncertaintyObservation extends AbstractObservation{
 	}
 
 	@Override
-	public void setResult(IResult result) throws Exception {
+	public void setResult(IResult result) throws IllegalArgumentException {
 		if(result instanceof UncertaintyResult){
 			this.result = (UncertaintyResult)result;
 		}
-		else throw new Exception("Result type of UncertaintyObservation has to be Uncertainty!");
+		else throw new IllegalArgumentException("Result type of UncertaintyObservation has to be Uncertainty!");
 		
 	}
 }

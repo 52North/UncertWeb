@@ -2,6 +2,7 @@ package org.uncertweb.api.om.observation;
 
 import java.net.URI;
 
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.result.IResult;
@@ -24,8 +25,6 @@ public class TextObservation extends AbstractObservation {
 	/**
 	 * Constructor with mandatory attributes
 	 * 
-	 * @param gmlId
-	 *            gml id attribute
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -39,22 +38,17 @@ public class TextObservation extends AbstractObservation {
 	 * @param result
 	 *            result
 	 */
-	public TextObservation(String gmlId, TimeObject phenomenonTime, TimeObject resultTime,
+	public TextObservation(TimeObject phenomenonTime, TimeObject resultTime,
 			URI procedure, URI observedProperty,
 			SpatialSamplingFeature featureOfInterest, TextResult result){
-		super(gmlId,phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		try {
-			setResult(result);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
+		setResult(result);
 	}
 
 	/**
 	 * Constructor
 	 * 
-	 * @param gmlId
+	 * @param identifier
 	 *            gml id attribute
 	 * @param boundedBy
 	 *            (optional) spatial and temporal extent
@@ -76,12 +70,12 @@ public class TextObservation extends AbstractObservation {
 	 * 			  (optional) result qualities as UncertaintyResults
 	 * @throws Exception 
 	 */
-	public TextObservation(String gmlId, Envelope boundedBy, TimeObject phenomenonTime,
+	public TextObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
 			TimeObject resultTime, TimeObject validTime, URI procedure,
 			URI observedProperty, SpatialSamplingFeature featureOfInterest,
 			DQ_UncertaintyResult[] resultQuality, TextResult result){
-		super(gmlId,phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-
+		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
+		setIdentifier(identifier);
 		setBoundedBy(boundedBy);
 		setValidTime(validTime);
 		setResultQuality(resultQuality);
@@ -99,11 +93,11 @@ public class TextObservation extends AbstractObservation {
 	}
 
 	@Override
-	public void setResult(IResult result) throws Exception {
+	public void setResult(IResult result) throws IllegalArgumentException {
 		if(result instanceof TextResult){
 			this.result = (TextResult)result;
 		}
-		else throw new Exception("Result type of TextObservation has to be Text!");
+		else throw new IllegalArgumentException("Result type of TextObservation has to be Text!");
 		
 	}
 }

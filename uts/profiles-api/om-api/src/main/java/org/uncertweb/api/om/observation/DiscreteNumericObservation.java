@@ -2,6 +2,7 @@ package org.uncertweb.api.om.observation;
 
 import java.net.URI;
 
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.result.IResult;
@@ -24,8 +25,6 @@ public class DiscreteNumericObservation extends AbstractObservation{
 	/**
 	 * Constructor with mandatory attributes
 	 * 
-	 * @param gmlId
-	 *            gml id attribute
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -39,23 +38,18 @@ public class DiscreteNumericObservation extends AbstractObservation{
 	 * @param result
 	 *            result
 	 */
-	public DiscreteNumericObservation(String gmlId, TimeObject phenomenonTime, TimeObject resultTime,
+	public DiscreteNumericObservation(TimeObject phenomenonTime, TimeObject resultTime,
 			URI procedure, URI observedProperty,
 			SpatialSamplingFeature featureOfInterest, IntegerResult result){
-		super(gmlId,phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		try {
-			setResult(result);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
+		setResult(result);
 	}
 
 	/**
 	 * Constructor
 	 * 
-	 * @param gmlId
-	 *            gml id attribute
+	 * @param identifier
+	 *            identifier of the observation
 	 * @param boundedBy
 	 *            (optional) spatial and temporal extent
 	 * @param phenomenonTime
@@ -76,21 +70,17 @@ public class DiscreteNumericObservation extends AbstractObservation{
 	 * 			  (optional) result qualities as UncertaintyResults
 	 * @throws Exception 
 	 */
-	public DiscreteNumericObservation(String gmlId, Envelope boundedBy, TimeObject phenomenonTime,
+	public DiscreteNumericObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
 			TimeObject resultTime, TimeObject validTime, URI procedure,
 			URI observedProperty, SpatialSamplingFeature featureOfInterest,
 			DQ_UncertaintyResult[] resultQuality, IntegerResult result){
-		super(gmlId,phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-
+		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
+		setIdentifier(identifier);
 		setBoundedBy(boundedBy);
 		setValidTime(validTime);
 		setResultQuality(resultQuality);
-		try {
-			setResult(result);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		setResult(result);
+		
 	}
 
 	@Override
@@ -99,11 +89,11 @@ public class DiscreteNumericObservation extends AbstractObservation{
 	}
 
 	@Override
-	public void setResult(IResult result) throws Exception {
+	public void setResult(IResult result) throws IllegalArgumentException {
 		if(result instanceof IntegerResult){
 			this.result = (IntegerResult)result;
 		}
-		else throw new Exception("Result type of DiscreteNumericObservation has to be Integer!");
+		else throw new IllegalArgumentException("Result type of DiscreteNumericObservation has to be Integer!");
 		
 	}
 
