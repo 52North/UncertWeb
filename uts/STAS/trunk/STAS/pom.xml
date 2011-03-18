@@ -42,22 +42,29 @@
 			<groupId>org.uncertweb</groupId>
 			<artifactId>intamap-om</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
-
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>1.6</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.0</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 
 		<!-- SOS XmlBeans -->
@@ -66,16 +73,22 @@
 			<groupId>org.n52.swe.sos</groupId>
 			<artifactId>52n-sos-xml-gml</artifactId>
 			<version>3.1.1</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.n52.swe.sos</groupId>
 			<artifactId>52n-sos-xml-sos</artifactId>
 			<version>1.0.0</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.n52.swe.sos</groupId>
 			<artifactId>52n-sos-xml-om</artifactId>
 			<version>1.0.0</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 
 		<!-- Logging -->
@@ -84,18 +97,22 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.1</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.6.1</version>
 			<scope>runtime</scope>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
 			<scope>runtime</scope>
+			<type>jar</type>
 		</dependency>
 
 		<!-- WPS dependencies -->
@@ -104,11 +121,15 @@
 			<groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-server</artifactId>
 			<version>${wps.version}</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-io</artifactId>
 			<version>${wps.version}</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 
 		<dependency>
@@ -161,6 +182,7 @@
 			<artifactId>junit</artifactId>
 			<version>4.8.1</version>
 			<scope>test</scope>
+			<type>jar</type>
 		</dependency>
 
 	</dependencies>
