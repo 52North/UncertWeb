@@ -32,23 +32,32 @@ import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.wps.api.ProcessInputHandler;
 
 /**
- * Class that handles a {@code String} input and creates a {@link Period} object.
+ * Class that handles a {@code String} input and creates a {@link Period}
+ * object.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class PeriodInputHandler extends ProcessInputHandler<Period> {
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected Period processInputs(Map<String, List<IData>> inputs) {
 		String id = checkForOnlyOneInput().getId();
-		String parameter = (String) inputs.get(id).get(0).getPayload();
-		if (parameter == null || parameter.trim().isEmpty()) {
-			throw new AlgorithmParameterException(MessageFormat.format("Parameter '{1}' not found.", id));
+		List<IData> input = inputs.get(id);
+		if (input != null && !input.isEmpty()) {
+			if (input.size() > 1) {
+				log.warn("Input '{}' has more than one IData. This class is not capable of multiple inputs.", id);
+			}
+			String parameter = (String) input.get(0).getPayload();
+			if (parameter == null || parameter.trim().isEmpty()) {
+				throw new AlgorithmParameterException(
+						MessageFormat.format("Parameter '{1}' not found.", id));
+			}
+			return TimeUtils.parsePeriod(parameter).toPeriod();
 		}
-		return TimeUtils.parsePeriod(parameter).toPeriod();
+		return null;
 	}
 
 }

@@ -39,24 +39,23 @@ import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class ObservedPropertyGrouping extends GroupingMethod<String> {
-	
+
 	/**
 	 * Creates a new {@code ObservedPropertyGrouping}.
 	 * 
-	 * @param obs
-	 *            the observations
+	 * @param obs the observations
 	 */
 	public ObservedPropertyGrouping(List<Observation> obs) {
 		this.setInputs(obs, null);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Iterator<ObservationMapping<String>> iterator() {
-		HashMap<String,LinkedList<Observation>> map = new HashMap<String,LinkedList<Observation>> ();
-		for(Observation o : getObservations()) {
+		HashMap<String, LinkedList<Observation>> map = new HashMap<String, LinkedList<Observation>>();
+		for (Observation o : getObservations()) {
 			String prop = o.getObservedProperty();
 			LinkedList<Observation> obs = map.get(prop);
 			if (obs == null) {
@@ -70,7 +69,7 @@ public class ObservedPropertyGrouping extends GroupingMethod<String> {
 		}
 		return mappings.iterator();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

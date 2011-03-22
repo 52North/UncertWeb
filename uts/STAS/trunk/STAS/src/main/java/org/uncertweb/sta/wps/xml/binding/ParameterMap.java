@@ -29,5 +29,6 @@ import java.util.HashMap;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class ParameterMap extends HashMap<String, String> {
+
 	private static final long serialVersionUID = -8736851400995314626L;
 }

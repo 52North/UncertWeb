@@ -48,10 +48,12 @@ public class IgnoreTimeGrouping extends TemporalGrouping {
 	@Override
 	public Iterator<ObservationMapping<ObservationTime>> iterator() {
 		DateTime start = null, end = null;
-		log.info("Calculating TimeRange for {} Observations.", getObservations().size());
+		log.info("Calculating TimeRange for {} Observations.", getObservations()
+				.size());
 		for (Observation o : getObservations()) {
 			if (o.getObservationTime() instanceof ObservationTimeInterval) {
-				ObservationTimeInterval time = (ObservationTimeInterval) o.getObservationTime();
+				ObservationTimeInterval time = (ObservationTimeInterval) o
+						.getObservationTime();
 				if (start == null || time.getStart().isBefore(start)) {
 					start = time.getStart();
 				}
@@ -59,7 +61,8 @@ public class IgnoreTimeGrouping extends TemporalGrouping {
 					end = time.getEnd();
 				}
 			} else {
-				ObservationTimeInstant time = (ObservationTimeInstant) o.getObservationTime();
+				ObservationTimeInstant time = (ObservationTimeInstant) o
+						.getObservationTime();
 				if (start == null || time.isBefore(start)) {
 					start = time.getDateTime();
 				}
@@ -68,9 +71,12 @@ public class IgnoreTimeGrouping extends TemporalGrouping {
 				}
 			}
 		}
-		ObservationTime time = (start.equals(end)) ? new ObservationTimeInstant(start)
-		 										   : new ObservationTimeInterval(start, end);
-		return Utils.mutableSingletonList(new ObservationMapping<ObservationTime>(time, getObservations())).iterator();
+		ObservationTime time = (start.equals(end))
+				? new ObservationTimeInstant(start)
+				: new ObservationTimeInterval(start, end);
+		return Utils
+				.mutableSingletonList(new ObservationMapping<ObservationTime>(
+						time, getObservations())).iterator();
 	}
 
 	/**

@@ -77,10 +77,8 @@ public class ParameterGenerator extends AbstractXMLGenerator implements
 	 * Writes the given {@code IData} (which should be a {@link ParamterBinding}
 	 * ) to a {@code Writer}.
 	 * 
-	 * @param data
-	 *            the data
-	 * @param writer
-	 *            the writer
+	 * @param data the data
+	 * @param writer the writer
 	 */
 	public void write(IData data, Writer writer) {
 		ParametersDocument xml = generateXML(data);
@@ -107,8 +105,7 @@ public class ParameterGenerator extends AbstractXMLGenerator implements
 	 * Generates an {@code ParameterDocument} out of the given {@code IData}
 	 * (which should be a {@link ParameterBinding}).
 	 * 
-	 * @param data
-	 *            the {@code IData}
+	 * @param data the {@code IData}
 	 * @return the generated XmlBean
 	 */
 	protected ParametersDocument generateXML(IData data) {

@@ -35,9 +35,9 @@ import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 
 /**
- * Groups a collection of {@code Observation}s by their {@code ISamplingFeature}.
- * Only {@code Observation}s with the same {@code ISamplingFeature} are grouped
- * together.
+ * Groups a collection of {@code Observation}s by their {@code ISamplingFeature}
+ * . Only {@code Observation}s with the same {@code ISamplingFeature} are
+ * grouped together.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
@@ -49,17 +49,17 @@ public class NoSpatialGrouping extends SpatialGrouping {
 	 */
 	private class MappingIterator implements
 			Iterator<ObservationMapping<ISamplingFeature>> {
-		
+
 		/**
 		 * A {@code Feature}/{@code Observation} pair.
 		 */
 		private class Pair {
-			
+
 			/**
 			 * The feature.
 			 */
 			ISamplingFeature f;
-			
+
 			/**
 			 * The observations
 			 */
@@ -67,6 +67,7 @@ public class NoSpatialGrouping extends SpatialGrouping {
 
 			/**
 			 * Creates a new {@code Pair}
+			 * 
 			 * @param f
 			 * @param o
 			 */
@@ -144,16 +145,15 @@ public class NoSpatialGrouping extends SpatialGrouping {
 	/**
 	 * Creates a new {@link SpatialGrouping}.
 	 */
-	public NoSpatialGrouping(){}
+	public NoSpatialGrouping() {}
 
 	/**
 	 * Creates a new {@link SpatialGrouping}.
 	 * 
-	 * @param obs
-	 *            the {@link Observation}s to group.
+	 * @param obs the {@link Observation}s to group.
 	 */
 	public NoSpatialGrouping(List<Observation> obs) {
 		setInputs(obs, null);
 	}
-	
+
 }

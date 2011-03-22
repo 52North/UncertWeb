@@ -29,5 +29,4 @@ import org.uncertweb.intamap.om.ObservationTime;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public abstract class TemporalGrouping extends GroupingMethod<ObservationTime> {
-}
+public abstract class TemporalGrouping extends GroupingMethod<ObservationTime> {}

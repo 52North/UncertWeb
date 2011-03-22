@@ -21,24 +21,23 @@
  */
 package org.uncertweb.sta.wps.method;
 
-import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.sta.utils.Constants;
+import org.uncertweb.sta.wps.STASException;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
+import org.uncertweb.sta.wps.method.grouping.GroupingMethod;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
 
 /**
  * Factory class that handles the method configuration.
- * 
- * @see Constants.Files#METHODS_CONFIG
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
@@ -47,7 +46,8 @@ public class MethodFactory {
 	/**
 	 * The Logger.
 	 */
-	private static final Logger log = LoggerFactory.getLogger(MethodFactory.class);
+	protected static final Logger log = LoggerFactory
+			.getLogger(MethodFactory.class);
 
 	/**
 	 * The singleton instance of this {@code class}.
@@ -55,127 +55,155 @@ public class MethodFactory {
 	private static MethodFactory singleton;
 
 	/**
+	 * @return the singleton of this {@code class}
+	 */
+	public static MethodFactory getInstance() {
+		if (singleton == null) {
+			singleton = new MethodFactory();
+		}
+		return singleton;
+	}
+
+	/**
+	 * The default {@link AggregationMethod} used for spatial aggregation.
+	 */
+	private Class<? extends AggregationMethod> defaultSAM;
+
+	/**
+	 * The default {@link AggregationMethod} used for temporal aggregation.
+	 */
+	private Class<? extends AggregationMethod> defaultTAM;
+
+	/**
 	 * All registered {@link TemporalGrouping} methods.
 	 */
-	private HashSet<String> temporalMethods;
+	private Map<String, Class<? extends TemporalGrouping>> temporalMethods = new HashMap<String, Class<? extends TemporalGrouping>>();
+
 	/**
 	 * All registered {@link SpatialGrouping} methods.
 	 */
-	private HashSet<String> spatialMethods;
+	private Map<String, Class<? extends SpatialGrouping>> spatialMethods = new HashMap<String, Class<? extends SpatialGrouping>>();
+
 	/**
 	 * All registered {@link AggregationMethod}s.
 	 */
-	private HashSet<String> aggregationMethods;
+	private Map<String, Class<? extends AggregationMethod>> aggregationMethods = new HashMap<String, Class<? extends AggregationMethod>>();
 
 	/**
 	 * Creates the singleton factory and loads the method configuration.
 	 */
 	private MethodFactory() {
-		temporalMethods = new HashSet<String>();
-		spatialMethods = new HashSet<String>();
-		aggregationMethods = new HashSet<String>();
-		for (Class<?> clazz : parseConfigFile()) {
-			if (fitsInterface(TemporalGrouping.class, clazz)) {
-				temporalMethods.add(clazz.getName());
-				log.info("Method class registered: {}", clazz.getName());
-			}
-			if (fitsInterface(SpatialGrouping.class, clazz)) {
-				spatialMethods.add(clazz.getName());
-				log.info("Method class registered: {}", clazz.getName());
-			}
-			if (fitsInterface(AggregationMethod.class, clazz)) {
-				aggregationMethods.add(clazz.getName());
-				log.info("Method class registered: {}", clazz.getName());
-			}
-		}
+
+		searchPackage("org.uncertweb.sta.wps.method"); // TODO
+
+		this.defaultSAM = getDefaultMethod(Constants.Process.Inputs.SPATIAL_AGGREGATION_METHOD_ID);
+		this.defaultTAM = getDefaultMethod(Constants.Process.Inputs.TEMPORAL_AGGREGATION_METHOD_ID);
 	}
 
-	/**
-	 * @return the singleton of this {@code class}
-	 */
-	public static MethodFactory getInstance() {
-		if (singleton == null)
-			singleton = new MethodFactory();
-		return singleton;
+	private void searchPackage(String p) {
+		Reflections r = new Reflections(p);
+		
+		for (Class<? extends TemporalGrouping> c : r
+				.getSubTypesOf(TemporalGrouping.class)) {
+			this.temporalMethods.put(c.getName(), c);
+			log.info("TemporalGrouping registered: {}", c.getName());
+		}
+
+		for (Class<? extends SpatialGrouping> c : r
+				.getSubTypesOf(SpatialGrouping.class)) {
+			this.spatialMethods.put(c.getName(), c);
+			log.info("SpatialGrouping registered: {}", c.getName());
+		}
+
+		for (Class<? extends AggregationMethod> c : r
+				.getSubTypesOf(AggregationMethod.class)) {
+			this.aggregationMethods.put(c.getName(), c);
+			log.info("AggregationMethod registered: {}", c.getName());
+		}
 	}
 
 	/**
 	 * @return all registered {@link TemporalGrouping} methods
 	 */
-	public Set<String> getTemporalGroupingMethods() {
-		return temporalMethods;
+	public Set<Class<? extends TemporalGrouping>> getTemporalGroupingMethods() {
+		return new HashSet<Class<? extends TemporalGrouping>>(
+				this.temporalMethods.values());
 	}
 
 	/**
 	 * @return all registered {@link SpatialGrouping} methods
 	 */
-	public Set<String> getSpatialGroupingMethods() {
-		return spatialMethods;
+	public Set<Class<? extends SpatialGrouping>> getSpatialGroupingMethods() {
+		return new HashSet<Class<? extends SpatialGrouping>>(
+				this.spatialMethods.values());
 	}
 
 	/**
 	 * @return all registered {@link AggregationMethod}s
 	 */
 	public Set<String> getAggregationMethods() {
-		return aggregationMethods;
+		return this.aggregationMethods.keySet();
 	}
 
 	/**
-	 * Parses the configuration file and loads all line that are not empty or
-	 * begin with '#' as classes.
-	 * 
-	 * @return all found classes
-	 * @see Constants.Files#METHODS_CONFIG
+	 * @return the default spatial {@link AggregationMethod}
 	 */
-	private LinkedList<Class<?>> parseConfigFile() {
-		try {
-			LinkedList<Class<?>> result = new LinkedList<Class<?>>();
-			List<String> lines = IOUtils.readLines(getClass()
-					.getResourceAsStream(Constants.Files.METHODS_CONFIG));
-			for (String line : lines) {
-				line = line.trim();
-				if (!line.isEmpty() && !line.startsWith("#")) {
-					result.add(Class.forName(line));
-				}
-			}
-			return result;
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"Can not load methods from configuration file.", e);
-		}
+	public Class<? extends AggregationMethod> getDefaultSpatialAggregationMethod() {
+		return this.defaultSAM;
 	}
 
 	/**
-	 * Tests if the given {@code class} fits the given {@code interface}.
-	 * 
-	 * @param interfase
-	 *            the {@code interface} which shall be implemented
-	 * @param test
-	 *            the {@code class} which will be tested
-	 * @return <code>true</code> if it fits, <code>false</code> otherwise
+	 * @return the default temporal {@link AggregationMethod}
 	 */
-	private boolean fitsInterface(Class<?> interfase, Class<?> test) {
-		int modifiers = test.getModifiers();
-		return !Modifier.isInterface(modifiers)
-				&& !Modifier.isAbstract(modifiers)
-				&& interfase.isAssignableFrom(test);
+	public Class<? extends AggregationMethod> getDefaultTemporalAggregationMethod() {
+		return this.defaultTAM;
 	}
 
 	/**
 	 * Creates the class for the given {@link AggregationMethod} class name.
 	 * 
-	 * @param name
-	 *            the class name
+	 * @param name the class name
 	 * @return the class
+	 * @throws STASException TODO
 	 */
-	@SuppressWarnings("unchecked")
-	public Class<? extends AggregationMethod> getMethodForName(String name) {
+	public Class<? extends AggregationMethod> getMethodForName(String name)
+			throws STASException {
+		Class<? extends AggregationMethod> c = this.aggregationMethods
+				.get(name);
+		if (c == null) {
+			throw new STASException("The method " + name + " is not registered");
+		}
+		return c;
+	}
+	
+	/**
+	 * Fetches the description of a {@link GroupingMethod} from the properties.
+	 * 
+	 * @param gm the {@link Class} of the {@code GroupingMethod}
+	 * @return the description
+	 */
+	public String getMethodDescription(Class<? extends GroupingMethod<?>> gm) {
+		return Constants.get("process." + gm.getName() + ".desc");
+	}
+
+	/**
+	 * Loads a {@code Class<? extends AggregationMethod>} configuration
+	 * property.
+	 * 
+	 * @param key the property key
+	 * @return the property
+	 */
+	protected Class<? extends AggregationMethod> getDefaultMethod(String inputId) {
+		String key = "stas.default." + inputId;
+		String s = Constants.get(key);
+		if (s == null) {
+			throw new RuntimeException("Default value for {} not set." + key);
+		}
 		try {
-			return (Class<? extends AggregationMethod>) Class.forName(name);
-		} catch (ClassCastException e) {
-			throw new RuntimeException(e);
-		} catch (ClassNotFoundException e) {
+			return getMethodForName(s);
+		} catch (STASException e) {
 			throw new RuntimeException(e);
 		}
 	}
+
 }

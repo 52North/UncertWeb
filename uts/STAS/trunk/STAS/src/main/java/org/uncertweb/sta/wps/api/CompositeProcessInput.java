@@ -47,10 +47,8 @@ public class CompositeProcessInput<T> extends AbstractProcessInput<T> {
 	/**
 	 * Constructs a new {@code CompositeProcessInput}.
 	 * 
-	 * @param id
-	 *            the "virtual" id of this input
-	 * @param handler
-	 *            the handler which can handle {@code Input}
+	 * @param id the "virtual" id of this input
+	 * @param handler the handler which can handle {@code Input}
 	 */
 	public CompositeProcessInput(String id, ProcessInputHandler<T> handler) {
 		super(id);

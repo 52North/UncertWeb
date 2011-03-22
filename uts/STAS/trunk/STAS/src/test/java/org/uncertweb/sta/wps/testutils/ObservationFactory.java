@@ -55,6 +55,7 @@ import org.uncertweb.sta.wps.xml.io.enc.ObservationGenerator;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class ObservationFactory {
+
 	private static final String SAMPLED_FEATURE = Constants.NULL_URN;
 	private static final String OBSERVATION_ID_PREFIX = "o_";
 	private static final String FEATURE_OF_INTEREST_PREFIX = "foi_";
@@ -73,34 +74,43 @@ public class ObservationFactory {
 
 	private int observationCount = 0;
 
-	public Observation createObservation(String process, String obsProp, DateTime time, double result, double lat, double lon) {
+	public Observation createObservation(String process, String obsProp,
+			DateTime time, double result, double lat, double lon) {
 		String id = OBSERVATION_ID_PREFIX + String.valueOf(observationCount);
-		String foiId = FEATURE_OF_INTEREST_PREFIX + String.valueOf(observationCount);
-		ISamplingFeature f = new SamplingPoint(lat, lon, SAMPLED_FEATURE, foiId, foiId);
+		String foiId = FEATURE_OF_INTEREST_PREFIX
+				+ String.valueOf(observationCount);
+		ISamplingFeature f = new SamplingPoint(lat, lon, SAMPLED_FEATURE,
+				foiId, foiId);
 		f.getLocation().setSRID(SRID);
 		observationCount++;
-		return new Observation(id, result, f, null, obsProp, process, new ObservationTimeInstant(time), UOM);
+		return new Observation(id, result, f, null, obsProp, process,
+				new ObservationTimeInstant(time), UOM);
 	}
-	
-	public Observation createObservation(String process, DateTime time, double result, double lat, double lon) {
+
+	public Observation createObservation(String process, DateTime time,
+			double result, double lat, double lon) {
 		return createObservation(process, OBSERVED_PROPERTY, time, result, lat, lon);
 	}
-	
-	public Observation createObservation(String process, DateTime time, double lat, double lon) {
+
+	public Observation createObservation(String process, DateTime time,
+			double lat, double lon) {
 		return createObservation(process, time, Math.random(), lat, lon);
 	}
-	
+
 	public Observation createObservation(String process, DateTime time) {
 		return createObservation(process, time, 5d + Math.random(), 52d + Math.random());
 	}
-	
+
 	public ObservationCollectionDocument toXml(List<Observation> obs) {
 		ObservationCollectionGenerator g = new ObservationCollectionGenerator();
-		ObservationCollectionBinding b = new ObservationCollectionBinding(new ObservationCollection(obs));
+		ObservationCollectionBinding b = new ObservationCollectionBinding(
+				new ObservationCollection(obs));
 		return g.generateXML(b);
 	}
-	
-	public ObservationCollection buildCollection(String url, int fois, int obsPerFoi, double latMin, double latMax, double lonMin, double lonMax) {
+
+	public ObservationCollection buildCollection(String url, int fois,
+			int obsPerFoi, double latMin, double latMax, double lonMin,
+			double lonMax) {
 		String uniqueString = RandomStringGenerator.getInstance().generate(20);
 		LinkedList<Observation> obs = new LinkedList<Observation>();
 		DateTime begin = new DateTime();
@@ -111,25 +121,33 @@ public class ObservationFactory {
 
 		for (int foi = 0; foi <= fois; foi++) {
 			String foiId = foiPrefix + String.valueOf(foi);
-			ISamplingFeature f = new SamplingPoint(Utils.randomBetween(latMin, latMax), Utils.randomBetween(lonMin, lonMax), Constants.NULL_URN, foiId, foiId);
+			ISamplingFeature f = new SamplingPoint(
+					Utils.randomBetween(latMin, latMax),
+					Utils.randomBetween(lonMin, lonMax), Constants.NULL_URN,
+					foiId, foiId);
 			f.getLocation().setSRID(SRID);
 			for (int o = 0; o < obsPerFoi; o++) {
-				obs.add(new Observation("o_" + obsId++, Utils.randomBetween(0.0, 100.0), f, null, obsProp, process,
+				obs.add(new Observation("o_" + obsId++, Utils
+						.randomBetween(0.0, 100.0), f, null, obsProp, process,
 						new ObservationTimeInstant(begin.plusMinutes(o)), "m"));
 			}
 		}
-		
-//		RegisterSensorDocument regSenDoc = RegisterSensorDocument.Factory.newInstance();
-		//TODO
+
+		// RegisterSensorDocument regSenDoc =
+		// RegisterSensorDocument.Factory.newInstance();
+		// TODO
 		ObservationGenerator obsGen = new ObservationGenerator();
 		Logger log = LoggerFactory.getLogger(this.getClass());
 		for (Observation o : obs) {
-			InsertObservationDocument insObsDoc = InsertObservationDocument.Factory.newInstance();
+			InsertObservationDocument insObsDoc = InsertObservationDocument.Factory
+					.newInstance();
 			InsertObservation insObs = insObsDoc.addNewInsertObservation();
 			insObs.setAssignedSensorId(process);
 			insObs.setObservation(obsGen.generateXML(o).getObservation());
 			try {
-				XmlObject xo = XmlObject.Factory.parse(Utils.sendPostRequest(url, insObsDoc.xmlText(defaultOptions())));
+				XmlObject xo = XmlObject.Factory.parse(Utils
+						.sendPostRequest(url, insObsDoc
+								.xmlText(defaultOptions())));
 				if (!(xo instanceof InsertObservationResponseDocument)) {
 					throw new RuntimeException(xo.xmlText(defaultOptions()));
 				}
@@ -140,20 +158,19 @@ public class ObservationFactory {
 				throw new RuntimeException(e);
 			}
 		}
-		
-		
+
 		return new ObservationCollection(obs);
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		long start = System.currentTimeMillis();
 		ObservationCollectionBinding obs = new ObservationCollectionBinding(
-				ObservationFactory.getInstance().buildCollection(
-						"http://localhost:8080/sos/sos", 10, 2000, 52.0D,
-						53.0D, 5.0D, 6.0D));		
-		
-		
-		System.out.println("Generated and written "+ obs.getPayload().size()+" Observations in "+Utils.timeElapsed(start));
+				ObservationFactory
+						.getInstance()
+						.buildCollection("http://localhost:8080/sos/sos", 10, 2000, 52.0D, 53.0D, 5.0D, 6.0D));
+
+		System.out.println("Generated and written " + obs.getPayload().size()
+				+ " Observations in " + Utils.timeElapsed(start));
 	}
-	
+
 }

@@ -37,14 +37,13 @@ import org.n52.wps.io.datahandler.xml.AbstractXMLGenerator;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 import org.w3c.dom.Node;
 
-
 /**
  * Generator for {@link GetObservationDocument}s.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class GetObservationRequestGenerator extends AbstractXMLGenerator implements
-		IStreamableGenerator {
+public class GetObservationRequestGenerator extends AbstractXMLGenerator
+		implements IStreamableGenerator {
 
 	/**
 	 * {@inheritDoc}
@@ -71,18 +70,17 @@ public class GetObservationRequestGenerator extends AbstractXMLGenerator impleme
 	public Node generateXML(IData data, String arg1) {
 		return ((GetObservationRequestBinding) data).getPayload().getDomNode();
 	}
-	
+
 	/**
 	 * Writes the given {@code IData} (which should be a
 	 * {@link GetObservationRequestBinding}) to a {@code Writer}.
 	 * 
-	 * @param data
-	 *            the data
-	 * @param writer
-	 *            the writer
+	 * @param data the data
+	 * @param writer the writer
 	 */
 	public void write(IData data, Writer writer) {
-		GetObservationDocument xml = ((GetObservationRequestBinding) data).getPayload();
+		GetObservationDocument xml = ((GetObservationRequestBinding) data)
+				.getPayload();
 		try {
 			BufferedWriter bufferedWriter = new BufferedWriter(writer);
 			xml.save(bufferedWriter, new XmlOptions().setSavePrettyPrint());

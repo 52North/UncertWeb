@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.uncertweb.intamap.utils.TimeUtils;
 
 public class TimeUtilsTest {
+
 	private static final String TIME1 = "2008-02-01T09:00:00.00+0000";
 	private static final String TIME2 = "2008-02-02T09:00:00.00+0000";
 	private static final String TIME3 = "2008-02-03T09:00:00.00+0000";
@@ -40,23 +41,24 @@ public class TimeUtilsTest {
 	@Test
 	public void testPeriodParsing() {
 		Period p = TimeUtils.parsePeriod(PERIOD_LONG).toPeriod();
-		assertEquals(  1, p.getYears());
-		assertEquals(  3, p.getMonths());
-		assertEquals(  5, p.getWeeks());
-		assertEquals(  2, p.getDays());
-		assertEquals( 10, p.getHours());
-		assertEquals( 18, p.getMinutes());
-		assertEquals( 41, p.getSeconds());
+		assertEquals(1, p.getYears());
+		assertEquals(3, p.getMonths());
+		assertEquals(5, p.getWeeks());
+		assertEquals(2, p.getDays());
+		assertEquals(10, p.getHours());
+		assertEquals(18, p.getMinutes());
+		assertEquals(41, p.getSeconds());
 		assertEquals(630, p.getMillis());
 	}
-	
+
 	@Test
 	public void testPeriodFormatting() {
-		assertEquals(PERIOD_LONG, TimeUtils.format(TimeUtils.parsePeriod(PERIOD_LONG)));
+		assertEquals(PERIOD_LONG, TimeUtils.format(TimeUtils
+				.parsePeriod(PERIOD_LONG)));
 	}
-	
+
 	@Test
-	public void testWithinRange () {
+	public void testWithinRange() {
 		DateTime d1 = TimeUtils.parseDateTime(TIME1);
 		DateTime d2 = TimeUtils.parseDateTime(TIME2);
 		DateTime d3 = TimeUtils.parseDateTime(TIME3);

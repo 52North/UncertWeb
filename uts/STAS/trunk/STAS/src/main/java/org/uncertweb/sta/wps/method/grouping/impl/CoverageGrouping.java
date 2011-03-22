@@ -26,18 +26,27 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import net.opengis.wfs.GetFeatureDocument;
+
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
+import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AlgorithmParameterException;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.type.FeatureType;
 import org.uncertweb.intamap.om.ISamplingFeature;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.SamplingSurface;
 import org.uncertweb.sta.utils.Constants;
+import org.uncertweb.sta.wps.FeatureCollectionInputHandler;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
+import org.uncertweb.sta.wps.api.CompositeProcessInput;
+import org.uncertweb.sta.wps.api.SingleProcessInput;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
+import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -50,12 +59,52 @@ import com.vividsolutions.jts.geom.Geometry;
 public class CoverageGrouping extends SpatialGrouping {
 
 	/**
+	 * The {@link FeatureCollection} which will be merged with the
+	 * {@code FeatureCollection} fetched from {@link #WFS_URL}.
+	 * 
+	 * @see CoverageGrouping
+	 */
+	public static final SingleProcessInput<FeatureCollection<FeatureType, Feature>> FEATURE_COLLECTION = new SingleProcessInput<FeatureCollection<FeatureType, Feature>>(
+			Constants.Process.Inputs.FEATURE_COLLECTION_ID,
+			GTVectorDataBinding.class, 0, 1, null, null);
+
+	/**
+	 * The URL of the WFS from which the {@link FeatureCollection} will be
+	 * fetched. Can also be a GET request.
+	 * 
+	 * @see CoverageGrouping
+	 */
+	public static final SingleProcessInput<String> WFS_URL = new SingleProcessInput<String>(
+			Constants.Process.Inputs.WFS_URL_ID, LiteralStringBinding.class, 0,
+			1, null, null);
+
+	/**
+	 * The request which will be posted to {@link #WFS_URL}.
+	 * 
+	 * @see CoverageGrouping
+	 */
+	public static final SingleProcessInput<GetFeatureDocument> WFS_REQUEST = new SingleProcessInput<GetFeatureDocument>(
+			Constants.Process.Inputs.WFS_REQUEST_ID,
+			GetFeatureRequestBinding.class, 0, 1, null, null);
+	/**
+	 * {@link CompositeProcessInput} to combine {@link #FEATURE_COLLECTION},
+	 * {@link #WFS_URL} and {@link #WFS_REQUEST}.
+	 * 
+	 * @see FeatureCollectionInputHandler
+	 * @see CoverageGrouping
+	 */
+	public static final AbstractProcessInput<FeatureCollection<FeatureType, Feature>> FEATURE_COLLECTION_INPUT = new CompositeProcessInput<FeatureCollection<FeatureType, Feature>>(
+			Constants.Process.Inputs.FEATURE_COLLECTION_INPUT_ID,
+			new FeatureCollectionInputHandler(FEATURE_COLLECTION, WFS_URL,
+					WFS_REQUEST));
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Set<AbstractProcessInput<?>> getAdditionalInputDeclarations() {
 		HashSet<AbstractProcessInput<?>> set = new HashSet<AbstractProcessInput<?>>();
-		set.add(Constants.Process.Inputs.FEATURE_COLLECTION_INPUT);
+		set.add(FEATURE_COLLECTION_INPUT);
 		return set;
 	}
 
@@ -76,13 +125,14 @@ public class CoverageGrouping extends SpatialGrouping {
 		 */
 		public LazyMappingIterator() {
 			FeatureCollection<?, ?> features = (FeatureCollection<?, ?>) getInputs()
-					.get(Constants.Process.Inputs.FEATURE_COLLECTION_INPUT);
+					.get(FEATURE_COLLECTION_INPUT);
 			if (features == null) {
-				throw new AlgorithmParameterException("No FeatureCollection found.");
+				throw new AlgorithmParameterException(
+						"No FeatureCollection found.");
 			}
 			this.iterator = features.features();
-			log.info("Grouping {} Observations with {} Features.",
-					getObservations().size(), features.size());
+			log.info("Grouping {} Observations with {} Features.", getObservations()
+					.size(), features.size());
 		}
 
 		/**
@@ -122,8 +172,7 @@ public class CoverageGrouping extends SpatialGrouping {
 	 * Gets all {@link Observation}s that are located in the given
 	 * {@link Feature} and creates a {@link ObservationMapping}.
 	 * 
-	 * @param feature
-	 *            the feature
+	 * @param feature the feature
 	 * @return the mapping
 	 */
 	protected ObservationMapping<ISamplingFeature> map(Feature feature) {
@@ -141,24 +190,25 @@ public class CoverageGrouping extends SpatialGrouping {
 			LinkedList<Observation> result = new LinkedList<Observation>();
 			if (!this.getObservations().isEmpty()) {
 				int srid = getObservations().get(0).getSRID();
-				geom.setSRID(srid); /* FIXME enable SRID parsing in WPS Parser class */
+				geom.setSRID(srid); /* FIXME enable SRID parsing in WPS Parser
+									 * class */
 				for (Observation o : getObservations()) {
-					log.debug("{}: Observation Geom: {}",
-							geom.contains(o.getFeatureOfInterest().getLocation()),
-							o.getFeatureOfInterest().getLocation());
-	
+					log.debug("{}: Observation Geom: {}", geom.contains(o
+							.getFeatureOfInterest().getLocation()), o
+							.getFeatureOfInterest().getLocation());
+
 					if (geom.contains(o.getFeatureOfInterest().getLocation())) {
 						result.add(o);
 					}
 				}
 			}
-			log.info("Feature-SRID: {}; Observation-SRID: {}", geom.getSRID(),
-					getObservations().get(0).getSRID());
+			log.info("Feature-SRID: {}; Observation-SRID: {}", geom.getSRID(), getObservations()
+					.get(0).getSRID());
 			log.info("{} Observations for Feature: {}", result.size(), geom);
 			return new ObservationMapping<ISamplingFeature>(
-					new SamplingSurface((Geometry) f.getDefaultGeometry(), null,
-							f.getID(), (f.getName() == null) ? f.getID() : f
-									.getName().getLocalPart()), result);
+					new SamplingSurface((Geometry) f.getDefaultGeometry(),
+							null, f.getID(), (f.getName() == null) ? f.getID()
+									: f.getName().getLocalPart()), result);
 		}
 	}
 }

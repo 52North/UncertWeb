@@ -29,11 +29,11 @@ import org.uncertweb.intamap.om.Observation;
  * A {@link ObservationMapping} maps an {@link Observation} collection with an
  * attribute.
  * 
- * @param <T>
- *            the type of the attribute
+ * @param <T> the type of the attribute
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class ObservationMapping<T> {
+
 	/**
 	 * The {@link Observation}s.
 	 */
@@ -47,10 +47,8 @@ public class ObservationMapping<T> {
 	/**
 	 * Creates a new {@code ObservationMapping}.
 	 * 
-	 * @param t
-	 *            the attribute
-	 * @param observations
-	 *            the {@code Observation} collection
+	 * @param t the attribute
+	 * @param observations the {@code Observation} collection
 	 */
 	public ObservationMapping(T t, List<Observation> observations) {
 		this.observations = observations;

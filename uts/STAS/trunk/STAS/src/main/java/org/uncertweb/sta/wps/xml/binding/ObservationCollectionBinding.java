@@ -38,14 +38,14 @@ import org.uncertweb.sta.wps.xml.io.enc.ObservationCollectionGenerator;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class ObservationCollectionBinding implements IComplexData {
+
 	private static final long serialVersionUID = 2249930191625226883L;
 	private transient ObservationCollection obsColl;
-	
-	
+
 	public ObservationCollectionBinding(ObservationCollection obsColl) {
 		this.obsColl = obsColl;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -65,29 +65,27 @@ public class ObservationCollectionBinding implements IComplexData {
 	/**
 	 * Serializes this {@code IData}.
 	 * 
-	 * @param oos
-	 *            the {@code ObjectOutputStream} to write to
-	 * @throws IOException
-	 *             if an IO error occurs
+	 * @param oos the {@code ObjectOutputStream} to write to
+	 * @throws IOException if an IO error occurs
 	 */
-	private synchronized void writeObject(ObjectOutputStream oos) throws IOException {
+	private synchronized void writeObject(ObjectOutputStream oos)
+			throws IOException {
 		StringWriter buffer = new StringWriter();
 		ObservationCollectionGenerator omg = new ObservationCollectionGenerator();
 		omg.write(this, buffer);
 		oos.writeObject(buffer.toString());
 	}
-	
+
 	/**
 	 * De-serializes this {@code IData}.
 	 * 
-	 * @param oos
-	 *            the {@code ObjectInputStream} to read from
-	 * @throws IOException
-	 *             if an IO error occurs
-	 * @throws ClassNotFoundException
-	 *             if the class of a serialized object cannot be found
+	 * @param oos the {@code ObjectInputStream} to read from
+	 * @throws IOException if an IO error occurs
+	 * @throws ClassNotFoundException if the class of a serialized object cannot
+	 *             be found
 	 */
-	private synchronized void readObject(ObjectInputStream oos) throws IOException, ClassNotFoundException {
+	private synchronized void readObject(ObjectInputStream oos)
+			throws IOException, ClassNotFoundException {
 		ObservationCollectionParser omp = new ObservationCollectionParser();
 		this.obsColl = omp.parseXML((String) oos.readObject()).getPayload();
 	}

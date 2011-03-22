@@ -34,19 +34,21 @@ import org.uncertweb.intamap.om.ObservationTimeInterval;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class ObservationTimeComparator implements Comparator<Observation> {
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public int compare(Observation o1, Observation o2) {
 		DateTime a, b;
+		//@formatter off
 		a = (o1.getObservationTime() instanceof ObservationTimeInstant) ? 
 			((ObservationTimeInstant) o1.getObservationTime()).getDateTime() : 
 			((ObservationTimeInterval) o1.getObservationTime()).getStart();
 		b = (o2.getObservationTime() instanceof ObservationTimeInstant) ? 
 			((ObservationTimeInstant) o2.getObservationTime()).getDateTime() :
 			((ObservationTimeInterval) o2.getObservationTime()).getStart();
+		//@formatter on
 		return a.compareTo(b);
 	}
 }

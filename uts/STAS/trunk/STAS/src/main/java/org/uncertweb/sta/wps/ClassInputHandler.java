@@ -39,7 +39,13 @@ public class ClassInputHandler extends ProcessInputHandler<Class<?>> {
 	 */
 	@Override
 	protected Class<?> processInputs(Map<String, List<IData>> inputs) {
-			String parameter = (String) inputs.get(checkForOnlyOneInput().getId()).get(0).getPayload();
+		String id = checkForOnlyOneInput().getId();
+		List<IData> input = inputs.get(id);
+		if (input != null && !input.isEmpty()) {
+			if (input.size() > 1) {
+				log.warn("Input '{}' has more than one IData. This class is not capable of multiple inputs.", id);
+			}
+			String parameter = (String) input.get(0).getPayload();
 			if (parameter != null) {
 				try {
 					return Class.forName(parameter.trim());
@@ -48,8 +54,8 @@ public class ClassInputHandler extends ProcessInputHandler<Class<?>> {
 				} catch (ClassCastException e) {
 					throw new RuntimeException(e);
 				}
-			} else {
-				return null;
 			}
+		}
+		return null;
 	}
 }

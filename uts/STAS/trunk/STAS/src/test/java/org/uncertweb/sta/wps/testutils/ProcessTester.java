@@ -84,11 +84,13 @@ import org.uncertweb.sta.wps.xml.io.dec.GetObservationRequestParser;
  */
 public class ProcessTester {
 
-	private static final String CONFIG_PATH = ProcessTester.class.getResource("/wps_config/wps_config.xml").getFile();
-	protected static final Logger log = LoggerFactory.getLogger(ProcessTester.class);
-	
+	private static final String CONFIG_PATH = ProcessTester.class
+			.getResource("/wps_config/wps_config.xml").getFile();
+	protected static final Logger log = LoggerFactory
+			.getLogger(ProcessTester.class);
+
 	static {
-//		Logging.GEOTOOLS.forceMonolineConsoleOutput();
+		// Logging.GEOTOOLS.forceMonolineConsoleOutput();
 		try {
 			WPSConfig.forceInitialization(CONFIG_PATH);
 		} catch (XmlException e) {
@@ -97,19 +99,20 @@ public class ProcessTester {
 			throw new RuntimeException(e);
 		}
 		ParserFactory.initialize(WPSConfig.getInstance().getRegisteredParser());
-		GeneratorFactory.initialize(WPSConfig.getInstance().getRegisteredGenerator());
+		GeneratorFactory.initialize(WPSConfig.getInstance()
+				.getRegisteredGenerator());
 	}
 
 	public ObservationCollection getObservationCollection() {
 		return oc;
 	}
-	
+
 	private static STARepository sta;
 	private static AbstractXMLParser gmlParser;
 	private static AbstractXMLParser omParser;
-	private static AbstractXMLParser getObsParser= null;
+	private static AbstractXMLParser getObsParser = null;
 	private static IStreamableGenerator omGenerator;
-	
+
 	public static IAlgorithmRepository getRepository() {
 		if (sta == null) {
 			sta = new STARepository();
@@ -120,13 +123,12 @@ public class ProcessTester {
 	public static Collection<IAlgorithm> getAlgorithms() {
 		return getRepository().getAlgorithms();
 	}
-	
+
 	public static IStreamableGenerator getOMGenerator() {
 		if (omGenerator == null) {
-			omGenerator = (IStreamableGenerator) GeneratorFactory.getInstance()
-					.getGenerator(Namespace.OM.SCHEMA,
-							IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING,
-							ObservationCollectionBinding.class);
+			omGenerator = (IStreamableGenerator) GeneratorFactory
+					.getInstance()
+					.getGenerator(Namespace.OM.SCHEMA, IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING, ObservationCollectionBinding.class);
 		}
 		return omGenerator;
 	}
@@ -135,47 +137,46 @@ public class ProcessTester {
 		if (gmlParser == null) {
 			gmlParser = (AbstractXMLParser) ParserFactory
 					.getInstance()
-					.getParser(
-							Namespace.WFS.SCHEMA,
-							IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING,
-							GTVectorDataBinding.class);
+					.getParser(Namespace.WFS.SCHEMA, IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING, GTVectorDataBinding.class);
 		}
 		return gmlParser;
 	}
 
 	public static AbstractXMLParser getGetObsParser() {
 		if (getObsParser == null) {
-			getObsParser = (AbstractXMLParser) ParserFactory.getInstance()
-					.getParser(Namespace.SOS.SCHEMA, IOHandler.DEFAULT_MIMETYPE,
-							IOHandler.DEFAULT_ENCODING,
-							GetObservationRequestBinding.class);
+			getObsParser = (AbstractXMLParser) ParserFactory
+					.getInstance()
+					.getParser(Namespace.SOS.SCHEMA, IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING, GetObservationRequestBinding.class);
 		}
 		return getObsParser;
 	}
-	
+
 	public static AbstractXMLParser getOMParser() {
 		if (omParser == null) {
-			omParser = (AbstractXMLParser) ParserFactory.getInstance()
-					.getParser(Namespace.OM.SCHEMA, IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING,
-							ObservationCollectionBinding.class);
+			omParser = (AbstractXMLParser) ParserFactory
+					.getInstance()
+					.getParser(Namespace.OM.SCHEMA, IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING, ObservationCollectionBinding.class);
 		}
 		return omParser;
 	}
-	
+
 	public static void print(ObservationCollection oc) throws XmlException {
 		StringBuffer sb = new StringBuffer();
 		StringBufferOutputStream out = new StringBufferOutputStream(sb);
-		getOMGenerator().writeToStream(new ObservationCollectionBinding(oc), out);
-		System.out.println(XmlObject.Factory.parse(sb.toString()).xmlText(
-				Namespace.defaultOptions()));
+		getOMGenerator()
+				.writeToStream(new ObservationCollectionBinding(oc), out);
+		System.out.println(XmlObject.Factory.parse(sb.toString())
+				.xmlText(Namespace.defaultOptions()));
 	}
-	
-//	public static void print(ObservationCollection oc, String filename) throws FileNotFoundException {
-//		getOMGenerator().writeToStream(new ObservationCollectionBinding(oc), new FileOutputStream(filename));
-//	}
+
+	// public static void print(ObservationCollection oc, String filename)
+	// throws FileNotFoundException {
+	// getOMGenerator().writeToStream(new ObservationCollectionBinding(oc), new
+	// FileOutputStream(filename));
+	// }
 
 	private IAlgorithm process;
-	
+
 	/* common inputs */
 	private URL sosSrcUrl;
 	private URL sosDestUrl;
@@ -185,20 +186,20 @@ public class ProcessTester {
 	private Class<? extends AggregationMethod> spatialAM;
 	private Boolean groupByObservedProperty;
 	private Boolean temporalBeforeSpatial;
-	
+
 	/* time range inputs */
 	private Period p;
-	
+
 	/* coverage grouping inputs */
 	private URL wfsUrl;
 	private GetFeatureDocument wfsRequest;
 	private FeatureCollection<?, ?> fc;
 
 	/* outputs */
-	
+
 	private XmlObject ocOutput = null;
 	private XmlObject refOutput = null;
-	
+
 	public void reset() {
 		p = null;
 		wfsUrl = null;
@@ -222,7 +223,7 @@ public class ProcessTester {
 	public void selectAlgorithm(Class<? extends SpatialGrouping> sg,
 			Class<? extends TemporalGrouping> tg) {
 		String sgN = sg.getSimpleName(), tgN = tg.getSimpleName();
-		selectAlgorithm(sgN+":"+tgN);
+		selectAlgorithm(sgN + ":" + tgN);
 	}
 
 	public IAlgorithm getSelectedAlgorithm() {
@@ -241,7 +242,8 @@ public class ProcessTester {
 
 	public void setSosRequest(String request) {
 		try {
-			setSosRequest(GetObservationDocument.Factory.parse(testNull(request)));
+			setSosRequest(GetObservationDocument.Factory
+					.parse(testNull(request)));
 		} catch (XmlException e) {
 			throw new RuntimeException(e);
 		}
@@ -251,8 +253,10 @@ public class ProcessTester {
 		this.sosRequest = testNull(request);
 	}
 
-	public void setSosRequest(String offering, String obsProp, DateTime begin, DateTime end) {
-		GetObservationDocument request = GetObservationDocument.Factory.newInstance();
+	public void setSosRequest(String offering, String obsProp, DateTime begin,
+			DateTime end) {
+		GetObservationDocument request = GetObservationDocument.Factory
+				.newInstance();
 		GetObservation getObs = request.addNewGetObservation();
 		getObs.setOffering(offering);
 		getObs.setService(Constants.Sos.SERVICE_NAME);
@@ -267,9 +271,10 @@ public class ProcessTester {
 		cursor.toChild(new QName("http://www.opengis.net/ogc", "PropertyName"));
 		cursor.setTextValue("om:SamplingTime");
 		cursor.dispose();
-        TimePeriodType xb_timePeriod = TimePeriodType.Factory.newInstance();
-        xb_timePeriod.addNewBeginPosition().setStringValue(TimeUtils.format(begin));
-        xb_timePeriod.addNewEndPosition().setStringValue(TimeUtils.format(end));
+		TimePeriodType xb_timePeriod = TimePeriodType.Factory.newInstance();
+		xb_timePeriod.addNewBeginPosition()
+				.setStringValue(TimeUtils.format(begin));
+		xb_timePeriod.addNewEndPosition().setStringValue(TimeUtils.format(end));
 		btot.setTimeObject(xb_timePeriod);
 		EventTime eventTime = getObs.addNewEventTime();
 		eventTime.setTemporalOps(btot);
@@ -290,24 +295,26 @@ public class ProcessTester {
 		}
 	}
 
-	public void setSpatialAggregationMethod(Class<? extends AggregationMethod> sam) {
+	public void setSpatialAggregationMethod(
+			Class<? extends AggregationMethod> sam) {
 		this.spatialAM = testNull(sam);
 	}
 
 	@SuppressWarnings("unchecked")
 	public void setSpatialAggregationMethod(String sam) {
 		try {
-			setSpatialAggregationMethod((Class<? extends AggregationMethod>) 
-					Class.forName(testNull(sam)));
+			setSpatialAggregationMethod((Class<? extends AggregationMethod>) Class
+					.forName(testNull(sam)));
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void setTemporalAggregationMethod(Class<? extends AggregationMethod> tam) {
+	public void setTemporalAggregationMethod(
+			Class<? extends AggregationMethod> tam) {
 		this.temporalAM = testNull(tam);
 	}
-	
+
 	public void setObservationCollection(ObservationCollection oc) {
 		this.oc = oc;
 	}
@@ -315,8 +322,8 @@ public class ProcessTester {
 	@SuppressWarnings("unchecked")
 	public void setTemporalAggregationMethod(String tam) {
 		try {
-			setTemporalAggregationMethod((Class<? extends AggregationMethod>) 
-					Class.forName(testNull(tam)));
+			setTemporalAggregationMethod((Class<? extends AggregationMethod>) Class
+					.forName(testNull(tam)));
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -357,67 +364,84 @@ public class ProcessTester {
 	public void setWfsRequest(GetFeatureDocument request) {
 		this.wfsRequest = testNull(request);
 	}
-	
+
 	public void setFeatureCollection(FeatureCollection<?, ?> fc) {
 		fc = testNull(fc);
 	}
-	
+
 	public ProcessTester execute() {
 		return execute(null);
 	}
-	
+
 	public ProcessTester execute(String wpsUrl) {
 		ProcessDescriptionType desc = getSelectedAlgorithm().getDescription();
 		ExecuteRequestBuilder eb = new ExecuteRequestBuilder(desc);
 		if (p != null) {
-			eb.addLiteralData(Constants.Process.Inputs.TIME_RANGE.getId(), TimeUtils.format(p));
+			eb.addLiteralData(Constants.Process.Inputs.TIME_RANGE_ID, TimeUtils
+					.format(p));
 		}
 		if (wfsUrl != null) {
-			eb.addLiteralData(Constants.Process.Inputs.WFS_URL.getId(), wfsUrl.toExternalForm());
+			eb.addLiteralData(Constants.Process.Inputs.WFS_URL_ID, wfsUrl
+					.toExternalForm());
 		}
 		if (sosDestUrl != null) {
-			eb.addLiteralData(Constants.Process.Inputs.Common.SOS_DESTINATION_URL.getId(), sosDestUrl.toExternalForm());
+			eb.addLiteralData(Constants.Process.Inputs.SOS_DESTINATION_URL_ID, sosDestUrl
+					.toExternalForm());
 		}
 		if (temporalAM != null) {
-			eb.addLiteralData(Constants.Process.Inputs.Common.TEMPORAL_AGGREGATION_METHOD.getId(), temporalAM.getName());
+			eb.addLiteralData(Constants.Process.Inputs.TEMPORAL_AGGREGATION_METHOD_ID, temporalAM
+					.getName());
 		}
 		if (spatialAM != null) {
-			eb.addLiteralData(Constants.Process.Inputs.Common.SPATIAL_AGGREGATION_METHOD.getId(), spatialAM.getName());
+			eb.addLiteralData(Constants.Process.Inputs.SPATIAL_AGGREGATION_METHOD_ID, spatialAM
+					.getName());
 		}
 		if (groupByObservedProperty != null) {
-			eb.addLiteralData(Constants.Process.Inputs.Common.GROUP_BY_OBSERVED_PROPERTY.getId(), groupByObservedProperty.toString());
+			eb.addLiteralData(Constants.Process.Inputs.GROUP_BY_OBSERVED_PROPERTY_ID, groupByObservedProperty
+					.toString());
 		}
 		if (temporalBeforeSpatial != null) {
-			eb.addLiteralData(Constants.Process.Inputs.Common.TEMPORAL_BEFORE_SPATIAL_GROUPING.getId(), temporalBeforeSpatial.toString());
+			eb.addLiteralData(Constants.Process.Inputs.TEMPORAL_BEFORE_SPATIAL_GROUPING_ID, temporalBeforeSpatial
+					.toString());
 		}
 		if (wfsRequest != null) {
-			eb.addComplexData(Constants.Process.Inputs.WFS_REQUEST.getId(), new GetFeatureRequestBinding(wfsRequest), Namespace.WFS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
+			eb.addComplexData(Constants.Process.Inputs.WFS_REQUEST_ID, new GetFeatureRequestBinding(
+					wfsRequest), Namespace.WFS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
-		if (sosSrcUrl != null) {	
-			eb.addLiteralData(Constants.Process.Inputs.Common.SOS_URL.getId(), sosSrcUrl.toExternalForm());
+		if (sosSrcUrl != null) {
+			eb.addLiteralData(Constants.Process.Inputs.SOS_SOURCE_URL_ID, sosSrcUrl
+					.toExternalForm());
 		}
 		if (sosRequest != null) {
-			eb.addComplexData(Constants.Process.Inputs.Common.SOS_REQUEST.getId(), new GetObservationRequestBinding(sosRequest), Namespace.SOS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
+			eb.addComplexData(Constants.Process.Inputs.SOS_REQUEST_ID, new GetObservationRequestBinding(
+					sosRequest), Namespace.SOS.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
 		if (fc != null) {
-			eb.addComplexData(Constants.Process.Inputs.FEATURE_COLLECTION.getId(), new GTVectorDataBinding(fc), Namespace.GML.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
+			eb.addComplexData(Constants.Process.Inputs.FEATURE_COLLECTION_ID, new GTVectorDataBinding(
+					fc), Namespace.GML.SCHEMA, IOHandler.DEFAULT_ENCODING, IOHandler.DEFAULT_MIMETYPE);
 		}
-		
-		ExecuteDocument exec = eb.getExecute();
-	
-		DocumentOutputDefinitionType dodt = exec.getExecute().addNewResponseForm().addNewResponseDocument().addNewOutput();
-		dodt.addNewIdentifier().setStringValue(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS.getId());
-		
-		if (sosDestUrl != null) {
-			dodt = exec.getExecute().getResponseForm().getResponseDocument().addNewOutput();
-			dodt.addNewIdentifier().setStringValue(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE.getId());	
 
-			dodt = exec.getExecute().getResponseForm().getResponseDocument().addNewOutput();
-			dodt.addNewIdentifier().setStringValue(Constants.Process.Outputs.VISUALIZATION_LINK.getId());	
+		ExecuteDocument exec = eb.getExecute();
+
+		DocumentOutputDefinitionType dodt = exec.getExecute()
+				.addNewResponseForm().addNewResponseDocument().addNewOutput();
+		dodt.addNewIdentifier()
+				.setStringValue(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_ID);
+
+		if (sosDestUrl != null) {
+			dodt = exec.getExecute().getResponseForm().getResponseDocument()
+					.addNewOutput();
+			dodt.addNewIdentifier()
+					.setStringValue(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE_ID);
+
+			dodt = exec.getExecute().getResponseForm().getResponseDocument()
+					.addNewOutput();
+			dodt.addNewIdentifier()
+					.setStringValue(Constants.Process.Outputs.VISUALIZATION_LINK_ID);
 		}
-		
-//		log.info("Sending Execute request:\n{}",exec.xmlText(Namespace.defaultOptions()));
-		
+
+		// log.info("Sending Execute request:\n{}",exec.xmlText(Namespace.defaultOptions()));
+
 		try {
 			XmlObject res = null;
 			if (wpsUrl == null) {
@@ -427,29 +451,42 @@ public class ProcessTester {
 				res = XmlObject.Factory.parse(os.toString());
 			} else {
 				// execute remote
-				res = XmlObject.Factory.parse(Utils.sendPostRequest(wpsUrl, exec.xmlText()));
+				res = XmlObject.Factory.parse(Utils
+						.sendPostRequest(wpsUrl, exec.xmlText()));
 			}
-			
+
 			exec.save(new File("src/test/request.xml"), Namespace.defaultOptions());
 			res.save(new File("src/test/response.xml"), Namespace.defaultOptions());
-			
+
 			if (res instanceof ExecuteResponseDocument) {
-//				log.info("Got response.\n{}",res.xmlText(Namespace.defaultOptions()));
+				// log.info("Got response.\n{}",res.xmlText(Namespace.defaultOptions()));
 				ExecuteResponseDocument resp = (ExecuteResponseDocument) res;
-				
-				for (OutputDataType odt : resp.getExecuteResponse().getProcessOutputs().getOutputArray()) {
-					log.info("Got '{}'-Output.", odt.getIdentifier().getStringValue());
-					if (odt.getIdentifier().getStringValue().equals(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS.getId())) {
+
+				for (OutputDataType odt : resp.getExecuteResponse()
+						.getProcessOutputs().getOutputArray()) {
+					log.info("Got '{}'-Output.", odt.getIdentifier()
+							.getStringValue());
+					if (odt.getIdentifier()
+							.getStringValue()
+							.equals(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_ID)) {
 						ocOutput = odt.getData().getComplexData();
-					} else if (odt.getIdentifier().getStringValue().equals(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE.getId())) {
+					} else if (odt
+							.getIdentifier()
+							.getStringValue()
+							.equals(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE_ID)) {
 						refOutput = odt.getData().getComplexData();
-					} else if (odt.getIdentifier().getStringValue().equals(Constants.Process.Outputs.VISUALIZATION_LINK.getId())) {
-						log.info("VisualizationLink: {}", odt.getData().getLiteralData().getStringValue());
+					} else if (odt
+							.getIdentifier()
+							.getStringValue()
+							.equals(Constants.Process.Outputs.VISUALIZATION_LINK_ID)) {
+						log.info("VisualizationLink: {}", odt.getData()
+								.getLiteralData().getStringValue());
 					}
-					
+
 				}
 			} else if (res instanceof ExceptionReport) {
-				throw new RuntimeException(res.xmlText(Namespace.defaultOptions()));
+				throw new RuntimeException(res.xmlText(Namespace
+						.defaultOptions()));
 			}
 		} catch (ExceptionReport e) {
 			throw new RuntimeException(e);
@@ -460,19 +497,23 @@ public class ProcessTester {
 		}
 		return this;
 	}
-	
+
 	public GetObservationDocument getReferenceOutput() {
-		if (refOutput == null) throw new RuntimeException("Not yet executed.");
-		return (GetObservationDocument) new GetObservationRequestParser().parseXML(refOutput.newInputStream()).getPayload();
+		if (refOutput == null)
+			throw new RuntimeException("Not yet executed.");
+		return (GetObservationDocument) new GetObservationRequestParser()
+				.parseXML(refOutput.newInputStream()).getPayload();
 	}
 
 	public ObservationCollection getOutput() {
-		if (ocOutput == null) throw new RuntimeException("Not yet executed.");
-		return (ObservationCollection) getOMParser().parseXML(ocOutput.newInputStream()).getPayload();
+		if (ocOutput == null)
+			throw new RuntimeException("Not yet executed.");
+		return (ObservationCollection) getOMParser()
+				.parseXML(ocOutput.newInputStream()).getPayload();
 	}
-	
+
 	private <T> T testNull(T t) {
-		if (t == null) 
+		if (t == null)
 			throw new NullPointerException();
 		ocOutput = null;
 		refOutput = null;

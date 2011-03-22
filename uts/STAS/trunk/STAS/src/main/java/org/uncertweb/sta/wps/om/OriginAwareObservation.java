@@ -57,27 +57,17 @@ public class OriginAwareObservation extends Observation {
 	/**
 	 * Creates a new {@link OriginAwareObservation}.
 	 * 
-	 * @param id
-	 *            the id of the {@code Observation}
-	 * @param result
-	 *            the result of the {@code Observation}
-	 * @param location
-	 *            the location of the {@code Observation}
-	 * @param observationError
-	 *            the observationError of the {@code Observation}
-	 * @param observedProperty
-	 *            the observedProperty of the {@code Observation}
-	 * @param sensor
-	 *            the sensor id of the {@code Observation}
-	 * @param observationTime
-	 *            the observationTime of the {@code Observation}
-	 * @param uom
-	 *            the unit of measurement of the {@code Observation}
-	 * @param obs
-	 *            the {@code Observation}s this {@code Observation} is created
+	 * @param id the id of the {@code Observation}
+	 * @param result the result of the {@code Observation}
+	 * @param location the location of the {@code Observation}
+	 * @param observationError the observationError of the {@code Observation}
+	 * @param observedProperty the observedProperty of the {@code Observation}
+	 * @param sensor the sensor id of the {@code Observation}
+	 * @param observationTime the observationTime of the {@code Observation}
+	 * @param uom the unit of measurement of the {@code Observation}
+	 * @param obs the {@code Observation}s this {@code Observation} is created
 	 *            from
-	 * @param sourceUrl
-	 *            the URL from which {@code obs} are fetched
+	 * @param sourceUrl the URL from which {@code obs} are fetched
 	 */
 	public OriginAwareObservation(String id, double result,
 			ISamplingFeature location, Uncertainty observationError,

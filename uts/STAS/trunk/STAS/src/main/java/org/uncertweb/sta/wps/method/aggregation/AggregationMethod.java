@@ -40,8 +40,7 @@ public interface AggregationMethod {
 	/**
 	 * Aggregates the given {@link Observation}s.
 	 * 
-	 * @param oc
-	 *            the {@code Observation}s
+	 * @param oc the {@code Observation}s
 	 * @return the aggregated result value
 	 */
 	public double aggregate(List<Observation> oc);

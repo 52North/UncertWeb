@@ -29,5 +29,4 @@ import org.uncertweb.intamap.om.ISamplingFeature;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public abstract class SpatialGrouping extends GroupingMethod<ISamplingFeature> {
-}
+public abstract class SpatialGrouping extends GroupingMethod<ISamplingFeature> {}

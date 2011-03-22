@@ -45,25 +45,34 @@ public class CoverageGroupingIgnoreTimeTest {
 	private static final String BEGIN_DATE = "2001-01-01T01:30:00.000+00:00";
 	private static final String DURATION = "PT1H";
 	private static final String OFFERING = "O3";
-	private static final String OBSERVED_PROPERTY = "http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[" + OFFERING + "]";
+	private static final String OBSERVED_PROPERTY = "http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration["
+			+ OFFERING + "]";
 	private static final String WFS_URL = "http://giv-uw.uni-muenster.de:8080/geoserver/wfs/GetFeature";
 	private static final String SOURCE_SOS = "http://giv-uw.uni-muenster.de:8080/AQE/sos";
 	private static final String DESTINATION_SOS = "http://giv-uw.uni-muenster.de:8080/STAS-SOS/sos";
 	private static final String STAS_URL = "http://localhost:8080/stas/WebProcessingService";
-	
-	
+
 	private static GetFeatureDocument buildWFSRequest() {
 		GetFeatureDocument doc = GetFeatureDocument.Factory.newInstance();
 		QueryType q = doc.addNewGetFeature().addNewQuery();
-		q.setTypeName(Utils.list(new QName("http://giv-uw.uni-muenster.de:8080/geoserver/stas", "boundary")));
-		BinaryComparisonOpType op = (BinaryComparisonOpType) q.addNewFilter()
-			.addNewComparisonOps().substitute(Namespace.OGC.q("PropertyIsEqualTo"), BinaryComparisonOpType.type);
+		q.setTypeName(Utils
+				.list(new QName(
+						"http://giv-uw.uni-muenster.de:8080/geoserver/stas",
+						"boundary")));
+		BinaryComparisonOpType op = (BinaryComparisonOpType) q
+				.addNewFilter()
+				.addNewComparisonOps()
+				.substitute(Namespace.OGC.q("PropertyIsEqualTo"), BinaryComparisonOpType.type);
 		XmlString property = XmlString.Factory.newInstance();
 		XmlString literal = XmlString.Factory.newInstance();
 		property.setStringValue("CNTRY_NAME");
 		literal.setStringValue("Germany");
-		(op.addNewExpression().substitute(Namespace.OGC.q("PropertyName"), PropertyNameType.type)).set(property);
-		(op.addNewExpression().substitute(Namespace.OGC.q("Literal"), LiteralType.type)).set(literal);
+		(op.addNewExpression()
+				.substitute(Namespace.OGC.q("PropertyName"), PropertyNameType.type))
+				.set(property);
+		(op.addNewExpression()
+				.substitute(Namespace.OGC.q("Literal"), LiteralType.type))
+				.set(literal);
 		return doc;
 	}
 
@@ -76,7 +85,7 @@ public class CoverageGroupingIgnoreTimeTest {
 		t.setSosSourceUrl(SOURCE_SOS);
 		t.setSosDestinationUrl(DESTINATION_SOS);
 		t.setGroupByObservedProperty(true);
-		
+
 		t.setTemporalBeforeSpatialAggregation(true);
 		DateTime b = TimeUtils.parseDateTime(BEGIN_DATE);
 		DateTime e = b.plus(TimeUtils.parsePeriod(DURATION));
@@ -84,17 +93,20 @@ public class CoverageGroupingIgnoreTimeTest {
 
 		t.setWfsUrl(WFS_URL);
 		t.setWfsRequest(buildWFSRequest());
-		
-		t.execute(STAS_URL);
-//		t.getOutput();
-//		t.getReferenceOutput();
+
+		t.execute();//STAS_URL);
+		// t.getOutput();
+		// t.getReferenceOutput();
 	}
 
 	public static void main(String[] args) throws Exception {
-		
-//		System.out.println(getWFSRequest().xmlText(Namespace.defaultOptions()));
-		try { new CoverageGroupingIgnoreTimeTest().test(); }
-		catch (Throwable t) {t.printStackTrace();}
+
+		// System.out.println(getWFSRequest().xmlText(Namespace.defaultOptions()));
+		try {
+			new CoverageGroupingIgnoreTimeTest().test();
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
 		System.exit(0);
 	}
 }

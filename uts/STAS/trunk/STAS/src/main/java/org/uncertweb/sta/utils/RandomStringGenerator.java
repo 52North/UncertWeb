@@ -29,9 +29,12 @@ import java.util.ArrayList;
  * Class to generate random Strings. Used to be a passwort generator
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
+ * 
  */
 public class RandomStringGenerator {
 
+	/* @formatter off */
+	
 	/**
 	 * All printable characters.
 	 */
@@ -77,16 +80,18 @@ public class RandomStringGenerator {
 		'}', '~'
 	};
 
+	/* @formatter on */
+
 	/**
 	 * The algorithm used to initialize the {@link SecureRandom}.
 	 */
 	private static final String ALGORITHM = "SHA1PRNG";
-	
+
 	/**
 	 * Single instance of this class.
 	 */
 	private static RandomStringGenerator singleton;
-	
+
 	/**
 	 * The RNG.
 	 */
@@ -103,7 +108,7 @@ public class RandomStringGenerator {
 		}
 		return singleton;
 	}
-	
+
 	/**
 	 * Private constructor. We are a singleton!
 	 */
@@ -123,8 +128,7 @@ public class RandomStringGenerator {
 	 * generate(length, true, true, true, false);
 	 * </pre>
 	 * 
-	 * @param length
-	 *            the length of the generated string.
+	 * @param length the length of the generated string.
 	 * @return the generated string.
 	 */
 	public String generate(int length) {
@@ -136,17 +140,12 @@ public class RandomStringGenerator {
 	 * chosen and every character within the component has the equal opportunity
 	 * to be chosen.
 	 * 
-	 * @param length
-	 *            the length of the generated string
-	 * @param digits
-	 *            if the string should contain digits
-	 * @param uppercase
-	 *            if the string should contain upper case characters
-	 * @param lowercase
-	 *            if the string should contain lower case characters
-	 * @param nonalphanum
-	 *            if the string should contain non alphanumeric, but printable,
-	 *            characters
+	 * @param length the length of the generated string
+	 * @param digits if the string should contain digits
+	 * @param uppercase if the string should contain upper case characters
+	 * @param lowercase if the string should contain lower case characters
+	 * @param nonalphanum if the string should contain non alphanumeric, but
+	 *            printable, characters
 	 * @return the generated string
 	 */
 	public String generate(int length, boolean digits, boolean uppercase,

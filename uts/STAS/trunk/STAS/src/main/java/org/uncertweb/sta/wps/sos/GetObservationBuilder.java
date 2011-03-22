@@ -46,9 +46,9 @@ public class GetObservationBuilder {
 		}
 		return singleton;
 	}
-	
-	private GetObservationBuilder(){}
-	
+
+	private GetObservationBuilder() {}
+
 	public GetObservationDocument build(String process, List<Observation> obs) {
 		GetObservationDocument getObsDoc = GetObservationDocument.Factory.newInstance();
 		GetObservation getObs = getObsDoc.addNewGetObservation();
@@ -59,16 +59,16 @@ public class GetObservationBuilder {
 		getObs.setResponseFormat(Constants.Sos.OBSERVATION_OUTPUT_FORMAT);
 		getObs.setResponseMode(ResponseModeType.INLINE);
 		getObs.addNewProcedure().setStringValue(process);
-		
+
 		HashSet<String> obsProps = new HashSet<String>();
 		for (Observation o : obs) {
 			obsProps.add(o.getObservedProperty());
 		}
-		
+
 		for (String s : obsProps) {
 			getObs.addNewObservedProperty().setStringValue(s);
 		}
-		
+
 		return getObsDoc;
 	}
 }

@@ -22,6 +22,7 @@
 package org.uncertweb.sta.wps.api;
 
 import org.n52.wps.io.data.IData;
+import org.uncertweb.sta.utils.Constants;
 
 /**
  * Encapsulates a WPS process output.
@@ -53,23 +54,26 @@ public class ProcessOutput {
 	/**
 	 * Constructs a new process output.
 	 * 
-	 * @param identifier
-	 *            the ID of the output
-	 * @param title
-	 *            the title of the output (if {@code title} is {@code null}, the
-	 *            {@code id} is used instead)
-	 * @param description
-	 *            the description of the output
-	 * @param bindingClass
-	 *            the {@link IData} class that encapsulates this output
+	 * @param identifier the ID of the output
+	 * @param title the title of the output (if {@code title} is {@code null},
+	 *            the {@code id} is used instead)
+	 * @param description the description of the output
+	 * @param bindingClass the {@link IData} class that encapsulates this output
 	 */
-	public ProcessOutput(String identifier, String title, String description,
-			Class<? extends IData> bindingClass) {
+	public ProcessOutput(String identifier, Class<? extends IData> bindingClass) {
 		this.identifier = identifier;
-		this.description = description;
-		this.title = title;
 		this.bindingClass = bindingClass;
-		this.title = title;
+		this.description = getOutputDescription(identifier);
+		this.title = getOutputTitle(identifier);
+	}
+
+	
+	private static String getOutputDescription(String id) {
+		return Constants.get("process.output." + id + ".desc");
+	}
+
+	private static String getOutputTitle(String id) {
+		return Constants.get("process.output." + id + ".title");
 	}
 
 	/**
@@ -80,13 +84,6 @@ public class ProcessOutput {
 	}
 
 	/**
-	 * @return the title of this output
-	 */
-	public String getTitle() {
-		return title == null ? getId() : title;
-	}
-
-	/**
 	 * @return the {@link IData} class that encapsulates this output
 	 */
 	public Class<? extends IData> getBindingClass() {
@@ -94,9 +91,18 @@ public class ProcessOutput {
 	}
 
 	/**
+	 * @return the title of this output
+	 */
+	public String getTitle() {
+		return this.title == null || this.title.trim().isEmpty() ? getId()
+				: this.title;
+	}
+
+	/**
 	 * @return the description of this output
 	 */
 	public String getDescription() {
-		return this.description;
+		return this.description == null || this.description.trim().isEmpty() ? null
+				: this.description;
 	}
 }

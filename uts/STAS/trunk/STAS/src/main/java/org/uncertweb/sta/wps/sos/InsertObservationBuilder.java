@@ -41,10 +41,11 @@ public class InsertObservationBuilder {
 		}
 		return singleton;
 	}
-	
-	private InsertObservationBuilder(){}
+
+	private InsertObservationBuilder() {}
+
 	private ObservationGenerator generator = new ObservationGenerator();
-	
+
 	public InsertObservationDocument build(Observation o) {
 		InsertObservationDocument insObsDoc = InsertObservationDocument.Factory.newInstance();
 		insObsDoc.addNewInsertObservation().set(generator.generateXML(o));

@@ -33,6 +33,9 @@ import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
  */
 public class MinAggregation implements AggregationMethod {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public double aggregate(List<Observation> oc) {
 		double min = Double.POSITIVE_INFINITY;

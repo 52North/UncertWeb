@@ -283,7 +283,7 @@ public class RegisterSensorBuilder {
 	}
 	
 	public static String getDescribeSensorUrl(String url, String sensorId) {
-		HashMap<String, String> props = new HashMap<String, String>();
+		HashMap<Constants.Sos.Parameter, Object> props = new HashMap<Constants.Sos.Parameter, Object>();
 		props.put(Constants.Sos.Parameter.REQUEST, Constants.Sos.Operation.DESCRIBE_SENSOR);
 		props.put(Constants.Sos.Parameter.SERVICE, Constants.Sos.SERVICE_NAME);
 		props.put(Constants.Sos.Parameter.VERSION, Constants.Sos.SERVICE_VERSION);

@@ -48,57 +48,71 @@ import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class SOSClient {
-	
-	protected static final Logger log = LoggerFactory.getLogger(SOSClient.class);
-	
-	public GetObservationRequestBinding registerAggregatedObservations(List<Observation> obs, String url, String process, Map<String, Object> meta) throws IOException {
-		RegisterSensorDocument regSenDoc = RegisterSensorBuilder.getInstance().build(process, obs, meta);
-		log.info("Sending RegisterSensor request:\n{}",regSenDoc.xmlText(Namespace.defaultOptions()));
+
+	protected static final Logger log = LoggerFactory
+			.getLogger(SOSClient.class);
+
+	public GetObservationRequestBinding registerAggregatedObservations(
+			List<Observation> obs, String url, String process,
+			Map<String, Object> meta) throws IOException {
+		RegisterSensorDocument regSenDoc = RegisterSensorBuilder.getInstance()
+				.build(process, obs, meta);
+		log.info("Sending RegisterSensor request:\n{}", regSenDoc
+				.xmlText(Namespace.defaultOptions()));
 		try {
 			sendPostRequests(url, regSenDoc);
-		} catch(Throwable e) {
+		} catch (Throwable e) {
 			log.warn("Can not register Sensor.");
 			throw new RuntimeException(e);
 		}
-		boolean printed =false;
+		boolean printed = false;
 		log.info("Sending RegisterSensor requests.");
 		for (Observation o : obs) {
-			InsertObservationDocument insObsDoc = InsertObservationBuilder.getInstance().build(o);
+			InsertObservationDocument insObsDoc = InsertObservationBuilder
+					.getInstance().build(o);
 			if (!printed) {
 				printed = true;
-				log.debug("InstertObservation:\n{}", insObsDoc.xmlText(Namespace.defaultOptions()));
+				log.debug("InstertObservation:\n{}", insObsDoc
+						.xmlText(Namespace.defaultOptions()));
 			}
 			try {
 				sendPostRequests(url, insObsDoc);
-			} catch(Throwable e) {
+			} catch (Throwable e) {
 				log.warn("Can not insert Observation.");
 				throw new RuntimeException(e);
 			}
 		}
 		log.info("Generating GetObservation request.");
-		GetObservationDocument getObsDoc = GetObservationBuilder.getInstance().build(process, obs);
+		GetObservationDocument getObsDoc = GetObservationBuilder.getInstance()
+				.build(process, obs);
 		return new GetObservationRequestBinding(getObsDoc);
 	}
 
-	protected void sendPostRequests(String url, XmlObject doc) throws IOException {
+	protected void sendPostRequests(String url, XmlObject doc)
+			throws IOException {
 		try {
-			XmlObject xml = XmlObject.Factory.parse(Utils.sendPostRequest(url, doc.xmlText()));
+			XmlObject xml = XmlObject.Factory.parse(Utils
+					.sendPostRequest(url, doc.xmlText()));
 
 			if (xml instanceof RegisterSensorResponseDocument) {
-				log.info("RegisterSensor successfull: {}", 
-						((RegisterSensorResponseDocument) xml).getRegisterSensorResponse().getAssignedSensorId());
+				log.info("RegisterSensor successfull: {}", ((RegisterSensorResponseDocument) xml)
+						.getRegisterSensorResponse().getAssignedSensorId());
 			} else if (xml instanceof InsertObservationResponseDocument) {
-				log.info("InsertObservation successfull: {}", 
-						((InsertObservationResponseDocument) xml).getInsertObservationResponse().getAssignedObservationId());
+				log.info("InsertObservation successfull: {}", ((InsertObservationResponseDocument) xml)
+						.getInsertObservationResponse()
+						.getAssignedObservationId());
 			} else if (xml instanceof ExceptionReportDocument) {
 				ExceptionReportDocument ex = (ExceptionReportDocument) xml;
-				String errorKey = ex.getExceptionReport().getExceptionArray(0).getExceptionCode();
-				String message = ex.getExceptionReport().getExceptionArray(0).getExceptionTextArray(0);
-				throw new RuntimeException(new ExceptionReport(message, errorKey));
+				String errorKey = ex.getExceptionReport().getExceptionArray(0)
+						.getExceptionCode();
+				String message = ex.getExceptionReport().getExceptionArray(0)
+						.getExceptionTextArray(0);
+				throw new RuntimeException(new ExceptionReport(message,
+						errorKey));
 			}
 		} catch (XmlException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 }

@@ -30,17 +30,19 @@ import org.uncertweb.sta.wps.method.grouping.impl.IgnoreTimeGrouping;
 import org.uncertweb.sta.wps.testutils.ProcessTester;
 
 public class InputFailureTest {
+
 	ProcessTester p = null;
-	
+
 	@Before
 	public void setUp() {
 		p = new ProcessTester();
 	}
-	
-	@Ignore@Test(expected=AlgorithmParameterException.class)
+
+	@Ignore
+	@Test(expected = AlgorithmParameterException.class)
 	public void noObservationCollection() {
 		p.selectAlgorithm(IgnoreSpatialGrouping.class, IgnoreTimeGrouping.class);
 		p.execute();
 	}
-	
+
 }

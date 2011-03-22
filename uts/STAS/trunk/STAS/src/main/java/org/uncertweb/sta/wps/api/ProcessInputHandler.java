@@ -51,7 +51,7 @@ public abstract class ProcessInputHandler<T> {
 	 * The atomic inputs this handler needs.
 	 */
 	private Set<SingleProcessInput<?>> inputs;
-	
+
 	public ProcessInputHandler(AbstractProcessInput<?>... abstractProcessInputs) {
 		Set<SingleProcessInput<?>> inputs = new HashSet<SingleProcessInput<?>>();
 		for (AbstractProcessInput<?> abi : abstractProcessInputs) {
@@ -59,7 +59,7 @@ public abstract class ProcessInputHandler<T> {
 		}
 		setNeededInputs(inputs);
 	}
-	
+
 	/**
 	 * @param inputs the inputs this handler needs.
 	 */
@@ -72,8 +72,7 @@ public abstract class ProcessInputHandler<T> {
 	 * will be checked and the actual processing will be delegated to
 	 * {@link #processInputs(Map)}.
 	 * 
-	 * @param inputs
-	 *            the process inputs (can't be <code>null</code>)
+	 * @param inputs the process inputs (can't be <code>null</code>)
 	 * @return the processed final input
 	 */
 	public T process(Map<String, List<IData>> inputs) {
@@ -85,19 +84,22 @@ public abstract class ProcessInputHandler<T> {
 			List<IData> d = inputs.get(p.getId());
 			if (d == null || d.isEmpty()) {
 				if (p.getMinOccurs().compareTo(BigInteger.ZERO) > 0) {
-					throw new AlgorithmParameterException(MessageFormat.format(
-							"Missing '{1}' parameter.", p.getId()));
+					throw new AlgorithmParameterException(
+							MessageFormat.format("Missing '{1}' parameter.", p
+									.getId()));
 				}
 			} else {
 				BigInteger size = BigInteger.valueOf(d.size());
 				if (p.getMinOccurs().compareTo(size) > 0) {
-					throw new AlgorithmParameterException(MessageFormat.format(
-							"Parameter '{1}' occurs only {2} times.",
-							p.getId(), d.size()));
+					throw new AlgorithmParameterException(
+							MessageFormat
+									.format("Parameter '{1}' occurs only {2} times.", p
+											.getId(), d.size()));
 				} else if (p.getMaxOccurs().compareTo(size) < 0) {
-					throw new AlgorithmParameterException(MessageFormat.format(
-							"Parameter '{1}' can only occur {2} times.",
-							p.getId(), p.getMaxOccurs()));
+					throw new AlgorithmParameterException(
+							MessageFormat
+									.format("Parameter '{1}' can only occur {2} times.", p
+											.getId(), p.getMaxOccurs()));
 				} else {
 					rawInputs.put(p.getId(), d);
 				}
@@ -120,9 +122,10 @@ public abstract class ProcessInputHandler<T> {
 		if (neededInputs.size() == 0) {
 			return null;
 		} else if (neededInputs.size() > 1) {
-			throw new RuntimeException(MessageFormat.format(
-					"{1} is not aplicable for more than 1 input.",
-					this.getClass()));
+			throw new RuntimeException(
+					MessageFormat
+							.format("{1} is not aplicable for more than 1 input.", this
+									.getClass()));
 		} else {
 			return (SingleProcessInput<T>) neededInputs.iterator().next();
 		}
@@ -138,8 +141,7 @@ public abstract class ProcessInputHandler<T> {
 	/**
 	 * Processes the inputs and generates the final input.
 	 * 
-	 * @param inputs
-	 *            the process inputs (can't be <code>null</code>)
+	 * @param inputs the process inputs (can't be <code>null</code>)
 	 * @return the processed final input
 	 */
 	protected abstract T processInputs(Map<String, List<IData>> inputs);

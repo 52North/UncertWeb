@@ -36,7 +36,8 @@ import org.uncertweb.sta.wps.api.AbstractProcessInput;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public abstract class GroupingMethod<T> implements Iterable<ObservationMapping<T>> {
+public abstract class GroupingMethod<T> implements
+		Iterable<ObservationMapping<T>> {
 
 	/**
 	 * The Logger.
@@ -57,10 +58,8 @@ public abstract class GroupingMethod<T> implements Iterable<ObservationMapping<T
 	/**
 	 * Set the input for this grouping.
 	 * 
-	 * @param observations
-	 *            the observations to group
-	 * @param inputs
-	 *            inputs needed by this {@code GroupingMethod}
+	 * @param observations the observations to group
+	 * @param inputs inputs needed by this {@code GroupingMethod}
 	 */
 	public void setInputs(List<Observation> observations,
 			Map<AbstractProcessInput<?>, Object> inputs) {

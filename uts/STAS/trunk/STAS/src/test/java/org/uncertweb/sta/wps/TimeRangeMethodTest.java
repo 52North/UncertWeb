@@ -40,22 +40,25 @@ import org.uncertweb.sta.wps.testutils.ObservationFactory;
 import org.uncertweb.sta.wps.testutils.ProcessTester;
 
 public class TimeRangeMethodTest {
+
 	private static final String PROCESS = "urn:ogc:object:sensor:test:timerange";
 	private static final long ONE_MINUTE = 1000 * 60;
 	private ProcessTester p = null;
-	
-	@Ignore@Before
+
+	@Ignore
+	@Before
 	public void setUp() {
 		p = new ProcessTester();
 	}
-	 
-	@Ignore@Test(timeout=ONE_MINUTE)
+
+	@Ignore
+	@Test(timeout = ONE_MINUTE)
 	public void bigObsColl() throws XmlException {
 		p.setSpatialAggregationMethod(MedianAggregation.class);
 		p.setTemporalAggregationMethod(MedianAggregation.class);
 		p.selectAlgorithm(IgnoreSpatialGrouping.class, TimeRangeGrouping.class);
 		p.setTimeRange("P1D");
-		
+
 		ObservationFactory f = ObservationFactory.getInstance();
 		List<Observation> obs = new LinkedList<Observation>();
 		DateTime begin = new DateTime();

@@ -35,8 +35,7 @@ import org.n52.wps.io.data.IData;
  * @see SingleProcessInput
  * @see CompositeProcessInput
  * @see ProcessInputHandler
- * @param <T>
- *            the Java type in which this input will be converted
+ * @param <T> the Java type in which this input will be converted
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
@@ -46,17 +45,16 @@ public abstract class AbstractProcessInput<T> {
 	 * The identifier of this input.
 	 */
 	private String id;
-	
+
 	/**
 	 * Creates a new input with the given id.
 	 * 
-	 * @param id
-	 *            the input id
+	 * @param id the input id
 	 */
 	protected AbstractProcessInput(String id) {
 		this.id = id;
 	}
-	
+
 	/**
 	 * Breaks down this input to its basic components. If this is a input only
 	 * consisting of one input it should simply return itself.
@@ -69,12 +67,11 @@ public abstract class AbstractProcessInput<T> {
 	 * Handles the input set of a WPS process and extracts the input which is
 	 * described by this class.
 	 * 
-	 * @param inputs
-	 *            the WPS inputs
+	 * @param inputs the WPS inputs
 	 * @return the final input
 	 */
 	public abstract T handle(Map<String, List<IData>> inputs);
-	
+
 	/**
 	 * @return the identifier of this input
 	 */

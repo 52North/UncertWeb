@@ -75,10 +75,8 @@ public class GetFeatureRequestGenerator extends AbstractXMLGenerator implements
 	 * Writes the given {@code IData} (which should be a
 	 * {@link GetFeatureRequestBinding}) to a {@code Writer}.
 	 * 
-	 * @param data
-	 *            the data
-	 * @param writer
-	 *            the writer
+	 * @param data the data
+	 * @param writer the writer
 	 */
 	public void write(IData data, Writer writer) {
 		GetFeatureDocument xml = ((GetFeatureRequestBinding) data).getPayload();

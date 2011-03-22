@@ -63,7 +63,8 @@ public class NoTemporalGrouping extends TemporalGrouping {
 				/* due some mystery in HashMap we have to do it this way... */
 				LinkedList<Observation> toAddTo = null;
 				for (LinkedList<Observation> lo : list) {
-					if (lo.element().getObservationTime().hashCode() == o.getObservationTime().hashCode()) {
+					if (lo.element().getObservationTime().hashCode() == o
+							.getObservationTime().hashCode()) {
 						toAddTo = lo;
 					}
 				}
@@ -123,14 +124,12 @@ public class NoTemporalGrouping extends TemporalGrouping {
 	/**
 	 * Creates a new {@code TemporalGrouping}.
 	 */
-	public NoTemporalGrouping() {
-	}
+	public NoTemporalGrouping() {}
 
 	/**
 	 * Creates a new {@code TemporalGrouping}.
 	 * 
-	 * @param obs
-	 *            the observations to group
+	 * @param obs the observations to group
 	 */
 	public NoTemporalGrouping(List<Observation> obs) {
 		setInputs(obs, null);

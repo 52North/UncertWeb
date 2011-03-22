@@ -75,17 +75,17 @@ public class ObservationGenerator {
 	/**
 	 * The Logger.
 	 */
-	protected static final Logger log = LoggerFactory.getLogger(ObservationGenerator.class);
-	
+	protected static final Logger log = LoggerFactory
+			.getLogger(ObservationGenerator.class);
+
 	/**
 	 * Generates a {@link ObservationDocument}.
 	 * 
-	 * @param o
-	 *            the {@code Observation}
+	 * @param o the {@code Observation}
 	 */
 	public ObservationDocument generateXML(Observation o) {
 		ObservationDocument doc = ObservationDocument.Factory.newInstance();
-		
+
 		MeasurementType m = (MeasurementType) doc.addNewObservation()
 				.substitute(OM.q("Measurement"), MeasurementType.type);
 		if (o.getId() != null)
@@ -98,17 +98,16 @@ public class ObservationGenerator {
 		generateFeatureOfInterest(o, m);
 		return doc;
 	}
-	
+
 	/**
 	 * Generates the Metadata.
 	 * 
-	 * @param o
-	 *            the {@code Observation}
-	 * @param m
-	 *            the XmlBean within the Metadata is generated.
+	 * @param o the {@code Observation}
+	 * @param m the XmlBean within the Metadata is generated.
 	 */
 	protected void generateMetaData(Observation o, MeasurementType m) {
-		if (!(o instanceof OriginAwareObservation)) return;
+		if (!(o instanceof OriginAwareObservation))
+			return;
 		OriginAwareObservation oao = (OriginAwareObservation) o;
 		LinkedList<String> obsIds = new LinkedList<String>();
 		for (Observation so : oao.getSourceObservations()) {
@@ -123,14 +122,13 @@ public class ObservationGenerator {
 	/**
 	 * Generates GetObservationById GET request for the give observation Id's.
 	 * 
-	 * @param url
-	 *            the base URL
-	 * @param observationIds
-	 *            the Id's of the {@link Observation}s
+	 * @param url the base URL
+	 * @param observationIds the Id's of the {@link Observation}s
 	 * @return the generated request
 	 */
-	protected String getObservationByIdUrl(String url, List<String> observationIds) {
-		HashMap<String, String> props = new HashMap<String, String>();
+	protected String getObservationByIdUrl(String url,
+			List<String> observationIds) {
+		HashMap<Constants.Sos.Parameter, Object> props = new HashMap<Constants.Sos.Parameter, Object>();
 		props.put(Constants.Sos.Parameter.REQUEST, Constants.Sos.Operation.GET_OBSERVATION_BY_ID);
 		props.put(Constants.Sos.Parameter.SERVICE, Constants.Sos.SERVICE_NAME);
 		props.put(Constants.Sos.Parameter.VERSION, Constants.Sos.SERVICE_VERSION);
@@ -151,10 +149,8 @@ public class ObservationGenerator {
 	/**
 	 * Generates the FeatureOfInterest.
 	 * 
-	 * @param o
-	 *            the {@code Observation}
-	 * @param m
-	 *            the XmlBean within the FeatureOfInterest is generated.
+	 * @param o the {@code Observation}
+	 * @param m the XmlBean within the FeatureOfInterest is generated.
 	 */
 	protected static void generateFeatureOfInterest(Observation o,
 			MeasurementType m) {
@@ -162,16 +158,16 @@ public class ObservationGenerator {
 		if (f != null) {
 			FeaturePropertyType fpt = m.addNewFeatureOfInterest();
 			if (f instanceof SamplingPoint) {
-				SamplingPointType spt = SamplingPointType.Factory.newInstance(); 
+				SamplingPointType spt = SamplingPointType.Factory.newInstance();
 				SamplingPoint sp = (SamplingPoint) f;
 
-				if (sp.getName() != null) { 
+				if (sp.getName() != null) {
 					spt.addNewName().setStringValue(sp.getName());
-				} 
-				if (sp.getId() != null) { 
+				}
+				if (sp.getId() != null) {
 					spt.setId(sp.getId());
 				}
-				
+
 				if (sp.getSampledFeature() != null) {
 					spt.addNewSampledFeature().setHref(sp.getSampledFeature());
 				} else {
@@ -180,13 +176,16 @@ public class ObservationGenerator {
 
 				DirectPositionType dpt = spt.addNewPosition().addNewPoint()
 						.addNewPos();
-				dpt.setSrsName(Constants.URN_EPSG_SRS_PREFIX + sp.getLocation().getSRID());
-				
+				dpt.setSrsName(Constants.URN_EPSG_SRS_PREFIX
+						+ sp.getLocation().getSRID());
+
 				if (Utils.switchCoordinates(sp.getLocation().getSRID())) {
-					dpt.setStringValue(sp.getLocation().getCoordinate().x + " " + sp.getLocation().getCoordinate().y);
+					dpt.setStringValue(sp.getLocation().getCoordinate().x + " "
+							+ sp.getLocation().getCoordinate().y);
 				} else {
-					dpt.setStringValue(sp.getLocation().getCoordinate().y + " " + sp.getLocation().getCoordinate().x);
-					
+					dpt.setStringValue(sp.getLocation().getCoordinate().y + " "
+							+ sp.getLocation().getCoordinate().x);
+
 				}
 
 				fpt.addNewFeature().set(spt);
@@ -225,10 +224,8 @@ public class ObservationGenerator {
 	 * Generates a sampling surface. Currently {@link Polygon} and
 	 * {@link MultiPolygon} are supported.
 	 * 
-	 * @param geom
-	 *            the {@code Geometry}
-	 * @param sst
-	 *            the XmlBean in which the surface will generated
+	 * @param geom the {@code Geometry}
+	 * @param sst the XmlBean in which the surface will generated
 	 */
 	protected static void generateShape(Geometry geom, SamplingSurfaceType sst) {
 		if (geom instanceof Polygon) {
@@ -239,19 +236,20 @@ public class ObservationGenerator {
 			}
 			generateMultiPolygon((MultiPolygon) geom, sst.addNewShape());
 		} else {
-			throw new RuntimeException("Not yet implemented: " + geom.getClass());
+			throw new RuntimeException("Not yet implemented: "
+					+ geom.getClass());
 		}
 	}
-	
+
 	/**
-	 * Generates the {@code MultiPolygon} (encoded as an {@code CompositeSurfaceType}).
+	 * Generates the {@code MultiPolygon} (encoded as an
+	 * {@code CompositeSurfaceType}).
 	 * 
-	 * @param p
-	 *            the {@code MultiPolygon} 
-	 * @param spt
-	 *            the XmlBean which will be substituted
+	 * @param p the {@code MultiPolygon}
+	 * @param spt the XmlBean which will be substituted
 	 */
-	protected static void generateMultiPolygon(MultiPolygon mp, SurfacePropertyType spt) {
+	protected static void generateMultiPolygon(MultiPolygon mp,
+			SurfacePropertyType spt) {
 		CompositeSurfaceType cst = (CompositeSurfaceType) spt.addNewSurface()
 				.changeType(CompositeSurfaceType.type);
 		for (int i = 0; i < mp.getNumGeometries(); i++) {
@@ -267,41 +265,42 @@ public class ObservationGenerator {
 	/**
 	 * Generates the Polygon.
 	 * 
-	 * @param p
-	 *            the {@code Polygon} 
-	 * @param ast
-	 *            the XmlBean which will be substituted
+	 * @param p the {@code Polygon}
+	 * @param ast the XmlBean which will be substituted
 	 */
 	protected static void generatePolygon(Polygon p, AbstractSurfaceType ast) {
-		
-		PolygonType pt = (PolygonType) ast.substitute(GML.q("Polygon"), PolygonType.type);
-		
+
+		PolygonType pt = (PolygonType) ast
+				.substitute(GML.q("Polygon"), PolygonType.type);
+
 		int srs = p.getSRID();
 		if (srs == 0) {
-			//TODO GeoTools parser does not set SRID
+			// TODO GeoTools parser does not set SRID
 			log.warn("SRID not set on Polygon. Defaulting to '4326'");
 			srs = 4326;
 		}
-		pt.setSrsName(Constants.URN_EPSG_SRS_PREFIX	+ srs);
-		
-		LinearRingType outer = (LinearRingType) pt.addNewExterior().addNewRing()
+		pt.setSrsName(Constants.URN_EPSG_SRS_PREFIX + srs);
+
+		LinearRingType outer = (LinearRingType) pt.addNewExterior()
+				.addNewRing()
 				.substitute(GML.q("LinearRing"), LinearRingType.type);
-		outer.addNewCoordinates().setStringValue(generateCoordinates(srs, p.getExteriorRing().getCoordinates()));
-		
+		outer.addNewCoordinates().setStringValue(generateCoordinates(srs, p
+				.getExteriorRing().getCoordinates()));
+
 		for (int i = 0; i < p.getNumInteriorRing(); i++) {
-			LinearRingType inner = (LinearRingType) pt.addNewInterior().addNewRing()
+			LinearRingType inner = (LinearRingType) pt.addNewInterior()
+					.addNewRing()
 					.substitute(GML.q("LinearRing"), LinearRingType.type);
-			inner.addNewCoordinates().setStringValue(generateCoordinates(srs, p.getInteriorRingN(i).getCoordinates()));
+			inner.addNewCoordinates().setStringValue(generateCoordinates(srs, p
+					.getInteriorRingN(i).getCoordinates()));
 		}
 	}
-	
+
 	/**
 	 * Generates a coordinate string.
 	 * 
-	 * @param epsg
-	 *            the EPSG id of the SRS
-	 * @param c
-	 *            the coordinate array
+	 * @param epsg the EPSG id of the SRS
+	 * @param c the coordinate array
 	 * @return the coordinate string
 	 * @see Utils#switchCoordinates(int)
 	 */
@@ -310,11 +309,14 @@ public class ObservationGenerator {
 		boolean swap = Utils.switchCoordinates(epsg);
 		for (int i = 0; i < c.length; i++) {
 			if (swap) {
-				buf.append(Utils.NUMBER_FORMAT.format(c[i].x)).append(" ").append(Utils.NUMBER_FORMAT.format(c[i].y));
+				buf.append(Utils.NUMBER_FORMAT.format(c[i].x)).append(" ")
+						.append(Utils.NUMBER_FORMAT.format(c[i].y));
 			} else {
-				buf.append(Utils.NUMBER_FORMAT.format(c[i].y)).append(" ").append(Utils.NUMBER_FORMAT.format(c[i].x));
+				buf.append(Utils.NUMBER_FORMAT.format(c[i].y)).append(" ")
+						.append(Utils.NUMBER_FORMAT.format(c[i].x));
 			}
-			if (i < c.length-1) buf.append(",");
+			if (i < c.length - 1)
+				buf.append(",");
 		}
 		return buf.toString();
 	}
@@ -322,10 +324,8 @@ public class ObservationGenerator {
 	/**
 	 * Generates the Procedure.
 	 * 
-	 * @param o
-	 *            the {@code Observation}
-	 * @param m
-	 *            the XmlBean within the Procedure is generated.
+	 * @param o the {@code Observation}
+	 * @param m the XmlBean within the Procedure is generated.
 	 */
 	protected static void generateProcedure(Observation o, MeasurementType m) {
 		if (o.getSensorModel() != null) {
@@ -336,10 +336,8 @@ public class ObservationGenerator {
 	/**
 	 * Generates the ObservedProperty.
 	 * 
-	 * @param o
-	 *            the {@code Observation}
-	 * @param m
-	 *            the XmlBean within the ObservedProperty is generated.
+	 * @param o the {@code Observation}
+	 * @param m the XmlBean within the ObservedProperty is generated.
 	 */
 	protected static void generateObservedProperty(Observation o,
 			MeasurementType m) {
@@ -351,10 +349,8 @@ public class ObservationGenerator {
 	/**
 	 * Generates the Result.
 	 * 
-	 * @param o
-	 *            the {@code Observation}
-	 * @param m
-	 *            the XmlBean within the Result is generated.
+	 * @param o the {@code Observation}
+	 * @param m the XmlBean within the Result is generated.
 	 */
 	protected static void generateResult(Observation o, MeasurementType m) {
 		if (!new Double(o.getResult()).equals(Double.NaN)) {
@@ -372,25 +368,29 @@ public class ObservationGenerator {
 	/**
 	 * Generates the SamplingTime.
 	 * 
-	 * @param o
-	 *            the {@code Observation}
-	 * @param m
-	 *            the XmlBean within the SamplingTime is generated.
+	 * @param o the {@code Observation}
+	 * @param m the XmlBean within the SamplingTime is generated.
 	 */
 	protected static void generateResultTime(Observation o, MeasurementType m) {
 		if (o.getObservationTime() != null) {
-			AbstractTimeObjectType atot = m.addNewSamplingTime().addNewTimeObject();
+			AbstractTimeObjectType atot = m.addNewSamplingTime()
+					.addNewTimeObject();
 			if (o.getObservationTime() instanceof ObservationTimeInterval) {
-				TimePeriodType tpt = (TimePeriodType) atot.substitute(
-						GML.q("TimePeriod"), TimePeriodType.type);
-				ObservationTimeInterval time = (ObservationTimeInterval) o.getObservationTime();
-				tpt.addNewBeginPosition().setStringValue(TimeUtils.format(time.getStart()));
-				tpt.addNewEndPosition().setStringValue(TimeUtils.format(time.getEnd()));
-			} if (o.getObservationTime() instanceof ObservationTimeInstant) {
-				TimeInstantType tit = (TimeInstantType) atot.substitute(
-						GML.q("TimeInstant"), TimeInstantType.type);
-				tit.addNewTimePosition().setStringValue(TimeUtils.format(
-						((ObservationTimeInstant) o.getObservationTime()).getDateTime()));
+				TimePeriodType tpt = (TimePeriodType) atot.substitute(GML
+						.q("TimePeriod"), TimePeriodType.type);
+				ObservationTimeInterval time = (ObservationTimeInterval) o
+						.getObservationTime();
+				tpt.addNewBeginPosition().setStringValue(TimeUtils.format(time
+						.getStart()));
+				tpt.addNewEndPosition().setStringValue(TimeUtils.format(time
+						.getEnd()));
+			}
+			if (o.getObservationTime() instanceof ObservationTimeInstant) {
+				TimeInstantType tit = (TimeInstantType) atot.substitute(GML
+						.q("TimeInstant"), TimeInstantType.type);
+				tit.addNewTimePosition()
+						.setStringValue(TimeUtils.format(((ObservationTimeInstant) o
+								.getObservationTime()).getDateTime()));
 			}
 		} else {
 			throw new NullPointerException("ObservationTime is null.");

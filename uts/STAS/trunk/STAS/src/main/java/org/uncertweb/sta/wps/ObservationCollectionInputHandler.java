@@ -46,7 +46,7 @@ public class ObservationCollectionInputHandler extends
 	 * The input containing the SOS URL
 	 */
 	private SingleProcessInput<String> urlInput;
-	
+
 	/**
 	 * The input containing the {@link GetObservationDocument} request.
 	 */

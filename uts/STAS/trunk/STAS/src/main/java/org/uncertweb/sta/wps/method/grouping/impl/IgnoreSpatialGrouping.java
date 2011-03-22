@@ -65,7 +65,7 @@ public class IgnoreSpatialGrouping extends SpatialGrouping {
 					.iterator();
 		case 1:
 			f = obs.get(0).getFeatureOfInterest();
-			break;
+		break;
 		default:
 			ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
 			for (Observation o : obs) {
@@ -74,14 +74,19 @@ public class IgnoreSpatialGrouping extends SpatialGrouping {
 				}
 			}
 			GeometryFactory gf = new GeometryFactory();
-			Geometry ch = gf.createMultiPoint(coordinates.toArray(new Coordinate[0])).convexHull();
-			String id = "foi_" + RandomStringGenerator.getInstance().generate(20);
+			Geometry ch = gf
+					.createMultiPoint(coordinates.toArray(new Coordinate[0]))
+					.convexHull();
+			String id = "foi_"
+					+ RandomStringGenerator.getInstance().generate(20);
 			f = new SamplingSurface(ch, Constants.NULL_URN, id, id);
 		}
 
-		return Utils.mutableSingletonList(new ObservationMapping<ISamplingFeature>(f, obs)).iterator();
+		return Utils
+				.mutableSingletonList(new ObservationMapping<ISamplingFeature>(
+						f, obs)).iterator();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -89,6 +94,5 @@ public class IgnoreSpatialGrouping extends SpatialGrouping {
 	public Set<AbstractProcessInput<?>> getAdditionalInputDeclarations() {
 		return Utils.set();
 	}
-
 
 }

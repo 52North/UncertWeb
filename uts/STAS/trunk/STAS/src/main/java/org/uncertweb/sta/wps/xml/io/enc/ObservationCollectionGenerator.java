@@ -80,10 +80,8 @@ public class ObservationCollectionGenerator extends AbstractXMLGenerator
 	 * Writes the given {@code IData} (which should be a
 	 * {@link ObservationCollectionBinding}) to a {@code Writer}.
 	 * 
-	 * @param data
-	 *            the data
-	 * @param writer
-	 *            the writer
+	 * @param data the data
+	 * @param writer the writer
 	 */
 	public void write(IData coll, Writer writer) {
 		ObservationCollectionDocument xml = generateXML(coll);
@@ -112,8 +110,7 @@ public class ObservationCollectionGenerator extends AbstractXMLGenerator
 	 * Generates an {@code ObservationCollectionDocument} out of the given
 	 * {@code IData} (which should be a {@link ObservationCollectionBinding}).
 	 * 
-	 * @param om
-	 *            the {@code IData}
+	 * @param om the {@code IData}
 	 * @return the generated XmlBean
 	 */
 	public ObservationCollectionDocument generateXML(IData om) {

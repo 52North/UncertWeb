@@ -47,18 +47,19 @@ import org.uncertweb.sta.wps.api.SingleProcessInput;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class FeatureCollectionInputHandler extends ProcessInputHandler<FeatureCollection<FeatureType, Feature>> {
-	
+public class FeatureCollectionInputHandler extends
+		ProcessInputHandler<FeatureCollection<FeatureType, Feature>> {
+
 	/**
 	 * The input containing the WFS URL.
 	 */
 	private SingleProcessInput<String> urlInput;
-	
+
 	/**
 	 * The input containing the {@link GetFeatureDocument} request.
 	 */
 	private SingleProcessInput<GetFeatureDocument> requestInput;
-	
+
 	/**
 	 * The input containing the {@link FeatureCollection} input.
 	 */
@@ -67,15 +68,11 @@ public class FeatureCollectionInputHandler extends ProcessInputHandler<FeatureCo
 	/**
 	 * Creates a new {@code FeatureCollectionInputHandler} for the given inputs.
 	 * 
-	 * @param featureCollection
-	 *            the {@link FeatureCollection} input
-	 * @param wfsUrl
-	 *            the URL input
-	 * @param wfsRequest
-	 *            the {@link GetFeatureDocument} input
+	 * @param featureCollection the {@link FeatureCollection} input
+	 * @param wfsUrl the URL input
+	 * @param wfsRequest the {@link GetFeatureDocument} input
 	 */
-	public FeatureCollectionInputHandler(
-			SingleProcessInput<FeatureCollection<FeatureType, Feature>> featureCollection,
+	public FeatureCollectionInputHandler(SingleProcessInput<FeatureCollection<FeatureType, Feature>> featureCollection,
 			SingleProcessInput<String> wfsUrl,
 			SingleProcessInput<GetFeatureDocument> wfsRequest) {
 		super(wfsRequest, wfsUrl, featureCollection);
@@ -89,32 +86,38 @@ public class FeatureCollectionInputHandler extends ProcessInputHandler<FeatureCo
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	protected FeatureCollection<FeatureType, Feature> processInputs(Map<String, List<IData>> inputs) {
+	protected FeatureCollection<FeatureType, Feature> processInputs(
+			Map<String, List<IData>> inputs) {
 		long start = System.currentTimeMillis();
-		
+
 		String wfsUrl = this.urlInput.handle(inputs);
 		GetFeatureDocument wfsReq = this.requestInput.handle(inputs);
-		FeatureCollection<FeatureType,Feature> paramPolColl = this.collectionInput.handle(inputs);
-		
-		FeatureCollection<FeatureType,Feature> requestPolColl = null;
-		
+		FeatureCollection<FeatureType, Feature> paramPolColl = this.collectionInput
+				.handle(inputs);
+
+		FeatureCollection<FeatureType, Feature> requestPolColl = null;
+
 		if (wfsUrl != null && wfsReq != null) {
-			IParser p = ParserFactory.getInstance().getParser(
-					Namespace.GML.SCHEMA, IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING,
-					GTVectorDataBinding.class);
+			IParser p = ParserFactory
+					.getInstance()
+					.getParser(Namespace.GML.SCHEMA, IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING, GTVectorDataBinding.class);
 			if (p == null) {
-				throw new NullPointerException("No Parser found to parse FeatureCollection.");
+				throw new NullPointerException(
+						"No Parser found to parse FeatureCollection.");
 			}
 			try {
-				InputStream wfsResponse = Utils.sendPostRequest(wfsUrl, wfsReq.xmlText());
-				requestPolColl = ((GTVectorDataBinding) p.parse(wfsResponse, IOHandler.DEFAULT_MIMETYPE)).getPayload();
+				InputStream wfsResponse = Utils.sendPostRequest(wfsUrl, wfsReq
+						.xmlText());
+				requestPolColl = ((GTVectorDataBinding) p
+						.parse(wfsResponse, IOHandler.DEFAULT_MIMETYPE))
+						.getPayload();
 			} catch (IOException e) {
 				log.error("Error while retrieving FeatureCollection from "
 						+ wfsUrl, e);
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		FeatureCollection<FeatureType, Feature> result = null;
 		if (paramPolColl != null) {
 			if (requestPolColl != null) {
@@ -124,7 +127,8 @@ public class FeatureCollectionInputHandler extends ProcessInputHandler<FeatureCo
 		} else if (requestPolColl != null) {
 			result = requestPolColl;
 		}
-		log.info("Fetching of FeatureCollection took {}", Utils.timeElapsed(start));
+		log.info("Fetching of FeatureCollection took {}", Utils
+				.timeElapsed(start));
 
 		return result;
 	}

@@ -32,13 +32,13 @@ import net.opengis.ows.x11.AllowedValuesDocument.AllowedValues;
 import net.opengis.wps.x100.LiteralInputType;
 
 import org.n52.wps.io.data.IData;
+import org.uncertweb.sta.utils.Constants;
 
 /**
  * A single atomic process input.
  * 
- * @param <T>
- *            the Java type which this input produces.
- *
+ * @param <T> the Java type which this input produces.
+ * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class SingleProcessInput<T> extends AbstractProcessInput<T> {
@@ -118,70 +118,60 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 	/**
 	 * Creates a new {@link SingleProcessInput}.
 	 * 
-	 * @param id
-	 *            the id of this input
-	 * @param title
-	 *            the title of this input (if <code>null</code>, {@code id} will
-	 *            be used)
-	 * @param description
-	 *            the description of this input
-	 * @param bindingClass
-	 *            the {@link IData} class for this input
-	 * @param min
-	 *            the minimal occurrence of this input
-	 * @param max
-	 *            the maximal occurrence of this input
-	 * @param allowedValues
-	 *            the allowed values for this input (can be <code>null</code>)
-	 * @param defaultValue
-	 *            the default value for this input (can be <code>null</code>)
-	 * @param handler
-	 *            the input handler (if <code>null</code>,
+	 * @param id the id of this input
+	 * @param bindingClass the {@link IData} class for this input
+	 * @param min the minimal occurrence of this input
+	 * @param max the maximal occurrence of this input
+	 * @param allowedValues the allowed values for this input (can be
+	 *            <code>null</code>)
+	 * @param defaultValue the default value for this input (can be
+	 *            <code>null</code>)
+	 * @param handler the input handler (if <code>null</code>,
 	 *            {@link SingleProcessInputHandler} will be used)
 	 */
-	public SingleProcessInput(String id, String title, String description,
-			Class<? extends IData> bindingClass, int min, int max,
-			Set<String> allowedValues, T defaultValue,
+	public SingleProcessInput(String id, Class<? extends IData> bindingClass,
+			int min, int max, Set<String> allowedValues, T defaultValue,
 			ProcessInputHandler<T> handler) {
 		super(id);
-		this.description = description;
-		this.title = title;
+		this.description = getInputDescription(id);
+		this.title = getInputTitle(id);
 		this.allowedValues = allowedValues;
 		this.defaultValue = defaultValue;
 		this.bindingClass = bindingClass;
 		this.minOccurs = new BigInteger(String.valueOf(min));
 		this.maxOccurs = new BigInteger(String.valueOf(max));
-		this.handler = (handler == null) ? new SingleProcessInputHandler() : handler;
+		this.handler = (handler == null) ? new SingleProcessInputHandler()
+				: handler;
 		this.handler.setNeededInputs(this.getProcessInputs());
 	}
 
+
+	private static String getInputDescription(String id) {
+		return Constants.get("process.input." + id + ".desc");
+	}
+
+	private static String getInputTitle(String id) {
+		return Constants.get("process.input." + id + ".title");
+	}
+	
 	/**
 	 * Creates a new {@link SingleProcessInput} with
 	 * {@link SingleProcessInputHandler} as handler.
 	 * 
-	 * @param id
-	 *            the id of this input
-	 * @param title
-	 *            the title of this input (if <code>null</code>, {@code id} will
-	 *            be used)
-	 * @param description
-	 *            the description of this input
-	 * @param bindingClass
-	 *            the {@link IData} class for this input
-	 * @param min
-	 *            the minimal occurrence of this input
-	 * @param max
-	 *            the maximal occurrence of this input
-	 * @param allowedValues
-	 *            the allowed values for this input (can be <code>null</code>)
-	 * @param defaultValue
-	 *            the default value for this input (can be <code>null</code>)
+	 * @param id the id of this input
+	 * @param bindingClass the {@link IData} class for this input
+	 * @param min the minimal occurrence of this input
+	 * @param max the maximal occurrence of this input
+	 * @param allowedValues the allowed values for this input (can be
+	 *            <code>null</code>)
+	 * @param defaultValue the default value for this input (can be
+	 *            <code>null</code>)
 	 */
-	public SingleProcessInput(String identifier, String title,
-			String description, Class<? extends IData> bindingClass, int min,
-			int max, Set<String> allowedValues, T defaultValue) {
-		this(identifier, title, description, bindingClass, min, max,
-				allowedValues, defaultValue, null);
+	public SingleProcessInput(String identifier,
+			Class<? extends IData> bindingClass, int min, int max,
+			Set<String> allowedValues, T defaultValue) {
+		this(identifier, bindingClass, min, max, allowedValues, defaultValue,
+				null);
 	}
 
 	/**
@@ -209,14 +199,16 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 	 * @return the title of this input
 	 */
 	public String getTitle() {
-		return this.title == null ? this.getId() : this.title;
+		return this.title == null || this.description.trim().isEmpty() ? this
+				.getId() : this.title;
 	}
 
 	/**
 	 * @return the description of this input
 	 */
 	public String getDescription() {
-		return this.description;
+		return this.description == null || this.description.trim().isEmpty() ? null
+				: this.description;
 	}
 
 	/**

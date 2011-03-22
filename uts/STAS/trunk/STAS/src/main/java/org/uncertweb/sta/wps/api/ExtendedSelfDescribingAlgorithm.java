@@ -60,33 +60,36 @@ import org.n52.wps.server.observerpattern.ISubject;
  * Extended version of {@link AbstractSelfDescribingAlgorithm}. This class
  * supports object-encoded inputs and outputs:
  * <nl>
- * 		<li>default values</li>
- * 		<li>minimal/maximal occurrences</li>
- * 		<li>descriptions</li>
- * 		<li>titles</li>
- * 		<li>Id's</li>
- * 		<li>multivariate inputs</li>
+ * <li>default values</li>
+ * <li>minimal/maximal occurrences</li>
+ * <li>descriptions</li>
+ * <li>titles</li>
+ * <li>Id's</li>
+ * <li>multivariate inputs</li>
  * </nl>
  * 
  * @see AbstractProcessInput
  * @see ProcessOutput
- *
+ * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgorithm {
-
+public abstract class ExtendedSelfDescribingAlgorithm implements ISubject,
+		IAlgorithm {
+	
 	/**
 	 * List of observers.
+	 * 
 	 * @see ISubject
 	 */
 	private List<IObserver> observers = new ArrayList<IObserver>();
-	
+
 	/**
 	 * The current state of this algorithm.
+	 * 
 	 * @see ISubject
 	 */
 	private Object state = null;
-	
+
 	/**
 	 * The process description of this process.
 	 */
@@ -106,7 +109,7 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 		}
 		throw new RuntimeException("Invalid input identifier: " + identifier);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -136,16 +139,18 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 	}
 
 	/**
-	 * @return the identifier of this process (the class name; should be overwritten)
+	 * @return the identifier of this process (the class name; should be
+	 *         overwritten)
 	 */
 	protected String getIdentifier() {
 		return this.getClass().getName();
 	}
+
 	/**
 	 * @return the inputs for this process
 	 */
 	protected abstract Set<AbstractProcessInput<?>> getInputs();
-	
+
 	/**
 	 * @return the outputs for this process
 	 */
@@ -184,7 +189,7 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 	public void removeObserver(IObserver o) {
 		observers.remove(o);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -192,7 +197,7 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 	public List<String> getErrors() {
 		return new ArrayList<String>();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -214,6 +219,7 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject, IAlgo
 	 */
 	@Override
 	public ProcessDescriptionType getDescription() {
+		//@formatter off
 		if (pdt == null) {
 			ProcessDescriptionsDocument document = ProcessDescriptionsDocument.Factory.newInstance();
 			ProcessDescriptions processDescriptions = document.addNewProcessDescriptions();
