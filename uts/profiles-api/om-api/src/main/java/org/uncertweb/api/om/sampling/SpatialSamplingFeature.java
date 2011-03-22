@@ -3,6 +3,7 @@ package org.uncertweb.api.om.sampling;
 
 import java.net.URI;
 
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -25,7 +26,7 @@ public class SpatialSamplingFeature {
 	private URI href;
 	
 	/**identifier of feature (optional)*/
-	private String identifer;
+	private Identifier identifer;
 	
 	/**envelope of the sampling feature*/
 	private Envelope boundedBy;
@@ -38,9 +39,37 @@ public class SpatialSamplingFeature {
 	
 	/**geometry of the sampling feature*/
 	private Geometry shape;
+	
+	/**
+	 * Constructor with mandatory attributes plus identifier
+	 * 
+	 * @param sampledFeature
+	 *            sampled feature
+	 * @param shape
+	 *            the feature's geometry
+	 * @throws Exception 
+	 */
+	public SpatialSamplingFeature(String sampledFeature,
+			Geometry shape) throws IllegalArgumentException {
+
+		if (shape instanceof Point){
+			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint";
+		}
+		else if (shape instanceof LineString){
+			this.featureType="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingCurve";
+		}
+		else if (shape instanceof Polygon){
+			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface";
+		}
+		else if (shape instanceof RectifiedGrid){
+			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingGrid";
+		}
+		this.setSampledFeature(sampledFeature);
+		this.setShape(shape);
+	}
 
 	/**
-	 * Constructor with mandatory attributes
+	 * Constructor with mandatory attributes plus identifier
 	 * 
 	 * @param identifier
 	 *            identifier of the feature
@@ -50,7 +79,7 @@ public class SpatialSamplingFeature {
 	 *            the feature's geometry
 	 * @throws Exception 
 	 */
-	public SpatialSamplingFeature(String identifier, String sampledFeature,
+	public SpatialSamplingFeature(Identifier identifier, String sampledFeature,
 			Geometry shape) throws IllegalArgumentException {
 
 		if (shape instanceof Point){
@@ -93,9 +122,9 @@ public class SpatialSamplingFeature {
 	 *            shape
 	 * @throws Exception 
 	 */
-	public SpatialSamplingFeature(String gmlId, Envelope boundedBy,
+	public SpatialSamplingFeature(Identifier identifier, Envelope boundedBy,
 			String sampledFeature, Geometry shape) throws Exception {
-		this(gmlId, sampledFeature, shape);
+		this(identifier, sampledFeature, shape);
 
 		this.setBoundedBy(boundedBy);
 	}
@@ -103,9 +132,9 @@ public class SpatialSamplingFeature {
 	// getters and setters
 	/**
 	 * 
-	 * @return Returns gml id of the feature
+	 * @return Returns identifier of the feature
 	 */
-	public String getIdentifier() {
+	public Identifier getIdentifier() {
 		return identifer;
 	}
 
@@ -114,7 +143,7 @@ public class SpatialSamplingFeature {
 	 * 
 	 * @param identifier
 	 */
-	public void setIdentifier(String identifier) {
+	public void setIdentifier(Identifier identifier) {
 		this.identifer = identifier;
 	}
 
