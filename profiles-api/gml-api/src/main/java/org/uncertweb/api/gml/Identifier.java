@@ -53,4 +53,11 @@ public class Identifier {
 	public void setCodeSpace(URI codeSpace) {
 		this.codeSpace = codeSpace;
 	}
+	
+	/**
+	 * returns the codespace concatenated with "/" and the identifier
+	 */
+	public String toIdentifierString(){
+		return this.codeSpace.toString()+"/"+this.identifier;
+	}
 }
