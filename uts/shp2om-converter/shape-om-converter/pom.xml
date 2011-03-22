@@ -7,10 +7,15 @@
     <geotools.version>2.5-SNAPSHOT</geotools.version>
   </properties>
   <dependencies>
+     <dependency>
+      <groupId>org.uncertweb</groupId>
+      <artifactId>gml-api</artifactId>
+      <version>0.0.3-SNAPSHOT</version>
+    </dependency>
     <dependency>
-    	<groupId>org.uncertweb</groupId>
-  		<artifactId>profiles-api</artifactId>
-  		<version>0.0.3-SNAPSHOT</version>
+      <groupId>org.uncertweb</groupId>
+      <artifactId>om-api</artifactId>
+      <version>0.0.3-SNAPSHOT</version>
     </dependency>
     <dependency>
     	<groupId>org.geotools</groupId>
