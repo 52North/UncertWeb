@@ -815,8 +815,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 			// already encoded
 			Identifier identifier = obs.getFeatureOfInterest().getIdentifier();
 			if (identifier != null && !identifier.equals("")) {
-				if (this.gmlID4sfIdentifier.containsKey(identifier.getCodeSpace().toString()+identifier.getIdentifier())) {
-					xb_foi.setHref("#" + this.gmlID4sfIdentifier);
+				if (this.gmlID4sfIdentifier.containsKey(identifier.toIdentifierString())) {
+					xb_foi.setHref("#" + this.gmlID4sfIdentifier.get(identifier.toIdentifierString()));
 					return;
 				}
 			}
@@ -883,7 +883,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 				CodeWithAuthorityType xb_identifier = xb_sfType.addNewIdentifier();
 				xb_identifier.setStringValue(identifier.getIdentifier());
 				xb_identifier.setCodeSpace(identifier.getCodeSpace().toString());
-				this.gmlID4sfIdentifier.put(identifier.getCodeSpace().toString()+identifier.getIdentifier(), gmlId);
+				this.gmlID4sfIdentifier.put(identifier.toIdentifierString(), gmlId);
 			}
 		}
 	}
