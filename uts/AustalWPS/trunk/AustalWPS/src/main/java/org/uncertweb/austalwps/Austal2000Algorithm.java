@@ -38,19 +38,31 @@ import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDoubleBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.FeatureFactory;
 import org.uncertweb.austalwps.util.AustalOutputReader;
 import org.uncertweb.austalwps.util.Point;
 import org.uncertweb.austalwps.util.StreamGobbler;
 import org.uncertweb.austalwps.util.Value;
-import org.geotools.feature.AttributeType;
+//import org.geotools.feature.AttributeType;
+import org.geotools.data.DataUtilities;
 import org.geotools.feature.DefaultFeatureCollections;
-import org.geotools.feature.DefaultFeatureTypeFactory;
+//import org.geotools.feature.DefaultFeatureTypeFactory;
+//import org.geotools.feature.*;
+//import org.geotools.feature.Feature;
+import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureType;
+import org.geotools.feature.AttributeTypeBuilder;
+
+//import org.geotools.feature.FeatureType;
 import org.geotools.feature.IllegalAttributeException;
 import org.geotools.feature.SchemaException;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.JTSFactoryFinder;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -96,7 +108,7 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 	public static final int BUFFER = 2048;
 	
 	public Austal2000Algorithm(){		
-		geomFactory = new GeometryFactory();
+		geomFactory = JTSFactoryFinder.getGeometryFactory(null);
 		
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
 		for(Property property : propertyArray){
@@ -176,7 +188,7 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 
 			try {
 				URL austal2000FileURL = new URL(
-						"http://localhost:8080/wps2/res/" + austal2000FileName);
+						"http://localhost:8081/AustalWPS/res/" + austal2000FileName);
 
 				BufferedReader bufferedReader = new BufferedReader(
 						new InputStreamReader(austal2000FileURL.openStream()));
@@ -199,13 +211,14 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 						FeatureCollection featColl = ((GTVectorDataBinding) firstInputData)
 								.getPayload();
 
-						FeatureIterator iterator = featColl.features();
+						FeatureIterator<SimpleFeature> iterator = featColl.features();
 
 						while (iterator.hasNext()) {
 
-							Feature feature = iterator.next();
+							SimpleFeature feature = iterator.next();
+							//Feature feature = iterator.next();
 
-							Coordinate coord = feature.getDefaultGeometry()
+							Coordinate coord = ((Geometry) feature.getDefaultGeometry())
 									.getCoordinate();
 
 							xp = xp.concat("" + (coord.x - gx) + " ");
@@ -357,7 +370,7 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 			String output = "";
 			
 			try {
-				URL timeperiodFileURL = new URL("http://localhost:8080/wps2/res/" + timeperiodFileName);//TODO: make configurable
+				URL timeperiodFileURL = new URL("http://localhost:8081/AustalWPS/res/" + timeperiodFileName);//TODO: make configurable
 				
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(timeperiodFileURL.openStream()));
 				
@@ -604,62 +617,61 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 	}
 	
 	private FeatureCollection createFeatureCollection(ArrayList<Point[]> pois) {
-		FeatureCollection collection = DefaultFeatureCollections.newCollection();
-		DefaultFeatureTypeFactory typeFactory = new DefaultFeatureTypeFactory();
-		typeFactory.setName("gmlPacketFeatures");
-		AttributeType geom;
-		FeatureType fType = null;
-		Feature feature = null;
-		
-		geom = org.geotools.feature.AttributeTypeFactory.newAttributeType(
-				"Point", com.vividsolutions.jts.geom.Point.class);
-		typeFactory.addType(geom);
-		
-		ArrayList<Value> allValues = pois.get(0)[0].values();//take values from first point...hopefully they are all the same
-		AttributeType attributeType;
-		
-		attributeType = org.geotools.feature.AttributeTypeFactory
-		.newAttributeType("f_id", String.class);
-		
-		typeFactory.addType(attributeType);
-		
+		FeatureCollection collection = FeatureCollections.newCollection();
+		//SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+		//typeBuilder.setName("gmlPacketFeatures");
+		SimpleFeatureType featType = null;
+		SimpleFeature feature = null;
+			
+		// build attributes for all timestamps
+		ArrayList<Value> allValues = pois.get(0)[0].values();//take values from first point...hopefully they are all the same				
+		String atts = "";
 		for (Value value : allValues) {
-			attributeType = org.geotools.feature.AttributeTypeFactory
-			.newAttributeType(value.TimeStamp(), String.class);//TODO: hier die timestamps als feldnamen!?
-			typeFactory.addType(attributeType);
+			atts += (", "+value.TimeStamp()+":String");
+			//attributeType = org.geotools.feature.AttributeTypeFactory
+			//.newAttributeType(value.TimeStamp(), String.class);//TODO: hier die timestamps als feldnamen!?
+			//typeFactory.addType(attributeType);
 		}
 		
 		try {
-			fType = typeFactory.getFeatureType();
+			featType = DataUtilities.createType("Point", "geom:Point, f_id:String"+atts);
 		} catch (SchemaException e) {
 			e.printStackTrace();
-		}				
+		}	
+		SimpleFeatureBuilder featBuilder = new SimpleFeatureBuilder(featType);
+		
+		//geom = org.geotools.feature.AttributeTypeFactory.newAttributeType(
+		//		"Point", com.vividsolutions.jts.geom.Point.class);
+		//typeFactory.addType(geom);	
+		//AttributeType attributeType;	
+		//attributeType = org.geotools.feature.AttributeTypeFactory
+		//.newAttributeType("f_id", String.class);
+		//typeFactory.addType(attributeType);
+					
 		
 		// loop through point arrays
 		for (int j = 0; j < pois.size(); j++) {
 			Point[] p = pois.get(j);
 			for (int i = 0; i < p.length; i++) {
-				ArrayList<Value> vals = p[i].values();
-				
+				ArrayList<Value> vals = p[i].values();				
 				double[] coords = p[i].coordinates();
 				
-				Coordinate coord = new Coordinate(coords[0], coords[1]);
+				// get coordinates and create point
+				Coordinate coord = new Coordinate(coords[0], coords[1]);				
+				com.vividsolutions.jts.geom.Point point = geomFactory.createPoint(coord);				
 				
-				Geometry geom1 = geomFactory.createPoint(coord);
-				
-				ArrayList<Object> properties = new ArrayList<Object>(allValues.size());
-				
-				properties.add(geom1);
-				
+				// collect properties for attributes
+				ArrayList<Object> properties = new ArrayList<Object>(allValues.size());				
+				properties.add(point);				
 				properties.add(p[i].get_fid());
-				
-				for (int k = 0; k < vals.size(); k++) {			
-					
+		
+				for (int k = 0; k < vals.size(); k++) {								
 					properties.add(vals.get(k).PM10val());					
 				}
 
 				try {
-					feature = fType.create(properties.toArray());//scheint so korrekt gemapped zu werden TODO:
+					featBuilder.add(properties);
+					feature = featBuilder.buildFeature(null);
 					collection.add(feature);
 					
 				} catch (IllegalAttributeException e) {
