@@ -14,8 +14,10 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.uncertml.distribution.continuous.GaussianDistribution;
 import org.uncertml.distribution.multivariate.MultivariateGaussianDistribution;
 import org.uncertml.statistic.CovarianceMatrix;
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -126,6 +128,7 @@ public class ShapeFileConverter {
 		for (int i = 0; i < numberOfFields; i++) {
 			DBFField f = reader.getField(i);
 			String name = f.getName();
+			System.out.println(name);
 			number4fieldName.put(name, new Integer(i));
 		}
 		
@@ -142,14 +145,26 @@ public class ShapeFileConverter {
 	    	  	//retrieve phenomenonTime
 	    	  	String phenTime = ((String) rowObjects[number4fieldName.get(props.getPhenTimeColName())]).trim();
 	    	  	TimeObject to = ShapeFileConverterUtil.parsePhenTime(phenTime);
-	    	  	if (uncertaintyType.equals("MultivariateGaussianDistribution")){
+	    	  	
+	    	  	//check if multivariate Gaussian parameters are set, then parse uncertainty and add observations
+	    	  	if (props.getMultivarGaussianMeanColName()!=null&&props.getMultivarGaussianCovarianceColName()!=null){
 	    	  		String means = ((String) rowObjects[number4fieldName.get(props.getMultivarGaussianMeanColName())]).trim();
 	    	  		String covariances = ((String) rowObjects[number4fieldName.get(props.getMultivarGaussianCovarianceColName())]).trim();
 	    	  		double[] meanDoubles = createDoubles(means);
 	    	  		CovarianceMatrix cm = createCovarianceMatrix(meanDoubles.length,covariances);
 	    	  		MultivariateGaussianDistribution mgd = new MultivariateGaussianDistribution(meanDoubles,cm);
 	    	  		UncertaintyResult ur = new UncertaintyResult(mgd);
-	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(obsProp),new URI(obsProp),ssf,ur);
+	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
+	    	  		result.addObservation(obs);
+	    	  	}
+	    	  	
+	    	  	//check if parameters of Gaussian Distribution are set, then also create uncertainty type and create new observation
+	    	  	if (props.getGaussianMeanColName()!=null&&props.getGaussianVarianceColName()!=null){
+	    	  		Double mean = ((Double) rowObjects[number4fieldName.get(props.getGaussianMeanColName())]);
+	    	  		Double var = ((Double) rowObjects[number4fieldName.get(props.getGaussianVarianceColName())]);
+	    	  		GaussianDistribution gd = new GaussianDistribution(mean.doubleValue(),var.doubleValue());
+	    	  		UncertaintyResult ur = new UncertaintyResult(gd);
+	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
 	    	  	
@@ -295,7 +310,8 @@ public class ShapeFileConverter {
 				multiGeomCounter++;
 			}
 			MultiLineString gmlLineString =  new GeometryFactory().createMultiLineString(lsArray);
-			sf = new SpatialSamplingFeature(null, gmlLineString);
+			Identifier identifier = new Identifier(new URI("http://www.uncertweb.org"),id);
+			sf = new SpatialSamplingFeature(identifier,null, gmlLineString);
 		}
 		// TODO add further geometry types
 		return sf;

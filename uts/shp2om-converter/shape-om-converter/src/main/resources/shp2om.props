@@ -50,16 +50,16 @@ UNTYPE=MultivariateGaussianDistribution
 #####
 #set if UNTYPE is GaussianDistribution
 #specifies the columnname of the gaussian mean
-UNTYPE.GAUSSIANDISTRIBUTION.MEAN=PM10_MEANS
+UNTYPE.GAUSSIANDISTRIBUTION.MEAN=PM10_DAY_M
 #specifies the columnname of the gaussian mean
-UNTYPE.GAUSSIANDISTRIBUTION.VARIANCE=PM_10_COVAR
+UNTYPE.GAUSSIANDISTRIBUTION.VARIANCE=PM10_DAY_V
 
 ######
 #set if UNTYPE is MultivariantGaussianDistribution
 #specifies the columnname of the gaussian means
-UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.MEANS=PM10_MEANS
+UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.MEANS=PM10_HOUR_
 #specifies the columnname of the gaussian covariances
-UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.COVARIANCE=PM10_COVAR
+UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.COVARIANCE=PM10_HOUR2
 
 
 ##### specifies the phenomenon time; can be either one ISO 8601 TimeString (YYYY-mm-DD'T'HH:mm:SS.mmmZ) representing a
