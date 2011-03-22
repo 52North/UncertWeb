@@ -5,14 +5,15 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Austal2000 WPS</name>
-  	<organization>
+  <description>Project contains generic WPS Process for running the Austal2000 air quality model.</description>
+  <organization>
 		<name>Institute for Geoinformatics</name>
 		<url>http://ifgi.uni-muenster.de</url>
 	</organization>
 	
 	<properties>
-		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-		<wps.version>2.0-rc5-SNAPSHOT</wps.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<wps.version>2.0-RC7-SNAPSHOT</wps.version>
 	</properties>
 
 	<dependencies>
