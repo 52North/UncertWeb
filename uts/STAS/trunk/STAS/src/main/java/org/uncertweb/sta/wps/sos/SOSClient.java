@@ -44,6 +44,7 @@ import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 
 /**
  * TODO JavaDoc
+ * TODO Asynchronously Feeding
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */

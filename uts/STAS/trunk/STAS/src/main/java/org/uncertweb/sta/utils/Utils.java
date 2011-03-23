@@ -212,20 +212,6 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	}
 
 	/**
-	 * Returns an mutable {@link List} containing only the specified object.
-	 * 
-	 * @param <T> type of t
-	 * @param t the sole object to be stored in the returned set.
-	 * @return an mutable {@code List} containing only the specified object.
-	 * @see Collections#singletonList(Object)
-	 */
-	public static <T> List<T> mutableSingletonList(T t) {
-		LinkedList<T> l = new LinkedList<T>();
-		l.add(t);
-		return l;
-	}
-
-	/**
 	 * Helper method for creating a {@link Collection}.
 	 * 
 	 * @param <T> type of elements in collection
@@ -254,6 +240,20 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	}
 
 	/**
+	 * Returns an mutable {@link List} containing only the specified object.
+	 * 
+	 * @param <T> type of t
+	 * @param t the sole object to be stored in the returned set.
+	 * @return an mutable {@code List} containing only the specified object.
+	 * @see Collections#singletonList(Object)
+	 */
+	public static <T> List<T> list(T t) {
+		LinkedList<T> l = new LinkedList<T>();
+		l.add(t);
+		return l;
+	}
+	
+	/**
 	 * Helper method for creating a {@link List}.
 	 * 
 	 * @param <T> type of elements in list
@@ -262,11 +262,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	 */
 	public static <T> List<T> list(T... ts) {
 		LinkedList<T> list = new LinkedList<T>();
-		if (ts != null) {
-			for (int i = 0; i < ts.length; i++) {
-				list.add(ts[i]);
-			}
-		}
+		Collections.addAll(list, ts);
 		return list;
 	}
 
@@ -280,9 +276,8 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 	public static <T> Set<T> multiSet(Set<T>... ts) {
 		HashSet<T> set = new HashSet<T>();
 		if (ts != null) {
-			for (int i = 0; i < ts.length; i++) {
-				if (ts[i] != null)
-					set.addAll(ts[i]);
+			for (Set<T> s : ts) {
+				set.addAll(s);
 			}
 		}
 		return set;

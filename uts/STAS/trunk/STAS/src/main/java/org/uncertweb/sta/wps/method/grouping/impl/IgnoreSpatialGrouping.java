@@ -83,7 +83,7 @@ public class IgnoreSpatialGrouping extends SpatialGrouping {
 		}
 
 		return Utils
-				.mutableSingletonList(new ObservationMapping<ISamplingFeature>(
+				.list(new ObservationMapping<ISamplingFeature>(
 						f, obs)).iterator();
 	}
 

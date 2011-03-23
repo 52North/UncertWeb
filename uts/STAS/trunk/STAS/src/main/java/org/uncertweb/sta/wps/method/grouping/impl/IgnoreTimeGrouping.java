@@ -75,7 +75,7 @@ public class IgnoreTimeGrouping extends TemporalGrouping {
 				? new ObservationTimeInstant(start)
 				: new ObservationTimeInterval(start, end);
 		return Utils
-				.mutableSingletonList(new ObservationMapping<ObservationTime>(
+				.list(new ObservationMapping<ObservationTime>(
 						time, getObservations())).iterator();
 	}
 

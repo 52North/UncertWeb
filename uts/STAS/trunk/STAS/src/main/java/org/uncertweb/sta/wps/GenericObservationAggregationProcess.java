@@ -30,6 +30,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import net.opengis.sos.x10.GetObservationDocument;
 
@@ -177,7 +182,12 @@ public class GenericObservationAggregationProcess extends
 	 * The {@link AbstractProcessInput}s for all
 	 * {@link GenericObservationAggregationProcess}.
 	 */
-	private static final Set<AbstractProcessInput<?>> commonInputs = getCommonInputs();
+	private static final Set<AbstractProcessInput<?>> COMMON_INPUTS = getCommonInputs();
+
+	/**
+	 * {@code ExecutorService} to process inputs.
+	 */
+	private static final ExecutorService INPUT_FETCHER = Executors.newFixedThreadPool(Constants.THREADS_TO_FETCH_INPUTS);
 
 	/**
 	 * The {@link AbstractProcessInput}s of the {@link TemporalGrouping} method.
@@ -290,7 +300,7 @@ public class GenericObservationAggregationProcess extends
 		if (sgInputs == null)
 			throw new NullPointerException();
 		Set<AbstractProcessInput<?>> set = new HashSet<AbstractProcessInput<?>>();
-		set.addAll(commonInputs);
+		set.addAll(COMMON_INPUTS);
 		set.addAll(tgInputs);
 		set.addAll(sgInputs);
 		return set;
@@ -307,32 +317,65 @@ public class GenericObservationAggregationProcess extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, IData> run(Map<String, List<IData>> inputs) {
+	public Map<String, IData> run(final Map<String, List<IData>> inputs) {
+		final long start = System.currentTimeMillis();
+		final String random = RandomStringGenerator.getInstance().generate(20);
+		final String process = Constants.Sos.AGGREGATED_PROCESS	+ random;
+
+		//@formatter off
 		try {
-			final String random = RandomStringGenerator.getInstance()
-					.generate(20);
-			final String process = Constants.Sos.AGGREGATED_PROCESS
-					+ random;
-
-			long start = System.currentTimeMillis();
-			//@formatter off
-
-			/* get the inputs */
+			/* Helper class to fetch the inputs asynchronously. */
+			class Mapper implements Callable<Mapper> {
+				AbstractProcessInput<?> i; Object o; 
+				Mapper(AbstractProcessInput<?> t) { this.i = t; }
+				@Override public Mapper call() {
+					this.o = i.handle(inputs);
+					return this; 
+				}
+				boolean is(AbstractProcessInput<?> t) {
+					return this.i.equals(t); }
+			}
 			
-			/* TODO do the following synchronously */
-			ObservationCollection observations = OBSERVATION_COLLECTION_INPUT.handle(inputs);
-			boolean groupByObservedProperty = GROUP_BY_OBSERVED_PROPERTY.handle(inputs);
-			boolean temporalBeforeSpatial = TEMPORAL_BEFORE_SPATIAL_GROUPING.handle(inputs);
-			AggregationMethod temporalAggregationMethod = (AggregationMethod) TEMPORAL_AGGREGATION_METHOD.handle(inputs).newInstance();
-			AggregationMethod spatialAggregationMethod = (AggregationMethod) SPATIAL_AGGREGATION_METHOD.handle(inputs).newInstance();
+			/* creating tasks */
+			Set<Mapper> tasks = new HashSet<Mapper>(sgInputs.size() + tgInputs.size() + COMMON_INPUTS.size());
+			for (AbstractProcessInput<?> i : COMMON_INPUTS) { tasks.add(new Mapper(i)); }
+			for (AbstractProcessInput<?> i : sgInputs) { tasks.add(new Mapper(i)); }
+			for (AbstractProcessInput<?> i : tgInputs) { tasks.add(new Mapper(i)); }
 			
-			/* get the grouping method inputs */
+			/* execute tasks */
+			List<Future<Mapper>> futures =  INPUT_FETCHER.invokeAll(tasks);
+			if (futures.size() != tasks.size()) {
+				throw new RuntimeException("Not all input processing tasks could be completed.");
+			}
+			
+			/* input declarations */
 			HashMap<AbstractProcessInput<?>, Object>  sgInputMap = new HashMap<AbstractProcessInput<?>, Object>();
-			for (AbstractProcessInput<?> i : sgInputs) { sgInputMap.put(i, i.handle(inputs)); }
-
 			HashMap<AbstractProcessInput<?>, Object>  tgInputMap = new HashMap<AbstractProcessInput<?>, Object>();
-			for (AbstractProcessInput<?> i : tgInputs) { tgInputMap.put(i, i.handle(inputs)); }
+			ObservationCollection observations = null;
+			Boolean groupByObservedProperty = null;
+			Boolean temporalBeforeSpatial = null;
+			AggregationMethod temporalAggregationMethod = null;
+			AggregationMethod spatialAggregationMethod = null;
 			
+			/* extracting of inputs from the tasks */
+			for (Future<Mapper> future : futures) {
+				Mapper m = future.get();
+				if (m.is(OBSERVATION_COLLECTION_INPUT)) {
+					observations = (ObservationCollection) m.o;
+				} else if (m.is(GROUP_BY_OBSERVED_PROPERTY)) {
+					groupByObservedProperty = (Boolean) m.o;
+				} else if (m.is(TEMPORAL_BEFORE_SPATIAL_GROUPING)) {
+					temporalBeforeSpatial = (Boolean) m.o;
+				} else if (m.is(TEMPORAL_AGGREGATION_METHOD)) {
+					temporalAggregationMethod = (AggregationMethod) ((Class<?>) m.o).newInstance();
+				} else if (m.is(SPATIAL_AGGREGATION_METHOD)) {
+					spatialAggregationMethod = (AggregationMethod) ((Class<?>) m.o).newInstance();
+				}
+				if (tgInputs.contains(m.i)) { tgInputMap.put(m.i, m.o); }
+				if (sgInputs.contains(m.i)) { sgInputMap.put(m.i, m.o); }
+			}
+
+			/* give some status */
 			log.info("Using Process URN: {}", process);
 			log.info("Using Spatial Grouping Method: {}", sg.getName());
 			log.info("Using Spatial Aggregation Method: {}", spatialAggregationMethod.getClass().getName());
@@ -413,13 +456,16 @@ public class GenericObservationAggregationProcess extends
 			log.info("Served Request in {}.", Utils.timeElapsed(start));
 	
 			return response;
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
+			throw new RuntimeException(e);
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 		//@formatter on
-
 	}
 
 	/**

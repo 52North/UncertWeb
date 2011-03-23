@@ -21,8 +21,6 @@
  */
 package org.uncertweb.sta.wps;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +35,7 @@ import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.uncertweb.intamap.utils.Namespace;
+import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.ProcessInputHandler;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
@@ -49,6 +48,12 @@ import org.uncertweb.sta.wps.api.SingleProcessInput;
  */
 public class FeatureCollectionInputHandler extends
 		ProcessInputHandler<FeatureCollection<FeatureType, Feature>> {
+
+	/**
+	 * Cache for GetFeature requests.
+	 */
+	private static final RequestCache<GetFeatureDocument, FeatureCollection<FeatureType, Feature>> CACHE = new RequestCache<GetFeatureDocument, FeatureCollection<FeatureType, Feature>>(
+			Namespace.GML.SCHEMA, GTVectorDataBinding.class, Constants.MAX_CACHED_REQUESTS);
 
 	/**
 	 * The input containing the WFS URL.
@@ -72,7 +77,8 @@ public class FeatureCollectionInputHandler extends
 	 * @param wfsUrl the URL input
 	 * @param wfsRequest the {@link GetFeatureDocument} input
 	 */
-	public FeatureCollectionInputHandler(SingleProcessInput<FeatureCollection<FeatureType, Feature>> featureCollection,
+	public FeatureCollectionInputHandler(
+			SingleProcessInput<FeatureCollection<FeatureType, Feature>> featureCollection,
 			SingleProcessInput<String> wfsUrl,
 			SingleProcessInput<GetFeatureDocument> wfsRequest) {
 		super(wfsRequest, wfsUrl, featureCollection);
@@ -85,7 +91,6 @@ public class FeatureCollectionInputHandler extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	protected FeatureCollection<FeatureType, Feature> processInputs(
 			Map<String, List<IData>> inputs) {
 		long start = System.currentTimeMillis();
@@ -105,17 +110,7 @@ public class FeatureCollectionInputHandler extends
 				throw new NullPointerException(
 						"No Parser found to parse FeatureCollection.");
 			}
-			try {
-				InputStream wfsResponse = Utils.sendPostRequest(wfsUrl, wfsReq
-						.xmlText());
-				requestPolColl = ((GTVectorDataBinding) p
-						.parse(wfsResponse, IOHandler.DEFAULT_MIMETYPE))
-						.getPayload();
-			} catch (IOException e) {
-				log.error("Error while retrieving FeatureCollection from "
-						+ wfsUrl, e);
-				throw new RuntimeException(e);
-			}
+			requestPolColl = CACHE.getResponse(wfsUrl, wfsReq, false);
 		}
 
 		FeatureCollection<FeatureType, Feature> result = null;

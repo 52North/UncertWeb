@@ -29,9 +29,11 @@ import net.opengis.sos.x10.GetObservationDocument;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.server.AlgorithmParameterException;
 import org.uncertweb.intamap.om.ObservationCollection;
+import org.uncertweb.intamap.utils.Namespace;
+import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.api.ProcessInputHandler;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
-import org.uncertweb.sta.wps.sos.GetObservationRequestCache;
+import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
 
 /**
  * Class that handles a {@code String}-URL and a {@code GetObservationDocument}
@@ -43,7 +45,13 @@ public class ObservationCollectionInputHandler extends
 		ProcessInputHandler<ObservationCollection> {
 
 	/**
-	 * The input containing the SOS URL
+	 * Cache for GetObservation requests. 
+	 */
+	private static final RequestCache<GetObservationDocument, ObservationCollection> CACHE = new RequestCache<GetObservationDocument, ObservationCollection>(
+			Namespace.OM.SCHEMA, ObservationCollectionBinding.class, Constants.MAX_CACHED_REQUESTS);
+	
+	/**
+	 * 
 	 */
 	private SingleProcessInput<String> urlInput;
 
@@ -70,8 +78,7 @@ public class ObservationCollectionInputHandler extends
 		if (sosUrl == null) {
 			throw new AlgorithmParameterException("No Source SOS Url.");
 		}
-		return GetObservationRequestCache.getInstance()
-				.getObservationCollection(sosUrl, sosReq, false);
+		return CACHE.getResponse(sosUrl, sosReq, false);
 	}
 
 }

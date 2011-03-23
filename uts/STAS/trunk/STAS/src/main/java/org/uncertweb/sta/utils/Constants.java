@@ -32,10 +32,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.sta.wps.GenericObservationAggregationProcess;
+import org.uncertweb.sta.wps.RequestCache;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
-import org.uncertweb.sta.wps.sos.GetObservationRequestCache;
 
 /**
  * Constants.
@@ -295,9 +295,12 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 		}
 	}
 
+	/** Number of threads to fetch process inputs. */
+	public static final int THREADS_TO_FETCH_INPUTS = getInt("stas.threadsToFetchInputs");
+	
 	/**
-	 * Numbers of cached SOS requests.
-	 * @see GetObservationRequestCache
+	 * Numbers of cached SOS requests. 
+	 * @see RequestCache
 	 */
 	public static final int MAX_CACHED_REQUESTS = getInt("stas.requestCache.max");
 
@@ -336,7 +339,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 		}
 		return prop;
 	}
-
+	
 	/**
 	 * Loads a configuration property.
 	 * 
