@@ -57,9 +57,9 @@ public class BooleanObservationCollection implements IObservationCollection{
 
 
 	@Override
-	public void addObservation(AbstractObservation obs) throws Exception {
+	public void addObservation(AbstractObservation obs) throws IllegalArgumentException {
 		if (!(obs instanceof BooleanObservation)){
-			throw new Exception("Only BooleanObservation could be added to BooleanObservationCollection!");
+			throw new IllegalArgumentException("Only BooleanObservation could be added to BooleanObservationCollection!");
 		}
 		this.members.add((BooleanObservation)obs);
 	}

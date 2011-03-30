@@ -69,16 +69,19 @@ import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.UnitDefinition;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
+import org.uncertweb.api.om.observation.CategoryObservation;
 import org.uncertweb.api.om.observation.DiscreteNumericObservation;
 import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.ReferenceObservation;
 import org.uncertweb.api.om.observation.TextObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
+import org.uncertweb.api.om.observation.collections.CategoryObservationCollection;
 import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
 import org.uncertweb.api.om.observation.collections.ReferenceObservationCollection;
+import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.BooleanResult;
 import org.uncertweb.api.om.result.IntegerResult;
@@ -813,5 +816,59 @@ public class XBObservationParser implements IObservationParser {
 
 	        return sb.toString();
 	    }
+
+	 /**
+		 * generic method for parsing a single observation or an observation collection; in case of a
+		 * single observation, a collection containing one element is returned.
+		 * 
+		 * @param xmlString
+		 * 			
+		 * @return returns internal representation of observation or observation collection
+		 * @throws URISyntaxException
+		 * 			if xlinks could not be resolved or are malformed 
+		 * @throws XmlException
+		 * 			if parsing of geometries fails 
+		 * @throws MalformedURLException 
+		 * 			if xlinks could not be resolved or are malformed
+		 * @throws IllegalArgumentException 
+		 * 			If parsing of observation fails
+		 * @throws UncertaintyParserException 
+					if parsing of uncertainty fails
+		 */
+	public IObservationCollection parse(String xmlString) throws XmlException, URISyntaxException, IllegalArgumentException, MalformedURLException, UncertaintyParserException {
+		XmlObject xb_object = XmlObject.Factory.parse(xmlString);
+		if (xb_object instanceof OMObservationDocument){
+			IObservationCollection col = null;
+			AbstractObservation obs = parseObservation(xmlString);
+			if (obs instanceof Measurement){
+				col = new MeasurementCollection();
+				col.addObservation(obs);
+			}
+			else if (obs instanceof CategoryObservation){
+				col = new CategoryObservationCollection();
+				col.addObservation(obs);
+			}
+			else if (obs instanceof UncertaintyObservation){
+				col = new UncertaintyObservationCollection();
+				col.addObservation(obs);
+			}
+			else if (obs instanceof TextObservation){
+				col = new TextObservationCollection();
+				col.addObservation(obs);
+			}
+			else if (obs instanceof DiscreteNumericObservation){
+				col = new DiscreteNumericObservationCollection();
+				col.addObservation(obs);
+			}
+			else if (obs instanceof ReferenceObservation){
+				col = new ReferenceObservationCollection();
+				col.addObservation(obs);
+			}
+			return col;
+		}
+		else {
+			return parseObservationCollection(xmlString);
+		}
+	}
 
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
-import org.uncertweb.api.om.observation.CategoryObservation;
 import org.uncertweb.api.om.observation.DiscreteNumericObservation;
 
 /**
@@ -54,9 +53,9 @@ public class DiscreteNumericObservationCollection implements
 	}
 
 	@Override
-	public void addObservation(AbstractObservation obs) throws Exception {
+	public void addObservation(AbstractObservation obs) throws IllegalArgumentException {
 		if (!(obs instanceof DiscreteNumericObservation)){
-			throw new Exception("Only DiscreteNumericObservation could be added to DiscreteNumericObservationCollection!");
+			throw new IllegalArgumentException("Only DiscreteNumericObservation could be added to DiscreteNumericObservationCollection!");
 		}	
 		this.members.add((DiscreteNumericObservation)obs);
 	}

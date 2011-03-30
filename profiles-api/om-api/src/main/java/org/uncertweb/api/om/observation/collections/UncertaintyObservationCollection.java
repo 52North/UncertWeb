@@ -52,9 +52,9 @@ public class UncertaintyObservationCollection implements IObservationCollection 
 	}
 
 	@Override
-	public void addObservation(AbstractObservation obs) throws Exception {
+	public void addObservation(AbstractObservation obs) throws IllegalArgumentException {
 		if (!(obs instanceof UncertaintyObservation)){
-			throw new Exception("Only UncertaintyObservation could be added to UncertaintyObservationCollection!");
+			throw new IllegalArgumentException("Only UncertaintyObservation could be added to UncertaintyObservationCollection!");
 		}
 		this.members.add((UncertaintyObservation)obs);
 	}
