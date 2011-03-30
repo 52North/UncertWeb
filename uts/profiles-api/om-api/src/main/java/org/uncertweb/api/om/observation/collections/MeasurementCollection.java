@@ -51,9 +51,9 @@ public class MeasurementCollection implements IObservationCollection{
 	}
 
 	@Override
-	public void addObservation(AbstractObservation obs) throws Exception {
+	public void addObservation(AbstractObservation obs) throws IllegalArgumentException {
 		if (!(obs instanceof Measurement)){
-			throw new Exception("Only Measurement could be added to MeasurementCollection!");
+			throw new IllegalArgumentException("Only Measurement could be added to MeasurementCollection!");
 		}
 		this.members.add((Measurement)obs);
 	}

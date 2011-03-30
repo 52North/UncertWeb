@@ -24,11 +24,19 @@ public interface IObservationCollection {
 	 * method for adding observations
 	 * 
 	 * @param obs
-	 * 			
-	 * @throws Exception
+	 * 			observation to add
+	 * @throws IllegalArgumentException
+	 * 			if type of observation does not match type of collection
 	 */
-	public void addObservation(AbstractObservation obs) throws Exception;
+	public void addObservation(AbstractObservation obs) throws IllegalArgumentException;
 	
+	
+	/**
+	 * getter for retrieving the list of observations contained in the collection
+	 * 
+	 * @return
+	 * 		Returns list of observations contained in the collection
+	 */
 	public List<? extends AbstractObservation> getObservations();
 }
 

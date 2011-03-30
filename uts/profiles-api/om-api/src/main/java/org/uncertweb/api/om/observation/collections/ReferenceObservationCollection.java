@@ -51,9 +51,9 @@ public class ReferenceObservationCollection implements IObservationCollection {
 	}
 
 	@Override
-	public void addObservation(AbstractObservation obs) throws Exception {
+	public void addObservation(AbstractObservation obs) throws IllegalArgumentException {
 		if (!(obs instanceof ReferenceObservation)){
-			throw new Exception("Only ReferenceObservation could be added to ReferenceObservationCollection!");
+			throw new IllegalArgumentException("Only ReferenceObservation could be added to ReferenceObservationCollection!");
 		}
 		this.members.add((ReferenceObservation)obs);
 	}

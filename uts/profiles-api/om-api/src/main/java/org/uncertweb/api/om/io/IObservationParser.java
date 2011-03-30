@@ -17,6 +17,28 @@ import org.uncertweb.api.om.observation.collections.IObservationCollection;
 public interface IObservationParser {
 	
 	/**
+	 * generic method for parsing a single observation or an observation collection; in case of a
+	 * single observation, a collection containing one element is returned.
+	 * 
+	 * @param xmlString
+	 * 			
+	 * @return returns internal representation of observation or observation collection
+	 * @throws URISyntaxException
+	 * 			if xlinks could not be resolved or are malformed 
+	 * @throws XmlException
+	 * 			if parsing of geometries fails 
+	 * @throws MalformedURLException 
+	 * 			if xlinks could not be resolved or are malformed
+	 * @throws IllegalArgumentException 
+	 * 			If parsing of observation fails
+	 * @throws UncertaintyParserException 
+				if parsing of uncertainty fails
+	 */
+	public IObservationCollection parse(String xmlString)
+	throws XmlException, URISyntaxException, IllegalArgumentException, MalformedURLException, UncertaintyParserException;
+
+	
+	/**
 	 * 
 	 * parses an Observation Collection from String and resturns a Java representation
 	 * 
