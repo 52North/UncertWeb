@@ -55,7 +55,6 @@ import org.uncertweb.sta.wps.api.CompositeProcessInput;
 import org.uncertweb.sta.wps.api.ExtendedSelfDescribingAlgorithm;
 import org.uncertweb.sta.wps.api.ProcessOutput;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
-import org.uncertweb.sta.wps.method.MethodFactory;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 import org.uncertweb.sta.wps.method.grouping.GroupingMethod;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
@@ -93,30 +92,14 @@ public class GenericObservationAggregationProcess extends
 			Constants.Process.Inputs.SOS_DESTINATION_URL_ID,
 			LiteralStringBinding.class, 0, 1, null, null);
 
-	/** The spatial {@link AggregationMethod}. */
-	public static final SingleProcessInput<Class<?>> SPATIAL_AGGREGATION_METHOD = new SingleProcessInput<Class<?>>(
-			Constants.Process.Inputs.SPATIAL_AGGREGATION_METHOD_ID,
-			LiteralStringBinding.class, 0, 1, MethodFactory.getInstance()
-					.getAggregationMethods(), MethodFactory.getInstance()
-					.getDefaultSpatialAggregationMethod(),
-			new ClassInputHandler());
-
-	/** The temporal {@link AggregationMethod}. */
-	public static final SingleProcessInput<Class<?>> TEMPORAL_AGGREGATION_METHOD = new SingleProcessInput<Class<?>>(
-			Constants.Process.Inputs.TEMPORAL_AGGREGATION_METHOD_ID,
-			LiteralStringBinding.class, 0, 1, MethodFactory.getInstance()
-					.getAggregationMethods(), MethodFactory.getInstance()
-					.getDefaultTemporalAggregationMethod(),
-			new ClassInputHandler());
-
 	/**
 	 * Indicates if the temporal aggregation should run before the spatial
 	 * aggregation.
 	 */
-	public static final SingleProcessInput<Boolean> TEMPORAL_BEFORE_SPATIAL_GROUPING = new SingleProcessInput<Boolean>(
-			Constants.Process.Inputs.TEMPORAL_BEFORE_SPATIAL_GROUPING_ID,
+	public static final SingleProcessInput<Boolean> SPATIAL_BEFORE_TEMPORAL = new SingleProcessInput<Boolean>(
+			Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL,
 			LiteralBooleanBinding.class, 0, 1, null,
-			Constants.getDefaultFlag(Constants.Process.Inputs.TEMPORAL_BEFORE_SPATIAL_GROUPING_ID));
+			Constants.getDefaultFlag(Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL));
 
 	/**
 	 * Indicates if the observations should be grouped by ObservedProperty.
@@ -210,6 +193,16 @@ public class GenericObservationAggregationProcess extends
 	private Class<? extends TemporalGrouping> tg;
 
 	/**
+	 * The {@link AggregationMethod} to for spatial aggregation.
+	 */
+	private Class<? extends AggregationMethod> sam;
+
+	/**
+	 * The {@link AggregationMethod} to for temporal aggregation.
+	 */
+	private Class<? extends AggregationMethod> tam;
+	
+	/**
 	 * The identifier of this algorithm.
 	 */
 	private String identifier;
@@ -228,11 +221,9 @@ public class GenericObservationAggregationProcess extends
 	private static HashSet<AbstractProcessInput<?>> getCommonInputs() {
 		HashSet<AbstractProcessInput<?>> inputs = new HashSet<AbstractProcessInput<?>>();
 		inputs.add(OBSERVATION_COLLECTION_INPUT);
-		inputs.add(SPATIAL_AGGREGATION_METHOD);
 		inputs.add(GROUP_BY_OBSERVED_PROPERTY);
 		inputs.add(SOS_DESTINATION_URL);
-		inputs.add(TEMPORAL_AGGREGATION_METHOD);
-		inputs.add(TEMPORAL_BEFORE_SPATIAL_GROUPING);
+		inputs.add(SPATIAL_BEFORE_TEMPORAL);
 		return inputs;
 	}
 
@@ -245,12 +236,17 @@ public class GenericObservationAggregationProcess extends
 	 * @param tg temporal grouping method
 	 */
 	public GenericObservationAggregationProcess(String identifier,
-			String title, Class<? extends SpatialGrouping> sg,
-			Class<? extends TemporalGrouping> tg) {
+			String title, 
+			Class<? extends SpatialGrouping> sg,
+			Class<? extends TemporalGrouping> tg,
+			Class<? extends AggregationMethod> sam,
+			Class<? extends AggregationMethod> tam) {
 		this.identifier = identifier;
 		this.title = title;
 		this.sg = sg;
 		this.tg = tg;
+		this.sam = sam;
+		this.tam = tam;
 		this.sgInputs = newSpatialGrouping(null, null)
 				.getAdditionalInputDeclarations();
 		this.tgInputs = newTemporalGrouping(null, null)
@@ -278,6 +274,8 @@ public class GenericObservationAggregationProcess extends
 	 */
 	@Override
 	protected String getAbstract() {
+		return null;
+		/* TODO
 		return new StringBuffer("\n")
 				//@formatter off
 				.append(Constants.Process.DESCRIPTION).append("\n")
@@ -288,6 +286,7 @@ public class GenericObservationAggregationProcess extends
 				.append(MethodFactory.getInstance().getMethodDescription(tg)).append("\n")
 				.toString();
 				//@formatter on
+		  */
 	}
 
 	/**
@@ -353,9 +352,7 @@ public class GenericObservationAggregationProcess extends
 			HashMap<AbstractProcessInput<?>, Object>  tgInputMap = new HashMap<AbstractProcessInput<?>, Object>();
 			ObservationCollection observations = null;
 			Boolean groupByObservedProperty = null;
-			Boolean temporalBeforeSpatial = null;
-			AggregationMethod temporalAggregationMethod = null;
-			AggregationMethod spatialAggregationMethod = null;
+			Boolean spatialBeforeTemporal = null;
 			
 			/* extracting of inputs from the tasks */
 			for (Future<Mapper> future : futures) {
@@ -364,12 +361,8 @@ public class GenericObservationAggregationProcess extends
 					observations = (ObservationCollection) m.o;
 				} else if (m.is(GROUP_BY_OBSERVED_PROPERTY)) {
 					groupByObservedProperty = (Boolean) m.o;
-				} else if (m.is(TEMPORAL_BEFORE_SPATIAL_GROUPING)) {
-					temporalBeforeSpatial = (Boolean) m.o;
-				} else if (m.is(TEMPORAL_AGGREGATION_METHOD)) {
-					temporalAggregationMethod = (AggregationMethod) ((Class<?>) m.o).newInstance();
-				} else if (m.is(SPATIAL_AGGREGATION_METHOD)) {
-					spatialAggregationMethod = (AggregationMethod) ((Class<?>) m.o).newInstance();
+				} else if (m.is(SPATIAL_BEFORE_TEMPORAL)) {
+					spatialBeforeTemporal = (Boolean) m.o;
 				}
 				if (tgInputs.contains(m.i)) { tgInputMap.put(m.i, m.o); }
 				if (sgInputs.contains(m.i)) { sgInputMap.put(m.i, m.o); }
@@ -378,9 +371,9 @@ public class GenericObservationAggregationProcess extends
 			/* give some status */
 			log.info("Using Process URN: {}", process);
 			log.info("Using Spatial Grouping Method: {}", sg.getName());
-			log.info("Using Spatial Aggregation Method: {}", spatialAggregationMethod.getClass().getName());
+			log.info("Using Spatial Aggregation Method: {}", sam.getName());
 			log.info("Using Temporal Grouping Method: {}", tg.getName());
-			log.info("Using Temporal Aggregation Method: {}", temporalAggregationMethod.getClass().getName());
+			log.info("Using Temporal Aggregation Method: {}", tam.getName());
 			log.info("Input: {} Observations.", observations.size());
 			
 			/* sort by observed property or set it to null */
@@ -404,12 +397,12 @@ public class GenericObservationAggregationProcess extends
 			}
 			
 			for (Entry<String, List<Observation>> e : obs.entrySet()) {
-				if (temporalBeforeSpatial) {
-					List<Observation> firstResult = doTemporalAggregation(process, sosUrl, temporalAggregationMethod, e.getKey(), tgInputMap, e.getValue());
-					result.addAll(doSpatialAggregation(process, sosUrl, spatialAggregationMethod, e.getKey(), sgInputMap, firstResult));
+				if (spatialBeforeTemporal) {
+					List<Observation> firstResult = doSpatialAggregation(process, sosUrl, e.getKey(), sgInputMap, e.getValue());
+					result.addAll(doTemporalAggregation(process, sosUrl, e.getKey(), tgInputMap, firstResult));
 				} else {
-					List<Observation> firstResult = doSpatialAggregation(process, sosUrl, spatialAggregationMethod, e.getKey(), sgInputMap, e.getValue());
-					result.addAll(doTemporalAggregation(process, sosUrl, temporalAggregationMethod, e.getKey(),	tgInputMap, firstResult));
+					List<Observation> firstResult = doTemporalAggregation(process, sosUrl, e.getKey(), tgInputMap, e.getValue());
+					result.addAll(doSpatialAggregation(process, sosUrl, e.getKey(), sgInputMap, firstResult));
 				}
 				
 			}
@@ -430,11 +423,11 @@ public class GenericObservationAggregationProcess extends
 					
 					/* TODO add inputs of methods... like time range */
 					meta.put(Constants.Sos.ProcessDescription.Parameter.GROUPED_BY_OBSERVED_PROPERTY, groupByObservedProperty);
-					meta.put(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_BEFORE_SPATIAL_AGGREGATION, temporalBeforeSpatial);
+					meta.put(Constants.Sos.ProcessDescription.Parameter.SPATIAL_BEFORE_TEMPORAL_AGGREGATION, spatialBeforeTemporal);
 					meta.put(Constants.Sos.ProcessDescription.Parameter.SPATIAL_GROUPING_METHOD, this.sg);
 					meta.put(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_GROUPING_METHOD, this.tg);
-					meta.put(Constants.Sos.ProcessDescription.Parameter.SPATIAL_AGGREGATION_METHOD, spatialAggregationMethod.getClass());
-					meta.put(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_AGGREGATION_METHOD, temporalAggregationMethod.getClass());
+					meta.put(Constants.Sos.ProcessDescription.Parameter.SPATIAL_AGGREGATION_METHOD, this.sam);
+					meta.put(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_AGGREGATION_METHOD, this.tam);
 					
 					log.info("Inserting Observations into SOS: {}", destinationUrl);
 					b = new SOSClient().registerAggregatedObservations(result, destinationUrl, process, meta);
@@ -460,10 +453,6 @@ public class GenericObservationAggregationProcess extends
 			throw new RuntimeException(e);
 		} catch (ExecutionException e) {
 			throw new RuntimeException(e);
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
 		}
 		//@formatter on
 	}
@@ -482,9 +471,17 @@ public class GenericObservationAggregationProcess extends
 	 * @return the aggregated {@code Observation}s
 	 */
 	protected List<Observation> doTemporalAggregation(String process,
-			String sourceUrl, AggregationMethod m, String obsProp,
+			String sourceUrl, String obsProp,
 			Map<AbstractProcessInput<?>, Object> inputs, List<Observation> obs) {
 		long start = System.currentTimeMillis();
+		AggregationMethod m;
+		try {
+			m = this.tam.newInstance();
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 		List<Observation> result = new LinkedList<Observation>();
 		/* only process observations with equal FeatureOfInterest */
 
@@ -518,9 +515,17 @@ public class GenericObservationAggregationProcess extends
 	 * @return the aggregated {@code Observation}s
 	 */
 	protected List<Observation> doSpatialAggregation(String process,
-			String sourceUrl, AggregationMethod m, String obsProp,
+			String sourceUrl, String obsProp,
 			Map<AbstractProcessInput<?>, Object> inputs, List<Observation> obs) {
 		long start = System.currentTimeMillis();
+		AggregationMethod m;
+		try {
+			m = this.sam.newInstance();
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 		List<Observation> result = new LinkedList<Observation>();
 		/* only process observations with equal ObservationTime */
 		for (ObservationMapping<ObservationTime> tMap : new NoTemporalGrouping(

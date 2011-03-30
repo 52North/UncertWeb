@@ -35,7 +35,17 @@ import org.n52.wps.server.request.ExecuteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.utils.Namespace;
+import org.uncertweb.sta.utils.Constants;
+import org.uncertweb.sta.wps.api.annotation.Ignore;
+import org.uncertweb.sta.wps.api.annotation.IsOnlyCompatibleWith;
+import org.uncertweb.sta.wps.api.annotation.SpatialAggregationFunction;
+import org.uncertweb.sta.wps.api.annotation.SpatialOnly;
+import org.uncertweb.sta.wps.api.annotation.SpatialPartitioningPredicate;
+import org.uncertweb.sta.wps.api.annotation.TemporalAggregationFunction;
+import org.uncertweb.sta.wps.api.annotation.TemporalOnly;
+import org.uncertweb.sta.wps.api.annotation.TemporalPartitioningPredicate;
 import org.uncertweb.sta.wps.method.MethodFactory;
+import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 import org.uncertweb.sta.wps.method.grouping.GroupingMethod;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
@@ -53,15 +63,22 @@ public class STARepository implements IAlgorithmRepository {
 	/**
 	 * Utility class to encapsulate {@link GroupingMethod}s.
 	 */
-	protected static class MethodPair {
+	protected static class MethodCombination {
 
 		private Class<? extends SpatialGrouping> sg;
 		private Class<? extends TemporalGrouping> tg;
+		private Class<? extends AggregationMethod> sam;
+		private Class<? extends AggregationMethod> tam;
 
-		public MethodPair(Class<? extends SpatialGrouping> sg,
-				Class<? extends TemporalGrouping> tg) {
+		public MethodCombination(
+				Class<? extends SpatialGrouping> sg,
+				Class<? extends TemporalGrouping> tg,
+				Class<? extends AggregationMethod> sam,
+				Class<? extends AggregationMethod> tam) {
 			this.tg = tg;
 			this.sg = sg;
+			this.sam = sam;
+			this.tam = tam;
 		}
 	}
 
@@ -75,29 +92,70 @@ public class STARepository implements IAlgorithmRepository {
 	 * The format of the process id.
 	 */
 	private static final MessageFormat PROCESS_NAME = new MessageFormat(
-			"{0}:{1}");
+			Constants.Process.PROCESS_PREFIX + "{0}:{1}:{2}:{3}");
 
 	/**
 	 * Mapping between process identifier and methods.
 	 */
-	private static final Map<String, MethodPair> ALGORITHMS = loadProcesses();
+	private static final Map<String, MethodCombination> ALGORITHMS = loadProcesses();
 
 	/**
 	 * Loads all {@code GenericObservationAggregationProcess}es.
 	 */
-	protected static HashMap<String, MethodPair> loadProcesses() {
-		HashMap<String, MethodPair> algos = new HashMap<String, MethodPair>();
-		for (Class<? extends SpatialGrouping> sg : MethodFactory.getInstance()
-				.getSpatialGroupingMethods()) {
-			for (Class<? extends TemporalGrouping> tg : MethodFactory
-					.getInstance().getTemporalGroupingMethods()) {
-				String id = PROCESS_NAME.format(new Object[] {
-						sg.getSimpleName(), tg.getSimpleName() });
-				algos.put(id, new MethodPair(sg, tg));
-				log.info("Registered Algorithm: {}", id);
+	protected static HashMap<String, MethodCombination> loadProcesses() {
+		HashMap<String, MethodCombination> algos = new HashMap<String, MethodCombination>();
+		MethodFactory mf = MethodFactory.getInstance();
+		
+		for (Class<? extends SpatialGrouping> sg : mf.getSpatialGroupingMethods()) {
+			if (sg.getAnnotation(Ignore.class) != null) { continue; }
+			SpatialPartitioningPredicate spp = sg.getAnnotation(SpatialPartitioningPredicate.class);
+			String sppName = (spp == null) ? sg.getSimpleName() : spp.value();
+			IsOnlyCompatibleWith sgIocw = sg.getAnnotation(IsOnlyCompatibleWith.class);
+			
+			for (Class<? extends AggregationMethod> sm : mf.getAggregationMethods()) {
+				if (sm.getAnnotation(Ignore.class) != null) { continue; }
+				if (sm.getAnnotation(TemporalOnly.class) != null) { continue; }
+				if (!isCompatible(sgIocw, sm)) { continue; }
+				SpatialAggregationFunction sam = sm.getAnnotation(SpatialAggregationFunction.class);
+				String samName = (sam == null) ? sm.getSimpleName() : sam.value();
+				
+				for (Class<? extends TemporalGrouping> tg : mf.getTemporalGroupingMethods()) {
+					if (tg.getAnnotation(Ignore.class) != null) { continue; }
+					TemporalPartitioningPredicate tpp = tg.getAnnotation(TemporalPartitioningPredicate.class);
+					String tppName = (tpp == null) ? tg.getSimpleName() : tpp.value();
+					IsOnlyCompatibleWith tgIocw = tg.getAnnotation(IsOnlyCompatibleWith.class);
+				
+					for (Class<? extends AggregationMethod> tm : mf.getAggregationMethods()) {
+						if (tm.getAnnotation(Ignore.class) != null) { continue; }
+						if (tm.getAnnotation(SpatialOnly.class) != null) { continue; }
+						if (!isCompatible(tgIocw, tm)) { continue; }
+
+						TemporalAggregationFunction tam = tm.getAnnotation(TemporalAggregationFunction.class);
+						String tamName = (tam == null) ? tm.getSimpleName() : tam.value();
+
+						String id = PROCESS_NAME.format(new Object[] {
+								sppName, samName, tppName, tamName
+						});
+						
+						algos.put(id, new MethodCombination(sg, tg, sm, tm));
+						log.info("Registered Algorithm: {}", id);
+					}
+				}
 			}
 		}
 		return algos;
+	}
+	
+	private static boolean isCompatible(IsOnlyCompatibleWith iocw, Class<?> a) {
+		if (iocw == null) { 
+			return true;
+		}
+		for (Class<? extends AggregationMethod> c : iocw.value()) {
+			if (c.equals(a)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -118,14 +176,14 @@ public class STARepository implements IAlgorithmRepository {
 	 *         not exist
 	 */
 	private IAlgorithm instantiate(String id) {
-		MethodPair methods = STARepository.ALGORITHMS.get(id);
+		MethodCombination methods = STARepository.ALGORITHMS.get(id);
 		if (methods == null) {
 			String msg = "The requested Algorithm is not available: " + id;
 			log.error(msg);
 			throw new RuntimeException(msg);
 		}
 		IAlgorithm a = new GenericObservationAggregationProcess(id,
-				id.replace(":", " "), methods.sg, methods.tg);
+				id, methods.sg, methods.tg, methods.sam, methods.tam);
 		if (!a.processDescriptionIsValid()) {
 			String msg = "ProcessDescription is not valid for " + id;
 			log.error(msg + ":\n"

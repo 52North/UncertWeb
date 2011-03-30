@@ -44,6 +44,7 @@ import org.uncertweb.sta.wps.FeatureCollectionInputHandler;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
 import org.uncertweb.sta.wps.api.CompositeProcessInput;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
+import org.uncertweb.sta.wps.api.annotation.SpatialPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
@@ -56,13 +57,14 @@ import com.vividsolutions.jts.geom.Geometry;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class CoverageGrouping extends SpatialGrouping {
+@SpatialPartitioningPredicate(Constants.MethodNames.Grouping.Spatial.POLYGON_CONTAINMENT)
+public class PolygonContainment extends SpatialGrouping {
 
 	/**
 	 * The {@link FeatureCollection} which will be merged with the
 	 * {@code FeatureCollection} fetched from {@link #WFS_URL}.
 	 * 
-	 * @see CoverageGrouping
+	 * @see PolygonContainment
 	 */
 	public static final SingleProcessInput<FeatureCollection<FeatureType, Feature>> FEATURE_COLLECTION = new SingleProcessInput<FeatureCollection<FeatureType, Feature>>(
 			Constants.Process.Inputs.FEATURE_COLLECTION_ID,
@@ -72,7 +74,7 @@ public class CoverageGrouping extends SpatialGrouping {
 	 * The URL of the WFS from which the {@link FeatureCollection} will be
 	 * fetched. Can also be a GET request.
 	 * 
-	 * @see CoverageGrouping
+	 * @see PolygonContainment
 	 */
 	public static final SingleProcessInput<String> WFS_URL = new SingleProcessInput<String>(
 			Constants.Process.Inputs.WFS_URL_ID, LiteralStringBinding.class, 0,
@@ -81,7 +83,7 @@ public class CoverageGrouping extends SpatialGrouping {
 	/**
 	 * The request which will be posted to {@link #WFS_URL}.
 	 * 
-	 * @see CoverageGrouping
+	 * @see PolygonContainment
 	 */
 	public static final SingleProcessInput<GetFeatureDocument> WFS_REQUEST = new SingleProcessInput<GetFeatureDocument>(
 			Constants.Process.Inputs.WFS_REQUEST_ID,
@@ -91,7 +93,7 @@ public class CoverageGrouping extends SpatialGrouping {
 	 * {@link #WFS_URL} and {@link #WFS_REQUEST}.
 	 * 
 	 * @see FeatureCollectionInputHandler
-	 * @see CoverageGrouping
+	 * @see PolygonContainment
 	 */
 	public static final AbstractProcessInput<FeatureCollection<FeatureType, Feature>> FEATURE_COLLECTION_INPUT = new CompositeProcessInput<FeatureCollection<FeatureType, Feature>>(
 			Constants.Process.Inputs.FEATURE_COLLECTION_INPUT_ID,

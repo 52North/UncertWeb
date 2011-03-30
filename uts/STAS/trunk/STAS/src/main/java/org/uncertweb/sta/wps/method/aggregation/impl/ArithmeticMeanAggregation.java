@@ -24,13 +24,19 @@ package org.uncertweb.sta.wps.method.aggregation.impl;
 import java.util.List;
 
 import org.uncertweb.intamap.om.Observation;
+import org.uncertweb.sta.utils.Constants.MethodNames.Aggregation;
+import org.uncertweb.sta.wps.api.annotation.SpatialAggregationFunction;
+import org.uncertweb.sta.wps.api.annotation.TemporalAggregationFunction;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
+
 
 /**
  * Method which uses the arithmetic mean to aggregate {@link Observation}s.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
+@SpatialAggregationFunction(Aggregation.Spatial.ARITHMETIC_MEAN)
+@TemporalAggregationFunction(Aggregation.Temporal.ARITHMETIC_MEAN)
 public class ArithmeticMeanAggregation implements AggregationMethod {
 
 	/**

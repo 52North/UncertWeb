@@ -29,8 +29,10 @@ import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationTime;
 import org.uncertweb.intamap.om.ObservationTimeInstant;
 import org.uncertweb.intamap.om.ObservationTimeInterval;
+import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
+import org.uncertweb.sta.wps.api.annotation.TemporalPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
 
@@ -40,7 +42,8 @@ import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class IgnoreTimeGrouping extends TemporalGrouping {
+@TemporalPartitioningPredicate(Constants.MethodNames.Grouping.Temporal.ONE_CONTAINING_TIME_RANGE)
+public class OneContainingTimeRangeGrouping extends TemporalGrouping {
 
 	/**
 	 * {@inheritDoc}

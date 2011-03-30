@@ -40,6 +40,7 @@ import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.PeriodInputHandler;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
+import org.uncertweb.sta.wps.api.annotation.TemporalPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
 
@@ -50,7 +51,8 @@ import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class TimeRangeGrouping extends TemporalGrouping {
+@TemporalPartitioningPredicate(Constants.MethodNames.Grouping.Temporal.TEMPORAL_GRIDDING)
+public class TemporalGridding extends TemporalGrouping {
 
 	/**
 	 * The {@link Period} of time in which observations will be grouped.

@@ -65,16 +65,6 @@ public class MethodFactory {
 	}
 
 	/**
-	 * The default {@link AggregationMethod} used for spatial aggregation.
-	 */
-	private Class<? extends AggregationMethod> defaultSAM;
-
-	/**
-	 * The default {@link AggregationMethod} used for temporal aggregation.
-	 */
-	private Class<? extends AggregationMethod> defaultTAM;
-
-	/**
 	 * All registered {@link TemporalGrouping} methods.
 	 */
 	private Map<String, Class<? extends TemporalGrouping>> temporalMethods = new HashMap<String, Class<? extends TemporalGrouping>>();
@@ -93,11 +83,7 @@ public class MethodFactory {
 	 * Creates the singleton factory and loads the method configuration.
 	 */
 	private MethodFactory() {
-
 		searchPackage("org.uncertweb.sta.wps.method"); // TODO
-
-		this.defaultSAM = getDefaultMethod(Constants.Process.Inputs.SPATIAL_AGGREGATION_METHOD_ID);
-		this.defaultTAM = getDefaultMethod(Constants.Process.Inputs.TEMPORAL_AGGREGATION_METHOD_ID);
 	}
 
 	private void searchPackage(String p) {
@@ -141,22 +127,9 @@ public class MethodFactory {
 	/**
 	 * @return all registered {@link AggregationMethod}s
 	 */
-	public Set<String> getAggregationMethods() {
-		return this.aggregationMethods.keySet();
-	}
-
-	/**
-	 * @return the default spatial {@link AggregationMethod}
-	 */
-	public Class<? extends AggregationMethod> getDefaultSpatialAggregationMethod() {
-		return this.defaultSAM;
-	}
-
-	/**
-	 * @return the default temporal {@link AggregationMethod}
-	 */
-	public Class<? extends AggregationMethod> getDefaultTemporalAggregationMethod() {
-		return this.defaultTAM;
+	public Set<Class<? extends AggregationMethod>> getAggregationMethods() {
+		return new HashSet<Class<? extends AggregationMethod>>(
+				aggregationMethods.values());
 	}
 
 	/**
@@ -184,26 +157,6 @@ public class MethodFactory {
 	 */
 	public String getMethodDescription(Class<? extends GroupingMethod<?>> gm) {
 		return Constants.get("process." + gm.getName() + ".desc");
-	}
-
-	/**
-	 * Loads a {@code Class<? extends AggregationMethod>} configuration
-	 * property.
-	 * 
-	 * @param key the property key
-	 * @return the property
-	 */
-	protected Class<? extends AggregationMethod> getDefaultMethod(String inputId) {
-		String key = "stas.default." + inputId;
-		String s = Constants.get(key);
-		if (s == null) {
-			throw new RuntimeException("Default value for {} not set." + key);
-		}
-		try {
-			return getMethodForName(s);
-		} catch (STASException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

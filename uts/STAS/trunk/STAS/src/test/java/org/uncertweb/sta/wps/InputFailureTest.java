@@ -25,8 +25,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.n52.wps.server.AlgorithmParameterException;
-import org.uncertweb.sta.wps.method.grouping.impl.IgnoreSpatialGrouping;
-import org.uncertweb.sta.wps.method.grouping.impl.IgnoreTimeGrouping;
+import org.uncertweb.sta.wps.method.grouping.impl.ConvexHullGrouping;
+import org.uncertweb.sta.wps.method.grouping.impl.OneContainingTimeRangeGrouping;
 import org.uncertweb.sta.wps.testutils.ProcessTester;
 
 public class InputFailureTest {
@@ -41,7 +41,7 @@ public class InputFailureTest {
 	@Ignore
 	@Test(expected = AlgorithmParameterException.class)
 	public void noObservationCollection() {
-		p.selectAlgorithm(IgnoreSpatialGrouping.class, IgnoreTimeGrouping.class);
+		p.selectAlgorithm(ConvexHullGrouping.class, OneContainingTimeRangeGrouping.class);
 		p.execute();
 	}
 

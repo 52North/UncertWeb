@@ -44,24 +44,65 @@ import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
  */
 public class Constants extends org.uncertweb.intamap.utils.Constants {
 
+	public static interface MethodNames {
+		public static interface Aggregation {
+			public static interface Temporal {
+				static final String TEMPORAL_PREFIX = "temporal";
+				public static final String ARITHMETIC_MEAN = TEMPORAL_PREFIX + "Mean";
+				public static final String MINIMUM = TEMPORAL_PREFIX + "Min";
+				public static final String MAXIMUM = TEMPORAL_PREFIX + "Max";
+				public static final String MEDIAN = TEMPORAL_PREFIX + "Median";
+				public static final String SUM = TEMPORAL_PREFIX + "Sum";
+				
+			}
+
+			public static interface Spatial {
+				static final String SPATIAL_PREFIX = "spatial";
+				public static final String ARITHMETIC_MEAN = SPATIAL_PREFIX + "Mean";
+				public static final String MINIMUM = SPATIAL_PREFIX + "Min";
+				public static final String MAXIMUM = SPATIAL_PREFIX + "Max";
+				public static final String MEDIAN = SPATIAL_PREFIX + "Median";
+				public static final String SUM = SPATIAL_PREFIX + "Sum";
+				
+			}
+			
+		}
+		public static interface Grouping {
+			public static interface Temporal {
+				public static final String TEMPORAL_GRIDDING = "temporalGridding";
+				public static final String NO_GROUPING = "noPartitioning";
+				public static final String ONE_CONTAINING_TIME_RANGE = "oneContainingTimeRange";
+			}
+			public static interface Spatial {
+				public static final String POLYGON_CONTAINMENT = "polygonContainment";
+				public static final String NO_GROUPING = "noPartitioning";
+				public static final String CONVEX_HULL = "convexHull";
+			}
+			
+			
+		}
+	}
+	
 	/** The Logger. */
 	protected static final Logger log = LoggerFactory.getLogger(Constants.class);
 
 	/** {@link GenericObservationAggregationProcess} related constants. */
 	public static interface Process {
+		
+		public static final String PROCESS_PREFIX = "urn:ogc:def:aggregationProcess:";
 
 		/** Description of all {@link GenericObservationAggregationProcess}. */
 		public static final String DESCRIPTION = get("process.description");
 
 		/** Process inputs. */
 		public static interface Inputs {
-
-			public static final String TEMPORAL_BEFORE_SPATIAL_GROUPING_ID = "TemporalBeforeSpatialGrouping";
 			public static final String OBSERVATION_COLLECTION_INPUT_ID = "ObservationCollectionCompositeInput";
-			public static final String TEMPORAL_AGGREGATION_METHOD_ID = "TemporalAggregationMethod";
-			public static final String GROUP_BY_OBSERVED_PROPERTY_ID = "GroupByObservedProperty";
-			public static final String SPATIAL_AGGREGATION_METHOD_ID = "SpatialAggregationMethod";
 			public static final String FEATURE_COLLECTION_INPUT_ID = "FeatureCollectionCompositeInput";
+
+			public static final String SPATIAL_BEFORE_TEMPORAL = "spatialFirst";
+			
+
+			public static final String GROUP_BY_OBSERVED_PROPERTY_ID = "GroupByObservedProperty";
 			public static final String SOS_DESTINATION_URL_ID = "SOSDestinationUrl";
 			public static final String FEATURE_COLLECTION_ID = "FeatureCollection";
 			public static final String TIME_RANGE_ID = "TimeRange";
@@ -273,7 +314,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 				 * Parameter to indicate if the the process grouped first
 				 * temporally.
 				 */
-				public static final String TEMPORAL_BEFORE_SPATIAL_AGGREGATION = get("stas.sos.param.temporalBeforeSpatialAggregation");
+				public static final String SPATIAL_BEFORE_TEMPORAL_AGGREGATION = get("stas.sos.param.spatialFirst");
 
 				/**
 				 * Parameter to indicate if the observation were grouped by

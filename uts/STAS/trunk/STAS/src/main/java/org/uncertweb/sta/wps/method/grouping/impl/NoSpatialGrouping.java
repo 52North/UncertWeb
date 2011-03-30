@@ -29,8 +29,10 @@ import java.util.Set;
 
 import org.uncertweb.intamap.om.ISamplingFeature;
 import org.uncertweb.intamap.om.Observation;
+import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
+import org.uncertweb.sta.wps.api.annotation.SpatialPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 
@@ -41,6 +43,7 @@ import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
+@SpatialPartitioningPredicate(Constants.MethodNames.Grouping.Spatial.NO_GROUPING)
 public class NoSpatialGrouping extends SpatialGrouping {
 
 	/**

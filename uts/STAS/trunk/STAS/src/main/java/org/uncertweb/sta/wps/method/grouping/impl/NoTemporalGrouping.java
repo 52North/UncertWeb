@@ -28,8 +28,10 @@ import java.util.Set;
 
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationTime;
+import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
+import org.uncertweb.sta.wps.api.annotation.TemporalPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
 
@@ -40,6 +42,7 @@ import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
+@TemporalPartitioningPredicate(Constants.MethodNames.Grouping.Temporal.NO_GROUPING)
 public class NoTemporalGrouping extends TemporalGrouping {
 
 	/**

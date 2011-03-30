@@ -26,6 +26,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.uncertweb.intamap.om.Observation;
+import org.uncertweb.sta.utils.Constants.MethodNames.Aggregation;
+import org.uncertweb.sta.wps.api.annotation.SpatialAggregationFunction;
+import org.uncertweb.sta.wps.api.annotation.TemporalAggregationFunction;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 
 /**
@@ -33,6 +36,8 @@ import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
+@SpatialAggregationFunction(Aggregation.Spatial.MEDIAN)
+@TemporalAggregationFunction(Aggregation.Temporal.MEDIAN)
 public class MedianAggregation implements AggregationMethod {
 
 	/**

@@ -34,8 +34,8 @@ import org.junit.Test;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationCollection;
 import org.uncertweb.sta.wps.method.aggregation.impl.MedianAggregation;
-import org.uncertweb.sta.wps.method.grouping.impl.IgnoreSpatialGrouping;
-import org.uncertweb.sta.wps.method.grouping.impl.TimeRangeGrouping;
+import org.uncertweb.sta.wps.method.grouping.impl.ConvexHullGrouping;
+import org.uncertweb.sta.wps.method.grouping.impl.TemporalGridding;
 import org.uncertweb.sta.wps.testutils.ObservationFactory;
 import org.uncertweb.sta.wps.testutils.ProcessTester;
 
@@ -56,7 +56,7 @@ public class TimeRangeMethodTest {
 	public void bigObsColl() throws XmlException {
 		p.setSpatialAggregationMethod(MedianAggregation.class);
 		p.setTemporalAggregationMethod(MedianAggregation.class);
-		p.selectAlgorithm(IgnoreSpatialGrouping.class, TimeRangeGrouping.class);
+		p.selectAlgorithm(ConvexHullGrouping.class, TemporalGridding.class);
 		p.setTimeRange("P1D");
 
 		ObservationFactory f = ObservationFactory.getInstance();

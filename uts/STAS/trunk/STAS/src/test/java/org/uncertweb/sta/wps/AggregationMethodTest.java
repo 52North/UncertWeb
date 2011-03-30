@@ -35,8 +35,8 @@ import org.uncertweb.intamap.om.ObservationCollection;
 import org.uncertweb.sta.wps.method.aggregation.impl.ArithmeticMeanAggregation;
 import org.uncertweb.sta.wps.method.aggregation.impl.MedianAggregation;
 import org.uncertweb.sta.wps.method.aggregation.impl.SumAggregation;
-import org.uncertweb.sta.wps.method.grouping.impl.IgnoreSpatialGrouping;
-import org.uncertweb.sta.wps.method.grouping.impl.IgnoreTimeGrouping;
+import org.uncertweb.sta.wps.method.grouping.impl.ConvexHullGrouping;
+import org.uncertweb.sta.wps.method.grouping.impl.OneContainingTimeRangeGrouping;
 import org.uncertweb.sta.wps.testutils.ObservationFactory;
 import org.uncertweb.sta.wps.testutils.ProcessTester;
 
@@ -47,7 +47,7 @@ public class AggregationMethodTest {
 	@Before
 	public void setUp() {
 		p = new ProcessTester();
-		p.selectAlgorithm(IgnoreSpatialGrouping.class, IgnoreTimeGrouping.class);
+		p.selectAlgorithm(ConvexHullGrouping.class, OneContainingTimeRangeGrouping.class);
 		// p.observationCollection(buildOC());
 	}
 

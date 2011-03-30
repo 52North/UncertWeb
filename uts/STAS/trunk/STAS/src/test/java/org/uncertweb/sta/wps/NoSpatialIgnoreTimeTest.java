@@ -25,7 +25,7 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.wps.method.aggregation.impl.ArithmeticMeanAggregation;
-import org.uncertweb.sta.wps.method.grouping.impl.IgnoreTimeGrouping;
+import org.uncertweb.sta.wps.method.grouping.impl.OneContainingTimeRangeGrouping;
 import org.uncertweb.sta.wps.method.grouping.impl.NoSpatialGrouping;
 import org.uncertweb.sta.wps.testutils.ProcessTester;
 
@@ -44,7 +44,7 @@ public class NoSpatialIgnoreTimeTest {
 	@Test
 	public void test() throws Exception {
 		ProcessTester t = new ProcessTester();
-		t.selectAlgorithm(NoSpatialGrouping.class, IgnoreTimeGrouping.class);
+		t.selectAlgorithm(NoSpatialGrouping.class, OneContainingTimeRangeGrouping.class);
 		t.setSpatialAggregationMethod(ArithmeticMeanAggregation.class);
 		t.setTemporalAggregationMethod(ArithmeticMeanAggregation.class);
 		t.setSosSourceUrl(SOURCE_SOS);

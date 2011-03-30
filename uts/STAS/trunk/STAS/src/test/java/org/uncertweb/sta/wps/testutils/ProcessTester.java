@@ -401,7 +401,7 @@ public class ProcessTester {
 					.toString());
 		}
 		if (temporalBeforeSpatial != null) {
-			eb.addLiteralData(Constants.Process.Inputs.TEMPORAL_BEFORE_SPATIAL_GROUPING_ID, temporalBeforeSpatial
+			eb.addLiteralData(Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL, temporalBeforeSpatial
 					.toString());
 		}
 		if (wfsRequest != null) {

@@ -34,6 +34,7 @@ import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.RandomStringGenerator;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
+import org.uncertweb.sta.wps.api.annotation.SpatialPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 
@@ -48,7 +49,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class IgnoreSpatialGrouping extends SpatialGrouping {
+@SpatialPartitioningPredicate(Constants.MethodNames.Grouping.Spatial.CONVEX_HULL)
+public class ConvexHullGrouping extends SpatialGrouping {
 
 	/**
 	 * {@inheritDoc}
