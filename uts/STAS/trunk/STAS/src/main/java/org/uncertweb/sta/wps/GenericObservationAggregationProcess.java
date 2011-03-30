@@ -279,10 +279,10 @@ public class GenericObservationAggregationProcess extends
 		return new StringBuffer()
 				//@formatter off
 				.append(Constants.Process.DESCRIPTION).append("\n")
-				.append("SpatialPartitioningPredicate: ").append(mf.getMethodDescription(sg)).append("\n")
-				.append("SpatialAggregationFunction: ").append(mf.getMethodDescription(sam)).append("\n")
-				.append("TemporalPartitioningPredicate").append(mf.getMethodDescription(tg)).append("\n")
-				.append("TemporalAggregationFunction: ").append(mf.getMethodDescription(tam)).append("\n")
+				.append("SpatialPartitioningPredicate: ").append(mf.getMethodDescription(sg)).append(" \n")
+				.append("SpatialAggregationFunction: ").append(mf.getMethodDescription(sam)).append(" \n")
+				.append("TemporalPartitioningPredicate: ").append(mf.getMethodDescription(tg)).append(" \n")
+				.append("TemporalAggregationFunction: ").append(mf.getMethodDescription(tam)).append(" \n")
 				.toString();
 				//@formatter on
 	}
