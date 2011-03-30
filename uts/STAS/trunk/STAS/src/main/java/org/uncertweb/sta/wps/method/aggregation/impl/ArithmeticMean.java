@@ -29,27 +29,28 @@ import org.uncertweb.sta.wps.api.annotation.SpatialAggregationFunction;
 import org.uncertweb.sta.wps.api.annotation.TemporalAggregationFunction;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 
+
 /**
- * Method which uses the minimal result value to aggregate {@link Observation}s.
+ * Method which uses the arithmetic mean to aggregate {@link Observation}s.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-@SpatialAggregationFunction(Aggregation.Spatial.MINIMUM)
-@TemporalAggregationFunction(Aggregation.Temporal.MINIMUM)
-public class MinAggregation implements AggregationMethod {
+@SpatialAggregationFunction(Aggregation.Spatial.ARITHMETIC_MEAN)
+@TemporalAggregationFunction(Aggregation.Temporal.ARITHMETIC_MEAN)
+public class ArithmeticMean implements AggregationMethod {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public double aggregate(List<Observation> oc) {
-		double min = Double.POSITIVE_INFINITY;
+		if (oc.isEmpty())
+			throw new RuntimeException(
+					"Can not aggregate empty ObservationCollection.");
+		double result = 0;
 		for (Observation o : oc) {
-			if (o.getResult() > min) {
-				min = o.getResult();
-			}
+			result += o.getResult();
 		}
-		return min;
+		return (result / oc.size());
 	}
-
 }

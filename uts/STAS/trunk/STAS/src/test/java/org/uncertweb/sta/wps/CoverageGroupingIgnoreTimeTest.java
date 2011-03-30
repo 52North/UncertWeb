@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.utils.Utils;
-import org.uncertweb.sta.wps.method.aggregation.impl.ArithmeticMeanAggregation;
+import org.uncertweb.sta.wps.method.aggregation.impl.ArithmeticMean;
 import org.uncertweb.sta.wps.method.grouping.impl.PolygonContainment;
 import org.uncertweb.sta.wps.method.grouping.impl.OneContainingTimeRangeGrouping;
 import org.uncertweb.sta.wps.testutils.ProcessTester;
@@ -80,8 +80,8 @@ public class CoverageGroupingIgnoreTimeTest {
 	public void test() throws Exception {
 		ProcessTester t = new ProcessTester();
 		t.selectAlgorithm(PolygonContainment.class, OneContainingTimeRangeGrouping.class);
-		t.setSpatialAggregationMethod(ArithmeticMeanAggregation.class);
-		t.setTemporalAggregationMethod(ArithmeticMeanAggregation.class);
+		t.setSpatialAggregationMethod(ArithmeticMean.class);
+		t.setTemporalAggregationMethod(ArithmeticMean.class);
 		t.setSosSourceUrl(SOURCE_SOS);
 		t.setSosDestinationUrl(DESTINATION_SOS);
 		t.setGroupByObservedProperty(true);

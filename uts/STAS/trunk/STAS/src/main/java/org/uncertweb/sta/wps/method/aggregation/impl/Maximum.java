@@ -36,7 +36,7 @@ import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
  */
 @TemporalAggregationFunction(Aggregation.Temporal.MAXIMUM)
 @SpatialAggregationFunction(Aggregation.Spatial.MAXIMUM)
-public class MaxAggregation implements AggregationMethod {
+public class Maximum implements AggregationMethod {
 
 	/**
 	 * {@inheritDoc}

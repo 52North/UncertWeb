@@ -32,9 +32,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.uncertweb.intamap.om.Observation;
 import org.uncertweb.intamap.om.ObservationCollection;
-import org.uncertweb.sta.wps.method.aggregation.impl.ArithmeticMeanAggregation;
-import org.uncertweb.sta.wps.method.aggregation.impl.MedianAggregation;
-import org.uncertweb.sta.wps.method.aggregation.impl.SumAggregation;
+import org.uncertweb.sta.wps.method.aggregation.impl.ArithmeticMean;
+import org.uncertweb.sta.wps.method.aggregation.impl.Median;
+import org.uncertweb.sta.wps.method.aggregation.impl.Sum;
 import org.uncertweb.sta.wps.method.grouping.impl.ConvexHullGrouping;
 import org.uncertweb.sta.wps.method.grouping.impl.OneContainingTimeRangeGrouping;
 import org.uncertweb.sta.wps.testutils.ObservationFactory;
@@ -75,8 +75,8 @@ public class AggregationMethodTest {
 	@Ignore
 	@Test
 	public void meanTest() throws XmlException {
-		p.setSpatialAggregationMethod(ArithmeticMeanAggregation.class);
-		p.setTemporalAggregationMethod(ArithmeticMeanAggregation.class);
+		p.setSpatialAggregationMethod(ArithmeticMean.class);
+		p.setTemporalAggregationMethod(ArithmeticMean.class);
 		p.execute();
 		ObservationCollection oc = p.getOutput();
 		assertEquals(1, oc.size());
@@ -86,8 +86,8 @@ public class AggregationMethodTest {
 	@Ignore
 	@Test
 	public void medianTest() throws XmlException {
-		p.setSpatialAggregationMethod(MedianAggregation.class);
-		p.setTemporalAggregationMethod(MedianAggregation.class);
+		p.setSpatialAggregationMethod(Median.class);
+		p.setTemporalAggregationMethod(Median.class);
 		p.execute();
 		ObservationCollection oc = p.getOutput();
 		assertEquals(1, oc.size());
@@ -97,8 +97,8 @@ public class AggregationMethodTest {
 	@Ignore
 	@Test
 	public void sumTest() {
-		p.setSpatialAggregationMethod(SumAggregation.class);
-		p.setTemporalAggregationMethod(SumAggregation.class);
+		p.setSpatialAggregationMethod(Sum.class);
+		p.setTemporalAggregationMethod(Sum.class);
 		p.execute();
 		ObservationCollection oc = p.getOutput();
 		assertEquals(1, oc.size());

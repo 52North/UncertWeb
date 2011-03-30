@@ -55,6 +55,7 @@ import org.uncertweb.sta.wps.api.CompositeProcessInput;
 import org.uncertweb.sta.wps.api.ExtendedSelfDescribingAlgorithm;
 import org.uncertweb.sta.wps.api.ProcessOutput;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
+import org.uncertweb.sta.wps.method.MethodFactory;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 import org.uncertweb.sta.wps.method.grouping.GroupingMethod;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
@@ -274,19 +275,16 @@ public class GenericObservationAggregationProcess extends
 	 */
 	@Override
 	protected String getAbstract() {
-		return null;
-		/* TODO
-		return new StringBuffer("\n")
+		MethodFactory mf = MethodFactory.getInstance();
+		return new StringBuffer()
 				//@formatter off
 				.append(Constants.Process.DESCRIPTION).append("\n")
-				.append("Spatial grouping method: ").append(sg.getName()).append("\n")
-				.append(MethodFactory.getInstance().getMethodDescription(sg)).append("\n")
-				.append("\n")
-				.append("Temporal grouping method: ").append(tg.getName()).append("\n")
-				.append(MethodFactory.getInstance().getMethodDescription(tg)).append("\n")
+				.append("SpatialPartitioningPredicate: ").append(mf.getMethodDescription(sg)).append("\n")
+				.append("SpatialAggregationFunction: ").append(mf.getMethodDescription(sam)).append("\n")
+				.append("TemporalPartitioningPredicate").append(mf.getMethodDescription(tg)).append("\n")
+				.append("TemporalAggregationFunction: ").append(mf.getMethodDescription(tam)).append("\n")
 				.toString();
 				//@formatter on
-		  */
 	}
 
 	/**

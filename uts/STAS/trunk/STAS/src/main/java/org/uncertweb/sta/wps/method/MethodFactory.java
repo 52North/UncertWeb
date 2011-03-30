@@ -150,13 +150,15 @@ public class MethodFactory {
 	}
 	
 	/**
-	 * Fetches the description of a {@link GroupingMethod} from the properties.
+	 * Fetches the description of a {@link GroupingMethod} or
+	 * {@link AggregationMethod} from the properties.
 	 * 
-	 * @param gm the {@link Class} of the {@code GroupingMethod}
+	 * @param gm the {@link Class} of the {@code GroupingMethod} or
+	 *            {@link AggregationMethod}.
 	 * @return the description
 	 */
-	public String getMethodDescription(Class<? extends GroupingMethod<?>> gm) {
-		return Constants.get("process." + gm.getName() + ".desc");
+	public String getMethodDescription(Class<?> c) {
+		return Constants.get("process." + c.getName() + ".desc");
 	}
 
 }

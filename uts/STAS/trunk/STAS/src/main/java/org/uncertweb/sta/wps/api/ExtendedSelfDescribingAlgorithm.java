@@ -224,14 +224,14 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject,
 			ProcessDescriptionsDocument document = ProcessDescriptionsDocument.Factory.newInstance();
 			ProcessDescriptions processDescriptions = document.addNewProcessDescriptions();
 			ProcessDescriptionType processDescription = processDescriptions.addNewProcessDescription();
-			processDescription.setStatusSupported(true);
-			processDescription.setStoreSupported(true);
+			processDescription.setStatusSupported(false);
+			processDescription.setStoreSupported(false);
 			processDescription.setProcessVersion("1.0.0");
 	
 			// 1. Identifer
 			processDescription.addNewIdentifier().setStringValue(this.getIdentifier());
 			processDescription.addNewTitle().setStringValue(this.getTitle());
-			if (getTitle() != null) {
+			if (getAbstract() != null) {
 				processDescription.addNewAbstract().setStringValue(this.getAbstract());
 			}
 	

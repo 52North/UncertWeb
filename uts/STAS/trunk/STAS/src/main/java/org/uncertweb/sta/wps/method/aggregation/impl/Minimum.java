@@ -21,8 +21,6 @@
  */
 package org.uncertweb.sta.wps.method.aggregation.impl;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.uncertweb.intamap.om.Observation;
@@ -32,34 +30,26 @@ import org.uncertweb.sta.wps.api.annotation.TemporalAggregationFunction;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 
 /**
- * Method which uses the median to aggregate {@link Observation}s.
+ * Method which uses the minimal result value to aggregate {@link Observation}s.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-@SpatialAggregationFunction(Aggregation.Spatial.MEDIAN)
-@TemporalAggregationFunction(Aggregation.Temporal.MEDIAN)
-public class MedianAggregation implements AggregationMethod {
+@SpatialAggregationFunction(Aggregation.Spatial.MINIMUM)
+@TemporalAggregationFunction(Aggregation.Temporal.MINIMUM)
+public class Minimum implements AggregationMethod {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public double aggregate(List<Observation> oc) {
-		if (oc.isEmpty())
-			throw new RuntimeException(
-					"Can not aggregate empty ObservationCollection.");
-		Collections.sort(oc, new Comparator<Observation>() {
-			@Override
-			public int compare(Observation o1, Observation o2) {
-				return Double.compare(o1.getResult(), o2.getResult());
+		double min = Double.POSITIVE_INFINITY;
+		for (Observation o : oc) {
+			if (o.getResult() > min) {
+				min = o.getResult();
 			}
-		});
-		int size = oc.size();
-		if (size % 2 == 0) {
-			return 0.5 * (oc.get((size / 2) - 1).getResult() + oc.get(
-					((size / 2) + 1) - 1).getResult());
-		} else {
-			return oc.get(((size + 1) / 2) - 1).getResult();
 		}
+		return min;
 	}
+
 }

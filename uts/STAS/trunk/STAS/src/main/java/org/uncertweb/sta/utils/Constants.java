@@ -89,15 +89,15 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	/** {@link GenericObservationAggregationProcess} related constants. */
 	public static interface Process {
 		
-		public static final String PROCESS_PREFIX = "urn:ogc:def:aggregationProcess:";
+		public static final String PROCESS_PREFIX = get("process.urn.prefix");
 
 		/** Description of all {@link GenericObservationAggregationProcess}. */
 		public static final String DESCRIPTION = get("process.description");
 
 		/** Process inputs. */
 		public static interface Inputs {
-			public static final String OBSERVATION_COLLECTION_INPUT_ID = "ObservationCollectionCompositeInput";
-			public static final String FEATURE_COLLECTION_INPUT_ID = "FeatureCollectionCompositeInput";
+			public static final String OBSERVATION_COLLECTION_INPUT_ID = "observationCollectionCompositeInput";
+			public static final String FEATURE_COLLECTION_INPUT_ID = "featureCollectionCompositeInput";
 
 			public static final String SPATIAL_BEFORE_TEMPORAL = "spatialFirst";
 			

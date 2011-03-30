@@ -36,7 +36,7 @@ import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
  */
 @SpatialAggregationFunction(Aggregation.Spatial.SUM)
 @TemporalAggregationFunction(Aggregation.Temporal.SUM)
-public class SumAggregation implements AggregationMethod {
+public class Sum implements AggregationMethod {
 
 	/**
 	 * {@inheritDoc}

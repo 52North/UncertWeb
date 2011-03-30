@@ -129,7 +129,6 @@ public class STARepository implements IAlgorithmRepository {
 						if (tm.getAnnotation(Ignore.class) != null) { continue; }
 						if (tm.getAnnotation(SpatialOnly.class) != null) { continue; }
 						if (!isCompatible(tgIocw, tm)) { continue; }
-
 						TemporalAggregationFunction tam = tm.getAnnotation(TemporalAggregationFunction.class);
 						String tamName = (tam == null) ? tm.getSimpleName() : tam.value();
 

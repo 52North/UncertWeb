@@ -388,14 +388,6 @@ public class ProcessTester {
 			eb.addLiteralData(Constants.Process.Inputs.SOS_DESTINATION_URL_ID, sosDestUrl
 					.toExternalForm());
 		}
-		if (temporalAM != null) {
-			eb.addLiteralData(Constants.Process.Inputs.TEMPORAL_AGGREGATION_METHOD_ID, temporalAM
-					.getName());
-		}
-		if (spatialAM != null) {
-			eb.addLiteralData(Constants.Process.Inputs.SPATIAL_AGGREGATION_METHOD_ID, spatialAM
-					.getName());
-		}
 		if (groupByObservedProperty != null) {
 			eb.addLiteralData(Constants.Process.Inputs.GROUP_BY_OBSERVED_PROPERTY_ID, groupByObservedProperty
 					.toString());

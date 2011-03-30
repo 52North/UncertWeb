@@ -24,14 +24,14 @@ package org.uncertweb.sta.wps.method.aggregation;
 import java.util.List;
 
 import org.uncertweb.intamap.om.Observation;
-import org.uncertweb.sta.wps.method.aggregation.impl.ArithmeticMeanAggregation;
-import org.uncertweb.sta.wps.method.aggregation.impl.MedianAggregation;
-import org.uncertweb.sta.wps.method.aggregation.impl.SumAggregation;
+import org.uncertweb.sta.wps.method.aggregation.impl.ArithmeticMean;
+import org.uncertweb.sta.wps.method.aggregation.impl.Median;
+import org.uncertweb.sta.wps.method.aggregation.impl.Sum;
 
 /**
  * Interface for aggregations methods. For simple implementations see
- * {@link ArithmeticMeanAggregation}, {@link SumAggregation} and
- * {@link MedianAggregation}.
+ * {@link ArithmeticMean}, {@link Sum} and
+ * {@link Median}.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
