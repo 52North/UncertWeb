@@ -54,7 +54,7 @@ public class XBObservationParserTestCase extends TestCase {
 					+ "/ObsCol_Measurements.xml");
 		}
 		XBObservationParser parser = new XBObservationParser();
-		IObservationCollection oc = parser.parseObservationCollection(xmlString);
+		IObservationCollection oc = parser.parse(xmlString);
 		XBObservationEncoder encoder = new XBObservationEncoder();
 		System.out.println(encoder.encodeObservationCollection(oc));
 	}
@@ -75,7 +75,7 @@ public class XBObservationParserTestCase extends TestCase {
 		}
 
 		XBObservationParser parser = new XBObservationParser();
-		AbstractObservation obs = parser.parseObservation(xmlString);
+		AbstractObservation obs = parser.parse(xmlString).getObservations().get(0);
 
 		// test id;
 		assertEquals("obsTest1", obs.getIdentifier().getIdentifier());
@@ -112,7 +112,7 @@ public class XBObservationParserTestCase extends TestCase {
 		// test resultQuality (optional parameter)
 		DQ_UncertaintyResult uncertainty =  obs.getResultQuality()[0];
 		IUncertainty uValue = uncertainty.getValues()[0];
-		assertEquals("degC",uncertainty.getValueUnit().getIdentifier());
+		assertEquals("degC",uncertainty.getUom());
 		assertEquals("org.uncertml.distribution.continuous.GaussianDistribution",uValue.getClass().getName());
 		assertEquals(29.564,((GaussianDistribution)uValue).getMean().get(0));
 		assertEquals(7.45,((GaussianDistribution)uValue).getVariance().get(0));

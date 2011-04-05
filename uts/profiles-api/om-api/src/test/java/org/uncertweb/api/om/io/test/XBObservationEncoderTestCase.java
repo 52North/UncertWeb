@@ -17,6 +17,8 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.geometry.GmlGeometryFactory;
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.io.JSONObservationEncoder;
+import org.uncertweb.api.om.io.JSONObservationParser;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -44,7 +46,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 		point_TimeInstant_DoubleTest();
 		obsCol_Point_TimeInstant_Double();
 		encodeObsTP();
-		//encode_Point_TimeInstant_FOIref();
+		encode_Point_TimeInstant_FOIref();
 	}
 
 	/**
@@ -86,6 +88,12 @@ public class XBObservationEncoderTestCase extends TestCase {
 		IObservationCollection obsCol2 = parser.parseObservationCollection(obsColString);
 		AbstractObservation obs2 = (AbstractObservation) obsCol2.getObservations()
 		.toArray()[0];
+		
+		System.out.println(encoder.encodeObservation(obs1));
+		System.out.println(new JSONObservationEncoder().encodeObservation(obs1));
+		String jsonObsColString = new JSONObservationEncoder().encodeObservationCollection(obsCol2);
+		System.out.println(jsonObsColString);
+		
 
 		// test collection
 		// test id
@@ -122,8 +130,8 @@ public class XBObservationEncoderTestCase extends TestCase {
 				((MeasureResult) obs2.getResult()).getMeasureValue());
 
 		// test resultQuality
-		assertEquals(obs1.getResultQuality()[0].getValueUnit().getIdentifier(),
-				obs2.getResultQuality()[0].getValueUnit().getIdentifier());
+		assertEquals(obs1.getResultQuality()[0].getUom(),
+				obs2.getResultQuality()[0].getUom());
 
 	}
 
@@ -157,6 +165,11 @@ public class XBObservationEncoderTestCase extends TestCase {
 		XBObservationEncoder encoder = new XBObservationEncoder();
 		String obsString = encoder.encodeObservation(obs);
 		System.out.println(obsString);
+		JSONObservationEncoder jobsEnc = new JSONObservationEncoder();
+		String jobsString = jobsEnc.encodeObservation(obs);
+		System.out.println(jobsString);
+		AbstractObservation obs3 = new JSONObservationParser().parseObservation(jobsString);
+		System.out.println(jobsEnc.encodeObservation(obs3));
 		
 		AbstractObservation obs2 = parser.parseObservation(xmlString);
 
@@ -200,8 +213,8 @@ public class XBObservationEncoderTestCase extends TestCase {
 				((MeasureResult) obs2.getResult()).getMeasureValue());
 
 		// test resultQuality
-		assertEquals(obs.getResultQuality()[0].getValueUnit().getIdentifier(),
-				obs2.getResultQuality()[0].getValueUnit().getIdentifier());
+		assertEquals(obs.getResultQuality()[0].getUom(),
+				obs2.getResultQuality()[0].getUom());
 	}
 	
 	private void encode_Point_TimeInstant_FOIref() throws Exception{
@@ -242,6 +255,8 @@ public class XBObservationEncoderTestCase extends TestCase {
 		Measurement meas = new Measurement(id,null,phenomenonTime,resultTime,validTime,new URI("sensor1"),new URI("phen1"),sf,null,new MeasureResult(2.45,"cm"));
 		XBObservationEncoder encoder = new XBObservationEncoder();
 		System.out.println(encoder.encodeObservation(meas));
+		System.out.println(new JSONObservationEncoder().encodeObservation(meas));
+
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
