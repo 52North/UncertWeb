@@ -244,6 +244,11 @@ public abstract class AbstractObservation {
 		this.resultQuality = resultQuality;
 	}
 
-	
+	/**
+	 * returns the name of observation
+	 * 
+	 * @return
+	 */
+	public abstract String getName();
 	
 }

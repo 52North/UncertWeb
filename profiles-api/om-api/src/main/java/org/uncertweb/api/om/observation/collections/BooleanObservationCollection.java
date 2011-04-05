@@ -21,6 +21,9 @@ public class BooleanObservationCollection implements IObservationCollection{
 	/**members of collection*/
 	private List<BooleanObservation> members;
 	
+	/**type name of observation collection*/
+	public static final String NAME = "OM_BooleanObservationCollection";
+	
 	/**
 	 * contructor; initializes members list
 	 * 
@@ -69,6 +72,11 @@ public class BooleanObservationCollection implements IObservationCollection{
 	@Override
 	public List<? extends AbstractObservation> getObservations() {
 		return members;
+	}
+
+	@Override
+	public String getTypeName() {
+		return "OM_BooleanObservationCollection";
 	}
 
 	

@@ -21,6 +21,9 @@ public class DiscreteNumericObservationCollection implements
 	/** members of collection */
 	private List<DiscreteNumericObservation> members;
 	
+	/**type name of observation collection*/
+	public static final String NAME = "OM_DiscreteNumericObservationCollection";
+	
 	/**
 	 * contructor; initializes members list
 	 * 
@@ -63,5 +66,10 @@ public class DiscreteNumericObservationCollection implements
 	@Override
 	public List<? extends AbstractObservation> getObservations() {
 		return members;
+	}
+
+	@Override
+	public String getTypeName() {
+		return NAME;
 	}
 }

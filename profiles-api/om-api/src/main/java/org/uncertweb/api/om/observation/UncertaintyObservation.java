@@ -23,6 +23,10 @@ public class UncertaintyObservation extends AbstractObservation{
 	/** uncertainty result of the observation */
 	private UncertaintyResult result;
 	
+	/**type name of this observation*/
+	public static final String NAME = "OM_UncertaintyObservation";
+	
+	
 	/**
 	 * Constructor with mandatory attributes
 	 * 
@@ -95,5 +99,10 @@ public class UncertaintyObservation extends AbstractObservation{
 		}
 		else throw new IllegalArgumentException("Result type of UncertaintyObservation has to be Uncertainty!");
 		
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}
 }

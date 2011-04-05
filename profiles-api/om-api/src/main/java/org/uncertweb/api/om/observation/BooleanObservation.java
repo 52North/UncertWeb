@@ -22,6 +22,10 @@ public class BooleanObservation extends AbstractObservation{
 	/** boolean result of the observation */
 	private BooleanResult result;
 	
+	/**type name of this observation*/
+	public static final String NAME = "OM_BooleanObservation";
+	
+	
 	/**
 	 * Constructor with mandatory attributes
 	 * 
@@ -100,6 +104,11 @@ public class BooleanObservation extends AbstractObservation{
 		}
 		else throw new IllegalArgumentException("Result type of BooleanObservation has to be Boolean!");
 		
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}
 	
 }

@@ -20,6 +20,9 @@ public class MeasurementCollection implements IObservationCollection{
 	/**members of collection*/
 	private List<Measurement> members;
 	
+	/**type name of observation collection*/
+	public static final String NAME = "OM_MeasurementCollection";
+	
 	/**
 	 * constructor creates an empty collection; add method can be used to fill the collection
 	 * 
@@ -61,6 +64,11 @@ public class MeasurementCollection implements IObservationCollection{
 	@Override
 	public List<Measurement> getObservations() {
 		return members;
+	}
+
+	@Override
+	public String getTypeName() {
+		return NAME;
 	}
 	
 	

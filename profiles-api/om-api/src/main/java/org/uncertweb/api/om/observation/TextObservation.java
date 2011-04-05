@@ -22,6 +22,9 @@ public class TextObservation extends AbstractObservation {
 	/** measure result of the observation */
 	private TextResult result;
 	
+	/**type name of this observation*/
+	public static final String NAME = "OM_TextObservation";
+	
 	/**
 	 * Constructor with mandatory attributes
 	 * 
@@ -99,5 +102,10 @@ public class TextObservation extends AbstractObservation {
 		}
 		else throw new IllegalArgumentException("Result type of TextObservation has to be Text!");
 		
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}
 }

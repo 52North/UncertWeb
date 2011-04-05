@@ -20,6 +20,9 @@ public class ReferenceObservationCollection implements IObservationCollection {
 	/**members of collection*/
 	private List<ReferenceObservation> members;
 	
+	/**type name of observation collection*/
+	public static final String NAME = "OM_ReferenceObservationCollection";
+	
 	/**
 	 * constructor creates empty collection
 	 * 
@@ -61,5 +64,10 @@ public class ReferenceObservationCollection implements IObservationCollection {
 	@Override
 	public List<? extends AbstractObservation> getObservations() {
 		return members;
+	}
+
+	@Override
+	public String getTypeName() {
+		return NAME;
 	}
 }

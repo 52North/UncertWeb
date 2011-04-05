@@ -20,6 +20,9 @@ public class CategoryObservationCollection implements IObservationCollection{
 	/**members of collection*/
 	private List<CategoryObservation> members;
 	
+	/**type name of observation collection*/
+	public static final String NAME = "OM_CategoryObservationCollection";
+	
 	/**
 	 * contructor; initializes members list
 	 * 
@@ -69,6 +72,11 @@ public class CategoryObservationCollection implements IObservationCollection{
 	@Override
 	public List<? extends AbstractObservation> getObservations() {
 		return members;
+	}
+
+	@Override
+	public String getTypeName() {
+		return NAME;
 	}
 
 	

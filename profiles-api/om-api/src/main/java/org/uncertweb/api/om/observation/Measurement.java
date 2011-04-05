@@ -22,6 +22,9 @@ public class Measurement extends AbstractObservation {
 	/** measure result of the observation */
 	private MeasureResult result;
 	
+	/**type name of this observation*/
+	public static final String NAME = "OM_Measurement";
+	
 	/**
 	 * Constructor with mandatory attributes
 	 * 
@@ -95,5 +98,10 @@ public class Measurement extends AbstractObservation {
 		}
 		else throw new IllegalArgumentException("Result type of MeasurementObservation has to be Measurement!");
 		
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}
 }
