@@ -1,6 +1,7 @@
 package org.uncertweb.api.gml.io;
 
 import org.apache.xmlbeans.XmlException;
+import org.json.JSONException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -22,7 +23,8 @@ public interface IGeometryParser {
 	 * @throws XmlException 
 	 * @throws IllegalArgumentException 
 	 * 				if the parsing fails
+	 * @throws JSONException 
 	 */
-	public Geometry parseUwGeometry(String geometryXml) throws IllegalArgumentException, XmlException ;
+	public Geometry parseUwGeometry(String geometryXml) throws IllegalArgumentException, XmlException, JSONException ;
 	
 }

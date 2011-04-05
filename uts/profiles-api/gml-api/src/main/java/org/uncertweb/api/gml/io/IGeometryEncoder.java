@@ -1,6 +1,7 @@
 package org.uncertweb.api.gml.io;
 
 import org.apache.xmlbeans.XmlException;
+import org.json.JSONException;
 import org.uncertweb.api.gml.UwAbstractFeature;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -23,8 +24,9 @@ public interface IGeometryEncoder {
 	 * 			Returns GML String of the geometry
 	 * @throws XmlException 
 	 * 			If encoding fails
+	 * @throws JSONException 
 	 */
-	public String encodeGeometry(Geometry geom) throws XmlException;
+	public String encodeGeometry(Geometry geom) throws XmlException, JSONException;
 	
 	/**
 	 * method for encoding GML features as defined in the UncertWeb GML profile into XML strings
