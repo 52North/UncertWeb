@@ -66,7 +66,6 @@ import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.io.XmlBeansGeometryParser;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
-import org.uncertweb.api.om.UnitDefinition;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.CategoryObservation;
@@ -443,16 +442,12 @@ public class XBObservationParser implements IObservationParser {
 							.getAbstractDQResult().changeType(
 									DQUncertaintyResultType.type);
 
-					String id = uncResult.getId();
-					String uuid = uncResult.getUuid();
-
+					
 					UnitOfMeasurePropertyType valueUnit = uncResult
 							.getValueUnit();
-					String unitGmlId = valueUnit.getUnitDefinition().getId();
 					String identifier = valueUnit.getUnitDefinition()
 							.getIdentifier().getStringValue();
-					UnitDefinition unitDef = new UnitDefinition(identifier,
-							unitGmlId);
+					
 					Value[] value = uncResult.getValueArray();
 					IUncertainty[] values = new IUncertainty[value.length];
 					for (int i = 0; i < value.length; ++i) {
@@ -461,8 +456,8 @@ public class XBObservationParser implements IObservationParser {
 						values[i] = uncertainty;
 					}
 
-					rqList.add(new DQ_UncertaintyResult(id, uuid, values,
-							unitDef));
+					rqList.add(new DQ_UncertaintyResult(values,
+							identifier));
 				}
 			}
 		}

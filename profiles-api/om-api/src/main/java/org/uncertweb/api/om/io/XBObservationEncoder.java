@@ -109,6 +109,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 	/**id counter for observations; used to generate observation IDs*/
 	private int obsIdCounter = 0;
 	
+	private int unitIdCounter = 0;
+	
 	/**encoder for geometries*/
 	private XmlBeansGeometryEncoder encoder;
 
@@ -914,20 +916,14 @@ public class XBObservationEncoder implements IObservationEncoder {
 			DQUncertaintyResultType xb_dqUncRes = xb_dqURDoc
 					.addNewDQUncertaintyResult();
 
-			if (resultObject.getId() != null) {
-				xb_dqUncRes.setId(resultObject.getId());
-			}
-			if (resultObject.getUuid() != null) {
-				xb_dqUncRes.setUuid(resultObject.getUuid());
-			}
+			
 			// add value unit
-			if (resultObject.getValueUnit() != null) {
-				UnitDefinitionType xb_vu = xb_dqUncRes.addNewValueUnit()
+			UnitDefinitionType xb_vu = xb_dqUncRes.addNewValueUnit()
 						.addNewUnitDefinition();
-				xb_vu.setId(resultObject.getValueUnit().getGmlId());
+				xb_vu.setId("u"+unitIdCounter);
+				unitIdCounter++;
 				xb_vu.addNewIdentifier().setStringValue(
-						resultObject.getValueUnit().getIdentifier());
-			}
+						resultObject.getUom());
 			// encode uncertainty value
 			IUncertainty[] valueArray = resultObject.getValues();
 			for (int i = 0; i < valueArray.length; i++) {
@@ -1081,6 +1077,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 		this.obsIdCounter = 0;
 		this.timeIdCounter = 0;
 		this.encoder.resetCounter();
+		this.unitIdCounter = 0;
 	}
 
 	/**
