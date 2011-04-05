@@ -8,10 +8,13 @@ import junit.framework.TestCase;
 
 import org.uncertweb.api.gml.geometry.GmlGeometryFactory;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
+import org.uncertweb.api.gml.io.JSONGeometryDecoder;
+import org.uncertweb.api.gml.io.JSONGeometryEncoder;
 import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
@@ -37,6 +40,10 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		Point x = new GmlGeometryFactory().createPoint(52.77, 8.76, 4326);
 		x.setSRID(4326);
 		System.out.println(encoder.encodeGeometry(x));
+		String jsonString = new JSONGeometryEncoder().encodeGeometry(x);
+		System.out.println(jsonString);
+		Geometry geometry = new JSONGeometryDecoder().parseUwGeometry(jsonString);
+		System.out.println(new JSONGeometryEncoder().encodeGeometry(geometry));
 	}
 	
 	public void testPolygonEncoder() throws Exception{
@@ -58,6 +65,10 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		holes.add(coords2);
 		Polygon poly = new GmlGeometryFactory().createPolygon(coords, holes, 4326);
 		System.out.println(encoder.encodeGeometry(poly));
+		String jsonString = new JSONGeometryEncoder().encodeGeometry(poly);
+		System.out.println(jsonString);
+		Geometry geometry = new JSONGeometryDecoder().parseUwGeometry(jsonString);
+		System.out.println(new JSONGeometryEncoder().encodeGeometry(geometry));
 	}
 	
 	
@@ -70,6 +81,10 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		coords[3] = new Coordinate(1.0,0.0);
 		LineString ls =  new GmlGeometryFactory().createLineString(coords, 4326);
 		System.out.println(encoder.encodeGeometry(ls));
+		String jsonString = new JSONGeometryEncoder().encodeGeometry(ls);
+		System.out.println(jsonString);
+		Geometry geom = new JSONGeometryDecoder().parseUwGeometry(jsonString);
+		System.out.println(new JSONGeometryEncoder().encodeGeometry(geom));
 	}
 	
 	public void testRectifiedGridEncoder() throws Exception{
@@ -107,6 +122,10 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		geom[2]=p;
 		MultiPoint geomCol = new GmlGeometryFactory().createMultiPoint(geom, 4326);
 		System.out.println(encoder.encodeGeometry(geomCol));
+		String jsonString = new JSONGeometryEncoder().encodeGeometry(geomCol);
+		System.out.println(jsonString);
+		Geometry geometry = new JSONGeometryDecoder().parseUwGeometry(jsonString);
+		System.out.println(new JSONGeometryEncoder().encodeGeometry(geometry));
 	}
 
 }
