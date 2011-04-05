@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.uncertweb</groupId>
   <artifactId>profiles-api</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
     <geotools.version>2.6-SNAPSHOT</geotools.version>
@@ -29,6 +29,11 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
       <version>1.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json-api</artifactId>
+      <version>0.0.1</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
