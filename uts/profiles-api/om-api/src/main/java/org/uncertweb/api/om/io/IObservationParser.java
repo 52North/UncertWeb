@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import org.apache.xmlbeans.XmlException;
+import org.json.JSONException;
 import org.uncertml.exception.UncertaintyParserException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
@@ -33,9 +34,11 @@ public interface IObservationParser {
 	 * 			If parsing of observation fails
 	 * @throws UncertaintyParserException 
 				if parsing of uncertainty fails
+	 * @throws JSONException
+	 * 			if parsing fails
 	 */
 	public IObservationCollection parse(String xmlString)
-	throws XmlException, URISyntaxException, IllegalArgumentException, MalformedURLException, UncertaintyParserException;
+	throws XmlException, URISyntaxException, IllegalArgumentException, MalformedURLException, UncertaintyParserException, JSONException;
 
 	
 	/**
@@ -55,9 +58,11 @@ public interface IObservationParser {
 	 * 			If parsing of observation fails
 	 * @throws UncertaintyParserException 
 				if parsing of uncertainty fails
+	 * @throws JSONException
+	 * 			if parsing fails
 	 */
 	public IObservationCollection parseObservationCollection(String xmlObsCol)
-			throws XmlException, URISyntaxException, IllegalArgumentException, MalformedURLException, UncertaintyParserException;
+			throws XmlException, URISyntaxException, IllegalArgumentException, MalformedURLException, UncertaintyParserException, JSONException;
 	
 	/**
 	 * parses an Observation and it's SpatialSamplingFeature
@@ -74,7 +79,9 @@ public interface IObservationParser {
 	 * 			If parsing of observation fails
 	 * @throws UncertaintyParserException 
 				if parsing of uncertainty fails
+	 * @throws JSONException 
+	 * 			if parsing fails	
 	 */
-	public AbstractObservation parseObservation(String xmlObs) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException, UncertaintyParserException;
+	public AbstractObservation parseObservation(String xmlObs) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException, UncertaintyParserException, JSONException;
 
 }
