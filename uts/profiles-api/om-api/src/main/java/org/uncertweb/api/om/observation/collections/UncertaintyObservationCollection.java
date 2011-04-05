@@ -20,6 +20,9 @@ public class UncertaintyObservationCollection implements IObservationCollection 
 	/**members of collection*/
 	private List<UncertaintyObservation> members;
 	
+	/**type name of observation collection*/
+	public static final String NAME = "OM_UncertaintyObservationCollection";
+	
 	/**
 	 * constructor
 	 * 
@@ -62,5 +65,10 @@ public class UncertaintyObservationCollection implements IObservationCollection 
 	@Override
 	public List<? extends AbstractObservation> getObservations() {
 		return members;
+	}
+
+	@Override
+	public String getTypeName() {
+		return NAME;
 	}
 }

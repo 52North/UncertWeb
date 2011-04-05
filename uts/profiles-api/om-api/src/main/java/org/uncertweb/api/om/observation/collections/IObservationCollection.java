@@ -38,5 +38,12 @@ public interface IObservationCollection {
 	 * 		Returns list of observations contained in the collection
 	 */
 	public List<? extends AbstractObservation> getObservations();
+	
+	/**
+	 * returns the type name for the collection
+	 * 
+	 * @return
+	 */
+	public String getTypeName();
 }
 

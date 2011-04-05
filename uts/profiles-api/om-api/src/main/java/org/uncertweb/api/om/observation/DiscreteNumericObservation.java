@@ -22,6 +22,10 @@ public class DiscreteNumericObservation extends AbstractObservation{
 	/** integer result of the observation */
 	private IntegerResult result;
 	
+	/**type name of this observation*/
+	public static final String NAME = "OM_DiscreteNumericObservation";
+	
+	
 	/**
 	 * Constructor with mandatory attributes
 	 * 
@@ -95,6 +99,11 @@ public class DiscreteNumericObservation extends AbstractObservation{
 		}
 		else throw new IllegalArgumentException("Result type of DiscreteNumericObservation has to be Integer!");
 		
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}
 
 }

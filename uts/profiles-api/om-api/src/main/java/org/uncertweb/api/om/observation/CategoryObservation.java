@@ -16,6 +16,10 @@ public class CategoryObservation extends AbstractObservation{
 	/** measure result of the observation */
 	private CategoryResult result;
 	
+	/**type name of this observation*/
+	public static final String NAME = "OM_CategoryObservation";
+	
+	
 	/**
 	 * Constructor with mandatory attributes
 	 * 
@@ -89,5 +93,10 @@ public class CategoryObservation extends AbstractObservation{
 		}
 		else throw new IllegalArgumentException("Result type of CategoryObservation has to be CategoryResult!");
 		
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}
 }

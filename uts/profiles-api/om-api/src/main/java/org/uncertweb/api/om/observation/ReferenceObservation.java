@@ -22,6 +22,9 @@ public class ReferenceObservation extends AbstractObservation{
 	/** measure result of the observation */
 	private ReferenceResult result;
 	
+	/**type name of this observation*/
+	public static final String NAME = "OM_ReferenceObservation";
+	
 	/**
 	 * Constructor with mandatory attributes
 	 * 
@@ -96,6 +99,11 @@ public class ReferenceObservation extends AbstractObservation{
 		}
 		else throw new IllegalArgumentException("Result type of ReferenceObservation has to be Reference!");
 		
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}
 	
 }
