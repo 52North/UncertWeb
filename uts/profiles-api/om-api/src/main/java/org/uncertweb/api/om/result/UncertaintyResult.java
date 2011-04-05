@@ -43,8 +43,8 @@ public class UncertaintyResult implements IResult {
 
 	// specific getter and setter
 
-	public Object getUncertaintyValue() {
-		return value;
+	public IUncertainty getUncertaintyValue() {
+		return (IUncertainty)value;
 	}
 
 	public void setUncertaintyValue(IUncertainty v) {
@@ -60,7 +60,7 @@ public class UncertaintyResult implements IResult {
 	}
 
 	// generic getter and setter
-	public Object getValue() {
+	public IUncertainty getValue() {
 		return getUncertaintyValue();
 	}
 
