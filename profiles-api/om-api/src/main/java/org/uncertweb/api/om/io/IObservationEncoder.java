@@ -3,6 +3,7 @@ package org.uncertweb.api.om.io;
 import net.opengis.om.x20.OMObservationDocument;
 
 import org.apache.xmlbeans.XmlException;
+import org.json.JSONException;
 import org.uncertml.exception.UncertaintyEncoderException;
 import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -30,8 +31,9 @@ public interface IObservationEncoder {
 	 * 			if encoding fails
 	 * @throws IllegalArgumentException
 	 *          if encoding fails
+	 * @throws JSONException 
 	 */
-	public String encodeObservationCollection(IObservationCollection obsCol) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException;
+	public String encodeObservationCollection(IObservationCollection obsCol) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException, JSONException;
 
 
 	/**
@@ -45,10 +47,12 @@ public interface IObservationEncoder {
 	 * @throws UnsupportedUncertaintyTypeException
 	 * 			if type of uncertainty is not supported 
 	 * @throws XmlException 
-	 * 			if encoding fails
+	 * 			if encoding fails		
 	 * @throws IllegalArgumentException
 	 *          if encoding fails
+	 * @throws JSONException
+	 * 			if encoding fails
 	 */
-	public String encodeObservation(AbstractObservation obs) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException;
+	public String encodeObservation(AbstractObservation obs) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException, JSONException;
 
 }
