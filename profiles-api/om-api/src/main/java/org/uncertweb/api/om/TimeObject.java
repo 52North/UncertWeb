@@ -81,6 +81,18 @@ public class TimeObject {
 		this.href = href;
 	}
 
+	/**
+	 * constructor for TimePeriod with begin and end objects as parameters
+	 * 
+	 * @param begin
+	 * 			begin of time period
+	 * @param end
+	 * 			end of time period
+	 */
+	public TimeObject(DateTime begin, DateTime end) {
+		this.interval = new Interval(begin,end);
+	}
+
 	// getters and setters
 	public DateTime getDateTime() {
 		return dateTime;
