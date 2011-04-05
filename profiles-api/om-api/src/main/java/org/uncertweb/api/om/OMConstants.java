@@ -1,5 +1,6 @@
 package org.uncertweb.api.om;
 
+
 /**
  * contains constants like namespace urls
  * 
@@ -33,7 +34,6 @@ public class OMConstants {
 	public static final String NS_GML = "http://www.opengis.net/gml/3.2";
 	/**namespace prefix for GML 3.2*/
 	public static final String NS_GML_PREFIX = "gml";
-	
 	
 	
 }
