@@ -27,10 +27,25 @@ public class ReferenceResult implements IResult {
 	public ReferenceResult() { }
 	
 	/**
+	 * constructor with reference and role attribute
+	 * 
+	 * @param href
+	 * 			reference
+	 * @param role
+	 * 			role of reference
+	 */
+	public ReferenceResult(String href, String role){
+		this.href=href;
+		this.role=role;
+	}
+	
+	/**
 	 * Constructor with all possible attributes
 	 * @param type
 	 * @param href
+	 * 			reference
 	 * @param role
+	 * 			role of reference
 	 * @param arcrole
 	 * @param show
 	 * @param actuate
