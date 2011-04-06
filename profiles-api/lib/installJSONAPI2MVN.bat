@@ -1,1 +1,0 @@
-mvn install:install-file -Dfile=Java-JSON.jar -DgroupId=org.json  -DartifactId=json-api -Dversion=0.0.1 -Dpackaging=jar

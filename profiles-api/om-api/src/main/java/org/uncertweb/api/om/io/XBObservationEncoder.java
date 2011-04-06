@@ -566,10 +566,6 @@ public class XBObservationEncoder implements IObservationEncoder {
 					this.gmlID4TimeStrings.put(startString, gmlId);
 				}
 
-				if (gmlID == null) {
-					gmlID = "t" + this.timeIdCounter;
-					this.timeIdCounter++;
-				}
 				xb_timePeriod.setId(gmlID);
 				this.gmlID4TimeStrings.put(key, gmlID);
 				xb_phenTime.set(xb_tpDoc);
@@ -681,10 +677,6 @@ public class XBObservationEncoder implements IObservationEncoder {
 					this.gmlID4TimeStrings.put(startString, gmlId);
 				}
 
-				if (gmlID == null) {
-					gmlID = "pt" + this.timeIdCounter;
-					this.timeIdCounter++;
-				}
 				xb_timePeriod.setId(gmlID);
 				this.gmlID4TimeStrings.put(key, gmlID);
 				xb_resultTime.set(xb_tpDoc);
@@ -769,10 +761,6 @@ public class XBObservationEncoder implements IObservationEncoder {
 					this.gmlID4TimeStrings.put(startString, gmlId);
 				}
 
-				if (gmlID == null) {
-					gmlID = "pt" + this.timeIdCounter;
-					this.timeIdCounter++;
-				}
 				xb_timePeriod.setId(gmlID);
 				this.gmlID4TimeStrings.put(key, gmlID);
 				xb_validTime.set(xb_tpDoc);

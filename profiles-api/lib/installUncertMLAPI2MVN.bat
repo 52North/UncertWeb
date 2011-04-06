@@ -1,1 +1,0 @@
-mvn install:install-file -Dfile=uncertml-api-with-dependencies.jar -DgroupId=org.uncertweb  -DartifactId=uncertml-api -Dversion=0.0.1-snapshot -Dpackaging=jar

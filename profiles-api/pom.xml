@@ -45,6 +45,10 @@
 
 	<repositories>
 		<repository>
+			<id>LocalDependencies</id>
+			<url>file://${basedir}/lib</url>
+		</repository>
+		<repository>
 			<id>osgeo</id>
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>http://download.osgeo.org/webdav/geotools/</url>
@@ -68,6 +72,7 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
@@ -86,6 +91,8 @@
 							<artifactId>json-api</artifactId>
 							<version>0.0.1</version>
 							<packaging>jar</packaging>
+							<createChecksum>true</createChecksum>
+							<localRepositoryPath>${basedir}/lib</localRepositoryPath>
 						</configuration>
 					</execution>
 					<execution>
@@ -100,6 +107,8 @@
 							<artifactId>xb-uw-profiles</artifactId>
 							<version>0.0.3</version>
 							<packaging>jar</packaging>
+							<createChecksum>true</createChecksum>
+							<localRepositoryPath>${basedir}/lib</localRepositoryPath>
 						</configuration>
 					</execution>
 					<execution>
@@ -114,10 +123,13 @@
 							<artifactId>uncertml-api</artifactId>
 							<version>0.0.1-SNAPSHOT</version>
 							<packaging>jar</packaging>
+							<createChecksum>true</createChecksum>
+							<localRepositoryPath>${basedir}/lib</localRepositoryPath>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 </project>
