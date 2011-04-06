@@ -6,14 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
 
 import junit.framework.TestCase;
 import net.opengis.om.x20.OMObservationDocument;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.geometry.GmlGeometryFactory;
 import org.uncertweb.api.om.TimeObject;
@@ -27,7 +23,6 @@ import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
 /**

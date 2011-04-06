@@ -1,1 +1,0 @@
-mvn install:install-file -Dfile=xbUWProfiles.jar -DgroupId=org.uncertweb  -DartifactId=xb-uw-profiles -Dversion=0.0.3 -Dpackaging=jar
