@@ -345,7 +345,7 @@ public class XBObservationParser implements IObservationParser {
 
 			} else if (xb_obsType instanceof UWTextObservationType) {
 
-				String value = ((UWTextObservationType)xb_obsType).getResult();
+				String value = ((UWTextObservationType)xb_obsType).getResult().trim();
 
 				TextResult result = new TextResult(value);
 				obs = new TextObservation(identifier, boundedBy, phenomenonTime,
