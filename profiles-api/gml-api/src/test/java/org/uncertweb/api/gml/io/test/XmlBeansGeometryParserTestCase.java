@@ -11,7 +11,6 @@ import org.uncertweb.api.gml.geometry.RectifiedGrid;
 import org.uncertweb.api.gml.io.XmlBeansGeometryParser;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -24,21 +23,31 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class XmlBeansGeometryParserTestCase extends TestCase {
 
+
 	private final String EXAMPLES_PATH = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/gml-api/src/test/resources";
-	@SuppressWarnings("unused")
-	private GeometryFactory geomFac;
+
+	
+	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/";
+	private String pathToExamples = "gml-api/src/test/resources";
+	
 	
 	
 	public void setUp() {
-		geomFac = new GeometryFactory();
 	}
 
 	
 	public void testPointParser() throws Exception {
 
 		// read XML example file
-		String xmlString = readXmlFile(EXAMPLES_PATH + "/Point.xml");
-		
+		String xmlString;
+		try {
+		 xmlString = readXmlFile(pathToExamples
+				+ "/Point.xml");
+		}
+		catch (IOException ioe){
+			xmlString = readXmlFile(localPath + pathToExamples
+					+ "/Point.xml");
+		}
 		XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
 		Geometry geom = parser.parseUwGeometry(xmlString);
 		assertEquals("Point", geom.getGeometryType());
@@ -50,7 +59,15 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 	
 	public void testPolygonParser() throws Exception {
 		// read XML example file
-		String xmlString = readXmlFile(EXAMPLES_PATH + "/Polygon.xml");
+		String xmlString;
+		try {
+		 xmlString = readXmlFile(pathToExamples
+				+ "/Polygon.xml");
+		}
+		catch (IOException ioe){
+			xmlString = readXmlFile(localPath + pathToExamples
+					+ "/Polygon.xml");
+		}
 		XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
 		Geometry geom = parser.parseUwGeometry(xmlString);
 		assertEquals("Polygon", geom.getGeometryType());
@@ -60,7 +77,15 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 
 	
 	public void testLineStringParser() throws Exception {
-		String xmlString = readXmlFile(EXAMPLES_PATH + "/LineString.xml");
+		String xmlString;
+		try {
+		 xmlString = readXmlFile(pathToExamples
+				+ "/LineString.xml");
+		}
+		catch (IOException ioe){
+			xmlString = readXmlFile(localPath + pathToExamples
+					+ "/LineString.xml");
+		}
 		XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
 		Geometry geom = parser.parseUwGeometry(xmlString);
 		assertEquals("LineString", geom.getGeometryType());
@@ -70,7 +95,15 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 
 	
 	public void testMultiLineStringParser() throws Exception {
-		String xmlString = readXmlFile(EXAMPLES_PATH + "/MultiLineString.xml");
+		String xmlString;
+		try {
+		 xmlString = readXmlFile(pathToExamples
+				+ "/MultiLineString.xml");
+		}
+		catch (IOException ioe){
+			xmlString = readXmlFile(localPath + pathToExamples
+					+ "/MultiLineString.xml");
+		}
 		XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
 		Geometry geom = parser.parseUwGeometry(xmlString);
 		assertEquals("MultiLineString", geom.getGeometryType());
@@ -78,7 +111,15 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 	
 	
 	public void testGridParser() throws Exception {
-		String xmlString = readXmlFile(EXAMPLES_PATH + "/Grid.xml");
+		String xmlString;
+		try {
+		 xmlString = readXmlFile(pathToExamples
+				+ "/Grid.xml");
+		}
+		catch (IOException ioe){
+			xmlString = readXmlFile(localPath + pathToExamples
+					+ "/Grid.xml");
+		}
 		XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
 		Geometry geom = parser.parseUwGeometry(xmlString);
 		assertEquals("RectifiedGrid", geom.getGeometryType());
