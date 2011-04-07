@@ -23,9 +23,6 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class XmlBeansGeometryParserTestCase extends TestCase {
 
-
-	private final String EXAMPLES_PATH = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/gml-api/src/test/resources";
-
 	
 	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/";
 	private String pathToExamples = "gml-api/src/test/resources";
