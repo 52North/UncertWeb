@@ -31,7 +31,7 @@ import com.vividsolutions.jts.geom.Point;
 public class XBObservationParserTestCase extends TestCase {
 
 	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/";
-	private String pathToExamples = "om-api/src/test/resources";
+	private String pathToExamples = "src/test/resources";
 	
 	
 	public void testObservationParser() throws Exception {
