@@ -1,6 +1,7 @@
 package org.uncertweb.api.gml.io.test;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,7 +26,7 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 
 	
 	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/";
-	private String pathToExamples = "gml-api/src/test/resources";
+	private String pathToExamples = "src/test/resources";
 	
 	
 	
@@ -34,7 +35,6 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 
 	
 	public void testPointParser() throws Exception {
-
 		// read XML example file
 		String xmlString;
 		try {
