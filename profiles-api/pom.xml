@@ -48,6 +48,8 @@
 			<id>UncertWebMavenRepository</id>
 			<name>UncertWeb Maven Repository</name>
 			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+			<snapshots><enabled>true</enabled></snapshots>
+			<releases><enabled>true</enabled></releases>
 		</repository>
 		<repository>
 			<id>osgeo</id>
@@ -73,65 +75,26 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<inherited>false</inherited>
-				<version>2.3.1</version>
-				<executions>
-					<execution>
-						<id>INSTALL-JSON-LIBRARY</id>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<phase>initialize</phase>
-						<configuration>
-							<file>${basedir}/lib/Java-JSON.jar</file>
-							<groupId>org.json</groupId>
-							<artifactId>json-api</artifactId>
-							<version>0.0.1</version>
-							<packaging>jar</packaging>
-							<createChecksum>true</createChecksum>
-							<localRepositoryPath>${basedir}/lib</localRepositoryPath>
-						</configuration>
-					</execution>
-					<execution>
-						<id>INSTALL-UW-XMLBEANS</id>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<phase>initialize</phase>
-						<configuration>
-							<file>${basedir}/lib/xbUWProfiles.jar</file>
-							<groupId>org.uncertweb</groupId>
-							<artifactId>xb-uw-profiles</artifactId>
-							<version>0.0.3</version>
-							<packaging>jar</packaging>
-							<createChecksum>true</createChecksum>
-							<localRepositoryPath>${basedir}/lib</localRepositoryPath>
-						</configuration>
-					</execution>
-					<execution>
-						<id>INSTALL-UNCERTML-XMLBEANS</id>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<phase>initialize</phase>
-						<configuration>
-							<file>${basedir}/lib/uncertml-api-with-dependencies.jar</file>
-							<groupId>org.uncertweb</groupId>
-							<artifactId>uncertml-api</artifactId>
-							<version>0.0.1-SNAPSHOT</version>
-							<packaging>jar</packaging>
-							<createChecksum>true</createChecksum>
-							<localRepositoryPath>${basedir}/lib</localRepositoryPath>
-						</configuration>
-					</execution>
-				</executions>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.5</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.wagon</groupId>
+						<artifactId>wagon-ssh</artifactId>
+						<version>1.0-beta-7</version>
+					</dependency>
+				</dependencies>
 			</plugin>
-			-->
 		</plugins>
 	</build>
+	<distributionManagement>
+		<repository>
+			<id>UncertWebMavenDeployRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>scp://giv-uw.uni-muenster.de:/var/www/m2/repo</url>
+		</repository>
+	</distributionManagement>
 </project>
 
