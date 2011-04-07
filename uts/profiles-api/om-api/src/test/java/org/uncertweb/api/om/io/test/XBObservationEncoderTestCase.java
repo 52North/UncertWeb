@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+
 import junit.framework.TestCase;
 import net.opengis.om.x20.OMObservationDocument;
 
@@ -33,8 +34,8 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class XBObservationEncoderTestCase extends TestCase {
 
-	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api";
-	private String pathToExamples = "/om-api/src/test/resources";
+	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/";
+	private String pathToExamples = "om-api/src/test/resources";
 	
 	public void testObservationEncoder() throws Exception {
 
