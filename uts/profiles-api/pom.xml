@@ -45,8 +45,9 @@
 
 	<repositories>
 		<repository>
-			<id>LocalDependencies</id>
-			<url>file://${basedir}/lib</url>
+			<id>UncertWebMavenRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
 		</repository>
 		<repository>
 			<id>osgeo</id>
