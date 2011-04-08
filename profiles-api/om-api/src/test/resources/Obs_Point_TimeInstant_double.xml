@@ -37,7 +37,8 @@
 	==============================================================-->
 	<om:featureOfInterest>
 		<sams:SF_SpatialSamplingFeature gml:id="SamplingPoint1">
-		<sf:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
+			<gml:identifier codeSpace="http://www.uncertweb.org/">University of Muenster</gml:identifier>
+			<sf:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
 			<sf:sampledFeature xsi:nil="true"/>
 			<sams:shape>
 				<gml:Point gml:id="UOMlocation">
