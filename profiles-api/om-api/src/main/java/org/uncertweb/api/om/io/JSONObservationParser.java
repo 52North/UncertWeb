@@ -355,8 +355,9 @@ public class JSONObservationParser implements IObservationParser{
 	 * 			if parsing fails
 	 * @throws JSONException
 	 * 			if parsing fails
+	 * @throws URISyntaxException 
 	 */
-	private SpatialSamplingFeature parseSamplingFeature(JSONObject jfoi) throws IllegalArgumentException, JSONException {
+	private SpatialSamplingFeature parseSamplingFeature(JSONObject jfoi) throws IllegalArgumentException, JSONException, URISyntaxException {
 		Geometry geom;
 		try {
 			geom = new JSONGeometryDecoder().parseUwGeometry(jfoi.getString("shape"));
@@ -364,7 +365,11 @@ public class JSONObservationParser implements IObservationParser{
 			throw new IllegalArgumentException(e);
 		}
 		String sampledFeature = jfoi.getString("sampledFeature");
-		return new SpatialSamplingFeature(sampledFeature, geom);
+		Identifier identifier =null;
+		if (jfoi.has("identifier")){
+			identifier = parseIdentifier(jfoi.getJSONObject("identifier"));
+		}
+		return new SpatialSamplingFeature(identifier, sampledFeature, geom);
 	}
 
 	/**
