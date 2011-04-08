@@ -199,6 +199,16 @@ public class JSONObservationEncoder implements IObservationEncoder{
 		writer.object();
 		writer.key("SF_SpatialSamplingFeature");
 		writer.object();
+		//TODO encapsulate in method encodeIdentifier()
+		if (foi.getIdentifier()!=null){
+		writer.key("identifier");
+			writer.object();
+			writer.key("codeSpace");
+			writer.value(foi.getIdentifier().getCodeSpace().toString());
+			writer.key("value");
+			writer.value(foi.getIdentifier().getIdentifier());
+			writer.endObject();
+		}
 		writer.key("type");
 		writer.value(foi.getFeatureType());
 		writer.key("sampledFeature");
