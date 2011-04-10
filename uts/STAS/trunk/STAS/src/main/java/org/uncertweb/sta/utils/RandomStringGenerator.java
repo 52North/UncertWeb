@@ -150,7 +150,7 @@ public class RandomStringGenerator {
 	 */
 	public String generate(int length, boolean digits, boolean uppercase,
 			boolean lowercase, boolean nonalphanum) {
-		ArrayList<Character[]> sources = new ArrayList<Character[]>();
+		ArrayList<Character[]> sources = new ArrayList<Character[]>(5);
 		if (digits) {
 			sources.add(NUMBERS);
 		}
