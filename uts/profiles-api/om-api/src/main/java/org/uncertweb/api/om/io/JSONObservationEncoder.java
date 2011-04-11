@@ -55,15 +55,11 @@ public class JSONObservationEncoder implements IObservationEncoder{
 		writer.object();
 		writer.key(obsCol.getTypeName());
 		List<? extends AbstractObservation> obsList = obsCol.getObservations();
-		if (obsList.size()>1){
 			writer.array();
-		}
 		for (AbstractObservation obs:obsList){
 			encodeObservation(writer,obs);
 		}
-		if (obsList.size()>1){
-			writer.endArray();
-		}
+		writer.endArray();
 		writer.endObject();
 		return writer.toString();
 	}
