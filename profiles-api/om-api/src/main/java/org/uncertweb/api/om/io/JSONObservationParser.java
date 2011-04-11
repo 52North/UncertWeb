@@ -114,7 +114,10 @@ public class JSONObservationParser implements IObservationParser{
 		URI obsPropURI = new URI(jobs.getString("observedProperty"));
 		JSONObject jfoi = jobs.getJSONObject("featureOfInterest").getJSONObject("SF_SpatialSamplingFeature");
 		SpatialSamplingFeature foi = parseSamplingFeature(jfoi);
-		DQ_UncertaintyResult[] resultQuality = parseResultQuality(jobs.getJSONArray("resultQuality"));
+		DQ_UncertaintyResult[] resultQuality = null;
+		if (jobs.has("resultQuality")){
+			resultQuality = parseResultQuality(jobs.getJSONArray("resultQuality"));
+		}
 		
 		//parse results
 		if (typeName.equals(Measurement.NAME)){
