@@ -644,15 +644,13 @@ public class XBObservationParser implements IObservationParser {
 
 			// TODO add boundedBy, location
 
-			// get id of the sampled feature
+			// get reference to the sampled feature
 			String sampledFeature = null;
 
-			if (!(xb_featureOfInterest.getSFSpatialSamplingFeature()
-					.getSampledFeature().getAbstractFeature() == null)) {
+			
+			if (!(xb_featureOfInterest.getSFSpatialSamplingFeature().getSampledFeature().getHref() == null)) {
 
-				sampledFeature = xb_featureOfInterest
-						.getSFSpatialSamplingFeature().getSampledFeature()
-						.getAbstractFeature().getId();
+				sampledFeature = xb_featureOfInterest.getSFSpatialSamplingFeature().getSampledFeature().getHref();
 			}
 
 			// get shape geometry
