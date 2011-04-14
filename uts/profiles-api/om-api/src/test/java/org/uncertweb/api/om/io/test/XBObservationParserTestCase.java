@@ -1,6 +1,7 @@
 package org.uncertweb.api.om.io.test;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +14,8 @@ import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.GaussianDistribution;
 import org.uncertml.statistic.Probability;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
+import org.uncertweb.api.om.io.JSONObservationEncoder;
+import org.uncertweb.api.om.io.JSONObservationParser;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -30,15 +33,47 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class XBObservationParserTestCase extends TestCase {
 
-	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/";
+	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/om-api/";
 	private String pathToExamples = "src/test/resources";
 	
 	
 	public void testObservationParser() throws Exception {
-		point_TimeInstant_Double();
-		obsCol_Measurement();
-		point_TimeInstant_Uncertainty();
-		point_TimeInstant_FOIref();
+//		point_TimeInstant_Double();
+//		obsCol_Measurement();
+//		point_TimeInstant_Uncertainty();
+//		point_TimeInstant_FOIref();
+		testJSON();
+	}
+	
+
+	public void testJSON() throws Exception{
+		File folder = new File(localPath+pathToExamples);
+		File[] fileArray = folder.listFiles();
+		if (fileArray!=null){
+			for (int i=0;i<fileArray.length;i++){
+				String path = fileArray[i].getAbsolutePath();
+				
+				//parse xmlFile
+				if (!path.contains("svn")){
+					String xmlString = readXmlFile(path);
+					XBObservationParser parser = new XBObservationParser();
+					IObservationCollection obsCol = parser.parse(xmlString);
+					System.out.println("-----XMLfile read from path " + path);
+					System.out.print(xmlString);
+					
+					//Encode Json FIle
+					JSONObservationEncoder jEncoder = new JSONObservationEncoder();
+					String jsonString = jEncoder.encodeObservationCollection(obsCol);
+					System.out.println("-----JSONEncodedfile");
+					System.out.println(jsonString);
+					
+					JSONObservationParser jParser = new JSONObservationParser();
+					System.out.println("-----JSONParsedFile");
+					IObservationCollection jObs = jParser.parse(jsonString);
+					System.out.println(jEncoder.encodeObservationCollection(jObs));
+				}
+			}
+		}
 	}
 
 	private void obsCol_Measurement() throws Exception {
