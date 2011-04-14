@@ -34,7 +34,7 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class XBObservationEncoderTestCase extends TestCase {
 
-	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/";
+	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/om-api/";
 	private String pathToExamples = "src/test/resources";
 	
 	public void testObservationEncoder() throws Exception {
@@ -194,7 +194,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 		assertEquals(obs.getObservedProperty().toString(), obs2.getObservedProperty().toString());
 
 		// test featureOfInterest
-		assertEquals(obs.getFeatureOfInterest().getIdentifier(), obs2.getFeatureOfInterest().getIdentifier());
+		assertEquals(obs.getFeatureOfInterest().getIdentifier().getIdentifier(), obs2.getFeatureOfInterest().getIdentifier().getIdentifier());
 
 		Point shape = (Point) obs.getFeatureOfInterest().getShape();
 		Point shape2 = (Point)obs2.getFeatureOfInterest().getShape();
