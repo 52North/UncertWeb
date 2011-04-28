@@ -17,11 +17,6 @@
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
-			<Parser name="ParameterParser" className="org.uncertweb.sta.wps.xml.io.dec.ParameterParser" active="true">
-				<Property name="supportedSchema" active="true">http://www.uncertweb.org/sta/wps/parameter.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Parser>
 			<Parser name="GML3BasicParser" className="org.n52.wps.io.datahandler.xml.GML3BasicParser" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Property>
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.2.1/gml.xsd</Property>
@@ -62,11 +57,6 @@
 			</Generator>
 			<Generator name="GetFeatureRequestGenerator" className="org.uncertweb.sta.wps.xml.io.enc.GetFeatureRequestGenerator" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/wfs/1.1.0/wfs.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Generator>
-			<Generator name="ParameterGenerator" className="org.uncertweb.sta.wps.xml.io.enc.ParameterGenerator" active="true">
-				<Property name="supportedSchema" active="true">http://www.uncertweb.org/sta/wps/parameter.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>

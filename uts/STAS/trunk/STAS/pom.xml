@@ -149,41 +149,6 @@
 			<artifactId>52n-wps-webapp</artifactId>
 			<version>${wps.version}</version>
 			<type>war</type>
-			<exclusions>
-				<!-- we don't need them ... -->
-				<exclusion>
-					<groupId>org.n52.wps</groupId>
-					<artifactId>52n-wps-gridgain</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.n52.wps</groupId>
-					<artifactId>52n-wps-unicore</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.n52.wps</groupId>
-					<artifactId>52n-wps-sextante</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.n52.wps</groupId>
-					<artifactId>52n-wps-ags</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.n52.wps</groupId>
-					<artifactId>52n-wps-webadmin</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.n52.wps</groupId>
-					<artifactId>52n-wps-transactional</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.n52.wps</groupId>
-					<artifactId>52n-wps-install-wizard</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.n52.wps</groupId>
-					<artifactId>52n-wps-grass</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- Testing dependencies -->
@@ -210,17 +175,6 @@
 			<url>http://maven.geotools.fr/repository</url>
 			<releases>
 				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>n52-snapshot</id>
-			<name>52° North Snapshot Repository</name>
-			<url>http://52north.org/maven/repo/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
@@ -270,7 +224,6 @@
 					<javaSource>1.5</javaSource>
 					<sourceSchemas>
 						<sourceSchema>wfs/1.1.0/wfs.xsd</sourceSchema>
-						<!-- <sourceSchema>parameter/parameter.xsd</sourceSchema> -->
 					</sourceSchemas>
 				</configuration>
 			</plugin>
