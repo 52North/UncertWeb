@@ -25,14 +25,31 @@
 	border: 1px solid black;
 }
 
-.bubblePlot {
+.bubbleContent {
 	width: 95%;
 	height: 95%;
 }
 
+.bubblePlot{
+	height:100%;
+	width: 95%;
+	float: left;
+}
+
+#confidenceSliderContainer {
+	float:right;
+}
+#confidenceSlider {
+	height:95%;
+}
+
+#intervalValue {
+
+}
+
 .bubble {
 	margin: 10px;
-	width: 400px;
+	width: 475px;
 	height: 250px;
 }
 

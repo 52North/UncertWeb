@@ -7,22 +7,29 @@
 		<meta name="keywords" content="SOS, Sensor, Observation, Service, OpenLayers, OpenStreetMap, GoogleMaps"/>
 		<link rel="stylesheet" type="text/css" href="css/style.css" />
 		<link rel="stylesheet" type="text/css" href="css/jquery.ui.css" />	
+
 		<script type="text/javascript" src="js/jquery/jquery.js"></script>
 		<script type="text/javascript" src="js/jquery/jquery.ui.js"></script>
 		<script type="text/javascript" src="js/jquery/jquery.flot.js"></script>
+
 		<script type="text/javascript" src="js/jstat.js"></script>
+
 		<script type="text/javascript" src="js/proj4js/proj4js-combined.js"></script>
 		<script type="text/javascript" src="js/proj4js/proj4js-srs.js"></script>
 		<script type="text/javascript" src="js/openlayers/OpenLayers.js"></script>
+
 		<script type="text/javascript" src="js/openlayers/OpenStreetMap.js"></script>
 		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
 		<script type="text/javascript" src="js/codemirror/codemirror.js"></script>
-		<script type="text/javascript" src="js/client/ERFormat.js"></script>
-		<script type="text/javascript" src="js/client/OCFormat.js"></script>
-		<script type="text/javascript" src="js/client/Color.js"></script>
-		<script type="text/javascript" src="js/client/ScaleBar.js"></script>
-		<script type="text/javascript" src="js/client/SOSClient.js"></script>
-		<script type="text/javascript" src="js/client/UI.js"></script>
+		
+		<script type="text/javascript" src="js/client/OpenLayers.SOS.ObservationSeries.js"></script>
+		<script type="text/javascript" src="js/client/OpenLayers.SOS.Format.JSOM.js"></script>
+		<script type="text/javascript" src="js/client/OpenLayers.SOS.Format.ObservationCollection.js"></script>
+		<script type="text/javascript" src="js/client/OpenLayers.SOS.ScaleBar.js"></script>
+		<script type="text/javascript" src="js/client/OpenLayers.SOS.Client.js"></script>
+		<script type="text/javascript" src="js/client/OpenLayers.SOS.UI.js"></script>
+
 		<title>OpenLayers SOS Client</title>
 	</head>
 	<body>
@@ -62,19 +69,19 @@
 
 		<div id="aboutDialog" class="dialog">
 			<p class="credits">
-				Editor based on <a href="http://marijn.haverbeke.nl/codemirror/">CodeMirror</a>.
+			Editor based on <a href="http://marijn.haverbeke.nl/codemirror/">CodeMirror</a>.
 			</p>
 			<p class="credits">
-				Interface-Design by <a href="http://jqueryui.com/">JQuery UI</a>, <a href="https://github.com/taitems/Aristo-jQuery-UI-Theme">Aristo</a>-Theme by <a href="http://taitems.tumblr.com/">taitems</a>.
+			Interface-Design by <a href="http://jqueryui.com/">JQuery UI</a>, <a href="https://github.com/taitems/Aristo-jQuery-UI-Theme">Aristo</a>-Theme by <a href="http://taitems.tumblr.com/">taitems</a>.
 			</p>
 			<p class="credits">
-				Map-Credit goes to <a href="http://openlayers.org/">OpenLayers</a>, <a href="http://www.openstreetmap.org/">OpenStreetMap</a> and <a href="http://maps.google.com">Google Maps</a>.
+			Map-Credit goes to <a href="http://openlayers.org/">OpenLayers</a>, <a href="http://www.openstreetmap.org/">OpenStreetMap</a> and <a href="http://maps.google.com">Google Maps</a>.
 			</p>
 		</div>
 		<div id="layerDialog" style="display: none;">
 			<div id="layerSwitcher"></div>
 		</div>
-	
+
 		<div id="map"></div>
 		<div id="scale"></div>
 		<div id="menu">
