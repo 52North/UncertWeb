@@ -157,8 +157,13 @@ public class JSONObservationEncoder implements IObservationEncoder{
 			writer.value(((TextResult) result).getTextValue());
 		}
 		else if (result instanceof UncertaintyResult){
+			writer.object();
+			writer.key("uom");
+			writer.value(((UncertaintyResult)result).getUnitOfMeasurement());
+			writer.key("value");
 			JSONObject jsonUncertainty = new JSONObject(new JSONEncoder().encode(((UncertaintyResult) result).getUncertaintyValue()));
 			writer.value(jsonUncertainty);
+			writer.endObject();
 		}
 	}
 
