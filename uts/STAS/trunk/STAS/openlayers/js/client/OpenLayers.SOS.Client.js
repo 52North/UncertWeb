@@ -41,6 +41,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		getObsFormat: new OpenLayers.SOS.Format.ObservationCollection(),
 		jsomFormat: new OpenLayers.SOS.Format.JSOM(),
 		foiFeatureMapping: null,
+		selectedConfInterval: 95,
 		scalebar: null,
 		initialize: function (options) {
 			OpenLayers.Util.extend(this, options);
@@ -114,6 +115,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				this.layer.redraw();
 				if (this.selectedFeature && this.selectedFeature.popup 
 					&& this.selectedFeature.popup.visible() && this.plot) {
+
 					this.onFeatureSelect(this.selectedFeature);
 				}
 			}
@@ -142,29 +144,27 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			this.map.addPopup(feature.popup, true);
 
 			var self = this;
-			var initConfidenceValue = 95;
-			$('#intervalValue').html(initConfidenceValue.toFixed(2));
+			$('#intervalValue').html(this.selectedConfInterval.toFixed(1));
 			$("#confidenceSlider").slider({ 
 				animate: true, 
-				value: initConfidenceValue,
-				min: 0.00001, 
-				max: 99.99999,
-				step: 0.00001,
 				orientation: 'vertical',
+				value: this.selectedConfInterval,
+				min: 0.1, max: 99.9, step: 0.1,
 				change: function(e, ui) {
-					self.draw(id, values, uom, ui.value);
+					self.selectedConfInterval = ui.value;
+					self.draw(id, values, uom);
 				},
 				slide: function (e, ui) {
-					$('#intervalValue').html(ui.value);
+					$('#intervalValue').html(ui.value.toFixed(1));
 				}
 			});
 			
-			this.draw(id, values, uom, initConfidenceValue);
+			this.draw(id, values, uom);
 		},
 		
-		draw: function(id, v, uom, p) {
+		draw: function(id, v, uom) {
 			var u = [], l = [], m = [];
-			p = parseFloat(p);
+			var p = parseFloat(this.selectedConfInterval);
 			p = (100 - (100-p)/2)/100;
 			for (var i = 0; i < v.length; i++) {
 				var time = v[i][0], value = v[i][1];
