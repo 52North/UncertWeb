@@ -32,8 +32,10 @@ OpenLayers.SOS = OpenLayers.SOS || {};
 OpenLayers.SOS.Client = OpenLayers.Class({
 		CLASS_NAME: "OpenLayers.SOS.Client",
 		id: null,
-		url: null, request: null,
-		oc: null, json: null,
+		url: null, 
+		request: null,
+		oc: null, 
+		json: null,
 		map: null,
 		readyCallback: null,
 		failCallback: null,
@@ -41,6 +43,9 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		jsomFormat: new OpenLayers.SOS.Format.JSOM(),
 		foiFeatureMapping: null,
 		selectedConfInterval: 95,
+		visualStyle: "intervals",
+		selectedTime: null,
+		visibleScale: null,
 		scalebar: null,
 		initialize: function (options) {
 			OpenLayers.Util.extend(this, options);
@@ -130,14 +135,15 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				}
 			}
 			log.info("Created Layer: Timestamps: " + new Date(min).toUTCString() + " - " + new Date(max).toUTCString());
-
+			this.selectedTime = min;
 			this.readyCallback({
 				time: { min: min, max: max, step: isNaN(step) ? 0 : step},
-				layer: this.layer
+				layer: this.layer,
 			});
 		},
 		
-		updateForNewScale: function () {
+		updateForNewScale: function (minmax) {
+			if (minmax) this.visibleScale = minmax;
 			if (this.layer) {
 				this.layer.styleMap = new OpenLayers.StyleMap({
 					default: this.scalebar.getStyle(),
@@ -146,13 +152,13 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				this.layer.redraw();
 				if (this.selectedFeature && this.selectedFeature.popup 
 					&& this.selectedFeature.popup.visible() && this.plot) {
-
 					this.onFeatureSelect(this.selectedFeature);
 				}
 			}
 		},
 		
 		updateForNewTime: function (time) {
+			this.selectedTime = time;
 			for (var i = 0; i < this.features.length; i++) {
 				this.features[i].setTime(time);
 			}
@@ -172,11 +178,24 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			var values = feature.getValues();
 			var uom = feature.getUom();
 			var id = "plot" + new Date().getTime();
-			var html = '<div class="bubble"><h2>' + feature.attributes.id 
-			+ ' (<span id="intervalValue"></span>% confidence interval)</h2>'
-			+'<div class="bubbleContent"><div id="' + id 
-			+ '" class="bubblePlot"></div><div id="confidenceSliderContainer">'
-			+'<div id="confidenceSlider"></div></div></div></div>';
+			var html = 
+			'<div class="bubble">'
+				+ '<div>'
+					+ '<span id="viewChooser">'
+						+ '<input type="radio" name="viewChooser" id="convInterval" checked="checked"/>'
+						+ '<label for="convInterval">Intervals</label>'
+						+ '<input type="radio" name="viewChooser" id="errorBars"/>'
+						+ '<label for="errorBars">Error Bars</label>'
+					+ '</span>'
+					+ '<h2>' + feature.attributes.id + ' (<span id="intervalValue"></span>% confidence interval)</h2>'
+				+ '</div>'
+				+ '<div class="bubbleContent">'
+					+ '<div id="' + id + '" class="bubblePlot"></div>'
+					+ '<div id="confidenceSliderContainer">'
+						+ '<div id="confidenceSlider"></div>'
+					+ '</div>'
+				+ '</div>'
+			+ '</div>';
 			var ctrls = this.map.getControlsByClass("OpenLayers.Control.SelectFeature");
 			feature.popup = new OpenLayers.Popup.FramedCloud("Feature",
 				feature.geometry.getBounds().getCenterLonLat(),
@@ -184,8 +203,18 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			feature.popup.panMapIfOutOfView = true;
 			this.selectedFeature = feature;
 			this.map.addPopup(feature.popup, true);
-
+			
 			var self = this;
+			$('#convInterval').button().click(function(){
+				self.visualStyle = "intervals"
+				self.draw(id, values, uom); 
+			});
+			$('#errorBars').button().click(function(){
+				self.visualStyle = "bars";
+				self.draw(id, values, uom);
+			});
+			
+			$('#viewChooser').buttonset();
 			$('#intervalValue').html(this.selectedConfInterval.toFixed(1));
 			$("#confidenceSlider").slider({ 
 				animate: true, 
@@ -204,10 +233,12 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			this.draw(id, values, uom);
 		},
 		
-		draw: function(id, v, uom) {
+		draw: function(id, v, uom, type) {
 			var u = [], l = [], m = [];
+			var self = this;
 			var p = parseFloat(this.selectedConfInterval);
 			p = (100 - (100-p)/2)/100;
+			
 			for (var i = 0; i < v.length; i++) {
 				var time = v[i][0], value = v[i][1];
 				if (typeof(value) == "number") {
@@ -224,42 +255,126 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 					u.push([time[j], value[2]]);
 				}
 			}
-
-			/* reverse lower to get background color... */
-			if (l.length > 0) {
-				l.sort(function(a,b){return (a[0]>b[0])?-1:((a[0]<b[0])?1:0);});
-				l.push(u[0]);
-			}
-			var scale = this.scalebar;
 			
-			this.plot = $.plot($('#' + id), [
-				{ color: "#FF0000", data: u.concat(l), lines: { fill: true } }, 
-				{ color: "#4F4F4F", points: { show: true }, data: m }
-			], {
-					xaxis: { color: "#B6B6B6", 
-							 mode: "time" },
-					yaxis: { color: "#B6B6B6" }, 
-					grid:  { color: "#B6B6B6", 
-							 hoverable: true, 
-							 mouseActiveRadius: 25 },
-					lines: { show: true },
-					hooks: { draw: [function(plot, ctx) {
-						var data = plot.getData()[1].data;
-						for (var j = 0; j < data.length; j++) {
-							var x = plot.getPlotOffset().left 
-								+ plot.getAxes().xaxis.p2c(data[j][0]);
-							var y = plot.getPlotOffset().top 
-								+ plot.getAxes().yaxis.p2c(data[j][1]);
-							ctx.lineWidth = 0;
-							ctx.beginPath();
-							ctx.arc(x, y, 3, 0, Math.PI * 2, true);
-							ctx.closePath();            
-							ctx.fillStyle = scale.getColorForResultValue(data[j][1]);
-							ctx.fill();
-						} 
+			function colorPointHook(series, plot, ctx) {
+				var data = plot.getData()[series].data;
+				for (var j = 0; j < data.length; j++) {
+					if (data[j][1] >= plot.getAxes().yaxis.min 
+						&& data[j][1] <= plot.getAxes().yaxis.max) {
+						var x = plot.getPlotOffset().left + plot.getAxes().xaxis.p2c(data[j][0]);
+						var y = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(data[j][1]);
+						ctx.lineWidth = 0;
+						ctx.beginPath();
+						ctx.arc(x, y, 3, 0, Math.PI * 2, true);
+						ctx.closePath();            
+						ctx.fillStyle = self.scalebar.getColorForResultValue(data[j][1]);
+						ctx.fill();
+					}
+				} 
+			}
+			
+			function verticalTimeLineHook(plot, ctx) {
+				var x = plot.getPlotOffset().left + plot.getAxes().xaxis.p2c(self.selectedTime);
+				var y0  = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(plot.getAxes().yaxis.max);
+				var y1 = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(plot.getAxes().yaxis.min);
+				ctx.linewidth = 5;
+				ctx.strokeStyle = "#000";
+				ctx.beginPath();
+				ctx.moveTo(x, y0);
+				ctx.lineTo(x, y1);
+				ctx.closePath();
+				ctx.stroke();
+			}
+
+			function errorBarHook(plot, ctx) {
+				var data = plot.getData()[0].data;
+				ctx.strokeStyle = "#F00";
+				ctx.lineWidth = 2;
+				var maxY = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(plot.getAxes().yaxis.max);
+				var minY = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(plot.getAxes().yaxis.min);
+//				maxY = Number.POSITIVE_INFINITY;
+//				minY = Number.NEGATIVE_INFINITY;
+				for (var j = 0; j < data.length; j++) {
+					if (data[j][1] >= plot.getAxes().yaxis.min 
+						&& data[j][1] <= plot.getAxes().yaxis.max) {
+						var x = plot.getPlotOffset().left + plot.getAxes().xaxis.p2c(data[j][0]);
+						var ym = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(data[j][1])
+						var y0 = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(u[j][1]);
+						var y1 = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(l[j][1]);
+						ctx.beginPath();
+						ctx.moveTo(x, ym);
+						if (minY > y0) {
+							ctx.lineTo(x,   y0);
+							ctx.moveTo(x-4, y0);
+							ctx.lineTo(x+4, y0);
+						} else {
+							ctx.lineTo(x, minY);
+						}
+						
+						ctx.moveTo(x, ym);
+						if (maxY < y1) {
+							ctx.lineTo(x,   y1);
+							ctx.moveTo(x-4, y1);
+							ctx.lineTo(x+4, y1);
+						} else {
+							ctx.lineTo(x, maxY);
+						}
+					
+						
+						ctx.closePath();            
+						ctx.stroke();
+					}
+				} 
+			}
+			
+			var series;
+			var buffer = (this.visibleScale) ? 0.1 * (this.visibleScale[1] - this.visibleScale[0]) : 0;
+			var options = {
+				xaxis: { 
+					color: "#B6B6B6", 
+					mode: "time" 
+				},
+				yaxis: {
+					color: "#B6B6B6",
+					min: (this.visibleScale) ? this.visibleScale[0] - buffer: null,
+					max: (this.visibleScale) ? this.visibleScale[1] + buffer: null
+				}, 
+				grid:  { 
+					color: "#B6B6B6", 
+					hoverable: true, 
+					mouseActiveRadius: 25 
+				},
+				lines: { show: true }
+			};
+			if (self.visualStyle == "bars") {
+				series = [
+					{ color: "#4F4F4F", points: { show: true }, data: m }
+				]
+				options.hooks = { 
+					draw: [ verticalTimeLineHook, errorBarHook, function(plot, ctx) {
+						colorPointHook(0, plot, ctx)
 					}]
 				}
-			});
+			
+			} else if (self.visualStyle == "intervals") {
+				/* reverse lower to get background color... */
+				if (l.length > 0) {
+					l.sort(function(a,b){return (a[0]>b[0])?-1:((a[0]<b[0])?1:0);});
+					l.push(u[0]);
+				}
+				series = [
+					{ color: "#FF0000", lines: { fill: true }, data: u.concat(l) }, 
+					{ color: "#4F4F4F", points: { show: true }, data: m }
+				];
+				options.hooks = { 
+					draw: [ verticalTimeLineHook, function(plot, ctx) {
+						colorPointHook(1, plot, ctx)
+					}]
+				}
+			} else {
+				throw "Invalid type: "+ self.visualStyle;
+			}
+			this.plot = $.plot($('#' + id), series, options);
 			var previous;
 			$('#'+id).bind("plothover", function(event, pos, item) {
 					$("#x").text(pos.x.toFixed(2));
@@ -269,7 +384,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 							previous = item.datapoint;
 							$("#tooltip").remove();
 							var text = item.datapoint[1] + " " + uom;
-							$('<div id="tooltip">' + text + "</div>").css( {
+							$('<div id="tooltip" class="tooltip">' + text + "</div>").css( {
 									position: "absolute",
 									display: "none",
 									top: item.pageY + 15,

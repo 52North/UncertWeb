@@ -134,12 +134,10 @@ input {
 }
 
 .bubbleContent {
-	width: 95%;
-	height: 95%;
 }
 
 .bubblePlot{
-	height:100%;
+	height:85%;
 	width: 95%;
 	float: left;
 }
@@ -149,16 +147,16 @@ input {
 }
 
 #confidenceSlider {
-	height:95%;
+	height: 80%;
 }
 
 .bubble {
 	margin: 10px;
-	width: 475px;
-	height: 250px;
+	width: 600px;
+	height: 350px;
 }
 
-#tooltip {
+.tooltip {
 	font-size: small;
 	border: 1px solid #B6B6B6;
 	color: white;
@@ -225,7 +223,9 @@ input {
 	width: 250px;
 }
 
-
+#viewChooser {
+	display: inline-block;
+}
 
 
 

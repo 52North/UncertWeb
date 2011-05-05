@@ -101,14 +101,15 @@ $(function (){
 				"OK": function (e, ui) {
 					$(".ui-dialog-buttonpane button", ui).button("disable");
 					clients.push(new OpenLayers.SOS.Client({
-						map: map, scalebar: scaleBar,
+						map: map, 
+						scalebar: scaleBar,
 						url: $("#sosUrl").val(),
 						request: editor.getCode(),
 						readyCallback: function (info) { 
 							updateTimeSlider(info);
 							dialog.issue.dialog("close"); 
 						},
-						statusCallback: function (stat) {},
+						visibleScale: getThresholdMinMax(),
 						failCallback: dialog.error
 					}));
 				},
@@ -128,13 +129,53 @@ $(function (){
 	};
 
 	function updateLegend() { 
-		scaleBar.update(
-			$('#thresholdSlider').slider("values", 0),
-			$('#thresholdSlider').slider("values", 1),
-			$('#intervalSlider').slider("value")
-		);
-		$.each(clients, function (i,c){ c.updateForNewScale(); }); 
+		var minmax = getThresholdMinMax();
+		scaleBar.update(minmax[0], minmax[1], $('#intervalSlider').slider("value"));
+		$.each(clients, function (i,c){ 
+			c.updateForNewScale(minmax); 
+		}); 
 	}
+	
+	function getThresholdMinMax() {
+		var min = $('#thresholdSlider').slider("values", 0);
+		var max = $('#thresholdSlider').slider("values", 1);
+		return [min, max];
+	}
+	
+	function changeForTime(time) {
+		$.each(clients, function (i, c){ 
+			c.updateForNewTime(time); 
+		});
+	}
+
+	function updateTimeLabel() {
+		$("#timeSliderValue").html(new Date(parseInt($("#timeSlider").slider("value"))).toUTCString());
+	}
+	
+	function updateTimeSlider(info) {
+		if ($('#timeSlider').slider("option", "disabled")) {
+			$('#timeSlider').slider("option", "min",  info.time.min);
+			$('#timeSlider').slider("option", "max",  info.time.max);
+			$('#timeSlider').slider("option", "step", info.time.step);
+			$('#timeSlider').slider("enable");
+		} else {	
+			var curStep = $('#timeSlider').slider("option", "step");
+			if (curStep > info.time.step && (curStep % info.time.step) == 0) {
+				$('#timeSlider').slider("option", "step", info.time.step);
+			} else if (curStep != info.time.step && ((info.time.step % curStep) != 0)) {			
+				map.removeLayer(info.layer);
+				dialog.error("Incompatible sampling time steps: " + curStep + " and " + info.time.step + ".");
+				return;
+			}
+			if ($('#timeSlider').slider("option", "min") > info.time.min)
+				$('#timeSlider').slider("option", "min",   info.time.min);
+			if ($('#timeSlider').slider("option", "max") < info.time.max)
+				$('#timeSlider').slider("option", "max",   info.time.max);
+		}
+		$('#timeSlider').slider("option", "value", info.time.min);
+		changeForTime(info.time.min);
+	}
+
 
 	$("#thresholdSlider").slider({ 
 		animate: true, range: true,
@@ -176,43 +217,13 @@ $(function (){
 
 	var now = new Date().getTime();
 	$("#timeSlider").slider({
-		animate: true, value: now, max: now, min: 0, step: now, slide: setTimeLabel,
+		animate: true, value: now, 
+		max: now, min: 0, step: now, 
+		slide: updateTimeLabel,
 		change: function(e, ui) { changeForTime(parseFloat(ui.value)); }
 	}).slider("disable");			
-	setTimeLabel();
+	updateTimeLabel();
 	
-	function changeForTime(time) {
-		$.each(clients, function (i, c){ c.updateForNewTime(time); });
-	}
-
-	function setTimeLabel() {
-		$("#timeSliderValue").html(new Date(parseInt($("#timeSlider").slider("value"))).toUTCString());
-	}
-	
-	function updateTimeSlider(info) {
-		if ($('#timeSlider').slider("option", "disabled")) {
-			$('#timeSlider').slider("option", "min",  info.time.min);
-			$('#timeSlider').slider("option", "max",  info.time.max);
-			$('#timeSlider').slider("option", "step", info.time.step);
-			$('#timeSlider').slider("enable");
-		} else {	
-			var curStep = $('#timeSlider').slider("option", "step");
-			if (curStep > info.time.step && (curStep % info.time.step) == 0) {
-				$('#timeSlider').slider("option", "step", info.time.step);
-			} else if (curStep != info.time.step && ((info.time.step % curStep) != 0)) {			
-				map.removeLayer(info.layer);
-				dialog.error("Incompatible sampling time steps: " + curStep + " and " + info.time.step + ".");
-				return;
-			}
-			if ($('#timeSlider').slider("option", "min") > info.time.min)
-				$('#timeSlider').slider("option", "min",   info.time.min);
-			if ($('#timeSlider').slider("option", "max") < info.time.max)
-				$('#timeSlider').slider("option", "max",   info.time.max);
-		}
-		$('#timeSlider').slider("option", "value", info.time.min);
-		changeForTime(info.time.min);
-	}
-
 
 	/* init map */
 	var ll1 = new OpenLayers.LonLat( 5.8669, 47.2708).transform(PROJ4326, PROJMERC);
@@ -317,6 +328,7 @@ $(function (){
 				clients.push(new OpenLayers.SOS.Client({
 					map: map, scalebar: scaleBar,
 					url: parameters['url'],
+					visibleScale: getThresholdMinMax(),
 					request: r.responseText,
 					readyCallback: updateTimeSlider,
 					failCallback: dialog.error
@@ -331,6 +343,7 @@ $(function (){
 				clients.push(new OpenLayers.SOS.Client({
 					map: map, scalebar: scaleBar,
 					oc: (r.responseXML)? r.responseXML : r.responseText,
+					visibleScale: getThresholdMinMax(),
 					readyCallback: updateTimeSlider,
 					failCallback: dialog.error
 				}));
@@ -344,6 +357,7 @@ $(function (){
 				clients.push(new OpenLayers.SOS.Client({
 					map: map, scalebar: scaleBar,
 					json: r.responseText,
+					visibleScale: getThresholdMinMax(),
 					readyCallback: updateTimeSlider,
 					failCallback: dialog.error
 				}));
@@ -351,4 +365,4 @@ $(function (){
 		});
 	}
 });
-	/* vim: set ts=4 sts=4 sw=4 noet ft=javascript fenc=utf-8 */
+/* vim: set ts=4 sts=4 sw=4 noet ft=javascript fenc=utf-8 */
