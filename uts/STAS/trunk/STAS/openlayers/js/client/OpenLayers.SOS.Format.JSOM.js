@@ -178,7 +178,6 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 						}
 						value = DistributionFactory.build(j);
 					} catch (e) {
-						console.log(e);
 						/* TODO no distribution */
 					}
 					return value;						

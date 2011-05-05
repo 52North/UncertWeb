@@ -1,7 +1,4 @@
 @CHARSET "UTF-8";
-@import url("resultTable.css");
-@import url("layerSwitcher.css");
-@import url("scaleBar.css");
 
 html, body, input, div, p {
 	padding:0px;
@@ -95,4 +92,140 @@ input {
 	font-family: monospace;
 	padding-top: .4em;
 }
+
+.olControlLayerSwitcher {
+	width: 20em;
+	height: 10em;
+	font-weight: bold;
+	margin-top: 3px;
+	margin-left: 3px;
+	margin-bottom: 3px;
+	font-size: smaller;
+	color: white;
+}
+
+.olControlLayerSwitcher .layersDiv {
+	padding-top: 5px;
+	padding-left: 10px;
+	padding-bottom: 5px;
+	padding-right: 75px;
+	width: 100%;
+	height: 100%;
+}
+
+.baseLayersDiv, .dataLayersDiv { 
+	font-size: .8em;
+	color #4F4F4F; 
+}
+
+.baseLbl, .dataLbl {
+	margin-top: 0.5em;
+	margin-bottom:0.5em;
+	font-weight: bold;
+}
+
+.baseLayersDiv input, .dataLayersDiv input, labelSpan { 
+	margin: 5px; 
+}
+
+.baseLayersDiv span, .dataLayersDiv span { 
+	font-size: .9em; 
+	vertical-align: middle !important; 
+}
+
+.bubbleContent {
+	width: 95%;
+	height: 95%;
+}
+
+.bubblePlot{
+	height:100%;
+	width: 95%;
+	float: left;
+}
+
+#confidenceSliderContainer {
+	float:right;
+}
+
+#confidenceSlider {
+	height:95%;
+}
+
+.bubble {
+	margin: 10px;
+	width: 475px;
+	height: 250px;
+}
+
+#tooltip {
+	font-size: small;
+	border: 1px solid #B6B6B6;
+	color: white;
+	padding: 5px;
+	background-color: black;
+	opacity: 0.80;
+}
+
+#scale {
+	line-height: 29px;
+	height: 29px;
+	bottom: 23px;
+	right: 20px;
+	text-align: left;
+	position: absolute;
+	z-index: 500;
+	font-size: 0.8em;
+	overflow: hidden;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+#scale span {
+	vertical-align: middle; 
+	display: inline-block; 
+	border-top: 1px solid #B6B6B6;
+	border-bottom: 1px solid #B6B6B6;
+	border-left: 1px solid #B6B6B6;
+	opacity: .80;
+	filter:Alpha(Opacity=80); 
+	height: 100%;
+}
+
+#scale span:first-child {
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+#scale span:last-child {
+	border-right: 1px solid #B6B6B6;
+	-webkit-border-top-right-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	-moz-border-radius-topright: 3px;
+	-moz-border-radius-bottomright: 3px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+#time {
+	position: absolute;
+	z-index: 500;
+	right: 20px;
+	top: 20px;
+	cursor: auto;
+}
+
+#timeSlider {
+	margin: 20px;
+	width: 250px;
+}
+
+
+
+
 

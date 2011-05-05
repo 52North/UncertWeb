@@ -35,7 +35,6 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		url: null, request: null,
 		oc: null, json: null,
 		map: null,
-		statusCalback: null,
 		readyCallback: null,
 		failCallback: null,
 		getObsFormat: new OpenLayers.SOS.Format.ObservationCollection(),
@@ -45,8 +44,12 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		scalebar: null,
 		initialize: function (options) {
 			OpenLayers.Util.extend(this, options);
+
+			if (!this.readyCallback) {
+				this.readyCallback = function (min, max){}
+			}
+
 			this.id = sosClientId++;
-			this.statusCallback("Sending Request");
 			if (this.url) {
 				if (this.request && !this.request.trim() == "") {
 					OpenLayers.Request.POST({
@@ -86,7 +89,6 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				this.features[i].transform(dest);
 			}
 
-			this.statusCallback("Generating layer");
 			this.layer = new OpenLayers.Layer.Vector("SOS Request " + this.id, {
 				styleMap: new OpenLayers.StyleMap({
 					default: this.scalebar.getStyle(),
@@ -104,8 +106,37 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			this.map.addLayer(this.layer);
 			this.map.addControl(this.ctrl);
 			this.ctrl.activate();
-			this.readyCallback();
+			
+			var min = Number.POSITIVE_INFINITY, 
+				max = Number.NEGATIVE_INFINITY,
+				step = Number.NaN;
+			for (var i = 0; i < this.features.length; i++) {
+				var values = this.features[i].getValues();
+				for (var j = 0; j < values.length; j++) {
+					if (values[j][0].length == 2) {
+						if (values[j][0][0] < min) min = values[j][0][0];
+						if (values[j][0][1] > max) max = values[j][0][1];
+					} else {
+						if (values[j][0][0] < min) min = values[j][0][0];
+						if (values[j][0][0] > max) max = values[j][0][0];
+					}
+				}
+				if (values.length > 2) {
+					// just check the distance between the first values...
+					var curStep = values[1][0][0] - values[0][0][0];
+					if (isNaN(step) || curStep < step) {
+						step = curStep;
+					}
+				}
+			}
+			log.info("Created Layer: Timestamps: " + new Date(min).toUTCString() + " - " + new Date(max).toUTCString());
+
+			this.readyCallback({
+				time: { min: min, max: max, step: isNaN(step) ? 0 : step},
+				layer: this.layer
+			});
 		},
+		
 		updateForNewScale: function () {
 			if (this.layer) {
 				this.layer.styleMap = new OpenLayers.StyleMap({
@@ -120,6 +151,14 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				}
 			}
 		},
+		
+		updateForNewTime: function (time) {
+			for (var i = 0; i < this.features.length; i++) {
+				this.features[i].setTime(time);
+			}
+			this.updateForNewScale();
+		},
+		
 		onFeatureUnselect: function (feature) {
 			if (feature.popup) {
 				feature.popup.hide();
@@ -128,12 +167,15 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				feature.popup = null;
 			}
 		},
+		
 		onFeatureSelect: function (feature) {
 			var values = feature.getValues();
 			var uom = feature.getUom();
 			var id = "plot" + new Date().getTime();
-			var html = '<div class="bubble"><h2>' + feature.attributes.id + ' (<span id="intervalValue"></span>% confidence interval)</h2>'
-			+'<div class="bubbleContent"><div id="' + id + '" class="bubblePlot"></div><div id="confidenceSliderContainer">'
+			var html = '<div class="bubble"><h2>' + feature.attributes.id 
+			+ ' (<span id="intervalValue"></span>% confidence interval)</h2>'
+			+'<div class="bubbleContent"><div id="' + id 
+			+ '" class="bubblePlot"></div><div id="confidenceSliderContainer">'
 			+'<div id="confidenceSlider"></div></div></div></div>';
 			var ctrls = this.map.getControlsByClass("OpenLayers.Control.SelectFeature");
 			feature.popup = new OpenLayers.Popup.FramedCloud("Feature",

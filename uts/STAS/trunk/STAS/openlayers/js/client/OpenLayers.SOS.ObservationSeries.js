@@ -67,14 +67,6 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			});
 			
 			for (var i = 0; i < values.length; i++) {
-				if (typeof(values[i].value) == "number") {
-					mapValue += values[i].value;
-				} else if (values[i].value.getClassName 
-						&& values[i].value.getClassName().match(".*Distribution$")) {
-					mapValue += values[i].value.getMean();
-				} else {
-					throw "TODO!!!";
-				}
 				var time;
 				if (values[i].time.timeInstant) {
 					time = [values[i].time.timeInstant.timePosition.getTime()];
@@ -86,7 +78,7 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 				}
 				timeValueArray.push([time, values[i].value]);
 			}
-			mapValue /= values.length;
+			
 			var attr = { 
 				id: id, 
 				uom: uom,
@@ -94,9 +86,38 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 				observedProperty: observedProperty,
 				isMultiFeature: values.length != 1,
 				timeValueArray: timeValueArray,
-				resultValue: mapValue
+				resultValue: this.getMapValueForArray(timeValueArray)
 			};
 			OpenLayers.Feature.Vector.prototype.initialize.apply(this, [geometry, attr]);
+		},
+		getMapValueForArray: function(values) {
+			var mapValue = 0.0;
+			for (var i = 0; i < values.length; i++) {
+				if (typeof(values[i][1]) == "number") {
+					mapValue += values[i][1];
+				} else if (values[i][1].getClassName 
+						&& values[i][1].getClassName().match(".*Distribution$")) {
+					mapValue += values[i][1].getMean();
+				} else {
+					throw "TODO!!!";
+				}
+			}
+			return mapValue/values.length;
+		},
+		setTime: function(time) {
+			var v = this.getValues();
+			var matchedValues = [];
+			for (var i = 0; i < v.length; i++) {
+				if ((v[i][0][0] == time) || (v[i][0].length == 2 
+					&& v[i][0][0] <= time && v[i][0][1] >= time)) { 
+					matchedValues.push(v[i]);
+				}
+			}
+			this.attributes.resultValue = this.getMapValueForArray(matchedValues);
+			if (isNaN(this.attributes.resultValue)) {
+				this.attributes.resultValue = Number.NEGATIVE_INFINITY;
+			}
+			return matchedValues;
 		},
 		getFoiId: function() {
 			return this.attributes.id;
@@ -118,7 +139,7 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			return this.attributes.timeValueArray;
 		},
 		getValue: function(){
-			return this.attributes.attributes.resultValue;
+			return this.attributes.resultValue;
 		},
 		isMultiFeature: function() {
 			return this.attributes.isMultiFeature;

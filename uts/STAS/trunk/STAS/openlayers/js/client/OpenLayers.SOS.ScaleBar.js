@@ -131,7 +131,6 @@ OpenLayers.SOS.ScaleBar = OpenLayers.Class({
 			var valueWidth = (this.maximum - this.minimum)/(this.numIntervals - 1)
 			for (var i = 0; i < (this.numIntervals - 1); i++) {
 				var value = this.minimum + i * valueWidth;
-				console.log(value);
 				html += '<span style="width:' + width + 'px;'
 				+ 'height:' + this.height + ';'
 				+ 'background-color:' 
@@ -151,14 +150,14 @@ OpenLayers.SOS.ScaleBar = OpenLayers.Class({
 			var self = this;
 			getRule = function(color, lower, upper, multi) {
 				var filters = [];
-				if (upper) {
+				if (upper === 0 || upper) {
 					filters.push(new OpenLayers.Filter.Comparison({
 						type: OpenLayers.Filter.Comparison.LESS_THAN,
 						property: self.propertyName,
 						value: upper
 					}));
 				}
-				if (lower) {
+				if (lower === 0  || lower) {
 					filters.push(new OpenLayers.Filter.Comparison({
 						type: OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO,
 						property: self.propertyName,
@@ -186,8 +185,8 @@ OpenLayers.SOS.ScaleBar = OpenLayers.Class({
 				this.style = new OpenLayers.Style();
 				var rules = [];
 				var intervalSize = (this.maximum-this.minimum)/(this.numIntervals-1);
-				rules.push(getRule(this.lessThanMinumumColor, undefined, this.minimum, true)); 
-				rules.push(getRule(this.lessThanMinimumColor, undefined, this.minimum, false)); 
+				rules.push(getRule(this.lessThanMinimumColor, undefined, this.minimum, true)); 
+				rules.push(getRule(this.lessThanMinimumColor, undefined, this.minimum, false));
 				for (var i = 0; i < (this.numIntervals-1); i++) {
 					var lower = this.minimum + (i * intervalSize);
 					rules.push(getRule(this.getColorForResultValue(lower), lower, lower + intervalSize, false));

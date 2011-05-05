@@ -19,8 +19,6 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-console = console || { log: function() {} };
-
 const PROJ4326 = new OpenLayers.Projection("EPSG:4326");
 const PROJMERC = new OpenLayers.Projection("EPSG:900913");
 const threshold = { init: [0, 50], range: [-100, 150], step: 0.1 };
@@ -106,8 +104,10 @@ $(function (){
 						map: map, scalebar: scaleBar,
 						url: $("#sosUrl").val(),
 						request: editor.getCode(),
-						readyCallback: function () { 
-						dialog.issue.dialog("close"); },
+						readyCallback: function (info) { 
+							updateTimeSlider(info);
+							dialog.issue.dialog("close"); 
+						},
 						statusCallback: function (stat) {},
 						failCallback: dialog.error
 					}));
@@ -157,7 +157,7 @@ $(function (){
 			$("#intervals span").html(ui.value);
 		}
 	});
-
+	
 	$("#threshold").html('<span class="slider-value">' 
 		+ $("#thresholdSlider").slider("values", 0) + ' - ' 
 		+ $("#thresholdSlider").slider("values", 1) + '</span');
@@ -172,6 +172,47 @@ $(function (){
 		minimum: $("#thresholdSlider").slider("values", 0),
 		maximum: $("#thresholdSlider").slider("values", 1),
 	});
+
+
+	var now = new Date().getTime();
+	$("#timeSlider").slider({
+		animate: true, value: now, max: now, min: 0, step: now, slide: setTimeLabel,
+		change: function(e, ui) { changeForTime(parseFloat(ui.value)); }
+	}).slider("disable");			
+	setTimeLabel();
+	
+	function changeForTime(time) {
+		$.each(clients, function (i, c){ c.updateForNewTime(time); });
+	}
+
+	function setTimeLabel() {
+		$("#timeSliderValue").html(new Date(parseInt($("#timeSlider").slider("value"))).toUTCString());
+	}
+	
+	function updateTimeSlider(info) {
+		if ($('#timeSlider').slider("option", "disabled")) {
+			$('#timeSlider').slider("option", "min",  info.time.min);
+			$('#timeSlider').slider("option", "max",  info.time.max);
+			$('#timeSlider').slider("option", "step", info.time.step);
+			$('#timeSlider').slider("enable");
+		} else {	
+			var curStep = $('#timeSlider').slider("option", "step");
+			if (curStep > info.time.step && (curStep % info.time.step) == 0) {
+				$('#timeSlider').slider("option", "step", info.time.step);
+			} else if (curStep != info.time.step && ((info.time.step % curStep) != 0)) {			
+				map.removeLayer(info.layer);
+				dialog.error("Incompatible sampling time steps: " + curStep + " and " + info.time.step + ".");
+				return;
+			}
+			if ($('#timeSlider').slider("option", "min") > info.time.min)
+				$('#timeSlider').slider("option", "min",   info.time.min);
+			if ($('#timeSlider').slider("option", "max") < info.time.max)
+				$('#timeSlider').slider("option", "max",   info.time.max);
+		}
+		$('#timeSlider').slider("option", "value", info.time.min);
+		changeForTime(info.time.min);
+	}
+
 
 	/* init map */
 	var ll1 = new OpenLayers.LonLat( 5.8669, 47.2708).transform(PROJ4326, PROJMERC);
@@ -277,8 +318,7 @@ $(function (){
 					map: map, scalebar: scaleBar,
 					url: parameters['url'],
 					request: r.responseText,
-					readyCallback: function () {},
-					statusCallback: function (stat) {},
+					readyCallback: updateTimeSlider,
 					failCallback: dialog.error
 				}));
 			}
@@ -291,8 +331,7 @@ $(function (){
 				clients.push(new OpenLayers.SOS.Client({
 					map: map, scalebar: scaleBar,
 					oc: (r.responseXML)? r.responseXML : r.responseText,
-					readyCallback: function () {},
-					statusCallback: function (stat) {},
+					readyCallback: updateTimeSlider,
 					failCallback: dialog.error
 				}));
 			}
@@ -305,8 +344,7 @@ $(function (){
 				clients.push(new OpenLayers.SOS.Client({
 					map: map, scalebar: scaleBar,
 					json: r.responseText,
-					readyCallback: function () {},
-					statusCallback: function (stat) {},
+					readyCallback: updateTimeSlider,
 					failCallback: dialog.error
 				}));
 			}
