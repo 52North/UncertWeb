@@ -292,37 +292,37 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				ctx.lineWidth = 2;
 				var maxY = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(plot.getAxes().yaxis.max);
 				var minY = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(plot.getAxes().yaxis.min);
-//				maxY = Number.POSITIVE_INFINITY;
-//				minY = Number.NEGATIVE_INFINITY;
 				for (var j = 0; j < data.length; j++) {
-					if (data[j][1] >= plot.getAxes().yaxis.min 
-						&& data[j][1] <= plot.getAxes().yaxis.max) {
-						var x = plot.getPlotOffset().left + plot.getAxes().xaxis.p2c(data[j][0]);
-						var ym = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(data[j][1])
-						var y0 = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(u[j][1]);
-						var y1 = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(l[j][1]);
-						ctx.beginPath();
-						ctx.moveTo(x, ym);
-						if (minY > y0) {
-							ctx.lineTo(x,   y0);
-							ctx.moveTo(x-4, y0);
-							ctx.lineTo(x+4, y0);
-						} else {
-							ctx.lineTo(x, minY);
-						}
+					if (u[j][1] != null && l[j][1] != null) {
+						if (data[j][1] >= plot.getAxes().yaxis.min 
+							&& data[j][1] <= plot.getAxes().yaxis.max) {
+							var x = plot.getPlotOffset().left + plot.getAxes().xaxis.p2c(data[j][0]);
+							var ym = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(data[j][1])
+							var y0 = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(u[j][1]);
+							var y1 = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(l[j][1]);
+							ctx.beginPath();
+							ctx.moveTo(x, ym);
+							if (minY > y0) {
+								ctx.lineTo(x,   y0);
+								ctx.moveTo(x-4, y0);
+								ctx.lineTo(x+4, y0);
+							} else {
+								ctx.lineTo(x, minY);
+							}
+							
+							ctx.moveTo(x, ym);
+							if (maxY < y1) {
+								ctx.lineTo(x,   y1);
+								ctx.moveTo(x-4, y1);
+								ctx.lineTo(x+4, y1);
+							} else {
+								ctx.lineTo(x, maxY);
+							}
 						
-						ctx.moveTo(x, ym);
-						if (maxY < y1) {
-							ctx.lineTo(x,   y1);
-							ctx.moveTo(x-4, y1);
-							ctx.lineTo(x+4, y1);
-						} else {
-							ctx.lineTo(x, maxY);
+							
+							ctx.closePath();            
+							ctx.stroke();
 						}
-					
-						
-						ctx.closePath();            
-						ctx.stroke();
 					}
 				} 
 			}
