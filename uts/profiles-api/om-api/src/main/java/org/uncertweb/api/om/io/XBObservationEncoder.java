@@ -756,9 +756,9 @@ public class XBObservationEncoder implements IObservationEncoder {
 					String gmlId = "pt" + this.timeIdCounter;
 					this.timeIdCounter++;
 					TimeInstantType xb_ti = xb_tiEnd.addNewTimeInstant();
-					xb_ti.addNewTimePosition().setStringValue(startString);
+					xb_ti.addNewTimePosition().setStringValue(endString);
 					xb_ti.setId(gmlId);
-					this.gmlID4TimeStrings.put(startString, gmlId);
+					this.gmlID4TimeStrings.put(endString, gmlId);
 				}
 
 				xb_timePeriod.setId(gmlID);
@@ -805,8 +805,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 			// already encoded
 			Identifier identifier = obs.getFeatureOfInterest().getIdentifier();
 			if (identifier != null && !identifier.equals("")) {
-				if (this.gmlID4sfIdentifier.containsKey(identifier.toIdentifierString())) {
-					xb_foi.setHref("#" + this.gmlID4sfIdentifier.get(identifier.toIdentifierString()));
+				if (this.gmlID4sfIdentifier.containsKey(identifier.getIdentifier())) {
+					xb_foi.setHref("#" + this.gmlID4sfIdentifier.get(identifier.getIdentifier()));
 					return;
 				}
 			}
@@ -873,7 +873,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 				CodeWithAuthorityType xb_identifier = xb_sfType.addNewIdentifier();
 				xb_identifier.setStringValue(identifier.getIdentifier());
 				xb_identifier.setCodeSpace(identifier.getCodeSpace().toString());
-				this.gmlID4sfIdentifier.put(identifier.toIdentifierString(), gmlId);
+				this.gmlID4sfIdentifier.put(identifier.getIdentifier(), gmlId);
 			}
 		}
 	}
