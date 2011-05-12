@@ -236,8 +236,8 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		draw: function(id, v, uom, type) {
 			var u = [], l = [], m = [];
 			var self = this;
-			var p = parseFloat(this.selectedConfInterval);
-			p = (100 - (100-p)/2)/100;
+			var p = (100-(100-parseFloat(this.selectedConfInterval))/2)/100;
+			var DATA_INDEX;
 			
 			for (var i = 0; i < v.length; i++) {
 				var time = v[i][0], value = v[i][1];
@@ -256,8 +256,8 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				}
 			}
 			
-			function colorPointHook(series, plot, ctx) {
-				var data = plot.getData()[series].data;
+			function colorPointHook(plot, ctx) {
+				var data = plot.getData()[DATA_INDEX].data;
 				for (var j = 0; j < data.length; j++) {
 					if (data[j][1] >= plot.getAxes().yaxis.min 
 						&& data[j][1] <= plot.getAxes().yaxis.max) {
@@ -288,6 +288,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 
 			function errorBarHook(plot, ctx) {
 				var data = plot.getData()[0].data;
+				var b = 4;
 				ctx.strokeStyle = "#F00";
 				ctx.lineWidth = 2;
 				var maxY = plot.getPlotOffset().top + plot.getAxes().yaxis.p2c(plot.getAxes().yaxis.max);
@@ -304,22 +305,19 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 							ctx.moveTo(x, ym);
 							if (minY > y0) {
 								ctx.lineTo(x,   y0);
-								ctx.moveTo(x-4, y0);
-								ctx.lineTo(x+4, y0);
+								ctx.moveTo(x-b, y0);
+								ctx.lineTo(x+b, y0);
 							} else {
 								ctx.lineTo(x, minY);
 							}
-							
 							ctx.moveTo(x, ym);
 							if (maxY < y1) {
 								ctx.lineTo(x,   y1);
-								ctx.moveTo(x-4, y1);
-								ctx.lineTo(x+4, y1);
+								ctx.moveTo(x-b, y1);
+								ctx.lineTo(x+b, y1);
 							} else {
 								ctx.lineTo(x, maxY);
 							}
-						
-							
 							ctx.closePath();            
 							ctx.stroke();
 						}
@@ -341,7 +339,8 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				}, 
 				grid:  { 
 					color: "#B6B6B6", 
-					hoverable: true, 
+					hoverable: true,
+					clickable: true,
 					mouseActiveRadius: 25 
 				},
 				lines: { show: true }
@@ -352,11 +351,12 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				]
 				options.hooks = { 
 					draw: [ verticalTimeLineHook, errorBarHook, function(plot, ctx) {
-						colorPointHook(0, plot, ctx)
+						colorPointHook(plot, ctx)
 					}]
 				}
+				DATA_INDEX = 0;
 			
-			} else if (self.visualStyle == "intervals") {
+			} else if (self.visualStyle === "intervals") {
 				/* reverse lower to get background color... */
 				if (l.length > 0) {
 					l.sort(function(a,b){return (a[0]>b[0])?-1:((a[0]<b[0])?1:0);});
@@ -368,34 +368,73 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				];
 				options.hooks = { 
 					draw: [ verticalTimeLineHook, function(plot, ctx) {
-						colorPointHook(1, plot, ctx)
+						colorPointHook(plot, ctx)
 					}]
 				}
+				DATA_INDEX = 1;
 			} else {
 				throw "Invalid type: "+ self.visualStyle;
 			}
 			this.plot = $.plot($('#' + id), series, options);
 			var previous;
-			$('#'+id).bind("plothover", function(event, pos, item) {
-					$("#x").text(pos.x.toFixed(2));
-					$("#y").text(pos.y.toFixed(2));
-					if (item) {
-						if (previous != item.datapoint) {
-							previous = item.datapoint;
-							$("#tooltip").remove();
-							var text = item.datapoint[1] + " " + uom;
-							$('<div id="tooltip" class="tooltip">' + text + "</div>").css( {
-									position: "absolute",
-									display: "none",
-									top: item.pageY + 15,
-									left: item.pageX + 5,
-								}).appendTo("body").show();
-						}
-					} else {
+			$('#' + id).bind("plothover", function(event, pos, item) {
+				$("#x").text(pos.x.toFixed(2));
+				$("#y").text(pos.y.toFixed(2));
+				if (item) {
+					if (previous != item.datapoint) {
+						previous = item.datapoint;
 						$("#tooltip").remove();
-						previous = null;
+						var text = item.datapoint[1] + " " + uom;
+						$('<div id="tooltip" class="tooltip">' + text + "</div>").css( {
+							position: "absolute",
+							display: "none",
+							top: item.pageY + 15,
+							left: item.pageX + 5
+						}).appendTo("body").show();
 					}
-				});
+				} else {
+					$("#tooltip").remove();
+					previous = null;
+				}
+			});
+			
+			function drawSingleValue(v) {
+				var isSimple = (typeof(v[1]) === "number");
+				var id = "singlevaluedialog";
+				var title = new Date(v[0][0]).toGMTString();
+				function plot() {
+					if (isSimple) {
+						$("#"+id).html(v[1].toFixed(5) + " " + uom);
+					} else {
+						if (v[1].getClassName && v[1].getClassName().match(".*Distribution$")) {
+							dplot = new DistributionPlot(id, v[1], new Range(self.visibleScale[0], self.visibleScale[1], 100));
+						} else {
+							throw "Unsupported!!!";
+						}
+					}
+				}
+				if (v[0].length == 2) {
+					 title += " - " + new Date(v[0][1]).toGMTString()
+				}
+				if ($("#" + id)) {
+					plot();
+				} else {
+					$('<div id="' + id + '"></div>').dialog({ 
+						title: title, 
+						open: plot, 
+						resize: plot, 
+						width: 450, 
+						height: 450
+					});
+				}
+			}
+			$('#' + id).unbind("plotclick");
+			$('#' + id).bind("plotclick", function(event, pos, item) {
+				if (item && item.seriesIndex == DATA_INDEX) {
+					drawSingleValue(v[item.dataIndex]);
+				}
+			});
+			
 		},
 		destroy: function () {/*TODO*/}
 	});

@@ -128,32 +128,6 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 				}
 				throw message;
 			}
-			/*if (destinationProjection) {
-				if (!this.externalProjection) {
-					throw "Can not reproject observations: no srsName found.";
-				}
-				for (var i = 0; i < info.measurements.length; i++) {
-					for (var j = 0; j < info.measurements[i].fois.length; j++) {
-						for (var k = 0; k < info.measurements[i].fois[j]
-							.features.length; k++) {
-							info.measurements[i].fois[j].features[k]
-							.geometry.transform(this.externalProjection, 
-								destinationProjection);
-						}
-					}				
-				}
-				for (var i = 0; i < info.observations.length; i++) {
-					for (var j = 0; j < info.observations[i].fois.length; j++) {
-						for (var k = 0; k < info.observations[i].fois[j]
-							.features.length; k++) {
-							info.observations[i].fois[j].features[k]
-							.geometry.transform(this.externalProjection, 
-								destinationProjection);
-						}
-					}				
-				}
-			}
-			*/
 			/* create measurements out of observations */
 			for (var i = 0; i < info.observations.length; i++){ 
 				var o = info.observations[i];
