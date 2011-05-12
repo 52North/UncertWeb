@@ -109,6 +109,7 @@ $(function (){
 							updateTimeSlider(info);
 							dialog.issue.dialog("close"); 
 						},
+						timeSelectCallback: function(t) { $('#timeSlider').slider("option", "value",  t); },
 						visibleScale: getThresholdMinMax(),
 						failCallback: dialog.error
 					}));
@@ -137,17 +138,17 @@ $(function (){
 	}
 	
 	function getThresholdMinMax() {
-		var min = $('#thresholdSlider').slider("values", 0);
-		var max = $('#thresholdSlider').slider("values", 1);
-		return [min, max];
+		return [ $('#thresholdSlider').slider("values", 0), 
+				 $('#thresholdSlider').slider("values", 1) ];
 	}
 	
 	function changeForTime(time) {
-		$.each(clients, function (i, c){ 
-			c.updateForNewTime(time); 
+		$.each(clients, function (i,c){ 
+			c.updateForNewTime(time);
 		});
+		updateTimeLabel();
 	}
-
+	
 	function updateTimeLabel() {
 		$("#timeSliderValue").html(new Date(parseInt($("#timeSlider").slider("value"))).toUTCString());
 	}
@@ -213,7 +214,6 @@ $(function (){
 		minimum: $("#thresholdSlider").slider("values", 0),
 		maximum: $("#thresholdSlider").slider("values", 1),
 	});
-
 
 	var now = new Date().getTime();
 	$("#timeSlider").slider({
@@ -331,6 +331,7 @@ $(function (){
 					visibleScale: getThresholdMinMax(),
 					request: r.responseText,
 					readyCallback: updateTimeSlider,
+					timeSelectCallback: function(t) { $('#timeSlider').slider("option", "value",  t); },
 					failCallback: dialog.error
 				}));
 			}
@@ -345,6 +346,7 @@ $(function (){
 					oc: (r.responseXML)? r.responseXML : r.responseText,
 					visibleScale: getThresholdMinMax(),
 					readyCallback: updateTimeSlider,
+					timeSelectCallback: function(t) { $('#timeSlider').slider("option", "value",  t); },
 					failCallback: dialog.error
 				}));
 			}
@@ -359,6 +361,7 @@ $(function (){
 					json: r.responseText,
 					visibleScale: getThresholdMinMax(),
 					readyCallback: updateTimeSlider,
+					timeSelectCallback: function(t) { $('#timeSlider').slider("option", "value",  t); },
 					failCallback: dialog.error
 				}));
 			}

@@ -44,6 +44,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		foiFeatureMapping: null,
 		selectedConfInterval: 95,
 		visualStyle: "intervals",
+		svId: "singlevaluedialog",
 		selectedTime: null,
 		visibleScale: null,
 		scalebar: null,
@@ -171,6 +172,11 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				this.map.removePopup(feature.popup);
 				feature.popup.destroy();
 				feature.popup = null;
+				if ($("#" + this.svId).length) {
+					$("#" + this.svId).dialog("close");
+					$("#" + this.svId).remove();
+					this.singleValueWindowOpen = false;
+				}
 			}
 		},
 		
@@ -236,6 +242,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		draw: function(id, v, uom, type) {
 			var u = [], l = [], m = [];
 			var self = this;
+			var svId = this.svId;
 			var p = (100-(100-parseFloat(this.selectedConfInterval))/2)/100;
 			var DATA_INDEX;
 			
@@ -397,44 +404,55 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 					previous = null;
 				}
 			});
-			
+
 			function drawSingleValue(v) {
-				var isSimple = (typeof(v[1]) === "number");
-				var id = "singlevaluedialog";
-				var title = new Date(v[0][0]).toGMTString();
 				function plot() {
-					if (isSimple) {
-						$("#"+id).html(v[1].toFixed(5) + " " + uom);
+					if (typeof(v[1]) === "number") {
+						$("#"+svId).html(v[1].toFixed(5) + " " + uom);
 					} else {
 						if (v[1].getClassName && v[1].getClassName().match(".*Distribution$")) {
-							dplot = new DistributionPlot(id, v[1], new Range(self.visibleScale[0], self.visibleScale[1], 100));
+							var dplot = new DistributionPlot(svId, v[1], new Range(self.visibleScale[0], self.visibleScale[1], 100), {
+								yaxis: { min: 0, max: 1}
+							});
 						} else {
 							throw "Unsupported!!!";
 						}
 					}
 				}
+				
+				var title = new Date(v[0][0]).toGMTString();
 				if (v[0].length == 2) {
 					 title += " - " + new Date(v[0][1]).toGMTString()
 				}
-				if ($("#" + id)) {
+				
+				if ($("#" + svId).length) {
+					$("#" + svId).html("");
 					plot();
 				} else {
-					$('<div id="' + id + '"></div>').dialog({ 
-						title: title, 
-						open: plot, 
-						resize: plot, 
-						width: 450, 
-						height: 450
+					$('<div id="' + svId + '"></div>').dialog({ 
+						title: title, open: plot, resize: plot, 
+						width: 450, height: 450
 					});
 				}
 			}
 			$('#' + id).unbind("plotclick");
 			$('#' + id).bind("plotclick", function(event, pos, item) {
 				if (item && item.seriesIndex == DATA_INDEX) {
-					drawSingleValue(v[item.dataIndex]);
+					self.singleValueWindowOpen = true;
+					self.timeSelectCallback(v[item.dataIndex][0]);
 				}
 			});
-			
+			if (self.singleValueWindowOpen) { //single value window is open
+				var selectedTimeValue = null;
+				for (var i = 0; i < v.length; i++) {
+					if ((v[i][0][0] == this.selectedTime) 
+						|| (v[i][0].length == 2 
+							&& v[i][0][0] <= this.selectedTime 
+							&& v[i][0][1] >= this.selectedTime)) { 
+						drawSingleValue(v[i]); break;
+					}
+				}
+			}
 		},
 		destroy: function () {/*TODO*/}
 	});
