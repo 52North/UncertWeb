@@ -157,7 +157,7 @@ public class JSONObservationParser implements IObservationParser{
 		}
 		else if (typeName.equals(UncertaintyObservation.NAME)){
 			JSONObject juncertainty = jobs.getJSONObject("result");
-			IUncertainty uncertainty = new JSONParser().parse(juncertainty.toString());
+			IUncertainty uncertainty = new JSONParser().parse(juncertainty.getJSONObject("value").toString());
 			UncertaintyResult uresult = new UncertaintyResult(uncertainty);
 			result = new UncertaintyObservation(identifier,null,phenomenonTime,resultTime,validTime,procedureURI,obsPropURI,foi,resultQuality,uresult);
 		}
