@@ -65,10 +65,10 @@ This example observation collection consists of two measurements
 								</gml:UnitDefinition>
 							</gmd:valueUnit>
 							<gmd:value>
-								<un:GaussianDistribution>
+								<un:NormalDistribution>
 									 <un:mean>29.564</un:mean>
 									 <un:variance>7.45</un:variance>
-								 </un:GaussianDistribution> 
+								 </un:NormalDistribution> 
 							</gmd:value>
 						</gmd:DQ_UncertaintyResult>
 					</gmd:result>
@@ -125,10 +125,10 @@ This example observation collection consists of two measurements
 								</gml:UnitDefinition>
 							</gmd:valueUnit>
 							<gmd:value>
-								 <un:GaussianDistribution>
+								 <un:NormalDistribution>
 									 <un:mean>29.564</un:mean>
 									 <un:variance>7.45</un:variance>
-								 </un:GaussianDistribution>  
+								 </un:NormalDistribution>  
 							</gmd:value>
 						</gmd:DQ_UncertaintyResult>
 					</gmd:result>
