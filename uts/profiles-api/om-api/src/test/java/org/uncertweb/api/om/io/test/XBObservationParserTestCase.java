@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.uncertml.IUncertainty;
-import org.uncertml.distribution.continuous.GaussianDistribution;
+import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.statistic.Probability;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.io.JSONObservationEncoder;
@@ -149,8 +149,8 @@ public class XBObservationParserTestCase extends TestCase {
 		IUncertainty uValue = uncertainty.getValues()[0];
 		assertEquals("degC",uncertainty.getUom());
 		assertEquals("org.uncertml.distribution.continuous.GaussianDistribution",uValue.getClass().getName());
-		assertEquals(29.564,((GaussianDistribution)uValue).getMean().get(0));
-		assertEquals(7.45,((GaussianDistribution)uValue).getVariance().get(0));
+		assertEquals(29.564,((NormalDistribution)uValue).getMean().get(0));
+		assertEquals(7.45,((NormalDistribution)uValue).getVariance().get(0));
 		
 		// test result
 		assertEquals("degC",
