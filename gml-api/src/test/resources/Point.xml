@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--============================================================================
+	Simple point example
+	==============================================================================-->
+<gml:Point gml:id="UOMlocation"  xmlns:gml="http://www.opengis.net/gml/3.2"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://v-mars.uni-muenster.de/uncertweb/schema/profiles/gml/UncertWeb_GML.xsd">
+		<gml:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">52.87 7.78</gml:pos>
+</gml:Point>
