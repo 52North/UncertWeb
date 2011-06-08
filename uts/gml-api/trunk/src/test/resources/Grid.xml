@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--============================================================================
+Example for an rectified grid. Taken from GML 3.2 spec (OGC07-036): "A rectified grid is a grid for which there is an affine transformation between the grid coordinates and the coordinates of an external coordinate reference system. It is defined by specifying the position (in some geometric space) of the grid ―origin‖ and of the vectors that specify the post locations." Note that the dimension of the grid is defined as attribute in the root element. 
+==============================================================================-->
+<gml:RectifiedGrid gml:id="grid1" dimension="2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://v-mars.uni-muenster.de/uncertweb/schema/profiles/gml/UncertWeb_GML.xsd">
+
+	<!--============================================================================
+	limits define the region of interest within the grid
+	==============================================================================-->
+	<gml:limits>
+		<gml:GridEnvelope>
+			<gml:low>1 1</gml:low>
+			<gml:high>5 5</gml:high>
+		</gml:GridEnvelope>
+	</gml:limits>
+	
+	<!--============================================================================
+	labels of the axis of the grid
+	==============================================================================-->
+	<gml:axisLabels>u v</gml:axisLabels>
+	
+	<!--============================================================================
+	georeferenced origin of the grid
+	==============================================================================-->
+	<gml:origin>
+		<gml:Point gml:id="IfGI">
+			<gml:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">52.77 7.82</gml:pos>
+		</gml:Point>
+	</gml:origin>
+	
+	<!--============================================================================
+	offset vectors specify the positions of the post locations in the grid derived from the origin
+	==============================================================================-->
+	<gml:offsetVector srsName="http://www.opengis.net/def/crs/EPSG/0/4329">-0.3 1.25</gml:offsetVector>
+	<gml:offsetVector srsName="http://www.opengis.net/def/crs/EPSG/0/4329">1.3 0.25</gml:offsetVector>
+	
+</gml:RectifiedGrid>
