@@ -24,6 +24,8 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 		CLASS_NAME: "OpenLayers.SOS.ObservationSeries",
 		
 		srid: null,
+		threshold: Number.NaN,
+		time: null,
 
 		initialize: function(id, geometry, srid, procedure, observedProperty, uom, values) {
 			var test = function(obj, name) { 
@@ -90,6 +92,7 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			};
 			OpenLayers.Feature.Vector.prototype.initialize.apply(this, [geometry, attr]);
 		},
+	
 		getMapValueForArray: function(values) {
 			var mapValue = 0.0;
 			for (var i = 0; i < values.length; i++) {
@@ -104,43 +107,76 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			}
 			return mapValue/values.length;
 		},
+		
+		setExceedanceProbabilityThreshold: function(val) {
+			//console.log("setExceedanceProbabilityThreshold("+val+");");
+			this.threshold = val;
+			if (this.time) this.setTime(this.time);
+		},
+		
+		calculateExceedanceProbability: function(t,val) {
+			var result;
+			if (typeof(val) === "number") {
+				result = (val < t) ? 0 : 100;
+			} else if (typeof(val) === "object") {
+				if (val.getClassName && val.getClassName().match(".*Distribution$")) {
+					result = val.getExceedanceProbability(t)*100;
+				} else {
+					throw "Unsupported value type: " + val;
+				}
+			}
+			//console.log("calculateExceedanceProbability("+val+"); == "+result);
+			return result;
+		},
+		
 		setTime: function(time) {
-			var v = this.getValues();
-			var matchedValues = [];
+			//console.log("setTime("+time+");");
+			var v = this.getValues(), matchedValues = [];
+			this.time = time;
 			for (var i = 0; i < v.length; i++) {
 				if ((v[i][0][0] == time) || (v[i][0].length == 2 
 					&& v[i][0][0] <= time && v[i][0][1] >= time)) { 
 					matchedValues.push(v[i]);
 				}
 			}
-			this.attributes.resultValue = this.getMapValueForArray(matchedValues);
-			if (isNaN(this.attributes.resultValue)) {
-				this.attributes.resultValue = Number.NEGATIVE_INFINITY;
+			if (!isNaN(this.threshold)) { 
+				this.attributes.exceedance = (matchedValues.length > 0) ? 
+					this.calculateExceedanceProbability(this.threshold, matchedValues[0][1]) 
+						: Number.NEGATIVE_INFINITY;
 			}
-			return matchedValues;
+			var rv = this.getMapValueForArray(matchedValues);
+			this.attributes.resultValue = (isNaN(rv)) ? Number.NEGATIVE_INFINITY : rv;
 		},
+		
 		getFoiId: function() {
 			return this.attributes.id;
 		},
+		
 		getUom: function() {
 			return this.attributes.uom;
 		},
+		
 		getObservedProperty: function() {
 			return this.attributes.observedProperty;
 		},
+		
 		getProcedure: function() {
 			return this.attributes.procedure;
 		},
+		
 		transform: function(dest){
 			this.geometry.transform(this.srid, dest);
 			this.srid = dest;
 		},
+		
 		getValues: function() {
 			return this.attributes.timeValueArray;
 		},
+		
 		getValue: function(){
 			return this.attributes.resultValue;
 		},
+		
 		isMultiFeature: function() {
 			return this.attributes.isMultiFeature;
 		}

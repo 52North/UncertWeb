@@ -22,31 +22,37 @@
 
 OpenLayers.Color = {
 	RGB: OpenLayers.Class({
-		CLASS_NAME: "OpenLayers.Color.RGB",
+		CLASS_NAME: 'OpenLayers.Color.RGB',
 		HEX_DIGITS: '0123456789ABCDEF',
+		
 		initialize: function (red, green, blue) {
 			this.r = red;
 			this.g = green;
 			this.b = blue;
 		},
+		
 		toHex: function () {
 			return '#' + this.hexify(this.r) 
 					   + this.hexify(this.g) 
 					   + this.hexify(this.b);
 		},
+		
 		hexify: function (number) {
 			var lsd = number % 16;
 			var msd = (number - lsd) / 16;	
 			return this.HEX_DIGITS.charAt(msd) + this.HEX_DIGITS.charAt(lsd);
 		}
 	}),
+	
 	HSV: OpenLayers.Class({
-		CLASS_NAME: "OpenLayers.Color.HSV",
+		CLASS_NAME: 'OpenLayers.Color.HSV',
+		
 		initialize: function (hue, sat, val) {
 			this.h = hue;
 			this.s = sat;
 			this.v = val;
 		},
+		
 		toRGB: function () {
 			var h = this.h / 360;
 			var s = this.s / 100;
@@ -77,127 +83,157 @@ OpenLayers.Color = {
 
 OpenLayers.SOS = OpenLayers.SOS || {};
 OpenLayers.SOS.ScaleBar = OpenLayers.Class({
-		CLASS_NAME: "OpenLayers.SOS.ScaleBar",
-		propertyName: "resultValue",
-		lessThanMinimumColor: "#000000",
-		moreThanMaximumColor: "#FF0000",
-		multiFeatureStrokeColor: "#444444",
-		width: null,
-		height: null,
-		defaultStyle: OpenLayers.Util.applyDefaults({
-				"pointRadius": 4,
-				"fill": true,
-				"fillOpacity": 0.8,
-				"stroke": true,
-				"strokeWidth": 1,
-				"strokeDashstyle": "solid",
-				"strokeOpacity": 1,
-			}, OpenLayers.Feature.Vector.style["default"]),
-		/* callback functions */
-		setLegendHtml: null,
-		minHue: 90,
-		maxHue: 15,
-		style: null,
-		/* actual valid values */
-		maximum: null,
-		numIntervals: null,
-		initialize: function (options) {
-			OpenLayers.Util.extend(this, options);
-			this.writeLegend();
-		},
-		getColorForResultValue: function (value) {
-			if (this.numIntervals <= 1 || value < this.minimum) {
-				return this.lessThanMinimumColor;
-			} 
-			if (value >= this.maximum) {
-				return this.moreThanMaximumColor;
-			} 
-			var intervals = this.numIntervals-1;
-			var valueIntervalSize = (this.maximum - this.minimum)/intervals;
-			var hueIntervalSize = (this.minHue - this.maxHue)/intervals;
-			var segment = Math.floor((value - this.minimum)/valueIntervalSize);
-			var hue = this.minHue - segment * hueIntervalSize;
-			return new OpenLayers.Color.HSV(hue, 100, 100).toRGB().toHex();
-		},
-		update: function (min, max, intervals) {
-			this.maximum = parseFloat(max);
-			this.numIntervals = parseInt(intervals);
-			this.minimum = parseFloat(min);
-			this.writeLegend();
-		},
-		writeLegend: function () {
-			var html = "";
-			var width = Math.floor(this.width/this.numIntervals);
-			var valueWidth = (this.maximum - this.minimum)/(this.numIntervals - 1)
-			for (var i = 0; i < (this.numIntervals - 1); i++) {
-				var value = this.minimum + i * valueWidth;
-				html += '<span style="width:' + width + 'px;'
-				+ 'height:' + this.height + ';'
-				+ 'background-color:' 
-				+ this.getColorForResultValue(value) + ';'
-				+ '">&ensp;' + value.toFixed(1) 
-				+ '</span>';
-			}
-			takenSize = (this.numIntervals-1) * width;
-			html += '<span style="width:' + (this.width-takenSize) + 'px;'
+	CLASS_NAME: 'OpenLayers.SOS.ScaleBar',
+	propertyName: 'resultValue',
+	color: { 
+		less: '#000000', 
+		more: '#FF0000', 
+		mult: '#444444' 
+	},
+	hue: { 
+		min: 90, 
+		max: 15 
+	},
+	defaultStyle: OpenLayers.Util.applyDefaults({
+		'pointRadius': 4, 
+		'fill': true,
+		'fillOpacity': 0.8, 
+		'stroke': true,
+		'strokeWidth': 1, 
+		'strokeOpacity': 1,
+		'strokeDashstyle': 'solid',
+	}, OpenLayers.Feature.Vector.style['default']),
+	setLegendHtml: function(html){},
+	width: null, 
+	height: null, 
+	style: null,
+	max: null, 
+	min: null, 
+	ints: null, 
+	uom: null,
+	
+	initialize: function (options) {
+		OpenLayers.Util.extend(this, options);
+		this.writeLegend();
+	},
+	
+	getColor: function (value) {
+		if (this.ints <= 1 || value < this.min) {
+			return this.color.less;
+		} 
+		if (value >= this.max) {
+			return this.color.more;
+		} 
+		var valueIntervalSize = (this.max - this.min)/(this.ints-1);
+		var hueIntervalSize = (this.hue.min - this.hue.max)/(this.ints-1);
+		var segment = Math.floor((value - this.min)/valueIntervalSize);
+		var hue = this.hue.min - segment * hueIntervalSize;
+		return new OpenLayers.Color.HSV(hue, 100, 100).toRGB().toHex();
+	},
+	
+	update: function (min, max, ints) {
+		if (ints) { this.ints = parseInt(ints); }
+		if (max != undefined) this.max = parseFloat(max);
+		if (min != undefined) this.min = parseFloat(min);
+		this.writeLegend();
+	},
+	
+	setPropertyName: function(val) {
+		this.propertyName = val;
+		this.style = null;
+	},
+	
+	setUom: function(uom) { 
+		this.uom = uom;
+	},
+	
+	getUom: function() {
+		return this.uom;
+	},
+	
+	getMax: function() {
+		return this.max;
+	},
+	
+	getMin: function() {
+		return this.min;
+	},
+	
+	writeLegend: function () {
+		var html = '';
+		var width = Math.floor(this.width/this.ints);
+		var valueWidth = (this.max - this.min)/(this.ints - 1)
+		for (var i = 0; i < (this.ints - 1); i++) {
+			var value = this.min + i * valueWidth;
+			html += '<span style="width:' + width + 'px;'
 			+ 'height:' + this.height + ';'
-			+ 'background-color:' + this.getColorForResultValue(this.maximum) 
-			+ ';">&ensp;' + this.maximum.toFixed(1)+'</span>';
-			this.setLegendHtml(html);
-			this.style = null; /* regenerate style */
-		},
-		getStyle: function () {
-			var self = this;
-			getRule = function(color, lower, upper, multi) {
-				var filters = [];
-				if (upper === 0 || upper) {
-					filters.push(new OpenLayers.Filter.Comparison({
-						type: OpenLayers.Filter.Comparison.LESS_THAN,
-						property: self.propertyName,
-						value: upper
-					}));
-				}
-				if (lower === 0  || lower) {
-					filters.push(new OpenLayers.Filter.Comparison({
-						type: OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO,
-						property: self.propertyName,
-						value: lower
-					}));
-				}
+			+ 'background-color:' 
+			+ this.getColor(value) + ';'
+			+ '">&ensp;' + value.toFixed(1) + ((this.uom) ? ' ' + this.uom : '')
+			+ '</span>';
+		}
+		takenSize = (this.ints-1) * width;
+		html += '<span style="'
+		+ 'width:' + (this.width-takenSize) + 'px;'
+		+ 'height:' + this.height + ';' 
+		+ 'background-color:' + this.getColor(this.max) + ';'
+		+ '">&ensp;' + this.max.toFixed(1) + ((this.uom) ? ' ' + this.uom  : '') + '</span>';
+		this.setLegendHtml(html);
+		this.style = null; /* regenerate style */
+	},
+	
+	getStyle: function () {
+		var self = this;
+		function getRule(color, lower, upper, multi) {
+			var filters = [];
+			if (upper === 0 || upper) {
 				filters.push(new OpenLayers.Filter.Comparison({
-					type: OpenLayers.Filter.Comparison.EQUAL_TO,
-					property: "isMultiFeature",
-					value: multi
+					type: OpenLayers.Filter.Comparison.LESS_THAN,
+					property: self.propertyName,
+					value: upper
 				}));
-				return new OpenLayers.Rule({
-					filter: new OpenLayers.Filter.Logical({
-						type: OpenLayers.Filter.Logical.AND,
-						filters: filters
-					}),
-					symbolizer: OpenLayers.Util.applyDefaults({
-						"color": color,
-						"strokeColor": (multi) ? self.multiFeatureStrokeColor : color,
-						"fillColor": color
-					}, self.defaultStyle)
-				});
 			}
-			if (!this.style) {
-				this.style = new OpenLayers.Style();
-				var rules = [];
-				var intervalSize = (this.maximum-this.minimum)/(this.numIntervals-1);
-				rules.push(getRule(this.lessThanMinimumColor, undefined, this.minimum, true)); 
-				rules.push(getRule(this.lessThanMinimumColor, undefined, this.minimum, false));
-				for (var i = 0; i < (this.numIntervals-1); i++) {
-					var lower = this.minimum + (i * intervalSize);
-					rules.push(getRule(this.getColorForResultValue(lower), lower, lower + intervalSize, false));
-					rules.push(getRule(this.getColorForResultValue(lower), lower, lower + intervalSize, true));
-				}
-				rules.push(getRule(this.getColorForResultValue(this.maximum), this.maximum, undefined, true)); 
-				rules.push(getRule(this.getColorForResultValue(this.maximum), this.maximum, undefined, false)); 
-				this.style.addRules(rules);
+			if (lower === 0  || lower) {
+				filters.push(new OpenLayers.Filter.Comparison({
+					type: OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO,
+					property: self.propertyName,
+					value: lower
+				}));
 			}
-			return this.style;
-		},
-		
-	});
+			filters.push(new OpenLayers.Filter.Comparison({
+				type: OpenLayers.Filter.Comparison.EQUAL_TO,
+				property: 'isMultiFeature',
+				value: multi
+			}));
+			return new OpenLayers.Rule({
+				filter: new OpenLayers.Filter.Logical({
+					type: OpenLayers.Filter.Logical.AND,
+					filters: filters
+				}),
+				symbolizer: OpenLayers.Util.applyDefaults({
+					'color': color,
+					'strokeColor': (multi) ? self.color.mult : color,
+					'fillColor': color
+				}, self.defaultStyle)
+			});
+		}
+		if (!this.style) {
+			this.style = new OpenLayers.Style();
+			var rules = [];
+			var intervalSize = (this.max-this.min)/(this.ints-1);
+			rules.push(getRule(this.color.less, undefined, this.min, true)); 
+			rules.push(getRule(this.color.less, undefined, this.min, false));
+			for (var i = 0; i < (this.ints-1); i++) {
+				var lower = this.min + (i * intervalSize);
+				rules.push(getRule(this.getColor(lower), lower, lower + intervalSize, false));
+				rules.push(getRule(this.getColor(lower), lower, lower + intervalSize, true));
+			}
+			rules.push(getRule(this.getColor(this.max), this.max, undefined, true)); 
+			rules.push(getRule(this.getColor(this.max), this.max, undefined, false)); 
+			this.style.addRules(rules);
+		}
+		return this.style;
+	}
+	
+});
 /* vim: set ts=4 sts=4 sw=4 noet ft=javascript fenc=utf-8 */

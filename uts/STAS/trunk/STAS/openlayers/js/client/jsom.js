@@ -119,6 +119,7 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 				if (json.shape.crs.type != "name")
 					throw "Currently only CRS of type 'name' are supported!";
 				var crs = json.shape.crs.properties.name;
+				
 				if (crs.match("^http")) {
 					crs = crs.split("/");
 				} else if (crs.match("^urn")) {
@@ -155,7 +156,7 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 			},
 			result: function(json, type) {
 				function parseUncertainty(j) {
-					var value;
+					var value = null;
 					try {
 						if (j.GaussianDistribution) {
 							j.NormalDistribution = j.GaussianDistribution;
@@ -176,10 +177,15 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 									= Math.sqrt(parseFloat(j.LogNormalDistribution.scale[i]));
 							}
 						}
+						/*
+						 * TODO realisations
+ 						 * TODO quantiles
+						 */
 						value = DistributionFactory.build(j);
 					} catch (e) {
-						/* TODO no distribution */
+						throw "Unsupported uncertainty type" + j;
 					}
+					if (value == null) throw "Unsupported uncertainty type" + j;
 					return value;						
 				}
 			

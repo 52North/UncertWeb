@@ -30,16 +30,8 @@ h2, input {
 
 input {
 	border: 1px solid #B6B6B6;
-}
-
-.slider-value, input {
 	vertical-align: middle;
 	color: #4F4F4F;
-}
-
-.slider-value, #threshold input, #intervals input{
-	float: right;
-	text-align: right;
 }
 
 #map {
@@ -50,21 +42,8 @@ input {
 	position: relative;
 }
 
-#menu {
-	left: 20px;
-	top: 20px;
-	position: absolute;
-	z-index: 500;
-}
-
 .credits {
 	margin: 5px;
-}
-
-.dialog {
-	margin: 5px;
-	padding: 5px;
-	display: none;
 }
 
 .failMessage {
@@ -133,17 +112,14 @@ input {
 	vertical-align: middle !important; 
 }
 
-.bubbleContent {
-}
-
 .bubblePlot{
-	height:85%;
+	height:95%;
 	width: 95%;
 	float: left;
 }
 
 #confidenceSliderContainer {
-	float:right;
+	float: right;
 }
 
 #confidenceSlider {
@@ -152,8 +128,8 @@ input {
 
 .bubble {
 	margin: 10px;
-	width: 600px;
-	height: 350px;
+	width: 550px;
+	height: 320px;
 }
 
 .tooltip {
@@ -187,7 +163,7 @@ input {
 	border-bottom: 1px solid #B6B6B6;
 	border-left: 1px solid #B6B6B6;
 	opacity: .80;
-	filter:Alpha(Opacity=80); 
+	filter: Alpha(Opacity=80); 
 	height: 100%;
 }
 
@@ -210,22 +186,93 @@ input {
 	border-bottom-right-radius: 3px;
 }
 
-#time {
+.slider { 
+	margin: 20px; 
+	width: 250px; 
+}
+
+#issue {
+	width: 680px;
+}
+
+#viewChooser { 
+	display: inline-block; 
+	margin: 5px;
+}
+
+#main-nav {
+	height: 40px;
 	position: absolute;
-	z-index: 500;
-	right: 20px;
-	top: 20px;
-	cursor: auto;
+	list-style: none;
+	left: 0px;
+	top: 0px;
+	margin-top: 20px;
+	z-Index: 1;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-right-radius: 3px; 
+	border-top-right-radius: 3px;
+	-moz-border-radius-bottomright: 3px; 
+	-webkit-border-bottom-right-radius: 3px; 
+	border-bottom-right-radius: 3px;
 }
 
-#timeSlider {
-	margin: 20px;
-	width: 250px;
+
+#main-nav:last-child {
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-right-radius: 3px; 
+	border-top-right-radius: 3px;
+	-moz-border-radius-bottomright: 3px; 
+	-webkit-border-bottom-right-radius: 3px; 
+	border-bottom-right-radius: 3px;
 }
 
-#viewChooser {
-	display: inline-block;
+#main-nav .main-nav-item {
+	display: inline;
+}
+ 
+#main-nav .main-nav-tab, #controlMethod {
+	float: left;
+	min-width: 140px;
+	min-height: 30px;
+	line-height: 40px;
+	text-align: center;
+	text-decoration: none;
 }
 
+#main-nav .main-nav-item-active .main-nav-tab, .main-nav-dd {
+	background-color: #fcfcfc;
+}
+ 
+#main-nav .main-nav-dd {
+	position: absolute;
+	top: 40px;
+	left: 0;
+	margin: 0;
+	padding: 10px;
+	border-bottom: 4px solid #234386;
+	display: none;
+	line-height: 30px;
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255,255,255,0.8) inset; 
+	-webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255,255,255,0.8) inset;
+}
 
+#main-nav .main-nav-item-active .main-nav-dd {
+	display: block;
+}
 
+#aboutButton {
+	z-Index: 10;
+	left: 10px;
+	bottom: 10px;
+	position: absolute;
+}
+
+#about {
+	display: none;
+	margin: 5px;
+	padding: 5px;
+}
+
+#excee-prob-threshold {
+	text-align:right;
+}
