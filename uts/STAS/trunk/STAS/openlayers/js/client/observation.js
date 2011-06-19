@@ -101,6 +101,12 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 				} else if (values[i][1].getClassName 
 						&& values[i][1].getClassName().match(".*Distribution$")) {
 					mapValue += values[i][1].getMean();
+				} else if (values[i][1].length) { // realisations
+					var m = 0;
+					for (var j = 0; j < values[i][1].length; j++) {
+						m += values[i][1][j];
+					}
+					mapValue += m/values[i][1].length;
 				} else {
 					throw "TODO!!!";
 				}
@@ -118,12 +124,16 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			var result;
 			if (typeof(val) === "number") {
 				result = (val < t) ? 0 : 100;
-			} else if (typeof(val) === "object") {
-				if (val.getClassName && val.getClassName().match(".*Distribution$")) {
-					result = val.getExceedanceProbability(t)*100;
-				} else {
-					throw "Unsupported value type: " + val;
+			} else if (val.getClassName && val.getClassName().match(".*Distribution$")) {
+				result = val.getExceedanceProbability(t)*100;
+			} else if (val.length) {
+				var u = 0;
+				for (var i = 0; i < val.length; i++) {
+					if (val[i] > t) { u++; }
 				}
+				return 100*(u/val.length);
+			} else {
+				throw "Unsupported value type: " + val;
 			}
 			//console.log("calculateExceedanceProbability("+val+"); == "+result);
 			return result;

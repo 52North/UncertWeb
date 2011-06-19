@@ -145,6 +145,7 @@ OpenLayers.SOS.ScaleBar = OpenLayers.Class({
 	
 	setUom: function(uom) { 
 		this.uom = uom;
+		this.writeLegend();
 	},
 	
 	getUom: function() {

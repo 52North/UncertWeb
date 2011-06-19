@@ -158,30 +158,33 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 				function parseUncertainty(j) {
 					var value = null;
 					try {
-						if (j.GaussianDistribution) {
-							j.NormalDistribution = j.GaussianDistribution;
-							j.NormalDistribution.standardDeviation 
-								= j.NormalDistribution.variance;
-							for (var i = 0; i < j.NormalDistribution.standardDeviation.length; i++) {
-								j.NormalDistribution.standardDeviation[i] 
-									= Math.sqrt(parseFloat(j.NormalDistribution.standardDeviation[i]));
+						if (j.Realisation) {
+							value = j.Realisation.values;
+						} else {
+							if (j.GaussianDistribution) {
+								j.NormalDistribution = j.GaussianDistribution;
+								j.NormalDistribution.standardDeviation 
+									= j.NormalDistribution.variance;
+								for (var i = 0; i < j.NormalDistribution.standardDeviation.length; i++) {
+									j.NormalDistribution.standardDeviation[i] 
+										= Math.sqrt(parseFloat(j.NormalDistribution.standardDeviation[i]));
+								}
 							}
-						}
-						if (j.LogNormalDistribution) {
-							j.LogNormalDistribution.location 
-								= j.LogNormalDistribution.mean;
-							j.LogNormalDistribution.scale
-								= j.LogNormalDistribution.variance
-							for (var i = 0; i < j.LogNormalDistribution.scale.length; i++) {
-								j.LogNormalDistribution.scale[i] 
-									= Math.sqrt(parseFloat(j.LogNormalDistribution.scale[i]));
+							if (j.LogNormalDistribution) {
+								j.LogNormalDistribution.location 
+									= j.LogNormalDistribution.mean;
+								j.LogNormalDistribution.scale
+									= j.LogNormalDistribution.variance
+								for (var i = 0; i < j.LogNormalDistribution.scale.length; i++) {
+									j.LogNormalDistribution.scale[i] 
+										= Math.sqrt(parseFloat(j.LogNormalDistribution.scale[i]));
+								}
 							}
+							/*
+	 						 * TODO quantiles
+							 */
+							value = DistributionFactory.build(j);
 						}
-						/*
-						 * TODO realisations
- 						 * TODO quantiles
-						 */
-						value = DistributionFactory.build(j);
 					} catch (e) {
 						throw "Unsupported uncertainty type" + j;
 					}

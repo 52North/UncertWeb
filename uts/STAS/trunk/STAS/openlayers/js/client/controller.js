@@ -23,6 +23,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 	times: null,
 	old: null,
 	exceedanceProbabilityThreshold: null,
+	valueRange: null,
 	
 	initialize: function(scalebar,map,time,scale,callbacks) {
 		this.scale = scalebar;
@@ -85,9 +86,21 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		}); 
 	},
 	
+	updateValueRange: function(v) {
+		if (!this.valueRange) {
+			this.valueRange = [v.min, v.max];
+		} else {
+			if (this.valueRange[0] > v.min)
+				this.valueRange[0] = v.min;
+			if (this.valueRange[1] < v.max)
+				this.valueRange[1] = v.max;
+		}
+		this.scale.update(this.valueRange[0],this.valueRange[1]);
+		this.callback.selectThreshold(this.valueRange);
+	},
+	
 	updateTimeRange: function(time){
 		function gcd(u, v) {
-			var u1=u,v1=v;
 			var k, d;
 			if (u == 0 || v == 0) { 
 				return u | v;
@@ -112,9 +125,9 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 				}
 				v >>= 1; 
 			} while (v != 0);
-			var r = u << k;
-			return ;
+			return u << k;
 		}
+		
 		if (!this.times) {
 			this.times = [ time.min, time.max, time.step ];
 		} else {
@@ -142,7 +155,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 				if (this.old) {
 					this.scale.setUom(this.old.uom);
 					this.scale.update(this.old.min, this.old.max);
-					this.callback.selectThreshold(this.old.min, this.old.max);
+					this.callback.selectThreshold([this.old.min, this.old.max]);
 					this.old = null;
 				}
 				this.scale.setPropertyName('resultValue');
@@ -163,7 +176,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		this.visualStyle = 'exceedance';
 		this.exceedanceProbabilityThreshold = val;
 		this.scale.setUom('%');
-		this.callback.selectThreshold(0, 100);
+		this.callback.selectThreshold([0, 100]);
 		this.scale.update(0, 100);
 		this.visibleScale = [0, 100];
 		this.scale.setPropertyName('exceedance');
@@ -205,8 +218,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 	
 	setUom: function(uom) {
 		this.scale.setUom(uom);
-		this.scale.writeLegend();
-		this.callback.selectThreshold(this.scale.getMin(), this.scale.getMax());
+		this.callback.selectThreshold([this.scale.getMin(), this.scale.getMax()]);
 	},
 	
 	getUom: function() {

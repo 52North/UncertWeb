@@ -232,12 +232,9 @@ function init() {
 			},
 			selectTime: function(t) { 
 				$('#timeSlider').slider('option', 'value',  t); 
-				console.log(t);
-				console.log(new Date(t));
 				updateTimeLabel(new Date(t));
 			},
-			selectThreshold: function(min, max) {
-				var mm = [min, max];
+			selectThreshold: function(mm) {
 				updateThresholdLabel(mm);
 				$('#thresholdSlider').slider('option', 'values', mm);
 			},
@@ -247,7 +244,7 @@ function init() {
 					max: times[1], 
 					step: times[2]
 				}).slider('enable');
-			}
+			},
 		}
 	);
 	

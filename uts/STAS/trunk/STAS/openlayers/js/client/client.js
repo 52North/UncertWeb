@@ -67,8 +67,10 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		this.ctrl.getMap().addControl(control);
 		control.activate();
 		
-		var min = Number.POSITIVE_INFINITY;
-		var max = Number.NEGATIVE_INFINITY;
+		var tempMin = Number.POSITIVE_INFINITY;
+		var tempMax = Number.NEGATIVE_INFINITY;
+		var valueMin = Number.POSITIVE_INFINITY;
+		var valueMax = Number.NEGATIVE_INFINITY;
 		var step = Number.NaN;
 		var uom;
 		for (var i = 0; i < this.features.length; i++) {
@@ -77,12 +79,31 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			}
 			var values = this.features[i].getValues();
 			for (var j = 0; j < values.length; j++) {
-				if (values[j][0].length == 2) {
-					if (values[j][0][0] < min) min = values[j][0][0];
-					if (values[j][0][1] > max) max = values[j][0][1];
+				if (typeof(values[j][1]) === "number") {
+					if (values[j][1] < valueMin) valueMin = values[j][1];
+					if (values[j][1] > valueMax) valueMax = values[j][1];
+				} else if (values[j][1].getClassName && values[j][1].getClassName().match('.*Distribution$')) {
+					var m = values[j][1].getMean();
+					if (m < valueMin) valueMin = m;
+					if (m > valueMax) valueMax = m;
+				} else if (values[j][1].length) {
+					var min = Number.POSITIVE_INFINITY, max = Number.NEGATIVE_INFINITY;	
+					for (var k = 0; k < values[j][1].length; k++) {
+						if (values[j][1][k] < min) min = values[j][1][k];
+						if (values[j][1][k] > max) max = values[j][1][k];
+					}
+					if (min < valueMin) valueMin = min;
+					if (max > valueMax) valueMax = max;
 				} else {
-					if (values[j][0][0] < min) min = values[j][0][0];
-					if (values[j][0][0] > max) max = values[j][0][0];
+					this.ctrl.fail(this, "Unsupported Type " + values[j][1]);
+				}
+			
+				if (values[j][0].length == 2) {
+					if (values[j][0][0] < tempMin) tempMin = values[j][0][0];
+					if (values[j][0][1] > tempMax) tempMax = values[j][0][1];
+				} else {
+					if (values[j][0][0] < tempMin) tempMin = values[j][0][0];
+					if (values[j][0][0] > tempMax) tempMax = values[j][0][0];
 				}
 			}
 			if (values.length > 2) {
@@ -93,11 +114,15 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				}
 			}
 		}
-		this.ctrl.setSelectedTime(min);
+		this.ctrl.setSelectedTime(tempMin);
 		this.ctrl.updateTimeRange({
-			min: min, 
-			max: max, 
+			min: tempMin, 
+			max: tempMax, 
 			step: isNaN(step) ? 0 : step
+		});
+		this.ctrl.updateValueRange({
+			min: valueMin,
+			max: valueMax
 		});
 		this.updateForNewTime();
 		this.ctrl.setUom(uom);
@@ -208,29 +233,31 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 	},
 	
 	draw: function(id, v, uom, type) {
-		var u = [], l = [], m = [];
 		var self = this;
 		var svId = this.svId;
 		var p = (100-(100-this.ctrl.getSelectedConfidenceInterval())/2)/100;
-		var DATA_INDEX;
 		
 		function colorPointHook(plot, ctx) {
-			var data = plot.getData()[DATA_INDEX].data;
-			for (var j = 0; j < data.length; j++) {
-				if (data[j][1] >= plot.getAxes().yaxis.min && 
-					data[j][1] <= plot.getAxes().yaxis.max) {
-					var x = plot.getPlotOffset().left 
-						  + plot.getAxes().xaxis.p2c(data[j][0]);
-					var y = plot.getPlotOffset().top 
-						  + plot.getAxes().yaxis.p2c(data[j][1]);
-					ctx.lineWidth = 0;
-					ctx.beginPath();
-					ctx.arc(x, y, 3, 0, Math.PI * 2, true);
-					ctx.closePath();            
-					ctx.fillStyle = self.ctrl.getScale().getColor(data[j][1]);
-					ctx.fill();
+			for (var i = 0; i < plot.getData().length; i++) {
+				if (plot.getData()[i].points.show) {
+					var data = plot.getData()[i].data;
+					for (var j = 0; j < data.length; j++) {
+						if (data[j][1] >= plot.getAxes().yaxis.min && 
+							data[j][1] <= plot.getAxes().yaxis.max) {
+							var x = plot.getPlotOffset().left 
+								  + plot.getAxes().xaxis.p2c(data[j][0]);
+							var y = plot.getPlotOffset().top 
+								  + plot.getAxes().yaxis.p2c(data[j][1]);
+							ctx.lineWidth = 0;
+							ctx.beginPath();
+							ctx.arc(x, y, 3, 0, Math.PI * 2, true);
+							ctx.closePath();            
+							ctx.fillStyle = self.ctrl.getScale().getColor(data[j][1]);
+							ctx.fill();
+						}
+					} 
 				}
-			} 
+			}
 		}
 		
 		function verticalTimeLineHook(plot, ctx) {
@@ -331,33 +358,41 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				for (var j = 0; j < v[i][0].length; j++) {
 					d.push([v[i][0][j], ep]);
 				}
-				
 			}
 			series = [{ data: d, color: '#4F4F4F', points: { show: true }}];
 			options.hooks = {draw:[verticalTimeLineHook,colorPointHook]};
-			DATA_INDEX = 0;
 			uom = '%';
 		} else {
+			var u = [], l = [], m = [];
+			var realisations = [];
 			for (var i = 0; i < v.length; i++) {
 				var time = v[i][0], value = v[i][1];
-				if (typeof(value) === 'number') {
-					value = [null, value, null];
-				} else if (value.getClassName && value.getClassName().match('.*Distribution$')) {
-					var cI = value.getConfidenceInterval(p);
-					value = [ cI[1], value.getMean(), cI[0] ];
+				if (value.length) { //realisation
+					for (var j = 0; j < value.length; j++) {
+						for (var k = 0; k < time.length; k++) {
+							realisations.push([time[k], value[j]]);
+						}
+					}
 				} else {
-					this.ctrl.fail(this, "Unknown Value Type: " + value);
-				}
-				for (var j = 0; j < time.length; j++) {
-					l.push([time[j], value[0]]);
-					m.push([time[j], value[1]]);
-					u.push([time[j], value[2]]);
+					if (typeof(value) === 'number') {
+						value = [null, value, null];
+					} else if (value.getClassName && value.getClassName().match('.*Distribution$')) {
+						var cI = value.getConfidenceInterval(p);
+						value = [ cI[1], value.getMean(), cI[0] ];
+					} else {
+						this.ctrl.fail(this, "Unknown Value Type: " + value);
+						return;
+					}
+					for (var j = 0; j < time.length; j++) {
+						l.push([time[j], value[0]]);
+						m.push([time[j], value[1]]);
+						u.push([time[j], value[2]]);
+					}
 				}
 			}
 			if (this.ctrl.getVisualStyle() === 'bars') {
 				series = [{ data: m, color: '#4F4F4F', points: { show: true } }];
 				options.hooks = {draw:[verticalTimeLineHook,errorBarHook,colorPointHook]};
-				DATA_INDEX = 0;
 			} else if (this.ctrl.getVisualStyle() === 'intervals') {
 				/* reverse lower to get background color... */
 				if (l.length > 0) {
@@ -369,10 +404,16 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 					{ color: '#4F4F4F', points: { show: true }, data: m  }
 				];
 				options.hooks = {draw:[verticalTimeLineHook,colorPointHook]};
-				DATA_INDEX = 1;
 			} else {
 				this.ctrl.fail(self, 'Invalid type: ' + this.ctrl.getVisualStyle());
 				return;
+			}
+			if (realisations.length > 0) {
+				series.push({
+					data: realisations, 
+					points: { show: true }, 
+					lines: { show: false }
+				});
 			}
 		}
 		
@@ -428,14 +469,16 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 						height: 450
 					});
 				}
+			} else if (v[1].length) { // realisations
+				//TODO
 			}
 		}
 		
 		$('#' + id).unbind('plotclick');
 		$('#' + id).bind('plotclick', function(event, pos, item) {
-			if (item && item.seriesIndex == DATA_INDEX) {
+			if (item && item.series.points.show) {
 				self.singleValueWindowOpen = true;
-				self.ctrl.callback.selectTime(v[item.dataIndex][0][0]);
+				self.ctrl.callback.selectTime(item.datapoint[0]);
 			}
 		});
 		if (self.singleValueWindowOpen) { //single value window is open
@@ -443,7 +486,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			for (var i = 0; i < v.length; i++) {
 				if ((v[i][0][0] == this.ctrl.getSelectedTime()) || (v[i][0].length == 2 && 
 					 v[i][0][0] <= this.ctrl.getSelectedTime() && 
-					 v[i][0][1] >= this.ctrl.getSelectedTime())) { 
+					 v[i][0][1] >= this.ctrl.getSelectedTime())) {
 					drawSingleValue(v[i]); 
 					break;
 				}

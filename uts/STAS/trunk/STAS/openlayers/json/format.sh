@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TMP=$(mktemp)
+TMP=`mktemp`
 
 for f in *.js; do
 	python -mjson.tool < $f > $TMP
