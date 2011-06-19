@@ -131,20 +131,12 @@ OpenLayers.SOS.ScaleBar = OpenLayers.Class({
 		return new OpenLayers.Color.HSV(hue, 100, 100).toRGB().toHex();
 	},
 	
-	update: function (min, max, ints) {
-		if (ints) { this.ints = parseInt(ints); }
-		if (max != undefined) this.max = parseFloat(max);
-		if (min != undefined) this.min = parseFloat(min);
-		this.writeLegend();
-	},
-	
-	setPropertyName: function(val) {
-		this.propertyName = val;
-		this.style = null;
-	},
-	
-	setUom: function(uom) { 
-		this.uom = uom;
+	update: function (v) {
+		if (v.ints) this.ints = parseInt(v.ints);
+		if (v.max != undefined && v.max != null) this.max = parseFloat(v.max);
+		if (v.min != undefined && v.min != null) this.min = parseFloat(v.min);
+		if (v.uom) this.uom = v.uom;
+		if (v.propertyName) this.propertyName = v.propertyName;
 		this.writeLegend();
 	},
 	
@@ -158,6 +150,10 @@ OpenLayers.SOS.ScaleBar = OpenLayers.Class({
 	
 	getMin: function() {
 		return this.min;
+	},
+	
+	getInts: function() {
+		return this.ints;
 	},
 	
 	writeLegend: function () {

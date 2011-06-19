@@ -159,26 +159,26 @@ function init() {
 	$('#exceedance').button().click(function () {
 		$('#thresholdSlider').slider('disable');
 		$('#excee-prob-threshold').removeAttr("disabled");
-		ctrl.setExceedenceProbabilityThreshold($('#excee-prob-threshold').val());
+		ctrl.switchToMode('exceedance', $('#excee-prob-threshold').val());
 	});
 	
 	$('#excee-prob-threshold').change(function (ev) {
 		var t = parseFloat($(this).val());
 		if (isNaN(t))
 			$(this).val(t = 100);
-		ctrl.setExceedenceProbabilityThreshold(t);
+		ctrl.switchToMode('exceedance', t);
 	});
 	
 	$('#convInterval').button().click(function(){
 		$('#thresholdSlider').slider('enable');
 		$('#excee-prob-threshold').attr("disabled", true);
-		ctrl.setVisualStyle('intervals');
+		ctrl.switchToMode('intervals'); 
 	});
 	
 	$('#errorBars').button().click(function(){
 		$('#thresholdSlider').slider('enable');		
 		$('#excee-prob-threshold').attr("disabled", true);
-		ctrl.setVisualStyle('bars');
+		ctrl.switchToMode('bars'); 
 	});
 
 	$('#send').button().click(function () {
@@ -224,27 +224,39 @@ function init() {
 			width: 800, 
 			height: 27, 
 		}), 
-		map, now, threshold.init, 
+		map, 
+		now, 
 		{
 			fail: error, 
 			ready: function() {
 				$('#send').button('enable');
 			},
-			selectTime: function(t) { 
-				$('#timeSlider').slider('option', 'value',  t); 
-				updateTimeLabel(new Date(t));
-			},
-			selectThreshold: function(mm) {
+			updateValues: function(values) {
+				var mm = [values.min, values.max];
 				updateThresholdLabel(mm);
-				$('#thresholdSlider').slider('option', 'values', mm);
+				var b = (values.max - values.min)/10;
+				$('#thresholdSlider').slider('option', {
+					min: values.min - b,
+					max: values.max + b,
+					values: mm,
+				});
 			},
-			updateTimeRange: function(times) {
+			updateTime: function(times) {
 				$('#timeSlider').slider('option', {
-					min: times[0], 
-					max: times[1], 
-					step: times[2]
+					min: times.min, 
+					max: times.max, 
+					step: times.step,
+					value: times.selected
 				}).slider('enable');
+				updateTimeLabel(new Date(times.selected));
 			},
+			probabilityMode: function(enable) {
+				var action = (!enable) ? 'enable' : 'disable';
+				$('#thresholdSlider').slider(action);
+				$('#thresholdSlider').slider(action);
+				$('#viewChooser input').button(action);
+				$('#excee-prob-threshold').attr("disabled", enable);
+			}
 		}
 	);
 	

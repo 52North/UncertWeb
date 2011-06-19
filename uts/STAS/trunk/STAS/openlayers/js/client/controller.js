@@ -2,35 +2,74 @@
 OpenLayers.SOS.Controller = OpenLayers.Class({
 	CLASS_NAME: "OpenLayers.SOS.Controller",
 	selectedConfInterval: 95.0,
-	visualStyle: "intervals",
 	
 	format: {
 		jsom: new OpenLayers.SOS.Format.JSOM(),
 		xml: new OpenLayers.SOS.Format.ObservationCollection()
 	},
+	
 	callback: {
-		ready: 			 function () {},
-		fail: 			 function () {},
-		selectTime: 	 function () {},
-		updateTimeRange: function () {},
-		selectThreshold: function () {}
+		ready:			function () {},
+		fail: 			function () {},
+		updateTime:		function () {},
+		updateValues:	function () {},
+		probabilityMode: function (bool) {},
 	},
+	
 	clients: [],
-	selectedTime: null,
-	visibleScale: null,
 	scale: null,
 	map: null,
-	times: null,
-	old: null,
-	exceedanceProbabilityThreshold: null,
-	valueRange: null,
+	mode: "intervals",
 	
-	initialize: function(scalebar,map,time,scale,callbacks) {
+	times: {
+		selected: null,
+		step: null,
+		min: null,
+		max: null
+	},
+	values: {
+		min: null,
+		max: null,
+		uom: null,
+		propertyName: null,
+		ints: null,
+		threshold: null
+	},
+	
+	oldValues: null,
+	mapContainsProbabilityLayer: false,
+	
+	initialize: function(scalebar,map,time,callbacks) {
 		this.scale = scalebar;
 		this.map = map;
-		this.selectedTime = time;
-		this.visibleScale = scale;
+		this.values = { 
+			min: this.scale.getMin(), 
+			max: this.scale.getMax(), 
+			ints: this.scale.getInts(),
+			propertyName: 'resultValue' 
+		};
 		OpenLayers.Util.extend(this.callback, callbacks);
+		var self = this;
+		
+		this.map.events.register("changelayer", map, function(ev) {
+			if (ev.layer.isProbabilityLayer) {
+				if (!ev.layer.getVisibility()) {
+					self.mapContainsProbabilityLayer = self._doesMapContainProbabilityLayers();
+					if (!self.mapContainsProbabilityLayer) {
+						self.switchToMode("intervals");
+					}					
+				} else if (!self.mapContainsProbabilityLayer) {
+					self.mapContainsProbabilityLayer = true;
+					self.switchToMode("probabilities");
+				}
+			} else if (self.mapContainsProbabilityLayer && ev.layer.getVisibility()) {
+				self._deactivateProbabilityLayers();
+			}
+			var ls = self.map.getControlsByClass('OpenLayers.Control.LayerSwitcher');
+			for (var i = 0; i < ls.length; i++) {
+				ls[i].redraw();
+			}
+		});
 	},
 	
 	addLayer: function(options) {
@@ -77,26 +116,16 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 	},
 	
 	updateForNewScale: function(min, max, ints) {
-		if (min != undefined && max != undefined) {
-			this.visibleScale = [min, max];
-		}
-		this.scale.update(min, max, ints);
+		if (min != undefined)
+			this.values.min = min;
+		if (max != undefined)
+			this.values.max = max;
+		if (ints)
+			this.values.ints = ints
+		this.scale.update(this.values);
 		$.each(this.clients, function (i, c){ 
 			c.updateForNewScale(); 
 		}); 
-	},
-	
-	updateValueRange: function(v) {
-		if (!this.valueRange) {
-			this.valueRange = [v.min, v.max];
-		} else {
-			if (this.valueRange[0] > v.min)
-				this.valueRange[0] = v.min;
-			if (this.valueRange[1] < v.max)
-				this.valueRange[1] = v.max;
-		}
-		this.scale.update(this.valueRange[0],this.valueRange[1]);
-		this.callback.selectThreshold(this.valueRange);
 	},
 	
 	updateTimeRange: function(time){
@@ -127,66 +156,109 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 			} while (v != 0);
 			return u << k;
 		}
-		
-		if (!this.times) {
-			this.times = [ time.min, time.max, time.step ];
-		} else {
-			if (this.times[0] > time.min) this.times[0] = time.min;
-			if (this.times[1] < time.max) this.times[1] = time.max;
-			this.times[2] = gcd(time.step, this.times[2]);
-		}
-		this.callback.updateTimeRange(this.times);
-		this.callback.selectTime(this.times[0]);
+		if (this.times.min == null || this.times.min > time.min) this.times.min = time.min;
+		if (this.times.max == null || this.times.max < time.max) this.times.max = time.max;
+		this.times.step = (this.times.step == null)? time.step : gcd(time.step, this.times.step);
+		this.callback.updateTime(this.times);
 	},
 	
 	getVisibleScale: function() {
-		return this.visibleScale;
+		return [this.values.min, this.values.max];
 	},
 	
 	getVisualStyle: function() {
-		return this.visualStyle;
+		return this.mode;
 	},
-	
-	setVisualStyle: function(val) {
-		this.visualStyle = val;
-		switch (val) {
+
+	switchToMode: function(val, opts) {
+		var self = this;
+		
+		function switchToPercantageMode() {
+			self.values.min = 0;
+			self.values.max = 100;
+			self.values.uom = '%';
+			self.scale.update(self.values);
+			self.callback.updateValues(self.values);
+			$.each(self.clients, function (i, c){ 
+				c.updateForNewScale(); 
+			}); 
+		}
+		
+		function backup() {
+			if (self.mode !== 'exceedance' 
+				&& self.mode !== 'probabilities') {
+				self.oldValues = self.values;
+				self.oldValues.mode = self.mode;
+			}
+		}
+		
+		switch(val) {
 			case 'bars': 
 			case 'intervals':
-				if (this.old) {
-					this.scale.setUom(this.old.uom);
-					this.scale.update(this.old.min, this.old.max);
-					this.callback.selectThreshold([this.old.min, this.old.max]);
-					this.old = null;
+				var prevMode = this.mode;
+				if (this.oldValues) {
+					this.values = this.oldValues;
+					this.scale.update(this.values);
+					this.callback.updateValues(this.values);
+					this.mode = this.oldValues.mode;
+					this.oldValues = null;
+				} else {
+					this.mode = val;
 				}
-				this.scale.setPropertyName('resultValue');
+				if (prevMode == 'exceedance' || prevMode == 'probabilities') {
+					this.callback.updateValues(this.values);
+				}
+				this._deactivateProbabilityLayers();
 				this.updateForNewScale();
-			break;
+				this.callback.probabilityMode(false);
+				break;
+			case 'probabilities':
+				backup();
+				this._deactivateNonProbabilityLayers();
+				this.mode = val;
+				switchToPercantageMode();
+				this.callback.probabilityMode(true);
+				break;
+			case 'exceedance':
+				backup();
+				this._deactivateProbabilityLayers();
+				this.values.propertyName = this.mode = val;
+				this.values.threshold = opts;
+				switchToPercantageMode();
+				this.callback.probabilityMode(false);
+				break;
 			default: 
-				this.setVisualStyle('intervals');
 				this.callback.fail("Invalid visual style: " + val);
 		}
 	},
-	
-	setExceedenceProbabilityThreshold: function(val) {
-		this.old = {
-			min: this.scale.getMin(), 
-			max: this.scale.getMax(), 
-			uom: this.scale.getUom()
-		};
-		this.visualStyle = 'exceedance';
-		this.exceedanceProbabilityThreshold = val;
-		this.scale.setUom('%');
-		this.callback.selectThreshold([0, 100]);
-		this.scale.update(0, 100);
-		this.visibleScale = [0, 100];
-		this.scale.setPropertyName('exceedance');
-		$.each(this.clients, function (i, c){ 
-			c.updateForNewScale(); 
-		}); 
-	},
 
+	_deactivateProbabilityLayers: function() {
+		for (var i = 0; i < this.map.layers.length; i++) {
+			if (this.map.layers[i].isProbabilityLayer && this.map.layers[i].getVisibility()) {
+				this.map.layers[i].setVisibility(false);
+			}
+		}
+	},
+	
+	_deactivateNonProbabilityLayers: function() {
+		for (var i = 0; i < this.map.layers.length; i++) {
+			if (!this.map.layers[i].isProbabilityLayer && !this.map.layers[i].isBaseLayer && this.map.layers[i].getVisibility()) {
+				this.map.layers[i].setVisibility(false);
+			}
+		}						
+	},
+	
+	_doesMapContainProbabilityLayers: function() {
+		for (var i = 0; i < this.map.layers.length; i++) {
+			if (this.map.layers[i].getVisibility() && this.map.layers[i].isProbabilityLayer) {
+				return true;
+			}
+		}
+		return false;
+	},
+	
 	getExceedanceProbabilityThreshold: function() {
-		return this.exceedanceProbabilityThreshold;
+		return this.values.threshold;
 	},
 	
 	getMap: function() { 
@@ -206,23 +278,22 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 	},
 	
 	getSelectedTime: function() {
-		return this.selectedTime; 
+		return this.times.selected; 
 	},
 	
 	setSelectedTime: function(val) { 
-		this.selectedTime = val; 
+		this.times.selected = val;
 		$.each(this.clients, function (i,c){ 
 			c.updateForNewTime();
 		});
 	},
-	
-	setUom: function(uom) {
-		this.scale.setUom(uom);
-		this.callback.selectThreshold([this.scale.getMin(), this.scale.getMax()]);
+	setSelectedTimeC: function(val) {
+		this.setSelectedTime(val);
+		this.callback.updateTime(this.times);
 	},
 	
 	getUom: function() {
-		return this.scale.getUom();
+		return this.values.uom;
 	},
 	
 	fail: function(l, m) {
@@ -230,7 +301,29 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		this.callback.fail(m);
 	},
 	
-	ready: function(l) {
+	ready: function(info) {
+		this.updateTimeRange(info.time);
+		this.setSelectedTime(info.time.min);
+		if (info.containsProbabilities) {
+			this.switchToMode('probabilities');
+		} else {
+			if (this.oldValues) {
+				if (this.oldValues.min > info.min)
+					this.oldValues.min = info.min;
+				if (this.oldValues.max < info.max)
+					this.oldValues.max = info.max;
+				this.oldValues.uom = info.uom;
+			} else {
+				if (this.values.min > info.min)
+					this.values.min = info.min;
+				if (this.values.max < info.max)
+					this.values.max = info.max;
+				this.values.uom = info.uom;
+			}
+			if (this.mode == 'probabilities') {
+				this.switchToMode('intervals');
+			}
+		}
 		this.callback.ready();
 	}
 });

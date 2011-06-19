@@ -33,7 +33,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 	CLASS_NAME: 'OpenLayers.SOS.Client',
 	svId: 'singlevaluedialog',
 
-	id: null, ctrl: null, layer: null,
+	id: null, ctrl: null, layer: null, uom: null,
 	
 	
 	initialize: function (ctrl, features) {
@@ -44,58 +44,49 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 	},
 	
 	generateLayer: function () {
-		var dest = this.ctrl.getMap().getProjectionObject();
-		for (var i = 0; i < this.features.length; i++) {
-			this.features[i].transform(dest);
-		}
-
-		this.layer = new OpenLayers.Layer.Vector('SOS Request ' + this.id, {
-			styleMap: new OpenLayers.StyleMap({
-				default: this.ctrl.getScale().getStyle(),
-				select: { 'pointRadius': 10 }
-			})
-		});
-		this.layer.addFeatures(this.features);
-		var control = new OpenLayers.Control.SelectFeature(this.layer, {
-				onSelect: this.onFeatureSelect, 
-				onUnselect: this.onFeatureUnselect,
-				scope: this
-		});
-		control.handlers.feature.stopDown = false;
-		control.handlers.feature.stopUp = false;
-		this.ctrl.getMap().addLayer(this.layer);
-		this.ctrl.getMap().addControl(control);
-		control.activate();
-		
+		var gotProbabilities = false;
+		var probabilityConstraint;
 		var tempMin = Number.POSITIVE_INFINITY;
 		var tempMax = Number.NEGATIVE_INFINITY;
 		var valueMin = Number.POSITIVE_INFINITY;
 		var valueMax = Number.NEGATIVE_INFINITY;
 		var step = Number.NaN;
-		var uom;
 		for (var i = 0; i < this.features.length; i++) {
-			if (!uom) {
-				uom = this.features[i].getUom();
+			if (!this.uom) {
+				this.uom = this.features[i].getUom();
 			}
 			var values = this.features[i].getValues();
 			for (var j = 0; j < values.length; j++) {
-				if (typeof(values[j][1]) === "number") {
-					if (values[j][1] < valueMin) valueMin = values[j][1];
-					if (values[j][1] > valueMax) valueMax = values[j][1];
-				} else if (values[j][1].getClassName && values[j][1].getClassName().match('.*Distribution$')) {
-					var m = values[j][1].getMean();
-					if (m < valueMin) valueMin = m;
-					if (m > valueMax) valueMax = m;
-				} else if (values[j][1].length) {
-					var min = Number.POSITIVE_INFINITY, max = Number.NEGATIVE_INFINITY;	
-					for (var k = 0; k < values[j][1].length; k++) {
-						if (values[j][1][k] < min) min = values[j][1][k];
-						if (values[j][1][k] > max) max = values[j][1][k];
+				if (values[j][1].probability) {
+					gotProbabilities = true;
+					if (!probabilityConstraint) {
+						probabilityConstraint = values[j][1].constraint;
+					} else if (probabilityConstraint !== values[j][1].constraint) {
+						return this.ctrl.fail('Mixed constraints are not supporeted: "' 
+							+ probabilityConstraint + '" != "' + values[j][1].constraint + '".');
 					}
-					if (min < valueMin) valueMin = min;
-					if (max > valueMax) valueMax = max;
+				} else if (gotProbabilities) {
+					return this.ctrl.fail('Probabilities mixed with normal values are not supported.');
 				} else {
-					this.ctrl.fail(this, "Unsupported Type " + values[j][1]);
+					if (typeof(values[j][1]) === 'number') {
+						if (values[j][1] < valueMin) valueMin = values[j][1];
+						if (values[j][1] > valueMax) valueMax = values[j][1];
+					} else if (values[j][1].getClassName 
+									&& values[j][1].getClassName().match('.*Distribution$')) {
+						var m = values[j][1].getMean();
+						if (m < valueMin) valueMin = m;
+						if (m > valueMax) valueMax = m;
+					} else if (values[j][1].length) {
+						var min = Number.POSITIVE_INFINITY, max = Number.NEGATIVE_INFINITY;	
+						for (var k = 0; k < values[j][1].length; k++) {
+							if (values[j][1][k] < min) min = values[j][1][k];
+							if (values[j][1][k] > max) max = values[j][1][k];
+						}
+						if (min < valueMin) valueMin = min;
+						if (max > valueMax) valueMax = max;
+					} else {
+						return this.ctrl.fail(this, "Unsupported Type " + values[j][1]);
+					}
 				}
 			
 				if (values[j][0].length == 2) {
@@ -114,19 +105,49 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				}
 			}
 		}
-		this.ctrl.setSelectedTime(tempMin);
-		this.ctrl.updateTimeRange({
-			min: tempMin, 
-			max: tempMax, 
-			step: isNaN(step) ? 0 : step
+		
+		var dest = this.ctrl.getMap().getProjectionObject();
+		for (var i = 0; i < this.features.length; i++) {
+			this.features[i].transform(dest);
+		}
+		var title = (probabilityConstraint) ? probabilityConstraint : 'SOS Request ' + this.id;
+		this.layer = new OpenLayers.Layer.Vector(title, {
+			styleMap: new OpenLayers.StyleMap({
+				default: this.ctrl.getScale().getStyle(),
+				select: { 'pointRadius': 10 }
+			})
 		});
-		this.ctrl.updateValueRange({
+		this.layer.isProbabilityLayer = gotProbabilities;
+		
+		this.layer.addFeatures(this.features);
+		var control = new OpenLayers.Control.SelectFeature(this.layer, {
+			onSelect: this.onFeatureSelect, 
+			onUnselect: this.onFeatureUnselect,
+			scope: this
+		});
+		
+		control.handlers.feature.stopDown = false;
+		control.handlers.feature.stopUp = false;
+		this.ctrl.getMap().addLayer(this.layer);
+		this.ctrl.getMap().addControl(control);
+		control.activate();
+		
+		if (probabilityConstraint) {
+			this.uom = '%';
+		}
+
+		this.ctrl.ready({
+			uom: this.uom,
+			containsProbabilities: gotProbabilities,
 			min: valueMin,
-			max: valueMax
+			max: valueMax,
+			time: {
+				min: tempMin,
+				max: tempMax,
+				step: isNaN(step) ? 0 : step
+			}
 		});
 		this.updateForNewTime();
-		this.ctrl.setUom(uom);
-		this.ctrl.ready(this);
 	},
 	
 	updateForNewScale: function () {
@@ -174,8 +195,17 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 	},
 	
 	onFeatureSelect: function (feature) {
+		console.log(this.selectedFeature);
+		console.log((this.selectedFeature)? this.selectedFeature.popup : null);
+		console.log(this.layer.getVisibility());
+		if (this.selectedFeature && this.selectedFeature.popup && !this.layer.getVisibility()) {
+			this.ctrl.getMap().removePopup(this.selectedFeature.popup);
+		}
+		if (!this.layer.getVisibility() || (this.ctrl.getVisualStyle() != 'probabilities' 
+			&& this.layer.isProbabilityLayer)) {
+			return;
+		}
 		var values = feature.getValues();
-		var uom = feature.getUom();
 		var method = this.ctrl.getVisualStyle();
 		var id = 'plot' + new Date().getTime();
 		var html;
@@ -204,7 +234,6 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			'</div>';
 		}
 		
-		var ctrls = this.ctrl.getMap().getControlsByClass('OpenLayers.Control.SelectFeature');
 		feature.popup = new OpenLayers.Popup.FramedCloud('Feature',
 			feature.geometry.getBounds().getCenterLonLat(),
 			null, html, null, false, null);
@@ -222,17 +251,17 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				min: 0.1, max: 99.9, step: 0.1,
 				change: function(e, ui) {
 					self.ctrl.setSelectedConfidenceInterval(ui.value);
-					self.draw(id, values, uom);
+					self.draw(id, values);
 				},
 				slide: function (e, ui) {
 					$('#intervalValue').html(ui.value.toFixed(1));
 				}
 			});
 		}
-		this.draw(id, values, uom);
+		this.draw(id, values);
 	},
 	
-	draw: function(id, v, uom, type) {
+	draw: function(id, v, type) {
 		var self = this;
 		var svId = this.svId;
 		var p = (100-(100-this.ctrl.getSelectedConfidenceInterval())/2)/100;
@@ -350,7 +379,15 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		};
 
 		var series;
-		if (this.ctrl.getVisualStyle() === 'exceedance') {
+		if (this.ctrl.getVisualStyle() === 'probabilities') {
+			series = [{ data: [], color: '#4F4F4F', points: { show: true }}];
+			options.hooks = {draw:[verticalTimeLineHook,colorPointHook]};
+			for (var i = 0; i < v.length; i++) {
+				for (var j = 0; j < v[i][0].length; j++) {
+					series[0].data.push([v[i][0][j], v[i][1].probability]);
+				}
+			}
+		} else if (this.ctrl.getVisualStyle() === 'exceedance') {
 			var d = [];
 			var t = this.ctrl.getExceedanceProbabilityThreshold();
 			for (var i = 0; i < v.length; i++) {
@@ -361,7 +398,6 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			}
 			series = [{ data: d, color: '#4F4F4F', points: { show: true }}];
 			options.hooks = {draw:[verticalTimeLineHook,colorPointHook]};
-			uom = '%';
 		} else {
 			var u = [], l = [], m = [];
 			var realisations = [];
@@ -380,8 +416,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 						var cI = value.getConfidenceInterval(p);
 						value = [ cI[1], value.getMean(), cI[0] ];
 					} else {
-						this.ctrl.fail(this, "Unknown Value Type: " + value);
-						return;
+						return this.ctrl.fail(this, "Unknown Value Type: " + value);
 					}
 					for (var j = 0; j < time.length; j++) {
 						l.push([time[j], value[0]]);
@@ -405,8 +440,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				];
 				options.hooks = {draw:[verticalTimeLineHook,colorPointHook]};
 			} else {
-				this.ctrl.fail(self, 'Invalid type: ' + this.ctrl.getVisualStyle());
-				return;
+				return this.ctrl.fail(this, 'Invalid type: ' + this.ctrl.getVisualStyle());
 			}
 			if (realisations.length > 0) {
 				series.push({
@@ -427,7 +461,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				if (previous != item.datapoint) {
 					previous = item.datapoint;
 					$('#tooltip').remove();
-					var text = item.datapoint[1] + ' ' + uom;
+					var text = item.datapoint[1] + ' ' + self.uom;
 					$('<div id="tooltip" class="tooltip">' + text + '</div>').css({
 						position: 'absolute',
 						display: 'none',
@@ -478,7 +512,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		$('#' + id).bind('plotclick', function(event, pos, item) {
 			if (item && item.series.points.show) {
 				self.singleValueWindowOpen = true;
-				self.ctrl.callback.selectTime(item.datapoint[0]);
+				self.ctrl.setSelectedTimeC(item.datapoint[0]);
 			}
 		});
 		if (self.singleValueWindowOpen) { //single value window is open

@@ -27,6 +27,8 @@
  * for the full text of the license.
  *
  */
+ 
+var print = true;
 OpenLayers.SOS = OpenLayers.SOS || {};
 OpenLayers.SOS.Format = OpenLayers.SOS.Format || {};
 OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
@@ -36,24 +38,21 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 		},
 		read: function (o) {
 			var j = (typeof(o) === "string") ? OpenLayers.Format.JSON.prototype.read(o) : o;
+			var result;
 			if (j.OM_MeasurementCollection) {
-				return this.parsers.collection(j.OM_MeasurementCollection, "OM_Measurement")
-			}
-			if (j.OM_DiscreteNumericObservationCollection) {
-				return this.parsers.collection(j.OM_DiscreteNumericObservationCollection, 
-					"OM_Measurement");
-			}
-			if (j.OM_UncertaintyObservationCollection) {
-				return this.parsers.collection(j.OM_UncertaintyObservationCollection, 
-					"OM_UncertaintyObservation");
-			}
-			if (j.OM_TextObservationCollection) { 
+				result = this.parsers.collection(j.OM_MeasurementCollection, "OM_Measurement")
+			} else if (j.OM_DiscreteNumericObservationCollection) {
+				result = this.parsers.collection(j.OM_DiscreteNumericObservationCollection, "OM_Measurement");
+			} else if (j.OM_UncertaintyObservationCollection) {
+				result = this.parsers.collection(j.OM_UncertaintyObservationCollection, "OM_UncertaintyObservation");
+			} else if (j.OM_TextObservationCollection) { 
 				throw "OM_TextObservations are not supported."; 
-			}
-			if (j.OM_ReferenceObservationCollection) {
+			} else if (j.OM_ReferenceObservationCollection) {
 				throw "OM_ReferenceObservations are not supported."; 
+			} else {
+				throw "JSON does not contain a parsable collection.";
 			}
-			throw "JSON does not contain a parsable collection.";
+			return result;
 		},
 
 		parsers: {
@@ -155,10 +154,30 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 				return json;
 			},
 			result: function(json, type) {
-				function parseUncertainty(j) {
+				function parseUncertainty(uom, j) {
 					var value = null;
 					try {
-						if (j.Realisation) {
+						if (j.Probability) {
+							var lt = null, le = null, gt = null, ge = null;
+							for (var i = 0; i < j.Probability.constraints.length; i++) {
+								switch(j.Probability.constraints[i].type) {
+									case 'GREATER_THAN':	  gt = j.Probability.constraints[i].value; break;
+									case 'GREATER_OR_EQUAL' : ge = j.Probability.constraints[i].value; break;
+									case 'LESS_THAN':		  lt = j.Probability.constraints[i].value; break;
+									case 'LESS_OR_EQUAL':     le = j.Probability.constraints[i].value; break;
+								}
+							}
+							var constraint = '';
+							if (gt != null) constraint += gt + ' ' + uom + ' &lt; ';
+							if (ge != null) constraint += ge + ' ' + uom +' &le; ';
+							constraint += 'x';
+							if (le != null) constraint += ' &le; ' + le + ' ' + uom;
+							if (lt != null) constraint += ' &lt; ' + lt + ' ' + uom;
+							value = {
+								constraint: constraint, 
+								probability: j.Probability.values[0] * 100
+							};
+						} else if (j.Realisation) {
 							value = j.Realisation.values;
 						} else {
 							if (j.GaussianDistribution) {
@@ -186,6 +205,7 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 							value = DistributionFactory.build(j);
 						}
 					} catch (e) {
+						console.log(j);
 						throw "Unsupported uncertainty type" + j;
 					}
 					if (value == null) throw "Unsupported uncertainty type" + j;
@@ -197,7 +217,7 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 				case "OM_UncertaintyObservation":
 					if (json.result.uom)
 						uom = json.result.uom;
-					value = parseUncertainty(json.result.value)
+					value = parseUncertainty(uom, json.result.value)
 					break;
 				case "OM_Measurement":
 					if (json.result.uom)
@@ -212,7 +232,7 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 								throw "Invalid JSOM: no values in resultQuality";
 							if (json.resultQuality[0].values.length != 1) 
 								throw "Currently only one resultQuality value is supported.";
-							value = parseUncertainty(json.resultQuality[0].values[0]);
+							value = parseUncertainty(uom, json.resultQuality[0].values[0]);
 						}
 					}
 					break;

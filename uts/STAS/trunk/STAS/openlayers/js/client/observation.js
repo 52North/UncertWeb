@@ -107,6 +107,8 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 						m += values[i][1][j];
 					}
 					mapValue += m/values[i][1].length;
+				} else if (values[i][1].probability) {
+					mapValue += values[i][1].probability;
 				} else {
 					throw "TODO!!!";
 				}
