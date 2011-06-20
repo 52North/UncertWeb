@@ -12,8 +12,8 @@
 	</organization>
 	
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<wps.version>2.0-RC7-SNAPSHOT</wps.version>
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+		<wps.version>2.0-RC7</wps.version>
 	</properties>
 
 	<dependencies>
@@ -147,6 +147,10 @@
 				<directory>src/main/resources</directory>
 				<includes><include>**/*</include></includes>
 			</resource>
+			<resource>
+				<directory>src/main/res</directory>
+				<includes><include>**/*</include></includes>
+			</resource>
 		</resources>
 		<testResources>
 			<testResource>
@@ -188,13 +192,13 @@
 					</webResources-->
 					<overlays>
 						<overlay>
-							<!-- be sure we use the web.xml of the 52N webapp -->
+							<!-- be sure we use the web.xml of the 52N webapp>
 							<id>wps-web.xml</id>
 							<groupId>org.n52.wps</groupId>
 							<artifactId>52n-wps-webapp</artifactId>
 							<includes>
 								<include>WEB-INF/web.xml</include>
-							</includes>
+							</includes -->
 						</overlay>
 						<overlay>
 							<!-- thats the sta-wps -->
