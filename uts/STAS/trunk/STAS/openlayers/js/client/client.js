@@ -195,9 +195,6 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 	},
 	
 	onFeatureSelect: function (feature) {
-		console.log(this.selectedFeature);
-		console.log((this.selectedFeature)? this.selectedFeature.popup : null);
-		console.log(this.layer.getVisibility());
 		if (this.selectedFeature && this.selectedFeature.popup && !this.layer.getVisibility()) {
 			this.ctrl.getMap().removePopup(this.selectedFeature.popup);
 		}

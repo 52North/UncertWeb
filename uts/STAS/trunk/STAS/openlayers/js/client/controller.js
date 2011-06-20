@@ -1,4 +1,24 @@
-
+/*
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ *                   48155 Muenster, Germany                  info@52north.org
+ *
+ * Author: Christian Autermann
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later 
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
+ * Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 OpenLayers.SOS.Controller = OpenLayers.Class({
 	CLASS_NAME: "OpenLayers.SOS.Controller",
 	selectedConfInterval: 95.0,
@@ -13,13 +33,14 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		fail: 			function () {},
 		updateTime:		function () {},
 		updateValues:	function () {},
-		probabilityMode: function (bool) {},
+		probabilityMode:function () {},
+		exceedanceMode: function () {},
+		standardMode:	function () {},
 	},
 	
 	clients: [],
 	scale: null,
 	map: null,
-	mode: "intervals",
 	
 	times: {
 		selected: null,
@@ -31,24 +52,29 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		min: null,
 		max: null,
 		uom: null,
-		propertyName: null,
+		propertyName: 'resultValue',
+		mode: "intervals",
 		ints: null,
-		threshold: null
+		threshold: null,
+		clone: function () {
+			var newObj = {};
+			for (i in this) newObj[i] = this[i]; 
+			return newObj;
+		}
 	},
 	
 	oldValues: null,
 	mapContainsProbabilityLayer: false,
 	
 	initialize: function(scalebar,map,time,callbacks) {
-		this.scale = scalebar;
-		this.map = map;
-		this.values = { 
-			min: this.scale.getMin(), 
-			max: this.scale.getMax(), 
-			ints: this.scale.getInts(),
-			propertyName: 'resultValue' 
-		};
+		this.scale = scalebar; this.map = map;
+		OpenLayers.Util.extend(this.values, {
+			min: this.scale.getMin(),
+			max: this.scale.getMax(),
+			ints: this.scale.getInts()
+		});
 		OpenLayers.Util.extend(this.callback, callbacks);
+
 		var self = this;
 		
 		this.map.events.register("changelayer", map, function(ev) {
@@ -158,7 +184,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		}
 		if (this.times.min == null || this.times.min > time.min) this.times.min = time.min;
 		if (this.times.max == null || this.times.max < time.max) this.times.max = time.max;
-		this.times.step = (this.times.step == null)? time.step : gcd(time.step, this.times.step);
+		this.times.step = (this.times.step == null) ? time.step : gcd(time.step, this.times.step);
 		this.callback.updateTime(this.times);
 	},
 	
@@ -167,16 +193,19 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 	},
 	
 	getVisualStyle: function() {
-		return this.mode;
+		return this.values.mode;
 	},
 
 	switchToMode: function(val, opts) {
 		var self = this;
 		
-		function switchToPercantageMode() {
-			self.values.min = 0;
-			self.values.max = 100;
-			self.values.uom = '%';
+		function switchToPercantageMode(val) {
+			if (self.oldValues == null) {
+				self.oldValues = self.values.clone();
+			}
+			OpenLayers.Util.extend(self.values, {
+				min: 0, max: 100, uom: '%', mode: val
+			});
 			self.scale.update(self.values);
 			self.callback.updateValues(self.values);
 			$.each(self.clients, function (i, c){ 
@@ -184,51 +213,33 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 			}); 
 		}
 		
-		function backup() {
-			if (self.mode !== 'exceedance' 
-				&& self.mode !== 'probabilities') {
-				self.oldValues = self.values;
-				self.oldValues.mode = self.mode;
+		if (val === 'bars' || val === 'intervals') {
+			var prevMode = this.values.mode;
+			if (this.oldValues != null) {
+				this.values = this.oldValues;
+				this.oldValues = null;
 			}
-		}
-		
-		switch(val) {
-			case 'bars': 
-			case 'intervals':
-				var prevMode = this.mode;
-				if (this.oldValues) {
-					this.values = this.oldValues;
-					this.scale.update(this.values);
-					this.callback.updateValues(this.values);
-					this.mode = this.oldValues.mode;
-					this.oldValues = null;
-				} else {
-					this.mode = val;
-				}
-				if (prevMode == 'exceedance' || prevMode == 'probabilities') {
-					this.callback.updateValues(this.values);
-				}
-				this._deactivateProbabilityLayers();
-				this.updateForNewScale();
-				this.callback.probabilityMode(false);
-				break;
-			case 'probabilities':
-				backup();
-				this._deactivateNonProbabilityLayers();
-				this.mode = val;
-				switchToPercantageMode();
-				this.callback.probabilityMode(true);
-				break;
-			case 'exceedance':
-				backup();
-				this._deactivateProbabilityLayers();
-				this.values.propertyName = this.mode = val;
-				this.values.threshold = opts;
-				switchToPercantageMode();
-				this.callback.probabilityMode(false);
-				break;
-			default: 
-				this.callback.fail("Invalid visual style: " + val);
+			if (prevMode != 'probabilities') {
+				this.values.mode = val;
+			}
+			this.scale.update(this.values);
+			this.callback.updateValues(this.values);
+			this.callback.standardMode();
+			this.updateForNewScale();
+			this._deactivateProbabilityLayers();
+		} else if (val === 'probabilities') {
+			switchToPercantageMode(val);
+			this._deactivateNonProbabilityLayers();
+			this.callback.probabilityMode();
+		} else if (val === 'exceedance') {
+			switchToPercantageMode(val);
+			OpenLayers.Util.extend(this.values, {
+				propertyName: val, threshold: opts
+			});
+			this._deactivateProbabilityLayers();
+			this.callback.exceedanceMode();
+		} else {
+			this.callback.fail("Invalid visual style: " + val);
 		}
 	},
 
@@ -238,6 +249,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 				this.map.layers[i].setVisibility(false);
 			}
 		}
+		this.mapContainsProbabilityLayer = false;
 	},
 	
 	_deactivateNonProbabilityLayers: function() {
@@ -303,10 +315,9 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 	
 	ready: function(info) {
 		this.updateTimeRange(info.time);
-		this.setSelectedTime(info.time.min);
-		if (info.containsProbabilities) {
-			this.switchToMode('probabilities');
-		} else {
+		this.setSelectedTime(this.times.min);
+		
+		if (!info.containsProbabilities) {
 			if (this.oldValues) {
 				if (this.oldValues.min > info.min)
 					this.oldValues.min = info.min;
@@ -320,9 +331,15 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 					this.values.max = info.max;
 				this.values.uom = info.uom;
 			}
-			if (this.mode == 'probabilities') {
-				this.switchToMode('intervals');
-			}
+		}
+		
+		if (info.containsProbabilities) {
+			this.switchToMode('probabilities');
+		} else if (this.values.mode == 'probabilities') {
+			this.switchToMode('intervals');
+		} else {
+			this.scale.update(this.values);
+			this.callback.updateValues(this.values);
 		}
 		this.callback.ready();
 	}

@@ -19,7 +19,6 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 OpenLayers.Color = {
 	RGB: OpenLayers.Class({
 		CLASS_NAME: 'OpenLayers.Color.RGB',
@@ -135,7 +134,7 @@ OpenLayers.SOS.ScaleBar = OpenLayers.Class({
 		if (v.ints) this.ints = parseInt(v.ints);
 		if (v.max != undefined && v.max != null) this.max = parseFloat(v.max);
 		if (v.min != undefined && v.min != null) this.min = parseFloat(v.min);
-		if (v.uom) this.uom = v.uom;
+		if (v.uom) this.uom = v.uom; else this.uom = null;
 		if (v.propertyName) this.propertyName = v.propertyName;
 		this.writeLegend();
 	},

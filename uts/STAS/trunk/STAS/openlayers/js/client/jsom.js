@@ -19,15 +19,6 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-/* 
- * Contains portions of OpenLayers Map Viewer Library (http:/openlayers.org):
- * 
- * Copyright 2005-2010 OpenLayers Contributors, released under the Clear BSD
- * license. Please see http://svn.openlayers.org/trunk/openlayers/license.txt
- * for the full text of the license.
- *
- */
- 
 var print = true;
 OpenLayers.SOS = OpenLayers.SOS || {};
 OpenLayers.SOS.Format = OpenLayers.SOS.Format || {};
@@ -205,7 +196,6 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 							value = DistributionFactory.build(j);
 						}
 					} catch (e) {
-						console.log(j);
 						throw "Unsupported uncertainty type" + j;
 					}
 					if (value == null) throw "Unsupported uncertainty type" + j;
