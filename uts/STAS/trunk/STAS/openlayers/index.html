@@ -46,6 +46,21 @@
 			$(function() { 
 				init(); 
 				checkForRequest(); 
+			
+			
+				$(".dataLayerDiv br").remove()
+				var l = $(".dataLayerDiv *").length;
+				for (var i = 0; i <= l; i += 3) {
+					console.log($(".dataLayerDiv *").slice(i,i+2));
+					$(".dataLayerDiv *")
+						.slice(i,i+2)
+						.wrapAll('<li class="draggable ui-state-default"/>');
+				}
+				$(".draggable").wrap('<ul class="sortable" style="list-style:none"/>')
+				$(".sortable").sortable();
+				
+				
+				
 			});
 		</script>
 		<title>OpenLayers SOS Client</title>

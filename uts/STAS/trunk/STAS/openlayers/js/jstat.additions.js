@@ -23,9 +23,9 @@ var SingleValuePseudoDistribution = ContinuousDistribution.extend({
     },
     _pdf: function(x, give_log) {/* TODO */},
     _cdf: function(x, lower_tail, log_p) {/* TODO */},
-    getMean: function() {return this._mean},
-    getSigma: function() {return this._sigma},
-    getVariance: function() {return 0.0}
+    getMean: function() {return this._mean;},
+    getSigma: function() {return this._sigma;},
+    getVariance: function() {return 0.0;}
 });
 
 
@@ -45,5 +45,4 @@ DistributionFactory.build = function(json) {
 	} else {
 		return DistributionFactory._build(json);
 	}
-	
-}
+};

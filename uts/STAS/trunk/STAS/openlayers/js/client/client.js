@@ -113,7 +113,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 		var title = (probabilityConstraint) ? probabilityConstraint : 'SOS Request ' + this.id;
 		this.layer = new OpenLayers.Layer.Vector(title, {
 			styleMap: new OpenLayers.StyleMap({
-				default: this.ctrl.getScale().getStyle(),
+				"default": this.ctrl.getScale().getStyle(),
 				select: { 'pointRadius': 10 }
 			})
 		});
@@ -144,7 +144,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			time: {
 				min: tempMin,
 				max: tempMax,
-				step: isNaN(step) ? 0 : step
+				step: (isNaN(step) ? 0 : step)
 			}
 		});
 		this.updateForNewTime();
@@ -160,7 +160,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 			}
 		
 			this.layer.styleMap = new OpenLayers.StyleMap({
-				default: this.ctrl.getScale().getStyle(),
+				"default": this.ctrl.getScale().getStyle(),
 				select: { 'pointRadius': 10 }
 			});
 			this.layer.redraw();
@@ -318,7 +318,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 						var x  = plot.getPlotOffset().left 
 							   + plot.getAxes().xaxis.p2c(data[j][0]);
 						var ym = plot.getPlotOffset().top 
-							   + plot.getAxes().yaxis.p2c(data[j][1])
+							   + plot.getAxes().yaxis.p2c(data[j][1]);
 						var y0 = plot.getPlotOffset().top 
 							   + plot.getAxes().yaxis.p2c(u[j][1]);
 						var y1 = plot.getPlotOffset().top 
@@ -482,7 +482,7 @@ OpenLayers.SOS.Client = OpenLayers.Class({
 				}
 				var title = new Date(v[0][0]).toGMTString();
 				if (v[0].length == 2) {
-					 title += ' - ' + new Date(v[0][1]).toGMTString()
+					 title += ' - ' + new Date(v[0][1]).toGMTString();
 				}
 				if ($('#' + svId).length) {
 					$('#' + svId).html('');

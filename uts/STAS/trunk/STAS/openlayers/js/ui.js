@@ -25,19 +25,24 @@ const PROJMERC = new OpenLayers.Projection('EPSG:900913');
 
 function error(e) {
 	$('<div><p class="failMessage">' + e + '</p></div>').dialog({
-			title: 'Failure', width: 600, 
-			buttons: {
-				'Ok': function () { $(this).dialog('close'); }
-			},  
-			close: function (e,ui) {},
-			open: function (e,ui) {	
-				$(this).parent().children().children('.ui-dialog-titlebar-close').hide(); 
-			}
+		title: 'Failure', width: 600, 
+		buttons: {
+			'Ok': function () { $(this).dialog('close'); }
+		},  
+		close: function (e,ui) {},
+		open: function (e,ui) {	
+			$(this).parent().children().children('.ui-dialog-titlebar-close').hide(); 
+		}
 	});
 }
 
 
-var now = new Date(), editor, map, mapControls, bounds, ctrl;
+var now = new Date();
+var editor;
+var map;
+var mapControls;
+var bounds; 
+var ctrl;
 
 function init() {
 	/* load default url & request and init editor */
@@ -241,8 +246,8 @@ function init() {
 			ints: intervals.init, 
 			min: threshold.init[0],	
 			max: threshold.init[1], 
-			width: 800, 
-			height: 27, 
+			height: 27,
+			width: 800 
 		}), 
 		map, now, {
 			fail: error, 
@@ -258,7 +263,7 @@ function init() {
 				$('#thresholdSlider').slider('option', {
 					min: values.min - b,
 					max: values.max + b,
-					values: mm,
+					values: mm
 				});
 			},
 
@@ -294,4 +299,4 @@ function init() {
 	updateThresholdLabel(threshold.init);
 	updateIntervalLabel(intervals.init);
 	updateTimeLabel(now);
-}
+}	

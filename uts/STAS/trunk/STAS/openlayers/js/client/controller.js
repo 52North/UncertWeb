@@ -35,7 +35,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		updateValues:	function () {},
 		probabilityMode:function () {},
 		exceedanceMode: function () {},
-		standardMode:	function () {},
+		standardMode:	function () {}
 	},
 	
 	clients: [],
@@ -147,7 +147,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		if (max != undefined)
 			this.values.max = max;
 		if (ints)
-			this.values.ints = ints
+			this.values.ints = ints;
 		this.scale.update(this.values);
 		$.each(this.clients, function (i, c){ 
 			c.updateForNewScale(); 

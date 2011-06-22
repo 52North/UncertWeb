@@ -89,7 +89,7 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 			ogc: "http://www.opengis.net/ogc",
 			om: "http://www.opengis.net/om/1.0",
 			xlink: "http://www.w3.org/1999/xlink",
-			xsi: "http://www.w3.org/2001/XMLSchema-instance",
+			xsi: "http://www.w3.org/2001/XMLSchema-instance"
 		},
 		schemaLocation: "http://www.opengis.net/sos/1.0 http://schemas.opengis.net/sos/1.0.0/sosAll.xsd",
 		defaultPrefix: "sos",
@@ -165,7 +165,7 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 					samplingTime: obs[i].samplingTime,
 					observedProperty: obs[i].observedProperty,
 					procedure: obs[i].procedure
-				}
+				};
 				mapping[foi.attributes.id].values.push(attr);
 			}
 			
@@ -271,7 +271,7 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 						}
 					}
 					function isValid(value){
-						return (!value || value === 0)
+						return (!value || value === 0);
 					}
 					if (isValid(timeField) && isValid(foiField) 
 							&& isValid(phenField)) {
@@ -398,13 +398,13 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 						}
 						OpenLayers.Format.GML.v3.prototype.readers.gml.Polygon
 						.apply(this, [node, obj]);
-					},
+					}
 				}, OpenLayers.Format.GML.v3.prototype.readers.gml),
 			"om": {
 				"ObservationCollection": function (node, obj) {
 					obj.id = this.getAttributeNS(node, this.namespaces.gml, "id");
 					obj.measurements = [];
-					obj.observations = []
+					obj.observations = [];
 					this.readChildNodes(node, obj);
 				},
 				"member": function (node, observationCollection) {

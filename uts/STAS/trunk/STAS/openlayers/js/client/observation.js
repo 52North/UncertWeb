@@ -28,7 +28,7 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 		time: null,
 
 		initialize: function(id, geometry, srid, procedure, observedProperty, uom, values) {
-			var test = function(obj, name) { 
+			function test(obj, name) { 
 				if (!obj) throw name + " is obligatory!";
 			}
 			test(id, "ID");

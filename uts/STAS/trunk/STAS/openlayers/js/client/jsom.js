@@ -31,7 +31,7 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 			var j = (typeof(o) === "string") ? OpenLayers.Format.JSON.prototype.read(o) : o;
 			var result;
 			if (j.OM_MeasurementCollection) {
-				result = this.parsers.collection(j.OM_MeasurementCollection, "OM_Measurement")
+				result = this.parsers.collection(j.OM_MeasurementCollection, "OM_Measurement");
 			} else if (j.OM_DiscreteNumericObservationCollection) {
 				result = this.parsers.collection(j.OM_DiscreteNumericObservationCollection, "OM_Measurement");
 			} else if (j.OM_UncertaintyObservationCollection) {
@@ -184,7 +184,7 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 								j.LogNormalDistribution.location 
 									= j.LogNormalDistribution.mean;
 								j.LogNormalDistribution.scale
-									= j.LogNormalDistribution.variance
+									= j.LogNormalDistribution.variance;
 								for (var i = 0; i < j.LogNormalDistribution.scale.length; i++) {
 									j.LogNormalDistribution.scale[i] 
 										= Math.sqrt(parseFloat(j.LogNormalDistribution.scale[i]));
@@ -207,7 +207,7 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 				case "OM_UncertaintyObservation":
 					if (json.result.uom)
 						uom = json.result.uom;
-					value = parseUncertainty(uom, json.result.value)
+					value = parseUncertainty(uom, json.result.value);
 					break;
 				case "OM_Measurement":
 					if (json.result.uom)
@@ -230,7 +230,7 @@ OpenLayers.SOS.Format.JSOM = OpenLayers.Class(OpenLayers.Format.JSON, {
 				if (!value)
 					throw "No value in type " + type;
 				return {value: value, uom: uom};
-			},
+			}
 		}
 });
 /* vim: set ts=4 sts=4 sw=4 noet ft=javascript fenc=utf-8 */

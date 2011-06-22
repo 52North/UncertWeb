@@ -78,7 +78,7 @@ OpenLayers.Color = {
 			return new OpenLayers.Color.RGB(r * 255, g * 255, b * 255);
 		}
 	})
-}
+};
 
 OpenLayers.SOS = OpenLayers.SOS || {};
 OpenLayers.SOS.ScaleBar = OpenLayers.Class({
@@ -100,7 +100,7 @@ OpenLayers.SOS.ScaleBar = OpenLayers.Class({
 		'stroke': true,
 		'strokeWidth': 1, 
 		'strokeOpacity': 1,
-		'strokeDashstyle': 'solid',
+		'strokeDashstyle': 'solid'
 	}, OpenLayers.Feature.Vector.style['default']),
 	setLegendHtml: function(html){},
 	width: null, 
@@ -158,7 +158,7 @@ OpenLayers.SOS.ScaleBar = OpenLayers.Class({
 	writeLegend: function () {
 		var html = '';
 		var width = Math.floor(this.width/this.ints);
-		var valueWidth = (this.max - this.min)/(this.ints - 1)
+		var valueWidth = (this.max - this.min)/(this.ints - 1);
 		for (var i = 0; i < (this.ints - 1); i++) {
 			var value = this.min + i * valueWidth;
 			html += '<span style="width:' + width + 'px;'
