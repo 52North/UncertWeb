@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.uncertweb</groupId>
 		<artifactId>uncertweb-parent</artifactId>
-		<version>0.1</version>
+		<version>1.0-SNAPSHOT</version>
 		<relativePath>../uncertweb-parent/pom.xml</relativePath>
 	</parent>
 
