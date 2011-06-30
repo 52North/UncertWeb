@@ -13,7 +13,7 @@
 		This is the parent POM for the UncertWeb projects Maven
 		artifacts, defining common configurations and settings, to be
 		inherited by individual children projects.
-    </description>
+	</description>
 	<inceptionYear>2010</inceptionYear>
 
 	<licenses>
@@ -23,12 +23,46 @@
 		</license>
 	</licenses>
 
+	<properties>
+		<slf4j-version>1.6.1</slf4j-version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j-version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<build>
 		<plugins>
+			<!-- Compiler set to 1.6 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.5</version>
+				<version>2.6</version>
 				<dependencies>
 					<dependency>
 						<groupId>org.apache.maven.wagon</groupId>
@@ -39,9 +73,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles>
-	</profiles>
 
 	<repositories>
 		<repository>
@@ -59,7 +90,7 @@
 			<url>scp://giv-uw.uni-muenster.de:/var/www/m2/repo</url>
 		</repository>
 	</distributionManagement>
-	
+
 	<scm>
 		<connection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/uncertweb-parent/trunk</connection>
 	</scm>
