@@ -35,5 +35,6 @@ public class OMConstants {
 	/**namespace prefix for GML 3.2*/
 	public static final String NS_GML_PREFIX = "gml";
 	
+	public static final String OM_SCHEMA_LOCATION = "http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd";
 	
 }
