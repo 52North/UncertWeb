@@ -1,24 +1,36 @@
 package org.uncertweb.api.om.converter;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.xmlbeans.XmlException;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.uncertml.distribution.continuous.GaussianDistribution;
-import org.uncertml.distribution.multivariate.MultivariateGaussianDistribution;
+import org.uncertml.distribution.continuous.LogNormalDistribution;
+import org.uncertml.distribution.continuous.NormalDistribution;
+import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
+import org.uncertml.exception.UncertaintyEncoderException;
+import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.statistic.CovarianceMatrix;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.converter.ShapeFileConverterProperties.FILETYPE;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.Measurement;
@@ -29,6 +41,8 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFReader;
@@ -56,12 +70,152 @@ public class ShapeFileConverter {
 	/**
 	 * constructor
 	 * 
-	 * @throws Exception
+	 * @throws IOException
+	 * 				if initialisation of properties from shp2om.properties file
+	 *             failed 
+	 * @throws FileNotFoundException 
 	 *             if initialisation of properties from shp2om.properties file
 	 *             failed
 	 */
-	public ShapeFileConverter() throws Exception {
+	public ShapeFileConverter() throws FileNotFoundException, IOException {
 		props = new ShapeFileConverterProperties();
+	}
+	
+	
+	public boolean run() throws MalformedURLException, URISyntaxException, IOException{
+		FILETYPE fileType = props.getFileType();
+		if (fileType== FILETYPE.valueOf("csv")){
+			convertSHPnCSV2OM(props.getOmPropsFilePath(), props.getShpFilePath(), props.getOutFilePath());
+		}
+		else if (fileType== FILETYPE.valueOf("dbf")){
+			convertSHPnDBF2OM(props.getOmPropsFilePath(), props.getShpFilePath(), props.getOutFilePath());
+		}
+		return true;
+	}
+	
+	/**
+	 * method for converting a shapefile containing the features with geometries
+	 * and the
+	 * 
+	 * @param shpFilePat
+	 * 
+	 * @param dbfFilePath
+	 * 
+	 * @param outputFilePath
+	 * @throws URISyntaxException 
+	 * @throws IOException 
+	 * @throws MalformedURLException 
+	 * 
+	 */
+	public void convertSHPnCSV2OM(String csvFilePath, String shpFilePath,
+			String outputFilePath) throws URISyntaxException, MalformedURLException, IOException  {
+		counter=0;
+		IObservationCollection result = new UncertaintyObservationCollection();
+
+
+		FeatureCollection<SimpleFeatureType, SimpleFeature> foiCollection = getFCollectionFromShpFile(new File(shpFilePath).toURL(), props.getFeatClassName());
+		Map<String,SpatialSamplingFeature> sf4featureID=new HashMap<String,SpatialSamplingFeature>(foiCollection.size());
+		FeatureIterator<SimpleFeature> features = foiCollection.features();
+		
+		while (features.hasNext()) {
+			SimpleFeature feature = features.next();
+
+			// get GML ID
+			String id = feature.getID();
+			Object geom = feature.getDefaultGeometry();
+			SpatialSamplingFeature sf = null;
+			// create samplingFeature
+			if (geom instanceof Geometry) {
+				sf = createSamplingFeature(id, (Geometry) geom);
+			}
+			sf4featureID.put(id, sf);
+			//TODO only encode feature once and then use xlink:href to reference the feature
+		}
+
+		
+		//TODO currently only one procedure per 
+		String procID = props.getProcPrefix()+props.getProcId();
+		String obsProp = props.getObsPropsPrefix()+props.getObsProps().get(0);
+		List<String> uncertaintyTypes = props.getUncertaintyType();
+		
+		// read CSV File
+		CSVReader reader = new CSVReader(new FileReader(props.getOmPropsFilePath()));
+		String[] nextLine;
+		Map<String,Integer> pos4ColumnName = null; 
+	    while ((nextLine = reader.readNext()) != null) {
+	    	
+	    	//if first row, initialize mapping between column names and column position
+	    	if (pos4ColumnName==null){
+	    		pos4ColumnName = new HashMap<String, Integer>(nextLine.length);
+	    		for (int i=0;i<nextLine.length;i++){
+	    			pos4ColumnName.put(nextLine[i], new Integer(i));
+	    		}
+	    	}
+	    	
+	    	else {
+		    	//parse featureID
+		    	String featureID = props.getFeatClassName()+"."+nextLine[pos4ColumnName.get("fid")];
+		    	SpatialSamplingFeature ssf = sf4featureID.get(featureID);
+		    	
+		    	//retrieve phenomenonTime
+	    	  	String phenTime = nextLine[pos4ColumnName.get(props.getPhenTimeColName())].trim();
+	    	  	TimeObject to = ShapeFileConverterUtil.parsePhenTime(phenTime);
+	    	  	
+	    	  
+	    	  	
+	    	  	//check if MultivariateNormalDistribution parameters are set, then parse uncertainty and add observations
+	    	  	if (uncertaintyTypes.contains("MultivariateNormalDistribution")&&props.getMultivarNormalMeanColName()!=null&&props.getMultivarNormalCovarianceColName()!=null){
+	    	  		String means = nextLine[pos4ColumnName.get(props.getMultivarNormalMeanColName())].trim();
+	    	  		String covariances = nextLine[pos4ColumnName.get(props.getMultivarNormalCovarianceColName())].trim();
+	    	  		double[] meanDoubles = createDoubles(means);
+	    	  		CovarianceMatrix cm = createCovarianceMatrix(meanDoubles.length,covariances);
+	    	  		MultivariateNormalDistribution mgd = new MultivariateNormalDistribution(meanDoubles,cm);
+	    	  		UncertaintyResult ur = new UncertaintyResult(mgd);
+	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
+	    	  		result.addObservation(obs);
+	    	  	}
+	    	  	
+	    	  	//check if NormalDistribution parameters are set, then also create uncertainty type and create new observation
+	    	  	if (uncertaintyTypes.contains("NormalDistribution")&&props.getNormalMeanColName()!=null&&props.getNormalVarianceColName()!=null){
+	    	  		Double mean = new Double(nextLine[pos4ColumnName.get(props.getNormalMeanColName())]);
+	    	  		Double var = new Double(nextLine[pos4ColumnName.get(props.getNormalVarianceColName())]);
+	    	  		NormalDistribution gd = new NormalDistribution(mean.doubleValue(),var.doubleValue());
+	    	  		UncertaintyResult ur = new UncertaintyResult(gd);
+	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
+	    	  		result.addObservation(obs);
+	    	  	}
+	    	  //check if NormalDistribution parameters are set, then also create uncertainty type and create new observation
+	    	  if (uncertaintyTypes.contains("LogNormalDistribution")&&props.getLogNormalMeanColName()!=null&&props.getLogNormalVarianceColName()!=null){
+	    	  		Double mean = new Double(nextLine[pos4ColumnName.get(props.getLogNormalMeanColName())]);
+	    	  		Double var = new Double(nextLine[pos4ColumnName.get(props.getLogNormalVarianceColName())]);
+	    	  		LogNormalDistribution gd = new LogNormalDistribution(mean.doubleValue(),var.doubleValue());
+	    	  		UncertaintyResult ur = new UncertaintyResult(gd);
+	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
+	    	  		result.addObservation(obs);
+	    	  }
+	    	}
+	    }
+
+	    XBObservationEncoder encoder = new XBObservationEncoder();
+		try {
+			System.out.println(encoder.encodeObservationCollection(result));
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XmlException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedUncertaintyTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UncertaintyEncoderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+
+		// TODO write to file
+
 	}
 
 	/**
@@ -73,11 +227,13 @@ public class ShapeFileConverter {
 	 * @param dbfFilePath
 	 * 
 	 * @param outputFilePath
+	 * @throws IOException 
+	 * @throws URISyntaxException 
 	 * @throws Exception
 	 * 
 	 */
-	public void convertSHPnDBF2OM(String shpFilePath, String dbfFilePath,
-			String outputFilePath) throws Exception {
+	public void convertSHPnDBF2OM(String dbfFilePath, String shpFilePath,
+			String outputFilePath) throws IOException, URISyntaxException {
 		counter=0;
 
 		IObservationCollection result = new UncertaintyObservationCollection();
@@ -89,7 +245,7 @@ public class ShapeFileConverter {
 					shpFilePath));
 			source = store.getFeatureSource(props.getFeatClassName());
 		} catch (Exception e) {
-			throw new Exception(
+			throw new IOException(
 					"Error while extracting feature class from shapefile: "
 							+ e.getMessage());
 		}
@@ -135,7 +291,7 @@ public class ShapeFileConverter {
 		Object[] rowObjects;
 		String procID = props.getProcPrefix()+props.getProcId();
 		String obsProp = props.getObsPropsPrefix()+props.getObsProps().get(0);
-		String uncertaintyType = props.getUncertaintyType();
+		List<String> uncertaintyType = props.getUncertaintyType();
 
 	      while( (rowObjects = reader.nextRecord()) != null) {
 	    	  	//retrieve featureID of row
@@ -146,23 +302,23 @@ public class ShapeFileConverter {
 	    	  	String phenTime = ((String) rowObjects[number4fieldName.get(props.getPhenTimeColName())]).trim();
 	    	  	TimeObject to = ShapeFileConverterUtil.parsePhenTime(phenTime);
 	    	  	
-	    	  	//check if multivariate Gaussian parameters are set, then parse uncertainty and add observations
-	    	  	if (props.getMultivarGaussianMeanColName()!=null&&props.getMultivarGaussianCovarianceColName()!=null){
-	    	  		String means = ((String) rowObjects[number4fieldName.get(props.getMultivarGaussianMeanColName())]).trim();
-	    	  		String covariances = ((String) rowObjects[number4fieldName.get(props.getMultivarGaussianCovarianceColName())]).trim();
+	    	  	//check if MultivariateNormalDistribution parameters are set, then parse uncertainty and add observations
+	    	  	if (uncertaintyType.contains("MultivariateNormalDistribution")&&props.getMultivarNormalMeanColName()!=null&&props.getMultivarNormalCovarianceColName()!=null){
+	    	  		String means = ((String) rowObjects[number4fieldName.get(props.getMultivarNormalMeanColName())]).trim();
+	    	  		String covariances = ((String) rowObjects[number4fieldName.get(props.getMultivarNormalCovarianceColName())]).trim();
 	    	  		double[] meanDoubles = createDoubles(means);
 	    	  		CovarianceMatrix cm = createCovarianceMatrix(meanDoubles.length,covariances);
-	    	  		MultivariateGaussianDistribution mgd = new MultivariateGaussianDistribution(meanDoubles,cm);
+	    	  		MultivariateNormalDistribution mgd = new MultivariateNormalDistribution(meanDoubles,cm);
 	    	  		UncertaintyResult ur = new UncertaintyResult(mgd);
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
 	    	  	
-	    	  	//check if parameters of Gaussian Distribution are set, then also create uncertainty type and create new observation
-	    	  	if (props.getGaussianMeanColName()!=null&&props.getGaussianVarianceColName()!=null){
-	    	  		Double mean = ((Double) rowObjects[number4fieldName.get(props.getGaussianMeanColName())]);
-	    	  		Double var = ((Double) rowObjects[number4fieldName.get(props.getGaussianVarianceColName())]);
-	    	  		GaussianDistribution gd = new GaussianDistribution(mean.doubleValue(),var.doubleValue());
+	    	  	//check if NormalDistribution parameters  are set, then also create uncertainty type and create new observation
+	    	  	if (uncertaintyType.contains("NormalDistribution")&&props.getNormalMeanColName()!=null&&props.getNormalVarianceColName()!=null){
+	    	  		Double mean = ((Double) rowObjects[number4fieldName.get(props.getNormalMeanColName())]);
+	    	  		Double var = ((Double) rowObjects[number4fieldName.get(props.getNormalVarianceColName())]);
+	    	  		NormalDistribution gd = new NormalDistribution(mean.doubleValue(),var.doubleValue());
 	    	  		UncertaintyResult ur = new UncertaintyResult(gd);
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
@@ -171,7 +327,21 @@ public class ShapeFileConverter {
 	    	}
 
 	      XBObservationEncoder encoder = new XBObservationEncoder();
-		System.out.println(encoder.encodeObservationCollection(result));
+		try {
+			System.out.println(encoder.encodeObservationCollection(result));
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XmlException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedUncertaintyTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UncertaintyEncoderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	
 
 		// TODO write to file
@@ -188,12 +358,12 @@ public class ShapeFileConverter {
 		return meanDoubles;
 	}
 
-	private CovarianceMatrix createCovarianceMatrix(int dim, String covariances) throws Exception {
+	private CovarianceMatrix createCovarianceMatrix(int dim, String covariances) throws IOException {
 		covariances = covariances.trim();
 		String[] elements = covariances.split(" ");
 		int elementsCount = dim*dim;
 		if (elements.length!=elementsCount){
-			throw new Exception("Covariance matrix has to contain nxn elements for n means!!");
+			throw new IOException("Covariance matrix has to contain nxn elements for n means!!");
 		}
 		double[] elementDoubles = new double[elements.length];
 		for (int i = 0; i<elements.length;i++){
@@ -293,11 +463,11 @@ public class ShapeFileConverter {
 	 * @param geom
 	 *            JTS geometry of the sampling feature
 	 * @return POJO representation of the SamplingFeature
-	 * @throws Exception
+	 * @throws URISyntaxException 
 	 *             if parsing fails
 	 */
 	private SpatialSamplingFeature createSamplingFeature(String id,
-			Geometry geom) throws Exception {
+			Geometry geom) throws URISyntaxException {
 		SpatialSamplingFeature sf = null;
 		int srid = geom.getSRID();
 		if (geom instanceof MultiLineString) {
@@ -307,6 +477,7 @@ public class ShapeFileConverter {
 			for (int i = 0; i < size; i++) {
 				lsArray[i] = new GeometryFactory().createLineString(((LineString) mls
 						.getGeometryN(i)).getCoordinateSequence());
+				lsArray[i].setSRID(srid);
 				multiGeomCounter++;
 			}
 			MultiLineString gmlLineString =  new GeometryFactory().createMultiLineString(lsArray);
@@ -315,6 +486,25 @@ public class ShapeFileConverter {
 		}
 		// TODO add further geometry types
 		return sf;
+	}
+	
+	
+	/**
+	 * helper method for reading featureCollection for passed feature type from SHP file 
+	 * 
+	 * @param filePath
+	 * 			path of SHP file
+	 * @param featureClassName
+	 * 			name of feature class
+	 * @return Returns feature collection
+	 * @throws IOException
+	 * 			if reading feature collection from SHP file fails
+	 */
+	private FeatureCollection<SimpleFeatureType,SimpleFeature> getFCollectionFromShpFile(URL filePath, String featureClassName) throws IOException{
+		FeatureSource<SimpleFeatureType, SimpleFeature> source = null;
+		ShapefileDataStore store = new ShapefileDataStore(filePath);
+		source = store.getFeatureSource(props.getFeatClassName());
+		return source.getFeatures();
 	}
 
 }
