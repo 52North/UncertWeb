@@ -1,0 +1,71 @@
+##############################################################
+#### The shp2om converter can be used to parse a Shapefile and to map the 
+#### attributes to O&M 2.0 observations as defined in the UncertWeb Profiles
+#########
+#Steps:
+#
+# 1. Create one shapefile per timestamp. The variables needed for the O&M are:
+#	procedureID = SensorID; you can either specify one here in the PROCID property whcih is used for all observations. If you have varying procs, please specify a columnname in PROC_COL		 
+#	featureID = FID is used together with shape to create the feature of interest	
+#	observedProperties = have to be the columnnames of the variables specified in the OBSPROPS property; from these columns the observations are created for each feature
+#	phenomenonTime = has to be specified in the PHENTIME property; the time when the observations applies
+
+ 
+#####indicates the name of the feature class which should be used
+#FEATCLASSNAME=lqMS
+FEATCLASSNAME=Traffic_Muenster
+
+#####indicates the geometry type in O&M
+GEOMTYPE=LineString
+
+###indicates the sensor ID(s)
+#specify PROCID, if you have ONE sensor for all features
+PROCID=STOLZTYP
+
+#specify column name containing the sensor IDs for PROCOL, if you have varying sensors for different features
+#TODO currently not implemented
+PROCCOL=
+
+##### specifies the column names of the variables; has to be comma-seperated list
+OBSPROPS=PM10_total,N,13,11
+
+####specifies the UOM of the observed property in case of numeric values
+UOM=ppm
+
+#####specifies the obspropsType
+#currently, only one type per shapefile is possible
+#can be either: double,integer,boolean, reference or text
+OBSPROPSTYPE=double
+
+#####specifies the columnname containing the phenomenon time strings encoded in ISO 8601; can be either one time string or two comma-seperated time #strings in case of time periods
+PHENTIMECOL=PHENOMENON
+
+#####specifies the columnname containing the result time strings encoded in ISO 8601; one timestring per row.
+RESULTTIMECOL=PHENOMENON
+
+
+######specified the uncertainty type; has to be named according to the ElementName of UncertML 2 (e.g. GaussianDistribution); the uncertaintyColName have to be provided below accordingly
+UNTYPE=MultivariateGaussianDistribution
+
+#####
+#set if UNTYPE is GaussianDistribution
+#specifies the columnname of the gaussian mean
+UNTYPE.GAUSSIANDISTRIBUTION.MEAN=PM10_DAY_M
+#specifies the columnname of the gaussian mean
+UNTYPE.GAUSSIANDISTRIBUTION.VARIANCE=PM10_DAY_V
+
+######
+#set if UNTYPE is MultivariantGaussianDistribution
+#specifies the columnname of the gaussian means
+UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.MEANS=PM10_HOUR_
+#specifies the columnname of the gaussian covariances
+UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.COVARIANCE=PM10_HOUR2
+
+
+##### specifies the phenomenon time; can be either one ISO 8601 TimeString (YYYY-mm-DD'T'HH:mm:SS.mmmZ) representing a
+##### timestamp or two comma-seperated ISO-Strings representing a TimePeriod 
+PHENTIME=2010-01-22T14:55:02.000+02
+
+PROCPREFIX=http://www.uncertweb.org/sensors/
+PHENPREFIX=http://www.uncertweb.org/phenomenon/
+FOIIDPREFIX=http://www.uncertweb.org/features/
