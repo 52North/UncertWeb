@@ -1,9 +1,8 @@
 package org.uncertweb.api.om.converter;
 
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
+import java.io.IOException;
+
 import org.uncertweb.api.om.TimeObject;
-import org.uncertweb.api.om.io.XBObservationParser;
 
 /**
  * Util class which contains some helper methods which are used in several classes
@@ -21,10 +20,10 @@ public class ShapeFileConverterUtil {
 	 * 			timestring which can contain either just one single ISO 8601 String or two comma-seperated time strings
 	 * @return 
 	 * 			represents the timeobject which has been parsed
-	 * @throws Exception
+	 * @throws IOException 
 	 * 			if timestring contains more than two time strings or if phenTime is empty string
 	 */
-	public static  TimeObject parsePhenTime(String phenTime) throws Exception{
+	public static  TimeObject parsePhenTime(String phenTime) throws IOException {
 		if (phenTime!=null&&!phenTime.equals("")){
 			TimeObject to = null;
 			String[] times = phenTime.split(",");
@@ -37,11 +36,11 @@ public class ShapeFileConverterUtil {
 				return to;
 			}
 			else {
-				throw new Exception("Phenomenon Time can only be time instant or time period!");
+				throw new IOException("Phenomenon Time can only be time instant or time period!");
 			}
 		}
 		else {
-			throw new Exception("PHENTIME property needs to be specified in properties file!!");
+			throw new IOException("PHENTIME property needs to be specified in properties file!!");
 		}
 		
 	}
