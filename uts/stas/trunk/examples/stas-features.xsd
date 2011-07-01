@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:stas="http://giv-uw.uni-muenster.de:8080/geoserver/stas" elementFormDefault="qualified" targetNamespace="http://giv-uw.uni-muenster.de:8080/geoserver/stas">
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://giv-uw.uni-muenster.de:8080/geoserver/schemas/gml/3.1.1/base/gml.xsd"/>
+  <xsd:complexType name="boundaryType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="0" name="the_geom" nillable="true" type="gml:MultiSurfacePropertyType"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="FIPS_ADMIN" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="GMI_ADMIN" nillable="true" type="xsd:string"/>
+
+          <xsd:element maxOccurs="1" minOccurs="0" name="ADMIN_NAME" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="FIPS_CNTRY" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="GMI_CNTRY" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="CNTRY_NAME" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="REGION" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="CONTINENT" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="POP_ADMIN" nillable="true" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="SQKM_ADMIN" nillable="true" type="xsd:double"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="SQMI_ADMIN" nillable="true" type="xsd:double"/>
+
+          <xsd:element maxOccurs="1" minOccurs="0" name="TYPE_ENG" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="TYPE_LOC" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="COLOR_MAP" nillable="true" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="boundary" substitutionGroup="gml:_Feature" type="stas:boundaryType"/>
+</xsd:schema>
+
