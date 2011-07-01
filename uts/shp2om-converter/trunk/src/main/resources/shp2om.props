@@ -10,6 +10,18 @@
 #	observedProperties = have to be the columnnames of the variables specified in the OBSPROPS property; from these columns the observations are created for each feature
 #	phenomenonTime = has to be specified in the PHENTIME property; the time when the observations applies
 
+
+#####absolute path to shp file containing the geometries of the features
+SHPPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/Traffic_Muenster.shp
+
+#####TYPE of file used for uncertainties; can be either csv or dbf file
+FILETYPE=csv
+
+#####absolute path to csv or dbf file containing the O&M properties and additional optional uncertainties for the features contained in the shapefile
+OMFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/street.csv
+
+#####output file path
+OUTFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/out.xml
  
 #####indicates the name of the feature class which should be used
 #FEATCLASSNAME=lqMS
@@ -38,28 +50,36 @@ UOM=ppm
 OBSPROPSTYPE=double
 
 #####specifies the columnname containing the phenomenon time strings encoded in ISO 8601; can be either one time string or two comma-seperated time #strings in case of time periods
-PHENTIMECOL=PHENOMENON
+PHENTIMECOL=time
 
 #####specifies the columnname containing the result time strings encoded in ISO 8601; one timestring per row.
-RESULTTIMECOL=PHENOMENON
+RESULTTIMECOL=time
 
 
-######specified the uncertainty type; has to be named according to the ElementName of UncertML 2 (e.g. GaussianDistribution); the uncertaintyColName have to be provided below accordingly
-UNTYPE=MultivariateGaussianDistribution
+######specified the uncertainty type; has to be named according to the ElementName of UncertML 2 (e.g. GaussianDistribution); the uncertaintyColName have # to be provided below accordingly
+# currently supported types are GaussianDistribution, MultivariateGaussianDistribution, LogNormalDistribution
+UNTYPES=MultivariateNormalDistribution,LogNormalDistribution
 
 #####
 #set if UNTYPE is GaussianDistribution
 #specifies the columnname of the gaussian mean
-UNTYPE.GAUSSIANDISTRIBUTION.MEAN=PM10_DAY_M
+UNTYPE.NORMALDISTRIBUTION.MEAN=PM10_DAY_M
 #specifies the columnname of the gaussian mean
-UNTYPE.GAUSSIANDISTRIBUTION.VARIANCE=PM10_DAY_V
+UNTYPE.NORMALDISTRIBUTION.VARIANCE=PM10_DAY_V
 
 ######
 #set if UNTYPE is MultivariantGaussianDistribution
 #specifies the columnname of the gaussian means
-UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.MEANS=PM10_HOUR_
+UNTYPE.MULTIVARIATENORMALDISTRIBUTION.MEANS=hourly_mean
 #specifies the columnname of the gaussian covariances
-UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.COVARIANCE=PM10_HOUR2
+UNTYPE.MULTIVARIATENORMALDISTRIBUTION.COVARIANCE=hourly_cov
+
+#####
+#set if UNTYPE is LogNormalDistribution
+#specifies the columnname of the gaussian mean
+UNTYPE.LOGNORMALDISTRIBUTION.MEAN=day_lmean
+#specifies the columnname of the gaussian mean
+UNTYPE.LOGNORMALDISTRIBUTION.VARIANCE=day_lsd
 
 
 ##### specifies the phenomenon time; can be either one ISO 8601 TimeString (YYYY-mm-DD'T'HH:mm:SS.mmmZ) representing a
