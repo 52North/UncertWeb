@@ -52,6 +52,11 @@
 			<version>1.2.15</version>
 			<scope>runtime</scope>
 		</dependency>
+    	<dependency>
+      		<groupId>org.uncertweb</groupId>
+      		<artifactId>om-api</artifactId>
+      		<version>0.0.4-SNAPSHOT</version>
+    	</dependency>
 
 		<!-- WPS dependencies -->
 
