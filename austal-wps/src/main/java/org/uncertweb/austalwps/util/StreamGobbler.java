@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import org.n52.wps.server.observerpattern.ISubject;
+
 /**
  * @author Michael C. Daconta, JavaWorld.com, 12/29/00
  * http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html?page=4
@@ -16,8 +18,9 @@ public class StreamGobbler extends Thread{
 	InputStream is;
     String type;
     OutputStream os;
+    ISubject subject;
     
-    public StreamGobbler(InputStream is, String type)
+	public StreamGobbler(InputStream is, String type)
     {
         this(is, type, null);
     }
@@ -43,6 +46,9 @@ public class StreamGobbler extends Thread{
             {
                 if (pw != null)
                     pw.println(line);
+                if(subject != null){
+                	subject.update(line);
+                }
                 System.out.println(type + ">" + line);    
             }
             if (pw != null){
@@ -53,7 +59,11 @@ public class StreamGobbler extends Thread{
             {
             ioe.printStackTrace();  
             }
-    }
+    }    
+    
+    public void setSubject(ISubject subject) {
+		this.subject = subject;
+	}
 
 	
 }
