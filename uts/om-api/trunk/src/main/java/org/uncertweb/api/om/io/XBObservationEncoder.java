@@ -1,9 +1,15 @@
 package org.uncertweb.api.om.io;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 import net.opengis.gml.x32.BoundingShapeType;
 import net.opengis.gml.x32.CodeWithAuthorityType;
@@ -47,6 +53,7 @@ import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertain
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
 import net.opengis.samplingSpatial.x20.ShapeType;
 
+import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
@@ -238,6 +245,11 @@ public class XBObservationEncoder implements IObservationEncoder {
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			reset();
+			XmlCursor cursor = result.newCursor();
+			if (cursor.toFirstChild())
+			{
+			  cursor.setAttributeText(new QName("http://www.w3.org/2001/XMLSchema-instance","schemaLocation"), OMConstants.NS_OM + " " + OMConstants.OM_SCHEMA_LOCATION);
+			}
 			return result;
 		}
 		// Measurement collection
@@ -258,6 +270,11 @@ public class XBObservationEncoder implements IObservationEncoder {
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			reset();
+			XmlCursor cursor = result.newCursor();
+			if (cursor.toFirstChild())
+			{
+			  cursor.setAttributeText(new QName("http://www.w3.org/2001/XMLSchema-instance","schemaLocation"), OMConstants.NS_OM + " " + OMConstants.OM_SCHEMA_LOCATION);
+			}
 			return result;
 		}
 		// ReferenceObservation collection
@@ -279,6 +296,11 @@ public class XBObservationEncoder implements IObservationEncoder {
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			reset();
+			XmlCursor cursor = result.newCursor();
+			if (cursor.toFirstChild())
+			{
+			  cursor.setAttributeText(new QName("http://www.w3.org/2001/XMLSchema-instance","schemaLocation"), OMConstants.NS_OM + " " + OMConstants.OM_SCHEMA_LOCATION);
+			}
 			return result;
 		}
 		// UncertaintyObservation collection
@@ -300,6 +322,11 @@ public class XBObservationEncoder implements IObservationEncoder {
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			reset();
+			XmlCursor cursor = result.newCursor();
+			if (cursor.toFirstChild())
+			{
+			  cursor.setAttributeText(new QName("http://www.w3.org/2001/XMLSchema-instance","schemaLocation"), OMConstants.NS_OM + " " + OMConstants.OM_SCHEMA_LOCATION);
+			}
 			return result;
 		}
 		// DiscreteNumericObservation collection
@@ -321,6 +348,11 @@ public class XBObservationEncoder implements IObservationEncoder {
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			reset();
+			XmlCursor cursor = result.newCursor();
+			if (cursor.toFirstChild())
+			{
+			  cursor.setAttributeText(new QName("http://www.w3.org/2001/XMLSchema-instance","schemaLocation"), OMConstants.NS_OM + " " + OMConstants.OM_SCHEMA_LOCATION);
+			}
 			return result;
 		}
 
@@ -447,6 +479,11 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 		if (!this.isCol) {
 			reset();
+		XmlCursor cursor = xb_obsDoc.newCursor();
+		if (cursor.toFirstChild())
+		{
+		  cursor.setAttributeText(new QName("http://www.w3.org/2001/XMLSchema-instance","schemaLocation"), OMConstants.NS_OM + " " + OMConstants.OM_SCHEMA_LOCATION);
+		}
 		}
 		return xb_obsDoc;
 	}
@@ -1091,5 +1128,58 @@ public class XBObservationEncoder implements IObservationEncoder {
 		return xmlOptions;
 	}
 
+	@Override
+	public void encodeObservationCollection(IObservationCollection obsCol,
+			File f) throws OMEncodingException {
+		String result = encodeObservationCollection(obsCol);
+		IOUtil.writeString2File(result, f);
+	}
 
+	@Override
+	public void encodeObservationCollection(IObservationCollection obsCol,
+			OutputStream out) throws OMEncodingException {
+		String result = encodeObservationCollection(obsCol);
+		IOUtil.writeString2OutputStream(result, out);
+	}
+
+	@Override
+	public void encodeObservationCollection(IObservationCollection obsCol,
+			Writer writer) throws OMEncodingException {
+		try {
+			writer.write(encodeObservationCollection(obsCol));
+			writer.flush();
+		} catch (IOException e) {
+			throw new OMEncodingException(e);
+		}
+	}
+
+	@Override
+	public void encodeObservation(AbstractObservation obs, File f)
+			throws OMEncodingException {
+		String result = encodeObservation(obs);
+		IOUtil.writeString2File(result, f);
+	}
+
+	@Override
+	public void encodeObservation(AbstractObservation obs, OutputStream out)
+			throws OMEncodingException {
+		String result = encodeObservation(obs);
+		IOUtil.writeString2OutputStream(result, out);
+	}
+
+	@Override
+	public void encodeObservation(AbstractObservation obs, Writer writer)
+			throws OMEncodingException {
+		try {
+			writer.write(encodeObservation(obs));
+			writer.flush();
+		} catch (IOException e) {
+			throw new OMEncodingException(e);
+		}
+	}
+
+
+	private void addOMSchemaLocation(){
+		
+	}
 }
