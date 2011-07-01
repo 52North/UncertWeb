@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:ProcessDescriptions xml:lang="en-US" xmlns:xs="http://www.w3.org/2001/XMLSchema" service="WPS" version="1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd">
+	<ProcessDescription wps:processVersion="">
+		<ows:Identifier>org.uncertweb.u_wps.MonteCarloSimulationAlgorithm</ows:Identifier>
+		<ows:Title/>
+		<DataInputs>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>IdentifierSimulatedProcess</ows:Identifier>
+				<ows:Title></ows:Title>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AllowedValues>
+						<ows:Value>Austal</ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="99999">
+				<ows:Identifier>UncertainProcessInputs</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty encoded as UncertML.For uncertain spatial/spatial-temporal information you should use OM.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/UncertML2.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/UncertML2.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/OM2.0.0/OM_Profile.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>ProcessExecuteRequest</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Execute request containing the process identifier and the static inputs for the process.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<!--Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>ProcessExecuteRequest</ows:Identifier>
+				<ows:Title></ows:Title>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AllowedValues>
+						<ows:Value/>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input-->
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>ServiceURL</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>URL to the WPS offering the process.</ows:Abstract>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AllowedValues>
+						<ows:Value/>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>OutputUncertaintyType</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AllowedValues>
+						<ows:Value>uncertweb:Realisations</ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>NumberOfRealisations</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:int"/>
+					<ows:AllowedValues>
+						<ows:Value/>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+		</DataInputs>
+		<ProcessOutputs>
+			<Output>
+				<ows:Identifier>UncertainProcessOutputs</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ComplexOutput>
+					<Default>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/UncertML2.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/UncertML2.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/OM2.0.0/OM_Profile.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
+		</ProcessOutputs>
+	</ProcessDescription>
+</wps:ProcessDescriptions>
