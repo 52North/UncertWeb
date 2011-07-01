@@ -66,6 +66,7 @@ import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.io.XmlBeansGeometryParser;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.CategoryObservation;
@@ -124,24 +125,18 @@ public class XBObservationParser implements IObservationParser {
 	 * @param xmlObsCol
 	 *            String containing an XML encoded observation collection
 	 * @return POJO observation collection
-	 * @throws URISyntaxException
-	 * 			if xlinks could not be resolved or are malformed 
-	 * @throws XmlException
-	 * 			if parsing of geometries fails 
-	 * @throws MalformedURLException 
-	 * 			if xlinks could not be resolved or are malformed
-	 * @throws IllegalArgumentException 
-	 * 			If parsing of observation fails
-	 * @throws UncertaintyParserException 
-				if parsing of uncertainty fails
+	 * @throws OMParsingException 
 	 */
 	@Override
-	public synchronized IObservationCollection parseObservationCollection(String xmlObsCol) throws XmlException, IllegalArgumentException, MalformedURLException, URISyntaxException, UncertaintyParserException {
+	public synchronized IObservationCollection parseObservationCollection(String xmlObsCol) throws OMParsingException {
 
 		featureCache = new HashMap<String, SpatialSamplingFeature>();
 		timeCache = new HashMap<String, TimeObject>();
+		IObservationCollection oc = null;
+		XmlObject xb_obsColDoc;
+		try {
+			xb_obsColDoc = XmlObject.Factory.parse(xmlObsCol);
 		
-		XmlObject xb_obsColDoc = XmlObject.Factory.parse(xmlObsCol);
 
 		//Measurement collection
 		if (xb_obsColDoc instanceof OMMeasurementCollectionDocument) {
@@ -155,7 +150,7 @@ public class XBObservationParser implements IObservationParser {
 				Measurement obs = (Measurement)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
-			MeasurementCollection oc = new MeasurementCollection(obsList);
+			oc = new MeasurementCollection(obsList);
 			return oc;
 		}
 		//BooleanObservation collection
@@ -170,7 +165,7 @@ public class XBObservationParser implements IObservationParser {
 				BooleanObservation obs = (BooleanObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
-			BooleanObservationCollection oc = new BooleanObservationCollection(obsList);
+			oc = new BooleanObservationCollection(obsList);
 			return oc;
 		}
 		//DiscreteNumericObservation collection
@@ -185,7 +180,7 @@ public class XBObservationParser implements IObservationParser {
 				DiscreteNumericObservation obs = (DiscreteNumericObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
-			DiscreteNumericObservationCollection oc = new DiscreteNumericObservationCollection(obsList);
+			oc = new DiscreteNumericObservationCollection(obsList);
 			return oc;
 		}
 		//UncertaintyObservation collection
@@ -200,7 +195,7 @@ public class XBObservationParser implements IObservationParser {
 				UncertaintyObservation obs = (UncertaintyObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
-			UncertaintyObservationCollection oc = new UncertaintyObservationCollection(obsList);
+			oc = new UncertaintyObservationCollection(obsList);
 			return oc;
 		}
 		//ReferenceObservation collection
@@ -215,11 +210,17 @@ public class XBObservationParser implements IObservationParser {
 				ReferenceObservation obs = (ReferenceObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
-			ReferenceObservationCollection oc = new ReferenceObservationCollection(obsList);
+			oc = new ReferenceObservationCollection(obsList);
 			return oc;
 		}
+		
+		
 		else {
-			throw new IllegalArgumentException("ObservationCollection type" + xb_obsColDoc.getClass() + "is not supported by this parser!");
+			throw new OMParsingException("ObservationCollection type" + xb_obsColDoc.getClass() + "is not supported by this parser!");
+		}
+		
+		} catch (XmlException e) {
+			throw new OMParsingException(e);
 		}
 
 	}
@@ -230,24 +231,21 @@ public class XBObservationParser implements IObservationParser {
 	 * @param xmlObs
 	 *            xml observation document's string
 	 * @return POJO observation
-	 * @throws URISyntaxException
-	 * 			if xlinks could not be resolved or are malformed 
-	 * @throws XmlException
-	 * 			if parsing of geometries fails 
-	 * @throws MalformedURLException 
-	 * 			if xlinks could not be resolved or are malformed
-	 * @throws IllegalArgumentException 
-	 * 			If parsing of observation fails
-	 * @throws UncertaintyParserException 
-				if parsing of uncertainty fails
+	 * @throws OMParsingException 
+	 * 			if parsing failed
 	 */
 	@Override
-	public synchronized AbstractObservation parseObservation(String xmlObs) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException, UncertaintyParserException {
+	public synchronized AbstractObservation parseObservation(String xmlObs) throws OMParsingException {
 
 		featureCache = new HashMap<String, SpatialSamplingFeature>();
 		timeCache = new HashMap<String, TimeObject>();
 		
-		XmlObject xb_obsDoc = XmlObject.Factory.parse(xmlObs);
+		XmlObject xb_obsDoc;
+		try {
+			xb_obsDoc = XmlObject.Factory.parse(xmlObs);
+		} catch (XmlException e) {
+			throw new OMParsingException(e);
+		}
 
 		return parseObservationDocument((OMObservationDocument) xb_obsDoc);
 	}
@@ -258,22 +256,15 @@ public class XBObservationParser implements IObservationParser {
 	 * @param xb_obsDoc
 	 *            XMLBeans observation document
 	 * @return POJO observation
-	 * @throws URISyntaxException
-	 * 			if xlinks could not be resolved or are malformed 
-	 * @throws XmlException
-	 * 			if parsing of geometries fails 
-	 * @throws MalformedURLException 
-	 * 			if xlinks could not be resolved or are malformed
-	 * @throws IllegalArgumentException 
-	 * 			If parsing of observation fails
-	 * @throws UncertaintyParserException 
-				if parsing of uncertainty fails
+	 * @throws OMParsingException
+	 * 			if parsing of uncertainty fails
 	 */
 	public synchronized AbstractObservation parseObservationDocument(
-			OMObservationDocument xb_obsDoc) throws URISyntaxException, IllegalArgumentException, MalformedURLException, XmlException, UncertaintyParserException {
+			OMObservationDocument xb_obsDoc) throws OMParsingException {
 
 		AbstractObservation obs = null;
 
+		try{
 		if (xb_obsDoc instanceof OMObservationDocument) {
 			OMAbstractObservationType xb_obsType = ((OMObservationDocument) xb_obsDoc)
 					.getOMObservation();
@@ -283,7 +274,8 @@ public class XBObservationParser implements IObservationParser {
 			Identifier identifier = null;
 			if (xb_identifier!=null){
 				String id = xb_identifier.getStringValue();
-				URI codeSpace = new URI(xb_identifier.getCodeSpace());
+				URI codeSpace;
+				codeSpace = new URI(xb_identifier.getCodeSpace());
 				identifier = new Identifier(codeSpace, id);
 			}
 
@@ -404,6 +396,9 @@ public class XBObservationParser implements IObservationParser {
 						result);
 			}
 		}
+		} catch (Exception e) {
+			throw new OMParsingException(e);		
+		} 
 		return obs;
 	}
 
@@ -815,23 +810,21 @@ public class XBObservationParser implements IObservationParser {
 		 * single observation, a collection containing one element is returned.
 		 * 
 		 * @param xmlString
-		 * 			
+		 *			string containing the O&M encoded as XML
 		 * @return returns internal representation of observation or observation collection
-		 * @throws URISyntaxException
-		 * 			if xlinks could not be resolved or are malformed 
-		 * @throws XmlException
-		 * 			if parsing of geometries fails 
-		 * @throws MalformedURLException 
-		 * 			if xlinks could not be resolved or are malformed
-		 * @throws IllegalArgumentException 
-		 * 			If parsing of observation fails
-		 * @throws UncertaintyParserException 
-					if parsing of uncertainty fails
+		 * @throws OMParsingException 
+		 * 			if parsing fails
 		 */
-	public IObservationCollection parse(String xmlString) throws XmlException, URISyntaxException, IllegalArgumentException, MalformedURLException, UncertaintyParserException {
-		XmlObject xb_object = XmlObject.Factory.parse(xmlString);
+	public IObservationCollection parse(String xmlString) throws OMParsingException {
+		XmlObject xb_object;
+		try {
+			xb_object = XmlObject.Factory.parse(xmlString);
+		} catch (XmlException e) {
+			throw new OMParsingException(e);
+		}
+		IObservationCollection col = null;
 		if (xb_object instanceof OMObservationDocument){
-			IObservationCollection col = null;
+			
 			AbstractObservation obs = parseObservation(xmlString);
 			if (obs instanceof Measurement){
 				col = new MeasurementCollection();

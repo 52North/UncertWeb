@@ -13,6 +13,7 @@ import org.uncertml.io.JSONEncoder;
 import org.uncertweb.api.gml.io.JSONGeometryEncoder;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.result.BooleanResult;
@@ -35,12 +36,14 @@ public class JSONObservationEncoder implements IObservationEncoder{
 
 	
 	@Override
-	public String encodeObservation(AbstractObservation obs)
-			throws IllegalArgumentException, XmlException,
-			UnsupportedUncertaintyTypeException, UncertaintyEncoderException, JSONException {
+	public String encodeObservation(AbstractObservation obs) throws OMEncodingException {
 		String jsonString;
 		JSONStringer writer = new JSONStringer();
-		encodeObservation(writer,obs);
+		try {
+			encodeObservation(writer,obs);
+		} catch (JSONException e) {
+			throw new OMEncodingException(e);
+		}
 		jsonString=writer.toString();
 		return jsonString;
 	}
@@ -48,11 +51,10 @@ public class JSONObservationEncoder implements IObservationEncoder{
 	
 
 	@Override
-	public String encodeObservationCollection(IObservationCollection obsCol)
-			throws IllegalArgumentException, XmlException,
-			UnsupportedUncertaintyTypeException, UncertaintyEncoderException, JSONException {
+	public String encodeObservationCollection(IObservationCollection obsCol) throws OMEncodingException {
 		JSONStringer writer = new JSONStringer();
-		writer.object();
+		try {
+			writer.object();
 		writer.key(obsCol.getTypeName());
 		List<? extends AbstractObservation> obsList = obsCol.getObservations();
 			writer.array();
@@ -61,6 +63,9 @@ public class JSONObservationEncoder implements IObservationEncoder{
 		}
 		writer.endArray();
 		writer.endObject();
+		} catch (JSONException e) {
+			throw new OMEncodingException(e);
+		}
 		return writer.toString();
 	}
 	

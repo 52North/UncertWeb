@@ -1,7 +1,6 @@
 package org.uncertweb.api.om.io;
 
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.io.JSONGeometryDecoder;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.CategoryObservation;
@@ -54,11 +54,12 @@ import com.vividsolutions.jts.geom.Geometry;
 public class JSONObservationParser implements IObservationParser{
 
 	@Override
-	public AbstractObservation parseObservation(String jsonObs)
-			throws IllegalArgumentException, MalformedURLException,
-			URISyntaxException, XmlException, UncertaintyParserException, JSONException {
+	public AbstractObservation parseObservation(String jsonObs) throws OMParsingException {
 		AbstractObservation result = null;
-		JSONObject obs = new JSONObject(jsonObs);
+		JSONObject obs;
+		try {
+			obs = new JSONObject(jsonObs);
+		
 		JSONObject jobs =null;
 		String typeName =null;
 		
@@ -94,8 +95,10 @@ public class JSONObservationParser implements IObservationParser{
 			jobs=obs.getJSONObject(UncertaintyObservation.NAME);
 		}
 		
+		
+		
 		else{
-			throw new IllegalArgumentException("Observation type is not supported by JSON parser!");
+			throw new OMParsingException("Observation type is not supported by JSON parser!");
 		}
 		
 		/////////////////////////////
@@ -162,16 +165,25 @@ public class JSONObservationParser implements IObservationParser{
 			result = new UncertaintyObservation(identifier,null,phenomenonTime,resultTime,validTime,procedureURI,obsPropURI,foi,resultQuality,uresult);
 		}
 		
+		} catch (JSONException e) {
+			throw new OMParsingException(e);
+		} catch (UncertaintyParserException e) {
+			throw new OMParsingException(e);
+		} catch (URISyntaxException e) {
+			throw new OMParsingException(e);
+		}
+		
 		return result;
 		
 	}
 
 
 	@Override
-	public IObservationCollection parseObservationCollection(String jsonObsCol)
-			throws XmlException, URISyntaxException, IllegalArgumentException,
-			MalformedURLException, UncertaintyParserException, JSONException {
-		JSONObject job = new JSONObject(jsonObsCol);
+	public IObservationCollection parseObservationCollection(String jsonObsCol) throws OMParsingException {
+		JSONObject job = null;
+		try {
+			job = new JSONObject(jsonObsCol);
+		
 		//BooleanObservationCollection
 		if (job.has(BooleanObservationCollection.NAME)){
 			JSONArray obsArray = job.getJSONArray(BooleanObservationCollection.NAME);
@@ -238,16 +250,22 @@ public class JSONObservationParser implements IObservationParser{
 		
 		//type of collection not supported
 		else {
-			throw new IllegalArgumentException("ObservationCollection Type is not supported by JSONParser!");
+			throw new OMParsingException("ObservationCollection Type is not supported by JSONParser!");
 		}
+		
+		} catch (Exception e) {
+			throw new OMParsingException(e);
+		} 
 	}
 
 	@Override
-	public IObservationCollection parse(String jsonString) throws XmlException,
-			URISyntaxException, IllegalArgumentException,
-			MalformedURLException, UncertaintyParserException, JSONException {
-		JSONObject job = new JSONObject(jsonString);
+	public IObservationCollection parse(String jsonString) throws OMParsingException {
+		JSONObject job = null;
 		IObservationCollection result = null;
+		try {
+			job = new JSONObject(jsonString);
+		
+		
 		//if string is an collection, invoke method for parsing observations
 		if (job.has(BooleanObservationCollection.NAME)||
 				job.has(CategoryObservationCollection.NAME)||
@@ -294,6 +312,11 @@ public class JSONObservationParser implements IObservationParser{
 			members.add((UncertaintyObservation)parseObservation(jsonString));
 			result = new UncertaintyObservationCollection(members);
 		}
+		
+		} catch (Exception e) {
+			throw new OMParsingException("Error while creating JSONObject from input string!",e);
+		} 
+		
 		return result;
 	}
 
