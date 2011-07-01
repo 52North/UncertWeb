@@ -121,11 +121,23 @@
 				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd</Property>
 				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Quantile.xsd</Property>
 				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Property>
+				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Property>
+				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInput.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
 			<Parser name="SimpleXMLParser" className="org.n52.wps.io.datahandler.xml.SimpleXMLParser" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+			<Parser name="UncertainInputParser" className="org.n52.wps.io.datahandler.xml.UncertainInputParser" active="true">
+				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+			<Parser name="StaticInputParser" className="org.n52.wps.io.datahandler.xml.StaticInputParser" active="true">
+				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>

@@ -31,16 +31,20 @@ import org.n52.wps.client.WPSClientSession;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.UncertWebData;
 import org.n52.wps.io.data.binding.complex.PlainStringBinding;
+import org.n52.wps.io.data.binding.complex.StaticInputDataBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
+import org.n52.wps.io.data.binding.complex.UncertainInputDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.uncertml.IUncertainty;
-import org.uncertml.distribution.continuous.GaussianDistribution;
+import org.uncertweb.StaticInputType;
+import org.uncertweb.UncertainInputType;
+import org.uncertml.distribution.continuous.NormalDistribution;
+import org.uncertml.exception.UncertaintyParserException;
 import org.uncertml.io.XMLEncoder;
 import org.uncertml.io.XMLParser;
 import org.uncertml.sample.Realisation;
-import org.uncertml.sample.SamplingMethod;
 import org.w3c.dom.Node;
 
 
@@ -55,6 +59,8 @@ public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
 	private static Logger LOGGER = Logger.getLogger(MonteCarloSimulationAlgorithm.class);
 	private String inputIDIdentifierSimulatedProcess = "IdentifierSimulatedProcess";
 	private String inputIDUncertainProcessInputs = "UncertainProcessInputs";
+	private String inputIDUncertainProcessInputs2 = "UncertainProcessInputs2";
+	private String inputIDStaticProcessInputs = "StaticProcessInputs";
 	private String inputIDProcessExecuteRequest = "ProcessExecuteRequest";
 	private String inputIDServiceURL = "ServiceURL";
 	private String inputIDOutputUncertaintyType = "OutputUncertaintyType";
@@ -71,7 +77,11 @@ public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
 		if(id.equals(inputIDIdentifierSimulatedProcess)){
 			return LiteralStringBinding.class;
 		}else if(id.equals(inputIDUncertainProcessInputs)){
-			return UncertWebDataBinding.class;
+			return UncertainInputDataBinding.class;
+		}else if(id.equals(inputIDStaticProcessInputs)){
+			return StaticInputDataBinding.class;
+		}else if(id.equals(inputIDUncertainProcessInputs2)){
+			return PlainStringBinding.class;
 		}else if(id.equals(inputIDProcessExecuteRequest)){
 //			return GenericFileDataBinding.class;
 			return PlainStringBinding.class;
@@ -111,29 +121,101 @@ public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
 		
 		int numberOfRealisations = ((LiteralIntBinding)numberOfRealisationsData).getPayload();
 		
-		
+		try {
+			IData uncertainProcessInputsData = getIData(
+					inputIDUncertainProcessInputs2, inputData);
+
+			String uncertainProcessInputs = (String)((PlainStringBinding) uncertainProcessInputsData)
+					.getPayload();
+
+			UncertainInputType type = UncertainInputType.Factory.parse(uncertainProcessInputs);
+			
+			XMLParser parser = new XMLParser();
+			
+			String uType = type.getData().getComplexData().getDomNode().getFirstChild().getTextContent();
+			
+			XMLParser p = new XMLParser();
+			
+			IUncertainty uncertaintyType =  p.parse(uType);
+			
+			String meanString = "";
+			String stdDevString = "";
+
+			if (uncertaintyType instanceof NormalDistribution) {
+
+				NormalDistribution gD = (NormalDistribution) uncertaintyType;
+
+				meanString = String.valueOf(gD.getMean().get(0));
+				stdDevString = String.valueOf(gD.getVariance().get(0));
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 		
 		IData uncertainProcessInputsData = getIData(inputIDUncertainProcessInputs, inputData);
 		
-		UncertWebData uncertainProcessInputs = ((UncertWebDataBinding)uncertainProcessInputsData).getPayload();
+		UncertainInputType uncertainProcessInputs = ((UncertainInputDataBinding)uncertainProcessInputsData).getPayload();
 		
-		if(uncertainProcessInputs.getUncertaintyType() == null){
+		if(uncertainProcessInputs.getData().getComplexData() == null){
 			return null;
 		}
+		Node n = uncertainProcessInputs.getData().getComplexData().getDomNode().getChildNodes().item(1);
+
+		String uType = null;
+		try {
+			uType = nodeToString(n);
+		} catch (TransformerFactoryConfigurationError e4) {
+			e4.printStackTrace();
+		} catch (TransformerException e4) {
+			e4.printStackTrace();
+		}
 		
-		IUncertainty uncertaintyType = uncertainProcessInputs.getUncertaintyType();
+		XMLParser p = new XMLParser();
+		
+		IUncertainty uncertaintyType = null;
+		try {
+			uncertaintyType = p.parse(uType);
+		} catch (UncertaintyParserException e3) {
+			e3.printStackTrace();
+		}
 		
 		String meanString = "";
-		String stdDevString = "";		
-		
-		if(uncertaintyType instanceof GaussianDistribution){
-			
-			GaussianDistribution gD = (GaussianDistribution)uncertaintyType;
-			
+		String stdDevString = "";
+
+		if (uncertaintyType instanceof NormalDistribution) {
+
+			NormalDistribution gD = (NormalDistribution) uncertaintyType;
+
 			meanString = String.valueOf(gD.getMean().get(0));
 			stdDevString = String.valueOf(gD.getVariance().get(0));
-			
-		}		
+
+		}
+		
+//		IUncertainty uncertaintyType = uncertainProcessInputs.getUncertaintyType();
+
+//		if(uncertaintyType instanceof GaussianDistribution){
+//			
+//			GaussianDistribution gD = (GaussianDistribution)uncertaintyType;
+//			
+//			meanString = String.valueOf(gD.getMean().get(0));
+//			stdDevString = String.valueOf(gD.getVariance().get(0));
+//			
+//		}		
+		
+		IData staticProcessInputsData = getIData(inputIDStaticProcessInputs, inputData);
+		
+		StaticInputType staticProcessInputs = ((StaticInputDataBinding)staticProcessInputsData).getPayload();
+		
+//		if(staticProcessInputs.getData().getComplexData() == null){
+//			return null;
+//		}
+		
+		System.out.println(staticProcessInputs.getIdentifier().getStringValue());
+		
+		String staticInput = staticProcessInputs.getData().getLiteralData().getDomNode().getFirstChild().getNodeValue();
+
+		
 		
 		/*
 		 * transform distribution to samples using UTS
@@ -229,7 +311,7 @@ public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
 			 * 
 			 */
 			
-			Realisation rplus = new Realisation(realisations, SamplingMethod.RANDOM);
+			Realisation rplus = new Realisation(realisations);
 			
 			/*
 			 * Create execute document 
