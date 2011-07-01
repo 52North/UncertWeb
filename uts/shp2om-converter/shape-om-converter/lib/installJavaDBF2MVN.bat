@@ -1,1 +1,0 @@
-mvn install:install-file -Dfile=javadbf-0.4.0.jar -DgroupId=com.linuxense  -DartifactId=javadbf -Dversion=0.4.0 -Dpackaging=jar
