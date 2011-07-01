@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:sos="http://www.opengis.net/sos/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ows:Identifier>NoSpatialGrouping.IgnoreTimeGrouping</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>SOSDestinationUrl</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:string">http://localhost:8080/sos/sos</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>TemporalAggregationMethod</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:string">org.uncertweb.sta.wps.method.aggregation.ArithmeticMeanAggregation</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>SpatialAggregationMethod</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:string">org.uncertweb.sta.wps.method.aggregation.ArithmeticMeanAggregation</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>GroupByObservedProperty</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:boolean">true</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>SOSSourceUrl</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:string">http://giv-uw.uni-muenster.de:8080/AQE/sos</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>SOSRequest</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData schema="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd" mimeType="text/xml" encoding="UTF-8">
+          <sos:GetObservation service="SOS" version="1.0.0">
+            <sos:offering>PM10</sos:offering>
+            <sos:eventTime>
+              <ogc:TM_Equals xsi:type="ogc:BinaryTemporalOpType" xmlns:ogc="http://www.opengis.net/ogc">
+                <ogc:PropertyName>om:SamplingTime</ogc:PropertyName>
+                <gml:TimePeriod xsi:type="gml:TimePeriodType" xmlns:gml="http://www.opengis.net/gml">
+                  <gml:beginPosition>2001-01-01T00:00:00.000Z</gml:beginPosition>
+                  <gml:endPosition>2001-01-01T02:00:00.000Z</gml:endPosition>
+                </gml:TimePeriod>
+              </ogc:TM_Equals>
+            </sos:eventTime>
+            <sos:observedProperty>http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[PM10]</sos:observedProperty>
+            <sos:responseFormat>text/xml;subtype="om/1.0.0"</sos:responseFormat>
+            <sos:resultModel xmlns:ns="http://www.opengis.net/om/1.0">ns:Measurement</sos:resultModel>
+            <sos:responseMode>inline</sos:responseMode>
+          </sos:GetObservation>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:ResponseDocument>
+      <wps:Output>
+        <ows:Identifier>AggregatedObservations</ows:Identifier>
+      </wps:Output>
+      <wps:Output>
+        <ows:Identifier>AggregatedObservationsReference</ows:Identifier>
+      </wps:Output>
+    </wps:ResponseDocument>
+  </wps:ResponseForm>
+</wps:Execute>

@@ -1,0 +1,14 @@
+-change IO classes to new UncertWeb APIs (once the SOS is able to deal with that)
+-test cases (classes, SOS setups)
+-implement GET binding for SOS for GetObservationByID
+-CLIENTS?
+
+done:
+-allow for different spatial and temporal aggregation methods (two distinct process parameters)
+-implement flag which indicates whether spatial aggregation should be executed first
+-metadata property for provenance information
+-testing "framework"
+-SOS Extension angucken
+-WFS Extension angucken, wie wird GML Layer erzeugt?
+-Farbskalen f�r Featureattribute
+

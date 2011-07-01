@@ -1,0 +1,318 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.uncertweb</groupId>
+	<artifactId>stas</artifactId>
+	<version>0.0.1</version>
+	<packaging>war</packaging>
+
+	<name>Spatiotemporal Aggregation Service</name>
+	<url>http://www.uncertweb.org</url>
+	<inceptionYear>2010</inceptionYear>
+	<description>WPS Process for spatiotemporal aggregation of sensor data.</description>
+
+	<organization>
+		<name>Institute for Geoinformatics</name>
+		<url>http://ifgi.uni-muenster.de</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<name>Christian Autermann</name>
+			<email>autermann@uni-muenster.de</email>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<timezone>GMT+1</timezone>
+			<id>ChristianAutermann</id>
+		</developer>
+	</developers>
+	
+	<scm>
+		<developerConnection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/STAS/trunk/STAS</developerConnection>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>UncertWebMavenDeployRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>scp://giv-uw.uni-muenster.de:/var/www/m2/repo</url>
+		</repository>
+	</distributionManagement>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<wps.version>2.0-RC7-SNAPSHOT</wps.version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.5-RC2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>intamap-om</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0</version>
+		</dependency>
+
+		<!-- SOS XmlBeans -->
+
+		<dependency>
+			<groupId>org.n52.swe.sos</groupId>
+			<artifactId>52n-sos-xml-gml</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.n52.swe.sos</groupId>
+			<artifactId>52n-sos-xml-sos</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.n52.swe.sos</groupId>
+			<artifactId>52n-sos-xml-om</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!-- Logging -->
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- WPS dependencies -->
+
+		<dependency>
+			<groupId>org.n52.wps</groupId>
+			<artifactId>52n-wps-server</artifactId>
+			<version>${wps.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.n52.wps</groupId>
+			<artifactId>52n-wps-io</artifactId>
+			<version>${wps.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.n52.wps</groupId>
+			<artifactId>52n-wps-webapp</artifactId>
+			<version>${wps.version}</version>
+			<type>war</type>
+		</dependency>
+
+		<!-- Testing dependencies -->
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+	<repositories>
+		<repository>
+			<id>UncertWebMavenRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+			<snapshots><enabled>true</enabled></snapshots>
+			<releases><enabled>true</enabled></releases>
+		</repository>
+		<repository>
+			<id>geotools.fr</id>
+			<name>Geotools Repository</name>
+			<url>http://maven.geotools.fr/repository</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>reflections-repo</id>
+			<name>Reflections Maven2 Repository</name>
+			<url>http://reflections.googlecode.com/svn/repo</url>
+		</repository>
+	</repositories>
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</testResource>
+		</testResources>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xmlbeans-maven-plugin</artifactId>
+				<version>2.3.3</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>xmlbeans</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<download>true</download>
+					<javaSource>1.5</javaSource>
+					<sourceSchemas>
+						<sourceSchema>wfs/1.1.0/wfs.xsd</sourceSchema>
+					</sourceSchemas>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+				<configuration>
+					<webResources>
+						<resource>
+							<directory>src/main/resources/wps_config</directory>
+							<filtering>true</filtering>
+							<targetPath>config</targetPath>
+						</resource>
+						<resource>
+							<directory>openlayers</directory>
+							<filtering>false</filtering>
+							<targetPath>olc</targetPath>
+						</resource>
+					</webResources>
+					<overlays>
+						<overlay>
+							<!-- be sure we use the web.xml of the 52N webapp -->
+							<id>wps-web.xml</id>
+							<groupId>org.n52.wps</groupId>
+							<artifactId>52n-wps-webapp</artifactId>
+							<includes>
+								<include>WEB-INF/web.xml</include>
+							</includes>
+						</overlay>
+						<overlay>
+							<!-- thats the sta-wps -->
+						</overlay>
+						<overlay>
+							<!-- include needed libraries -->
+							<id>needed-libraries</id>
+							<groupId>org.n52.wps</groupId>
+							<artifactId>52n-wps-webapp</artifactId>
+							<includes>
+								<include>WEB-INF/lib/52n-security*.jar</include>
+								<include>WEB-INF/lib/pjl-comp-filter*.jar</include>
+							</includes>
+						</overlay>
+						<overlay>
+							<!--overlay of the webapp without libraries -->
+							<id>52N-WebApp</id>
+							<groupId>org.n52.wps</groupId>
+							<artifactId>52n-wps-webapp</artifactId>
+							<excludes>
+								<exclude>WEB-INF/lib/*.jar</exclude>
+							</excludes>
+						</overlay>
+					</overlays>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<compilerVersion>1.6</compilerVersion>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<skip>true</skip>
+					<includes>
+						<include>**/*Test.java</include>
+						<include>**/*Tests.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.5</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.wagon</groupId>
+						<artifactId>wagon-ssh</artifactId>
+						<version>1.0-beta-7</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+</project>
