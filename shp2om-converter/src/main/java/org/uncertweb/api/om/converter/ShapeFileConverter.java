@@ -31,6 +31,7 @@ import org.uncertml.statistic.CovarianceMatrix;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.converter.ShapeFileConverterProperties.FILETYPE;
+import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.Measurement;
@@ -82,7 +83,7 @@ public class ShapeFileConverter {
 	}
 	
 	
-	public boolean run() throws MalformedURLException, URISyntaxException, IOException{
+	public boolean run() throws MalformedURLException, URISyntaxException, IOException, OMEncodingException{
 		FILETYPE fileType = props.getFileType();
 		if (fileType== FILETYPE.valueOf("csv")){
 			convertSHPnCSV2OM(props.getOmPropsFilePath(), props.getShpFilePath(), props.getOutFilePath());
@@ -105,10 +106,11 @@ public class ShapeFileConverter {
 	 * @throws URISyntaxException 
 	 * @throws IOException 
 	 * @throws MalformedURLException 
+	 * @throws OMEncodingException 
 	 * 
 	 */
 	public void convertSHPnCSV2OM(String csvFilePath, String shpFilePath,
-			String outputFilePath) throws URISyntaxException, MalformedURLException, IOException  {
+			String outputFilePath) throws URISyntaxException, MalformedURLException, IOException, OMEncodingException  {
 		counter=0;
 		IObservationCollection result = new UncertaintyObservationCollection();
 
@@ -197,21 +199,9 @@ public class ShapeFileConverter {
 	    }
 
 	    XBObservationEncoder encoder = new XBObservationEncoder();
-		try {
-			System.out.println(encoder.encodeObservationCollection(result));
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (XmlException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedUncertaintyTypeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UncertaintyEncoderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		File out = new File(outputFilePath);
+		encoder.encodeObservationCollection(result, out);
+		
 	
 
 		// TODO write to file
@@ -229,11 +219,12 @@ public class ShapeFileConverter {
 	 * @param outputFilePath
 	 * @throws IOException 
 	 * @throws URISyntaxException 
+	 * @throws OMEncodingException 
 	 * @throws Exception
 	 * 
 	 */
 	public void convertSHPnDBF2OM(String dbfFilePath, String shpFilePath,
-			String outputFilePath) throws IOException, URISyntaxException {
+			String outputFilePath) throws IOException, URISyntaxException, OMEncodingException {
 		counter=0;
 
 		IObservationCollection result = new UncertaintyObservationCollection();
@@ -327,21 +318,9 @@ public class ShapeFileConverter {
 	    	}
 
 	      XBObservationEncoder encoder = new XBObservationEncoder();
-		try {
-			System.out.println(encoder.encodeObservationCollection(result));
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (XmlException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedUncertaintyTypeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UncertaintyEncoderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	      File out = new File(outputFilePath);
+	    	encoder.encodeObservationCollection(result,out);
+		
 	
 
 		// TODO write to file
