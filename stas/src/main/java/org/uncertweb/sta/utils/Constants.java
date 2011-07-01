@@ -118,7 +118,6 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 
 			public static final String AGGREGATED_OBSERVATIONS_ID = "AggregatedObservations";
 			public static final String AGGREGATED_OBSERVATIONS_REFERENCE_ID = "AggregatedObservationsReference";
-			public static final String VISUALIZATION_LINK_ID = "VisualizationLink";
 		}
 	}
 

@@ -144,14 +144,6 @@ public class GenericObservationAggregationProcess extends
 			GetObservationRequestBinding.class);
 
 	/**
-	 * Process output that contains a link to visualize the aggregated
-	 * observations.
-	 */
-	public static final ProcessOutput VISUALIZATION_LINK = new ProcessOutput(
-			Constants.Process.Outputs.VISUALIZATION_LINK_ID,
-			LiteralStringBinding.class);
-
-	/**
 	 * The Logger.
 	 */
 	protected static final Logger log = LoggerFactory
@@ -306,8 +298,7 @@ public class GenericObservationAggregationProcess extends
 	@Override
 	protected Set<ProcessOutput> getOutputs() {
 		return Utils.set(AGGREGATED_OBSERVATIONS, 
-						 AGGREGATED_OBSERVATIONS_REFERENCE,
-						 VISUALIZATION_LINK);
+						 AGGREGATED_OBSERVATIONS_REFERENCE);
 	}
 
 	/**
@@ -431,13 +422,7 @@ public class GenericObservationAggregationProcess extends
 					b = new SOSClient().registerAggregatedObservations(result, destinationUrl, process, meta);
 					log.info("Registered {} Observations in {}.", result.size(), Utils.timeElapsed(insertStart));
 				
-					
-					
-					String visualizationLink = OpenLayersClient.getInstance().getUrlForRequest(random, destinationUrl, b.getPayload());
-					log.info("Visualization URL: {}", visualizationLink);
-
 					response.put(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE_ID, b);
-					response.put(Constants.Process.Outputs.VISUALIZATION_LINK_ID, new LiteralStringBinding(visualizationLink));
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}

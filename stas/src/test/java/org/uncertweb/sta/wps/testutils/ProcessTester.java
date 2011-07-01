@@ -425,11 +425,6 @@ public class ProcessTester {
 					.addNewOutput();
 			dodt.addNewIdentifier()
 					.setStringValue(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE_ID);
-
-			dodt = exec.getExecute().getResponseForm().getResponseDocument()
-					.addNewOutput();
-			dodt.addNewIdentifier()
-					.setStringValue(Constants.Process.Outputs.VISUALIZATION_LINK_ID);
 		}
 
 		// log.info("Sending Execute request:\n{}",exec.xmlText(Namespace.defaultOptions()));
@@ -467,12 +462,6 @@ public class ProcessTester {
 							.getStringValue()
 							.equals(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE_ID)) {
 						refOutput = odt.getData().getComplexData();
-					} else if (odt
-							.getIdentifier()
-							.getStringValue()
-							.equals(Constants.Process.Outputs.VISUALIZATION_LINK_ID)) {
-						log.info("VisualizationLink: {}", odt.getData()
-								.getLiteralData().getStringValue());
 					}
 
 				}

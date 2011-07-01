@@ -238,11 +238,6 @@
 							<filtering>true</filtering>
 							<targetPath>config</targetPath>
 						</resource>
-						<resource>
-							<directory>openlayers</directory>
-							<filtering>false</filtering>
-							<targetPath>olc</targetPath>
-						</resource>
 					</webResources>
 					<overlays>
 						<overlay>
