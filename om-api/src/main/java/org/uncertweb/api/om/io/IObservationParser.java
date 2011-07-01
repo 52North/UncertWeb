@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import org.apache.xmlbeans.XmlException;
 import org.json.JSONException;
 import org.uncertml.exception.UncertaintyParserException;
+import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 
@@ -38,7 +39,7 @@ public interface IObservationParser {
 	 * 			if parsing fails
 	 */
 	public IObservationCollection parse(String xmlString)
-	throws XmlException, URISyntaxException, IllegalArgumentException, MalformedURLException, UncertaintyParserException, JSONException;
+	throws OMParsingException;
 
 	
 	/**
@@ -48,21 +49,11 @@ public interface IObservationParser {
 	 * @param xmlObsCol
 	 * 			String containing the XML representation of the observation collection
 	 * @return returns internal representation of observation collection
-	 * @throws URISyntaxException
-	 * 			if xlinks could not be resolved or are malformed 
-	 * @throws XmlException
-	 * 			if parsing of geometries fails 
-	 * @throws MalformedURLException 
-	 * 			if xlinks could not be resolved or are malformed
-	 * @throws IllegalArgumentException 
-	 * 			If parsing of observation fails
-	 * @throws UncertaintyParserException 
-				if parsing of uncertainty fails
-	 * @throws JSONException
+	 * @throws OMParsingException
 	 * 			if parsing fails
 	 */
 	public IObservationCollection parseObservationCollection(String xmlObsCol)
-			throws XmlException, URISyntaxException, IllegalArgumentException, MalformedURLException, UncertaintyParserException, JSONException;
+			throws OMParsingException;
 	
 	/**
 	 * parses an Observation and it's SpatialSamplingFeature
@@ -71,17 +62,9 @@ public interface IObservationParser {
 	 * @return internal JAVA representation of observation
 	 * @throws URISyntaxException
 	 * 			if xlinks could not be resolved or are malformed 
-	 * @throws XmlException
-	 * 			if parsing of geometries fails 
-	 * @throws MalformedURLException 
-	 * 			if xlinks could not be resolved or are malformed
-	 * @throws IllegalArgumentException 
-	 * 			If parsing of observation fails
-	 * @throws UncertaintyParserException 
-				if parsing of uncertainty fails
-	 * @throws JSONException 
+	 * @throws OMParsingException
 	 * 			if parsing fails	
 	 */
-	public AbstractObservation parseObservation(String xmlObs) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException, UncertaintyParserException, JSONException;
+	public AbstractObservation parseObservation(String xmlObs) throws OMParsingException;
 
 }

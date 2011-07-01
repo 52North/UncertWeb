@@ -66,6 +66,7 @@ import org.uncertweb.api.gml.geometry.RectifiedGrid;
 import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.OMConstants;
+import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.Measurement;
@@ -156,20 +157,21 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * @param obsCol
 	 *            observation collection
 	 * @return observation collections's xml document as formatted String
-	 * @throws UncertaintyEncoderException 
-	 * 			if encoding of uncertainty fails
-	 * @throws UnsupportedUncertaintyTypeException
-	 * 			if type of uncertainty is not supported 
-	 * @throws XmlException 
-	 * 			if encoding fails
-	 * @throws IllegalArgumentException
-	 *          if encoding fails
+	 * @throws OMEncodingException
+	 * 			if encoding fails 
 	 */
 	@Override
 	public synchronized String encodeObservationCollection(
-			IObservationCollection obsCol) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
-		return encodeObservationCollectionDocument(obsCol).xmlText(
-				getOMOptions());
+			IObservationCollection obsCol) throws OMEncodingException  {
+		String result = null;
+		
+		try {
+			result = encodeObservationCollectionDocument(obsCol).xmlText(
+					getOMOptions());
+		} catch (Exception e) {
+			throw new OMEncodingException(e);
+		} 
+		return result;
 	}
 	
 	/**
@@ -178,19 +180,19 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * @param obs
 	 *            observation
 	 * @return observation's xml document as formatted String
-	 * @throws UncertaintyEncoderException 
-	 * 			if encoding of uncertainty fails
-	 * @throws UnsupportedUncertaintyTypeException
-	 * 			if type of uncertainty is not supported 
-	 * @throws XmlException 
+	 * @throws OMEncodingException 
 	 * 			if encoding fails
-	 * @throws IllegalArgumentException
-	 *          if encoding fails
 	 */
 	@Override
-	public synchronized String encodeObservation(AbstractObservation obs) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException
+	public synchronized String encodeObservation(AbstractObservation obs) throws OMEncodingException
 		{
-		return encodeObservationDocument(obs).xmlText(getOMOptions());
+		String result = null;
+		try {
+			result = encodeObservationDocument(obs).xmlText(getOMOptions());
+		} catch (Exception e) {
+			throw new OMEncodingException(e);
+		}
+		return result;
 	}
 
 	/**
