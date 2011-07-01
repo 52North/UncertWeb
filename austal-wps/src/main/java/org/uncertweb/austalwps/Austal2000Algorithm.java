@@ -68,6 +68,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class Austal2000Algorithm extends AbstractAlgorithm{
@@ -186,9 +187,11 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 			//insert point coordinates in austal2000.txt
 			String output = "";
 
+			int coordinateCount = 0;
+			
 			try {
 				URL austal2000FileURL = new URL(
-						"http://localhost:8081/AustalWPS/res/" + austal2000FileName);
+						"http://localhost:8080/wps/res/" + austal2000FileName);
 
 				BufferedReader bufferedReader = new BufferedReader(
 						new InputStreamReader(austal2000FileURL.openStream()));
@@ -211,19 +214,64 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 						FeatureCollection featColl = ((GTVectorDataBinding) firstInputData)
 								.getPayload();
 
-						FeatureIterator<SimpleFeature> iterator = featColl.features();
-
+						FeatureIterator iterator = featColl.features();//Differentiate between point and line
+												
 						while (iterator.hasNext()) {
 
-							SimpleFeature feature = iterator.next();
-							//Feature feature = iterator.next();
+							SimpleFeature feature = (SimpleFeature) iterator.next();
 
-							Coordinate coord = ((Geometry) feature.getDefaultGeometry())
+							
+							if(feature.getDefaultGeometry() instanceof com.vividsolutions.jts.geom.Point){
+							
+							Coordinate coord = ((Geometry)feature.getDefaultGeometry())
 									.getCoordinate();
 
 							xp = xp.concat("" + (coord.x - gx) + " ");
 							yp = yp.concat("" + (coord.y - gy) + " ");
 							// hp = hp.concat("" + coord.z + " ");
+							}else if(feature.getDefaultGeometry() instanceof MultiLineString){
+								
+								MultiLineString lineString = (MultiLineString) feature
+										.getDefaultGeometry();
+
+
+								coordinateCount = lineString.getCoordinates().length;
+								
+								for (int i = 0; i < lineString.getCoordinates().length; i++) {
+									
+									if(i == 20){
+										coordinateCount = 20;
+										break;//TODO: check if we can go higher.
+									}
+									
+									Coordinate coord = lineString
+											.getCoordinates()[i];
+
+									xp = xp.concat("" + (coord.x - gx) + " ");
+									yp = yp.concat("" + (coord.y - gy) + " ");
+								}
+							}else if(feature.getDefaultGeometry() instanceof LineString){
+								
+								LineString lineString = (LineString) feature
+										.getDefaultGeometry();
+
+								coordinateCount = lineString.getCoordinates().length;
+								
+								for (int i = 0; i < lineString.getCoordinates().length; i++) {
+									
+									if(i == 20){
+										coordinateCount = 20;
+										break;//TODO: check if we can go higher. corresponding to the count of points
+												//we have to add heigh values in austal2000.txt
+									}
+									
+									Coordinate coord = lineString
+											.getCoordinates()[i];
+
+									xp = xp.concat("" + (coord.x - gx) + " ");
+									yp = yp.concat("" + (coord.y - gy) + " ");
+								}
+							}
 
 						}
 
@@ -231,9 +279,16 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 					} else if (line.contains(pointsYMarker)) {
 						line = line.concat(" " + yp);
 					}
-//					else if (line.contains(pointsHMarker)) {
-//						line = line.concat(" " + hp);
-//					} 
+					else if (line.contains(pointsHMarker)) {
+						
+						String hp = "";
+						
+						for (int i = 0; i < coordinateCount; i++) {
+							hp = hp.concat(" 2");//for now just add height of two meters
+						}
+						
+						line = line.concat(" " + hp);
+					} 
 					else if (line.contains(gxMarker)) {
 						gx = Integer.valueOf(line.replace(gxMarker, "").trim());
 					} else if (line.contains(gyMarker)) {
@@ -370,7 +425,7 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 			String output = "";
 			
 			try {
-				URL timeperiodFileURL = new URL("http://localhost:8081/AustalWPS/res/" + timeperiodFileName);//TODO: make configurable
+				URL timeperiodFileURL = new URL("http://localhost:8080/wps/res/" + timeperiodFileName);//TODO: make configurable
 				
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(timeperiodFileURL.openStream()));
 				
