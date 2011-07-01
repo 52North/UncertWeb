@@ -1,6 +1,8 @@
 package org.uncertweb.api.om.converter;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -15,6 +17,18 @@ import org.uncertweb.api.om.TimeObject;
  * 
  */
 public class ShapeFileConverterProperties {
+	
+	
+	public enum FILETYPE{
+		dbf,csv
+	};
+	
+	private FILETYPE fileType;
+	
+
+	private String shpFilePath;
+	private String omPropsFilePath;
+	private String outFilePath;
 
 	private String featClassName;
 	private String procId;
@@ -32,49 +46,58 @@ public class ShapeFileConverterProperties {
 	
 	private String phenTimeColName;
 	private String resultTimeColName;
-	private String uncertaintyType;
-	private String gaussianMeanColName;
-	private String gaussianVarianceColName;
-	private String multivarGaussianMeanColName;
-	private String multivarGaussianCovarianceColName;
+	private List<String> uncertaintyTypes;
+	private String normalMeanColName;
+	private String normalVarianceColName;
+	private String multivarNormalMeanColName;
+	private String multivarNormalCovarianceColName;
+	private String logNormalMeanColName;
+	private String logNormalVarianceColName;
 
 	/**
 	 * constructor; reads in config file and creates constants
-	 * 
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 * @throws Exception
 	 * 			if properties file shp2om is not found or if some mandatory properties are missing
 	 */
-	public ShapeFileConverterProperties() throws Exception {
+	public ShapeFileConverterProperties() throws FileNotFoundException, IOException  {
 		Properties props = new Properties();
 		props.load(new FileInputStream("src/main/resources/shp2om.props"));
+		shpFilePath = props.getProperty("SHPPATH");
+		omPropsFilePath = props.getProperty("OMFILEPATH");
+		outFilePath = props.getProperty("OUTFILEPATH");
+		fileType = FILETYPE.valueOf(props.getProperty("FILETYPE"));
 		featClassName=props.getProperty("FEATCLASSNAME");
 		procId = props.getProperty("PROCID");
 		procColName = props.getProperty("PROCCOL");
-		obsProps = parseObsProps(props.getProperty("OBSPROPS"));
+		obsProps = parsePropsList(props.getProperty("OBSPROPS"));
 		obsPropsType = props.getProperty("OBSPROPSTYPE");
 		phenTime = ShapeFileConverterUtil.parsePhenTime(props.getProperty("PHENTIME"));
 		procPrefix = props.getProperty("PROCPREFIX");
 		obsPropsPrefix = props.getProperty("PHENPREFIX");
 		foiPrefix = props.getProperty("FOIPREFIX");
-		uncertaintyType = props.getProperty("UNTYPE");
-		gaussianMeanColName = props.getProperty("UNTYPE.GAUSSIANDISTRIBUTION.MEAN");
-		gaussianVarianceColName = props.getProperty("UNTYPE.GAUSSIANDISTRIBUTION.VARIANCE");
-		multivarGaussianMeanColName = props.getProperty("UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.MEANS");
-		multivarGaussianCovarianceColName = props.getProperty("UNTYPE.MULTIVARIANTGAUSSIANDISTRIBUTION.COVARIANCE");
+		uncertaintyTypes = parsePropsList(props.getProperty("UNTYPES"));
+		normalMeanColName = props.getProperty("UNTYPE.NORMALDISTRIBUTION.MEAN");
+		normalVarianceColName = props.getProperty("UNTYPE.NORMALDISTRIBUTION.VARIANCE");
+		logNormalMeanColName = props.getProperty("UNTYPE.LOGNORMALDISTRIBUTION.MEAN");
+		logNormalVarianceColName = props.getProperty("UNTYPE.LOGNORMALDISTRIBUTION.VARIANCE");
+		multivarNormalMeanColName = props.getProperty("UNTYPE.MULTIVARIATENORMALDISTRIBUTION.MEANS");
+		multivarNormalCovarianceColName = props.getProperty("UNTYPE.MULTIVARIATENORMALDISTRIBUTION.COVARIANCE");
 		uom = props.getProperty("UOM");
 		phenTimeColName = props.getProperty("PHENTIMECOL");
 		resultTimeColName = props.getProperty("RESULTTIMECOL");
 	}
 
 	/**
-	 * helper method for parsing the observed properties from properties file
+	 * helper method for parsing a list of properties from file
 	 * 
 	 * @param obsPropsString
 	 *            comma seperated list of
-	 * @return
-	 * @throws Exception
+	 * @return 
+	 * @throws IOException 
 	 */
-	private List<String> parseObsProps(String obsPropsString) throws Exception {
+	private List<String> parsePropsList(String obsPropsString) throws IOException{
 		if (obsPropsString != null && !obsPropsString.equals("")) {
 			List<String> obsPropsList = new ArrayList<String>();
 			String[] obsProps = obsPropsString.split(",");
@@ -83,7 +106,7 @@ public class ShapeFileConverterProperties {
 			}
 			return obsPropsList;
 		} else {
-			throw new Exception(
+			throw new IOException(
 					"OBSPROPS property has to be set in config file!");
 		}
 	}
@@ -153,19 +176,6 @@ public class ShapeFileConverterProperties {
 		return obsPropsPrefix;
 	}
 
-	/**
-	 * @return the gaussianMeanColName
-	 */
-	public String getGaussianMeanColName() {
-		return gaussianMeanColName;
-	}
-
-	/**
-	 * @return the gaussianVarianceColName
-	 */
-	public String getGaussianVarianceColName() {
-		return gaussianVarianceColName;
-	}
 
 	/**
 	 * @return the obsPropsType
@@ -185,8 +195,8 @@ public class ShapeFileConverterProperties {
 	 * 
 	 * @return the uncertainty type used in the result of observations
 	 */
-	public String getUncertaintyType() {
-		return uncertaintyType;
+	public List<String> getUncertaintyType() {
+		return uncertaintyTypes;
 	}
 
 	/**
@@ -210,27 +220,82 @@ public class ShapeFileConverterProperties {
 	 */
 	public List<String> getFieldNames(){
 		List<String> result = new ArrayList<String>();
-		result.add(this.gaussianMeanColName);
-		result.add(this.gaussianVarianceColName);
+		result.add(this.normalMeanColName);
+		result.add(this.normalVarianceColName);
 		result.add(this.phenTimeColName);
 		result.add(this.resultTimeColName);
-		result.add(this.multivarGaussianCovarianceColName);
-		result.add(this.multivarGaussianMeanColName);
+		result.add(this.multivarNormalCovarianceColName);
+		result.add(this.multivarNormalMeanColName);
 		result.add(this.procColName);
 		return result;
 	}
 
-	/**
-	 * @return the multivarGaussianMeanColName
-	 */
-	public String getMultivarGaussianMeanColName() {
-		return multivarGaussianMeanColName;
+	
+	public FILETYPE getFileType() {
+		return fileType;
+	}
+
+	public String getShpFilePath() {
+		return shpFilePath;
+	}
+
+	public String getOmPropsFilePath() {
+		return omPropsFilePath;
 	}
 
 	/**
-	 * @return the multivarGaussianCovarianceColName
+	 * @return the outFilePath
 	 */
-	public String getMultivarGaussianCovarianceColName() {
-		return multivarGaussianCovarianceColName;
+	public String getOutFilePath() {
+		return outFilePath;
+	}
+
+	/**
+	 * @return the uncertaintyTypes
+	 */
+	public List<String> getUncertaintyTypes() {
+		return uncertaintyTypes;
+	}
+
+	/**
+	 * @return the normalMeanColName
+	 */
+	public String getNormalMeanColName() {
+		return normalMeanColName;
+	}
+
+	/**
+	 * @return the normalVarianceColName
+	 */
+	public String getNormalVarianceColName() {
+		return normalVarianceColName;
+	}
+
+	/**
+	 * @return the logNormalMeanColName
+	 */
+	public String getLogNormalMeanColName() {
+		return logNormalMeanColName;
+	}
+
+	/**
+	 * @return the logNormalVarianceColName
+	 */
+	public String getLogNormalVarianceColName() {
+		return logNormalVarianceColName;
+	}
+
+	/**
+	 * @return the multivarNormalMeanColName
+	 */
+	public String getMultivarNormalMeanColName() {
+		return multivarNormalMeanColName;
+	}
+
+	/**
+	 * @return the multivarNormalCovarianceColName
+	 */
+	public String getMultivarNormalCovarianceColName() {
+		return multivarNormalCovarianceColName;
 	}
 }
