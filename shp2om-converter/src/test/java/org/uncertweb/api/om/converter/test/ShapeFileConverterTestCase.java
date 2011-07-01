@@ -20,7 +20,7 @@ public class ShapeFileConverterTestCase extends TestCase {
 	
 	public void testUncertaintyConverter() throws Exception{
 		ShapeFileConverter converter = new ShapeFileConverter();
-		converter.convertSHPnDBF2OM(FILE_PATH+"/shapefiles/Traffic_Muenster.shp", FILE_PATH.replace("file://","")+"/shapefiles/Traffic_uncertainties_2att.dbf", "");
+		converter.run();
 	}
 	
 	public void tearDown() {
