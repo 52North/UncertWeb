@@ -6,15 +6,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,55 +20,40 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import net.opengis.examples.packet.PropertyType;
-import net.opengis.examples.packet.StaticFeatureType;
-
-//import org.apache.log4j.Logger;
+import org.geotools.data.DataUtilities;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureCollections;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.IllegalAttributeException;
+import org.geotools.feature.SchemaException;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.GenericFileData;
-import org.n52.wps.io.data.GenericFileDataConstants;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDoubleBinding;
 import org.n52.wps.server.AbstractAlgorithm;
+import org.n52.wps.server.AbstractObservableAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
+import org.n52.wps.server.WebProcessingService;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.FeatureFactory;
 import org.uncertweb.austalwps.util.AustalOutputReader;
 import org.uncertweb.austalwps.util.Point;
 import org.uncertweb.austalwps.util.StreamGobbler;
 import org.uncertweb.austalwps.util.Value;
-//import org.geotools.feature.AttributeType;
-import org.geotools.data.DataUtilities;
-import org.geotools.feature.DefaultFeatureCollections;
-//import org.geotools.feature.DefaultFeatureTypeFactory;
-//import org.geotools.feature.*;
-//import org.geotools.feature.Feature;
-import org.geotools.feature.FeatureCollections;
-import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.AttributeTypeBuilder;
-
-//import org.geotools.feature.FeatureType;
-import org.geotools.feature.IllegalAttributeException;
-import org.geotools.feature.SchemaException;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geometry.jts.JTSFactoryFinder;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.Polygon;
 
-public class Austal2000Algorithm extends AbstractAlgorithm{
+public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 //	private static Logger LOGGER = Logger.getLogger(Austal2000Algorithm.class);
 //	private final String inputIDXQ = "XQ";
@@ -127,7 +109,7 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 	}
 
 	@Override
-	public Class getInputDataType(String id) {
+	public Class<?> getInputDataType(String id) {
 		if(id.equals(inputIDPQ)){
 			return LiteralDoubleBinding.class;
 		}else if(id.equals(inputIDStartTime)){
@@ -140,7 +122,7 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 	}
 
 	@Override
-	public Class getOutputDataType(String id) {
+	public Class<?> getOutputDataType(String id) {
 		return GTVectorDataBinding.class;
 //		return GenericFileDataBinding.class;
 	}
@@ -149,7 +131,14 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 		
 		//1.a get input
-		Map<String, IData> result = new HashMap<String, IData>();		
+		Map<String, IData> result = new HashMap<String, IData>();			
+
+		String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
+		String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
+		
+		String endpointURL = "http://" + host + ":" + hostPort+ "/" + 
+		//WPSConfiguration.getInstance().getProperty(WebProcessingService.PROPERTY_NAME_HOST_PORT) + "/" + 
+		WebProcessingService.WEBAPP_PATH + "/";
 		
 		File workDir = new File(workDirPath);
 		
@@ -190,8 +179,10 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 			int coordinateCount = 0;
 			
 			try {
+				
+				
 				URL austal2000FileURL = new URL(
-						"http://localhost:8080/wps/res/" + austal2000FileName);
+						endpointURL + "res/" + austal2000FileName);
 
 				BufferedReader bufferedReader = new BufferedReader(
 						new InputStreamReader(austal2000FileURL.openStream()));
@@ -425,7 +416,7 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 			String output = "";
 			
 			try {
-				URL timeperiodFileURL = new URL("http://localhost:8080/wps/res/" + timeperiodFileName);//TODO: make configurable
+				URL timeperiodFileURL = new URL( endpointURL + "res/" + timeperiodFileName);//TODO: make configurable
 				
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(timeperiodFileURL.openStream()));
 				
@@ -516,10 +507,14 @@ public class Austal2000Algorithm extends AbstractAlgorithm{
 			StreamGobbler errorGobbler = new StreamGobbler(proc
 					.getErrorStream(), "ERROR");
 			
+			errorGobbler.setSubject(this);
+			
 			// any output?
 			StreamGobbler outputGobbler = new StreamGobbler(proc
 					.getInputStream(), "OUTPUT");
 
+			outputGobbler.setSubject(this);
+			
 			// kick them off
 			errorGobbler.start();
 			outputGobbler.start();
