@@ -10,62 +10,48 @@
 				<LiteralData>
 				<ows:DataType ows:reference="xs:string"/>
 					<ows:AllowedValues>
-						<ows:Value>Austal</ows:Value>
-					</ows:AllowedValues>
-				</LiteralData>
-			</Input>
-			<Input minOccurs="0" maxOccurs="99999">
-				<ows:Identifier>UncertainProcessInputs</ows:Identifier>
-				<ows:Title></ows:Title>
-				<ows:Abstract>Input data with probabilistic uncertainty encoded as UncertML.For uncertain spatial/spatial-temporal information you should use OM.</ows:Abstract>
-				<ComplexData>
-					<Default>
-						<Format>
-							<MimeType>text/xml</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/UncertML2.xsd</Schema>
-						</Format>
-					</Default>
-					<Supported>
-						<Format>
-							<MimeType>text/xml</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/UncertML2.xsd</Schema>
-						</Format>
-						<Format>
-							<MimeType>text/xml</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/OM2.0.0/OM_Profile.xsd</Schema>
-						</Format>
-					</Supported>
-				</ComplexData>
-			</Input>
-			<Input minOccurs="1" maxOccurs="1">
-				<ows:Identifier>ProcessExecuteRequest</ows:Identifier>
-				<ows:Title></ows:Title>
-				<ows:Abstract>Execute request containing the process identifier and the static inputs for the process.</ows:Abstract>
-				<ComplexData>
-					<Default>
-						<Format>
-							<MimeType>text/xml</MimeType>
-							<Schema>http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd</Schema>
-						</Format>
-					</Default>
-					<Supported>
-						<Format>
-							<MimeType>text/xml</MimeType>
-							<Schema>http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd</Schema>
-						</Format>
-					</Supported>
-				</ComplexData>
-			</Input>
-			<!--Input minOccurs="1" maxOccurs="1">
-				<ows:Identifier>ProcessExecuteRequest</ows:Identifier>
-				<ows:Title></ows:Title>
-				<LiteralData>
-				<ows:DataType ows:reference="xs:string"/>
-					<ows:AllowedValues>
 						<ows:Value/>
 					</ows:AllowedValues>
 				</LiteralData>
-			</Input-->
+			</Input>
+			<Input minOccurs="0" maxOccurs="9999">
+				<ows:Identifier>UncertainProcessInputs</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty. The UncertainInputType is structured similar to a normal WPS DataInputType, i.e. it has an identifier and a data element. The identifier is necessary to construct the executedocument for the model WPS.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="9999">
+				<ows:Identifier>StaticProcessInputs</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty. The StaticInputType is structured similar to a normal WPS DataInputType, i.e. it has an identifier and a data element. The identifier is necessary to construct the executedocument for the model WPS.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInput.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInput.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
 			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>ServiceURL</ows:Identifier>
 				<ows:Title></ows:Title>
@@ -85,6 +71,7 @@
 				<ows:DataType ows:reference="xs:string"/>
 					<ows:AllowedValues>
 						<ows:Value>uncertweb:Realisations</ows:Value>
+						<ows:Value>...</ows:Value>
 					</ows:AllowedValues>
 				</LiteralData>
 			</Input>
