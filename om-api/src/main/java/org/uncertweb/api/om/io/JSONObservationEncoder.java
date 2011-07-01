@@ -1,14 +1,15 @@
 package org.uncertweb.api.om.io;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.util.List;
 
-import org.apache.xmlbeans.XmlException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 import org.uncertml.IUncertainty;
-import org.uncertml.exception.UncertaintyEncoderException;
-import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.io.JSONEncoder;
 import org.uncertweb.api.gml.io.JSONGeometryEncoder;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
@@ -258,6 +259,66 @@ public class JSONObservationEncoder implements IObservationEncoder{
 			writer.endObject();
 		}
 		writer.endObject();
+	}
+
+
+
+	@Override
+	public void encodeObservationCollection(IObservationCollection obsCol,
+			File f) throws OMEncodingException {
+		String result = encodeObservationCollection(obsCol);
+		IOUtil.writeString2File(result, f);
+	}
+
+
+
+	@Override
+	public void encodeObservationCollection(IObservationCollection obsCol,
+			OutputStream out) throws OMEncodingException {
+		String result = encodeObservationCollection(obsCol);
+		IOUtil.writeString2OutputStream(result, out);
+	}
+
+
+
+	@Override
+	public void encodeObservationCollection(IObservationCollection obsCol,
+			Writer writer) throws OMEncodingException {
+		try {
+			writer.write(encodeObservationCollection(obsCol));
+			writer.flush();
+		} catch (IOException e) {
+			throw new OMEncodingException(e);
+		}
+	}
+
+
+
+	@Override
+	public void encodeObservation(AbstractObservation obs, File f)
+			throws OMEncodingException {
+		String result = encodeObservation(obs);
+		IOUtil.writeString2File(result, f);
+	}
+
+
+
+	@Override
+	public void encodeObservation(AbstractObservation obs, OutputStream out)
+			throws OMEncodingException {
+		String result = encodeObservation(obs);
+		IOUtil.writeString2OutputStream(result, out);
+	}
+
+	@Override
+	public void encodeObservation(AbstractObservation obs, Writer writer)
+			throws OMEncodingException {
+		try {
+			writer.write(encodeObservation(obs));
+			writer.flush();
+		} catch (IOException e) {
+			throw new OMEncodingException(e);
+		}
 	}
 
 
