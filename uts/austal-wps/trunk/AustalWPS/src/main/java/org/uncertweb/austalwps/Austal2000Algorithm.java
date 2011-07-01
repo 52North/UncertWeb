@@ -24,7 +24,6 @@ import org.geotools.data.DataUtilities;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.IllegalAttributeException;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -36,7 +35,6 @@ import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDoubleBinding;
-import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.server.AbstractObservableAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
 import org.n52.wps.server.WebProcessingService;
@@ -58,15 +56,12 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 //	private static Logger LOGGER = Logger.getLogger(Austal2000Algorithm.class);
 //	private final String inputIDXQ = "XQ";
 //	private final String inputIDYQ = "YQ";
-//	private final String inputIDHQ = "HQ";
-	private final String inputIDPQ = "PQ";
-	private final String inputIDFeatures = "FEATURES";
-	private final String inputIDTimeperiod = "TIMEPERIOD";
-	private final String inputIDStartTime = "START_TIME";
-	private final String inputIDEndTime = "END_TIME";
-	private final String outputID_1 = "RESULT_1";
-	private final String outputID_2 = "RESULT_2";
-	private final String outputID_ZIP = "RESULT_ZIP";
+	private final String inputIDMeteorology = "meteorology";
+	private final String inputIDStreetEmissions = "street-emissions";
+	private final String inputIDReceptorPoints = "receptor-points";
+	private final String inputIDStartTime = "start-time";
+	private final String inputIDEndTime = "end-time";
+	private final String outputIDResult = "result";
 	private final String fileSeparator = System.getProperty("file.separator");
 	private final String lineSeparator = System.getProperty("line.separator");
 	private final String logFileMarkerBeginningEnglish = "File";
@@ -110,11 +105,11 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 	@Override
 	public Class<?> getInputDataType(String id) {
-		if(id.equals(inputIDPQ)){
+		if(id.equals(inputIDStreetEmissions)){
 			return LiteralDoubleBinding.class;
 		}else if(id.equals(inputIDStartTime)){
 			return LiteralDateTimeBinding.class;
-		}else if(id.equals(inputIDFeatures)){
+		}else if(id.equals(inputIDReceptorPoints)){
 			return GTVectorDataBinding.class;
 		}else{
 			return GenericFileDataBinding.class;			
@@ -146,11 +141,11 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			workDir.mkdir();
 		}
 		
-		List<IData> firstDataList = inputData.get(inputIDFeatures);
-		if(firstDataList == null || firstDataList.size() != 1){
+		List<IData> receptorPointsDataList = inputData.get(inputIDReceptorPoints);
+		if(receptorPointsDataList == null || receptorPointsDataList.size() != 1){
 			throw new RuntimeException("Error while allocating input parameters");
 		}
-		IData firstInputData = firstDataList.get(0);
+		IData firstInputData = receptorPointsDataList.get(0);
 		
 		File austal2000File = null;
 		
@@ -202,10 +197,10 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 					if (line.contains(pointsXMarker)) {
 
-						FeatureCollection featColl = ((GTVectorDataBinding) firstInputData)
+						FeatureCollection<?, ?> featColl = ((GTVectorDataBinding) firstInputData)
 								.getPayload();
 
-						FeatureIterator iterator = featColl.features();//Differentiate between point and line
+						FeatureIterator<?> iterator = featColl.features();//Differentiate between point and line
 												
 						while (iterator.hasNext()) {
 
@@ -317,32 +312,19 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 		}
 		
-		List<IData> secondDataList = inputData.get(inputIDTimeperiod);
+		List<IData> streetEmissionDataList = inputData.get(inputIDStreetEmissions);
 		
-		if(!(secondDataList == null) && secondDataList.size() != 1){
+		if(!(streetEmissionDataList == null) && streetEmissionDataList.size() != 1){
 
-			IData secondInputData = secondDataList.get(0);
+//			IData secondInputData = streetEmissionDataList.get(0);
 			
-			File timeperiodFile = null;
-			
-			if(secondInputData instanceof GenericFileDataBinding){
-				GenericFileData genericInputData = ((GenericFileDataBinding)secondInputData).getPayload();
+		}
+		
+		List<IData> meteorologyDataList1 = inputData.get(inputIDMeteorology);
+		
+		if(!(meteorologyDataList1 == null) && meteorologyDataList1.size() != 1){
 
-				String fileName = genericInputData.writeData(workDir);
-				
-				File tmpFile = new File(fileName);
-				
-				String newFileName = fileName.substring(0, fileName.lastIndexOf(fileSeparator));
-				
-				newFileName = newFileName.concat(fileSeparator + timeperiodFileName);
-				
-				timeperiodFile = new File(newFileName);
-				
-				boolean success = tmpFile.renameTo(timeperiodFile);
-				
-				System.out.println("created " + timeperiodFileName + " " + success);
-				
-			}
+//			IData secondInputData = meteorologyDataList1.get(0);
 			
 		}
 		
@@ -411,7 +393,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		//cut zeitreihe.txt to timeperiod starttime - endtime
 		
-		if(secondDataList == null || secondDataList.size() == 0){
+		if(meteorologyDataList1 == null || meteorologyDataList1.size() == 0){
 			
 			String output = "";
 			
@@ -494,9 +476,9 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		try {
 
-			File parentFile = workDir.getParentFile();
+//			File parentFile = workDir.getParentFile();
 			
-			String path = parentFile.getAbsolutePath() + fileSeparator;
+//			String path = parentFile.getAbsolutePath() + fileSeparator;
 			
 			String command = austalHome + fileSeparator + "austal2000.exe " + workDir.getAbsolutePath();
 			
@@ -518,11 +500,9 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			// kick them off
 			errorGobbler.start();
 			outputGobbler.start();
-
-			// any error???
-			int exitVal;
+			
 			try {
-				exitVal = proc.waitFor();
+				proc.waitFor();
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
@@ -602,7 +582,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			
 			//zip the output
 			
-			String[] files = fileList.toArray(new String[fileList.size()]);
+//			String[] files = fileList.toArray(new String[fileList.size()]);
 			
 			parseAustalOutput();
 			
@@ -610,9 +590,9 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			
 			ArrayList<Point[]> points = austal.createPoints(workDirPath, true);
 
-			FeatureCollection fOut = createFeatureCollection(points);
+			FeatureCollection<?, SimpleFeature> fOut = createFeatureCollection(points);
 
-			result.put("RESULT_ZIP",
+			result.put(outputIDResult,
 					new GTVectorDataBinding(fOut));
 			
 //			// loop through point arrays
@@ -666,8 +646,8 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		return null;
 	}
 	
-	private FeatureCollection createFeatureCollection(ArrayList<Point[]> pois) {
-		FeatureCollection collection = FeatureCollections.newCollection();
+	private FeatureCollection<?, SimpleFeature> createFeatureCollection(ArrayList<Point[]> pois) {
+		FeatureCollection<?, SimpleFeature> collection = FeatureCollections.newCollection();
 		//SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
 		//typeBuilder.setName("gmlPacketFeatures");
 		SimpleFeatureType featType = null;
@@ -724,7 +704,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					feature = featBuilder.buildFeature(null);
 					collection.add(feature);
 					
-				} catch (IllegalAttributeException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}				
 			}
@@ -748,7 +728,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	}
 	
 	
-	private File zipFiles(String[] files){
+	public File zipFiles(String[] files){
 		
 //		String result = "c:\\temp\\work\\result.zip";
 		String result = tmpDir + fileSeparator + "result.zip";
