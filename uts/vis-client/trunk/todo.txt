@@ -1,6 +1,0 @@
-- changing layer order
-- renaming of layers
-- requesting of JSON
-- O&M2 parser
-- quantiles
-
