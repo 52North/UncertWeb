@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:uw="http://www.uncertweb.org" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/1.0.0" targetNamespace="http://www.uncertweb.org" elementFormDefault="qualified" version="1.0.0 2010-02-03" xml:lang="en">
+	<annotation>
+		<documentation/>
+	</annotation>
+	<!-- =============================================================
+		includes and imports
+	============================================================== -->
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"/>
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
+	<import namespace="http://www.opengis.net/wps/1.0.0" schemaLocation="http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd"/>
+	<element name="AbstractInput" type="uw:AbstractInputType" abstract="true"/>
+	<complexType name="AbstractInputType" abstract="true">
+		<sequence>
+			<element ref="ows:Identifier">
+				<annotation>
+					<documentation>Unambiguous identifier or name of a process, unique for this server, or unambiguous identifier or name of an output, unique for this process. </documentation>
+				</annotation>
+			</element>
+			<element ref="ows:Title" minOccurs="0">
+				<annotation>
+					<documentation>Title of a process or output, normally available for display to a human. </documentation>
+				</annotation>
+			</element>
+			<element ref="ows:Abstract" minOccurs="0">
+				<annotation>
+					<documentation>Brief narrative description of a process or output, normally available for display to a human. </documentation>
+				</annotation>
+			</element>
+			<group ref="wps:InputDataFormChoice">
+				<annotation>
+					<documentation>Identifies the form of this input, and provides supporting information. </documentation>
+				</annotation>
+			</group>
+		</sequence>
+	</complexType>
+	<element name="AbstractStaticInput" type="uw:AbstractStaticInputType" abstract="true" substitutionGroup="uw:AbstractInput"/>
+	<complexType name="AbstractStaticInputType" abstract="true">
+		<complexContent>
+			<extension base="uw:AbstractInputType"/>
+		</complexContent>
+	</complexType>
+	<element name="AbstractUncertainInput" type="uw:AbstractUncertainInputType" abstract="true" substitutionGroup="uw:AbstractInput"/>
+	<complexType name="AbstractUncertainInputType" abstract="true">
+		<complexContent>
+			<extension base="uw:AbstractInputType"/>
+		</complexContent>
+	</complexType>
+	<element name="StaticInput" type="uw:StaticInputType" substitutionGroup="uw:AbstractStaticInput"/>
+	<complexType name="StaticInputType">
+		<complexContent>
+			<extension base="uw:AbstractStaticInputType">
+			</extension>
+		</complexContent>
+	</complexType>
+		<element name="UncertainInput" type="uw:UncertainInputType" substitutionGroup="uw:AbstractUncertainInput"/>
+	<complexType name="UncertainInputType">
+		<complexContent>
+			<extension base="uw:AbstractUncertainInputType">
+			</extension>
+		</complexContent>
+	</complexType>
+	<group name="InputDataFormChoice">
+		<annotation>
+			<documentation>Identifies the form of this input or output value, and provides supporting information. </documentation>
+		</annotation>
+		<choice>
+			<element name="Reference" type="wps:InputReferenceType">
+				<annotation>
+					<documentation>Identifies this input value as a web accessible resource, and references that resource. </documentation>
+				</annotation>
+			</element>
+			<element name="Data" type="wps:DataType">
+				<annotation>
+					<documentation>Identifies this input value as a data embedded in this request, and includes that data. </documentation>
+				</annotation>
+			</element>
+		</choice>
+	</group>
+	<complexType name="DataType">
+		<annotation>
+			<documentation>Identifies the form of this input or output value, and provides supporting information. </documentation>
+		</annotation>
+		<choice>
+			<element name="ComplexData" type="wps:ComplexDataType">
+				<annotation>
+					<documentation>Identifies this input or output value as a complex data structure encoded in XML (e.g., using GML), and provides that complex data structure. For an input, this element may be used by a client for any process input coded as ComplexData in the ProcessDescription. For an output, this element shall be used by a server when "store" in the Execute request is "false". </documentation>
+				</annotation>
+			</element>
+			<element name="LiteralData" type="wps:LiteralDataType">
+				<annotation>
+					<documentation>Identifies this input or output data as literal data of a simple quantity (e.g., one number), and provides that data. </documentation>
+				</annotation>
+			</element>
+			<element name="BoundingBoxData" type="ows:BoundingBoxType">
+				<annotation>
+					<documentation>Identifies this input or output data as an ows:BoundingBox data structure, and provides that ows:BoundingBox data. </documentation>
+				</annotation>
+			</element>
+		</choice>
+	</complexType>
+	<complexType name="InputReferenceType">
+		<annotation>
+			<documentation>Reference to an input or output value that is a web accessible resource. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="Header" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Extra HTTP request headers needed by the service identified in ../Reference/@href.  For example, an HTTP SOAP request requires a SOAPAction header.  This permits the creation of a complete and valid POST request.</documentation>
+				</annotation>
+				<complexType>
+					<attribute name="key" type="string" use="required">
+						<annotation>
+							<documentation>Key portion of the Key-Value pair in the HTTP request header.</documentation>
+						</annotation>
+					</attribute>
+					<attribute name="value" type="string" use="required">
+						<annotation>
+							<documentation>Value portion of the Key-Value pair in the HTTP request header.</documentation>
+						</annotation>
+					</attribute>
+				</complexType>
+			</element>
+			<choice minOccurs="0">
+				<element name="Body" type="anyType">
+					<annotation>
+						<documentation>The contents of this element to be used as the body of the HTTP request message to be sent to the service identified in ../Reference/@href.  For example, it could be an XML encoded WFS request using HTTP POST</documentation>
+					</annotation>
+				</element>
+				<element name="BodyReference">
+					<annotation>
+						<documentation>Reference to a remote document to be used as the body of the an HTTP POST request message to the service identified in ../Reference/@href.</documentation>
+					</annotation>
+					<complexType>
+						<attribute ref="xlink:href" use="required">
+							<annotation>
+								<documentation>Reference to a remote document to be used as the body of the an HTTP POST request message. This attribute shall contain a URL from which this input can be electronically retrieved. </documentation>
+							</annotation>
+						</attribute>
+					</complexType>
+				</element>
+			</choice>
+		</sequence>
+		<attribute ref="xlink:href" use="required">
+			<annotation>
+				<documentation>Reference to a web-accessible resource that can be used as input, or is provided by the process as output. This attribute shall contain a URL from which this input/output can be electronically retrieved. </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="method" use="optional" default="GET">
+			<annotation>
+				<documentation>Identifies the HTTP method.  Allows a choice of GET or POST.  Default is GET.</documentation>
+			</annotation>
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="GET"/>
+					<enumeration value="POST"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+		<attributeGroup ref="wps:ComplexDataEncoding"/>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ComplexDataType" mixed="true">
+		<annotation>
+			<documentation>Complex data (such as an image), including a definition of the complex value data structure (i.e., schema, format, and encoding).  May be an ows:Manifest data structure.</documentation>
+		</annotation>
+		<complexContent mixed="true">
+			<extension base="anyType">
+				<attributeGroup ref="wps:ComplexDataEncoding"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="LiteralDataType">
+		<annotation>
+			<documentation>One simple literal value (such as an integer or real number) that is embedded in the Execute operation request or response. </documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="string">
+				<annotation>
+					<documentation>String containing the Literal value (e.g., "49").</documentation>
+				</annotation>
+				<attribute name="dataType" type="anyURI" use="optional">
+					<annotation>
+						<documentation>Identifies the data type of this literal input or output. This dataType should be included for each quantity whose value is not a simple string. </documentation>
+					</annotation>
+				</attribute>
+				<attribute name="uom" type="anyURI" use="optional">
+					<annotation>
+						<documentation>Identifies the unit of measure of this literal input or output. This unit of measure should be referenced for any numerical value that has units (e.g., "meters", but not a more complete reference system). Shall be a UOM identified in the Process description for this input or output. </documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<attributeGroup name="ComplexDataEncoding">
+		<annotation>
+			<documentation>References the XML schema, format, and encoding of a complex value. </documentation>
+		</annotation>
+		<attribute name="mimeType" type="ows:MimeType" use="optional">
+			<annotation>
+				<documentation>The Format of this input or requested for this output (e.g., text/xml). This element shall be omitted when the Format is indicated in the http header of the output. When included, this format shall be one published for this output or input in the Process full description. </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="encoding" type="anyURI" use="optional">
+			<annotation>
+				<documentation>The encoding of this input or requested for this output (e.g., UTF-8). This "encoding" shall be included whenever the encoding required is not the default encoding indicated in the Process full description. When included, this encoding shall be one published for this output or input in the Process full description. </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="schema" type="anyURI" use="optional">
+			<annotation>
+				<documentation>Web-accessible XML Schema Document that defines the content model of this complex resource (e.g., encoded using GML 2.2 Application Schema).  This reference should be included for XML encoded complex resources to facilitate validation. </documentation>
+				<documentation>PS I changed the name of this attribute to be consistent with the ProcessDescription.  The original was giving me validation troubles in XMLSpy. </documentation>
+			</annotation>
+		</attribute>
+	</attributeGroup>
+</schema>
