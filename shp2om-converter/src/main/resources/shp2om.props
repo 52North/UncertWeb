@@ -12,27 +12,28 @@
 
 
 #####absolute path to shp file containing the geometries of the features
-SHPPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/Traffic_Muenster.shp
+SHPPATH=D:/JavaProjects/shp2om-converter/src/main/resources/shapefiles/small.shp
 
 #####TYPE of file used for uncertainties; can be either csv or dbf file
 FILETYPE=csv
 
 #####absolute path to csv or dbf file containing the O&M properties and additional optional uncertainties for the features contained in the shapefile
-OMFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/street.csv
+OMFILEPATH=D:/JavaProjects/shp2om-converter/src/main/resources/shapefiles/small.csv
 
 #####output file path
-OUTFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/out.xml
+OUTFILEPATH=D:/JavaProjects/shp2om-converter/src/main/resources/out_small.xml
  
 #####indicates the name of the feature class which should be used
 #FEATCLASSNAME=lqMS
-FEATCLASSNAME=Traffic_Muenster
+FEATCLASSNAME=small
 
 #####indicates the geometry type in O&M
-GEOMTYPE=LineString
+#GEOMTYPE=LineString
+GEOMTYPE=Polygon
 
 ###indicates the sensor ID(s)
 #specify PROCID, if you have ONE sensor for all features
-PROCID=STOLZTYP
+PROCID=ID
 
 #specify column name containing the sensor IDs for PROCOL, if you have varying sensors for different features
 #TODO currently not implemented
@@ -42,7 +43,7 @@ PROCCOL=
 OBSPROPS=PM10_total,N,13,11
 
 ####specifies the UOM of the observed property in case of numeric values
-UOM=ppm
+UOM=PM10gsec
 
 #####specifies the obspropsType
 #currently, only one type per shapefile is possible
@@ -63,23 +64,23 @@ UNTYPES=MultivariateNormalDistribution,LogNormalDistribution
 #####
 #set if UNTYPE is GaussianDistribution
 #specifies the columnname of the gaussian mean
-UNTYPE.NORMALDISTRIBUTION.MEAN=PM10_DAY_M
+UNTYPE.NORMALDISTRIBUTION.MEAN=DE_Nmean
 #specifies the columnname of the gaussian mean
-UNTYPE.NORMALDISTRIBUTION.VARIANCE=PM10_DAY_V
+UNTYPE.NORMALDISTRIBUTION.VARIANCE=DE_Nsd
 
 ######
 #set if UNTYPE is MultivariantGaussianDistribution
 #specifies the columnname of the gaussian means
-UNTYPE.MULTIVARIATENORMALDISTRIBUTION.MEANS=hourly_mean
+UNTYPE.MULTIVARIATENORMALDISTRIBUTION.MEANS=HFDE_MVNmean
 #specifies the columnname of the gaussian covariances
-UNTYPE.MULTIVARIATENORMALDISTRIBUTION.COVARIANCE=hourly_cov
+UNTYPE.MULTIVARIATENORMALDISTRIBUTION.COVARIANCE=HFDE_MVNcov
 
 #####
 #set if UNTYPE is LogNormalDistribution
 #specifies the columnname of the gaussian mean
-UNTYPE.LOGNORMALDISTRIBUTION.MEAN=day_lmean
+UNTYPE.LOGNORMALDISTRIBUTION.MEAN=DE_LNmean
 #specifies the columnname of the gaussian mean
-UNTYPE.LOGNORMALDISTRIBUTION.VARIANCE=day_lsd
+UNTYPE.LOGNORMALDISTRIBUTION.VARIANCE=DE_LNsd
 
 
 ##### specifies the phenomenon time; can be either one ISO 8601 TimeString (YYYY-mm-DD'T'HH:mm:SS.mmmZ) representing a
