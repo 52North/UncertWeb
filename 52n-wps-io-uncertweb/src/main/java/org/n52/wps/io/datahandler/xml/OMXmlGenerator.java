@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
+import org.n52.wps.io.IStreamableGenerator;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.OMData;
 import org.n52.wps.io.data.UncertWebDataConstants;
@@ -21,7 +22,7 @@ import org.w3c.dom.Node;
  * @author Kiesow
  * 
  */
-public class OMXmlGenerator extends AbstractXMLGenerator {
+public class OMXmlGenerator extends AbstractXMLGenerator implements IStreamableGenerator{
 
 	private static Logger LOGGER = Logger.getLogger(OMXmlGenerator.class);
 	private XBObservationEncoder encoder = new XBObservationEncoder();
@@ -114,6 +115,17 @@ public class OMXmlGenerator extends AbstractXMLGenerator {
 	public Class<?>[] getSupportedInternalInputDataType() {
 		Class<?>[] supportedClasses = { OMDataBinding.class };
 		return supportedClasses;
+	}
+
+	@Override
+	public void writeToStream(IData outputData, OutputStream os) {
+		XmlObject xb_doc = generateXMLDocument(outputData);
+		try {
+			xb_doc.save(os);
+		} catch (IOException e) {
+			LOGGER.error("Unable to encode observation: " + e.getMessage());
+		}
+		
 	}
 
 }

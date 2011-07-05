@@ -24,7 +24,7 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
  * {@link org.uncertweb.api.om.observation.ObservationCollection
  * ObservationCollections}
  * 
- * @author Kiesow
+ * @author Kiesow, staschc
  * 
  */
 public class OMData {
@@ -32,17 +32,20 @@ public class OMData {
 	private static Logger log = Logger.getLogger(OMData.class);
 	private IObservationCollection obsCol;
 	private AbstractObservation obs;
+	private String mimeType;
 
 	// private InputStream dataStream;
 	// private String mimeType;
 	// private String fileExtension;
 
-	public OMData(IObservationCollection obsCol) {
+	public OMData(IObservationCollection obsCol, String mimeType) {
 		this.obsCol = obsCol;
+		this.mimeType=mimeType;
 	}
 
-	public OMData(AbstractObservation obs) {
+	public OMData(AbstractObservation obs, String mimeType) {
 		this.obs = obs;
+		this.mimeType=mimeType;
 	}
 
 	// public OMData(InputStream stream, String mimeType) {
@@ -101,6 +104,13 @@ public class OMData {
 	 */
 	public AbstractObservation getObservation() {
 		return obs;
+	}
+
+	/**
+	 * @return the mimeType
+	 */
+	public String getMimeType() {
+		return mimeType;
 	}
 }
 

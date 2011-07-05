@@ -106,7 +106,7 @@ public class OMXmlParser extends AbstractXMLParser {
 		if (xbDoc instanceof OMObservationDocument) {
 			AbstractObservation obs;
 			obs = parser.parseObservation(xbDoc.toString());
-			omData = new OMData(obs);
+			omData = new OMData(obs, UncertWebDataConstants.MIME_TYPE_OMX);
 		} else if (xbDoc instanceof OMBooleanObservationCollectionDocument
 				|| xbDoc instanceof OMDiscreteNumericObservationCollectionDocument
 				|| xbDoc instanceof OMMeasurementCollectionDocument
@@ -118,7 +118,7 @@ public class OMXmlParser extends AbstractXMLParser {
 
 			IObservationCollection obsCol = parser
 					.parseObservationCollection(xbDoc.toString());
-			omData = new OMData(obsCol);
+			omData = new OMData(obsCol, UncertWebDataConstants.MIME_TYPE_OMX);
 		} else {
 			throw new RuntimeException(
 					"The data is neither an observation nor an observation collection.");

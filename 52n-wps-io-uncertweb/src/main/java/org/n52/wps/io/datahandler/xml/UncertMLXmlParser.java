@@ -32,7 +32,7 @@ public class UncertMLXmlParser extends AbstractXMLParser{
 
 	@Override
 	public IData parse(InputStream stream, String mimeType) {
-		if (!mimeType.equals(UncertWebDataConstants.MIMETYPE_TYPE_UNCERTML)){
+		if (!mimeType.equals(UncertWebDataConstants.MIME_TYPE_UNCERTML)){
 			throw new RuntimeException("MimeType "+mimeType+" is not supported by UncertMLXMLParser!");
 		}
 		else {
@@ -46,7 +46,7 @@ public class UncertMLXmlParser extends AbstractXMLParser{
 		XMLParser parser = new XMLParser();
 		try {
 			IUncertainty uncertainty = parser.parse(arg0);
-			result = new UncertMLDataBinding(new UncertMLData(uncertainty));
+			result = new UncertMLDataBinding(new UncertMLData(uncertainty, UncertWebDataConstants.MIME_TYPE_UNCERTML));
 		} catch (UncertaintyParserException e) {
 			String message = "Error while parsing UncertML input: "+e.getMessage();
 			LOGGER.debug(message);
@@ -61,7 +61,7 @@ public class UncertMLXmlParser extends AbstractXMLParser{
 		XMLParser parser = new XMLParser();
 		try {
 			IUncertainty uncertainty = parser.parse(stream);
-			result = new UncertMLDataBinding(new UncertMLData(uncertainty));
+			result = new UncertMLDataBinding(new UncertMLData(uncertainty, UncertWebDataConstants.MIME_TYPE_UNCERTML));
 		} catch (UncertaintyParserException e) {
 			String message = "Error while parsing UncertML input: "+e.getMessage();
 			LOGGER.debug(message);
