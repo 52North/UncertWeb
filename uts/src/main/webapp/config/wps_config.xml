@@ -55,7 +55,7 @@
 				<Property name="supportedFormat" active="true">application/dbase</Property>
 				<Property name="supportedFormat" active="true">application/remap</Property>
 				<Property name="supportedFormat" active="true">application/x-erdas-hfa</Property>
-				<Property name="supportedFormat" active="true">application/x-netcdf</Property>
+				<!-- <Property name="supportedFormat" active="true">application/x-netcdf</Property> -->
 				<Property name="supportedFormat" active="true">application/dgn</Property>
 				<Property name="supportedFormat" active="true">image/jpeg</Property>
 				<Property name="supportedFormat" active="true">image/png</Property>
@@ -117,20 +117,22 @@
 				<Property name="supportedFormat" active="true">application/x-zipped-wkt</Property>
 				<Property name="supportedEncoding" active="true">Base64</Property>
 			</Parser>
-			<Parser name="UncertMLParser" className="org.n52.wps.io.datahandler.xml.UncertMLParser" active="true">
-				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd</Property>
-				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Quantile.xsd</Property>
-				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Parser>	
-			<Parser name="UncertWebBinaryParser" className="org.n52.wps.io.datahandler.binary.UncertWebBinaryParser" active="true">
+			
+			<!--
+			##################################
+			##UncertWeb Parsers
+			################################## 
+			 -->
+			<Parser name="UncertWebIODataParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true">
+				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
+				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
 				<Property name="supportedFormat" active="true">application/x-netcdf</Property>
+				<Property name="supportedFormat" active="true">application/uncertml</Property>
+				<Property name="supportedFormat" active="true">application/gml+xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Parser>	
-			
-			
+			</Parser>		
 		</ParserList>
+		
 		<GeneratorList>
 		 
 			<Generator name="GML3BasicGenerator" className="org.n52.wps.io.datahandler.xml.GML3BasicGenerator" active="true">
@@ -262,18 +264,20 @@
 				<Property name="supportedFormat" active="true">application/vnd.google-earth.kml+xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>	
-			<Generator name="UncertMLGenerator" className="org.n52.wps.io.datahandler.xml.UncertMLGenerator" active="true">
-				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd</Property>
-				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Quantile.xsd</Property>
-				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Generator>	
-			<Generator name="UncertWebBinaryGenerator" className="org.n52.wps.io.datahandler.binary.UncertWebBinaryGenerator" active="true">
+			
+			<!-- 
+			################
+			## UncertWeb generators
+			################
+			 -->
+			<Generator name="UncertWebIODataGenerator" className="org.n52.wps.io.datahandler.UncertWebIODataGenerator" active="true">
+				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
+				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
 				<Property name="supportedFormat" active="true">application/x-netcdf</Property>
+				<Property name="supportedFormat" active="true">application/uncertml</Property>
+				<Property name="supportedFormat" active="true">application/gml+xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Generator>	
-				
+			</Generator>
 			
 		</GeneratorList>
 	</Datahandlers>
@@ -401,7 +405,7 @@
            
 		
 	</AlgorithmRepositoryList>
-	<Server hostname="giv-uw.uni-muenster.de" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="uts">
+	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="uts">
 		     <Database/>
 	</Server>
 </WPSConfiguration>

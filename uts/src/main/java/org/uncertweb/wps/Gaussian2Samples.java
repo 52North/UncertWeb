@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.n52.wps.io.data.GenericFileDataConstants;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.UncertWebData;
-import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
+import org.n52.wps.io.data.NetCDFData;
+import org.n52.wps.io.data.UncertWebIOData;
+import org.n52.wps.io.data.binding.complex.NetCDFDataBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.util.r.process.ExtendedRConnection;
@@ -58,21 +59,16 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 		try {
 
 			// get netCDF file containing the Gaussian Distributions
-			IData ncdfInput = inputData.get(INPUT_IDENTIFIER_DIST).get(0);
+			IData dataInput = inputData.get(INPUT_IDENTIFIER_DIST).get(0);
 
-			String errorMsg = "No NetCDF-U data can be loaded from input reference!";
-			if (!(ncdfInput.getPayload() instanceof UncertWebData)) {
-				LOGGER.error(errorMsg);
-				throw new IOException(errorMsg);
-			}
-			UncertWebData uwNcdfInput = (UncertWebData) ncdfInput.getPayload();
-			if (!uwNcdfInput.getMimeType().equalsIgnoreCase(
-					GenericFileDataConstants.MIME_TYPE_NETCDFX)) {
-				LOGGER.error(errorMsg);
-				throw new IOException(errorMsg);
-			}
-
-			NetcdfUWFile uwNcdfFile = uwNcdfInput.getNcdfFile();
+			String errorMsg = "No uncertainty data can be loaded from input reference!";
+			
+			UncertWebIOData uwIOInput = (UncertWebIOData) dataInput.getPayload();
+			Object data = uwIOInput.getData();
+			
+			if (data instanceof NetCDFData){
+			
+			NetcdfUWFile uwNcdfFile = ((NetCDFData)data).getNetcdfUWFile();
 			IData numbRealsInput = inputData.get(INPUT_IDENTIFIER_NUMB_REAL)
 					.get(0);
 			Integer intNRealisations = ((LiteralIntBinding) numbRealsInput)
@@ -81,12 +77,14 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 					intNRealisations);
 
 			// create resultfile
-			String fileLocation = resultFile.getNetcdfFile().getLocation();
-			File file = new File(fileLocation);
-			UncertWebData uwNcdfOutput = new UncertWebData(file,
-					GenericFileDataConstants.MIME_TYPE_NETCDFX);
-			UncertWebDataBinding uwData = new UncertWebDataBinding(uwNcdfOutput);
-			result.put(OUTPUT_IDENTIFIER_SAMPLES, uwData);
+//			String fileLocation = resultFile.getNetcdfFile().getLocation();
+//			File file = new File(fileLocation);
+			NetCDFData uwNcdfOutput = new NetCDFData(resultFile);
+			
+			UncertWebIOData uwIOData = new UncertWebIOData(uwNcdfOutput);
+			result.put(OUTPUT_IDENTIFIER_SAMPLES, new UncertWebIODataBinding(uwIOData));
+			}
+			//TODO add support for O&M and UncertML
 
 		} catch (Exception e) {
 			LOGGER
@@ -102,9 +100,9 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 	}
 
 	@Override
-	public Class getInputDataType(String id) {
+	public Class<?> getInputDataType(String id) {
 		if (id.equals(INPUT_IDENTIFIER_DIST)) {
-			return UncertWebDataBinding.class;
+			return UncertWebIODataBinding.class;
 		} else if (id.equals(INPUT_IDENTIFIER_NUMB_REAL)) {
 			return LiteralIntBinding.class;
 		}
@@ -112,9 +110,9 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 	}
 
 	@Override
-	public Class getOutputDataType(String id) {
+	public Class<?> getOutputDataType(String id) {
 		if (id.equals(OUTPUT_IDENTIFIER_SAMPLES)) {
-			return UncertWebDataBinding.class;
+			return UncertWebIODataBinding.class;
 		}
 		return null;
 	}
