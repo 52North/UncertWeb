@@ -4,7 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -70,13 +72,16 @@ public class StaxObservationEncoder implements IObservationEncoder{
 		IOUtil.writeString2File(result, f);
 	}
 
+	@SuppressWarnings("restriction")
 	@Override
 	public void encodeObservationCollection(IObservationCollection obsCol,
 			OutputStream out) throws OMEncodingException {
 		try {
-			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			XMLOutputFactory factory = XMLOutputFactory.newInstance();
-			XMLStreamWriter writer = factory.createXMLStreamWriter(bout);
+			XMLStreamWriter writer = factory.createXMLStreamWriter(out);
+			
+			//set character escaping on false!
+			((com.sun.xml.internal.stream.writers.XMLStreamWriterImpl)writer).setEscapeCharacters(false);
 			writer.writeStartDocument();
 			
 			if (obsCol instanceof UncertaintyObservationCollection){
@@ -101,13 +106,6 @@ public class StaxObservationEncoder implements IObservationEncoder{
 			writer.writeEndDocument();
 			writer.flush();
 			writer.close();
-			/*
-			 * TODO hack for resulting string due to writeCharacters method; 
-			 * String is read from stream, symbols are replaced, and then the string is written
-			 * to an outputstream again - UGLY :o) ...
-			 */
-			String result =prepareResultString(bout.toString());
-			IOUtil.writeString2OutputStream(result, out);
 
 		} catch (XMLStreamException e) {
 			// TODO Auto-generated catch block
