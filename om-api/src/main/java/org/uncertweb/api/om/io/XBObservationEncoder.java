@@ -156,6 +156,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 */
 	public XBObservationEncoder(){
 		encoder = new XmlBeansGeometryEncoder();
+		this.gmlID4TimeStrings = new HashMap<String, String>();
+		this.gmlID4sfIdentifier = new HashMap<String, String>();
 	}
 
 	/**
@@ -486,6 +488,10 @@ public class XBObservationEncoder implements IObservationEncoder {
 		}
 		}
 		return xb_obsDoc;
+	}
+	
+	public void setIsCol(boolean isCollection){
+		this.isCol=isCollection;
 	}
 
 	/**
@@ -1097,7 +1103,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * helper methods for resetting member variables used for gml ID encoding
 	 * 
 	 */
-	private void reset() {
+	void reset() {
 		this.gmlID4TimeStrings = null;
 		this.gmlID4sfIdentifier = null;
 		this.isCol = false;
@@ -1178,8 +1184,4 @@ public class XBObservationEncoder implements IObservationEncoder {
 		}
 	}
 
-
-	private void addOMSchemaLocation(){
-		
-	}
 }

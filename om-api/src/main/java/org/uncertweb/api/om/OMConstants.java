@@ -35,6 +35,16 @@ public class OMConstants {
 	/**namespace prefix for GML 3.2*/
 	public static final String NS_GML_PREFIX = "gml";
 	
+	
+	public static final String NS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
+	/**namespace prefix for GML 3.2*/
+	public static final String NS_XSI_PREFIX = "xsi";
+	
+	public static final String NS_GMD = "http://www.isotc211.org/2005/gmd";
+	/**namespace prefix for GML 3.2*/
+	public static final String NS_GMD_PREFIX = "gmd";
+	
+	
 	public static final String OM_SCHEMA_LOCATION = "http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd";
 	
 }
