@@ -32,7 +32,7 @@ import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.converter.ShapeFileConverterProperties.FILETYPE;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
-import org.uncertweb.api.om.io.XBObservationEncoder;
+import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
@@ -51,6 +51,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
 
 /**
  * converter which can be used to read data from an ESRI shapefile and to write
@@ -119,18 +120,30 @@ public class ShapeFileConverter {
 		Map<String,SpatialSamplingFeature> sf4featureID=new HashMap<String,SpatialSamplingFeature>(foiCollection.size());
 		FeatureIterator<SimpleFeature> features = foiCollection.features();
 		
+		/*
+		 * TODO workaround because Geotools seems to add 1 to the FID when read in; 
+		 * so, if number starts with 1
+		 */
 		while (features.hasNext()) {
 			SimpleFeature feature = features.next();
 
-			// get GML ID
-			String id = feature.getID();
+			
+			/*
+			 * Getting FID 
+			 * 
+			 * TODO workaround because Geotools seems to add 1 to the FID when read in; 
+			 */
+			String fidPrefix = props.getFeatClassName()+".";
+			String textFID = feature.getID().replace(fidPrefix,"");
+			int id = new Integer(textFID).intValue()-1;
+			textFID = fidPrefix+id;
 			Object geom = feature.getDefaultGeometry();
 			SpatialSamplingFeature sf = null;
 			// create samplingFeature
 			if (geom instanceof Geometry) {
-				sf = createSamplingFeature(id, (Geometry) geom);
+				sf = createSamplingFeature(textFID, (Geometry) geom);
 			}
-			sf4featureID.put(id, sf);
+			sf4featureID.put(textFID, sf);
 			//TODO only encode feature once and then use xlink:href to reference the feature
 		}
 
@@ -198,7 +211,7 @@ public class ShapeFileConverter {
 	    	}
 	    }
 
-	    XBObservationEncoder encoder = new XBObservationEncoder();
+	    StaxObservationEncoder encoder = new StaxObservationEncoder();
 		File out = new File(outputFilePath);
 		encoder.encodeObservationCollection(result, out);
 		
@@ -317,7 +330,7 @@ public class ShapeFileConverter {
 	    	  	
 	    	}
 
-	      XBObservationEncoder encoder = new XBObservationEncoder();
+	      StaxObservationEncoder encoder = new StaxObservationEncoder();
 	      File out = new File(outputFilePath);
 	    	encoder.encodeObservationCollection(result,out);
 		
@@ -429,7 +442,7 @@ public class ShapeFileConverter {
 			}
 		}
 
-		XBObservationEncoder encoder = new XBObservationEncoder();
+		StaxObservationEncoder encoder = new StaxObservationEncoder();
 		System.out.println(encoder.encodeObservationCollection(result));
 	}
 
@@ -463,7 +476,22 @@ public class ShapeFileConverter {
 			Identifier identifier = new Identifier(new URI("http://www.uncertweb.org"),id);
 			sf = new SpatialSamplingFeature(identifier,null, gmlLineString);
 		}
-		// TODO add further geometry types
+		else if (geom instanceof MultiPolygon) {
+//			MultiPolygon mp = (MultiPolygon) geom;
+//			int size = mp.getNumGeometries();
+//			LineString[] lsArray = new LineString[size];
+//			for (int i = 0; i < size; i++) {
+//				lsArray[i] = new GeometryFactory().createLineString(((MultiPolygon) mls
+//						.getGeometryN(i)).getCoordinateSequence());
+//				lsArray[i].setSRID(srid);
+//				multiGeomCounter++;
+//			}
+//			MultiPolygon
+//			MultiLineString gmlLineString =  new GeometryFactory().createMultiLineString(lsArray);
+			Identifier identifier = new Identifier(new URI("http://www.uncertweb.org"),id);
+			sf = new SpatialSamplingFeature(identifier,null, geom);
+		}
+		// TODO add further geometry types	
 		return sf;
 	}
 	

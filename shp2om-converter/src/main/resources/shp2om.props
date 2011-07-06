@@ -12,19 +12,23 @@
 
 
 #####absolute path to shp file containing the geometries of the features
-SHPPATH=D:/JavaProjects/shp2om-converter/src/main/resources/shapefiles/small.shp
+#SHPPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/large.shp
+SHPPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/small.shp
 
 #####TYPE of file used for uncertainties; can be either csv or dbf file
 FILETYPE=csv
 
 #####absolute path to csv or dbf file containing the O&M properties and additional optional uncertainties for the features contained in the shapefile
-OMFILEPATH=D:/JavaProjects/shp2om-converter/src/main/resources/shapefiles/small.csv
+OMFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/large_1week.csv
+OMFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/small.csv
 
 #####output file path
-OUTFILEPATH=D:/JavaProjects/shp2om-converter/src/main/resources/out_small.xml
+#OUTFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/out_small.xml
+OUTFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/out_large.xml 
  
 #####indicates the name of the feature class which should be used
 #FEATCLASSNAME=lqMS
+#FEATCLASSNAME=large
 FEATCLASSNAME=small
 
 #####indicates the geometry type in O&M
