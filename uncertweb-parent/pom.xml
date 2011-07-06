@@ -28,6 +28,42 @@
 		<slf4j-version>1.6.1</slf4j-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	
+	<developers>
+		<developer>
+			<id>bigagli</id>
+			<name>Lorenzo Bigagli</name>
+			<email>lorenzo.bigagli@cnr.it</email>
+			<roles>
+				<role>Architect</role>
+				<role>Developer</role>
+			</roles>
+			<organization>CNR</organization>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>angelini</id>
+			<name>Valerio Angelini</name>
+			<email>angelini@imaa.cnr.it</email>
+			<roles>
+				<role>Architect</role>
+				<role>Developer</role>
+			</roles>
+			<organization>CNR</organization>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>santoro</id>
+			<name>Mattia Santoro</name>
+			<email>santoro@imaa.cnr.it</email>
+			<roles>
+				<role>Architect</role>
+				<role>Developer</role>
+			</roles>
+			<organization>CNR</organization>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
 
 	<dependencies>
 		<dependency>
@@ -84,7 +120,6 @@
 		</repository>
 	</repositories>
 
-	<!-- here the repositories where this project should be deployed to -->
 	<distributionManagement>
 		<repository>
 			<id>UncertWebMavenDeployRepository</id>
