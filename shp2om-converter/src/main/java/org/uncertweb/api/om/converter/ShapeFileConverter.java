@@ -211,6 +211,10 @@ public class ShapeFileConverter {
 	    	}
 	    }
 
+	    reader.close();
+	    long maxMem = Runtime.getRuntime().maxMemory();
+	    long freeMem = Runtime.getRuntime().freeMemory();
+        System.out.println("Remaining Heap Size: " + freeMem + " of max size: " + maxMem);
 	    StaxObservationEncoder encoder = new StaxObservationEncoder();
 		File out = new File(outputFilePath);
 		encoder.encodeObservationCollection(result, out);
@@ -244,8 +248,9 @@ public class ShapeFileConverter {
 
 		// extract feature class from feature source
 		FeatureSource<SimpleFeatureType, SimpleFeature> source = null;
+		ShapefileDataStore store =null;
 		try {
-			ShapefileDataStore store = new ShapefileDataStore(new URL(
+			store = new ShapefileDataStore(new URL(
 					shpFilePath));
 			source = store.getFeatureSource(props.getFeatClassName());
 		} catch (Exception e) {
@@ -330,9 +335,10 @@ public class ShapeFileConverter {
 	    	  	
 	    	}
 
+	      inputStream.close();
 	      StaxObservationEncoder encoder = new StaxObservationEncoder();
 	      File out = new File(outputFilePath);
-	    	encoder.encodeObservationCollection(result,out);
+	      encoder.encodeObservationCollection(result,out);
 		
 	
 
@@ -511,7 +517,9 @@ public class ShapeFileConverter {
 		FeatureSource<SimpleFeatureType, SimpleFeature> source = null;
 		ShapefileDataStore store = new ShapefileDataStore(filePath);
 		source = store.getFeatureSource(props.getFeatClassName());
-		return source.getFeatures();
+		FeatureCollection<SimpleFeatureType,SimpleFeature> features = source.getFeatures();
+		store.dispose();
+		return features;
 	}
 
 }
