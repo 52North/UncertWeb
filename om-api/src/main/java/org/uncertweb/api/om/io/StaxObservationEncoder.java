@@ -2,6 +2,8 @@ package org.uncertweb.api.om.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -68,8 +70,17 @@ public class StaxObservationEncoder implements IObservationEncoder{
 	@Override
 	public void encodeObservationCollection(IObservationCollection obsCol,
 			File f) throws OMEncodingException {
-		String result = encodeObservationCollection(obsCol);
-		IOUtil.writeString2File(result, f);
+		try {
+			FileOutputStream fos = new FileOutputStream(f);
+			encodeObservationCollection(obsCol,fos);
+			fos.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@SuppressWarnings("restriction")
@@ -145,13 +156,6 @@ public class StaxObservationEncoder implements IObservationEncoder{
 		this.xbEncoder.encodeObservation(obs,writer);
 	}
 	
-	
-	private String prepareResultString(String resultString){
-		String result = resultString.replace("&gt;", ">");
-		result=result.replace("&lt;", "<");
-		return result;
-	}
-	
 	/**
 	 * 
 	 * 
@@ -173,44 +177,4 @@ public class StaxObservationEncoder implements IObservationEncoder{
 		return "xmlns:"+prefix+"=\""+nsUrl+"\"";
 	}
 
-	
-	private void writeObs(XMLStreamWriter writer, AbstractObservation obs) throws XMLStreamException{
-		writer.writeStartElement(OMConstants.NS_OM_PREFIX, obs.getName(), OMConstants.NS_OM);
-		writer.writeStartElement(OMConstants.NS_OM_PREFIX,"phenomenonTime",OMConstants.NS_OM);
-		writeTimeObject(writer,obs.getPhenomenonTime());
-		writer.writeEndElement();
-		writer.writeEndElement();
-	}
-
-	private void writeTimeObject(XMLStreamWriter writer,
-			TimeObject time) throws XMLStreamException {
-		if (time.getDateTime()!=null){
-			writer.writeStartElement(OMConstants.NS_GML_PREFIX,"TimeInstant",OMConstants.NS_GML);
-			writer.writeStartElement(OMConstants.NS_GML_PREFIX,"timePosition",OMConstants.NS_GML);
-			writer.writeCharacters(time.getDateTime().toString());
-			writer.writeEndElement();
-			writer.writeEndElement();
-		}
-		else if (time.getInterval()!=null){
-			writer.writeStartElement(OMConstants.NS_GML_PREFIX,"TimePeriod",OMConstants.NS_GML);
-			writer.writeStartElement(OMConstants.NS_GML_PREFIX,"begin",OMConstants.NS_GML);
-			writer.writeStartElement(OMConstants.NS_GML_PREFIX,"TimeInstant",OMConstants.NS_GML);
-			writer.writeStartElement(OMConstants.NS_GML_PREFIX,"timePosition",OMConstants.NS_GML);
-			writer.writeCharacters(time.getInterval().getStart().toString());
-			writer.writeEndElement();
-			writer.writeEndElement();
-			writer.writeEndElement();
-			
-			writer.writeStartElement(OMConstants.NS_GML_PREFIX,"end",OMConstants.NS_GML);
-			writer.writeStartElement(OMConstants.NS_GML_PREFIX,"TimeInstant",OMConstants.NS_GML);
-			writer.writeStartElement(OMConstants.NS_GML_PREFIX,"timePosition",OMConstants.NS_GML);
-			writer.writeCharacters(time.getInterval().getEnd().toString());
-			writer.writeEndElement();
-			writer.writeEndElement();
-			writer.writeEndElement();
-			writer.writeEndElement();
-			
-		}
-		
-	}
 }
