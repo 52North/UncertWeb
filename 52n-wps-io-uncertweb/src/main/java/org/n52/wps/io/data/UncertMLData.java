@@ -34,6 +34,16 @@ public class UncertMLData {
 		this.uncertainty = uncertaintyp;
 		this.mimeType=mimeType;
 	}
+	
+	/**
+	 * constructor with uncertainty
+	 * 
+	 * @param uncertainty
+	 */
+	public UncertMLData(IUncertainty uncertaintyp) {
+		this.uncertainty = uncertaintyp;
+		this.mimeType=UncertWebDataConstants.MIME_TYPE_UNCERTML;
+	}
 
 
 	/**
