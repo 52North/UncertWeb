@@ -15,5 +15,5 @@ public class UncertWebDataConstants {
 	public static final String MIME_TYPE_OMX = "application/om-u";
 
 	/**mime type of UncertML in/outputs*/
-	public static final String MIME_TYPE_UNCERTML = "application/uncertml";
+	public static final String MIME_TYPE_UNCERTML = "application/x-uncertml";
 }
