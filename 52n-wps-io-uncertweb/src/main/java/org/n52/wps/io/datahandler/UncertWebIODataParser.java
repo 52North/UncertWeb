@@ -60,4 +60,30 @@ public class UncertWebIODataParser extends AbstractUncertWebDataParser{
 		return new UncertWebIODataBinding(uwData);
 	}
 
+	@Override
+	public IData parseXML(String inputString) {
+		Object data = new UncertMLXmlParser().parseXML(inputString).getPayload();
+		UncertWebIOData uwData;
+		try {
+			uwData = new UncertWebIOData(data);
+		} catch (IOException e) {
+			LOGGER.info(e.getMessage());
+			throw new RuntimeException(e.getMessage());
+		}
+		return new UncertWebIODataBinding(uwData);
+	}
+
+	@Override
+	public IData parseXML(InputStream inputStream) {
+		Object data = new UncertMLXmlParser().parseXML(inputStream).getPayload();
+		UncertWebIOData uwData;
+		try {
+			uwData = new UncertWebIOData(data);
+		} catch (IOException e) {
+			LOGGER.info(e.getMessage());
+			throw new RuntimeException(e.getMessage());
+		}
+		return new UncertWebIODataBinding(uwData);
+	}
+
 }

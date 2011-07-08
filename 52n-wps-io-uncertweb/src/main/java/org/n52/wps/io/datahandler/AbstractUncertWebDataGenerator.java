@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.commons.WPSConfig;
-import org.n52.wps.io.IGenerator;
 import org.n52.wps.io.IStreamableGenerator;
+import org.n52.wps.io.datahandler.xml.AbstractXMLGenerator;
 
-public abstract class AbstractUncertWebDataGenerator implements IGenerator, IStreamableGenerator{
+public abstract class AbstractUncertWebDataGenerator extends AbstractXMLGenerator implements IStreamableGenerator{
 
 	protected Property[] properties;
 	protected List<String> supportedSchemas;

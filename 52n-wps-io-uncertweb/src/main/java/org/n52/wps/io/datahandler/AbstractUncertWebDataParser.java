@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.commons.WPSConfig;
-import org.n52.wps.io.IParser;
+import org.n52.wps.io.datahandler.xml.AbstractXMLParser;
 
 /**
  * abstract parser for UncertWeb Data types
@@ -13,7 +13,7 @@ import org.n52.wps.io.IParser;
  * @author staschc
  *
  */
-public abstract class AbstractUncertWebDataParser implements IParser{
+public abstract class AbstractUncertWebDataParser extends AbstractXMLParser{
 
 	protected Property[] properties;
 	protected List<String> supportedSchemas;
