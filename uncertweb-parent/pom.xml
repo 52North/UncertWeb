@@ -4,7 +4,7 @@
 
 	<groupId>org.uncertweb</groupId>
 	<artifactId>uncertweb-parent</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>UncertWeb Parent POM</name>
@@ -128,7 +128,7 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/uncertweb-parent/tags/uncertweb-parent-1.0</connection>
+		<connection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/uncertweb-parent/trunk</connection>
 	</scm>
 
 </project>
