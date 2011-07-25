@@ -33,6 +33,7 @@ import net.opengis.om.x20.OMMeasurementCollectionDocument;
 import net.opengis.om.x20.OMObservationDocument;
 import net.opengis.om.x20.OMProcessPropertyType;
 import net.opengis.om.x20.OMReferenceObservationCollectionDocument;
+import net.opengis.om.x20.OMTextObservationCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
 import net.opengis.om.x20.UWBooleanObservationType;
 import net.opengis.om.x20.UWDiscreteNumericObservationType;
@@ -44,6 +45,7 @@ import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObserv
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscreteNumericObservationCollection;
 import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
 import net.opengis.om.x20.OMReferenceObservationCollectionDocument.OMReferenceObservationCollection;
+import net.opengis.om.x20.OMTextObservationCollectionDocument.OMTextObservationCollection;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureDocument;
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
@@ -211,6 +213,21 @@ public class XBObservationParser implements IObservationParser {
 				obsList.add(obs);
 			}
 			oc = new ReferenceObservationCollection(obsList);
+			return oc;
+		}
+		//TextObservation collection
+		else if (xb_obsColDoc instanceof OMTextObservationCollectionDocument){
+			OMTextObservationCollection xb_ocType = ((OMTextObservationCollectionDocument)xb_obsColDoc).getOMTextObservationCollection();
+			UWTextObservationType[] xb_obsArray = xb_ocType.getOMTextObservationArray();
+			List<TextObservation> obsList = new ArrayList<TextObservation>(xb_obsArray.length);
+			for (UWTextObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				TextObservation obs = (TextObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			oc = new TextObservationCollection(obsList);
 			return oc;
 		}
 		
@@ -651,8 +668,7 @@ public class XBObservationParser implements IObservationParser {
 			// get shape geometry
 			XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
 
-			ShapeType geomString = xb_featureOfInterest
-					.getSFSpatialSamplingFeature().getShape();
+			ShapeType geomString = xb_featureOfInterest.getSFSpatialSamplingFeature().getShape();
 			Geometry shape = parser.parseUwGeometry(geomString.toString());
 
 			ssf = new SpatialSamplingFeature(identifier, sampledFeature, shape);

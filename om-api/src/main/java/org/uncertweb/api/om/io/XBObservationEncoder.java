@@ -11,6 +11,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import net.opengis.gml.x32.AbstractGeometryDocument;
+import net.opengis.gml.x32.AbstractGeometryType;
 import net.opengis.gml.x32.BoundingShapeType;
 import net.opengis.gml.x32.CodeWithAuthorityType;
 import net.opengis.gml.x32.EnvelopeType;
@@ -28,16 +30,23 @@ import net.opengis.gml.x32.UnitDefinitionType;
 import net.opengis.om.x20.FoiPropertyType;
 import net.opengis.om.x20.OMAbstractObservationType;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
+import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObservationCollection;
 import net.opengis.om.x20.OMBooleanObservationDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
+import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscreteNumericObservationCollection;
 import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
+import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
 import net.opengis.om.x20.OMMeasurementDocument;
 import net.opengis.om.x20.OMObservationDocument;
 import net.opengis.om.x20.OMReferenceObservationCollectionDocument;
+import net.opengis.om.x20.OMReferenceObservationCollectionDocument.OMReferenceObservationCollection;
 import net.opengis.om.x20.OMReferenceObservationDocument;
+import net.opengis.om.x20.OMTextObservationCollectionDocument;
+import net.opengis.om.x20.OMTextObservationCollectionDocument.OMTextObservationCollection;
 import net.opengis.om.x20.OMTextObservationDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
+import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 import net.opengis.om.x20.OMUncertaintyObservationDocument;
 import net.opengis.om.x20.UWBooleanObservationType;
 import net.opengis.om.x20.UWDiscreteNumericObservationType;
@@ -45,11 +54,6 @@ import net.opengis.om.x20.UWMeasurementType;
 import net.opengis.om.x20.UWReferenceObservationType;
 import net.opengis.om.x20.UWTextObservationType;
 import net.opengis.om.x20.UWUncertaintyObservationType;
-import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObservationCollection;
-import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscreteNumericObservationCollection;
-import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
-import net.opengis.om.x20.OMReferenceObservationCollectionDocument.OMReferenceObservationCollection;
-import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
 import net.opengis.samplingSpatial.x20.ShapeType;
 
@@ -77,12 +81,14 @@ import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.Measurement;
+import org.uncertweb.api.om.observation.TextObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
 import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
 import org.uncertweb.api.om.observation.collections.ReferenceObservationCollection;
+import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.BooleanResult;
 import org.uncertweb.api.om.result.IntegerResult;
@@ -118,6 +124,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 	private int obsIdCounter = 0;
 	
 	private int unitIdCounter = 0;
+	
+	private String idPrefix = null;
 	
 	/**encoder for geometries*/
 	private XmlBeansGeometryEncoder encoder;
@@ -172,15 +180,18 @@ public class XBObservationEncoder implements IObservationEncoder {
 	@Override
 	public synchronized String encodeObservationCollection(
 			IObservationCollection obsCol) throws OMEncodingException  {
-		String result = null;
-		
+		return encodeObservationCollectionWithId(obsCol, null);
+	}
+	
+	public synchronized String encodeObservationCollectionWithId(
+		IObservationCollection obsCol, String idPrefix) throws OMEncodingException {
 		try {
-			result = encodeObservationCollectionDocument(obsCol).xmlText(
-					getOMOptions());
-		} catch (Exception e) {
+			return encodeObservationCollectionDocument(obsCol, idPrefix).xmlText(
+				getOMOptions());
+		}
+		catch (Exception e) {
 			throw new OMEncodingException(e);
-		} 
-		return result;
+		}
 	}
 	
 	/**
@@ -195,14 +206,18 @@ public class XBObservationEncoder implements IObservationEncoder {
 	@Override
 	public synchronized String encodeObservation(AbstractObservation obs) throws OMEncodingException
 		{
-		String result = null;
+		return encodeObservationWithId(obs, null);
+	}
+	
+	public synchronized String encodeObservationWithId(AbstractObservation obs, String idPrefix) throws OMEncodingException
+	{
 		try {
-			result = encodeObservationDocument(obs).xmlText(getOMOptions());
+			return encodeObservationDocument(obs, idPrefix).xmlText(getOMOptions());
 		} catch (Exception e) {
 			throw new OMEncodingException(e);
 		}
-		return result;
 	}
+	
 
 	/**
 	 * encodes an observation collection
@@ -220,7 +235,12 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 *          if encoding fails
 	 */
 	public synchronized XmlObject encodeObservationCollectionDocument(
-			IObservationCollection obsCol) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
+		IObservationCollection obsCol) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
+		return encodeObservationCollectionDocument(obsCol, null);
+	}	
+	
+	public synchronized XmlObject encodeObservationCollectionDocument(
+			IObservationCollection obsCol, String idPrefix) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
 		this.isCol = true;
 		this.timeIdCounter = 0;
 		this.sfIdCounter = 0;
@@ -243,7 +263,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 				UWBooleanObservationType xb_obs = xb_boCol
 						.addNewOMBooleanObservation();
 				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
-						.next());
+						.next(), idPrefix);
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			reset();
@@ -268,7 +288,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 			while (obsIter.hasNext()) {
 				UWMeasurementType xb_obs = xb_boCol.addNewOMMeasurement();
 				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
-						.next());
+						.next(), idPrefix);
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			reset();
@@ -294,7 +314,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 				UWReferenceObservationType xb_obs = xb_boCol
 						.addNewOMReferenceObservation();
 				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
-						.next());
+						.next(), idPrefix);
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			reset();
@@ -320,7 +340,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 				UWUncertaintyObservationType xb_obs = xb_boCol
 						.addNewOMUncertaintyObservation();
 				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
-						.next());
+						.next(), idPrefix);
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			reset();
@@ -346,7 +366,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 				UWDiscreteNumericObservationType xb_obs = xb_boCol
 						.addNewOMDiscreteNumericObservation();
 				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
-						.next());
+						.next(), idPrefix);
 				xb_obs.set(xb_boDoc.getOMObservation());
 			}
 			reset();
@@ -355,6 +375,27 @@ public class XBObservationEncoder implements IObservationEncoder {
 			{
 			  cursor.setAttributeText(new QName("http://www.w3.org/2001/XMLSchema-instance","schemaLocation"), OMConstants.NS_OM + " " + OMConstants.OM_SCHEMA_LOCATION);
 			}
+			return result;
+		}
+		// TextObservation collection
+		else if (obsCol instanceof TextObservationCollection) {
+			OMTextObservationCollectionDocument result = OMTextObservationCollectionDocument.Factory
+					.newInstance();
+			OMTextObservationCollection xb_boCol = result
+					.addNewOMTextObservationCollection();
+			if (obsCol.getGmlId() != null) {
+				xb_boCol.setId(obsCol.getGmlId());
+			}
+			Iterator<TextObservation> obsIter = ((TextObservationCollection) obsCol)
+					.getMembers().iterator();
+			while (obsIter.hasNext()) {
+				UWTextObservationType xb_obs = xb_boCol
+						.addNewOMTextObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
+						.next(), idPrefix);
+				xb_obs.set(xb_boDoc.getOMObservation());
+			}
+			reset();
 			return result;
 		}
 
@@ -384,13 +425,20 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 *          if encoding fails
 	 */
 	public synchronized OMObservationDocument encodeObservationDocument(
-			AbstractObservation obs) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
+		AbstractObservation obs) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
+		return encodeObservationDocument(obs, null);
+	}
+	
+	public synchronized OMObservationDocument encodeObservationDocument(
+			AbstractObservation obs, String idPrefix) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
 
 		// initialize maps for IDs and timestrings
 		if (!this.isCol) {
 			this.gmlID4TimeStrings = new HashMap<String, String>();
 			this.gmlID4sfIdentifier = new HashMap<String, String>();
 		}
+		
+		this.idPrefix = idPrefix;
 
 		// define observation type
 		OMObservationDocument xb_obsDoc = null;
@@ -435,7 +483,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 		// encode id
 		// xb_obs.setId(obs.getGmlId());
-		xb_obs.setId("o_" + obsIdCounter);
+		xb_obs.setId((idPrefix != null ? idPrefix + "_" : "") + "o_" + obsIdCounter);
 		obsIdCounter++;
 
 		// add identifier
@@ -546,10 +594,10 @@ public class XBObservationEncoder implements IObservationEncoder {
 				xb_timeInstant.addNewTimePosition().setStringValue(
 						obs.getPhenomenonTime().getDateTime().toString());
 				// TODO use DateTimeFormatter? .toString(String pattern)
-
-				xb_timeInstant.setId("t" + timeIdCounter);
+				String gmlId = (idPrefix != null ? idPrefix + "_" : "")  + "t" + timeIdCounter;
+				xb_timeInstant.setId(gmlId);
 					this.gmlID4TimeStrings.put(obs.getPhenomenonTime()
-							.getDateTime().toString(), "t" + timeIdCounter);
+							.getDateTime().toString(), gmlId);
 					timeIdCounter++;
 				xb_phenTime.set(xb_tiDoc);
 			}
@@ -573,8 +621,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			// time period has to be encoded as new element
 			else {
-					String gmlID = "t" + this.timeIdCounter;
-					timeIdCounter++;
+				String gmlID = (idPrefix != null ? idPrefix + "_" : "") + "t" + this.timeIdCounter;
+				timeIdCounter++;
 
 				TimePeriodDocument xb_tpDoc = TimePeriodDocument.Factory
 						.newInstance();
@@ -589,7 +637,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 					xb_tiStart.setHref("#"
 							+ this.gmlID4TimeStrings.get(startString));
 				} else {
-					String gmlId = "t" + this.timeIdCounter;
+					String gmlId = (idPrefix != null ? idPrefix + "_" : "") + "t" + this.timeIdCounter;
 					this.timeIdCounter++;
 					TimeInstantType xb_ti = xb_tiStart.addNewTimeInstant();
 					xb_ti.addNewTimePosition().setStringValue(startString);
@@ -603,7 +651,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 					xb_tiEnd.setHref("#"
 							+ this.gmlID4TimeStrings.get(endString));
 				} else {
-					String gmlId = "t" + this.timeIdCounter;
+					String gmlId = (idPrefix != null ? idPrefix + "_" : "")  + "t" + this.timeIdCounter;
 					this.timeIdCounter++;
 					TimeInstantType xb_ti = xb_tiEnd.addNewTimeInstant();
 					xb_ti.addNewTimePosition().setStringValue(endString);
@@ -657,10 +705,10 @@ public class XBObservationEncoder implements IObservationEncoder {
 				xb_timeInstant.addNewTimePosition().setStringValue(
 						obs.getResultTime().getDateTime().toString());
 				// TODO use DateTimeFormatter? .toString(String pattern)
-
-				xb_timeInstant.setId("t" + timeIdCounter);
+				String gmlId = (idPrefix != null ? idPrefix + "_" : "")  + "t" + timeIdCounter;
+				xb_timeInstant.setId(gmlId);
 					this.gmlID4TimeStrings.put(obs.getResultTime()
-							.getDateTime().toString(), "t" + timeIdCounter);
+							.getDateTime().toString(), gmlId);
 					timeIdCounter++;
 				xb_resultTime.set(xb_tiDoc);
 			}
@@ -684,7 +732,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			// time period has to be encoded as new element
 			else {
-				String gmlID = "t" + this.timeIdCounter;
+				String gmlID = (idPrefix != null ? idPrefix + "_" : "") + "t" + this.timeIdCounter;
 				timeIdCounter++;
 
 				TimePeriodDocument xb_tpDoc = TimePeriodDocument.Factory
@@ -700,7 +748,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 					xb_tiStart.setHref("#"
 							+ this.gmlID4TimeStrings.get(startString));
 				} else {
-					String gmlId = "t" + this.timeIdCounter;
+					String gmlId = (idPrefix != null ? idPrefix + "_" : "") + "t" + this.timeIdCounter;
 					this.timeIdCounter++;
 					TimeInstantType xb_ti = xb_tiStart.addNewTimeInstant();
 					xb_ti.addNewTimePosition().setStringValue(startString);
@@ -714,7 +762,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 					xb_tiEnd.setHref("#"
 							+ this.gmlID4TimeStrings.get(endString));
 				} else {
-					String gmlId = "pt" + this.timeIdCounter;
+					String gmlId = (idPrefix != null ? idPrefix + "_" : "") + "pt" + this.timeIdCounter;
 					this.timeIdCounter++;
 					TimeInstantType xb_ti = xb_tiEnd.addNewTimeInstant();
 					xb_ti.addNewTimePosition().setStringValue(startString);
@@ -768,7 +816,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			// time period has to be encoded as new element
 			else {
-				String gmlID = "t" + this.timeIdCounter;
+				String gmlID = (idPrefix != null ? idPrefix + "_" : "") + "t" + this.timeIdCounter;
 				timeIdCounter++;
 
 				TimePeriodDocument xb_tpDoc = TimePeriodDocument.Factory
@@ -784,7 +832,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 					xb_tiStart.setHref("#"
 							+ this.gmlID4TimeStrings.get(startString));
 				} else {
-					String gmlId = "t" + this.timeIdCounter;
+					String gmlId = (idPrefix != null ? idPrefix + "_" : "") + "t" + this.timeIdCounter;
 					this.timeIdCounter++;
 					TimeInstantType xb_ti = xb_tiStart.addNewTimeInstant();
 					xb_ti.addNewTimePosition().setStringValue(startString);
@@ -798,7 +846,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 					xb_tiEnd.setHref("#"
 							+ this.gmlID4TimeStrings.get(endString));
 				} else {
-					String gmlId = "pt" + this.timeIdCounter;
+					String gmlId = (idPrefix != null ? idPrefix + "_" : "") + "pt" + this.timeIdCounter;
 					this.timeIdCounter++;
 					TimeInstantType xb_ti = xb_tiEnd.addNewTimeInstant();
 					xb_ti.addNewTimePosition().setStringValue(endString);
@@ -859,7 +907,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 			//if feature has not been implemented, encode the feature.
 			SFSpatialSamplingFeatureType xb_sfType = xb_foi
 					.addNewSFSpatialSamplingFeature();
-			String gmlId = "sf" + this.sfIdCounter;
+			String gmlId = (idPrefix != null ? idPrefix + "_" : "") + "sf" + this.sfIdCounter;
 			this.sfIdCounter++;
 			xb_sfType.setId(gmlId);
 			
@@ -913,6 +961,15 @@ public class XBObservationEncoder implements IObservationEncoder {
 				throw new IllegalArgumentException(
 						"Geometry type is not supported by UncertWeb GML profile!");
 			}
+			
+			
+			// set id prefix
+			if (idPrefix != null) {
+				AbstractGeometryType xb_geometry_type = ((AbstractGeometryDocument) xb_geometry).getAbstractGeometry();
+				xb_geometry_type.setId(idPrefix + "_" + xb_geometry_type.getId());
+			}
+			
+			
 			xb_shape.set(xb_geometry);
 			if (identifier != null) {
 				CodeWithAuthorityType xb_identifier = xb_sfType.addNewIdentifier();
@@ -953,7 +1010,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 			// add value unit
 			UnitDefinitionType xb_vu = xb_dqUncRes.addNewValueUnit()
 						.addNewUnitDefinition();
-				xb_vu.setId("u"+unitIdCounter);
+				xb_vu.setId((idPrefix != null ? idPrefix + "_" : "") + "u"+unitIdCounter);
 				unitIdCounter++;
 				xb_vu.addNewIdentifier().setStringValue(
 						resultObject.getUom());
