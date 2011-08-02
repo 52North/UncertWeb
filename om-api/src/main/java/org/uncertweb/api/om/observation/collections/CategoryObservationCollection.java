@@ -1,9 +1,11 @@
 package org.uncertweb.api.om.observation.collections;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.CategoryObservation;
 
 /**
@@ -77,6 +79,16 @@ public class CategoryObservationCollection implements IObservationCollection{
 	@Override
 	public String getTypeName() {
 		return NAME;
+	}
+
+	@Override
+	public void addObservationCollection(IObservationCollection obsCol) {
+		if (obsCol.getObservations().get(0) instanceof CategoryObservation){
+			this.members.addAll((Collection<CategoryObservation>) obsCol.getObservations());
+		}
+		else {
+			throw new RuntimeException("ObservationCollection with type"+obsCol.getObservations().get(0).getName()+ " cannot be added to CategoryObservationCollection!!");
+		}
 	}
 
 	

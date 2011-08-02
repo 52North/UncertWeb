@@ -45,5 +45,8 @@ public interface IObservationCollection {
 	 * @return
 	 */
 	public String getTypeName();
+	
+	
+	public void addObservationCollection(IObservationCollection obsCol);
 }
 

@@ -1,9 +1,11 @@
 package org.uncertweb.api.om.observation.collections;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.Measurement;
 
 /**
@@ -71,5 +73,13 @@ public class MeasurementCollection implements IObservationCollection{
 		return NAME;
 	}
 	
-	
+	@Override
+	public void addObservationCollection(IObservationCollection obsCol) {
+		if (obsCol.getObservations().get(0) instanceof Measurement){
+			this.members.addAll((Collection<Measurement>) obsCol.getObservations());
+		}
+		else {
+			throw new RuntimeException("ObservationCollection with type"+obsCol.getObservations().get(0).getName()+ " cannot be added to MeasurementCollection!!");
+		}
+	}
 }
