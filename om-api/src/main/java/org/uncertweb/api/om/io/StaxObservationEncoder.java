@@ -6,9 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -16,7 +14,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.uncertweb.api.om.OMConstants;
-import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;

@@ -1109,12 +1109,13 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			ReferenceResult refObject = (ReferenceResult) obs.getResult();
 
-			xb_refResult.setType(refObject.getType());
+			//TODO add null check to check, whether additional properties should be encoded or not!!
+//			xb_refResult.setType(refObject.getType());
 			xb_refResult.setHref(refObject.getHref());
 			xb_refResult.setRole(refObject.getRole());
-			xb_refResult.setArcrole(refObject.getArcrole());
-			xb_refResult.setShow(refObject.getShow());
-			xb_refResult.setActuate(refObject.getActuate());
+//			xb_refResult.setArcrole(refObject.getArcrole());
+//			xb_refResult.setShow(refObject.getShow());
+//			xb_refResult.setActuate(refObject.getActuate());
 		}
 
 		// TODO add CategoryObservation
