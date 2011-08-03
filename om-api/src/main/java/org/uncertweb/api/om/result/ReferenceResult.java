@@ -20,6 +20,7 @@ public class ReferenceResult implements IResult {
 	private String title;
 	private Show.Enum show;
 	private Actuate.Enum actuate;
+	private Object result;
 
 	/**
 	 * Generic constructor
@@ -119,13 +120,11 @@ public class ReferenceResult implements IResult {
 
 	// generic getter and setter
 	public Object getValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.result;
 	}
 
 	public void setValue(Object v) {
-		// TODO Auto-generated method stub
-
+		this.result = v;
 	}
 
 }
