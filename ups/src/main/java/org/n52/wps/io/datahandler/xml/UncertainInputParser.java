@@ -14,13 +14,20 @@ public class UncertainInputParser extends AbstractXMLParser {
 	@Override
 	public IData parseXML(String arg0) {
 		UncertainInputDocument type2 = null;
-		UncertainInputType type = null;
+		UncertainInputType type = null;		
 		try {
 			type2 = UncertainInputDocument.Factory.parse(arg0);
 			
 			type = type2.getUncertainInput();
 			return new UncertainInputDataBinding(type);
 		} catch (XmlException e) {
+			e.printStackTrace();
+		}
+		try {
+			IData omData = new OMParser().parseXML(arg0);
+			
+			return omData;			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
