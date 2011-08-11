@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.xmlbeans.XmlException;
+
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureCollection;
@@ -157,8 +157,10 @@ public class ShapeFileConverter {
 		CSVReader reader = new CSVReader(new FileReader(props.getOmPropsFilePath()));
 		String[] nextLine;
 		Map<String,Integer> pos4ColumnName = null; 
-	    while ((nextLine = reader.readNext()) != null) {
+		int obsCounter =0;
+	    while ((nextLine = reader.readNext()) != null &&obsCounter<100) {
 	    	
+	    	obsCounter++;
 	    	//if first row, initialize mapping between column names and column position
 	    	if (pos4ColumnName==null){
 	    		pos4ColumnName = new HashMap<String, Integer>(nextLine.length);
@@ -218,6 +220,9 @@ public class ShapeFileConverter {
 	    StaxObservationEncoder encoder = new StaxObservationEncoder();
 		File out = new File(outputFilePath);
 		encoder.encodeObservationCollection(result, out);
+//        CSVEncoder encoder = new CSVEncoder();
+//        File out = new File(outputFilePath);
+//        encoder.encodeObservationCollection(result,out);
 		
 	
 
@@ -301,6 +306,7 @@ public class ShapeFileConverter {
 		String procID = props.getProcPrefix()+props.getProcId();
 		String obsProp = props.getObsPropsPrefix()+props.getObsProps().get(0);
 		List<String> uncertaintyType = props.getUncertaintyType();
+		String uom = props.getUom();
 
 	      while( (rowObjects = reader.nextRecord()) != null) {
 	    	  	//retrieve featureID of row
@@ -319,6 +325,7 @@ public class ShapeFileConverter {
 	    	  		CovarianceMatrix cm = createCovarianceMatrix(meanDoubles.length,covariances);
 	    	  		MultivariateNormalDistribution mgd = new MultivariateNormalDistribution(meanDoubles,cm);
 	    	  		UncertaintyResult ur = new UncertaintyResult(mgd);
+	    	  		ur.setUnitOfMeasurement(uom);
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
@@ -329,6 +336,7 @@ public class ShapeFileConverter {
 	    	  		Double var = ((Double) rowObjects[number4fieldName.get(props.getNormalVarianceColName())]);
 	    	  		NormalDistribution gd = new NormalDistribution(mean.doubleValue(),var.doubleValue());
 	    	  		UncertaintyResult ur = new UncertaintyResult(gd);
+	    	  		ur.setUnitOfMeasurement(uom);
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
