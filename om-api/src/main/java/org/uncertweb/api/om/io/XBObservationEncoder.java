@@ -1091,15 +1091,17 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			UncertaintyResult resultObject = (UncertaintyResult) obs
 					.getResult();
+			
 
 			// encode UOM attribute, if UOM is set
+			
+			xb_uncResult.addNewAbstractUncertainty();
+			xb_uncResult.set(encodeUncertainty((IUncertainty) resultObject
+					.getUncertaintyValue()));
 			if (resultObject.getUnitOfMeasurement() != null
 					&& !resultObject.getUnitOfMeasurement().equals("")) {
 				xb_uncResult.setUom(resultObject.getUnitOfMeasurement());
 			}
-			xb_uncResult.addNewAbstractUncertainty();
-			xb_uncResult.set(encodeUncertainty((IUncertainty) resultObject
-					.getUncertaintyValue()));
 
 		} else if (obs.getResult() instanceof ReferenceResult
 				&& xb_obs instanceof UWReferenceObservationType) {
