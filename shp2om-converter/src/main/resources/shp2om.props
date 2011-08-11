@@ -12,28 +12,34 @@
 
 
 #####absolute path to shp file containing the geometries of the features
-#SHPPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/large.shp
-SHPPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/small.shp
+#SHPPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/shapefiles/meteorology.shp
+SHPPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/shapefiles/large.shp
+#SHPPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/shapefiles/small.shp
 
 #####TYPE of file used for uncertainties; can be either csv or dbf file
 FILETYPE=csv
 
 #####absolute path to csv or dbf file containing the O&M properties and additional optional uncertainties for the features contained in the shapefile
-OMFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/large_1week.csv
-OMFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/shapefiles/small.csv
+#OMFILEPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/shapefiles/meteorology_1week.csv
+OMFILEPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/shapefiles/large_1week.csv
+#OMFILEPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/shapefiles/small_1week.csv
 
 #####output file path
-#OUTFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/out_small.xml
-OUTFILEPATH=D:/uncertwebWorkspace/shp2om-converter-trunk/src/main/resources/out_large.xml 
+#OUTFILEPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/out_winddirection_1week.xml 
+#OUTFILEPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/out_windspeed_1week.xml 
+#OUTFILEPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/out_large_DE_1week.xml 
+OUTFILEPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/out_large_HFDE_1week.xml 
+#OUTFILEPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/out_small_DE_1week.xml
+#OUTFILEPATH=D:/JavaProjects/shp2om-converter-trunk/src/main/resources/out_small_HFDE_1week.xml
  
 #####indicates the name of the feature class which should be used
-#FEATCLASSNAME=lqMS
-#FEATCLASSNAME=large
-FEATCLASSNAME=small
+#FEATCLASSNAME=meteorology
+FEATCLASSNAME=large
+#FEATCLASSNAME=small
 
 #####indicates the geometry type in O&M
-#GEOMTYPE=LineString
-GEOMTYPE=Polygon
+GEOMTYPE=LineString
+#GEOMTYPE=Polygon
 
 ###indicates the sensor ID(s)
 #specify PROCID, if you have ONE sensor for all features
@@ -44,10 +50,15 @@ PROCID=ID
 PROCCOL=
 
 ##### specifies the column names of the variables; has to be comma-seperated list
-OBSPROPS=PM10_total,N,13,11
+#OBSPROPS=winddirection
+#OBSPROPS=windspeed
+OBSPROPS=pm10emissions
 
 ####specifies the UOM of the observed property in case of numeric values
-UOM=PM10gsec
+#UOM=deg
+#UOM=m/s
+#UOM=g[PM10]/s
+UOM=%
 
 #####specifies the obspropsType
 #currently, only one type per shapefile is possible
@@ -63,14 +74,18 @@ RESULTTIMECOL=time
 
 ######specified the uncertainty type; has to be named according to the ElementName of UncertML 2 (e.g. GaussianDistribution); the uncertaintyColName have # to be provided below accordingly
 # currently supported types are GaussianDistribution, MultivariateGaussianDistribution, LogNormalDistribution
-UNTYPES=MultivariateNormalDistribution,LogNormalDistribution
+#UNTYPES=NormalDistribution
+UNTYPES=MultivariateNormalDistribution
+#UNTYPES=LogNormalDistribution
 
 #####
 #set if UNTYPE is GaussianDistribution
 #specifies the columnname of the gaussian mean
-UNTYPE.NORMALDISTRIBUTION.MEAN=DE_Nmean
-#specifies the columnname of the gaussian mean
-UNTYPE.NORMALDISTRIBUTION.VARIANCE=DE_Nsd
+#UNTYPE.NORMALDISTRIBUTION.MEAN=WD_Nmean
+#UNTYPE.NORMALDISTRIBUTION.MEAN=WS_Nmean
+#specifies the columnname of the gaussian sd
+#UNTYPE.NORMALDISTRIBUTION.VARIANCE=WD_Nsd
+#UNTYPE.NORMALDISTRIBUTION.VARIANCE=WS_Nsd
 
 ######
 #set if UNTYPE is MultivariantGaussianDistribution
@@ -82,9 +97,9 @@ UNTYPE.MULTIVARIATENORMALDISTRIBUTION.COVARIANCE=HFDE_MVNcov
 #####
 #set if UNTYPE is LogNormalDistribution
 #specifies the columnname of the gaussian mean
-UNTYPE.LOGNORMALDISTRIBUTION.MEAN=DE_LNmean
-#specifies the columnname of the gaussian mean
-UNTYPE.LOGNORMALDISTRIBUTION.VARIANCE=DE_LNsd
+#UNTYPE.LOGNORMALDISTRIBUTION.MEAN=DE_LNmean
+#specifies the columnname of the gaussian sd
+#UNTYPE.LOGNORMALDISTRIBUTION.VARIANCE=DE_LNsd
 
 
 ##### specifies the phenomenon time; can be either one ISO 8601 TimeString (YYYY-mm-DD'T'HH:mm:SS.mmmZ) representing a
