@@ -188,6 +188,7 @@ public class ShapeFileConverter {
 	    	  		CovarianceMatrix cm = createCovarianceMatrix(meanDoubles.length,covariances);
 	    	  		MultivariateNormalDistribution mgd = new MultivariateNormalDistribution(meanDoubles,cm);
 	    	  		UncertaintyResult ur = new UncertaintyResult(mgd);
+	    	  		ur.setUnitOfMeasurement(props.getUom());
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
@@ -198,6 +199,7 @@ public class ShapeFileConverter {
 	    	  		Double var = new Double(nextLine[pos4ColumnName.get(props.getNormalVarianceColName())]);
 	    	  		NormalDistribution gd = new NormalDistribution(mean.doubleValue(),var.doubleValue());
 	    	  		UncertaintyResult ur = new UncertaintyResult(gd);
+	    	  		ur.setUnitOfMeasurement(props.getUom());
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
@@ -207,6 +209,7 @@ public class ShapeFileConverter {
 	    	  		Double var = new Double(nextLine[pos4ColumnName.get(props.getLogNormalVarianceColName())]);
 	    	  		LogNormalDistribution gd = new LogNormalDistribution(mean.doubleValue(),var.doubleValue());
 	    	  		UncertaintyResult ur = new UncertaintyResult(gd);
+	    	  		ur.setUnitOfMeasurement(props.getUom());
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  }
