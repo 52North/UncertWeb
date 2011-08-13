@@ -47,8 +47,10 @@ public class ResourceProvider implements MessageBodyWriter<Resource> {
 		for (Visualization v : r.getVisualizations()) {
 			a.put(VisualizationProvider.toJson(v));
 		}
-		return new JSONObject().put("id", r.getUUID())
-				.put("mimeType", r.getMediaType()).put("visualizations", a);
+		return new JSONObject()
+			.put("id", r.getUUID())
+			.put("mimeType", r.getMediaType())
+			.put("visualizations", a);
 	}
 
 	@Override

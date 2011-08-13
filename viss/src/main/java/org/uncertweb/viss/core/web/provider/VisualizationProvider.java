@@ -50,7 +50,8 @@ public class VisualizationProvider implements MessageBodyWriter<Visualization> {
 
 	static JSONObject toJson(Visualization v) {
 		try {
-			JSONObject j = new JSONObject().put("id", v.getVisId())
+			JSONObject j = new JSONObject()
+					.put("id", v.getVisId())
 					.put("visualizer", v.getCreator().getShortName())
 					.put("params", v.getParameters())
 					.put("coverages", v.getCoverages().size())
@@ -63,8 +64,9 @@ public class VisualizationProvider implements MessageBodyWriter<Visualization> {
 				for (String l : vr.getLayers())
 					a.put(l);
 				j.put("reference",
-						new JSONObject().putOpt("url", vr.getWcsUrl()).put(
-								"layers", a));
+						new JSONObject()
+							.putOpt("url", vr.getWcsUrl())
+							.put("layers", a));
 			}
 			return j;
 		} catch (JSONException e) {

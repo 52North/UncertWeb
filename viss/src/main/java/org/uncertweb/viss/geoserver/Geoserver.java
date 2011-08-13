@@ -30,8 +30,7 @@ import org.uncertweb.viss.core.util.Utils;
 
 public class Geoserver {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(GeoserverWCSAdapter.class);
+	private static final Logger log = LoggerFactory.getLogger(GeoserverWCSAdapter.class);
 
 	private String baseUrl;
 	private boolean cacheWorkspaceList;
@@ -160,11 +159,10 @@ public class Geoserver {
 	public boolean createWorkspace(String name) throws IOException,
 			JSONException {
 		log.debug("Creating Workspace '{}'", name);
-		JSONObject json = new JSONObject().put("workspace",
-				new JSONObject().put("name", name));
-
 		HttpURLConnection con;
 		
+		JSONObject json = Utils.flatJSON("workspace", "name", name);
+
 		con = RestBuilder.path(url("workspaces.json"))
 				.contentType(APPLICATION_JSON_TYPE).entity(json)
 				.auth(this.user, this.pass).post();
@@ -189,7 +187,8 @@ public class Geoserver {
 		logCon("Layer deletion", con);
 		
 		// delete style...
-		con = RestBuilder.path(url("styles/%s"), cs).auth(this.user, this.pass).delete();
+		con = RestBuilder.path(url("styles/%s"), cs).auth(this.user, this.pass)
+				.param("purge", true).delete();
 		logCon("Style deletion", con);
 		
 		// delete coverage...
@@ -203,6 +202,28 @@ public class Geoserver {
 		logCon("CStore deletion", con);
 		
 		return isOk(con);
+	}
+	
+	public boolean setStyle(String layer, String style) throws IOException {
+		try {
+			log.debug("Setting style '{}' for layer '{}'", style, layer);
+			HttpURLConnection con;
+			
+			
+
+			JSONObject j = Utils.flatJSON("layer", "defaultStyle", "name", style);
+			
+			con = RestBuilder.path(url("layers/%s.json"), layer).auth(this.user, this.pass)
+					.responseType(APPLICATION_JSON_TYPE).contentType(APPLICATION_JSON_TYPE)
+					.entity(j).put();
+			
+			logCon("Setting of Layer style", con);
+		
+			return isOk(con);
+			
+		} catch (JSONException e) {
+			throw VissError.internal(e);
+		}
 	}
 
 	public boolean deleteWorkspace(String ws) throws IOException, JSONException {
@@ -230,6 +251,7 @@ public class Geoserver {
 			JSONException {
 		log.debug("Requesting CoverageStores");
 		HttpURLConnection con;
+		
 		con = RestBuilder.path(url("workspaces/%s/coveragestores.json"), ws)
 				.auth(this.user, this.pass).responseType(APPLICATION_JSON_TYPE)
 				.get();
@@ -272,10 +294,7 @@ public class Geoserver {
 		try {
 			HttpURLConnection con;
 			
-			JSONObject j = new JSONObject()
-				.put("layer", new JSONObject()
-					.put("enabled", enable));
-			
+			JSONObject j = Utils.flatJSON("layer", "enabled", String.valueOf(enable));
 			
 			con = RestBuilder.path(url("layers/%s.json"), layerName).auth(this.user, this.pass)
 					.contentType(APPLICATION_JSON_TYPE).responseType(APPLICATION_JSON_TYPE)

@@ -224,5 +224,27 @@ public class Utils {
 		}
 		return false;
 	}
-
+	/**
+	 * 
+	 * <pre>flatJSON("one","two","three","four")</pre>
+	 * creates 
+	 * <pre>    
+	 * { "one": { "two": { "three": "four" } } }
+	 * </pre>
+	 * 
+	 * 
+	 * @param s
+	 * @return
+	 * @throws JSONException
+	 */
+	public static final JSONObject flatJSON(String... s) throws JSONException{
+		int l = s.length;
+		if (s.length < 2)
+			throw VissError.internal("Invalid parameter number");
+		JSONObject j = new JSONObject().put(s[l-2], s[l-1]);
+		for (int i = l-3; i >= 0; --i) {
+			j = new JSONObject().put(s[i], j);
+		}
+		return j;
+	}
 }

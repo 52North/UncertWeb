@@ -109,7 +109,11 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 	@Override
 	public boolean setSldForVisualization(Visualization vis) {
 		try {
-			return getGeoserver().createStyle(vis.getSld(), vis.getVisId());
+			if (getGeoserver().createStyle(vis.getSld(), vis.getVisId())) {
+				return getGeoserver().setStyle(vis.getVisId(), vis.getVisId());
+			}
+			return false;
+			
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
