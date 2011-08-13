@@ -211,7 +211,11 @@ public class Geoserver {
 			
 			
 
-			JSONObject j = Utils.flatJSON("layer", "defaultStyle", "name", style);
+			JSONObject j = new JSONObject()
+				.put("layer", new JSONObject()
+					.put("enabled", true)
+					.put("defaultStyle", new JSONObject()
+						.put("name", style)));
 			
 			con = RestBuilder.path(url("layers/%s.json"), layer).auth(this.user, this.pass)
 					.responseType(APPLICATION_JSON_TYPE).contentType(APPLICATION_JSON_TYPE)
@@ -291,6 +295,7 @@ public class Geoserver {
 
 	private boolean enableLayer(String layerName, boolean enable)
 			throws IOException {
+		log.debug("Enabling layer {}", layerName);
 		try {
 			HttpURLConnection con;
 			
