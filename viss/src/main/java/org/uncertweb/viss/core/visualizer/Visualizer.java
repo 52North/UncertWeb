@@ -54,7 +54,12 @@ public abstract class Visualizer {
 
 	public static Set<MediaType> getCompatibleMediaTypes(
 			Class<? extends Visualizer> c) {
-		Compatible s = c.getAnnotation(Compatible.class);
+		Compatible s = null;
+		Class<?> cl = c;
+		while (s == null && cl != null) {
+			s = cl.getAnnotation(Compatible.class);
+			cl = cl.getSuperclass();
+		}
 		Set<MediaType> mts = Utils.set();
 		if (s != null) {
 			for (String mt : s.value()) {

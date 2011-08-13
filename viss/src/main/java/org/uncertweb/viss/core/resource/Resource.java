@@ -19,6 +19,8 @@ public interface Resource {
 	public abstract void suspend();
 
 	public Set<Visualization> getVisualizations();
+	
+	public void addVisualization(Visualization v);
 
 	public void load() throws IOException;
 

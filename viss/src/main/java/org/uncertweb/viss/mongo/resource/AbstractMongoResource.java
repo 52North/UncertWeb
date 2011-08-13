@@ -1,4 +1,4 @@
-package org.uncertweb.viss.core.resource.mongo;
+package org.uncertweb.viss.mongo.resource;
 
 import java.io.File;
 import java.util.Set;
@@ -96,7 +96,8 @@ public abstract class AbstractMongoResource implements Resource {
 	public void suspend() {
 		this.content = null;
 	}
-
+	
+	@Override
 	public void addVisualization(Visualization v) {
 		this.visualizations.add(v);
 	}

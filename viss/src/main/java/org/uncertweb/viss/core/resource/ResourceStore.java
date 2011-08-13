@@ -13,16 +13,16 @@ public interface ResourceStore {
 
 	public Resource get(UUID uuid);
 
-	public void rm(Resource resource);
+	public void deleteResource(Resource resource);
 
-	public Resource add(InputStream is, MediaType mt);
+	public Resource addResource(InputStream is, MediaType mt);
 
-	public Set<Resource> getAll();
+	public Set<Resource> getAllResources();
 
 	public Set<Resource> getResourcesUsedBefore(DateTime dt);
 
-	public void saveVisualizationForResource(Resource r, Visualization v);
+	public void saveResource(Resource r);
 
-	void deleteVisualizationForResource(Resource r, Visualization v);
+	public void deleteVisualizationForResource(Resource r, Visualization v);
 
 }

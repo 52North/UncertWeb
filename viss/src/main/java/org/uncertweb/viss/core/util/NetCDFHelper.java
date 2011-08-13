@@ -40,6 +40,17 @@ public class NetCDFHelper {
 		throw VissError.internal("NetCDF file is not " + UW_CONVENTION
 				+ " compliant.");
 	}
+	
+	public static Set<URI> getURIs(NetcdfFile f) {
+		Set<URI> set = Utils.set();
+		for (Variable v : f.getVariables()) {
+			URI uri = getURI(v);
+			if (uri != null) {
+				set.add(uri);
+			}
+		}
+		return set;
+	}
 
 	public static double getMissingValue(Variable v) {
 		Attribute a = v.findAttribute(MISSING_VALUE_ATTRIBUTE);
@@ -176,7 +187,7 @@ public class NetCDFHelper {
 		b.newVariable(layerName, getUnit(v)).setLinearTransform(1, 0);
 		return new WriteableGridCoverage(b.getGridCoverage2D());
 	}
-
+	
 	public static URI getURI(Variable v) {
 		Attribute ref = v.findAttribute(REF_ATTRIBUTE);
 		if (ref != null) {

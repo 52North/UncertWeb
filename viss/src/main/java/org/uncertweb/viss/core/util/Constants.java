@@ -3,53 +3,48 @@ package org.uncertweb.viss.core.util;
 import java.io.File;
 import java.net.URI;
 import java.util.Properties;
+
 import javax.ws.rs.core.MediaType;
+
+import org.apache.xmlbeans.XmlOptions;
 import org.joda.time.Period;
 import org.uncertml.UncertML;
+import org.uncertml.distribution.continuous.NormalDistribution;
 
 public class Constants {
 
-	public static final URI NORMAL_DISTRIBUTION = URI
-			.create(UncertML
-					.getURI(org.uncertml.distribution.continuous.NormalDistribution.class));
-	public static final URI NORMAL_DISTRIBUTION_MEAN = URI.create(Utils.join(
-			"#", NORMAL_DISTRIBUTION.toString(), "mean"));
-	public static final URI NORMAL_DISTRIBUTION_VARIANCE = URI.create(Utils
-			.join("#", NORMAL_DISTRIBUTION.toString(), "variance"));
+	public static final URI NORMAL_DISTRIBUTION = URI.create(UncertML.getURI(NormalDistribution.class));
+	public static final URI NORMAL_DISTRIBUTION_MEAN = URI.create(Utils.join("#", NORMAL_DISTRIBUTION.toString(), "mean"));
+	public static final URI NORMAL_DISTRIBUTION_VARIANCE = URI.create(Utils.join("#", NORMAL_DISTRIBUTION.toString(), "variance"));
 
 	public static final String NETCDF = "application/netcdf";
-	public static final MediaType NETCDF_TYPE = MediaType.valueOf(NETCDF);
-
 	public static final String X_NETCDF = "application/x-netcdf";
-	public static final MediaType X_NETCDF_TYPE = MediaType.valueOf(X_NETCDF);
-
 	public static final String GEOTIFF = "image/geotiff";
-	public static final MediaType GEOTIFF_TYPE = MediaType.valueOf(GEOTIFF);
-
 	public static final String OM_2 = "application/xml;subtype=\"om/2.0.0\"";
-	public static final MediaType OM_2_TYPE = MediaType.valueOf(OM_2);
+	public static final String STYLED_LAYER_DESCRIPTOR = "application/vnd.ogc.sld+xml";
 
-	public static final String STYLED_LAYER_DESCRIPTOR = "application/xml;subtype=\"sld/1.0.0\"";
-	public static final MediaType STYLED_LAYER_DESCRIPTOR_TYPE = MediaType
-			.valueOf(STYLED_LAYER_DESCRIPTOR);
+	public static final MediaType NETCDF_TYPE = MediaType.valueOf(NETCDF);
+	public static final MediaType X_NETCDF_TYPE = MediaType.valueOf(X_NETCDF);
+	public static final MediaType GEOTIFF_TYPE = MediaType.valueOf(GEOTIFF);
+	public static final MediaType OM_2_TYPE = MediaType.valueOf(OM_2);
+	public static final MediaType STYLED_LAYER_DESCRIPTOR_TYPE = MediaType.valueOf(STYLED_LAYER_DESCRIPTOR);
 
 	public static final String WORKING_DIR = get("workingDir");
 
-	public static final String RESOURCE_PATH = Utils.join(File.separator,
-			WORKING_DIR, "resources");
-	public static final String HSQLDB_PATH = Utils.join(File.separator,
-			WORKING_DIR, "database");
+	public static final String RESOURCE_PATH = Utils.join(File.separator, WORKING_DIR, "resources");
+	public static final String HSQLDB_PATH = Utils.join(File.separator, WORKING_DIR, "database");
 
-	public static final Period CLEAN_UP_INTERVAL = new Period(get(
-			"cleanup.interval", "PT2H"));
-	public static final Period DELETE_OLDER_THAN_PERIOD = new Period(get(
-			"cleanup.deleteBefore", "P1D"));
-
+	public static final Period CLEAN_UP_INTERVAL = new Period(get("cleanup.interval", "PT2H"));
+	public static final Period DELETE_OLDER_THAN_PERIOD = new Period(get("cleanup.deleteBefore", "P1D"));
+	
+	public static final String RESOURCE_STORE_KEY = "implementation.resourceStore";
+	public static final String WCS_ADAPTER_KEY = "implementation.wcsAdapter";
+	
 	public static final String CONFIG_FILE = "/viss.properties";
 
 	private static Properties p;
 
-	private static String get(String key) {
+	public synchronized static String get(String key) {
 		if (p == null) {
 			try {
 				p = new Properties();
@@ -69,5 +64,10 @@ public class Constants {
 	}
 
 	public static final boolean INTEND_JSON = true;
+	public static final XmlOptions XML_OPTIONS = new XmlOptions()
+	.setLoadStripWhitespace().setLoadStripProcinsts()
+	.setLoadStripComments().setLoadTrimTextBuffer()
+	.setSaveAggressiveNamespaces();
+	public static final String VISUALIZER_CONFIG_FILE = "/visualizers.rc";
 
 }

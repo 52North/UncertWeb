@@ -1,4 +1,4 @@
-package org.uncertweb.viss.core.mongo;
+package org.uncertweb.viss.mongo;
 
 import org.uncertweb.viss.core.visualizer.Visualizer;
 import org.uncertweb.viss.core.visualizer.VisualizerFactory;

@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.visualizer.Visualization;
 import org.uncertweb.viss.core.visualizer.VisualizationReference;
 import org.uncertweb.viss.core.wcs.WCSAdapter;
@@ -40,7 +41,10 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 			}
 		}
 		return p.getProperty(key);
+	}
 
+	protected Geoserver getGeoserver() {
+		return this.wcs;
 	}
 
 	public GeoserverWCSAdapter() {
@@ -61,17 +65,17 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 	}
 
 	@Override
-	public VisualizationReference add(Visualization vis) {
+	public VisualizationReference addVisualization(Visualization vis) {
 		try {
 			String ws = vis.getUuid().toString();
 			String cs = vis.getVisId();
-			if (!wcs.containsWorkspace(ws)) {
-				if (!wcs.createWorkspace(ws)) {
+			if (!getGeoserver().containsWorkspace(ws)) {
+				if (!getGeoserver().createWorkspace(ws)) {
 					throw VissError.internal("Could not create Workspace");
 				}
 			}
 
-			if (!wcs.createCoverageStore(cs, ws, "GeoTIFF", true)) {
+			if (!getGeoserver().createCoverageStore(cs, ws, "GeoTIFF", true)) {
 				throw VissError.internal("Could not create CoverageStore");
 			}
 
@@ -81,21 +85,42 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 			ByteArrayInputStream in = new ByteArrayInputStream(
 					out.toByteArray());
 
-			if (!wcs.insertCoverage(ws, cs, "application/geotiff", in)) {
+			if (!getGeoserver().insertCoverage(ws, cs, Constants.GEOTIFF, in)) {
 				throw VissError.internal("Could not insert Coverage");
 			}
 
-			return new VisualizationReference(wcs.getUrl(), vis.getVisId());
+			return new VisualizationReference(getGeoserver().getUrl(),
+					vis.getVisId());
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
 	}
 
 	@Override
-	public boolean rm(Resource resource) {
+	public boolean deleteResource(Resource resource) {
 		try {
-			return wcs.deleteWorkspace(resource.getUUID().toString());
+			return getGeoserver()
+					.deleteWorkspace(resource.getUUID().toString());
 		} catch (Exception e) {
+			throw VissError.internal(e);
+		}
+	}
+
+	@Override
+	public boolean setSldForVisualization(Visualization vis) {
+		try {
+			return getGeoserver().createStyle(vis.getSld(), vis.getVisId());
+		} catch (IOException e) {
+			throw VissError.internal(e);
+		}
+	}
+
+	@Override
+	public boolean deleteVisualization(Visualization vis) {
+		try {
+			return getGeoserver().deleteCoverageStore(vis.getUuid().toString(),
+					vis.getVisId());
+		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
 	}

@@ -1,4 +1,4 @@
-package org.uncertweb.viss.core.mongo;
+package org.uncertweb.viss.mongo;
 
 import javax.ws.rs.core.MediaType;
 

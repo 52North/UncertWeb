@@ -1,4 +1,4 @@
-package org.uncertweb.viss.core.mongo;
+package org.uncertweb.viss.mongo;
 
 import net.opengis.sld.StyledLayerDescriptorDocument;
 import net.opengis.sld.impl.StyledLayerDescriptorDocumentImpl;

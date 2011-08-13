@@ -1,26 +1,26 @@
-package org.uncertweb.viss.core.mongo;
+package org.uncertweb.viss.mongo;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
 
-import com.google.code.morphia.converters.SimpleValueConverter;
 import com.google.code.morphia.converters.TypeConverter;
 import com.google.code.morphia.mapping.MappedField;
 import com.google.code.morphia.mapping.MappingException;
+import com.mongodb.util.JSON;
 
 @SuppressWarnings("rawtypes")
-public class URLConverter extends TypeConverter implements SimpleValueConverter {
-	public URLConverter() {
-		super(URL.class);
+public class JSONConverter extends TypeConverter {
+
+	public JSONConverter() {
+		super(JSONObject.class);
 	}
 
 	@Override
 	public Object encode(Object value, MappedField optionalExtraInfo) {
 		if (value == null)
 			return null;
-		return ((URL) value).toString();
+		return JSON.parse(((JSONObject) value).toString());
 	}
 
 	@Override
@@ -29,10 +29,9 @@ public class URLConverter extends TypeConverter implements SimpleValueConverter 
 		if (o == null)
 			return null;
 		try {
-			return new URL((String) o);
-		} catch (MalformedURLException e) {
+			return new JSONObject(JSON.serialize(o));
+		} catch (JSONException e) {
 			throw VissError.internal(e);
 		}
 	}
-
 }

@@ -69,8 +69,8 @@ public class Viss {
 	public void delete(Resource resource) {
 		if (lock.deletingResource(resource)) {
 			try {
-				getWCS().rm(resource);
-				getStore().rm(resource);
+				getStore().deleteResource(resource);
+				getWCS().deleteResource(resource);
 			} catch (RuntimeException e) {
 				log.warn("Error while deleting resource.", e);
 				throw e;
@@ -99,9 +99,10 @@ public class Viss {
 				Visualization vis = v.visualize(resource, param);
 				if (vis == null)
 					throw VissError.internal(new NullPointerException());
-				VisualizationReference ref = getWCS().add(vis);
+				VisualizationReference ref = getWCS().addVisualization(vis);
 				vis.setReference(ref);
-				getStore().saveVisualizationForResource(resource, vis);
+				resource.addVisualization(vis);
+				getStore().saveResource(resource);
 				return vis;
 			} catch (RuntimeException e) {
 				log.warn("Error while retrieving Visualization", e);
@@ -117,7 +118,7 @@ public class Viss {
 	}
 
 	public Resource createResource(InputStream is, MediaType mt) {
-		return getStore().add(is, mt);
+		return getStore().addResource(is, mt);
 	}
 
 	public Visualizer getVisualizer(String shortName) {
@@ -148,7 +149,7 @@ public class Viss {
 	}
 
 	public Set<Resource> getResources() {
-		return getStore().getAll();
+		return getStore().getAllResources();
 	}
 
 	public void deleteVisualization(UUID uuid, String vis) {
@@ -173,15 +174,21 @@ public class Viss {
 		throw VissError.noSuchVisualization();
 	}
 
-	public StyledLayerDescriptorDocument getSldForVisualization(UUID uuid,
-			String vis) {
-		// TODO Auto-generated method stub
-		return null;
+	public StyledLayerDescriptorDocument getSldForVisualization(UUID uuid, String vis) {
+		StyledLayerDescriptorDocument sld = getVisualization(uuid, vis).getSld();
+		if (sld == null) {
+			throw VissError.notFound("No attached SLD.");
+		}
+		return sld;
 	}
 
 	public void setSldForVisualization(UUID uuid, String vis,
 			StyledLayerDescriptorDocument sld) {
-		// TODO Auto-generated method stub
+		Resource r = getResource(uuid);
+		Visualization v = getVisualization(r, vis);
+		v.setSld(sld);
+		getWCS().setSldForVisualization(v);
+		getStore().saveResource(r);
 
 	}
 

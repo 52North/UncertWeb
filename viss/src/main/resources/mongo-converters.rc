@@ -1,0 +1,8 @@
+org.uncertweb.viss.mongo.UUIDConverter
+org.uncertweb.viss.mongo.MediaTypeConverter
+org.uncertweb.viss.mongo.DateTimeConverter
+org.uncertweb.viss.mongo.JSONConverter
+org.uncertweb.viss.mongo.VisualizerConverter
+org.uncertweb.viss.mongo.XmlObjectConverter
+org.uncertweb.viss.mongo.FileConverter
+org.uncertweb.viss.mongo.URLConverter

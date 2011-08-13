@@ -6,26 +6,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.Utils;
 
 @SuppressWarnings("unchecked")
 public class VisualizerFactory {
-	private static final Logger log = LoggerFactory
-			.getLogger(VisualizerFactory.class);
-	private static Map<String, Class<? extends Visualizer>> creatorsByShortName = Utils
-			.map();
-	private static Map<MediaType, Set<Class<? extends Visualizer>>> creatorsByMediaType = Utils
-			.map();
+	private static final Logger log = LoggerFactory.getLogger(VisualizerFactory.class);
+	private static Map<String, Class<? extends Visualizer>> creatorsByShortName = Utils.map();
+	private static Map<Class<? extends Visualizer>, String> shortNamesByCreator = Utils.map();
+	private static Map<MediaType, Set<Class<? extends Visualizer>>> creatorsByMediaType = Utils.map();
 
 	static {
-		InputStream is = Visualizer.class
-				.getResourceAsStream("/creators.config");
+		InputStream is = Visualizer.class.getResourceAsStream(Constants.VISUALIZER_CONFIG_FILE);
 		if (is == null) {
 			throw new RuntimeException("can not load creator config.");
 		}
@@ -35,8 +35,7 @@ public class VisualizerFactory {
 				String name = ((String) o).trim();
 				if (!name.startsWith("#") && !name.isEmpty()) {
 					try {
-						analyzeVisualizer((Class<? extends Visualizer>) Class
-								.forName(name));
+						analyzeVisualizer((Class<? extends Visualizer>) Class.forName(name));
 					} catch (Exception e) {
 						throw new RuntimeException(
 								"can not instantiate creator", e);
@@ -44,16 +43,18 @@ public class VisualizerFactory {
 				}
 			}
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw VissError.internal(e);
 		}
 	}
 
 	private static void analyzeVisualizer(Class<? extends Visualizer> c)
 			throws InstantiationException, IllegalAccessException {
 		String shortName = Visualizer.getShortName(c);
-		log.info("Registered Visualizer \"{}\" from class {}", shortName,
-				c.getName());
+		log.info("Registered Visualizer \"{}\" from class {}", shortName, c.getName());
+		
 		creatorsByShortName.put(shortName, c);
+		shortNamesByCreator.put(c, shortName);
+		
 		for (MediaType mt : Visualizer.getCompatibleMediaTypes(c)) {
 			Set<Class<? extends Visualizer>> set = creatorsByMediaType.get(mt);
 			if (set == null) {
@@ -61,7 +62,6 @@ public class VisualizerFactory {
 			}
 			set.add(c);
 		}
-		// TODO
 	}
 
 	public static Set<Visualizer> getVisualizers() {
@@ -106,7 +106,12 @@ public class VisualizerFactory {
 	}
 
 	public static Set<Visualizer> getVisualizerForResource(Resource resource) {
-		// TODO Auto-generated method stub
-		return null;
+		Set<Visualizer> set = Utils.set();
+		for (Class<? extends Visualizer> v : getVisualizerForMediaType(resource.getMediaType())) {
+			Visualizer vis = getVisualizer(shortNamesByCreator.get(v));
+			if (vis.isCompatible(resource))
+				set.add(vis);
+		}
+		return set;
 	}
 }

@@ -1,4 +1,4 @@
-package org.uncertweb.viss.core.resource.mongo;
+package org.uncertweb.viss.mongo.resource;
 
 import static org.uncertweb.viss.core.util.Constants.GEOTIFF_TYPE;
 import static org.uncertweb.viss.core.util.Constants.NETCDF_TYPE;
@@ -6,33 +6,24 @@ import static org.uncertweb.viss.core.util.Constants.OM_2_TYPE;
 import static org.uncertweb.viss.core.util.Constants.X_NETCDF_TYPE;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
-import net.opengis.sld.StyledLayerDescriptorDocument;
-
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.mongo.MongoDB;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.resource.ResourceStore;
 import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.visualizer.Visualization;
-import org.uncertweb.viss.core.visualizer.VisualizationReference;
-import org.uncertweb.viss.visualizer.MeanVisualizer;
+import org.uncertweb.viss.mongo.MongoDB;
 
+import com.google.code.morphia.Datastore;
 import com.google.code.morphia.dao.BasicDAO;
-import com.mongodb.DBCursor;
 
 public class MongoResourceStore implements ResourceStore {
 
@@ -63,13 +54,19 @@ public class MongoResourceStore implements ResourceStore {
 	}
 
 	@Override
-	public void rm(Resource resource) {
-		getDao().delete((AbstractMongoResource) resource);
+	public void deleteResource(Resource resource) {
+		if (resource == null) 
+			throw new NullPointerException();
+		// does not work... don't know why....
+		// getDao().delete((AbstractMongoResource) resource);
+		Datastore ds = getDao().getDatastore();
+		ds.delete(ds.createQuery(AbstractMongoResource.class)
+			.field("_id").equal(resource.getUUID()));
 		Utils.deleteRecursively(getResourceDir(resource.getUUID()));
 	}
 
 	@Override
-	public AbstractMongoResource add(InputStream is, MediaType mt) {
+	public AbstractMongoResource addResource(InputStream is, MediaType mt) {
 		UUID uuid = UUID.randomUUID();
 		try {
 			AbstractMongoResource r = getResourceForMediaType(mt);
@@ -85,7 +82,7 @@ public class MongoResourceStore implements ResourceStore {
 	}
 
 	@Override
-	public Set<Resource> getAll() {
+	public Set<Resource> getAllResources() {
 		return Utils.<Resource> asSet(getDao().find().asList());
 	}
 
@@ -94,13 +91,6 @@ public class MongoResourceStore implements ResourceStore {
 		return Utils.<Resource> asSet(getDao().createQuery()
 				.field(AbstractMongoResource.TIME_PROPERTY).lessThanOrEq(dt)
 				.asList());
-	}
-
-	@Override
-	public void saveVisualizationForResource(Resource r, Visualization v) {
-		AbstractMongoResource amr = (AbstractMongoResource) r;
-		amr.addVisualization(v);
-		getDao().save(amr);
 	}
 
 	@Override
@@ -139,32 +129,9 @@ public class MongoResourceStore implements ResourceStore {
 		throw VissError.internal("Can not create resource for '" + mt + "'");
 	}
 
-	public static void main(String[] args) throws FileNotFoundException,
-			JSONException, MalformedURLException {
-		MongoResourceStore mrs = new MongoResourceStore();
-
-		AbstractMongoResource r = mrs.add(new FileInputStream(
-				"/home/auti/doc/src/uw/viss/src/test/resources/biotemp.nc"),
-				Constants.NETCDF_TYPE);
-		Visualization v = new Visualization();
-		v.setCreator(new MeanVisualizer());
-		v.setParameters(new JSONObject().put("test", "testtest").put("test2",
-				new JSONObject().put("hallo", "welt")));
-		v.setReference(new VisualizationReference("http://localhost:8080/wcs",
-				"testLayer", "testLayer2"));
-		StyledLayerDescriptorDocument sld = StyledLayerDescriptorDocument.Factory
-				.newInstance();
-		sld.addNewStyledLayerDescriptor().addNewUserLayer().addNewUserStyle()
-				.addNewFeatureTypeStyle().addNewRule().addNewFilter()
-				.addNewLogicOps();
-		v.setSld(sld);
-		mrs.saveVisualizationForResource(r, v);
-
-		DBCursor c = mrs.dao.getCollection().find();
-		System.out.println(mrs.getResourcesUsedBefore(new DateTime()).size());
-		while (c.hasNext())
-			System.out.println(c.next());
-		c.close();
-
+	@Override
+	public void saveResource(Resource r) {
+		AbstractMongoResource amr = (AbstractMongoResource) r;
+		getDao().save(amr);
 	}
 }

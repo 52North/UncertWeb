@@ -1,4 +1,4 @@
-package org.uncertweb.viss.core.resource.mongo;
+package org.uncertweb.viss.mongo.resource;
 
 import java.io.File;
 import java.io.FileInputStream;
