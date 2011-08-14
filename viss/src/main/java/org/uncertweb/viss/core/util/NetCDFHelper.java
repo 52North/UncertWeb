@@ -5,20 +5,30 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+
 import javax.measure.quantity.Quantity;
 import javax.measure.unit.Unit;
+
 import org.geotools.coverage.grid.GridCoverageBuilder;
+import org.geotools.factory.FactoryRegistryException;
 import org.geotools.geometry.Envelope2D;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.CRS;
 import org.opengis.geometry.Envelope;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.visualizer.WriteableGridCoverage;
+
 import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import org.uncertweb.viss.core.VissError;
 
 public class NetCDFHelper {
+	private static final Logger log = LoggerFactory.getLogger(NetCDFHelper.class);
 
 	private static final String MISSING_VALUE_ATTRIBUTE = "missing_value";
 	private static final String PRIMARY_VARIABLES_ATTRIBUTE = "primary_variables";
@@ -27,7 +37,20 @@ public class NetCDFHelper {
 	private static final String ANCIALLARY_VARIABLES_ATTRIBUTE = "ancillary_variables";
 	private static final String CONVENTIONS_ATTRIBUTE = "Conventions";
 	private static final String UW_CONVENTION = "UW-1.0";
-
+	public static final CoordinateReferenceSystem EPSG4326;
+	
+	static {
+		try {
+			EPSG4326 = CRS.getAuthorityFactory(true).createCoordinateReferenceSystem("EPSG:4326");
+		} catch (NoSuchAuthorityCodeException e) {
+			throw VissError.internal(e);
+		} catch (FactoryRegistryException e) {
+			throw VissError.internal(e);
+		} catch (FactoryException e) {
+			throw VissError.internal(e);
+		}
+	}
+	
 	public static void checkForUWConvention(NetcdfFile f) {
 		Attribute a = f.findGlobalAttribute(CONVENTIONS_ATTRIBUTE);
 		if (a == null) {
@@ -126,23 +149,14 @@ public class NetCDFHelper {
 		Variable lon = getLongitude(f);
 		Variable lat = getLatitude(f);
 		try {
+			//X=LON,Y=LAT!!!
 			int lonSize = lon.getShape()[0];
 			int latSize = lat.getShape()[0];
-
 			double lonMin = lon.read(Utils.list(new Range(0, 0))).getDouble(0);
-			double lonMax = lon.read(
-					Utils.list(new Range(lonSize - 1, lonSize - 1))).getDouble(
-					0);
-
+			double lonMax = lon.read(Utils.list(new Range(lonSize - 1, lonSize - 1))).getDouble(0);
 			double latMin = lat.read(Utils.list(new Range(0, 0))).getDouble(0);
-			double latMax = lat.read(
-					Utils.list(new Range(latSize - 1, latSize - 1))).getDouble(
-					0);
-			double width = latMax - latMin;
-			double height = lonMax - lonMin;
-
-			return new Envelope2D(DefaultGeographicCRS.WGS84, latMin, lonMin,
-					width, height);
+			double latMax = lat.read(Utils.list(new Range(latSize - 1, latSize - 1))).getDouble(0);
+			return new Envelope2D(EPSG4326, lonMin, latMin, lonMax - lonMin, latMax - latMin);
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -157,32 +171,19 @@ public class NetCDFHelper {
 		return getURI(getPrimaryVariable(f));
 	}
 
-	public static WriteableGridCoverage getCoverage(NetcdfFile f,
-			String layerName, Variable v) {
+	public static WriteableGridCoverage getCoverage(NetcdfFile f, String layerName, Variable v) {
 		Attribute a = v.findAttribute(ANCIALLARY_VARIABLES_ATTRIBUTE);
 		if (a == null)
-			throw VissError
-					.internal("Can not determine shape of variable: no \""
-							+ ANCIALLARY_VARIABLES_ATTRIBUTE + "\" attribute.");
-		int[] size = null;
-		for (String s : a.getStringValue().split(" ")) {
-			int[] shape = getNotNullVariable(f, (String) s).getShape();
-			if (size == null)
-				size = shape;
-			else if (size.length == shape.length) {
-				for (int i = 0; i < size.length; i++) {
-					if (shape[i] != size[i])
-						throw VissError
-								.internal("Different shapes in ancillary_variables.");
-				}
-			} else {
-				throw VissError
-						.internal("Different dimensions in ancillary_variables.");
-			}
-		}
+			throw VissError.internal("Can not determine shape of variable: no \""
+						+ ANCIALLARY_VARIABLES_ATTRIBUTE + "\" attribute.");
+		
+		int latSize = getLatitude(f).getShape()[0];
+		int lonSize = getLongitude(f).getShape()[0];
+
 		final GridCoverageBuilder b = new GridCoverageBuilder();
-		b.setCoordinateReferenceSystem(DefaultGeographicCRS.WGS84);
-		b.setImageSize(size[0], size[1]);
+		b.setCoordinateReferenceSystem(EPSG4326);
+		log.info("ImageSize: {}x{}", lonSize, latSize);
+		b.setImageSize(lonSize, latSize);
 		b.setEnvelope(getEnvelope(f));
 		b.newVariable(layerName, getUnit(v)).setLinearTransform(1, 0);
 		return new WriteableGridCoverage(b.getGridCoverage2D());

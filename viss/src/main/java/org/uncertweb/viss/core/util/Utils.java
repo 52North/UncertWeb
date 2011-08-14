@@ -27,10 +27,14 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.opengis.coverage.grid.GridCoverage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertml.UncertML;
 import org.uncertweb.viss.core.VissError;
 
 public class Utils {
+	
+	private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
 	public static String join(String sep, Object... col) {
 		if (col == null || col.length == 0)
@@ -61,6 +65,7 @@ public class Utils {
 
 	public static boolean deleteRecursively(File path) {
 		if (path != null && path.exists()) {
+			log.debug("Deleting {}", path.getAbsolutePath());
 			if (path.isDirectory()) {
 				for (File f : path.listFiles()) {
 					if (f.isDirectory())

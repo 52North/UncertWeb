@@ -201,6 +201,10 @@ public class Geoserver {
 				.auth(this.user, this.pass).delete();
 		logCon("CStore deletion", con);
 		
+		if (sameServer && path != null) {
+			Utils.deleteRecursively(getCoverageFile(ws, cs));
+		}
+		
 		return isOk(con);
 	}
 	
@@ -246,6 +250,10 @@ public class Geoserver {
 		
 		if (r && cacheWorkspaceList) {
 			workspaces.remove(ws);
+		}
+		
+		if (sameServer && path != null) {
+			Utils.deleteRecursively(new File(getWorkspacePath(ws)));
 		}
 		
 		return r;
@@ -313,6 +321,14 @@ public class Geoserver {
 			throw VissError.internal(e);
 		}
 	}
+	
+	private String getWorkspacePath(String ws) {
+		return Utils.join(File.separator, path.getAbsolutePath(), ws);
+	}
+	
+	private File getCoverageFile(String ws, String c) {
+		return new File(Utils.join(File.separator, getWorkspacePath(ws), c));
+	}
 
 	private boolean createCoverage(String ws, String cs, String mime,
 			InputStream is) throws IOException {
@@ -324,13 +340,12 @@ public class Geoserver {
 			if (sameServer && path != null) {
 				OutputStream os = null;
 				try {
-					String dirName = Utils.join(File.separator,
-							path.getAbsolutePath(), ws);
+					String dirName = getWorkspacePath(ws);
 					File dir = new File(dirName);
 					if (!dir.exists()) {
 						dir.mkdirs();
 					}
-					File f = new File(Utils.join(File.separator, dirName, cs));
+					File f = getCoverageFile(ws, cs);
 					log.info("Saving Coverage to file: " + f.getAbsolutePath());
 					os = new FileOutputStream(f);
 					IOUtils.copy(is, os);

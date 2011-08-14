@@ -52,8 +52,9 @@
 	</developers>
 
 	<properties>
-		<geotools.version>2.7.2</geotools.version>
+		<geotools.version>8.0-M1</geotools.version>
 		<jersey.version>1.8</jersey.version>
+		<morphia.version>0.99</morphia.version>
 	</properties>
 
 	<dependencies>
@@ -73,6 +74,11 @@
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-main</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-epsg-wkt</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
 		<dependency>
@@ -139,12 +145,12 @@
 		<dependency>
 			<groupId>com.google.code.morphia</groupId>
 			<artifactId>morphia-logging-slf4j</artifactId>
-			<version>0.99</version>
+			<version>${morphia.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.morphia</groupId>
 			<artifactId>morphia</artifactId>
-			<version>0.99</version>
+			<version>${morphia.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mongodb</groupId>

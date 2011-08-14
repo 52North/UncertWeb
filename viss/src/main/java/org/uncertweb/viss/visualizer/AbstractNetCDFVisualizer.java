@@ -72,7 +72,8 @@ public abstract class AbstractNetCDFVisualizer extends Visualizer {
 
 		WriteableGridCoverage wgc = NetCDFHelper.getCoverage(f,
 				getCoverageName());
-
+		
+		log.info(wgc.getGridCoverage().getCoordinateReferenceSystem().toWKT());
 		Array latValues = NetCDFHelper.getLongitude(f).read();
 		Array lonValues = NetCDFHelper.getLatitude(f).read();
 

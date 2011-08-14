@@ -25,6 +25,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.uncertweb.viss.core.visualizer.Visualizer;
 import org.uncertweb.viss.visualizer.MeanVisualizer;
@@ -80,8 +81,7 @@ public class VissTest extends JerseyTest {
 	@Test
 	public void getVisualizers() throws UniformInterfaceException,
 			JSONException {
-		assertEquals(
-				Visualizer.getShortName(MeanVisualizer.class),
+		assertEquals(Visualizer.getShortName(MeanVisualizer.class),
 				getWebResource().path(VISUALIZERS).get(JSONObject.class)
 						.getJSONArray("visualizers").getJSONObject(0)
 						.getString("id"));
@@ -127,6 +127,7 @@ public class VissTest extends JerseyTest {
 	}
 
 	@After
+	@Before
 	public void deleteAll() throws JSONException {
 		JSONObject j = getWebResource().path(RESOURCES)
 				.accept(APPLICATION_JSON_TYPE).get(JSONObject.class);
@@ -138,7 +139,6 @@ public class VissTest extends JerseyTest {
 				deleteResource(id);
 			}
 		}
-		
 
 	}
 
