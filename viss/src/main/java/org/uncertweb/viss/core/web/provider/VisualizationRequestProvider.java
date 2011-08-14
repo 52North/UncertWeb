@@ -36,8 +36,11 @@ public class VisualizationRequestProvider implements
 		try {
 
 			JSONObject j = new JSONObject(ReaderWriter.readFromAsString(es, mt));
-			return new VisualizationRequest(j.getJSONObject("params"),
-					j.getString("visualizer"));
+			JSONObject param = j.optJSONObject("params");
+			if (param != null && !param.keys().hasNext()) {
+				param = null;
+			}
+			return new VisualizationRequest(param, j.getString("visualizer"));
 		} catch (JSONException e) {
 			throw VissError.internal(e);
 		}

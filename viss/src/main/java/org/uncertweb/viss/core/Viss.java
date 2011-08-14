@@ -92,6 +92,12 @@ public class Viss {
 		Resource resource = this.getResource(uuid);
 		if (lock.usingResource(resource, true)) {
 			try {
+				
+				Visualization existentVis = getVisualization(resource, visualizer, param);
+				if (existentVis != null) {
+					return existentVis;
+				}
+				
 				Visualizer v = VisualizerFactory.getVisualizer(visualizer);
 				if (!resource.isLoaded()) {
 					resource.load();
@@ -115,6 +121,48 @@ public class Viss {
 		} else {
 			throw VissError.internal("Resource is marked for deletion.");
 		}
+	}
+
+	protected Visualization getVisualization(Resource r, String visualizer,
+			JSONObject param) {
+		log.debug(
+				"Searching for Visualizer {} in Resource {} with parameters {}",
+				new Object[] { visualizer, r.getUUID(), param });
+		for (Visualization v : r.getVisualizations()) {
+			if (v.getCreator().getShortName().equals(visualizer)) {
+				log.debug("Found Visualizer {}", visualizer);
+				log.debug("ID: {}; Parameters: {}", v.getVisId(),
+						v.getParameters());
+				if ((param == v.getParameters())
+						|| (param != null && param.equals(v.getParameters()))) {
+					log.debug("Found matching visualization");
+					return v;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public void deleteVisualization(UUID uuid, String vis) {
+		Resource r = getResource(uuid);
+		Visualization v = getVisualization(r, vis);
+		getStore().deleteVisualizationForResource(r, v);
+	}
+
+	public Set<Visualization> getVisualizations(UUID uuid) {
+		return getResource(uuid).getVisualizations();
+	}
+
+	public Visualization getVisualization(UUID uuid, String vis) {
+		return getVisualization(getResource(uuid), vis);
+	}
+
+	public Visualization getVisualization(Resource r, String vis) {
+		for (Visualization v : r.getVisualizations()) {
+			if (v.getVisId().equals(vis))
+				return v;
+		}
+		throw VissError.noSuchVisualization();
 	}
 
 	public Resource createResource(InputStream is, MediaType mt) {
@@ -150,28 +198,6 @@ public class Viss {
 
 	public Set<Resource> getResources() {
 		return getStore().getAllResources();
-	}
-
-	public void deleteVisualization(UUID uuid, String vis) {
-		Resource r = getResource(uuid);
-		Visualization v = getVisualization(r, vis);
-		getStore().deleteVisualizationForResource(r, v);
-	}
-
-	public Set<Visualization> getVisualizations(UUID uuid) {
-		return getResource(uuid).getVisualizations();
-	}
-
-	public Visualization getVisualization(UUID uuid, String vis) {
-		return getVisualization(getResource(uuid), vis);
-	}
-
-	public Visualization getVisualization(Resource r, String vis) {
-		for (Visualization v : r.getVisualizations()) {
-			if (v.getVisId().equals(vis))
-				return v;
-		}
-		throw VissError.noSuchVisualization();
 	}
 
 	public StyledLayerDescriptorDocument getSldForVisualization(UUID uuid, String vis) {

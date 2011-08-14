@@ -14,6 +14,8 @@ import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.resource.ResourceStore;
@@ -24,8 +26,11 @@ import org.uncertweb.viss.mongo.MongoDB;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.dao.BasicDAO;
+import com.google.code.morphia.mapping.Mapper;
 
 public class MongoResourceStore implements ResourceStore {
+	
+	private static final Logger log = LoggerFactory.getLogger(MongoResourceStore.class);
 
 	private class ResourceDAO extends BasicDAO<AbstractMongoResource, UUID> {
 		protected ResourceDAO() {
@@ -61,7 +66,7 @@ public class MongoResourceStore implements ResourceStore {
 		// getDao().delete((AbstractMongoResource) resource);
 		Datastore ds = getDao().getDatastore();
 		ds.delete(ds.createQuery(AbstractMongoResource.class)
-			.field("_id").equal(resource.getUUID()));
+			.field(Mapper.ID_KEY).equal(resource.getUUID()));
 		Utils.deleteRecursively(getResourceDir(resource.getUUID()));
 	}
 
@@ -69,16 +74,26 @@ public class MongoResourceStore implements ResourceStore {
 	public AbstractMongoResource addResource(InputStream is, MediaType mt) {
 		UUID uuid = UUID.randomUUID();
 		try {
-			AbstractMongoResource r = getResourceForMediaType(mt);
 			File f = createResourceFile(uuid, mt);
-			Utils.saveToFile(f, is);
-			r.setFile(f);
-			r.setUUID(UUID.randomUUID());
-			getDao().save(r);
+			long crc = Utils.saveToFileWithChecksum(f, is);
+			AbstractMongoResource r = getResourceWithChecksum(crc);
+			if (r == null) {
+				r = getResourceForMediaType(mt);
+				r.setFile(f);
+				r.setUUID(UUID.randomUUID());
+				r.setChecksum(crc);
+				getDao().save(r);
+			} else {
+				log.info("Resource allready existent.");
+			}
 			return r;
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
+	}
+	
+	protected AbstractMongoResource getResourceWithChecksum(long crc) {
+		return getDao().createQuery().field(AbstractMongoResource.CHECKSUM_PROPERTY).equal(crc).get();
 	}
 
 	@Override

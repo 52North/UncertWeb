@@ -54,7 +54,6 @@ public class VisualizationProvider implements MessageBodyWriter<Visualization> {
 					.put("id", v.getVisId())
 					.put("visualizer", v.getCreator().getShortName())
 					.put("params", v.getParameters())
-					.put("coverages", v.getCoverages().size())
 					.put("customSLD", v.getSld() != null);
 
 			VisualizationReference vr = v.getReference();

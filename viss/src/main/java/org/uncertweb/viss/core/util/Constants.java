@@ -20,7 +20,7 @@ public class Constants {
 	public static final String NETCDF = "application/netcdf";
 	public static final String X_NETCDF = "application/x-netcdf";
 	public static final String GEOTIFF = "image/geotiff";
-	public static final String OM_2 = "application/xml;subtype=\"om/2.0.0\"";
+	public static final String OM_2 = "application/vnd.ogc.om+xml";
 	public static final String STYLED_LAYER_DESCRIPTOR = "application/vnd.ogc.sld+xml";
 
 	public static final MediaType NETCDF_TYPE = MediaType.valueOf(NETCDF);

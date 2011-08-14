@@ -78,7 +78,7 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 	public VisualizationReference addVisualization(Visualization vis) {
 		try {
 			String ws = vis.getUuid().toString();
-			String cs = vis.getVisId();
+			String cs = vis.getUuidVisId();
 			if (!getGeoserver().containsWorkspace(ws)) {
 				if (!getGeoserver().createWorkspace(ws)) {
 					throw VissError.internal("Could not create Workspace");
@@ -97,7 +97,7 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 			}
 
 			return new VisualizationReference(getGeoserver().getUrl(),
-					vis.getVisId());
+					vis.getUuidVisId());
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -128,8 +128,7 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 	@Override
 	public boolean deleteResource(Resource resource) {
 		try {
-			return getGeoserver()
-					.deleteWorkspace(resource.getUUID().toString());
+			return getGeoserver().deleteWorkspace(resource.getUUID().toString());
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -138,8 +137,8 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 	@Override
 	public boolean setSldForVisualization(Visualization vis) {
 		try {
-			if (getGeoserver().createStyle(vis.getSld(), vis.getVisId())) {
-				return getGeoserver().setStyle(vis.getVisId(), vis.getVisId());
+			if (getGeoserver().createStyle(vis.getSld(), vis.getUuidVisId())) {
+				return getGeoserver().setStyle(vis.getUuidVisId(), vis.getUuidVisId());
 			}
 			return false;
 			
@@ -152,7 +151,7 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 	public boolean deleteVisualization(Visualization vis) {
 		try {
 			return getGeoserver().deleteCoverageStore(vis.getUuid().toString(),
-					vis.getVisId());
+					vis.getUuidVisId());
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}

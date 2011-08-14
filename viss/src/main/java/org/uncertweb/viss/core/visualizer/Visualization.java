@@ -1,10 +1,12 @@
 package org.uncertweb.viss.core.visualizer;
 
+import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.opengis.coverage.grid.GridCoverage;
 import org.uncertweb.viss.core.util.Utils;
@@ -20,6 +22,7 @@ public class Visualization {
 	private StyledLayerDescriptorDocument sld;
 	@Transient
 	private Set<GridCoverage> coverages = Utils.set();
+	private String visId;
 
 	public Visualization() {
 	}
@@ -35,6 +38,7 @@ public class Visualization {
 		this.creator = creator;
 		this.parameters = parameters;
 		this.coverages = coverages;
+		createVisId();
 	}
 
 	public Visualizer getCreator() {
@@ -43,6 +47,7 @@ public class Visualization {
 
 	public void setCreator(Visualizer creator) {
 		this.creator = creator;
+		createVisId();
 	}
 
 	public UUID getUuid() {
@@ -51,11 +56,33 @@ public class Visualization {
 
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
+		createVisId();
+	}
+	
+	public String getUuidVisId() {
+		return getUuid().toString() + "-" + getVisId();
 	}
 
 	public String getVisId() {
-		return Utils.join("-", getUuid(),
-				Visualizer.getShortName(getCreator().getClass()));
+		return this.visId;
+	}
+	
+	private void createVisId() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(getCreator().getShortName());
+		
+		if (getParameters() != null) {
+			Iterator<?> i = getParameters().keys();
+			while(i.hasNext()) {
+				try {
+					String key = (String) i.next();
+					sb.append("-").append(key);
+					sb.append("-").append(getParameters().get(key));
+				} catch (JSONException e) {
+				}
+			}
+		}
+		this.visId = sb.toString();
 	}
 
 	public Set<GridCoverage> getCoverages() {
@@ -76,6 +103,7 @@ public class Visualization {
 
 	public void setParameters(JSONObject parameters) {
 		this.parameters = parameters;
+		createVisId();
 	}
 
 	public StyledLayerDescriptorDocument getSld() {

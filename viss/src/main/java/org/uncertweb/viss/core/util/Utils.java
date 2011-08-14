@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -130,6 +132,17 @@ public class Utils {
 			IOUtils.write(s, os);
 		} finally {
 			IOUtils.closeQuietly(os);
+		}
+	}
+	
+	public static long saveToFileWithChecksum(File f, InputStream is) throws IOException {
+		CheckedOutputStream cos = null;
+		try {
+			cos = new CheckedOutputStream(new FileOutputStream(f), new CRC32());
+			IOUtils.copy(is, cos);
+			return cos.getChecksum().getValue();
+		} finally {
+			IOUtils.closeQuietly(cos);
 		}
 	}
 

@@ -42,8 +42,7 @@ public abstract class AbstractNetCDFVisualizer extends Visualizer {
 	public Visualization visualize(Resource r, JSONObject params) {
 		this.params = params;
 		try {
-			return new Visualization(r.getUUID(), this, getParams(),
-					visualize(getNetCDF(r)));
+			return new Visualization(r.getUUID(), this, params, visualize(getNetCDF(r)));
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
@@ -54,7 +53,7 @@ public abstract class AbstractNetCDFVisualizer extends Visualizer {
 
 		Map<URI, Variable> vars = NetCDFHelper.getVariables(f,
 				getRelevantURIs());
-		log.info("Found {} Variables with relevant URIs.", vars.size());
+		log.debug("Found {} Variables with relevant URIs.", vars.size());
 		
 		this.found = Collections.unmodifiableSet(vars.keySet());
 
@@ -73,7 +72,6 @@ public abstract class AbstractNetCDFVisualizer extends Visualizer {
 		WriteableGridCoverage wgc = NetCDFHelper.getCoverage(f,
 				getCoverageName());
 		
-		log.info(wgc.getGridCoverage().getCoordinateReferenceSystem().toWKT());
 		Array latValues = NetCDFHelper.getLongitude(f).read();
 		Array lonValues = NetCDFHelper.getLatitude(f).read();
 

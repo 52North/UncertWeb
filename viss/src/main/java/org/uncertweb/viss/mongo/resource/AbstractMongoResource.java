@@ -26,6 +26,7 @@ import com.google.code.morphia.annotations.Transient;
 public abstract class AbstractMongoResource implements Resource {
 
 	public static final String TIME_PROPERTY = "last_usage";
+	public static final String CHECKSUM_PROPERTY = "checksum";
 
 	@Id
 	private UUID uuid;
@@ -36,6 +37,9 @@ public abstract class AbstractMongoResource implements Resource {
 	private File file;
 	@Transient
 	private Object content;
+	@Indexed
+	@Property(CHECKSUM_PROPERTY)
+	private long checksum;
 
 	@Embedded
 	private Set<Visualization> visualizations = Utils.set();;
@@ -110,6 +114,14 @@ public abstract class AbstractMongoResource implements Resource {
 		return this.visualizations;
 	}
 
+	public long getChecksum() {
+		return checksum;
+	}
+
+	public void setChecksum(long checksum) {
+		this.checksum = checksum;
+	}
+	
 	@PostLoad
 	@PrePersist
 	public void setLastUsageTime() {
