@@ -158,7 +158,7 @@ public class ShapeFileConverter {
 		String[] nextLine;
 		Map<String,Integer> pos4ColumnName = null; 
 		int obsCounter =0;
-	    while ((nextLine = reader.readNext()) != null &&obsCounter<100) {
+	    while ((nextLine = reader.readNext()) != null) {
 	    	
 	    	obsCounter++;
 	    	//if first row, initialize mapping between column names and column position
