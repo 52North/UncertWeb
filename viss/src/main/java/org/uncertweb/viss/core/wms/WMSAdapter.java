@@ -1,10 +1,10 @@
-package org.uncertweb.viss.core.wcs;
+package org.uncertweb.viss.core.wms;
 
 import org.uncertweb.viss.core.resource.Resource;
-import org.uncertweb.viss.core.visualizer.Visualization;
-import org.uncertweb.viss.core.visualizer.VisualizationReference;
+import org.uncertweb.viss.core.vis.Visualization;
+import org.uncertweb.viss.core.vis.VisualizationReference;
 
-public interface WCSAdapter {
+public interface WMSAdapter {
 
 	public boolean deleteResource(Resource res);
 

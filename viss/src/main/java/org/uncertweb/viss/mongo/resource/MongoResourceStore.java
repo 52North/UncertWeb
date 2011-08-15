@@ -21,7 +21,7 @@ import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.resource.ResourceStore;
 import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.Utils;
-import org.uncertweb.viss.core.visualizer.Visualization;
+import org.uncertweb.viss.core.vis.Visualization;
 import org.uncertweb.viss.mongo.MongoDB;
 
 import com.google.code.morphia.Datastore;
@@ -82,7 +82,7 @@ public class MongoResourceStore implements ResourceStore {
 				r.setFile(f);
 				r.setUUID(UUID.randomUUID());
 				r.setChecksum(crc);
-				getDao().save(r);
+				saveResource(r);
 			} else {
 				log.info("Resource allready existent.");
 			}
@@ -112,7 +112,7 @@ public class MongoResourceStore implements ResourceStore {
 	public void deleteVisualizationForResource(Resource r, Visualization v) {
 		AbstractMongoResource amr = (AbstractMongoResource) r;
 		amr.removeVisualization(v);
-		getDao().save(amr);
+		saveResource(r);
 	}
 
 	public File createResourceFile(UUID uuid, MediaType mt) throws IOException {
@@ -147,6 +147,7 @@ public class MongoResourceStore implements ResourceStore {
 	@Override
 	public void saveResource(Resource r) {
 		AbstractMongoResource amr = (AbstractMongoResource) r;
+		log.debug("Saving Resource {};",amr.getUUID());
 		getDao().save(amr);
 	}
 }

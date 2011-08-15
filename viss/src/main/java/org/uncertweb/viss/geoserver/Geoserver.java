@@ -30,7 +30,7 @@ import org.uncertweb.viss.core.util.Utils;
 
 public class Geoserver {
 
-	private static final Logger log = LoggerFactory.getLogger(GeoserverWCSAdapter.class);
+	private static final Logger log = LoggerFactory.getLogger(GeoserverAdapter.class);
 
 	private String baseUrl;
 	private boolean cacheWorkspaceList;
@@ -183,11 +183,11 @@ public class Geoserver {
 		HttpURLConnection con;
 		
 		// delete layer...
-		con = RestBuilder.path(url("layers/%s"), cs).auth(this.user, this.pass).delete();
+		con = RestBuilder.path(url("layers/%s:%s"), ws, cs).auth(this.user, this.pass).delete();
 		logCon("Layer deletion", con);
 		
 		// delete style...
-		con = RestBuilder.path(url("styles/%s"), cs).auth(this.user, this.pass)
+		con = RestBuilder.path(url("styles/%s-%s"), ws, cs).auth(this.user, this.pass)
 				.param("purge", true).delete();
 		logCon("Style deletion", con);
 		
@@ -208,7 +208,7 @@ public class Geoserver {
 		return isOk(con);
 	}
 	
-	public boolean setStyle(String layer, String style) throws IOException {
+	public boolean setStyle(String ws, String layer, String style) throws IOException {
 		try {
 			log.debug("Setting style '{}' for layer '{}'", style, layer);
 			HttpURLConnection con;
@@ -221,7 +221,7 @@ public class Geoserver {
 					.put("defaultStyle", new JSONObject()
 						.put("name", style)));
 			
-			con = RestBuilder.path(url("layers/%s.json"), layer).auth(this.user, this.pass)
+			con = RestBuilder.path(url("layers/%s:%s.json"), ws, layer).auth(this.user, this.pass)
 					.responseType(APPLICATION_JSON_TYPE).contentType(APPLICATION_JSON_TYPE)
 					.entity(j).put();
 			
@@ -296,12 +296,12 @@ public class Geoserver {
 	public boolean insertCoverage(String ws, String cs, String mime,
 			InputStream is) throws IOException {
 		if (createCoverage(ws, cs, mime, is)) {
-			return enableLayer(cs, true);
+			return enableLayer(ws, cs, true);
 		}
 		return false;
 	}
 
-	private boolean enableLayer(String layerName, boolean enable)
+	private boolean enableLayer(String ws, String layerName, boolean enable)
 			throws IOException {
 		log.debug("Enabling layer {}", layerName);
 		try {
@@ -309,7 +309,7 @@ public class Geoserver {
 			
 			JSONObject j = Utils.flatJSON("layer", "enabled", String.valueOf(enable));
 			
-			con = RestBuilder.path(url("layers/%s.json"), layerName).auth(this.user, this.pass)
+			con = RestBuilder.path(url("layers/%s:%s.json"), ws, layerName).auth(this.user, this.pass)
 					.contentType(APPLICATION_JSON_TYPE).responseType(APPLICATION_JSON_TYPE)
 					.entity(j).put();
 			

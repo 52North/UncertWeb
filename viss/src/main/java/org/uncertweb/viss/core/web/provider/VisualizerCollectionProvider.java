@@ -15,7 +15,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Utils;
-import org.uncertweb.viss.core.visualizer.Visualizer;
+import org.uncertweb.viss.core.vis.Visualizer;
 
 import com.sun.jersey.core.util.ReaderWriter;
 

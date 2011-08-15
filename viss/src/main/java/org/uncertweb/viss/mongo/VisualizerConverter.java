@@ -1,7 +1,7 @@
 package org.uncertweb.viss.mongo;
 
-import org.uncertweb.viss.core.visualizer.Visualizer;
-import org.uncertweb.viss.core.visualizer.VisualizerFactory;
+import org.uncertweb.viss.core.vis.Visualizer;
+import org.uncertweb.viss.core.vis.VisualizerFactory;
 
 import com.google.code.morphia.converters.SimpleValueConverter;
 import com.google.code.morphia.converters.TypeConverter;

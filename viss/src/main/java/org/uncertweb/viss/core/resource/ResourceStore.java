@@ -7,7 +7,7 @@ import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
-import org.uncertweb.viss.core.visualizer.Visualization;
+import org.uncertweb.viss.core.vis.Visualization;
 
 public interface ResourceStore {
 

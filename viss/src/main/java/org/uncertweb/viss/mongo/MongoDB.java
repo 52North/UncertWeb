@@ -1,11 +1,10 @@
 package org.uncertweb.viss.mongo;
 
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,12 +15,10 @@ import com.google.code.morphia.converters.TypeConverter;
 import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
 
-@SuppressWarnings("unchecked")
 public class MongoDB {
 	private static final Logger log = LoggerFactory.getLogger(MongoDB.class);
 
 	private static final String PROPERTIES_FILE = "/mongo.properties";
-	private static final String CONVERTERS_FILE = "/mongo-converters.rc";
 	
 	private static final String HOST_PROPERTY = "host";
 	private static final String PORT_PROPERTY = "port";
@@ -60,29 +57,18 @@ public class MongoDB {
 			String port = p.getProperty(PORT_PROPERTY);
 			port = (port == null || port.trim().isEmpty()) ? "27017" : port;
 
-			this.mongo = new Mongo(new ServerAddress(host,
-					Integer.valueOf(port)));
-			this.morphia = new Morphia();
+			this.mongo = new Mongo(new ServerAddress(host, Integer.valueOf(port)));
 			
-			is = getClass().getResourceAsStream(CONVERTERS_FILE);
-			List<?> converters = Collections.EMPTY_LIST;
-			try {
-				converters = IOUtils.readLines(is);
-			} finally {
-				IOUtils.closeQuietly(is);
-			}
-
+			this.morphia = new Morphia();
+			String pkg = getClass().getPackage().getName();
+			Reflections r = new Reflections(pkg);
+			log.info("Search for Converters in {}", pkg);
 			DefaultConverters dc = this.morphia.getMapper().getConverters();
-			for (Object o : converters) {
-				String className = (String) o;
-				if (!className.trim().isEmpty() && !className.startsWith("#")) {
-					Class<? extends TypeConverter> c = (Class<? extends TypeConverter>) 
-								Class.forName(className);
-					log.info("Registering Morphia TypeConverter {}", c.getName());
-					dc.addConverter(c);
-				}
+			for (Class<? extends TypeConverter> c : r.getSubTypesOf(TypeConverter.class)) {
+				log.info("Registering Morphia TypeConverter {}", c.getName());
+				dc.addConverter(c);
 			}
-
+			
 			String auth = p.getProperty(AUTH_PROPERTY);
 			auth = (auth == null || auth.trim().isEmpty()) ? "false" : auth;
 			String dbna = p.getProperty(DATABASE_PROPERTY);

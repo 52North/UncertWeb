@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
-import org.uncertweb.viss.core.visualizer.Visualization;
+import org.uncertweb.viss.core.vis.Visualization;
 
 public interface Resource {
 

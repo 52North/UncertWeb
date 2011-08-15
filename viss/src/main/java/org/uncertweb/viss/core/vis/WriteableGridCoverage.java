@@ -1,4 +1,4 @@
-package org.uncertweb.viss.core.visualizer;
+package org.uncertweb.viss.core.vis;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
-package org.uncertweb.viss.visualizer;
+package org.uncertweb.viss.core.vis.impl.netcdf;
 
-import static org.uncertweb.viss.core.util.Constants.NETCDF;
-import static org.uncertweb.viss.core.util.Constants.X_NETCDF;
+import static org.uncertweb.viss.core.util.Constants.NETCDF_TYPE;
+import static org.uncertweb.viss.core.util.Constants.X_NETCDF_TYPE;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONObject;
 import org.opengis.coverage.grid.GridCoverage;
@@ -20,20 +22,19 @@ import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.util.NetCDFHelper;
 import org.uncertweb.viss.core.util.Utils;
-import org.uncertweb.viss.core.visualizer.Visualization;
-import org.uncertweb.viss.core.visualizer.Visualizer;
-import org.uncertweb.viss.core.visualizer.Visualizer.Compatible;
-import org.uncertweb.viss.core.visualizer.WriteableGridCoverage;
+import org.uncertweb.viss.core.vis.Visualization;
+import org.uncertweb.viss.core.vis.Visualizer;
+import org.uncertweb.viss.core.vis.WriteableGridCoverage;
 
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-@Compatible({ NETCDF, X_NETCDF })
-public abstract class AbstractNetCDFVisualizer extends Visualizer {
-	
-	private static final Logger log = LoggerFactory.getLogger(AbstractNetCDFVisualizer.class);
+public abstract class AbstractNetCDFVisualizer implements Visualizer {
+
+	private static final Logger log = LoggerFactory
+			.getLogger(AbstractNetCDFVisualizer.class);
 
 	private JSONObject params;
 	private Set<URI> found;
@@ -42,19 +43,20 @@ public abstract class AbstractNetCDFVisualizer extends Visualizer {
 	public Visualization visualize(Resource r, JSONObject params) {
 		this.params = params;
 		try {
-			return new Visualization(r.getUUID(), this, params, visualize(getNetCDF(r)));
+			return new Visualization(r.getUUID(), getId(params), this, params, visualize(getNetCDF(r)));
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private GridCoverage visualize(NetcdfFile f) throws IOException {
 		NetCDFHelper.checkForUWConvention(f);
 
 		Map<URI, Variable> vars = NetCDFHelper.getVariables(f,
-				getRelevantURIs());
+				Utils.combineSets(hasToHaveAll(), hasToHaveOneOf()));
 		log.debug("Found {} Variables with relevant URIs.", vars.size());
-		
+
 		this.found = Collections.unmodifiableSet(vars.keySet());
 
 		Map<URI, Array> arrays = Utils.map();
@@ -71,7 +73,7 @@ public abstract class AbstractNetCDFVisualizer extends Visualizer {
 
 		WriteableGridCoverage wgc = NetCDFHelper.getCoverage(f,
 				getCoverageName());
-		
+
 		Array latValues = NetCDFHelper.getLongitude(f).read();
 		Array lonValues = NetCDFHelper.getLatitude(f).read();
 
@@ -114,15 +116,22 @@ public abstract class AbstractNetCDFVisualizer extends Visualizer {
 	@Override
 	public boolean isCompatible(Resource r) {
 		Set<URI> uris = NetCDFHelper.getURIs(getNetCDF(r));
-		if (!uris.containsAll(hasToHaveAll())) {
-			return false;
-		}
-		for (URI uri : hasToHaveOneOf()) {
-			if (uris.contains(uri)) {
-				return true;
+		Set<URI> all = hasToHaveAll();
+		if (!all.isEmpty()) {
+			if (!uris.containsAll(all)) {
+				return false;
 			}
 		}
-		return false;
+		Set<URI> one = hasToHaveOneOf();
+		if (!one.isEmpty()) {
+			for (URI uri : one) {
+				if (uris.contains(uri)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		return true;
 	}
 
 	private NetcdfFile getNetCDF(Resource r) {
@@ -130,9 +139,17 @@ public abstract class AbstractNetCDFVisualizer extends Visualizer {
 		return netCDF.getNetcdfFile();
 	}
 
-	protected abstract String getCoverageName();
+	@Override
+	public String getId(JSONObject params) {
+		return this.getShortName();
+	}
+	
+	@Override
+	public String getShortName() {
+		return this.getClass().getSimpleName();
+	}
 
-	protected abstract Set<URI> getRelevantURIs();
+	protected abstract String getCoverageName();
 
 	protected abstract Set<URI> hasToHaveOneOf();
 
@@ -140,4 +157,13 @@ public abstract class AbstractNetCDFVisualizer extends Visualizer {
 
 	protected abstract double evaluate(Map<URI, Double> values);
 
+	@Override
+	public Set<MediaType> getCompatibleMediaTypes() {
+		return Utils.set(NETCDF_TYPE, X_NETCDF_TYPE);
+	}
+
+	@Override
+	public String getDescription() {
+		return null;
+	}
 }

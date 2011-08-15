@@ -38,10 +38,20 @@ public class Constants {
 	public static final Period DELETE_OLDER_THAN_PERIOD = new Period(get("cleanup.deleteBefore", "P1D"));
 	
 	public static final String RESOURCE_STORE_KEY = "implementation.resourceStore";
-	public static final String WCS_ADAPTER_KEY = "implementation.wcsAdapter";
+	public static final String WMS_ADAPTER_KEY = "implementation.wmsAdapter";
+	public static final String SEARCH_PACKAGES_KEY = "visualizerSearchPackages";
+	
+	public static final boolean INTEND_JSON = true;
+	
+	public static final XmlOptions XML_OPTIONS = new XmlOptions()
+			.setLoadStripWhitespace().setLoadStripProcinsts()
+			.setLoadStripComments().setLoadTrimTextBuffer()
+			.setSaveAggressiveNamespaces();
 	
 	public static final String CONFIG_FILE = "/viss.properties";
 
+	public static final String VISUALIZER_CONFIG_FILE = "/visualizers.rc";
+	
 	private static Properties p;
 
 	public synchronized static String get(String key) {
@@ -62,12 +72,5 @@ public class Constants {
 		String s = get(key);
 		return (s == null || s.trim().isEmpty()) ? defauld : s;
 	}
-
-	public static final boolean INTEND_JSON = true;
-	public static final XmlOptions XML_OPTIONS = new XmlOptions()
-	.setLoadStripWhitespace().setLoadStripProcinsts()
-	.setLoadStripComments().setLoadTrimTextBuffer()
-	.setSaveAggressiveNamespaces();
-	public static final String VISUALIZER_CONFIG_FILE = "/visualizers.rc";
 
 }

@@ -7,9 +7,11 @@ import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.util.Utils;
-import org.uncertweb.viss.core.visualizer.Visualization;
+import org.uncertweb.viss.core.vis.Visualization;
 
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
@@ -25,6 +27,8 @@ import com.google.code.morphia.annotations.Transient;
 @Entity("resources")
 public abstract class AbstractMongoResource implements Resource {
 
+	protected static final Logger log = LoggerFactory.getLogger(AbstractMongoResource.class);
+	
 	public static final String TIME_PROPERTY = "last_usage";
 	public static final String CHECKSUM_PROPERTY = "checksum";
 

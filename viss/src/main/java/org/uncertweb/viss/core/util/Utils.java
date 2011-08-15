@@ -92,6 +92,17 @@ public class Utils {
 			}
 		};
 	}
+	
+	@SuppressWarnings("serial")
+	public static <T> Set<T> combineSets(final Set<T>... values) {
+		if (values == null || values.length == 0) {
+			return Collections.emptySet();
+		}
+		return new HashSet<T>() {{
+			for (Set<T> s : values)
+				addAll(s);
+		}};
+	}
 
 	public static <T> Set<T> asSet(Iterable<? extends T> col) {
 		Iterator<? extends T> i;

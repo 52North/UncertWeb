@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.uncertweb.viss.core.resource.ResourceStore;
 import org.uncertweb.viss.core.util.Constants;
-import org.uncertweb.viss.core.wcs.WCSAdapter;
+import org.uncertweb.viss.core.wms.WMSAdapter;
 
 public class VissConfig {
 	private static VissConfig instance;
@@ -18,7 +18,7 @@ public class VissConfig {
 
 	private final Timer timer = new Timer(true);
 	private ResourceStore resourceStore;
-	private WCSAdapter wcsAdapter;
+	private WMSAdapter wmsAdapter;
 
 	private VissConfig() {}
 
@@ -34,16 +34,16 @@ public class VissConfig {
 		return this.resourceStore;
 	}
 
-	public WCSAdapter getWCSAdapter() {
-		if (this.wcsAdapter == null) {
+	public WMSAdapter getWMSAdapter() {
+		if (this.wmsAdapter == null) {
 			try {
-				this.wcsAdapter = (WCSAdapter) Class.forName(
-						Constants.get(Constants.WCS_ADAPTER_KEY)).newInstance();
+				this.wmsAdapter = (WMSAdapter) Class.forName(
+						Constants.get(Constants.WMS_ADAPTER_KEY)).newInstance();
 			} catch (Exception e) {
 				throw VissError.internal(e);
 			}
 		}
-		return this.wcsAdapter;
+		return this.wmsAdapter;
 	}
 
 	public void scheduleTask(TimerTask tt, Period p) {

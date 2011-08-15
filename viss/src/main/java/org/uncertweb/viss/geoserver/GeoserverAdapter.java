@@ -23,20 +23,20 @@ import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.util.Constants;
-import org.uncertweb.viss.core.visualizer.Visualization;
-import org.uncertweb.viss.core.visualizer.VisualizationReference;
-import org.uncertweb.viss.core.wcs.WCSAdapter;
+import org.uncertweb.viss.core.vis.Visualization;
+import org.uncertweb.viss.core.vis.VisualizationReference;
+import org.uncertweb.viss.core.wms.WMSAdapter;
 
-public class GeoserverWCSAdapter implements WCSAdapter {
+public class GeoserverAdapter implements WMSAdapter {
 
 	private static Properties p;
-	private Geoserver wcs;
+	private Geoserver wms;
 	private static final Logger log = LoggerFactory
-			.getLogger(GeoserverWCSAdapter.class);
+			.getLogger(GeoserverAdapter.class);
 
 	protected static String getProp(String key) {
 		if (p == null) {
-			InputStream is = GeoserverWCSAdapter.class
+			InputStream is = GeoserverAdapter.class
 					.getResourceAsStream("/geoserver.properties");
 			if (is == null)
 				throw new RuntimeException("Can not find configuration file");
@@ -54,10 +54,10 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 	}
 
 	protected Geoserver getGeoserver() {
-		return this.wcs;
+		return this.wms;
 	}
 
-	public GeoserverWCSAdapter() {
+	public GeoserverAdapter() {
 		String user = getProp("user");
 		String pass = getProp("pass");
 		String url = getProp("baseUrl");
@@ -65,9 +65,9 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 		String path = getProp("path");
 		try {
 			if (path != null && !path.trim().isEmpty()) {
-				wcs = new Geoserver(user, pass, url, cache, new File(path));
+				wms = new Geoserver(user, pass, url, cache, new File(path));
 			} else {
-				wcs = new Geoserver(user, pass, url, cache);
+				wms = new Geoserver(user, pass, url, cache);
 			}
 		} catch (Exception e) {
 			throw VissError.internal(e);
@@ -78,7 +78,7 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 	public VisualizationReference addVisualization(Visualization vis) {
 		try {
 			String ws = vis.getUuid().toString();
-			String cs = vis.getUuidVisId();
+			String cs = vis.getVisId();
 			if (!getGeoserver().containsWorkspace(ws)) {
 				if (!getGeoserver().createWorkspace(ws)) {
 					throw VissError.internal("Could not create Workspace");
@@ -97,7 +97,7 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 			}
 
 			return new VisualizationReference(getGeoserver().getUrl(),
-					vis.getUuidVisId());
+					vis.getUuid()+":"+vis.getVisId());
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -137,8 +137,9 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 	@Override
 	public boolean setSldForVisualization(Visualization vis) {
 		try {
-			if (getGeoserver().createStyle(vis.getSld(), vis.getUuidVisId())) {
-				return getGeoserver().setStyle(vis.getUuidVisId(), vis.getUuidVisId());
+			String stylename = vis.getUuid() + "-" + vis.getVisId();
+			if (getGeoserver().createStyle(vis.getSld(), stylename)) {
+				return getGeoserver().setStyle(vis.getUuid().toString(), vis.getVisId(), stylename);
 			}
 			return false;
 			
@@ -150,8 +151,7 @@ public class GeoserverWCSAdapter implements WCSAdapter {
 	@Override
 	public boolean deleteVisualization(Visualization vis) {
 		try {
-			return getGeoserver().deleteCoverageStore(vis.getUuid().toString(),
-					vis.getUuidVisId());
+			return getGeoserver().deleteCoverageStore(vis.getUuid().toString(), vis.getVisId());
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}

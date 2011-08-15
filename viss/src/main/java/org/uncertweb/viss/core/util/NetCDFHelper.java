@@ -20,7 +20,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.visualizer.WriteableGridCoverage;
+import org.uncertweb.viss.core.vis.WriteableGridCoverage;
 
 import ucar.ma2.Range;
 import ucar.nc2.Attribute;

@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.Viss;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
-import org.uncertweb.viss.core.visualizer.Visualization;
-import org.uncertweb.viss.core.visualizer.Visualizer;
+import org.uncertweb.viss.core.vis.Visualization;
+import org.uncertweb.viss.core.vis.Visualizer;
 
 @Path("/")
 public class Servlet {
@@ -177,6 +177,8 @@ public class Servlet {
 
 	@PUT
 	@Path(VISUALIZATIONS)
+	@Consumes(APPLICATION_JSON)
+	@Produces()
 	public Response putVisualization(@PathParam(RES_PARAM) UUID uuid,
 			VisualizationRequest req, @Context UriInfo uriI) {
 		log.debug("Creating Visualizaton for resource with UUID \"{}\".", uuid);

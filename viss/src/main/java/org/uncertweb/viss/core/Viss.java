@@ -16,11 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.resource.ResourceStore;
 import org.uncertweb.viss.core.util.Constants;
-import org.uncertweb.viss.core.visualizer.Visualization;
-import org.uncertweb.viss.core.visualizer.VisualizationReference;
-import org.uncertweb.viss.core.visualizer.Visualizer;
-import org.uncertweb.viss.core.visualizer.VisualizerFactory;
-import org.uncertweb.viss.core.wcs.WCSAdapter;
+import org.uncertweb.viss.core.vis.Visualization;
+import org.uncertweb.viss.core.vis.Visualizer;
+import org.uncertweb.viss.core.vis.VisualizerFactory;
+import org.uncertweb.viss.core.wms.WMSAdapter;
 
 import com.sun.jersey.spi.resource.Singleton;
 
@@ -51,13 +50,13 @@ public class Viss {
 	private static Viss instance;
 
 	private Lock lock = Lock.getInstance();
-	private WCSAdapter wcs = null;
+	private WMSAdapter wms = null;
 	private ResourceStore store = null;
 
 	private Viss() {
 		log.info("Starting up application...");
 		this.store = VissConfig.getInstance().getResourceStore();
-		this.wcs = VissConfig.getInstance().getWCSAdapter();
+		this.wms = VissConfig.getInstance().getWMSAdapter();
 		VissConfig.getInstance().scheduleTask(new CleanUpThread(),
 				Constants.CLEAN_UP_INTERVAL);
 	}
@@ -70,7 +69,7 @@ public class Viss {
 		if (lock.deletingResource(resource)) {
 			try {
 				getStore().deleteResource(resource);
-				getWCS().deleteResource(resource);
+				getWMS().deleteResource(resource);
 			} catch (RuntimeException e) {
 				log.warn("Error while deleting resource.", e);
 				throw e;
@@ -88,11 +87,10 @@ public class Viss {
 	}
 
 	public Visualization getVisualization(String visualizer, UUID uuid,
-			JSONObject param) {
+			final JSONObject param) {
 		Resource resource = this.getResource(uuid);
 		if (lock.usingResource(resource, true)) {
 			try {
-				
 				Visualization existentVis = getVisualization(resource, visualizer, param);
 				if (existentVis != null) {
 					return existentVis;
@@ -102,13 +100,22 @@ public class Viss {
 				if (!resource.isLoaded()) {
 					resource.load();
 				}
+				
+				if (!v.isCompatible(resource)) {
+					throw VissError.incompatibleVisualizer();
+				}
+				
 				Visualization vis = v.visualize(resource, param);
-				if (vis == null)
-					throw VissError.internal(new NullPointerException());
-				VisualizationReference ref = getWCS().addVisualization(vis);
-				vis.setReference(ref);
+			
+				if (param != null && vis.getParameters() == null)
+					throw new NullPointerException();
+				
+				vis.setReference(getWMS().addVisualization(vis));
+				
 				resource.addVisualization(vis);
+				
 				getStore().saveResource(resource);
+				
 				return vis;
 			} catch (RuntimeException e) {
 				log.warn("Error while retrieving Visualization", e);
@@ -128,15 +135,23 @@ public class Viss {
 		log.debug(
 				"Searching for Visualizer {} in Resource {} with parameters {}",
 				new Object[] { visualizer, r.getUUID(), param });
+		String paramS = null;
+		if (param != null) {
+			paramS = param.toString();
+		}
 		for (Visualization v : r.getVisualizations()) {
 			if (v.getCreator().getShortName().equals(visualizer)) {
 				log.debug("Found Visualizer {}", visualizer);
 				log.debug("ID: {}; Parameters: {}", v.getVisId(),
 						v.getParameters());
-				if ((param == v.getParameters())
-						|| (param != null && param.equals(v.getParameters()))) {
-					log.debug("Found matching visualization");
+				if (param == v.getParameters()) {
 					return v;
+				}
+				if (param != null && v.getParameters() != null) {
+					if (paramS.equals(v.getParameters().toString())) {
+						log.debug("Found matching visualization");
+						return v;
+					}
 				}
 			}
 		}
@@ -213,7 +228,7 @@ public class Viss {
 		Resource r = getResource(uuid);
 		Visualization v = getVisualization(r, vis);
 		v.setSld(sld);
-		getWCS().setSldForVisualization(v);
+		getWMS().setSldForVisualization(v);
 		getStore().saveResource(r);
 
 	}
@@ -222,7 +237,7 @@ public class Viss {
 		return this.store;
 	}
 
-	protected WCSAdapter getWCS() {
-		return this.wcs;
+	protected WMSAdapter getWMS() {
+		return this.wms;
 	}
 }

@@ -15,8 +15,8 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Utils;
-import org.uncertweb.viss.core.visualizer.Visualization;
-import org.uncertweb.viss.core.visualizer.VisualizationReference;
+import org.uncertweb.viss.core.vis.Visualization;
+import org.uncertweb.viss.core.vis.VisualizationReference;
 
 import com.sun.jersey.core.util.ReaderWriter;
 
@@ -64,7 +64,7 @@ public class VisualizationProvider implements MessageBodyWriter<Visualization> {
 					a.put(l);
 				j.put("reference",
 						new JSONObject()
-							.putOpt("url", vr.getWcsUrl())
+							.putOpt("url", vr.getWmsUrl())
 							.put("layers", a));
 			}
 			return j;

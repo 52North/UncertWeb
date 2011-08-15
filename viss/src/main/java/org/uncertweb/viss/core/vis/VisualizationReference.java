@@ -1,4 +1,4 @@
-package org.uncertweb.viss.core.visualizer;
+package org.uncertweb.viss.core.vis;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,14 +8,14 @@ import org.uncertweb.viss.core.util.Utils;
 
 public class VisualizationReference {
 
-	private URL wcsUrl;
+	private URL wmsUrl;
 	private Set<String> layers;
 
 	public VisualizationReference() {
 	}
 
 	public VisualizationReference(URL url, Set<String> layers) {
-		this.wcsUrl = url;
+		this.wmsUrl = url;
 		this.layers = layers;
 	}
 
@@ -33,8 +33,8 @@ public class VisualizationReference {
 		this(new URL(url), layers);
 	}
 
-	public URL getWcsUrl() {
-		return wcsUrl;
+	public URL getWmsUrl() {
+		return wmsUrl;
 	}
 
 	public Set<String> getLayers() {

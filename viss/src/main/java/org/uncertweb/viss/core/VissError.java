@@ -66,4 +66,12 @@ public class VissError extends WebApplicationException {
 	public static VissError noSuchVisualization() {
 		return notFound("No such Visualization.");
 	}
+	
+	public static VissError invalidParameter(String name) {
+		return new VissError(Status.BAD_REQUEST, "Invalid Visualizer Parameter: '" + name + "'");
+	}
+	
+	public static VissError incompatibleVisualizer() {
+		return new VissError(Status.BAD_REQUEST, "Visualizer is not compatible");
+	}
 }
