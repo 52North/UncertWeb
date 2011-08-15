@@ -9,17 +9,18 @@ import org.codehaus.jettison.json.JSONObject;
 import org.opengis.coverage.grid.GridCoverage;
 import org.uncertweb.viss.core.util.Utils;
 
-import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Transient;
 
 public class Visualization {
 
-	@Embedded private UUID uuid;
-	@Embedded private Visualizer creator;
-	@Embedded private JSONObject parameters;
-	@Embedded private VisualizationReference ref;
-	@Embedded private StyledLayerDescriptorDocument sld;
-	@Embedded private String visId;
+	private UUID uuid;
+	private Visualizer creator;
+	private JSONObject parameters;
+	private VisualizationReference ref;
+	private StyledLayerDescriptorDocument sld;
+	private String visId;
+	private double minValue;
+	private double maxValue;
 
 	@Transient
 	private Set<GridCoverage> coverages = Utils.set();
@@ -27,18 +28,21 @@ public class Visualization {
 	public Visualization() {
 	}
 
-	public Visualization(UUID uuid, String id, Visualizer creator, JSONObject parameters,
-			GridCoverage coverage) {
-		this(uuid, id, creator, parameters, Utils.set(coverage));
+	public Visualization(UUID uuid, String id, Visualizer creator,
+			JSONObject parameters, double min, double max, GridCoverage coverage) {
+		this(uuid, id, creator, parameters, min, max, Utils.set(coverage));
 	}
 
-	public Visualization(UUID uuid, String id, Visualizer creator, JSONObject parameters,
+	public Visualization(UUID uuid, String id, Visualizer creator,
+			JSONObject parameters, double min, double max,
 			Set<GridCoverage> coverages) {
-		this.uuid = uuid;
-		this.creator = creator;
-		this.parameters = parameters;
+		setUuid(uuid);
+		setCreator(creator);
+		setParameters(parameters);
+		setVisId(id);
+		setMinValue(min);
+		setMaxValue(max);
 		this.coverages = coverages;
-		this.visId = id;
 	}
 
 	public Visualizer getCreator() {
@@ -60,7 +64,7 @@ public class Visualization {
 	public String getVisId() {
 		return this.visId;
 	}
-	
+
 	public Set<GridCoverage> getCoverages() {
 		return coverages;
 	}
@@ -88,9 +92,25 @@ public class Visualization {
 	public void setSld(StyledLayerDescriptorDocument sld) {
 		this.sld = sld;
 	}
-	
+
 	public void setVisId(String visId) {
 		this.visId = visId;
+	}
+
+	public double getMinValue() {
+		return minValue;
+	}
+
+	public void setMinValue(double minValue) {
+		this.minValue = minValue;
+	}
+
+	public double getMaxValue() {
+		return maxValue;
+	}
+
+	public void setMaxValue(double maxValue) {
+		this.maxValue = maxValue;
 	}
 
 }

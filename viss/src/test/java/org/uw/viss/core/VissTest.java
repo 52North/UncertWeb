@@ -124,65 +124,56 @@ public class VissTest extends JerseyTest {
 						.put(ClientResponse.class).getLocation().getPath())
 				.get(JSONObject.class).getString("id");
 	}
-	
+
 	@Test
 	public void sameVisualizationWithParameters() throws JSONException {
-		deleteAll();
 		UUID uuid = addResource(OM_2_TYPE, getOMStream());
-		String cdfVisId1 = createVisualization(
-				uuid,
-				CumulativeProbabilityOfNormalDistributionOfMultiCoverages.class.getSimpleName(),
-				new JSONObject().put("max", 0.5D));
-		String cdfVisId2 = createVisualization(
-				uuid,
-				CumulativeProbabilityOfNormalDistributionOfMultiCoverages.class.getSimpleName(),
-				new JSONObject().put("max", 0.5D));
+		String cdfVisId1 = createVisualization(uuid,
+				CumulativeProbabilityOfNormalDistributionOfMultiCoverages.class
+						.getSimpleName(), new JSONObject().put("max", 0.5D));
+		String cdfVisId2 = createVisualization(uuid,
+				CumulativeProbabilityOfNormalDistributionOfMultiCoverages.class
+						.getSimpleName(), new JSONObject().put("max", 0.5D));
 		assertEquals(cdfVisId1, cdfVisId2);
 	}
 
 	@Test
 	public void addResourceAndCreateVisualizations() throws JSONException,
 			UniformInterfaceException, XmlException {
-		deleteAll();
 
 		UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
 
 		String meanVisId = createVisualization(uuid,
 				MeanOfNormalDistribution.class.getSimpleName(),
 				new JSONObject());
-		String varVisId = createVisualization(uuid,
+		createVisualization(uuid,
 				VarianceOfNormalDistribution.class.getSimpleName(),
 				new JSONObject());
-		String sdVisId = createVisualization(uuid,
+		createVisualization(uuid,
 				StandardDeviationOfNormalDistribution.class.getSimpleName(),
 				new JSONObject());
-		String cdfVisId = createVisualization(
+		createVisualization(
 				uuid,
 				CumulativeProbabilityOfNormalDistribution.class.getSimpleName(),
 				new JSONObject().put("max", 0.5D));
-		String cdf2VisId = createVisualization(uuid,
+		createVisualization(uuid,
 				CumulativeProbabilityWithMinMaxOfNormalDistribution.class
 						.getSimpleName(), new JSONObject().put("min", 0.3D)
 						.put("max", 0.6D));
 
 		String url = VISUALIZATION_SLD.replace(RES_PARAM_P, uuid.toString())
 				.replace(VIS_PARAM_P, meanVisId);
-		
-		StyledLayerDescriptorDocument.Factory
-				.parse(getWebResource().path(
-						getWebResource()
-								.path(url)
-								.accept(APPLICATION_JSON_TYPE)
-								.entity(getSLDStream(),
-										STYLED_LAYER_DESCRIPTOR_TYPE)
-								.put(ClientResponse.class).getLocation()
-								.getPath()).get(String.class));
+
+		StyledLayerDescriptorDocument.Factory.parse(getWebResource().path(
+				getWebResource().path(url).accept(APPLICATION_JSON_TYPE)
+						.entity(getSLDStream(), STYLED_LAYER_DESCRIPTOR_TYPE)
+						.put(ClientResponse.class).getLocation().getPath())
+				.get(String.class));
 
 	}
 
 	@Test
 	public void testSameResource() throws JSONException {
-		deleteAll();
 		UUID uuid1 = addResource(NETCDF_TYPE, getNetCDFStream());
 		UUID uuid2 = addResource(NETCDF_TYPE, getNetCDFStream());
 		UUID uuid3 = addResource(OM_2_TYPE, getOMStream());

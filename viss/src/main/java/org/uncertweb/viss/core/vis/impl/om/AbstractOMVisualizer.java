@@ -19,8 +19,9 @@ import org.uncertweb.viss.core.vis.Visualization;
 import org.uncertweb.viss.core.vis.Visualizer;
 
 public abstract class AbstractOMVisualizer implements Visualizer {
-	
-	protected static final Logger log = LoggerFactory.getLogger(AbstractOMVisualizer.class);
+
+	protected static final Logger log = LoggerFactory
+			.getLogger(AbstractOMVisualizer.class);
 
 	private final Visualizer vis;
 
@@ -42,7 +43,8 @@ public abstract class AbstractOMVisualizer implements Visualizer {
 				return false;
 			}
 			if (!(ao.getResult().getValue() instanceof Resource)) {
-				log.debug("result value not instance of resource: {}", ao.getResult().getValue().getClass());
+				log.debug("result value not instance of resource: {}", ao
+						.getResult().getValue().getClass());
 				return false;
 			}
 			if (!vis.isCompatible((Resource) ao.getResult().getValue())) {
@@ -62,6 +64,7 @@ public abstract class AbstractOMVisualizer implements Visualizer {
 	public Visualization visualize(Resource r, JSONObject params) {
 		IObservationCollection col = (IObservationCollection) r.getResource();
 		Set<GridCoverage> coverages = Utils.set();
+		Double min = null, max = null;
 		for (AbstractObservation ao : col.getObservations()) {
 			if (!(ao.getResult().getValue() instanceof Resource)) {
 				throw VissError.internal("Resource is not compatible");
@@ -70,10 +73,21 @@ public abstract class AbstractOMVisualizer implements Visualizer {
 			if (!vis.isCompatible(rs)) {
 				throw VissError.internal("Resource is not compatible");
 			}
-			coverages.addAll(vis.visualize(rs, params).getCoverages());
+			Visualization v = vis.visualize(rs, params);
+
+			if (min == null || v.getMinValue() < min.doubleValue()) {
+				min = v.getMinValue();
+				log.debug("Setting min to {}", min);
+			}
+			if (max == null || v.getMaxValue() > max.doubleValue()) {
+				max = v.getMaxValue();
+				log.debug("Setting max to {}", max);
+			}
+
+			coverages.addAll(v.getCoverages());
 		}
 		return new Visualization(r.getUUID(), getId(params), this, params,
-				coverages);
+				min.doubleValue(), max.doubleValue(), coverages);
 	}
 
 	@Override

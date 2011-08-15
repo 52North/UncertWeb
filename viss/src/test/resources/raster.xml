@@ -9,46 +9,26 @@
 				<sld:Rule>
 					<sld:RasterSymbolizer>
 						<sld:ColorMap type="intervals">
-							<sld:ColorMapEntry color="#7FFF00" opacity="0.8"
-								quantity="-1"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#90FF00" opacity="0.8"
-								quantity="-0.8947368421052632"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#A1FF00" opacity="0.8"
-								quantity="-0.7894736842105263"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#B1FF00" opacity="0.8"
-								quantity="-0.6842105263157895"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#C2FF00" opacity="0.8"
-								quantity="-0.5789473684210527"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#D3FF00" opacity="0.8"
-								quantity="-0.4736842105263158"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#E4FF00" opacity="0.8"
-								quantity="-0.368421052631579"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#F4FF00" opacity="0.8"
-								quantity="-0.26315789473684215"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FFF800" opacity="0.8"
-								quantity="-0.1578947368421053"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FFE700" opacity="0.8"
-								quantity="-0.052631578947368474"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FFD600" opacity="0.8"
-								quantity="0.05263157894736836"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FFC500" opacity="0.8"
-								quantity="0.1578947368421053"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FFB500" opacity="0.8"
-								quantity="0.26315789473684204"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FFB500" opacity="0.8"
-								quantity="0.36842105263157876"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FF9300" opacity="0.8"
-								quantity="0.4736842105263157"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FF8200" opacity="0.8"
-								quantity="0.5789473684210527"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FF7200" opacity="0.8"
-								quantity="0.6842105263157894"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FF6100" opacity="0.8"
-								quantity="0.7894736842105261"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FF5000" opacity="0.8"
-								quantity="0.894736842105263"></sld:ColorMapEntry>
-							<sld:ColorMapEntry color="#FF0000" opacity="0.8"
-								quantity="1.7976931348623157e+308"></sld:ColorMapEntry>
+							<sld:ColorMapEntry color="#7FFF00" opacity="0.8" quantity="0" />
+							<sld:ColorMapEntry color="#90FF00" opacity="0.8" quantity="1.0526315789473684" />
+							<sld:ColorMapEntry color="#A1FF00" opacity="0.8" quantity="2.1052631578947367" />
+							<sld:ColorMapEntry color="#B1FF00" opacity="0.8" quantity="3.1578947368421053" />
+							<sld:ColorMapEntry color="#C2FF00" opacity="0.8" quantity="4.2105263157894735" />
+							<sld:ColorMapEntry color="#D3FF00" opacity="0.8" quantity="5.263157894736842" />
+							<sld:ColorMapEntry color="#E4FF00" opacity="0.8" quantity="6.315789473684211" />
+							<sld:ColorMapEntry color="#F4FF00" opacity="0.8" quantity="7.368421052631579" />
+							<sld:ColorMapEntry color="#FFF800" opacity="0.8" quantity="8.421052631578947" />
+							<sld:ColorMapEntry color="#FFE700" opacity="0.8" quantity="9.473684210526315" />
+							<sld:ColorMapEntry color="#FFD600" opacity="0.8" quantity="10.526315789473683" />
+							<sld:ColorMapEntry color="#FFC500" opacity="0.8" quantity="11.578947368421051" />
+							<sld:ColorMapEntry color="#FFB500" opacity="0.8" quantity="12.631578947368421" />
+							<sld:ColorMapEntry color="#FFA400" opacity="0.8" quantity="13.68421052631579" />
+							<sld:ColorMapEntry color="#FF9300" opacity="0.8" quantity="14.736842105263158" />
+							<sld:ColorMapEntry color="#FF8200" opacity="0.8" quantity="15.789473684210526" />
+							<sld:ColorMapEntry color="#FF7200" opacity="0.8" quantity="16.842105263157894" />
+							<sld:ColorMapEntry color="#FF6100" opacity="0.8" quantity="17.894736842105264" />
+							<sld:ColorMapEntry color="#FF5000" opacity="0.8" quantity="18.94736842105263" />
+							<sld:ColorMapEntry color="#FF0000" opacity="0.8" quantity="1.7976931348623157e+308" />
 						</sld:ColorMap>
 					</sld:RasterSymbolizer>
 				</sld:Rule>

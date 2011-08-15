@@ -14,7 +14,6 @@ import java.util.Set;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONObject;
-import org.opengis.coverage.grid.GridCoverage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
@@ -39,70 +38,78 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 	private JSONObject params;
 	private Set<URI> found;
 
-	@Override
-	public Visualization visualize(Resource r, JSONObject params) {
-		this.params = params;
-		try {
-			return new Visualization(r.getUUID(), getId(params), this, params, visualize(getNetCDF(r)));
-		} catch (IOException e) {
-			throw VissError.internal(e);
-		}
-	}
-
 	@SuppressWarnings("unchecked")
-	private GridCoverage visualize(NetcdfFile f) throws IOException {
-		NetCDFHelper.checkForUWConvention(f);
+	public Visualization visualize(Resource r, JSONObject params) {
+		try {
+			this.params = params;
+			NetcdfFile f = getNetCDF(r);
 
-		Map<URI, Variable> vars = NetCDFHelper.getVariables(f,
-				Utils.combineSets(hasToHaveAll(), hasToHaveOneOf()));
-		log.debug("Found {} Variables with relevant URIs.", vars.size());
+			NetCDFHelper.checkForUWConvention(f);
 
-		this.found = Collections.unmodifiableSet(vars.keySet());
+			Map<URI, Variable> vars = NetCDFHelper.getVariables(f,
+					Utils.combineSets(hasToHaveAll(), hasToHaveOneOf()));
+			log.debug("Found {} Variables with relevant URIs.", vars.size());
 
-		Map<URI, Array> arrays = Utils.map();
-		Map<URI, Index> indexes = Utils.map();
-		Map<URI, Double> missingValues = Utils.map();
+			this.found = Collections.unmodifiableSet(vars.keySet());
 
-		for (final Entry<URI, Variable> e : vars.entrySet()) {
-			Array a = e.getValue().read();
-			arrays.put(e.getKey(), a);
-			indexes.put(e.getKey(), a.getIndex());
-			missingValues.put(e.getKey(),
-					Double.valueOf(NetCDFHelper.getMissingValue(e.getValue())));
-		}
+			Map<URI, Array> arrays = Utils.map();
+			Map<URI, Index> indexes = Utils.map();
+			Map<URI, Double> missingValues = Utils.map();
 
-		WriteableGridCoverage wgc = NetCDFHelper.getCoverage(f,
-				getCoverageName());
+			for (final Entry<URI, Variable> e : vars.entrySet()) {
+				Array a;
+				a = e.getValue().read();
+				arrays.put(e.getKey(), a);
+				indexes.put(e.getKey(), a.getIndex());
+				missingValues.put(e.getKey(), Double.valueOf(NetCDFHelper
+						.getMissingValue(e.getValue())));
+			}
 
-		Array latValues = NetCDFHelper.getLongitude(f).read();
-		Array lonValues = NetCDFHelper.getLatitude(f).read();
+			WriteableGridCoverage wgc = NetCDFHelper.getCoverage(f,
+					getCoverageName());
 
-		final int sizeLon = lonValues.getShape()[0];
-		final int sizeLat = latValues.getShape()[0];
+			Array latValues = NetCDFHelper.getLongitude(f).read();
+			Array lonValues = NetCDFHelper.getLatitude(f).read();
 
-		for (int i = 0; i < sizeLon; ++i) {
-			for (int j = 0; j < sizeLat; ++j) {
-				final Map<URI, Double> values = Utils.map();
-				for (final URI uri : vars.keySet()) {
-					Array a = arrays.get(uri);
-					Index x = indexes.get(uri);
-					Double val = Double.valueOf(a.getDouble(x.set(i, j)));
-					if (!val.equals(missingValues.get(uri))) {
-						values.put(uri, val);
+			final int sizeLon = lonValues.getShape()[0];
+			final int sizeLat = latValues.getShape()[0];
+
+			Double min = null, max = null;
+
+			for (int i = 0; i < sizeLon; ++i) {
+				for (int j = 0; j < sizeLat; ++j) {
+					final Map<URI, Double> values = Utils.map();
+					for (final URI uri : vars.keySet()) {
+						Array a = arrays.get(uri);
+						Index x = indexes.get(uri);
+						Double val = Double.valueOf(a.getDouble(x.set(i, j)));
+						if (!val.equals(missingValues.get(uri))) {
+							values.put(uri, val);
+						}
 					}
-				}
-				if (!values.isEmpty()) {
-					double v = evaluate(values);
-					if (!Double.isNaN(v) && Double.isInfinite(v)) {
-						double lon = lonValues.getDouble(i);
-						double lat = latValues.getDouble(j);
-						Point2D p = new Point2D.Double(lon, lat);
-						wgc.setValueAtPos(p, v);
+					if (!values.isEmpty()) {
+						double v = evaluate(values);
+						if (!Double.isNaN(v) && !Double.isInfinite(v)) {
+							if (min == null || min.doubleValue() > v) {
+								min = Double.valueOf(v);
+							}
+							if (max == null || max.doubleValue() < v) {
+								max = Double.valueOf(v);
+							}
+							double lat = latValues.getDouble(j);
+							double lon = lonValues.getDouble(i);
+							Point2D p = new Point2D.Double(lat, lon);
+							wgc.setValueAtPos(p, v);
+						}
 					}
 				}
 			}
+			log.debug("min: {}; max: {}", min, max);
+			return new Visualization(r.getUUID(), getId(params), this, params,
+					min.doubleValue(), max.doubleValue(), wgc.getGridCoverage());
+		} catch (IOException e) {
+			throw VissError.internal(e);
 		}
-		return wgc.getGridCoverage();
 	}
 
 	protected Set<URI> getFoundURIs() {
@@ -143,7 +150,7 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 	public String getId(JSONObject params) {
 		return this.getShortName();
 	}
-	
+
 	@Override
 	public String getShortName() {
 		return this.getClass().getSimpleName();

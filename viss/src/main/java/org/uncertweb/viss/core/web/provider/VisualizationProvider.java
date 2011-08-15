@@ -53,7 +53,9 @@ public class VisualizationProvider implements MessageBodyWriter<Visualization> {
 			JSONObject j = new JSONObject()
 					.put("id", v.getVisId())
 					.put("visualizer", v.getCreator().getShortName())
-					.put("params", v.getParameters())
+					.putOpt("params", v.getParameters())
+					.putOpt("minValue",v.getMinValue())
+					.putOpt("maxValue", v.getMaxValue())
 					.put("customSLD", v.getSld() != null);
 
 			VisualizationReference vr = v.getReference();
