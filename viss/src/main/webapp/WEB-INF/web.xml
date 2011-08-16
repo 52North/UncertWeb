@@ -12,7 +12,17 @@
 			<param-value>org.uncertweb.viss.core.web</param-value>
 		</init-param>
 
-		<!-- com.sun.jersey.api.container.filter.GZIPContentEncodingFilter -->
+		<!--
+		<init-param>
+			<param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+			<param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+		</init-param>
+		<init-param>
+			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+			<param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;org.uncertweb.viss.core.web.CORSFilter</param-value>
+		</init-param>
+		-->
+
 		
 		<init-param>
 			<param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
