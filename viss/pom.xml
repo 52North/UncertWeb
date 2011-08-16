@@ -177,6 +177,11 @@
 
 	<repositories>
 		<repository>
+			<id>UncertWebMavenRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+		</repository>
+		<repository>
 			<id>geotools</id>
 			<name>GeoTools Maven Repository</name>
 			<url>http://download.osgeo.org/webdav/geotools/</url>
@@ -196,7 +201,6 @@
 			<name>Reflections Maven Repository</name>
 			<url>http://reflections.googlecode.com/svn/repo</url>
 		</repository>
-
 	</repositories>
 
 	<build>

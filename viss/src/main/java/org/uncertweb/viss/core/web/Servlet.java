@@ -18,6 +18,7 @@ import java.util.UUID;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -86,14 +87,15 @@ public class Servlet {
 	
 	@PUT
 	@Path(RESOURCES)
+	@Produces(APPLICATION_JSON)
 	@Consumes({ APPLICATION_JSON, NETCDF, X_NETCDF, GEOTIFF, OM_2 })
-	public Response putResource(InputStream is, @Context HttpHeaders h, @Context UriInfo uriI) {
+	public Response putResource(InputStream is, @HeaderParam(HttpHeaders.CONTENT_TYPE) MediaType h, @Context UriInfo uriI) {
 		log.debug("Putting Resource.");
 		Resource r = null;
-		if (h.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)) {
+		if (MediaType.APPLICATION_JSON_TYPE.equals(h)) {
 			try {
 				JSONObject j = new JSONObject(IOUtils.toString(is));
-				log.debug("Fetching resource described as json:\n", j.toString(4));
+				log.debug("Fetching resource described as json: {}\n", j.toString(4));
 				URL url = new URL(j.getString("url"));
 				HttpURLConnection con = (HttpURLConnection) url
 						.openConnection();
@@ -112,18 +114,17 @@ public class Servlet {
 						IOUtils.closeQuietly(os);
 					}
 				}
-				r = Viss.getInstance().createResource(con.getInputStream(),
-						MediaType.valueOf(j.getString("responseMediaType")));
+				r = Viss.getInstance().createResource(con.getInputStream(), MediaType.valueOf(j.getString("responseMediaType")));
 			} catch (Exception e) {
 				throw VissError.internal(e);
 			} finally {
 				IOUtils.closeQuietly(is);
 			}
 		} else {
-			r = Viss.getInstance().createResource(is, h.getMediaType());
+			r = Viss.getInstance().createResource(is, h);
 		}
 		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getResource").build(r.getUUID());
-		return Response.created(uri).build();
+		return Response.created(uri).entity(r).build();
 	}
 
 	@GET
@@ -177,15 +178,15 @@ public class Servlet {
 
 	@PUT
 	@Path(VISUALIZATIONS)
+	@Produces(APPLICATION_JSON)
 	@Consumes(APPLICATION_JSON)
-	@Produces()
 	public Response putVisualization(@PathParam(RES_PARAM) UUID uuid,
 			VisualizationRequest req, @Context UriInfo uriI) {
 		log.debug("Creating Visualizaton for resource with UUID \"{}\".", uuid);
 		Visualization v = Viss.getInstance().getVisualization(req.getVisualizer(), uuid,
 				req.getParameters());
 		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getVisualization").build(v.getUuid(), v.getVisId());
-		return Response.created(uri).build();
+		return Response.created(uri).entity(v).build();
 	}
 
 	@GET
@@ -225,4 +226,5 @@ public class Servlet {
 		log.debug("Getting SLD for Visualization with UUID \"{}\"", uuid);
 		return Viss.getInstance().getSldForVisualization(uuid, vis);
 	}
+	
 }
