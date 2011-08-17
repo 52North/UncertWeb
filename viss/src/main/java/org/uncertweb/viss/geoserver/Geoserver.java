@@ -52,7 +52,9 @@ public class Geoserver {
 		this.path = path;
 
 		if (sameServer && !path.exists()) {
-			path.mkdirs();
+			if (!path.mkdirs()) {
+				throw VissError.internal("Could not create directory: " + path.getAbsolutePath());
+			}
 		}
 		this.cacheWorkspaceList = cacheWorkspaceList;
 		if (cacheWorkspaceList) {
