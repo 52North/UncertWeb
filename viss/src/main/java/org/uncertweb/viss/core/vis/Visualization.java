@@ -17,11 +17,13 @@ public class Visualization {
 	private Visualizer creator;
 	private JSONObject parameters;
 	private VisualizationReference ref;
-	private StyledLayerDescriptorDocument sld;
 	private String visId;
 	private double minValue;
 	private double maxValue;
 
+	@Transient
+	private StyledLayerDescriptorDocument sld;
+	
 	@Transient
 	private Set<GridCoverage> coverages = Utils.set();
 

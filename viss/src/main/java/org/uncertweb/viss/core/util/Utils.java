@@ -228,7 +228,7 @@ public class Utils {
 	}
 
 	public static String stringifyJson(JSONObject json) throws JSONException {
-		if (Constants.INTEND_JSON)
+		if (Constants.PRETTY_PRINT_IO)
 			return json.toString(4);
 		else
 			return json.toString();

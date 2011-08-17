@@ -41,12 +41,22 @@ public class Constants {
 	public static final String WMS_ADAPTER_KEY = "implementation.wmsAdapter";
 	public static final String SEARCH_PACKAGES_KEY = "visualizerSearchPackages";
 	
-	public static final boolean INTEND_JSON = true;
+	public static final boolean PRETTY_PRINT_IO = Boolean.valueOf(get("prettyPrintIO", "false")); 
 	
-	public static final XmlOptions XML_OPTIONS = new XmlOptions()
-			.setLoadStripWhitespace().setLoadStripProcinsts()
-			.setLoadStripComments().setLoadTrimTextBuffer()
-			.setSaveAggressiveNamespaces();
+	public static final XmlOptions XML_OPTIONS = PRETTY_PRINT_IO ? 
+			new XmlOptions().setSavePrettyPrint()
+				.setLoadStripWhitespace()
+				.setLoadStripProcinsts()
+				.setLoadStripComments()
+				.setLoadTrimTextBuffer()
+				.setSaveAggressiveNamespaces() :
+			new XmlOptions()
+				.setLoadStripWhitespace()
+				.setLoadStripProcinsts()
+				.setLoadStripComments()
+				.setLoadTrimTextBuffer()
+				.setSaveAggressiveNamespaces();
+
 	
 	public static final String CONFIG_FILE = "/viss.properties";
 
