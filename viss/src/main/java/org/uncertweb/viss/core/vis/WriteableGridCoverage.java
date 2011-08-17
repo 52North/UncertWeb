@@ -18,9 +18,9 @@ public class WriteableGridCoverage {
 
 	private class PendingValue {
 		private Point2D.Double pos;
-		private double value;
+		private Number value;
 
-		public PendingValue(Point2D.Double pos, double value) {
+		public PendingValue(Point2D.Double pos, Number value) {
 			this.pos = pos;
 			this.value = value;
 		}
@@ -29,9 +29,10 @@ public class WriteableGridCoverage {
 	private List<PendingValue> pendingValues = new ArrayList<PendingValue>();
 	private GridCoverage2D gridCov;
 	private MathTransform2D worldToGrid = null;
-
-	public WriteableGridCoverage(GridCoverage2D gridCov) {
+	
+	public WriteableGridCoverage(int missingValue, GridCoverage2D gridCov) {
 		this.gridCov = gridCov;
+		this.missingValue = missingValue;
 	}
 
 	public GridCoverage2D getGridCoverage() {
@@ -40,20 +41,20 @@ public class WriteableGridCoverage {
 	}
 
 	public void setValueAtPos(Point2D pos, int value) {
-		doSetValue(pos, Integer.valueOf(value));
+		setValueAtPos(pos, Integer.valueOf(value));
 	}
 
 	public void setValueAtPos(Point2D pos, float value) {
-		doSetValue(pos, Float.valueOf(value));
+		setValueAtPos(pos, Float.valueOf(value));
 	}
 
 	public void setValueAtPos(Point2D pos, double value) {
-		doSetValue(pos, Double.valueOf(value));
+		setValueAtPos(pos, Double.valueOf(value));
 	}
 
-	private void doSetValue(Point2D pos, Number value) {
+	public void setValueAtPos(Point2D pos, Number value) {
 		pendingValues.add(new PendingValue(new Point2D.Double(pos.getX(), pos
-				.getY()), value.doubleValue()));
+				.getY()), value));
 		flushCache(false);
 	}
 
@@ -74,8 +75,11 @@ public class WriteableGridCoverage {
 			for (PendingValue pv : pendingValues) {
 				try {
 					worldToGrid.transform(pv.pos, gridPos);
-					writeIter.setSample((int) gridPos.x, (int) gridPos.y, 0,
-							pv.value);
+					if (pv.value == null) {
+						writeIter.setSample((int) gridPos.x, (int) gridPos.y, 0, getMissingValue());
+					} else {
+						writeIter.setSample((int) gridPos.x, (int) gridPos.y, 0, pv.value.doubleValue());
+					}
 				} catch (TransformException e) {
 					throw VissError.internal("Could not transform location ["
 							+ pv.pos + "] to grid coords");
@@ -83,5 +87,9 @@ public class WriteableGridCoverage {
 			}
 			pendingValues.clear();
 		}
+	}
+	private int missingValue;
+	public int getMissingValue() {
+		return this.missingValue;
 	}
 }

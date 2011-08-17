@@ -141,7 +141,7 @@ public class VissTest extends JerseyTest {
 	@Test
 	public void addResourceAndCreateVisualizations() throws JSONException,
 			UniformInterfaceException, XmlException {
-
+		deleteAll();
 		UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
 
 		String meanVisId = createVisualization(uuid,

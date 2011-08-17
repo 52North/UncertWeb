@@ -104,7 +104,6 @@ public class GeoserverAdapter implements WMSAdapter {
 			throw VissError.internal(e);
 		}
 	}
-
 	
 	private InputStream toInputStream(GridCoverage c) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

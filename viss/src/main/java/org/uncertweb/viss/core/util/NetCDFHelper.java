@@ -29,7 +29,6 @@ import ucar.nc2.Variable;
 
 public class NetCDFHelper {
 	private static final Logger log = LoggerFactory.getLogger(NetCDFHelper.class);
-
 	private static final String MISSING_VALUE_ATTRIBUTE = "missing_value";
 	private static final String PRIMARY_VARIABLES_ATTRIBUTE = "primary_variables";
 	private static final String UNITS_ATTRIBUTE = "units";
@@ -75,12 +74,12 @@ public class NetCDFHelper {
 		return set;
 	}
 
-	public static double getMissingValue(Variable v) {
+	public static Integer getMissingValue(Variable v) {
 		Attribute a = v.findAttribute(MISSING_VALUE_ATTRIBUTE);
 		if (a == null) {
-			return Double.NaN;
+			return Integer.MIN_VALUE;
 		} else {
-			return a.getNumericValue().doubleValue();
+			return a.getNumericValue().intValue();
 		}
 	}
 
@@ -177,6 +176,16 @@ public class NetCDFHelper {
 			throw VissError.internal("Can not determine shape of variable: no \""
 						+ ANCIALLARY_VARIABLES_ATTRIBUTE + "\" attribute.");
 		
+		int missingValue = -999;
+		for (String s  : a.getStringValue().split(" ")) {
+			Attribute mv = f.findVariable(s).findAttribute(MISSING_VALUE_ATTRIBUTE);
+			if (mv != null) {
+				missingValue = mv.getNumericValue().intValue();
+				break;
+			}
+		}
+	
+		
 		int latSize = getLatitude(f).getShape()[0];
 		int lonSize = getLongitude(f).getShape()[0];
 
@@ -185,8 +194,11 @@ public class NetCDFHelper {
 		log.info("ImageSize: {}x{}", lonSize, latSize);
 		b.setImageSize(lonSize, latSize);
 		b.setEnvelope(getEnvelope(f));
-		b.newVariable(layerName, getUnit(v)).setLinearTransform(1, 0);
-		return new WriteableGridCoverage(b.getGridCoverage2D());
+		GridCoverageBuilder.Variable var = b.newVariable(layerName, getUnit(v));
+		var.setLinearTransform(1, 0);
+		log.info("MissingValue: {}", missingValue);
+		var.addNodataValue("UNKNOWN", missingValue);
+		return new WriteableGridCoverage(missingValue, b.getGridCoverage2D());
 	}
 	
 	public static URI getURI(Variable v) {

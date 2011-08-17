@@ -54,15 +54,17 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 
 			Map<URI, Array> arrays = Utils.map();
 			Map<URI, Index> indexes = Utils.map();
-			Map<URI, Double> missingValues = Utils.map();
+			Map<URI, Integer> missingValues = Utils.map();
 
 			for (final Entry<URI, Variable> e : vars.entrySet()) {
 				Array a;
 				a = e.getValue().read();
 				arrays.put(e.getKey(), a);
 				indexes.put(e.getKey(), a.getIndex());
-				missingValues.put(e.getKey(), Double.valueOf(NetCDFHelper
+				missingValues.put(e.getKey(), Integer.valueOf(NetCDFHelper
 						.getMissingValue(e.getValue())));
+				log.debug("Missing value: {}",missingValues.get(e.getKey()));
+				log.debug("Missing value: {}",NetCDFHelper.getMissingValue(e.getValue()));
 			}
 
 			WriteableGridCoverage wgc = NetCDFHelper.getCoverage(f,
@@ -83,25 +85,29 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 						Array a = arrays.get(uri);
 						Index x = indexes.get(uri);
 						Double val = Double.valueOf(a.getDouble(x.set(i, j)));
-						if (!val.equals(missingValues.get(uri))) {
+						if (!Integer.valueOf(val.intValue()).equals(missingValues.get(uri))) {
 							values.put(uri, val);
 						}
 					}
+					Number value = null;
 					if (!values.isEmpty()) {
 						double v = evaluate(values);
 						if (!Double.isNaN(v) && !Double.isInfinite(v)) {
+							value = Double.valueOf(v);
 							if (min == null || min.doubleValue() > v) {
 								min = Double.valueOf(v);
 							}
 							if (max == null || max.doubleValue() < v) {
 								max = Double.valueOf(v);
 							}
-							double lat = latValues.getDouble(j);
-							double lon = lonValues.getDouble(i);
-							Point2D p = new Point2D.Double(lat, lon);
-							wgc.setValueAtPos(p, v);
 						}
 					}
+					
+					double lat = latValues.getDouble(j);
+					double lon = lonValues.getDouble(i);
+					Point2D p = new Point2D.Double(lat, lon);
+					wgc.setValueAtPos(p, value);
+					
 				}
 			}
 			log.debug("min: {}; max: {}", min, max);

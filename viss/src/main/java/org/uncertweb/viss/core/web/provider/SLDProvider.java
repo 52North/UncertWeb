@@ -13,8 +13,11 @@ import javax.ws.rs.ext.Provider;
 
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Constants;
 
@@ -24,6 +27,8 @@ import com.sun.jersey.core.provider.AbstractMessageReaderWriterProvider;
 public class SLDProvider extends
 		AbstractMessageReaderWriterProvider<StyledLayerDescriptorDocument> {
 
+	private static final Logger log = LoggerFactory.getLogger(SLDProvider.class); 
+	
 	@Override
 	public boolean isReadable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
 		return mt.equals(Constants.STYLED_LAYER_DESCRIPTOR_TYPE)
@@ -36,7 +41,9 @@ public class SLDProvider extends
 			MediaType mt, MultivaluedMap<String, String> hh, InputStream es)
 			throws IOException, WebApplicationException {
 		try {
-			return StyledLayerDescriptorDocument.Factory.parse(es, Constants.XML_OPTIONS);
+			String s = IOUtils.toString(es);
+			log.info("SLD:\n{}",s);
+			return StyledLayerDescriptorDocument.Factory.parse(s, Constants.XML_OPTIONS);
 		} catch (XmlException e) {
 			throw VissError.internal(e);
 		}
@@ -52,7 +59,7 @@ public class SLDProvider extends
 	public void writeTo(StyledLayerDescriptorDocument x, Class<?> t, Type gt,
 			Annotation[] a, MediaType mt, MultivaluedMap<String, Object> hh,
 			OutputStream es) throws IOException {
-		x.save(es, Constants.XML_OPTIONS);
+		writeToAsString(x.xmlText(Constants.XML_OPTIONS), es, mt);
 	}
 	
 }
