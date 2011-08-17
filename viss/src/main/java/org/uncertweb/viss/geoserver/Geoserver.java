@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response.Status;
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.xmlbeans.XmlException;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -405,6 +406,29 @@ public class Geoserver {
 		}
 	}
 	
+
+	public StyledLayerDescriptorDocument getStyle(String stylename) throws IOException, XmlException {
+
+		HttpURLConnection con;
+		
+		con = RestBuilder.path(url("styles/%s.sld"), stylename)
+				   .responseType(STYLED_LAYER_DESCRIPTOR_TYPE)
+				   .auth(this.user, this.pass)
+				   .get();
+		
+		logCon("style fetch", con);
+		
+		if (!isOk(con)) {
+			return null;
+		} 
+		InputStream is = null;
+		try {
+			return StyledLayerDescriptorDocument.Factory.parse(con.getInputStream());
+		} finally {
+			IOUtils.closeQuietly(is);
+		}
+	}
+	
 	protected static void logCon(String requestDesc, HttpURLConnection con) throws IOException {
 		if (con.getResponseCode() >= 300) {
 			log.warn(requestDesc + " status: " + con.getResponseCode() +" "+ con.getResponseMessage());
@@ -422,5 +446,4 @@ public class Geoserver {
 	protected static boolean isStatus(HttpURLConnection con, Status s) throws IOException {
 		return con.getResponseCode() == s.getStatusCode();
 	}
-
 }

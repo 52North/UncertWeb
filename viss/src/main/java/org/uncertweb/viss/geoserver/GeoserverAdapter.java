@@ -9,6 +9,8 @@ import java.util.Properties;
 
 import javax.media.jai.JAI;
 
+import net.opengis.sld.StyledLayerDescriptorDocument;
+
 import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
@@ -142,7 +144,6 @@ public class GeoserverAdapter implements WMSAdapter {
 				return getGeoserver().setStyle(vis.getUuid().toString(), vis.getVisId(), stylename);
 			}
 			return false;
-			
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
@@ -155,5 +156,21 @@ public class GeoserverAdapter implements WMSAdapter {
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
+	}
+
+	@Override
+	public StyledLayerDescriptorDocument getSldForVisualization(
+			Visualization vis) {
+		String stylename = vis.getUuid() + "-" + vis.getVisId();
+		StyledLayerDescriptorDocument sld;
+		try {
+			sld = getGeoserver().getStyle(stylename);
+		} catch (Exception e) {
+			throw VissError.internal(e);
+		}
+		if (sld == null) {
+			throw VissError.notFound("No attached SLD");
+		}
+		return sld;
 	}
 }

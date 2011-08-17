@@ -216,11 +216,7 @@ public class Viss {
 	}
 
 	public StyledLayerDescriptorDocument getSldForVisualization(UUID uuid, String vis) {
-		StyledLayerDescriptorDocument sld = getVisualization(uuid, vis).getSld();
-		if (sld == null) {
-			throw VissError.notFound("No attached SLD.");
-		}
-		return sld;
+		return getWMS().getSldForVisualization(getVisualization(uuid, vis));
 	}
 
 	public void setSldForVisualization(UUID uuid, String vis,

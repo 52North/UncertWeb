@@ -15,6 +15,7 @@ import static org.uncertweb.viss.core.web.Servlet.VISUALIZATIONS;
 import static org.uncertweb.viss.core.web.Servlet.VISUALIZATION_SLD;
 import static org.uncertweb.viss.core.web.Servlet.VIS_PARAM_P;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -179,6 +180,11 @@ public class VissTest extends JerseyTest {
 		UUID uuid3 = addResource(OM_2_TYPE, getOMStream());
 		assertEquals(uuid1, uuid2);
 		assertTrue(!uuid1.equals(uuid3));
+	}
+	
+	@Test
+	public void testSldFile() throws XmlException, IOException {
+		StyledLayerDescriptorDocument.Factory.parse(getSLDStream());
 	}
 
 	@Test
