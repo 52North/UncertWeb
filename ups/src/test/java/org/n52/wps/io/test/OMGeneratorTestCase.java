@@ -19,10 +19,10 @@ import org.isotc211.x2005.gmd.DQUncertaintyResultType;
 import org.n52.wps.io.data.OMData;
 import org.n52.wps.io.data.binding.complex.OMDataBinding;
 import org.n52.wps.io.datahandler.xml.OMGenerator;
-import org.uncertml.distribution.continuous.GaussianDistribution;
-import org.uncertml.distribution.multivariate.MultivariateGaussianDistribution;
+import org.uncertml.distribution.continuous.NormalDistribution;
+import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
 import org.uncertml.statistic.CovarianceMatrix;
-import org.uncertml.x20.GaussianDistributionType;
+import org.uncertml.x20.NormalDistributionType;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.geometry.GmlGeometryFactory;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
@@ -142,7 +142,7 @@ public class OMGeneratorTestCase extends TestCase {
 				"FOINAME", poly);
 
 		// create resultQuality (optional) and result
-		GaussianDistribution[] gauss = { new GaussianDistribution(29.564, 7.45) };
+		NormalDistribution[] gauss = { new NormalDistribution(29.564, 7.45) };
 		DQ_UncertaintyResult[] resultQuality = { new DQ_UncertaintyResult(
 				gauss, "degC") };
 
@@ -150,7 +150,7 @@ public class OMGeneratorTestCase extends TestCase {
 		double[] values = { 66.26, 32.3, 232.2, 232.2 };
 		CovarianceMatrix cov = new CovarianceMatrix(2, values);
 		UncertaintyResult result = new UncertaintyResult(
-				new MultivariateGaussianDistribution(mean, cov));
+				new MultivariateNormalDistribution(mean, cov));
 
 		UncertaintyObservation obs = new UncertaintyObservation(identifier,
 				boundedBy, phenomenonTime, resultTime, validTime, procedure,
@@ -261,7 +261,7 @@ public class OMGeneratorTestCase extends TestCase {
 		double[] values = { 66.26, 32.3, 232.2, 232.2 };
 		CovarianceMatrix cov = new CovarianceMatrix(2, values);
 		UncertaintyResult result = new UncertaintyResult(
-				new MultivariateGaussianDistribution(mean, cov));
+				new MultivariateNormalDistribution(mean, cov));
 
 		// create and add an observation from the parameters above
 		UncertaintyObservation obs1 = new UncertaintyObservation(
@@ -337,7 +337,7 @@ public class OMGeneratorTestCase extends TestCase {
 		double[] mean2 = { 133.52, 384.23 };
 		double[] values2 = { 67.26, 32.3, 232.2, 232.2 };
 		cov = new CovarianceMatrix(2, values2);
-		result = new UncertaintyResult(new MultivariateGaussianDistribution(
+		result = new UncertaintyResult(new MultivariateNormalDistribution(
 				mean2, cov));
 
 		// create and add an observation from the parameters above
@@ -438,7 +438,7 @@ public class OMGeneratorTestCase extends TestCase {
 		double[] mean3 = { 134.52, 384.23 };
 		double[] values3 = { 68.26, 32.3, 232.2, 232.2 };
 		cov = new CovarianceMatrix(2, values3);
-		result = new UncertaintyResult(new MultivariateGaussianDistribution(
+		result = new UncertaintyResult(new MultivariateNormalDistribution(
 				mean3, cov));
 
 		// create and add an observation from the parameters above
@@ -539,15 +539,15 @@ public class OMGeneratorTestCase extends TestCase {
 					.getResultQuality()[0];
 
 			assertEquals(
-					((GaussianDistributionType) dqURT.getValueArray(0)
+					((NormalDistributionType) dqURT.getValueArray(0)
 							.getAbstractUncertainty()).getMean()
 							.getStringValue(),
-					((GaussianDistribution) dqUR.getValues()[0]).getMean()
+					((NormalDistribution) dqUR.getValues()[0]).getMean()
 							.get(0).toString());
 
-			assertEquals(((GaussianDistributionType) dqURT.getValueArray(0)
+			assertEquals(((NormalDistributionType) dqURT.getValueArray(0)
 					.getAbstractUncertainty()).getVariance().getStringValue(),
-					((GaussianDistribution) dqUR.getValues()[0]).getVariance()
+					((NormalDistribution) dqUR.getValues()[0]).getVariance()
 							.get(0).toString());
 
 			assertEquals(dqURT.getValueUnit().getUnitDefinition()
@@ -555,9 +555,9 @@ public class OMGeneratorTestCase extends TestCase {
 		}
 
 		// test result
-		org.uncertml.x20.MultivariateGaussianDistributionDocument.MultivariateGaussianDistribution encMGD = (org.uncertml.x20.MultivariateGaussianDistributionDocument.MultivariateGaussianDistribution) ((UWUncertaintyObservationType) encObs)
+		org.uncertml.x20.MultivariateNormalDistributionDocument.MultivariateNormalDistribution encMGD = (org.uncertml.x20.MultivariateNormalDistributionDocument.MultivariateNormalDistribution) ((UWUncertaintyObservationType) encObs)
 				.getResult().getAbstractUncertainty();
-		MultivariateGaussianDistribution mGD = (MultivariateGaussianDistribution) obs
+		MultivariateNormalDistribution mGD = (MultivariateNormalDistribution) obs
 				.getResult().getValue();
 		assertEquals((Double) encMGD.getMean().getListValue().get(0), mGD
 				.getMean().get(0));

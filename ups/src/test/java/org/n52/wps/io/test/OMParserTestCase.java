@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.OMData;
 import org.n52.wps.io.datahandler.xml.OMParser;
-import org.uncertml.distribution.multivariate.MultivariateGaussianDistribution;
+import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.result.UncertaintyResult;
@@ -76,9 +76,9 @@ public class OMParserTestCase extends TestCase {
 				
 				// Result
 				assertEquals(obs_0.getResult().getClass(), UncertaintyResult.class);
-				assertEquals(obs_0.getResult().getValue().getClass(), MultivariateGaussianDistribution.class);
-				assertEquals(((MultivariateGaussianDistribution) obs_0.getResult().getValue()).getMean().get(0), 132.52);
-				assertEquals(((MultivariateGaussianDistribution) obs_0.getResult().getValue()).getCovarianceMatrix().getValues().get(0), 66.26);
+				assertEquals(obs_0.getResult().getValue().getClass(), MultivariateNormalDistribution.class);
+				assertEquals(((MultivariateNormalDistribution) obs_0.getResult().getValue()).getMean().get(0), 132.52);
+				assertEquals(((MultivariateNormalDistribution) obs_0.getResult().getValue()).getCovarianceMatrix().getValues().get(0), 66.26);
 				
 				// Observation 3
 				AbstractObservation obs_3 = obsCol.getObservations().get(3);
@@ -104,9 +104,9 @@ public class OMParserTestCase extends TestCase {
 				
 				// Result
 				assertEquals(obs_3.getResult().getClass(), UncertaintyResult.class);
-				assertEquals(obs_3.getResult().getValue().getClass(), MultivariateGaussianDistribution.class);
-				assertEquals(((MultivariateGaussianDistribution) obs_3.getResult().getValue()).getMean().get(1), 384.23);
-				assertEquals(((MultivariateGaussianDistribution) obs_3.getResult().getValue()).getCovarianceMatrix().getValues().get(3), 232.2);
+				assertEquals(obs_3.getResult().getValue().getClass(), MultivariateNormalDistribution.class);
+				assertEquals(((MultivariateNormalDistribution) obs_3.getResult().getValue()).getMean().get(1), 384.23);
+				assertEquals(((MultivariateNormalDistribution) obs_3.getResult().getValue()).getCovarianceMatrix().getValues().get(3), 232.2);
 			}
 		}
 		
