@@ -10,19 +10,21 @@ import org.uncertweb.viss.core.vis.Visualization;
 
 public interface Resource {
 
-	public abstract UUID getUUID();
+	public UUID getUUID();
 
-	public abstract MediaType getMediaType();
+	public MediaType getMediaType();
 
-	public abstract Object getResource();
-
-	public abstract void suspend();
+	public Object getResource();
 
 	public Set<Visualization> getVisualizations();
-	
+
 	public void addVisualization(Visualization v);
 
+	public String getPhenomenon();
+
 	public void load() throws IOException;
+
+	public void suspend();
 
 	public boolean isLoaded();
 }

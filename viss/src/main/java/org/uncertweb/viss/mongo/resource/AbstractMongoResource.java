@@ -1,6 +1,7 @@
 package org.uncertweb.viss.mongo.resource;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualization;
@@ -25,7 +27,7 @@ import com.google.code.morphia.annotations.Transient;
 
 @Polymorphic
 @Entity("resources")
-public abstract class AbstractMongoResource implements Resource {
+public abstract class AbstractMongoResource<T> implements Resource {
 
 	protected static final Logger log = LoggerFactory.getLogger(AbstractMongoResource.class);
 	
@@ -40,11 +42,12 @@ public abstract class AbstractMongoResource implements Resource {
 	private DateTime lastUsage;
 	private File file;
 	@Transient
-	private Object content;
+	private T content;
 	@Indexed
 	@Property(CHECKSUM_PROPERTY)
 	private long checksum;
-
+	private String phenomenon;
+	
 	@Embedded
 	private Set<Visualization> visualizations = Utils.set();;
 
@@ -75,7 +78,22 @@ public abstract class AbstractMongoResource implements Resource {
 	public Object getResource() {
 		return this.content;
 	}
-
+	
+	@Override
+	public String getPhenomenon() {
+		if (this.phenomenon == null) {
+			if (!isLoaded()) {
+				try {
+					load();
+				} catch (IOException e) {
+					throw VissError.internal(e);
+				}
+			}
+			this.phenomenon = getPhenomenonForResource();
+		}
+		return this.phenomenon;
+	}
+	
 	public File getFile() {
 		return file;
 	}
@@ -92,11 +110,11 @@ public abstract class AbstractMongoResource implements Resource {
 		this.lastUsage = lastUsage;
 	}
 
-	public Object getContent() {
+	public T getContent() {
 		return content;
 	}
 
-	public void setContent(Object content) {
+	public void setContent(T content) {
 		this.content = content;
 	}
 
@@ -126,10 +144,19 @@ public abstract class AbstractMongoResource implements Resource {
 		this.checksum = checksum;
 	}
 	
+	protected abstract String getPhenomenonForResource();
+	
 	@PostLoad
 	@PrePersist
 	public void setLastUsageTime() {
 		setLastUsage(new DateTime());
+	}
+	
+	@PostLoad
+	public void setPhenomenon() {
+		if (this.phenomenon == null) {
+			getPhenomenon();
+		}
 	}
 
 }

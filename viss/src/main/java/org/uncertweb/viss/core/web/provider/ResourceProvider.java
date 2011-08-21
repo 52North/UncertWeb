@@ -50,6 +50,7 @@ public class ResourceProvider implements MessageBodyWriter<Resource> {
 		return new JSONObject()
 			.put("id", r.getUUID())
 			.put("mimeType", r.getMediaType())
+			.put("phenomenon", r.getPhenomenon())
 			.put("visualizations", a);
 	}
 

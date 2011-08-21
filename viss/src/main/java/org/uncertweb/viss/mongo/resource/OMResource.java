@@ -30,7 +30,7 @@ import com.google.code.morphia.annotations.PrePersist;
 import com.google.code.morphia.annotations.Transient;
 
 @Polymorphic
-public class OMResource extends AbstractMongoResource {
+public class OMResource extends AbstractMongoResource<IObservationCollection>{
 
 	public OMResource() {
 		super(Constants.OM_2_TYPE);
@@ -39,7 +39,7 @@ public class OMResource extends AbstractMongoResource {
 	private Set<ResourceFile> savedResourceFiles = Utils.set();
 
 	@Transient
-	private Set<AbstractMongoResource> resources = null;
+	private Set<AbstractMongoResource<?>> resources = null;
 	@Transient
 	private Map<String, File> resourceFiles = Utils.map();
 
@@ -89,7 +89,7 @@ public class OMResource extends AbstractMongoResource {
 			log.debug("ReferenceResult already loaded");
 			/* reference is already resolved */
 			if (!resources.contains(rr.getValue())) {
-				resources.add((AbstractMongoResource) rr.getValue());
+				resources.add((AbstractMongoResource<?>) rr.getValue());
 			}
 			return;
 		}
@@ -99,7 +99,7 @@ public class OMResource extends AbstractMongoResource {
 		MediaType mt = MediaType.valueOf(rr.getRole());
 		log.debug("Creating resource for {}", mt);
 		/* check whether we can resolve the reference */
-		AbstractMongoResource r = mrs.getResourceForMediaType(mt);
+		AbstractMongoResource<?> r = mrs.getResourceForMediaType(mt);
 
 		/* check whether we have loaded the referenced file */
 		File f = resourceFiles.get(rr.getHref());
@@ -142,5 +142,18 @@ public class OMResource extends AbstractMongoResource {
 				r.suspend();
 			}
 		}
+	}
+
+	@Override
+	protected String getPhenomenonForResource() {
+		String phen = null;
+		for (AbstractObservation ao : getContent().getObservations()) {
+			if (phen == null) {
+				phen = ao.getObservedProperty().toString();
+			} else if (!phen.equals(ao.getObservedProperty().toString())) {
+				phen = "UNKNOWN";
+			}
+		}
+		return phen == null ? "UNKNOWN" : phen;
 	}
 }

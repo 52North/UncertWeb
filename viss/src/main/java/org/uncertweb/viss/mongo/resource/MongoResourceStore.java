@@ -32,6 +32,7 @@ public class MongoResourceStore implements ResourceStore {
 	
 	private static final Logger log = LoggerFactory.getLogger(MongoResourceStore.class);
 
+	@SuppressWarnings("rawtypes")
 	private class ResourceDAO extends BasicDAO<AbstractMongoResource, UUID> {
 		protected ResourceDAO() {
 			super(MongoDB.getInstance().getDatastore());
@@ -51,7 +52,7 @@ public class MongoResourceStore implements ResourceStore {
 
 	@Override
 	public Resource get(UUID uuid) {
-		AbstractMongoResource r = getDao().get(uuid);
+		AbstractMongoResource<?> r = getDao().get(uuid);
 		if (r == null) {
 			throw VissError.noSuchResource();
 		}
@@ -71,12 +72,12 @@ public class MongoResourceStore implements ResourceStore {
 	}
 
 	@Override
-	public AbstractMongoResource addResource(InputStream is, MediaType mt) {
+	public AbstractMongoResource<?> addResource(InputStream is, MediaType mt) {
 		UUID uuid = UUID.randomUUID();
 		try {
 			File f = createResourceFile(uuid, mt);
 			long crc = Utils.saveToFileWithChecksum(f, is);
-			AbstractMongoResource r = getResourceWithChecksum(crc);
+			AbstractMongoResource<?> r = getResourceWithChecksum(crc);
 			if (r == null) {
 				r = getResourceForMediaType(mt);
 				r.setFile(f);
@@ -92,7 +93,7 @@ public class MongoResourceStore implements ResourceStore {
 		}
 	}
 	
-	protected AbstractMongoResource getResourceWithChecksum(long crc) {
+	protected AbstractMongoResource<?> getResourceWithChecksum(long crc) {
 		return getDao().createQuery().field(AbstractMongoResource.CHECKSUM_PROPERTY).equal(crc).get();
 	}
 
@@ -110,7 +111,7 @@ public class MongoResourceStore implements ResourceStore {
 
 	@Override
 	public void deleteVisualizationForResource(Resource r, Visualization v) {
-		AbstractMongoResource amr = (AbstractMongoResource) r;
+		AbstractMongoResource<?> amr = (AbstractMongoResource<?>) r;
 		amr.removeVisualization(v);
 		saveResource(r);
 	}
@@ -132,7 +133,7 @@ public class MongoResourceStore implements ResourceStore {
 		return Utils.to(resourceDir, uuid.toString());
 	}
 
-	public AbstractMongoResource getResourceForMediaType(MediaType mt)
+	public AbstractMongoResource<?> getResourceForMediaType(MediaType mt)
 			throws IOException {
 		if (mt.equals(GEOTIFF_TYPE)) {
 			return new GeoTIFFResource();
@@ -146,7 +147,7 @@ public class MongoResourceStore implements ResourceStore {
 
 	@Override
 	public void saveResource(Resource r) {
-		AbstractMongoResource amr = (AbstractMongoResource) r;
+		AbstractMongoResource<?> amr = (AbstractMongoResource<?>) r;
 		log.debug("Saving Resource {};",amr.getUUID());
 		getDao().save(amr);
 	}
