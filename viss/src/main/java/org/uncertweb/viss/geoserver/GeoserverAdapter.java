@@ -34,7 +34,6 @@ import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
@@ -133,7 +132,7 @@ public class GeoserverAdapter implements WMSAdapter {
 		GeoTiffWriteParams wp = new GeoTiffWriteParams();
 		wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
 		wp.setCompressionType("LZW");
-		wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
+		wp.setTilingMode(GeoTiffWriteParams.MODE_EXPLICIT);
 		int width = c.getRenderedImage().getWidth();
 		int tileWidth = 1024;
 		if (width < 2048) {

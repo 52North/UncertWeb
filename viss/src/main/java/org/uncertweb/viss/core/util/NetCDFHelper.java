@@ -228,14 +228,16 @@ public class NetCDFHelper {
 
 		final GridCoverageBuilder b = new GridCoverageBuilder();
 		b.setCoordinateReferenceSystem(EPSG4326);
-		log.info("ImageSize: {}x{}", lonSize, latSize);
-		b.setImageSize(lonSize, latSize);
+		log.debug("ImageSize: {}x{}", lonSize, latSize);
+		//FIXME this removes the cross, but thats somewhat ugly
+		b.setImageSize(lonSize-1, latSize-1);
 		b.setEnvelope(getEnvelope(f));
 		GridCoverageBuilder.Variable var;
-		if (unit == null)
+		if (unit == null) {
 			var = b.newVariable(layerName, getUnit(v));
-		else
+		} else {
 			var = b.newVariable(layerName, getUnit(unit));
+		}
 		var.setLinearTransform(1, 0);
 		log.info("MissingValue: {}", missingValue);
 		var.addNodataValue("UNKNOWN", missingValue);
