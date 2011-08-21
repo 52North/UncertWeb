@@ -7,7 +7,7 @@ public class VarianceOfNormalDistribution extends
 
 	@Override
 	protected double evaluate(NormalDistribution nd) {
-		return nd.getStandardDeviation();
+		return nd.getStandardDeviation() * nd.getStandardDeviation();
 	}
 
 }
