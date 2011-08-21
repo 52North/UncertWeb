@@ -218,7 +218,7 @@ public class NetCDFHelper {
 		var.setLinearTransform(1, 0);
 		log.info("MissingValue: {}", missingValue);
 		var.addNodataValue("UNKNOWN", missingValue);
-		return new WriteableGridCoverage(missingValue, b.getGridCoverage2D());
+		return new WriteableGridCoverage(b.getGridCoverage2D());
 	}
 	
 	public static URI getURI(Variable v) {
