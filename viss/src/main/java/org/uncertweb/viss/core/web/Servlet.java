@@ -19,6 +19,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -85,11 +86,11 @@ public class Servlet {
 	 * [ "url", "request", "requestMediaType", "responseMediaType", "method" ]
 	 */
 	
-	@PUT
+	@POST
 	@Path(RESOURCES)
 	@Produces(APPLICATION_JSON)
 	@Consumes({ APPLICATION_JSON, NETCDF, X_NETCDF, GEOTIFF, OM_2 })
-	public Response putResource(InputStream is, @HeaderParam(HttpHeaders.CONTENT_TYPE) MediaType h, @Context UriInfo uriI) {
+	public Response createResource(InputStream is, @HeaderParam(HttpHeaders.CONTENT_TYPE) MediaType h, @Context UriInfo uriI) {
 		log.debug("Putting Resource.");
 		Resource r = null;
 		if (MediaType.APPLICATION_JSON_TYPE.equals(h)) {
@@ -137,10 +138,9 @@ public class Servlet {
 
 	@DELETE
 	@Path(RESOURCE_WITH_ID)
-	public Response deleteResource(@PathParam(RES_PARAM) UUID uuid) {
+	public void deleteResource(@PathParam(RES_PARAM) UUID uuid) {
 		log.debug("Deleting Resource with UUID \"{}\".", uuid);
 		Viss.getInstance().delete(uuid);
-		return Response.ok().build();
 	}
 
 	@GET
@@ -176,11 +176,11 @@ public class Servlet {
 		return Viss.getInstance().getVisualizations(uuid);
 	}
 
-	@PUT
+	@POST
 	@Path(VISUALIZATIONS)
 	@Produces(APPLICATION_JSON)
 	@Consumes(APPLICATION_JSON)
-	public Response putVisualization(@PathParam(RES_PARAM) UUID uuid,
+	public Response createVisualization(@PathParam(RES_PARAM) UUID uuid,
 			VisualizationRequest req, @Context UriInfo uriI) {
 		log.debug("Creating Visualizaton for resource with UUID \"{}\".", uuid);
 		Visualization v = Viss.getInstance().getVisualization(req.getVisualizer(), uuid,
@@ -200,22 +200,31 @@ public class Servlet {
 
 	@DELETE
 	@Path(VISUALIZATION_WITH_ID)
-	public Response deleteVisualization(@PathParam(RES_PARAM) UUID uuid,
+	public void deleteVisualization(@PathParam(RES_PARAM) UUID uuid,
 			@PathParam(VIS_PARAM) String vis) {
 		log.debug("Deleting visualization for resource with UUID \"{}\".");
 		Viss.getInstance().deleteVisualization(uuid, vis);
-		return Response.ok().build();
+	}
+	
+	@POST
+	@Path(VISUALIZATION_SLD)
+	@Consumes(STYLED_LAYER_DESCRIPTOR)
+	public Response createSldForVisualization(@PathParam(RES_PARAM) UUID uuid,
+			@PathParam(VIS_PARAM) String vis, StyledLayerDescriptorDocument sld, 
+			@Context UriInfo uriI) {
+		log.debug("Posting SLD for visualization of resource with UUID \"{}\"", uuid);
+		Viss.getInstance().setSldForVisualization(uuid, vis, sld);
+		URI uri = uriI.getBaseUriBuilder().path(getClass(),"getSldForVisualization").build(uuid, vis);
+		return Response.created(uri).build();
 	}
 
 	@PUT
 	@Path(VISUALIZATION_SLD)
 	@Consumes(STYLED_LAYER_DESCRIPTOR)
-	public Response putSldForVisualization(@PathParam(RES_PARAM) UUID uuid,
+	public void updateSldForVisualization(@PathParam(RES_PARAM) UUID uuid,
 			@PathParam(VIS_PARAM) String vis, StyledLayerDescriptorDocument sld, @Context UriInfo uriI) {
 		log.debug("Putting SLD for visualization of resource with UUID \"{}\"", uuid);
 		Viss.getInstance().setSldForVisualization(uuid, vis, sld);
-		URI uri = uriI.getBaseUriBuilder().path(getClass(),"getSldForVisualization").build(uuid, vis);
-		return Response.created(uri).build();
 	}
 
 	@GET

@@ -8,6 +8,11 @@ import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.resource.Resource;
 
 public interface Visualizer {
+	
+	public static final String JSON_KEY_DESCRIPTION = "description";
+	public static final String JSON_KEY_TYPE = "type";
+	public static final String JSON_TYPE_NUMBER = "number";
+	public static final String JSON_KEY_REQUIRED = "required";
 
 	public Set<MediaType> getCompatibleMediaTypes();
 

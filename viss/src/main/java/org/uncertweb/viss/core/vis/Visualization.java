@@ -20,6 +20,7 @@ public class Visualization {
 	private String visId;
 	private double minValue;
 	private double maxValue;
+	private String uom;
 
 	@Transient
 	private StyledLayerDescriptorDocument sld;
@@ -31,19 +32,20 @@ public class Visualization {
 	}
 
 	public Visualization(UUID uuid, String id, Visualizer creator,
-			JSONObject parameters, double min, double max, GridCoverage coverage) {
-		this(uuid, id, creator, parameters, min, max, Utils.set(coverage));
+			JSONObject parameters, double min, double max, String uom, GridCoverage coverage) {
+		this(uuid, id, creator, parameters, min, max, uom, Utils.set(coverage));
 	}
 
 	public Visualization(UUID uuid, String id, Visualizer creator,
 			JSONObject parameters, double min, double max,
-			Set<GridCoverage> coverages) {
+			String uom, Set<GridCoverage> coverages) {
 		setUuid(uuid);
 		setCreator(creator);
 		setParameters(parameters);
 		setVisId(id);
 		setMinValue(min);
 		setMaxValue(max);
+		setUom(uom);
 		this.coverages = coverages;
 	}
 
@@ -113,6 +115,14 @@ public class Visualization {
 
 	public void setMaxValue(double maxValue) {
 		this.maxValue = maxValue;
+	}
+
+	public String getUom() {
+		return uom;
+	}
+
+	public void setUom(String uom) {
+		this.uom = uom;
 	}
 
 }

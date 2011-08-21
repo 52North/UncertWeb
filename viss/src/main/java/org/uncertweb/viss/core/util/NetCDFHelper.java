@@ -95,6 +95,10 @@ public class NetCDFHelper {
 	public static Unit<? extends Quantity> getUnit(NetcdfFile f) {
 		return getUnit(getPrimaryVariable(f));
 	}
+	
+	public static String getUnitAsString(NetcdfFile f) {
+		return getUnitAsString(getPrimaryVariable(f));
+	}
 
 	public static Variable getPrimaryVariable(NetcdfFile f) {
 		Attribute a = f.findGlobalAttribute(PRIMARY_VARIABLES_ATTRIBUTE);
@@ -105,12 +109,21 @@ public class NetCDFHelper {
 					.internal("Only a single primary value is currently supported");
 		}
 	}
+	
+	public static String getUnitAsString(Variable v) {
+		Attribute a = v.findAttribute(UNITS_ATTRIBUTE);
+		if (a!=null)return a.getStringValue();
+		return null;
+	}
 
 	public static Unit<? extends Quantity> getUnit(Variable v) {
-		Attribute a = v.findAttribute(UNITS_ATTRIBUTE);
-		if (a != null) {
+		return getUnit(getUnitAsString(v));
+	}
+	
+	public static Unit<? extends Quantity> getUnit(String uom) {
+		if (uom != null) {
 			try {
-				return Unit.valueOf(a.getStringValue());
+				return Unit.valueOf(uom);
 			} catch (IllegalArgumentException e) {
 				return Unit.ONE;
 			}
@@ -161,16 +174,19 @@ public class NetCDFHelper {
 		}
 	}
 
-	public static WriteableGridCoverage getCoverage(NetcdfFile f,
-			String layerName) {
-		return getCoverage(f, layerName, getPrimaryVariable(f));
+	public static WriteableGridCoverage getCoverage(NetcdfFile f, String layerName) {
+		return getCoverage(f, layerName, getPrimaryVariable(f), null);
+	}
+	
+	public static WriteableGridCoverage getCoverage(NetcdfFile f, String layerName, String uom) {
+		return getCoverage(f, layerName, getPrimaryVariable(f), uom);
 	}
 
 	public static URI getPrimaryURI(NetcdfFile f) {
 		return getURI(getPrimaryVariable(f));
 	}
 
-	public static WriteableGridCoverage getCoverage(NetcdfFile f, String layerName, Variable v) {
+	public static WriteableGridCoverage getCoverage(NetcdfFile f, String layerName, Variable v, String unit) {
 		Attribute a = v.findAttribute(ANCIALLARY_VARIABLES_ATTRIBUTE);
 		if (a == null)
 			throw VissError.internal("Can not determine shape of variable: no \""
@@ -194,7 +210,11 @@ public class NetCDFHelper {
 		log.info("ImageSize: {}x{}", lonSize, latSize);
 		b.setImageSize(lonSize, latSize);
 		b.setEnvelope(getEnvelope(f));
-		GridCoverageBuilder.Variable var = b.newVariable(layerName, getUnit(v));
+		GridCoverageBuilder.Variable var;
+		if (unit == null)
+			var = b.newVariable(layerName, getUnit(v));
+		else
+			var = b.newVariable(layerName, getUnit(unit));
 		var.setLinearTransform(1, 0);
 		log.info("MissingValue: {}", missingValue);
 		var.addNodataValue("UNKNOWN", missingValue);

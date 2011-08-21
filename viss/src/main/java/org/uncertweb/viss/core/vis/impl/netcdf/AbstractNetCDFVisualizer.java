@@ -37,16 +37,21 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 
 	private JSONObject params;
 	private Set<URI> found;
+	private NetcdfFile resource;
+	
+	protected NetcdfFile getResource() {
+		return this.resource;
+	}
 
 	@SuppressWarnings("unchecked")
 	public Visualization visualize(Resource r, JSONObject params) {
 		try {
 			this.params = params;
-			NetcdfFile f = getNetCDF(r);
+			this.resource = getNetCDF(r);
 
-			NetCDFHelper.checkForUWConvention(f);
+			NetCDFHelper.checkForUWConvention(this.resource);
 
-			Map<URI, Variable> vars = NetCDFHelper.getVariables(f,
+			Map<URI, Variable> vars = NetCDFHelper.getVariables(this.resource,
 					Utils.combineSets(hasToHaveAll(), hasToHaveOneOf()));
 			log.debug("Found {} Variables with relevant URIs.", vars.size());
 
@@ -67,11 +72,10 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 				log.debug("Missing value: {}",NetCDFHelper.getMissingValue(e.getValue()));
 			}
 
-			WriteableGridCoverage wgc = NetCDFHelper.getCoverage(f,
-					getCoverageName());
-
-			Array latValues = NetCDFHelper.getLongitude(f).read();
-			Array lonValues = NetCDFHelper.getLatitude(f).read();
+			WriteableGridCoverage wgc = NetCDFHelper.getCoverage(this.resource, getCoverageName(), getUom());
+			
+			Array latValues = NetCDFHelper.getLongitude(this.resource).read();
+			Array lonValues = NetCDFHelper.getLatitude(this.resource).read();
 
 			final int sizeLon = lonValues.getShape()[0];
 			final int sizeLat = latValues.getShape()[0];
@@ -112,7 +116,7 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 			}
 			log.debug("min: {}; max: {}", min, max);
 			return new Visualization(r.getUUID(), getId(params), this, params,
-					min.doubleValue(), max.doubleValue(), wgc.getGridCoverage());
+					min.doubleValue(), max.doubleValue(), getUom(), wgc.getGridCoverage());
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
@@ -167,6 +171,10 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 	protected abstract Set<URI> hasToHaveOneOf();
 
 	protected abstract Set<URI> hasToHaveAll();
+	
+	protected String getUom() {
+		return NetCDFHelper.getUnitAsString(getResource());
+	}
 
 	protected abstract double evaluate(Map<URI, Double> values);
 

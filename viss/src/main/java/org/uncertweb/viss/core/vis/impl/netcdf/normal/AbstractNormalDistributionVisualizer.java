@@ -33,7 +33,7 @@ public abstract class AbstractNormalDistributionVisualizer extends
 	protected Set<URI> hasToHaveOneOf() {
 		return Collections.emptySet();
 	}
-
+	
 	@Override
 	protected Set<URI> hasToHaveAll() {
 		return NEEDED;

@@ -7,7 +7,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Utils;
 
-public class CumulativeProbabilityWithMinMaxOfNormalDistribution extends
+public class ProbabilityForIntervalOfNormalDistribution extends
 		AbstractNormalDistributionVisualizer {
 
 	private static final String DESCRIPTION = "Returns P(min <= X <= max).";
@@ -22,11 +22,13 @@ public class CumulativeProbabilityWithMinMaxOfNormalDistribution extends
 		try {
 			j = new JSONObject()
 			.put(MIN_PARAMETER, new JSONObject()
-				.put("description", MIN_DESCRIPTION)
-				.put("value", "number"))
+				.put(JSON_KEY_DESCRIPTION, MIN_DESCRIPTION)
+				.put(JSON_KEY_TYPE, JSON_TYPE_NUMBER)
+				.put(JSON_KEY_REQUIRED, true))
 			.put(MAX_PARAMETER, new JSONObject()
-				.put("description", MAX_DESCRIPTION)
-				.put("value", "number"));
+				.put(JSON_KEY_DESCRIPTION, MAX_DESCRIPTION)
+				.put(JSON_KEY_TYPE, JSON_TYPE_NUMBER)
+				.put(JSON_KEY_REQUIRED, true));
 		} catch (JSONException e) {
 			VissError.internal(e);
 		} finally {
@@ -42,6 +44,11 @@ public class CumulativeProbabilityWithMinMaxOfNormalDistribution extends
 	@Override
 	public String getDescription() {
 		return DESCRIPTION;
+	}
+	
+	@Override
+	public String getUom() {
+		return "%";
 	}
 	
 	private double getMin() {

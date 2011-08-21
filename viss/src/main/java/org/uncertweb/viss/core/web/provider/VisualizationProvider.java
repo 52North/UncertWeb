@@ -53,9 +53,10 @@ public class VisualizationProvider implements MessageBodyWriter<Visualization> {
 			JSONObject j = new JSONObject()
 					.put("id", v.getVisId())
 					.put("visualizer", v.getCreator().getShortName())
-					.putOpt("params", v.getParameters())
-					.putOpt("minValue",v.getMinValue())
-					.putOpt("maxValue", v.getMaxValue())
+					.put("params", v.getParameters())
+					.put("minValue",v.getMinValue())
+					.put("maxValue", v.getMaxValue())
+					.put("uom",v.getUom())
 					.put("customSLD", v.getSld() != null);
 
 			VisualizationReference vr = v.getReference();
@@ -65,9 +66,8 @@ public class VisualizationProvider implements MessageBodyWriter<Visualization> {
 				for (String l : vr.getLayers())
 					a.put(l);
 				j.put("reference",
-						new JSONObject()
-							.putOpt("url", vr.getWmsUrl())
-							.put("layers", a));
+						new JSONObject().put("url", vr.getWmsUrl())
+						.put("layers", a));
 			}
 			return j;
 		} catch (JSONException e) {

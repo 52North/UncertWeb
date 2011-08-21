@@ -65,6 +65,7 @@ public abstract class AbstractOMVisualizer implements Visualizer {
 		IObservationCollection col = (IObservationCollection) r.getResource();
 		Set<GridCoverage> coverages = Utils.set();
 		Double min = null, max = null;
+		String uom = null;
 		for (AbstractObservation ao : col.getObservations()) {
 			if (!(ao.getResult().getValue() instanceof Resource)) {
 				throw VissError.internal("Resource is not compatible");
@@ -75,6 +76,12 @@ public abstract class AbstractOMVisualizer implements Visualizer {
 			}
 			Visualization v = vis.visualize(rs, params);
 
+			if (uom == null) {
+				uom = v.getUom();
+			} else if (!uom.equals(v.getUom())) {
+				throw VissError.internal("Different UOM");
+			}
+			
 			if (min == null || v.getMinValue() < min.doubleValue()) {
 				min = v.getMinValue();
 				log.debug("Setting min to {}", min);
@@ -87,7 +94,7 @@ public abstract class AbstractOMVisualizer implements Visualizer {
 			coverages.addAll(v.getCoverages());
 		}
 		return new Visualization(r.getUUID(), getId(params), this, params,
-				min.doubleValue(), max.doubleValue(), coverages);
+				min.doubleValue(), max.doubleValue(), uom, coverages);
 	}
 
 	@Override
