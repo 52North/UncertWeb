@@ -19,15 +19,16 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core.vis.impl.om;
+package org.uncertweb.viss.core.vis.impl.om.impl;
 
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.MeanOfNormalDistribution;
+import org.uncertweb.viss.core.vis.impl.netcdf.normal.StandardDeviationOfNormalDistribution;
+import org.uncertweb.viss.core.vis.impl.om.AbstractOMVisualizer;
 
-public class MeanOfNormalDistributionOfMultiCoverages extends
+public class StandardDeviationOfNormalDistributionOfMultiCoverages extends
 		AbstractOMVisualizer {
 
-	public MeanOfNormalDistributionOfMultiCoverages() {
-		super(new MeanOfNormalDistribution());
+	public StandardDeviationOfNormalDistributionOfMultiCoverages() {
+		super(new StandardDeviationOfNormalDistribution());
 	}
 
 }

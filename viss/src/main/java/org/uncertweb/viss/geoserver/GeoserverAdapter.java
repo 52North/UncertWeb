@@ -26,13 +26,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.media.jai.JAI;
 
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jettison.json.JSONException;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
@@ -45,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.util.Constants;
+import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualization;
 import org.uncertweb.viss.core.vis.VisualizationReference;
 import org.uncertweb.viss.core.wms.WMSAdapter;
@@ -100,28 +104,47 @@ public class GeoserverAdapter implements WMSAdapter {
 	public VisualizationReference addVisualization(Visualization vis) {
 		try {
 			String ws = vis.getUuid().toString();
-			String cs = vis.getVisId();
+			
 			if (!getGeoserver().containsWorkspace(ws)) {
 				if (!getGeoserver().createWorkspace(ws)) {
 					throw VissError.internal("Could not create Workspace");
 				}
 			}
-
-			if (!getGeoserver().createCoverageStore(cs, ws, "GeoTIFF", true)) {
-				throw VissError.internal("Could not create CoverageStore");
-			}
-
-			GridCoverage c = vis.getCoverages().iterator().next();
-			InputStream is = toInputStream(c);
 			
-			if (!getGeoserver().insertCoverage(ws, cs, Constants.GEOTIFF, is)) {
-				throw VissError.internal("Could not insert Coverage");
+			String[] layer = null;
+			String csBase = vis.getVisId();
+			String layerBase = vis.getUuid() + ":" + csBase;
+			Set<GridCoverage> coverages = vis.getCoverages();
+			
+			if (coverages.isEmpty()) {
+				throw VissError.internal("no coverages to insert");
+			} else if (coverages.size() == 1) {
+				insertCoverage(ws, csBase, toInputStream(vis.getCoverages().iterator().next()));
+				layer = new String[] { layerBase };
+			} else {
+				ArrayList<String> layers = new ArrayList<String>(vis.getCoverages().size());
+				int i = 0; 
+				for (GridCoverage c : vis.getCoverages()) {
+					insertCoverage(ws, Utils.join("-", csBase, i), toInputStream(c));
+					layers.add(Utils.join("-", layerBase, i));
+					++i;
+				}
+				layer = layers.toArray(new String[layers.size()]);
 			}
-
-			return new VisualizationReference(getGeoserver().getUrl(),
-					vis.getUuid()+":"+vis.getVisId());
+			
+			
+			return new VisualizationReference(getGeoserver().getUrl(), layer);
 		} catch (Exception e) {
 			throw VissError.internal(e);
+		}
+	}
+	
+	private void insertCoverage(String ws, String cs, InputStream is) throws IOException, JSONException {
+		if (!getGeoserver().createCoverageStore(cs, ws, "GeoTIFF", true)) {
+			throw VissError.internal("Could not create CoverageStore");
+		}
+		if (!getGeoserver().insertCoverage(ws, cs, Constants.GEOTIFF, is)) {
+			throw VissError.internal("Could not insert Coverage");
 		}
 	}
 	

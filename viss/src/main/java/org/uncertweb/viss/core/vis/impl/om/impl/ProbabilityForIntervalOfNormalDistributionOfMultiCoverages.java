@@ -19,15 +19,16 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core.vis.impl.om;
+package org.uncertweb.viss.core.vis.impl.om.impl;
 
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.StandardDeviationOfNormalDistribution;
+import org.uncertweb.viss.core.vis.impl.netcdf.normal.ProbabilityForIntervalOfNormalDistribution;
+import org.uncertweb.viss.core.vis.impl.om.AbstractOMVisualizer;
 
-public class StandardDeviationOfNormalDistributionOfMultiCoverages extends
-		AbstractOMVisualizer {
+public class ProbabilityForIntervalOfNormalDistributionOfMultiCoverages
+		extends AbstractOMVisualizer {
 
-	public StandardDeviationOfNormalDistributionOfMultiCoverages() {
-		super(new StandardDeviationOfNormalDistribution());
+	public ProbabilityForIntervalOfNormalDistributionOfMultiCoverages() {
+		super(new ProbabilityForIntervalOfNormalDistribution());
 	}
 
 }

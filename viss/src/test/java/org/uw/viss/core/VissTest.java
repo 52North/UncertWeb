@@ -56,8 +56,8 @@ import org.uncertweb.viss.core.vis.impl.netcdf.normal.ProbabilityForIntervalOfNo
 import org.uncertweb.viss.core.vis.impl.netcdf.normal.MeanOfNormalDistribution;
 import org.uncertweb.viss.core.vis.impl.netcdf.normal.StandardDeviationOfNormalDistribution;
 import org.uncertweb.viss.core.vis.impl.netcdf.normal.VarianceOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.om.ProbabilityOfNormalDistributionOfMultiCoverages;
-import org.uncertweb.viss.core.vis.impl.om.MeanOfNormalDistributionOfMultiCoverages;
+import org.uncertweb.viss.core.vis.impl.om.impl.MeanOfNormalDistributionOfMultiCoverages;
+import org.uncertweb.viss.core.vis.impl.om.impl.ProbabilityOfNormalDistributionOfMultiCoverages;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;

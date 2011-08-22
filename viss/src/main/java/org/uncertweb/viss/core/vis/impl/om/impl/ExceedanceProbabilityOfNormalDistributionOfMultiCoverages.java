@@ -19,15 +19,16 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core.vis.impl.om;
+package org.uncertweb.viss.core.vis.impl.om.impl;
 
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.VarianceOfNormalDistribution;
+import org.uncertweb.viss.core.vis.impl.netcdf.normal.ExceedanceProbabilityOfNormalDistribution;
+import org.uncertweb.viss.core.vis.impl.om.AbstractOMVisualizer;
 
-public class VarianceOfNormalDistributionOfMultiCoverages extends
+public class ExceedanceProbabilityOfNormalDistributionOfMultiCoverages extends
 		AbstractOMVisualizer {
 
-	public VarianceOfNormalDistributionOfMultiCoverages() {
-		super(new VarianceOfNormalDistribution());
+	public ExceedanceProbabilityOfNormalDistributionOfMultiCoverages() {
+		super(new ExceedanceProbabilityOfNormalDistribution());
 	}
 
 }
