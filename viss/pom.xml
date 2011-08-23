@@ -19,9 +19,9 @@
 
 	<scm>
 		<tag>HEAD</tag>
-		<url>https://svn.52north.org/svn/geostatistics/main/uncertweb/viss/trunk</url>
+		<url>http://svn.52north.org/svn/geostatistics/main/uncertweb/viss/trunk</url>
 		<connection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/viss/trunk</connection>
-		<developerConnection>${project.scm.connection}</developerConnection>
+		<developerConnection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/viss/trunk</developerConnection>
 	</scm>
 
 	<licenses>
@@ -46,8 +46,6 @@
 			<organizationUrl>${project.organization.url}</organizationUrl>
 			<timezone>GMT+1</timezone>
 			<id>ChristianAutermann</id>
-			<roles>
-			</roles>
 		</developer>
 	</developers>
 
@@ -55,7 +53,14 @@
 		<geotools.version>8.0-M1</geotools.version>
 		<jersey.version>1.8</jersey.version>
 		<morphia.version>0.99</morphia.version>
+
+		<filter.cors>org.uncertweb.viss.core.web.CorsFilter</filter.cors>
+		<filter.logs>com.sun.jersey.api.container.filter.LoggingFilter</filter.logs>
+		<filter.gzip>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</filter.gzip>
+		<filter.response>${filter.cors};${filter.gzip}</filter.response>
+		<filter.request>${filter.gzip}</filter.request>
 	</properties>
+
 
 	<dependencies>
 		<!-- UncertWeb #################################################### -->
@@ -202,12 +207,72 @@
 		</repository>
 	</repositories>
 
+	<profiles>
+		<profile>
+			<id>withDeploy</id>
+			<activation></activation>
+			<properties>
+				<response.filter>${cors.filter};${logging.filter}</response.filter>
+				<request.filter>${logging.filter}</request.filter>
+			</properties>
+			<build>
+				<defaultGoal>tomcat:deploy</defaultGoal>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>properties-maven-plugin</artifactId>
+						<version>1.0-alpha-2</version>
+						<executions>
+							<execution>
+								<phase>initialize</phase>
+								<goals>
+									<goal>read-project-properties</goal>
+								</goals>
+								<configuration>
+									<files>
+										<file>${basedir}/deploy.properties</file>
+									</files>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>tomcat-maven-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>deploy</goal>
+								</goals>
+								<configuration>
+									<update>true</update>
+									<mode>war</mode>
+									<url>${deploy.tomcat.manager.url}</url>
+									<path>/${project.artifactId}</path>
+									<password>${deploy.tomcat.manager.password}</password>
+									<username>${deploy.tomcat.manager.username}</username>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>withLogging</id>
+			<properties>
+				<filter.response>${filter.cors};${filter.logs}</filter.response>
+				<filter.request>${filter.logs}</filter.request>
+			</properties>
+		</profile>
+	</profiles>
 	<build>
-		<finalName>${project.artifactId}</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-				<filtering>false</filtering>
+				<filtering>true</filtering>
 				<includes>
 					<include>**/*</include>
 				</includes>
@@ -216,13 +281,44 @@
 		<testResources>
 			<testResource>
 				<directory>src/test/resources</directory>
-				<filtering>false</filtering>
+				<filtering>true</filtering>
 				<includes>
 					<include>**/*</include>
 				</includes>
 			</testResource>
 		</testResources>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+				<configuration>
+					<filterDeploymentDescriptors>true</filterDeploymentDescriptors>
+					<webResources>
+						<resource>
+							<directory>src/main/webapp</directory>
+							<filtering>true</filtering>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- <doCheck>true</doCheck> -->
+					<doUpdate>true</doUpdate>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>xmlbeans-maven-plugin</artifactId>
@@ -251,11 +347,13 @@
 					<port>9090</port>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
+					<skipTests>true</skipTests>
 					<includes>
 						<include>**/*Test.java</include>
 						<include>**/*Tests.java</include>
