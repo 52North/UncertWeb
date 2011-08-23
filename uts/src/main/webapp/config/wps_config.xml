@@ -123,6 +123,17 @@
 			##UncertWeb Parsers
 			################################## 
 			 -->
+			<Parser name="UncertMLParser" className="org.n52.wps.io.datahandler.xml.UncertMLParser" active="true">
+				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd</Property>
+				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Quantile.xsd</Property>
+				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>	
+			<Parser name="UncertWebBinaryParser" className="org.n52.wps.io.datahandler.binary.UncertWebBinaryParser" active="true">
+				<Property name="supportedFormat" active="true">application/x-netcdf</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>	
 			<Parser name="UncertWebIODataParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true">
 				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
 				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
@@ -231,7 +242,7 @@
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>
 			
-			<Generator name="WMSGenerator" className="org.n52.wps.io.datahandler.ows.WMSGenerator" active="true">
+			<Generator name="WMSGenerator" className="org.n52.wps.io.datahandler.ows.GeoserverWMSGenerator" active="true">
 				<Property name="supportedFormat" active="true">application/WMS</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 				<Property name="Geoserver_username" active="true">admin</Property>
@@ -240,7 +251,7 @@
 				<Property name="Geoserver_port" active="true">8080</Property>
 			</Generator>
 			
-			<Generator name="WFSGenerator" className="org.n52.wps.io.datahandler.ows.WFSGenerator" active="true">
+			<Generator name="WFSGenerator" className="org.n52.wps.io.datahandler.ows.GeoserverWFSGenerator" active="true">
 				<Property name="supportedFormat" active="true">application/WFS</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 				<Property name="Geoserver_username" active="true">admin</Property>
@@ -249,7 +260,7 @@
 				<Property name="Geoserver_port" active="true">8080</Property>
 			</Generator>
 			
-			<Generator name="WCSGenerator" className="org.n52.wps.io.datahandler.ows.WCSGenerator" active="true">
+			<Generator name="WCSGenerator" className="org.n52.wps.io.datahandler.ows.GeoserverWCSGenerator" active="true">
 				<Property name="supportedFormat" active="true">application/WCS</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 				<Property name="Geoserver_username" active="true">admin</Property>
@@ -269,7 +280,18 @@
 			################
 			## UncertWeb generators
 			################
-			 -->
+			 -->	
+			<Generator name="UncertMLGenerator" className="org.n52.wps.io.datahandler.xml.UncertMLGenerator" active="true">
+				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd</Property>
+				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Quantile.xsd</Property>
+				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>	
+			<Generator name="UncertWebBinaryGenerator" className="org.n52.wps.io.datahandler.binary.UncertWebBinaryGenerator" active="true">
+				<Property name="supportedFormat" active="true">application/x-netcdf</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>
 			<Generator name="UncertWebIODataGenerator" className="org.n52.wps.io.datahandler.UncertWebIODataGenerator" active="true">
 				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
 				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
@@ -292,6 +314,9 @@
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Realisations2Distribution</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Gaussian2Samples</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Samples2Statistics</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.wps.LognormalDist2Realisations</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.wps.MultiGaussianDist2Realisations</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.wps.UnivGaussianDist2Realisations</Property>
 			<Property name="tmpDir" active="true">/tmp/</Property>	
 		</Repository>
 		
@@ -405,7 +430,8 @@
            
 		
 	</AlgorithmRepositoryList>
-	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="uts">
+	<RemoteRepositoryList/>
+	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="uts" repoReloadInterval="0">
 		     <Database/>
 	</Server>
 </WPSConfiguration>
