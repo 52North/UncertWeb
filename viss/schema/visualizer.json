@@ -1,4 +1,5 @@
-{	"type": "object",
+{	"$schema" : "http://json-schema.org/draft-03/schema#",
+	"type": "object",
 	"description": "a visualizer",
 	"properties": {
 		"id": { "type":"string", "required": true,
@@ -7,9 +8,8 @@
 		"description": { "type": "string", "required": false,
 			"description": "the description of the visualizer"
 		},
-		"options": { "type": "object", "required": true,
+		"options": { "type": "http://json-schema.org/schema.type", "required": true,
 			"description": "an associative array of input parameters defined as JSON schema",
-			"additionalProperties": "http://json-schema.org/draft-03/schema"
 		}
 	}
 }

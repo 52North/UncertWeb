@@ -49,11 +49,8 @@ public class Viss {
 	private class CleanUpThread extends TimerTask {
 		@Override
 		public void run() {
-			DateTime dt = new DateTime()
-					.minus(Constants.DELETE_OLDER_THAN_PERIOD);
-			log.info(
-					"CleanUpThread running. Deleting Resources used before {}",
-					dt);
+			DateTime dt = new DateTime().minus(Constants.DELETE_OLDER_THAN_PERIOD);
+			log.info("CleanUpThread running. Deleting Resources used before {}", dt);
 			int count = 0;
 			for (Resource r : getStore().getResourcesUsedBefore(dt)) {
 				try {

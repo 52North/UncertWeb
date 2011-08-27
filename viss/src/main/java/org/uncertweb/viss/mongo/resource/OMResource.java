@@ -161,14 +161,6 @@ public class OMResource extends AbstractMongoResource<IObservationCollection>{
 		}
 	}
 
-	public void suspend() {
-		if (resources != null) {
-			for (Resource r : resources) {
-				r.suspend();
-			}
-		}
-	}
-
 	@Override
 	protected String getPhenomenonForResource() {
 		String phen = null;

@@ -39,6 +39,7 @@ import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.util.Constants;
+import org.uncertweb.viss.core.util.JSONSchema;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualization;
 import org.uncertweb.viss.core.vis.Visualizer;
@@ -189,12 +190,10 @@ public abstract class AbstractOMVisualizer implements Visualizer {
 			} else {
 				Object v1 = o1.get(key);
 				if (!v1.equals(v2)) {
-					if (key.endsWith(JSON_KEY_MAXIMUM)
-							|| key.equals(JSON_KEY_MAXIMUM_EXCLUSIVE)) {
+					if (key.endsWith(JSONSchema.Key.MAXIMUM)) {
 						o2.put(key, FastMath.max(((Double) v1).doubleValue(),
 								((Double) v2).doubleValue()));
-					} else if (key.endsWith(JSON_KEY_MINIMUM)
-							|| key.equals(JSON_KEY_MINIMUM_EXCLUSIVE)) {
+					} else if (key.endsWith(JSONSchema.Key.MINIMUM)) {
 						o2.put(key, FastMath.min(((Double) v1).doubleValue(),
 								((Double) v2).doubleValue()));
 					} else {

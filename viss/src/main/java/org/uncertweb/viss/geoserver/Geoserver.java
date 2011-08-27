@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,6 +56,7 @@ public class Geoserver {
 	private static final Logger log = LoggerFactory.getLogger(GeoserverAdapter.class);
 
 	private String baseUrl;
+	private URL wmsUrl;
 	private boolean cacheWorkspaceList;
 	private boolean sameServer;
 	private File path;
@@ -69,6 +71,7 @@ public class Geoserver {
 		this.user = user;
 		this.pass = pass;
 		this.baseUrl = baseurl;
+		this.wmsUrl = new URL(baseUrl + "/wms");
 		this.sameServer = path != null;
 		this.path = path;
 
@@ -93,8 +96,8 @@ public class Geoserver {
 		return getWorkspaces().contains(name);
 	}
 	
-	public String getUrl() {
-		return baseUrl + "/wms";
+	public URL getUrl() {
+		return this.wmsUrl;
 	}
 	
 	protected String url(String path) {

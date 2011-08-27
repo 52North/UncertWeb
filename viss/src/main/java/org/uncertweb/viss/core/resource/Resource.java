@@ -31,24 +31,54 @@ import org.uncertweb.viss.core.resource.time.TemporalExtent;
 import org.uncertweb.viss.core.vis.Visualization;
 
 public interface Resource {
-
+	/**
+	 * @return the UUID of the resource
+	 */
 	public UUID getUUID();
 
+	/**
+	 * @return the MediaType of the resource
+	 */
 	public MediaType getMediaType();
 
+	/**
+	 * @return the underlying object
+	 */
 	public Object getResource();
 
+	/**
+	 * @return the already generated visualizations
+	 */
 	public Set<Visualization> getVisualizations();
 
+	/**
+	 * Adds a visualization to the resource
+	 * 
+	 * @param the
+	 *            visualization
+	 */
 	public void addVisualization(Visualization v);
-	
+
+	/**
+	 * @return the temporal extent of this resource
+	 */
 	public TemporalExtent getTemporalExtent();
-	
+
+	/**
+	 * @return the phenomenon this resource describes
+	 */
 	public String getPhenomenon();
 
+	/**
+	 * Loads the resource.
+	 * 
+	 * @throws IOException
+	 *             if an IO error occurs
+	 */
 	public void load() throws IOException;
 
-	public void suspend();
-
+	/**
+	 * @return true if the resource is loaded, false otherwise
+	 */
 	public boolean isLoaded();
 }

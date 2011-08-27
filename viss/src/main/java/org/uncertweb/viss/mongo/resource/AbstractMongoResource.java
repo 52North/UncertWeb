@@ -153,11 +153,6 @@ public abstract class AbstractMongoResource<T> implements Resource {
 	}
 
 	@Override
-	public void suspend() {
-		this.content = null;
-	}
-	
-	@Override
 	public void addVisualization(Visualization v) {
 		this.visualizations.add(v);
 	}

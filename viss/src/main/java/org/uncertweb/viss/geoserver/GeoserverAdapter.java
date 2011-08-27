@@ -131,9 +131,7 @@ public class GeoserverAdapter implements WMSAdapter {
 				}
 				layer = layers.toArray(new String[layers.size()]);
 			}
-			
-			
-			return new VisualizationReference(getGeoserver().getUrl(), layer);
+			return new VisualizationReference(getGeoserver().getUrl(), Utils.set(layer));
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}

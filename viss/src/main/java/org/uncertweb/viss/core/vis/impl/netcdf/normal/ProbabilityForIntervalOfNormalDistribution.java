@@ -27,6 +27,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.util.JSONSchema;
 import org.uncertweb.viss.core.util.Utils;
 
 public class ProbabilityForIntervalOfNormalDistribution extends
@@ -53,13 +54,13 @@ public class ProbabilityForIntervalOfNormalDistribution extends
 	private static JSONObject createOptions() throws JSONException {
 		return new JSONObject().put(
 				MIN_PARAMETER, new JSONObject()
-					.put(JSON_KEY_DESCRIPTION, MIN_DESCRIPTION)
-					.put(JSON_KEY_TYPE, JSON_TYPE_NUMBER)
-					.put(JSON_KEY_REQUIRED, true)).put(
+					.put(JSONSchema.Key.DESCRIPTION, MIN_DESCRIPTION)
+					.put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
+					.put(JSONSchema.Key.REQUIRED, true)).put(
 				MAX_PARAMETER, new JSONObject()
-					.put(JSON_KEY_DESCRIPTION, MAX_DESCRIPTION)
-					.put(JSON_KEY_TYPE, JSON_TYPE_NUMBER)
-					.put(JSON_KEY_REQUIRED, true));
+					.put(JSONSchema.Key.DESCRIPTION, MAX_DESCRIPTION)
+					.put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
+					.put(JSONSchema.Key.REQUIRED, true));
 	}
 
 	@Override
@@ -68,11 +69,11 @@ public class ProbabilityForIntervalOfNormalDistribution extends
 			JSONObject o = createOptions();
 			double[] minmax = getRange(r);
 			o.getJSONObject(MAX_PARAMETER)
-				.put(JSON_KEY_MINIMUM, minmax[0])
-				.put(JSON_KEY_MAXIMUM, minmax[1]);
+				.put(JSONSchema.Key.MINIMUM, minmax[0])
+				.put(JSONSchema.Key.MAXIMUM, minmax[1]);
 			o.getJSONObject(MIN_PARAMETER)
-				.put(JSON_KEY_MINIMUM, minmax[0])
-				.put(JSON_KEY_MAXIMUM, minmax[1]);
+				.put(JSONSchema.Key.MINIMUM, minmax[0])
+				.put(JSONSchema.Key.MAXIMUM, minmax[1]);
 			return o;
 		} catch (JSONException e) {
 			throw VissError.internal(e);

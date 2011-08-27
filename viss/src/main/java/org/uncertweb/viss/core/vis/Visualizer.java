@@ -30,16 +30,6 @@ import org.uncertweb.viss.core.resource.Resource;
 
 public interface Visualizer {
 	
-	public static final String JSON_KEY_DESCRIPTION = "description";
-	public static final String JSON_KEY_TYPE = "type";
-	public static final String JSON_TYPE_NUMBER = "number";
-	public static final String JSON_KEY_REQUIRED = "required";
-	public static final String JSON_KEY_MINIMUM = "minimum";
-	public static final String JSON_KEY_MAXIMUM = "maximum";
-	public static final String JSON_KEY_MINIMUM_EXCLUSIVE = "minimumExclusive";
-	public static final String JSON_KEY_MAXIMUM_EXCLUSIVE = "maximumExclusive";
-	
-
 	public Set<MediaType> getCompatibleMediaTypes();
 
 	public String getShortName();

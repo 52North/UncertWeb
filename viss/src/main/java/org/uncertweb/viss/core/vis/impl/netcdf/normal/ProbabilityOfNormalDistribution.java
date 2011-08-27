@@ -27,6 +27,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.util.JSONSchema;
 import org.uncertweb.viss.core.util.Utils;
 
 public class ProbabilityOfNormalDistribution extends
@@ -40,9 +41,9 @@ public class ProbabilityOfNormalDistribution extends
 
 	private static JSONObject createOptions() throws JSONException {
 		return new JSONObject().put(MAX_PARAMETER, new JSONObject()
-			.put(JSON_KEY_DESCRIPTION, MAX_DESCRIPTION)
-			.put(JSON_KEY_TYPE, JSON_TYPE_NUMBER)
-			.put(JSON_KEY_REQUIRED, true));
+			.put(JSONSchema.Key.DESCRIPTION, MAX_DESCRIPTION)
+			.put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
+			.put(JSONSchema.Key.REQUIRED, true));
 	}
 
 	static {
@@ -62,8 +63,8 @@ public class ProbabilityOfNormalDistribution extends
 			JSONObject o = createOptions();
 			double[] minmax = getRange(r);
 			o.getJSONObject(MAX_PARAMETER)
-				.put(JSON_KEY_MINIMUM, minmax[0])
-				.put(JSON_KEY_MAXIMUM, minmax[1]);
+				.put(JSONSchema.Key.MINIMUM, minmax[0])
+				.put(JSONSchema.Key.MAXIMUM, minmax[1]);
 			return o;
 		} catch (JSONException e) {
 			throw VissError.internal(e);

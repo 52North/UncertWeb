@@ -37,7 +37,7 @@ public class Visualization {
 	private UUID uuid;
 	private Visualizer creator;
 	private JSONObject parameters;
-	private VisualizationReference ref;
+	private VisualizationReference reference;
 	private String visId;
 	private double minValue;
 	private double maxValue;
@@ -45,21 +45,65 @@ public class Visualization {
 
 	@Transient
 	private StyledLayerDescriptorDocument sld;
-	
+
 	@Transient
 	private Set<GridCoverage> coverages = Utils.set();
 
+	/**
+	 * creates an empty visualization
+	 */
 	public Visualization() {
 	}
 
+	/**
+	 * Creates a Visualization
+	 * 
+	 * @param uuid
+	 *            the UUID of the resource
+	 * @param id
+	 *            the id of the visualization
+	 * @param creator
+	 *            the visualizer that created this visualization
+	 * @param parameters
+	 *            the used parameters
+	 * @param min
+	 *            the minimal value of the generated values
+	 * @param max
+	 *            the maximal value of the generated values
+	 * @param uom
+	 *            the unit of measurement of the visualization
+	 * @param coverage
+	 *            the generated coverage
+	 */
 	public Visualization(UUID uuid, String id, Visualizer creator,
-			JSONObject parameters, double min, double max, String uom, GridCoverage coverage) {
+			JSONObject parameters, double min, double max, String uom,
+			GridCoverage coverage) {
 		this(uuid, id, creator, parameters, min, max, uom, Utils.set(coverage));
 	}
 
+	/**
+	 * Creates a Visualization
+	 * 
+	 * @param uuid
+	 *            the UUID of the resource
+	 * @param id
+	 *            the id of the visualization
+	 * @param creator
+	 *            the visualizer that created this visualization
+	 * @param parameters
+	 *            the used parameters
+	 * @param min
+	 *            the minimal value of the generated values
+	 * @param max
+	 *            the maximal value of the generated values
+	 * @param uom
+	 *            the unit of measurement of the visualization
+	 * @param coverages
+	 *            the generated coverages
+	 */
 	public Visualization(UUID uuid, String id, Visualizer creator,
-			JSONObject parameters, double min, double max,
-			String uom, Set<GridCoverage> coverages) {
+			JSONObject parameters, double min, double max, String uom,
+			Set<GridCoverage> coverages) {
 		setUuid(uuid);
 		setCreator(creator);
 		setParameters(parameters);
@@ -67,83 +111,149 @@ public class Visualization {
 		setMinValue(min);
 		setMaxValue(max);
 		setUom(uom);
-		this.coverages = coverages;
+		setCoverages(coverages);
 	}
 
-	public Visualizer getCreator() {
-		return creator;
-	}
-
-	public void setCreator(Visualizer creator) {
-		this.creator = creator;
-	}
-
+	/**
+	 * @return the uuid
+	 */
 	public UUID getUuid() {
 		return uuid;
 	}
 
+	/**
+	 * @param uuid the uuid to set
+	 */
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
 	}
 
-	public String getVisId() {
-		return this.visId;
+	/**
+	 * @return the creator
+	 */
+	public Visualizer getCreator() {
+		return creator;
 	}
 
-	public Set<GridCoverage> getCoverages() {
-		return coverages;
+	/**
+	 * @param creator the creator to set
+	 */
+	public void setCreator(Visualizer creator) {
+		this.creator = creator;
 	}
 
-	public VisualizationReference getReference() {
-		return ref;
-	}
-
-	public void setReference(VisualizationReference ref) {
-		this.ref = ref;
-	}
-
+	/**
+	 * @return the parameters
+	 */
 	public JSONObject getParameters() {
 		return parameters;
 	}
 
+	/**
+	 * @param parameters the parameters to set
+	 */
 	public void setParameters(JSONObject parameters) {
 		this.parameters = parameters;
 	}
 
-	public StyledLayerDescriptorDocument getSld() {
-		return sld;
+	/**
+	 * @return the reference
+	 */
+	public VisualizationReference getReference() {
+		return reference;
 	}
 
-	public void setSld(StyledLayerDescriptorDocument sld) {
-		this.sld = sld;
+	/**
+	 * @param reference the reference to set
+	 */
+	public void setReference(VisualizationReference reference) {
+		this.reference = reference;
 	}
 
+	/**
+	 * @return the visId
+	 */
+	public String getVisId() {
+		return visId;
+	}
+
+	/**
+	 * @param visId the visId to set
+	 */
 	public void setVisId(String visId) {
 		this.visId = visId;
 	}
 
+	/**
+	 * @return the minValue
+	 */
 	public double getMinValue() {
 		return minValue;
 	}
 
+	/**
+	 * @param minValue the minValue to set
+	 */
 	public void setMinValue(double minValue) {
 		this.minValue = minValue;
 	}
 
+	/**
+	 * @return the maxValue
+	 */
 	public double getMaxValue() {
 		return maxValue;
 	}
 
+	/**
+	 * @param maxValue the maxValue to set
+	 */
 	public void setMaxValue(double maxValue) {
 		this.maxValue = maxValue;
 	}
 
+	/**
+	 * @return the uom
+	 */
 	public String getUom() {
 		return uom;
 	}
 
+	/**
+	 * @param uom the uom to set
+	 */
 	public void setUom(String uom) {
 		this.uom = uom;
 	}
+
+	/**
+	 * @return the sld
+	 */
+	public StyledLayerDescriptorDocument getSld() {
+		return sld;
+	}
+
+	/**
+	 * @param sld the sld to set
+	 */
+	public void setSld(StyledLayerDescriptorDocument sld) {
+		this.sld = sld;
+	}
+
+	/**
+	 * @return the coverages
+	 */
+	public Set<GridCoverage> getCoverages() {
+		return coverages;
+	}
+
+	/**
+	 * @param coverages the coverages to set
+	 */
+	public void setCoverages(Set<GridCoverage> coverages) {
+		this.coverages = coverages;
+	}
+
+
 
 }
