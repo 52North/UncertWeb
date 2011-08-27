@@ -28,8 +28,8 @@ import org.joda.time.Interval;
 
 public class TemporalInterval implements TemporalExtent {
 
-	public static final String BEGIN_JSON_KEY = "begin";
-	public static final String END_JSON_KEY = "end";
+	static final String BEGIN_JSON_KEY = "begin";
+	static final String END_JSON_KEY = "end";
 
 	private Interval interval;
 

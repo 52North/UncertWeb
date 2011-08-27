@@ -1,0 +1,60 @@
+{	"type": "object",
+	"description": "a resource object",
+	"properties": {
+		"id": { "type": "string", "required": true,
+			"description": "resource identifier",
+		},
+		"mimeType": { "type": "string", "required": true,
+			"description": "resource type",
+		},
+		"phenomenon": { "type": "string", "required": true,
+			"description": "the phenomenon of the visualization",
+		},
+		"temporalExtent": { "type": "object",
+			"description": "the temporal extent of the resource",
+			"properties": {
+				"instant": { "id": "timeinstant",
+					"type": "string", "format": "date-time",
+					"description": "the time of the data"
+				},
+				"begin": { "type": {"$ref": "timeinstant"},
+					"description": "the begin of the temporalExtent"
+				},
+				"end": { "type": {"$ref": "timeinstant"},
+					"description": "the end of the temporalExtent"
+				},
+				"intervalSize": { "type": "integer",
+					"description": "the size of regular intervals"
+				},
+				"seperator": { "type": "integer",
+					"description": "the time span between regular time instants"
+				},
+				"intervals": { "type": "array",
+					"description": "the intervals of irregular intervals",
+					"items": { "type": "object",
+						"properties": {
+							"begin": { "type": {"$ref": "timeinstant"} },
+							"end": { "type": {"$ref": "timeinstant"} },
+						}
+					}
+				},
+				"instants": { "type": "array",
+					"description": "the instants of irregular instants",
+					"items": { "type": {"$ref": "timeinstant"} }
+				},
+			},
+			"dependencies" : { "begin" : "end", "end" : "begin",
+				"intervalSize": [ "begin", "end" ],
+				"seperator": [ "begin", "end" ],
+				"intervals": [ "begin", "end" ],
+				"instants": [ "begin", "end" ],
+			}
+		},
+		"visualizations": { "type": "array", "required": true,
+			"description": "array of already generated visualizations",
+			"items": {
+				"$ref": "http://giv-uw.uni-muenster.de:8080/viss/schema/visualization"
+			}
+		}
+	}
+}

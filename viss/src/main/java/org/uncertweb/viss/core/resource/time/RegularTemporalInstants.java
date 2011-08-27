@@ -28,7 +28,7 @@ import org.joda.time.Duration;
 
 public class RegularTemporalInstants extends RegularTemporalExtent {
 
-	private static final String SEPERATOR_JSON_KEY = "seperator";
+	static final String SEPERATOR_JSON_KEY = "seperator";
 
 	public RegularTemporalInstants() {}
 

@@ -1,0 +1,15 @@
+{	"type": "object",
+	"description": "a visualizer",
+	"properties": {
+		"id": { "type":"string", "required": true,
+			"description": "the visualizer identifier"
+		},
+		"description": { "type": "string", "required": false,
+			"description": "the description of the visualizer"
+		},
+		"options": { "type": "object", "required": true,
+			"description": "an associative array of input parameters defined as JSON schema",
+			"additionalProperties": "http://json-schema.org/draft-03/schema"
+		}
+	}
+}

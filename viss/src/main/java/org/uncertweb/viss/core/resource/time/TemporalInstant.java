@@ -28,7 +28,7 @@ import org.joda.time.Interval;
 
 public class TemporalInstant implements TemporalExtent {
 
-	public static final String INSTANT_JSON_KEY = "instant";
+	static final String INSTANT_JSON_KEY = "instant";
 
 	private DateTime instant;
 

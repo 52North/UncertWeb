@@ -23,12 +23,12 @@ package org.uncertweb.viss.core.resource.time;
 
 import java.util.List;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.uncertweb.viss.core.util.Utils;
 
 public class MixedTemporalExtent extends IrregularTemporalExtent {
-
-	public static final String EXTENTS_JSON_KEY = "extents";
 
 	private List<TemporalExtent> extents;
 
@@ -50,8 +50,21 @@ public class MixedTemporalExtent extends IrregularTemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
-		return super.toJson().put(EXTENTS_JSON_KEY,
-				toJSONArray(getExtents()));
+		List<JSONObject> instants = Utils.list();
+		List<JSONObject> intervals = Utils.list();
+		for (TemporalExtent te : getExtents()) {
+			if (te instanceof TemporalInstant) {
+				instants.add(te.toJson());
+			} else if (te instanceof TemporalInterval) {
+				intervals.add(te.toJson());
+			}
+		}
+		return super
+				.toJson()
+				.put(IrregularTemporalInstants.INSTANTS_JSON_KEY,
+						new JSONArray(instants))
+				.put(IrregularTemporalIntervals.INTERVALS_JSON_KEY,
+						new JSONArray(intervals));
 	}
 
 }

@@ -1,0 +1,12 @@
+{	"type": "object",
+	"description": "a visualization request",
+	"properties": {
+		"visualizer": { "type":"string", "required": true,
+			"description": "the visualizer identifier"
+		},
+		"params": { "type": "object", "required": true,
+			"description": "an associative array of input parameters defined by the visualizer",
+			"additionalProperties": true
+		}
+	}
+}

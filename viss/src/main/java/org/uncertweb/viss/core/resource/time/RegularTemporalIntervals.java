@@ -28,7 +28,7 @@ import org.joda.time.Duration;
 
 public class RegularTemporalIntervals extends RegularTemporalExtent {
 
-	private static final String INTERVAL_SIZE_JSON_KEY = "intervalSize";
+	static final String INTERVAL_SIZE_JSON_KEY = "intervalSize";
 
 	public RegularTemporalIntervals() {
 	}

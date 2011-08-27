@@ -30,7 +30,7 @@ import org.uncertweb.viss.core.util.Utils;
 
 public class IrregularTemporalInstants extends IrregularTemporalExtent {
 
-	private static final String INSTANTS_JSON_KEY = "instants";
+	static final String INSTANTS_JSON_KEY = "instants";
 
 	protected static List<TemporalInstant> toTemporalInstantList(
 			List<DateTime> instants) {
