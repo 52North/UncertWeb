@@ -42,12 +42,9 @@ public class VisualizerFactory {
 	private static final Logger log = LoggerFactory
 			.getLogger(VisualizerFactory.class);
 
-	private static final Map<String, Class<? extends Visualizer>> creatorsByShortName = Utils
-			.map();
-	private static final Map<Class<? extends Visualizer>, String> shortNamesByCreator = Utils
-			.map();
-	private static final Map<MediaType, Set<Class<? extends Visualizer>>> creatorsByMediaType = Utils
-			.map();
+	private static final Map<String, Class<? extends Visualizer>> creatorsByShortName = Utils.map();
+	private static final Map<Class<? extends Visualizer>, String> shortNamesByCreator = Utils.map();
+	private static final Map<MediaType, Set<Class<? extends Visualizer>>> creatorsByMediaType = Utils.map();
 
 	static {
 		String packages = Constants.get(Constants.SEARCH_PACKAGES_KEY);
@@ -147,6 +144,7 @@ public class VisualizerFactory {
 		for (Class<? extends Visualizer> v : visualizerForMediaType) {
 			Visualizer vis = getVisualizer(shortNamesByCreator.get(v));
 			if (vis.isCompatible(resource)) {
+				vis.setResource(resource);
 				set.add(vis);
 			}
 		}

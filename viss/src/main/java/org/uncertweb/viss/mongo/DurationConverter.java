@@ -19,15 +19,42 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core.vis.impl.om.impl;
+package org.uncertweb.viss.mongo;
 
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.ExceedanceProbabilityForIntervalOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.om.AbstractOMVisualizer;
+import org.joda.time.Duration;
 
-public class ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages extends
-		AbstractOMVisualizer {
+import com.google.code.morphia.converters.SimpleValueConverter;
+import com.google.code.morphia.converters.TypeConverter;
+import com.google.code.morphia.mapping.MappedField;
+import com.google.code.morphia.mapping.MappingException;
 
-	public ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages() {
-		super(new ExceedanceProbabilityForIntervalOfNormalDistribution());
+@SuppressWarnings("rawtypes")
+public class DurationConverter extends TypeConverter implements
+		SimpleValueConverter {
+
+	public DurationConverter() {
+		super(Duration.class);
+	}
+
+	@Override
+	public Object encode(Object value, MappedField optionalExtraInfo) {
+		if (value == null)
+			return null;
+		Duration dt = (Duration) value;
+		return dt.getMillis();
+	}
+
+	@Override
+	public Object decode(Class c, Object o, MappedField i)
+			throws MappingException {
+		if (o == null) {
+			return null;
+		} else if (o instanceof Duration) {
+			return o;
+		} else if (o instanceof Number) {
+			return new Duration(((Number) o).longValue());
+		} else {
+			return new Duration(o);
+		}
 	}
 }

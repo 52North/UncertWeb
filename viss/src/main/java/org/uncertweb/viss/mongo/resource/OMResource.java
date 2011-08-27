@@ -33,6 +33,9 @@ import java.util.Set;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -42,6 +45,7 @@ import org.uncertweb.api.om.result.ReferenceResult;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.resource.time.TemporalExtent;
 import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.Utils;
 
@@ -177,4 +181,20 @@ public class OMResource extends AbstractMongoResource<IObservationCollection>{
 		}
 		return phen == null ? "UNKNOWN" : phen;
 	}
+	
+	@Override
+	protected TemporalExtent getTemporalExtentForResource() {
+		Set<DateTime> instants = Utils.set();
+		Set<Interval> intervals = Utils.set();
+		for (AbstractObservation ao : getContent().getObservations()) {
+			TimeObject to = ao.getPhenomenonTime();
+			if (to.getInterval() != null) {
+				intervals.add(to.getInterval());
+			} else if (to.getDateTime() != null) {
+				instants.add(to.getDateTime());
+			}
+		}
+		return getExtent(instants, intervals);
+	}
+	
 }

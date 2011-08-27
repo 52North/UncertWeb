@@ -21,10 +21,14 @@
  */
 package org.uncertweb.viss.core.vis.impl.om;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.math.util.FastMath;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.opengis.coverage.grid.GridCoverage;
 import org.slf4j.Logger;
@@ -102,7 +106,7 @@ public abstract class AbstractOMVisualizer implements Visualizer {
 			} else if (!uom.equals(v.getUom())) {
 				throw VissError.internal("Different UOM");
 			}
-			
+
 			if (min == null || v.getMinValue() < min.doubleValue()) {
 				min = v.getMinValue();
 				log.debug("Setting min to {}", min);
@@ -137,4 +141,80 @@ public abstract class AbstractOMVisualizer implements Visualizer {
 	public String getDescription() {
 		return vis.getDescription();
 	}
+
+	@Override
+	public JSONObject getOptionsForResource(Resource r) {
+		List<JSONObject> options = Utils.list();
+		IObservationCollection col = (IObservationCollection) r.getResource();
+		for (AbstractObservation ao : col.getObservations()) {
+			Resource rs = (Resource) ao.getResult().getValue();
+			options.add(vis.getOptionsForResource(rs));
+		}
+		return mergeOptions(options);
+	}
+
+	private JSONObject mergeOptions(List<JSONObject> options) {
+		try {
+			JSONObject option = new JSONObject();
+			for (JSONObject o : options) {
+				Iterator<?> i = o.keys();
+				while (i.hasNext()) {
+					String key = (String) i.next();
+					Object v = option.opt(key);
+					if (v == null) {
+						option.put(key, o.get(key));
+					} else {
+						option.put(
+								key,
+								mergeOption(o.getJSONObject(key),
+										option.getJSONObject(key)));
+					}
+				}
+			}
+			return option;
+		} catch (JSONException e) {
+			throw VissError.internal(e);
+		}
+	}
+
+	private JSONObject mergeOption(JSONObject o1, JSONObject o2)
+			throws JSONException {
+		// copy from o1 to o2
+		Iterator<?> i = o1.keys();
+		while (i.hasNext()) {
+			String key = (String) i.next();
+			Object v2 = o2.opt(key);
+			if (v2 == null) {
+				o2.put(key, o1.get(key));
+			} else {
+				Object v1 = o1.get(key);
+				if (!v1.equals(v2)) {
+					if (key.endsWith(JSON_KEY_MAXIMUM)
+							|| key.equals(JSON_KEY_MAXIMUM_EXCLUSIVE)) {
+						o2.put(key, FastMath.max(((Double) v1).doubleValue(),
+								((Double) v2).doubleValue()));
+					} else if (key.endsWith(JSON_KEY_MINIMUM)
+							|| key.equals(JSON_KEY_MINIMUM_EXCLUSIVE)) {
+						o2.put(key, FastMath.min(((Double) v1).doubleValue(),
+								((Double) v2).doubleValue()));
+					} else {
+						throw VissError.internal("Not yet supported: " + v1
+								+ " vs. " + v2 + ".");
+					}
+				}
+			}
+		}
+		return o2;
+	}
+
+	@Override
+	public void setResource(Resource r) {
+		vis.setResource(r);
+	}
+
+	@Override
+	public Resource getResource() {
+		return vis.getResource();
+	}
+
 }

@@ -19,15 +19,37 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core.vis.impl.om.impl;
+package org.uncertweb.viss.core.resource.time;
 
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.ExceedanceProbabilityForIntervalOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.om.AbstractOMVisualizer;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.joda.time.Interval;
 
-public class ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages extends
-		AbstractOMVisualizer {
+/*
+ * Has to be a top level class for MongoDB
+ */
+public class NoTemporalExtent implements TemporalExtent {
+	
+	@Override
+	public JSONObject toJson() throws JSONException {
+		return null;
+	}
 
-	public ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages() {
-		super(new ExceedanceProbabilityForIntervalOfNormalDistribution());
+	@Override
+	public int hashCode() {
+		return 0;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || o instanceof NoTemporalExtent) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Interval toInterval() {
+		return null;
 	}
 }

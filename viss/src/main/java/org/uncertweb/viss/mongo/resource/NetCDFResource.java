@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.exception.NetcdfUWException;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.resource.time.TemporalExtent;
 import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.NetCDFHelper;
 
@@ -45,6 +46,7 @@ public class NetCDFResource extends AbstractMongoResource<NetcdfUWFile> {
 	@Override
 	public void load() throws IOException, VissError {
 		try {
+			log.debug("Size: {}",getFile().length());
 			String path = getFile().getAbsolutePath();
 			NetcdfFile f = (LOAD_TO_MEMORY) ? NetcdfFile.openInMemory(path)
 					: NetcdfFile.open(path);
@@ -58,6 +60,12 @@ public class NetCDFResource extends AbstractMongoResource<NetcdfUWFile> {
 	protected String getPhenomenonForResource() {
 		return NetCDFHelper.getPrimaryVariable(getContent().getNetcdfFile())
 				.getName();
+	}
+	
+	@Override
+	protected TemporalExtent getTemporalExtentForResource() {
+		// TODO how is time encoded in NetCDF?
+		return TemporalExtent.NO_TEMPORAL_EXTENT;
 	}
 
 }

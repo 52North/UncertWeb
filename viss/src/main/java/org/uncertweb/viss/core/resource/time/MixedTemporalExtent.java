@@ -19,15 +19,39 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core.vis.impl.om.impl;
+package org.uncertweb.viss.core.resource.time;
 
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.ExceedanceProbabilityForIntervalOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.om.AbstractOMVisualizer;
+import java.util.List;
 
-public class ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages extends
-		AbstractOMVisualizer {
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
-	public ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages() {
-		super(new ExceedanceProbabilityForIntervalOfNormalDistribution());
+public class MixedTemporalExtent extends IrregularTemporalExtent {
+
+	public static final String EXTENTS_JSON_KEY = "extents";
+
+	private List<TemporalExtent> extents;
+
+	public MixedTemporalExtent() {
 	}
+
+	public MixedTemporalExtent(List<TemporalExtent> l) {
+		setExtents(l);
+	}
+
+	public void setExtents(List<TemporalExtent> extents) {
+		setInterval(findOverallInterval(extents));
+		this.extents = extents;
+	}
+
+	public List<TemporalExtent> getExtents() {
+		return this.extents;
+	}
+
+	@Override
+	public JSONObject toJson() throws JSONException {
+		return super.toJson().put(EXTENTS_JSON_KEY,
+				toJSONArray(getExtents()));
+	}
+
 }

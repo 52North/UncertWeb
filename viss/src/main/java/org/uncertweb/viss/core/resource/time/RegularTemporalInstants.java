@@ -19,15 +19,35 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core.vis.impl.om.impl;
+package org.uncertweb.viss.core.resource.time;
 
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.ExceedanceProbabilityForIntervalOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.om.AbstractOMVisualizer;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
-public class ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages extends
-		AbstractOMVisualizer {
+public class RegularTemporalInstants extends RegularTemporalExtent {
 
-	public ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages() {
-		super(new ExceedanceProbabilityForIntervalOfNormalDistribution());
+	private static final String SEPERATOR_JSON_KEY = "seperator";
+
+	public RegularTemporalInstants() {}
+
+	public RegularTemporalInstants(DateTime begin, DateTime end,
+			Duration seperator) {
+		super(begin, end, seperator);
+	}
+
+	public Duration getSeperator() {
+		return getSep();
+	}
+
+	public void setSeperator(Duration seperator) {
+		setSep(seperator);
+	}
+
+	@Override
+	public JSONObject toJson() throws JSONException {
+		return super.toJson().put(SEPERATOR_JSON_KEY,
+				getSeperator().getMillis());
 	}
 }

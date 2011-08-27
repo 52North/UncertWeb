@@ -23,16 +23,27 @@ package org.uncertweb.viss.mongo.resource;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.resource.time.IrregularTemporalInstants;
+import org.uncertweb.viss.core.resource.time.IrregularTemporalIntervals;
+import org.uncertweb.viss.core.resource.time.MixedTemporalExtent;
+import org.uncertweb.viss.core.resource.time.RegularTemporalInstants;
+import org.uncertweb.viss.core.resource.time.RegularTemporalIntervals;
+import org.uncertweb.viss.core.resource.time.TemporalExtent;
+import org.uncertweb.viss.core.resource.time.TemporalInstant;
+import org.uncertweb.viss.core.resource.time.TemporalInterval;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualization;
 
@@ -50,8 +61,9 @@ import com.google.code.morphia.annotations.Transient;
 @Entity("resources")
 public abstract class AbstractMongoResource<T> implements Resource {
 
-	protected static final Logger log = LoggerFactory.getLogger(AbstractMongoResource.class);
-	
+	protected static final Logger log = LoggerFactory
+			.getLogger(AbstractMongoResource.class);
+
 	public static final String TIME_PROPERTY = "last_usage";
 	public static final String CHECKSUM_PROPERTY = "checksum";
 
@@ -68,7 +80,8 @@ public abstract class AbstractMongoResource<T> implements Resource {
 	@Property(CHECKSUM_PROPERTY)
 	private long checksum;
 	private String phenomenon;
-	
+	private TemporalExtent temporalExtent;
+
 	@Embedded
 	private Set<Visualization> visualizations = Utils.set();;
 
@@ -99,7 +112,7 @@ public abstract class AbstractMongoResource<T> implements Resource {
 	public Object getResource() {
 		return this.content;
 	}
-	
+
 	@Override
 	public String getPhenomenon() {
 		if (this.phenomenon == null) {
@@ -114,7 +127,7 @@ public abstract class AbstractMongoResource<T> implements Resource {
 		}
 		return this.phenomenon;
 	}
-	
+
 	public File getFile() {
 		return file;
 	}
@@ -164,20 +177,100 @@ public abstract class AbstractMongoResource<T> implements Resource {
 	public void setChecksum(long checksum) {
 		this.checksum = checksum;
 	}
-	
-	protected abstract String getPhenomenonForResource();
-	
-	@PostLoad
-	@PrePersist
-	public void setLastUsageTime() {
+
+	@PostLoad@PrePersist
+	public void setTime() {
 		setLastUsage(new DateTime());
 	}
-	
+
 	@PostLoad
-	public void setPhenomenon() {
-		if (this.phenomenon == null) {
-			getPhenomenon();
+	public void setPhenomenonAndExtent() {
+		getPhenomenon();
+		getTemporalExtent();
+	}
+
+	@Override
+	public TemporalExtent getTemporalExtent() {
+		if (this.temporalExtent == null) {
+			if (!isLoaded()) {
+				try {
+					load();
+				} catch (IOException e) {
+					throw VissError.internal(e);
+				}
+			}
+			this.temporalExtent = getTemporalExtentForResource();
+		}
+		return this.temporalExtent;
+	}
+	
+	public static TemporalExtent getExtent(Set<DateTime> instants, Set<Interval> intervals){
+		if (instants == null || instants.isEmpty()) {
+			if (intervals == null || intervals.isEmpty()) {
+				return TemporalExtent.NO_TEMPORAL_EXTENT;
+			} else {
+				if (intervals.size() == 1) {
+					return new TemporalInterval(intervals.iterator().next());
+				} else {
+					Long duration = null;
+					boolean irregular = false;
+					DateTime begin = null, end = null;
+					for (Interval i : intervals) {
+						if (!irregular) {
+							if (duration == null) {
+								duration = Long.valueOf(i.toDurationMillis());
+							} else if (i.toDurationMillis() != duration.longValue()) {
+								irregular = true;
+								break;
+							}
+						}
+						if (begin == null || i.getStart().isBefore(begin)) {
+							begin = i.getStart();
+						}
+						if (end == null || i.getEnd().isAfter(end)) {
+							end = i.getEnd();
+						}
+					}
+					if (irregular) {
+						return new IrregularTemporalIntervals(Utils.asList(intervals));
+					} else {
+						return new RegularTemporalIntervals(begin, end, new Duration(duration.longValue()));
+					}
+				}
+			}
+		} else {
+			if (intervals == null || intervals.isEmpty()) {
+				if (instants.size() == 1) {
+					return new TemporalInstant(instants.iterator().next());
+				} else {
+					DateTime[] dts = Utils.sort(instants.toArray(new DateTime[instants.size()]));
+					Duration duration = new Duration(dts[0], dts[1]);
+					boolean irregular = false;
+					for (int i = 2; i < dts.length && !irregular; ++i) {
+						if (!duration.isEqual(new Duration(dts[i-1], dts[i]))) {
+							irregular = true;
+						}
+					}
+					if (irregular) {
+						return new IrregularTemporalInstants(Utils.asList(instants));
+					} else {
+						return new RegularTemporalInstants(dts[0], dts[dts.length-1], duration);
+					}
+				}
+			} else {
+				List<TemporalExtent> l = Utils.list();
+				for (DateTime t : instants) {
+					l.add(new TemporalInstant(t));
+				}
+				for (Interval i : intervals) {
+					l.add(new TemporalInterval(i));
+				}
+				return new MixedTemporalExtent(l);
+			}
 		}
 	}
 
+	protected abstract TemporalExtent getTemporalExtentForResource();
+	protected abstract String getPhenomenonForResource();
+	
 }

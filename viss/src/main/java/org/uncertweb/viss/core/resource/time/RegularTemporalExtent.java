@@ -19,15 +19,40 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core.vis.impl.om.impl;
+package org.uncertweb.viss.core.resource.time;
 
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.ExceedanceProbabilityForIntervalOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.om.AbstractOMVisualizer;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
-public class ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages extends
-		AbstractOMVisualizer {
+public abstract class RegularTemporalExtent extends TemporalInterval {
 
-	public ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages() {
-		super(new ExceedanceProbabilityForIntervalOfNormalDistribution());
+	private Duration seperator;
+	
+	protected RegularTemporalExtent() {}
+	
+	protected RegularTemporalExtent(DateTime begin, DateTime end, Duration seperator) {
+		super(begin, end);
+
+		Duration d = getInterval().toDuration();
+
+		if (!d.isLongerThan(seperator)) {
+			throw new IllegalArgumentException("to long seperator");
+		}
+
+		if (d.getMillis() % seperator.getMillis() != 0) {
+			throw new IllegalArgumentException(
+					"duration between begin and end are not a multiple of seperator");
+		}
+
+		setSep(seperator);
+
+	}
+
+	protected Duration getSep() {
+		return seperator;
+	}
+
+	protected void setSep(Duration seperator) {
+		this.seperator = seperator;
 	}
 }

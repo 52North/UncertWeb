@@ -65,8 +65,12 @@ public class VisualizerProvider implements MessageBodyWriter<Visualizer> {
 		try {
 			JSONObject j = new JSONObject()
 					.putOpt("description", v.getDescription())
-					.put("id", v.getShortName())
-					.put("options", v.getOptions());
+					.put("id", v.getShortName());
+			if (v.getResource() != null) {
+				j.put("options", v.getOptionsForResource(v.getResource()));
+			} else {
+				j.put("options", v.getOptions());
+			}
 			return j;
 		} catch (JSONException e) {
 			throw VissError.internal(e);

@@ -19,15 +19,41 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core.vis.impl.om.impl;
+package org.uncertweb.viss.core.web;
 
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.ExceedanceProbabilityForIntervalOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.om.AbstractOMVisualizer;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
-public class ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages extends
-		AbstractOMVisualizer {
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-	public ExceedanceProbabilityForIntervalOfNormalDistributionOfMultiCoverages() {
-		super(new ExceedanceProbabilityForIntervalOfNormalDistribution());
+import org.apache.commons.io.IOUtils;
+
+@Provider
+public class RuntimeExceptionMapper implements ExceptionMapper<Throwable> {
+
+	@Override
+	public Response toResponse(Throwable exception) {
+
+		if (exception instanceof WebApplicationException) {
+			return ((WebApplicationException) exception).getResponse();
+		}
+		
+		ByteArrayOutputStream out = null;
+		try {
+			out = new ByteArrayOutputStream();
+			exception.printStackTrace(new PrintStream(out));
+			return Response.serverError().entity(new String(out.toByteArray()))
+					.type(MediaType.TEXT_PLAIN).build();
+		} catch (Throwable t) {
+			throw new RuntimeException(exception);
+		} finally {
+			IOUtils.closeQuietly(out);
+		}
+
 	}
+
 }

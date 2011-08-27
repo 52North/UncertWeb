@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.resource.time.TemporalExtent;
 import org.uncertweb.viss.core.util.Constants;
 
 import com.google.code.morphia.annotations.Polymorphic;
@@ -46,6 +47,12 @@ public class GeoTIFFResource extends AbstractMongoResource<GridCoverage2D> {
 	protected String getPhenomenonForResource() {
 		// TODO test this...
 		return getContent().getName().toString();
+	}
+
+	@Override
+	protected TemporalExtent getTemporalExtentForResource() {
+		// TODO how is time encoded in GeoTIFF?
+		return TemporalExtent.NO_TEMPORAL_EXTENT;
 	}
 
 }

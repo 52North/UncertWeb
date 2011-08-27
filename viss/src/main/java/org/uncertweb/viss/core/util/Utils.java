@@ -33,6 +33,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -135,14 +137,34 @@ public class Utils {
 		}
 		return set;
 	}
+	
+	public static <T> List<T> asList(Iterable<? extends T> col) {
+		Iterator<? extends T> i;
+		if (col == null || (!(i = col.iterator()).hasNext()))
+			return Collections.emptyList();
+		List<T> list = list();
+		while (i.hasNext()) {
+			list.add(i.next());
+		}
+		return list;
+	}
 
+	public static <T> List<T> list() {
+		return new LinkedList<T>();
+	}
+	
+	public static <T> T[] sort(T[] t) {
+		Arrays.sort(t);
+		return t;
+	}
+	
 	@SuppressWarnings("serial")
 	public static <T> List<T> list(final T... elements) {
 		if (elements == null || elements.length == 0)
-			return Collections.emptyList();
-		return new LinkedList<T>() {
+			return new LinkedList<T>();
+		return new ArrayList<T>(elements.length) {
 			{
-				for (T t : elements)
+				for (T t : elements) 
 					add(t);
 			}
 		};
@@ -297,4 +319,33 @@ public class Utils {
 		}
 		return j;
 	}
+
+	public static long gcd(long u, long v) {
+		if (u == 0 || v == 0) {
+			return u | v;
+		}
+		long k;
+		for (k = 0; ((u | v) & 1) == 0; ++k) {
+			u >>= 1;
+			v >>= 1;
+		}
+		while ((u & 1) == 0) {
+			u >>= 1;
+		}
+		do {
+			while ((v & 1) == 0) {
+				v >>= 1;
+			}
+			if (u < v) {
+				v -= u;
+			} else {
+				long d = u - v;
+				u = v;
+				v = d;
+			}
+			v >>= 1;
+		} while (v != 0);
+		return u << k;
+	}
+
 }

@@ -20,7 +20,7 @@
 
 		<init-param>
 			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-			<param-value>${filter.response}</param-value>
+			<param-value>org.uncertweb.viss.core.web.CorsFilter;${filter.response}</param-value>
 		</init-param>
 		
 		<load-on-startup>1</load-on-startup>

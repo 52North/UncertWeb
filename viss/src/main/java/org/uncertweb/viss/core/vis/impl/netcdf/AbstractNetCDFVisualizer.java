@@ -53,26 +53,23 @@ import ucar.nc2.Variable;
 
 public abstract class AbstractNetCDFVisualizer implements Visualizer {
 
-	private static final Logger log = LoggerFactory
+	protected static final Logger log = LoggerFactory
 			.getLogger(AbstractNetCDFVisualizer.class);
 
 	private JSONObject params;
 	private Set<URI> found;
-	private NetcdfFile resource;
-	
-	protected NetcdfFile getResource() {
-		return this.resource;
-	}
+	private NetcdfFile netCDF;
+	private Resource resource;
 
 	@SuppressWarnings("unchecked")
 	public Visualization visualize(Resource r, JSONObject params) {
 		try {
 			this.params = params;
-			this.resource = getNetCDF(r);
+			setNetCDF(r);
 
-			NetCDFHelper.checkForUWConvention(this.resource);
+			NetCDFHelper.checkForUWConvention(getNetCDF());
 
-			Map<URI, Variable> vars = NetCDFHelper.getVariables(this.resource,
+			Map<URI, Variable> vars = NetCDFHelper.getVariables(getNetCDF(),
 					Utils.combineSets(hasToHaveAll(), hasToHaveOneOf()));
 			log.debug("Found {} Variables with relevant URIs.", vars.size());
 
@@ -89,22 +86,20 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 				indexes.put(e.getKey(), a.getIndex());
 				missingValues.put(e.getKey(), Integer.valueOf(NetCDFHelper
 						.getMissingValue(e.getValue())));
-				log.debug("Missing value: {}",missingValues.get(e.getKey()));
-				log.debug("Missing value: {}",NetCDFHelper.getMissingValue(e.getValue()));
 			}
 
-			WriteableGridCoverage wgc = NetCDFHelper.getCoverage(this.resource, getCoverageName(), getUom());
-			
-			Array latValues = NetCDFHelper.getLongitude(this.resource).read();
-			Array lonValues = NetCDFHelper.getLatitude(this.resource).read();
+			WriteableGridCoverage wgc = NetCDFHelper.getCoverage(getNetCDF(), getCoverageName(), getUom());
+
+			Array lonValues = NetCDFHelper.getLongitude(getNetCDF()).read();
+			Array latValues = NetCDFHelper.getLatitude(getNetCDF()).read();
 
 			final int sizeLon = lonValues.getShape()[0];
 			final int sizeLat = latValues.getShape()[0];
 
 			Double min = null, max = null;
 
-			for (int i = 0; i < sizeLon; ++i) {
-				for (int j = 0; j < sizeLat; ++j) {
+			for (int i = 0; i < sizeLat; ++i) {
+				for (int j = 0; j < sizeLon; ++j) {
 					final Map<URI, Double> values = Utils.map();
 					for (final URI uri : vars.keySet()) {
 						Array a = arrays.get(uri);
@@ -128,9 +123,9 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 						}
 					}
 					
-					double lat = latValues.getDouble(j);
-					double lon = lonValues.getDouble(i);
-					Point2D p = new Point2D.Double(lat, lon);
+					double lat = latValues.getDouble(i);
+					double lon = lonValues.getDouble(j);
+					Point2D p = new Point2D.Double(lon,lat);
 					wgc.setValueAtPos(p, value);
 					
 				}
@@ -143,12 +138,9 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 		}
 	}
 
-	protected Set<URI> getFoundURIs() {
-		return this.found;
-	}
-
-	protected JSONObject getParams() {
-		return this.params;
+	@Override
+	public JSONObject getOptionsForResource(Resource r) {
+		return getOptions();
 	}
 
 	@Override
@@ -172,32 +164,20 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 		return true;
 	}
 
-	private NetcdfFile getNetCDF(Resource r) {
-		NetcdfUWFile netCDF = (NetcdfUWFile) r.getResource();
-		return netCDF.getNetcdfFile();
-	}
-
 	@Override
 	public String getId(JSONObject params) {
 		return this.getShortName();
 	}
 
 	@Override
+	public JSONObject getOptions() {
+		return new JSONObject();
+	}
+
+	@Override
 	public String getShortName() {
 		return this.getClass().getSimpleName();
 	}
-
-	protected abstract String getCoverageName();
-
-	protected abstract Set<URI> hasToHaveOneOf();
-
-	protected abstract Set<URI> hasToHaveAll();
-	
-	protected String getUom() {
-		return NetCDFHelper.getUnitAsString(getResource());
-	}
-
-	protected abstract double evaluate(Map<URI, Double> values);
 
 	@Override
 	public Set<MediaType> getCompatibleMediaTypes() {
@@ -208,4 +188,54 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 	public String getDescription() {
 		return null;
 	}
+
+	@Override
+	public Resource getResource() {
+		return this.resource;
+	}
+
+	@Override
+	public void setResource(Resource r) {
+		this.resource = r;
+	}
+
+	protected String getCoverageName() {
+		return this.getId(getParams());
+	}
+
+	protected Set<URI> getFoundURIs() {
+		return this.found;
+	}
+
+	protected JSONObject getParams() {
+		return this.params;
+	}
+
+	protected String getUom() {
+		return NetCDFHelper.getUnitAsString(getNetCDF());
+	}
+
+	protected NetcdfFile getNetCDF() {
+		return this.netCDF;
+	}
+
+	protected void setNetCDF(NetcdfFile netCDF) {
+		this.netCDF = netCDF;
+	}
+
+	protected void setNetCDF(Resource r) {
+		setNetCDF(getNetCDF(r));
+	}
+
+	protected NetcdfFile getNetCDF(Resource r) {
+		NetcdfUWFile netCDF = (NetcdfUWFile) r.getResource();
+		return netCDF.getNetcdfFile();
+	}
+
+	protected abstract Set<URI> hasToHaveOneOf();
+
+	protected abstract Set<URI> hasToHaveAll();
+
+	protected abstract double evaluate(Map<URI, Double> values);
+
 }

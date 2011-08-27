@@ -54,10 +54,9 @@
 		<jersey.version>1.8</jersey.version>
 		<morphia.version>0.99</morphia.version>
 
-		<filter.cors>org.uncertweb.viss.core.web.CorsFilter</filter.cors>
 		<filter.logs>com.sun.jersey.api.container.filter.LoggingFilter</filter.logs>
 		<filter.gzip>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</filter.gzip>
-		<filter.response>${filter.cors};${filter.gzip}</filter.response>
+		<filter.response>${filter.gzip}</filter.response>
 		<filter.request>${filter.gzip}</filter.request>
 	</properties>
 
@@ -262,7 +261,7 @@
 		<profile>
 			<id>withLogging</id>
 			<properties>
-				<filter.response>${filter.cors};${filter.logs}</filter.response>
+				<filter.response>${filter.logs}</filter.response>
 				<filter.request>${filter.logs}</filter.request>
 			</properties>
 		</profile>
@@ -281,7 +280,7 @@
 		<testResources>
 			<testResource>
 				<directory>src/test/resources</directory>
-				<filtering>true</filtering>
+				<filtering>false</filtering>
 				<includes>
 					<include>**/*</include>
 				</includes>
@@ -353,7 +352,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
-					<skipTests>true</skipTests>
 					<includes>
 						<include>**/*Test.java</include>
 						<include>**/*Tests.java</include>

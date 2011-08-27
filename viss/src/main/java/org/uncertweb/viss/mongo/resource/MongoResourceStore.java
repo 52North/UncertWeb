@@ -97,7 +97,9 @@ public class MongoResourceStore implements ResourceStore {
 		UUID uuid = UUID.randomUUID();
 		try {
 			File f = createResourceFile(uuid, mt);
+			log.debug("Size: {}",f.length());
 			long crc = Utils.saveToFileWithChecksum(f, is);
+			log.debug("Size: {}",f.length());
 			AbstractMongoResource<?> r = getResourceWithChecksum(crc);
 			if (r == null) {
 				r = getResourceForMediaType(mt);

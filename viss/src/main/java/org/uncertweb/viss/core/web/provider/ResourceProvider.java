@@ -72,6 +72,7 @@ public class ResourceProvider implements MessageBodyWriter<Resource> {
 			.put("id", r.getUUID())
 			.put("mimeType", r.getMediaType())
 			.put("phenomenon", r.getPhenomenon())
+			.putOpt("temporalExtent", r.getTemporalExtent().toJson())
 			.put("visualizations", a);
 	}
 

@@ -26,30 +26,50 @@ import org.apache.commons.math.distribution.NormalDistribution;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.util.Utils;
 
 public class ProbabilityOfNormalDistribution extends
 		AbstractNormalDistributionVisualizer {
 
 	public static final String DESCRIPTION = "Returns P(X <= max).";
-	private static final String MAX_DESCRIPTION = "the (inclusive) upper bound";
-	private static final String MAX_PARAMETER = "max";
+	public static final String MAX_DESCRIPTION = "the (inclusive) upper bound";
+	public static final String MAX_PARAMETER = "max";
+
 	private static final JSONObject OPTIONS;
+
+	private static JSONObject createOptions() throws JSONException {
+		return new JSONObject().put(MAX_PARAMETER, new JSONObject()
+			.put(JSON_KEY_DESCRIPTION, MAX_DESCRIPTION)
+			.put(JSON_KEY_TYPE, JSON_TYPE_NUMBER)
+			.put(JSON_KEY_REQUIRED, true));
+	}
 
 	static {
 		JSONObject j = null;
 		try {
-			j = new JSONObject().put(MAX_PARAMETER, new JSONObject()
-				.put(JSON_KEY_DESCRIPTION, MAX_DESCRIPTION)
-				.put(JSON_KEY_TYPE, JSON_TYPE_NUMBER)
-				.put(JSON_KEY_REQUIRED, true));
+			j = createOptions();
 		} catch (JSONException e) {
 			VissError.internal(e);
 		} finally {
 			OPTIONS = j;
 		}
 	}
-	
+
+	@Override
+	public JSONObject getOptionsForResource(Resource r) {
+		try {
+			JSONObject o = createOptions();
+			double[] minmax = getRange(r);
+			o.getJSONObject(MAX_PARAMETER)
+				.put(JSON_KEY_MINIMUM, minmax[0])
+				.put(JSON_KEY_MAXIMUM, minmax[1]);
+			return o;
+		} catch (JSONException e) {
+			throw VissError.internal(e);
+		}
+	}
+
 	@Override
 	public String getDescription() {
 		return DESCRIPTION;
@@ -59,7 +79,7 @@ public class ProbabilityOfNormalDistribution extends
 	public JSONObject getOptions() {
 		return OPTIONS;
 	}
-	
+
 	@Override
 	protected String getUom() {
 		return "%";

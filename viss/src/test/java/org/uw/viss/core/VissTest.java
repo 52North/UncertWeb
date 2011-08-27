@@ -34,6 +34,7 @@ import static org.uncertweb.viss.core.web.Servlet.RESOURCE_WITH_ID;
 import static org.uncertweb.viss.core.web.Servlet.RES_PARAM_P;
 import static org.uncertweb.viss.core.web.Servlet.VISUALIZATIONS;
 import static org.uncertweb.viss.core.web.Servlet.VISUALIZATION_SLD;
+import static org.uncertweb.viss.core.web.Servlet.VISUALIZERS_FOR_RESOURCE;
 import static org.uncertweb.viss.core.web.Servlet.VIS_PARAM_P;
 
 import java.io.IOException;
@@ -51,9 +52,9 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Test;
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.ProbabilityOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.ProbabilityForIntervalOfNormalDistribution;
 import org.uncertweb.viss.core.vis.impl.netcdf.normal.MeanOfNormalDistribution;
+import org.uncertweb.viss.core.vis.impl.netcdf.normal.ProbabilityForIntervalOfNormalDistribution;
+import org.uncertweb.viss.core.vis.impl.netcdf.normal.ProbabilityOfNormalDistribution;
 import org.uncertweb.viss.core.vis.impl.netcdf.normal.StandardDeviationOfNormalDistribution;
 import org.uncertweb.viss.core.vis.impl.netcdf.normal.VarianceOfNormalDistribution;
 import org.uncertweb.viss.core.vis.impl.om.impl.MeanOfNormalDistributionOfMultiCoverages;
@@ -128,8 +129,8 @@ public class VissTest extends JerseyTest {
 	private UUID addResource(MediaType mt, InputStream is) throws JSONException {
 		JSONObject j = getWebResource().path(
 				getWebResource().path(RESOURCES).accept(APPLICATION_JSON_TYPE)
-						.entity(is, mt).post(ClientResponse.class).getLocation()
-						.getPath()).get(JSONObject.class);
+						.entity(is, mt).post(ClientResponse.class)
+						.getLocation().getPath()).get(JSONObject.class);
 
 		return UUID.fromString(j.getString("id"));
 	}
@@ -174,8 +175,7 @@ public class VissTest extends JerseyTest {
 		createVisualization(uuid,
 				StandardDeviationOfNormalDistribution.class.getSimpleName(),
 				new JSONObject());
-		createVisualization(
-				uuid,
+		createVisualization(uuid,
 				ProbabilityOfNormalDistribution.class.getSimpleName(),
 				new JSONObject().put("max", 0.5D));
 		createVisualization(uuid,
@@ -195,6 +195,18 @@ public class VissTest extends JerseyTest {
 	}
 
 	@Test
+	public void visualizersForResource() throws JSONException {
+		deleteAll();
+		UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
+		JSONObject j = getWebResource()
+				.path(VISUALIZERS_FOR_RESOURCE.replace(RES_PARAM_P, uuid.toString()))
+				.accept(APPLICATION_JSON_TYPE)
+				.get(JSONObject.class);
+
+		System.out.println(j.toString(4));
+	}
+
+	@Test
 	public void testSameResource() throws JSONException {
 		UUID uuid1 = addResource(NETCDF_TYPE, getNetCDFStream());
 		UUID uuid2 = addResource(NETCDF_TYPE, getNetCDFStream());
@@ -202,7 +214,7 @@ public class VissTest extends JerseyTest {
 		assertEquals(uuid1, uuid2);
 		assertTrue(!uuid1.equals(uuid3));
 	}
-	
+
 	@Test
 	public void testSldFile() throws XmlException, IOException {
 		StyledLayerDescriptorDocument.Factory.parse(getSLDStream());
