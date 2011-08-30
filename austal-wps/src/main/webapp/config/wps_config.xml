@@ -111,6 +111,12 @@
 				<Property name="supportedFormat" active="true">application/vnd.google-earth.kml+xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
+ 
+ 			<Parser name="OMParser" className="org.n52.wps.io.datahandler.xml.OMParser" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
 			
 			<Parser name="WKTParser" className="org.n52.wps.io.datahandler.binary.GTBinZippedWKT64Parser" active="true">
 				<Property name="supportedFormat" active="true">application/x-zipped-wkt</Property>
@@ -247,6 +253,13 @@
 			<Generator name="KMLGenerator" className="org.n52.wps.io.datahandler.xml.KMLGenerator" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd</Property>
 				<Property name="supportedFormat" active="true">application/vnd.google-earth.kml+xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>
+			
+			
+			<Generator name="OMGenerator" className="org.n52.wps.io.datahandler.xml.OMGenerator" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>
 				

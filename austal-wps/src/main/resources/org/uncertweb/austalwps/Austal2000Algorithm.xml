@@ -16,7 +16,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				<ComplexData>
 					<Default>
 						<Format>
-							<MimeType>text/XML</MimeType>
+							<MimeType>text/xml</MimeType>
 							<Schema>
 								http://schemas.opengis.net/gml/2.1.2/feature.xsd
 							</Schema>
@@ -24,7 +24,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					</Default>
 					<Supported>
 						<Format>
-							<MimeType>text/XML</MimeType>
+							<MimeType>text/xml</MimeType>
 							<Schema>
 								http://schemas.opengis.net/gml/3.2.1/base/feature.xsd
 							</Schema>
@@ -35,15 +35,22 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 			<Input minOccurs="0" maxOccurs="1">
 				<ows:Identifier>street-emissions</ows:Identifier>
 				<ows:Title>particle value</ows:Title>
-				<ows:Abstract>particle value</ows:Abstract><ComplexData>
+				<ows:Abstract>particle value</ows:Abstract>
+				<ComplexData>
 					<Default>
 						<Format>
-							<MimeType>text/plain</MimeType>
+							<MimeType>text/xml</MimeType>
+							<Schema>
+								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+							</Schema>
 						</Format>
 					</Default>
 					<Supported>
 						<Format>
-							<MimeType>text/plain</MimeType>
+							<MimeType>text/xml</MimeType>
+							<Schema>
+								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+							</Schema>
 						</Format>
 					</Supported>
 				</ComplexData>
@@ -51,15 +58,22 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 			<Input minOccurs="0" maxOccurs="1">
 				<ows:Identifier>meteorology</ows:Identifier>
 				<ows:Title>particle value</ows:Title>
-				<ows:Abstract>particle value</ows:Abstract><ComplexData>
+				<ows:Abstract>particle value</ows:Abstract>
+				<ComplexData>
 					<Default>
 						<Format>
-							<MimeType>text/plain</MimeType>
+							<MimeType>text/xml</MimeType>
+							<Schema>
+								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+							</Schema>
 						</Format>
 					</Default>
 					<Supported>
 						<Format>
-							<MimeType>text/plain</MimeType>
+							<MimeType>text/xml</MimeType>
+							<Schema>
+								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+							</Schema>
 						</Format>
 					</Supported>
 				</ComplexData>
@@ -110,6 +124,12 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 						</Format>
 						<Format>
 							<MimeType>application/x-zipped-shp</MimeType>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>
+								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+							</Schema>
 						</Format>
 					</Supported>
 				</ComplexOutput>
