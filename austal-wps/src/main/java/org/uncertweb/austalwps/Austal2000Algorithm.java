@@ -13,7 +13,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +54,19 @@ import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.result.IResult;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.austalwps.util.AustalOutputReader;
 import org.uncertweb.austalwps.util.Point;
 import org.uncertweb.austalwps.util.StreamGobbler;
 import org.uncertweb.austalwps.util.Value;
+import org.uncertweb.austalwps.util.austal.files.Austal2000Txt;
+import org.uncertweb.austalwps.util.austal.files.Zeitreihe;
+import org.uncertweb.austalwps.util.austal.geometry.EmissionSource;
+import org.uncertweb.austalwps.util.austal.geometry.ReceptorPoint;
+import org.uncertweb.austalwps.util.austal.timeseries.EmissionTimeSeries;
+import org.uncertweb.austalwps.util.austal.timeseries.MeteorologyTimeSeries;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -65,6 +74,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 
 public class Austal2000Algorithm extends AbstractObservableAlgorithm{
@@ -100,6 +110,11 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private List<String> errors = new ArrayList<String>();
 	private GeometryFactory geomFactory;
 	public static final int BUFFER = 2048;
+	// general Austal objects
+	private Austal2000Txt austal;
+	private Zeitreihe ts;
+	
+	private static final String FILE_PATH="C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\";
 	
 	public Austal2000Algorithm(){		
 		geomFactory = JTSFactoryFinder.getGeometryFactory(null);
@@ -152,7 +167,16 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			workDir.mkdir();
 		}
 		
+		// 1. read files to create datamodel
+		this.readFiles("austal2000_template.txt", "zeitreihe_0810.dmna");
+		
 		XBObservationEncoder encoder = new XBObservationEncoder();
+		
+		
+		ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
+		ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
+
+		List<ReceptorPoint> pointList = new ArrayList<ReceptorPoint>();
 		
 		//1.a get input
 		Map<String, IData> result = new HashMap<String, IData>();	
@@ -168,18 +192,26 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 				OMData theData = (OMData) ((OMDataBinding)streetEmissionData).getPayload();
 				
 				List<? extends AbstractObservation> observations = theData.getObservationCollection().getObservations();
+
+				try {
+					handleObservationCollection(newEmissionSources, newEmisTS, theData.getObservationCollection());
+				} catch (Exception e) {
+					LOGGER.debug(e);
+					e.printStackTrace();
+				}
 				
-				for (AbstractObservation abstractObservation : observations) {
-					Coordinate[] coordinates = abstractObservation.getFeatureOfInterest().getShape().getCoordinates();
-					
-					LOGGER.debug(coordinates[0] + " " + coordinates[1]);
-					
-					try {
-						System.out.println(encoder.encodeObservation(abstractObservation));
-					} catch (OMEncodingException e) {
-						e.printStackTrace();
-					}					
-				}				
+				
+//				for (AbstractObservation abstractObservation : observations) {
+//					Coordinate[] coordinates = abstractObservation.getFeatureOfInterest().getShape().getCoordinates();
+//					
+//					LOGGER.debug(coordinates[0] + " " + coordinates[1]);
+//					
+//					try {
+//						System.out.println(encoder.encodeObservation(abstractObservation));
+//					} catch (OMEncodingException e) {
+//						e.printStackTrace();
+//					}					
+//				}				
 			}			
 		}
 		
@@ -217,124 +249,11 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			
 			if(receptorPointsData instanceof GTVectorDataBinding){
 				
-				try {
-				URL austal2000FileURL = new URL(
-							"http://localhost:8080/wps2/res/" + austal2000FileName);
-				FeatureCollection<?, ?> featColl = ((GTVectorDataBinding)receptorPointsData).getPayload();
+				handleReceptorPoints(pointList, (FeatureCollection<?, ?>)receptorPointsData.getPayload());
 				
-				BufferedReader bufferedReader = new BufferedReader(
-						new InputStreamReader(austal2000FileURL.openStream()));
-
-				String line = bufferedReader.readLine();
-
-				int gx = 0;
-				int gy = 0;
-
-				String xp = "";
-				String yp = "";
-				// String hp = "";
-				
-				String output = "";
-
-				int coordinateCount = 0;
-				while (line != null) {
-
-//					System.out.println(line);
-
-					if (line.contains(pointsXMarker)) {
-
-						FeatureIterator iterator = featColl.features();//Differentiate between point and line
-												
-						while (iterator.hasNext()) {
-
-							SimpleFeature feature = (SimpleFeature) iterator.next();
-
-							
-							if(feature.getDefaultGeometry() instanceof com.vividsolutions.jts.geom.Point){
-							
-							Coordinate coord = ((Geometry)feature.getDefaultGeometry())
-									.getCoordinate();
-
-							xp = xp.concat("" + (coord.x - gx) + " ");
-							yp = yp.concat("" + (coord.y - gy) + " ");
-							// hp = hp.concat("" + coord.z + " ");
-							}else if(feature.getDefaultGeometry() instanceof MultiLineString){
-								
-								MultiLineString lineString = (MultiLineString) feature
-										.getDefaultGeometry();
-
-
-								coordinateCount = lineString.getCoordinates().length;
-								
-								for (int i = 0; i < lineString.getCoordinates().length; i++) {
-									
-									if(i == 20){
-										coordinateCount = 20;
-										break;//TODO: check if we can go higher.
-									}
-									
-									Coordinate coord = lineString
-											.getCoordinates()[i];
-
-									xp = xp.concat("" + (coord.x - gx) + " ");
-									yp = yp.concat("" + (coord.y - gy) + " ");
-								}
-							}else if(feature.getDefaultGeometry() instanceof LineString){
-								
-								LineString lineString = (LineString) feature
-										.getDefaultGeometry();
-
-								coordinateCount = lineString.getCoordinates().length;
-								
-								for (int i = 0; i < lineString.getCoordinates().length; i++) {
-									
-									if(i == 20){
-										coordinateCount = 20;
-										break;//TODO: check if we can go higher. corresponding to the count of points
-												//we have to add heigh values in austal2000.txt
-									}
-									
-									Coordinate coord = lineString
-											.getCoordinates()[i];
-
-									xp = xp.concat("" + (coord.x - gx) + " ");
-									yp = yp.concat("" + (coord.y - gy) + " ");
-								}
-							}
-
-						}
-
-						line = line.concat(" " + xp);
-					} else if (line.contains(pointsYMarker)) {
-						line = line.concat(" " + yp);
-					}
-					else if (line.contains(pointsHMarker)) {
-						
-						String hp = "";
-						
-						for (int i = 0; i < coordinateCount; i++) {
-							hp = hp.concat(" 2");//for now just add height of two meters
-						}
-						
-						line = line.concat(" " + hp);
-					} 
-					else if (line.contains(gxMarker)) {
-						gx = Integer.valueOf(line.replace(gxMarker, "").trim());
-					} else if (line.contains(gyMarker)) {
-						gy = Integer.valueOf(line.replace(gyMarker, "").trim());
-					}
-					output = output.concat(line + "\n");
-					line = bufferedReader.readLine();
-				}
-
-				bufferedReader.close();
-
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
-			}			
+				
+				
 		}
 		
 		
@@ -473,7 +392,416 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		result.put("result", new GTVectorDataBinding(collection));
 		
 		return result;
+	}	
+	
+	private void readFiles(String austalFileName, String zeitreiheFileName){
+		// read austal2000.txt
+		File austalFile = new File(FILE_PATH+"//"+ austalFileName);
+		austal = new Austal2000Txt(austalFile);
+			
+		// read zeitreihe.dmna
+		File tsFile = new File(FILE_PATH+"//"+zeitreiheFileName);
+		ts = new Zeitreihe(tsFile);
 	}
+	
+	private void writeFiles(String austalFileName, String zeitreiheFileName){
+		// test writer
+		File new_austalFile = new File(FILE_PATH+"//"+austalFileName);
+		austal.writeFile(new_austalFile);
+		File new_tsFile = new File(FILE_PATH+"//"+zeitreiheFileName);
+		ts.writeFile(new_tsFile);
+	}
+	
+	
+	private void handleReceptorPoints(List<ReceptorPoint> pointList,
+			FeatureCollection<?, ?> featColl) {
+
+		int gx = austal.getStudyArea().getGx();
+		int gy = austal.getStudyArea().getGy();
+
+		String xp = "";
+		String yp = "";
+		// String hp = "";
+
+		int coordinateCount = 0;
+
+		FeatureIterator<?> iterator = featColl.features();
+
+		while (iterator.hasNext()) {
+
+			SimpleFeature feature = (SimpleFeature) iterator.next();
+
+			if (feature.getDefaultGeometry() instanceof com.vividsolutions.jts.geom.Point) {
+				/*
+				 * TODO points won't work right now
+				 */
+				Coordinate coord = ((Geometry) feature.getDefaultGeometry())
+						.getCoordinate();
+
+				xp = xp.concat("" + (coord.x - gx) + " ");
+				yp = yp.concat("" + (coord.y - gy) + " ");
+			} else if (feature.getDefaultGeometry() instanceof MultiLineString) {
+
+				MultiLineString lineString = (MultiLineString) feature
+						.getDefaultGeometry();
+
+				coordinateCount = lineString.getCoordinates().length;
+
+				for (int i = 0; i < lineString.getCoordinates().length; i++) {
+
+					if (i == 20) {
+						coordinateCount = 20;
+						break;
+					}
+					Coordinate coord = lineString.getCoordinates()[i];
+
+					xp = "" + Math.round(coord.y - gy);
+					yp = "" + Math.round(coord.y - gy);
+
+					ReceptorPoint rp = new ReceptorPoint(xp, yp, "2");
+
+					pointList.add(rp);
+				}
+			} else if (feature.getDefaultGeometry() instanceof LineString) {
+
+				LineString lineString = (LineString) feature
+						.getDefaultGeometry();
+
+				coordinateCount = lineString.getCoordinates().length;
+
+				for (int i = 0; i < lineString.getCoordinates().length; i++) {
+
+					if (i == 20) {
+						coordinateCount = 20;
+						break;
+					}
+					Coordinate coord = lineString.getCoordinates()[i];
+
+					xp = "" + Math.round(coord.y - gy);
+					yp = "" + Math.round(coord.y - gy);
+
+					ReceptorPoint rp = new ReceptorPoint(xp, yp, "2");
+
+					pointList.add(rp);
+				}
+			}
+
+		}
+
+	}
+	
+	private void handleMeteorology(MeteorologyTimeSeries newMetList, IObservationCollection coll) throws Exception{
+	
+		Map<TimeObject, AbstractObservation> timeObservationMap = new HashMap<TimeObject, AbstractObservation>();
+				
+		/*
+		 * the O&M is structured in that way that at first the wind direction values are listed
+		 * and second the wind speed values. each timestamp has a wind direction value and on wind speed value 
+		 */
+		for (AbstractObservation abstractObservation : coll.getObservations()) {
+			if(!timeObservationMap.containsKey(abstractObservation.getPhenomenonTime())){
+				timeObservationMap.put(abstractObservation.getPhenomenonTime(), abstractObservation);
+			}else{
+				/*
+				 * if the map already contains a observation we should now have both windspeed and winddirection
+				 * either in the Observation already in the map or in the current abstractObservation
+				 */
+				AbstractObservation obs1 = timeObservationMap.get(abstractObservation.getPhenomenonTime());
+				
+				/*
+				 * check for wind direction value
+				 */				
+				Double windDirection = 0.0d;
+				if(obs1.getObservedProperty().getPath().contains("winddirection")){
+					windDirection = (Double)obs1.getResult().getValue();
+				}else if(abstractObservation.getObservedProperty().getPath().contains("winddirection")){
+					windDirection = (Double)abstractObservation.getResult().getValue();
+				}
+				/*
+				 * check for wind sped value
+				 */				
+				Double windSpeed = 0.0d;
+				if(obs1.getObservedProperty().getPath().contains("windspeed")){
+					windSpeed = (Double)obs1.getResult().getValue();
+				}else if(abstractObservation.getObservedProperty().getPath().contains("windspeed")){
+					windSpeed = (Double)abstractObservation.getResult().getValue();
+				}
+				
+				DateTime dt = abstractObservation.getPhenomenonTime().getDateTime();				
+				/*
+				 * if exact date format needed
+				 */
+//				Date timeStamp = null;
+//				try {
+//					timeStamp = dateFormat.parse(dt.toString("yyyy-MM-dd.HH:mm:ss"));
+//				} catch (ParseException e) {
+//					e.printStackTrace();
+//				}
+				newMetList.addWindDirection(dt.toDate(), windDirection);
+				newMetList.addWindSpeed(dt.toDate(), windSpeed);
+				
+			}
+		}
+	}
+	
+	
+	private void handleObservationCollection(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS, IObservationCollection coll) throws Exception {
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
+		
+		int gx = austal.getStudyArea().getGx();
+		int gy = austal.getStudyArea().getGy();
+
+		SpatialSamplingFeature spsam = null;
+
+		int counter = 1;
+		/*
+		 * The samplingfeature of the observations is only defined explicitly once
+		 * and the remainder of the observations holds just references.
+		 * So we need to check all observations and if the sampling feature is 
+		 * "new" we add it to the list. 
+		 */
+		EmissionTimeSeries lineTS = null;
+		
+		for (AbstractObservation abstractObservation : coll.getObservations()) {
+			
+			if(spsam == null){
+				spsam = abstractObservation.getFeatureOfInterest();
+//				
+//				EmissionTimeSeries polygonTS = new EmissionTimeSeries(polygon.getDynamicSourceID());	// assign id of respective source
+
+				lineTS = new EmissionTimeSeries(counter);// assign id of respective source
+				
+				if (abstractObservation.getFeatureOfInterest().getShape() instanceof MultiLineString) {
+
+					MultiLineString mline = (MultiLineString) abstractObservation
+							.getFeatureOfInterest().getShape();
+
+					Coordinate[] coords = mline.getCoordinates();
+					/*
+					 * create EmissionSource
+					 */
+					EmissionSource tmpEMS = lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[1].x, coords[1].y);
+					tmpEMS.setDynamicSourceID(counter);
+					newEmissionSources.add(tmpEMS);
+					
+				} else if (abstractObservation.getFeatureOfInterest()
+						.getShape() instanceof MultiPolygon) {
+
+					MultiPolygon mpoly = (MultiPolygon) abstractObservation
+							.getFeatureOfInterest().getShape();
+					
+					Coordinate[] coords = mpoly.getCoordinates();
+					/*
+					 * create EmissionSource
+					 */
+					EmissionSource tmpEMS = cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
+					tmpEMS.setDynamicSourceID(counter);
+					newEmissionSources.add(tmpEMS);					
+//					System.out.println(tmpEMS);
+				}
+				
+				counter++;
+			} else {
+				if (!spsam.equals(abstractObservation.getFeatureOfInterest())) {
+					newEmisTS.add(lineTS);
+					lineTS = new EmissionTimeSeries(counter);// assign id of respective source
+					spsam = abstractObservation.getFeatureOfInterest();
+//					System.out.println(counter);
+//					counter++;
+					if (abstractObservation.getFeatureOfInterest().getShape() instanceof MultiLineString) {
+
+						MultiLineString mline = (MultiLineString) abstractObservation
+								.getFeatureOfInterest().getShape();
+
+						Coordinate[] coords = mline.getCoordinates();
+						EmissionSource tmpEMS = lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[1].x, coords[1].y);
+						tmpEMS.setDynamicSourceID(counter);
+						newEmissionSources.add(tmpEMS);
+//						System.out.println(tmpEMS);
+					} else if (abstractObservation.getFeatureOfInterest()
+							.getShape() instanceof MultiPolygon) {
+
+						MultiPolygon mpoly = (MultiPolygon) abstractObservation
+								.getFeatureOfInterest().getShape();
+						
+						Coordinate[] coords = mpoly.getCoordinates();
+						
+						EmissionSource tmpEMS = cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
+						tmpEMS.setDynamicSourceID(counter);
+						newEmissionSources.add(tmpEMS);
+//						System.out.println(tmpEMS);
+					}
+					counter++;
+				}
+			}
+			/*
+			 * create EmissionTimeSeries
+			 */
+			DateTime dt = abstractObservation.getPhenomenonTime().getDateTime();
+			IResult result = abstractObservation.getResult();
+			
+			Object o = result.getValue();
+			
+			/*
+			 * if exact date format needed
+			 */
+//			Date timeStamp = null;
+//			try {
+//				timeStamp = dateFormat.parse(dt.toString("yyyy-MM-dd.HH:mm:ss"));
+//			} catch (ParseException e) {
+//				e.printStackTrace();
+//			}
+			lineTS.addEmissionValue(dt.toDate(), (Double)o);
+
+		}
+		/*
+		 * add last EmissionTimeSeries
+		 */
+		newEmisTS.add(lineTS);
+	}
+	
+	
+	// methods to calculate Gauss-Krüger-Coordinates to local austal coordinates
+	private EmissionSource lineGK3ToLocalCoords(double gx, double gy, double x1, double y1, double x2, double y2){
+		
+		EmissionSource source = new EmissionSource();		
+		double xq, yq, wq;	
+		double bq = Math.sqrt(Math.pow((x1-x2), 2)+Math.pow((y1-y2), 2)); // extension in y direction = length
+		double aq=0;					// extension in x direction
+		double cq=1;					// extension in z direction
+		double hq=0.2;					// height
+		
+		// find point to the right which will stay fixed
+		if(x1==x2){ // easiest case
+			// convert to local coordinates
+			xq = x1 - gx;
+			yq = y1 - gy;		
+			wq = 0;					// angle						
+		} else if(x1>x2){	
+			// convert to local coordinates
+			xq = x1 - gx;
+			yq = y1 - gy;
+			if(y1>y2)
+				wq = 180 - Math.atan(Math.abs(x1-x2)/Math.abs(y1-y2))*180/Math.PI;
+			else
+				wq = Math.atan(Math.abs(x1-x2)/Math.abs(y1-y2))*180/Math.PI;
+				
+		}else{
+			// convert to local coordinates
+			xq = x2 - gx;
+			yq = y2 - gy;
+			if(y2>y1)
+				wq = 180 - Math.atan(Math.abs(x1-x2)/Math.abs(y1-y2))*180/Math.PI;
+			else
+				wq = Math.atan(Math.abs(x1-x2)/Math.abs(y1-y2))*180/Math.PI;
+		}
+		
+		source.setCoordinates(xq, yq);
+		source.setExtent(aq, bq, cq, wq, hq);
+		return source;
+	}
+	
+	// method to calculate Gauss-Krüger-Coordinates to local austal coordinates
+	private EmissionSource cellPolygonGK3ToLocalCoords(double gx, double gy, double x1, double y1, double x2, double y2){
+			
+			EmissionSource source = new EmissionSource();		
+			double xq, yq;	
+			double bq = Math.abs(y1-y2); 	// extension in y direction
+			double aq = Math.abs(x1-x2);	// extension in x direction
+			double cq=1;					// extension in z direction
+			double hq=0.2;					// height
+			double wq = 0;					//TODO: This is zero for our case
+			
+			// get lower left point which will stay fixed
+			if(x1<x2)
+				xq = x1 - gx;
+			else
+				xq = x2 - gx;
+			
+			if(y1<y2)
+				yq = y1 - gy;
+			else
+				yq = y2 - gy;
+		
+			source.setCoordinates(xq, yq);
+			source.setExtent(aq, bq, cq, wq, hq);
+			return source;
+		}
+	
+	private void substituteStreetEmissions(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS){
+		// get old emission lists
+		ArrayList<EmissionSource> emissionSources = (ArrayList) austal.getEmissionSources();
+		ArrayList<EmissionTimeSeries> emisList = (ArrayList) ts.getEmissionSourcesTimeSeries();
+		int newID = newEmissionSources.size()+1;
+		
+		//get length o
+		Date minDate = newEmisTS.get(0).getMinDate();
+		Date maxDate = newEmisTS.get(0).getMaxDate();
+		
+		// add only non-traffic and non-dynamic sources from the old list
+		for(int i=0; i<austal.getEmissionSources().size(); i++){
+			// get dynamic sources which are not street sources
+			if(emissionSources.get(i).isDynamic()&&!emissionSources.get(i).getSourceType().contains("streets")){
+				EmissionSource e = emissionSources.get(i);
+				int oldID = e.getDynamicSourceID();
+				e.setDynamicSourceID(newID);
+				newEmissionSources.add(e);
+				
+				// get respective time series and change id
+				EmissionTimeSeries ets = emisList.get(i);
+				
+				// check if dynamic id is correct
+				if(ets.getDynamicSourceID()==oldID){
+					ets.setSourceID(newID);
+					// cut timeseries to length of new one
+					ets.cutTimePeriod(minDate, maxDate);
+					//check
+					Date min = ets.getMinDate();
+					Date max = ets.getMaxDate();
+					newEmisTS.add(ets);
+				}else{ // in case the time series is not correct search for it
+					for(int j=0; j<emisList.size(); j++){
+						ets = emisList.get(j);
+						if(ets.getDynamicSourceID()==oldID){
+							ets.setSourceID(newID);
+							newEmisTS.add(ets);
+							return;
+						}
+					}
+				}
+				
+				// set new id for nex source
+				newID++;
+			}
+			else if(!emissionSources.get(i).isDynamic()){ 	// static sources are added without changes
+				newEmissionSources.add(emissionSources.get(i));
+			}
+		}	
+		
+		// finally add new list to austal and ts object
+		austal.setEmissionSources(newEmissionSources);
+		ts.setEmissionSourcesTimeSeries(newEmisTS);
+	}
+	
+	private void substituteMeteoorology(MeteorologyTimeSeries newMetList){
+		// get old meteorology list
+		MeteorologyTimeSeries metList = ts.getMeteorologyTimeSeries();
+		ArrayList<Date> timeStampList = (ArrayList) newMetList.getTimeStamps();
+		
+		// add stability class values to new list
+		for(int i=0; i<timeStampList.size(); i++){
+			Date d = timeStampList.get(i);
+			newMetList.addStabilityClass(d, metList.getStabilityClass(d));
+		}
+		
+		// finally add new list to ts object
+		ts.setMeteorologyTimeSeries(newMetList);
+	}
+	
+	
+	
+	
 	
 	private IObservationCollection createResultCollection() throws URISyntaxException{
 		

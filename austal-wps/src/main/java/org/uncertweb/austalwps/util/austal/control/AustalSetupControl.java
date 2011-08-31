@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,7 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.joda.time.DateTime;
+import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
+import org.opengis.feature.simple.SimpleFeature;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -22,11 +30,14 @@ import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.austalwps.util.austal.files.Austal2000Txt;
 import org.uncertweb.austalwps.util.austal.files.Zeitreihe;
 import org.uncertweb.austalwps.util.austal.geometry.EmissionSource;
+import org.uncertweb.austalwps.util.austal.geometry.ReceptorPoint;
 import org.uncertweb.austalwps.util.austal.timeseries.EmissionTimeSeries;
 import org.uncertweb.austalwps.util.austal.timeseries.MeteorologyTimeSeries;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
@@ -46,12 +57,21 @@ public class AustalSetupControl {
 	private List<EmissionSource> emissionSources;
 	private List<EmissionTimeSeries> emisList = new ArrayList<EmissionTimeSeries>();
 	private MeteorologyTimeSeries metList = new MeteorologyTimeSeries();
+	private final CharSequence pointsXMarker = "xp";
+	private final CharSequence pointsYMarker = "yp";
+	private final CharSequence pointsHMarker = "hp";
+	private final CharSequence gxMarker = "gx";
+	private final CharSequence gyMarker = "gy";
 	
 	public static void main(String[] args) {
-		AustalSetupControl control = new AustalSetupControl();
+		try {
+			AustalSetupControl control = new AustalSetupControl();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public AustalSetupControl(){
+	public AustalSetupControl() throws Exception{
 		// read files to create datamodel
 //		this.readFiles();
 			// 1. read files to create datamodel
@@ -76,11 +96,33 @@ public class AustalSetupControl {
 				
 			// 2b. Emission TimeSeries
 				// make an ArrayList with the respective timeseries per source
+				
+				BufferedReader bread = new BufferedReader(
+						new FileReader(
+								new File(
+										"C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\xml\\Streets1.xml")));
+
+				String xmlString = "";
+
+				String line = bread.readLine();
+
+				xmlString = xmlString.concat(line);
+
+				while ((line = bread.readLine()) != null) {
+					xmlString = xmlString.concat(line);
+				}
+
+				XBObservationParser parser = new XBObservationParser();
+
+				IObservationCollection coll = parser
+						.parseObservationCollection(xmlString);
+				
+				
 				ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
 
 				
 				try {
-					handleObservationCollection(newEmissionSources, newEmisTS);
+					handleObservationCollection(newEmissionSources, newEmisTS, coll);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -109,9 +151,31 @@ public class AustalSetupControl {
 			// 2b. Meteorology TimeSeries
 				MeteorologyTimeSeries newMetList = new MeteorologyTimeSeries();
 				
+				/*
+				 * read meteo data
+				 */
+				bread = new BufferedReader(
+						new FileReader(
+								new File(
+										"C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\xml\\Meteo1.xml")));
+
+				xmlString = "";
+
+				line = bread.readLine();
+
+				xmlString = xmlString.concat(line);
+
+				while ((line = bread.readLine()) != null) {
+					xmlString = xmlString.concat(line);
+				}
+				coll = parser
+						.parseObservationCollection(xmlString);				
 				
 				try {
-					handleMeteorology(newMetList);
+					
+					
+					
+					handleMeteorology(newMetList, coll);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -141,30 +205,85 @@ public class AustalSetupControl {
 			}
 		
 	
-	private void handleMeteorology(MeteorologyTimeSeries newMetList) throws Exception{
-		/*
-		 * read meteo data
-		 */
-		BufferedReader bread = new BufferedReader(
-				new FileReader(
-						new File(
-								"C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\xml\\Meteo1.xml")));
+	private void handleReceptorPoints(List<ReceptorPoint> pointList,
+			FeatureCollection<?, ?> featColl) {
 
-		String xmlString = "";
+		int gx = austal.getStudyArea().getGx();
+		int gy = austal.getStudyArea().getGy();
 
-		String line = bread.readLine();
+		String xp = "";
+		String yp = "";
+		// String hp = "";
 
-		xmlString = xmlString.concat(line);
+		int coordinateCount = 0;
 
-		while ((line = bread.readLine()) != null) {
-			xmlString = xmlString.concat(line);
+		FeatureIterator<?> iterator = featColl.features();
+
+		while (iterator.hasNext()) {
+
+			SimpleFeature feature = (SimpleFeature) iterator.next();
+
+			if (feature.getDefaultGeometry() instanceof com.vividsolutions.jts.geom.Point) {
+				/*
+				 * TODO points won't work right now
+				 */
+				Coordinate coord = ((Geometry) feature.getDefaultGeometry())
+						.getCoordinate();
+
+				xp = xp.concat("" + (coord.x - gx) + " ");
+				yp = yp.concat("" + (coord.y - gy) + " ");
+			} else if (feature.getDefaultGeometry() instanceof MultiLineString) {
+
+				MultiLineString lineString = (MultiLineString) feature
+						.getDefaultGeometry();
+
+				coordinateCount = lineString.getCoordinates().length;
+
+				for (int i = 0; i < lineString.getCoordinates().length; i++) {
+
+					if (i == 20) {
+						coordinateCount = 20;
+						break;
+					}
+					Coordinate coord = lineString.getCoordinates()[i];
+
+					xp = "" + (coord.x - gx);
+					yp = "" + (coord.y - gy);
+
+					ReceptorPoint rp = new ReceptorPoint(xp, yp, "2.0");
+
+					pointList.add(rp);
+				}
+			} else if (feature.getDefaultGeometry() instanceof LineString) {
+
+				LineString lineString = (LineString) feature
+						.getDefaultGeometry();
+
+				coordinateCount = lineString.getCoordinates().length;
+
+				for (int i = 0; i < lineString.getCoordinates().length; i++) {
+
+					if (i == 20) {
+						coordinateCount = 20;
+						break;
+					}
+					Coordinate coord = lineString.getCoordinates()[i];
+
+					xp = "" + (coord.x - gx);
+					yp = "" + (coord.y - gy);
+
+					ReceptorPoint rp = new ReceptorPoint(xp, yp, "2.0");
+
+					pointList.add(rp);
+				}
+			}
+
 		}
-		
-		XBObservationParser parser = new XBObservationParser();
 
-		IObservationCollection coll = parser
-				.parseObservationCollection(xmlString);
-		
+	}
+	
+	private void handleMeteorology(MeteorologyTimeSeries newMetList, IObservationCollection coll) throws Exception{
+	
 		Map<TimeObject, AbstractObservation> timeObservationMap = new HashMap<TimeObject, AbstractObservation>();
 				
 		/*
@@ -218,32 +337,12 @@ public class AustalSetupControl {
 	}
 	
 	
-	private void handleObservationCollection(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS) throws Exception {
+	private void handleObservationCollection(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS, IObservationCollection coll) throws Exception {
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
 		
 		int gx = austal.getStudyArea().getGx();
 		int gy = austal.getStudyArea().getGy();
-
-		BufferedReader bread = new BufferedReader(
-				new FileReader(
-						new File(
-								"C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\xml\\Streets1.xml")));
-
-		String xmlString = "";
-
-		String line = bread.readLine();
-
-		xmlString = xmlString.concat(line);
-
-		while ((line = bread.readLine()) != null) {
-			xmlString = xmlString.concat(line);
-		}
-
-		XBObservationParser parser = new XBObservationParser();
-
-		IObservationCollection coll = parser
-				.parseObservationCollection(xmlString);
 
 		SpatialSamplingFeature spsam = null;
 
