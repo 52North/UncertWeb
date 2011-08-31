@@ -8,7 +8,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.uncertweb.austalwps.util.austal.timeseries.EmissionTimeSeries;
@@ -42,6 +45,7 @@ public class Zeitreihe implements Serializable{
 	private String[] meteoIdentifiers = {"\"ra%5.0f\"","\"ua%5.1f\"","\"lm%7.1f\""};
 	// "te%20lt" timestamp 
 	private String timeStampIdentifier = "\"te%20lt\"";
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
 	
 	//private List<TimeStamp> timestamps = new ArrayList<TimeStamp>();
 	private List<EmissionTimeSeries> emisList = new ArrayList<EmissionTimeSeries>();
@@ -59,7 +63,7 @@ public class Zeitreihe implements Serializable{
 		this.dims = zeitreihe.dims;
 		this.size = zeitreihe.size;
 		this.lowb = zeitreihe.lowb;
-		
+		//this.dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
 		//in the first modelRun we have to guarantee, that there are at least 24 values or austal won't work
 	//	if(modelRun == 0) optimizationInterval = 24;
 		
@@ -85,6 +89,14 @@ public class Zeitreihe implements Serializable{
 	
 	public String getTSlength(){
 		return hghb;
+	}
+	
+	public void setTimePeriod(Date start, Date end){
+		metList.cutTimePeriod(start, end);
+		for(int i=0; i<emisList.size(); i++){
+			emisList.get(i).cutTimePeriod(start, end);
+		}
+		this.hghb = "hghb\t"+(this.metList.getSize());
 	}
 	
 	// ***** PARSER *****
@@ -135,11 +147,20 @@ public class Zeitreihe implements Serializable{
 		// check if line has same length as forms in header
 		if(timeStampTokens.length!=forms.size()){
 			System.out.println("Length of header is "+forms.size()+" while lenght of line is "+timeStampTokens.length);
+			System.out.println("Error for line "+ timeStampTokens[this.getFormIndex(timeStampIdentifier)].trim());
 		}
 		
 		// divide into meteorology and emissions
 		// timestamp 
-		String timeStamp = timeStampTokens[this.getFormIndex(timeStampIdentifier)];
+		String time = timeStampTokens[this.getFormIndex(timeStampIdentifier)].trim();
+		Date timeStamp = null;
+		try {
+			timeStamp = dateFormat.parse(time);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//String timeStamp = timeStampTokens[this.getFormIndex(timeStampIdentifier)];
 		
 		// meteorology				
 		String[] meteoVals = new String[3];
@@ -149,7 +170,7 @@ public class Zeitreihe implements Serializable{
 		// emissions
 		// "01.pm-2%10.3e" ...
 		for(int i=0; i<emisList.size(); i++){
-			emisList.get(i).addEmissionValue(timeStamp, timeStampTokens[this.getFormIndex(emisList.get(i).getSourceID())]);
+			emisList.get(i).addEmissionValue(timeStamp, timeStampTokens[this.getFormIndex(emisList.get(i).getDynamicSourceIDToken())]);
 		}
 		
 		//timestamps.add(new TimeStamp(timeStampTokens));
@@ -173,8 +194,7 @@ public class Zeitreihe implements Serializable{
 				if(lineTokens.length<2) return;
 					String[] forms = lineTokens[1].split(" ");
 					for(int i = 0; i<forms.length; i++){
-						this.forms.add(forms[i]);
-						
+						this.forms.add(forms[i]);					
 						// fill emission list with sources
 						if(forms[i].contains("pm-2")){
 							EmissionTimeSeries emis = new EmissionTimeSeries(forms[i]);
@@ -248,6 +268,7 @@ public class Zeitreihe implements Serializable{
 	 */
 	public void writeFile(File targetFile){
 		try {
+			this.hghb = "hghb\t"+(this.metList.getSize());
 			FileWriter fw = new FileWriter(targetFile);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write("form\t"+buildFormsString()+SEPERATOR);
@@ -263,9 +284,10 @@ public class Zeitreihe implements Serializable{
 			bw.write(lowb+SEPERATOR);
 			bw.write(hghb+SEPERATOR);
 			bw.write("*"+SEPERATOR);
-			List<String> timestamps = metList.getTimeStamps();
+			List<Date> timestamps = metList.getTimeStamps();
 			for(int i=0; i<timestamps.size(); i++){
-				bw.write(timestamps.get(i)+" ");
+				String time = dateFormat.format(timestamps.get(i));
+				bw.write(time+" ");
 				bw.write(metList.getMeteorologyToString(i));
 				String e = "";
 				for(EmissionTimeSeries ts : emisList){
@@ -284,20 +306,24 @@ public class Zeitreihe implements Serializable{
 	
 	// ***** MODIFICATION *****
 	// modify meteorology time series
+	public MeteorologyTimeSeries getMeteorologyTimeSeries(){
+		return metList;
+	}
+	
 	public void setMeteorologyTimeSeries(MeteorologyTimeSeries meteoTS){
 		this.metList = meteoTS;
 		this.hghb = "hghb\t"+(this.metList.getSize());
 	}
 	
 	// modify emission time series
+	public List<EmissionTimeSeries> getEmissionSourcesTimeSeries(){
+		return emisList;
+	}
+	
 	public void setEmissionSourcesTimeSeries(List<EmissionTimeSeries> emisListTS){
 		this.emisList = emisListTS;
 	}
 	
-	// set start and end date
-	public void setStartEndDate(String start, String end){
-		
-	}
 	
 	//****** UTILITIES ******
 	// find index in the timestamp arrays for the respective parameter
@@ -312,8 +338,15 @@ public class Zeitreihe implements Serializable{
 	
 	// creates new line from forms array
 	private String buildFormsString() {
-		String s = "";
-		for(String s2 : forms){
+		String s = "form\t";
+		// add time and meteo tokens
+		s = s+ timeStampIdentifier + " ";
+		for(String s2 : meteoIdentifiers){
+			s = s+s2+" ";
+		}
+		// add emission id tokens
+		for(EmissionTimeSeries emisTS : emisList){
+			String s2 = emisTS.getDynamicSourceIDToken();
 			s = s+s2+" ";
 		}
 		return s;

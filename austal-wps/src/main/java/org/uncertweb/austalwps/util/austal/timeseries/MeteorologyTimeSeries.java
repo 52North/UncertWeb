@@ -2,34 +2,65 @@ package org.uncertweb.austalwps.util.austal.timeseries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 public class MeteorologyTimeSeries {
 
 	private List<Double> winddirVals = new ArrayList<Double>();
 	private List<Double> windspeedVals = new ArrayList<Double>();
 	private List<Double> stabilityVals = new ArrayList<Double>();
-	private List<String> timeStamps = new ArrayList<String>();
+	private List<Date> timeStamps = new ArrayList<Date>();
 	
 	public MeteorologyTimeSeries(){
 		
 	}
 	
 	// time stamps
-	public List<String> getTimeStamps(){
+	public List<Date> getTimeStamps(){
 		return timeStamps;
 	}
 
-	public void setTimeStamps(int index, String value) {
-		timeStamps.set(index, value);
+	public void setTimeStamps(int index, Date date) {
+		timeStamps.set(index, date);
+	}
+	
+	public Date getMinDate(){
+		Date minDate = timeStamps.get(0);
+		for(int i=1; i<timeStamps.size(); i++){
+			if(timeStamps.get(i).before(minDate))
+				minDate = timeStamps.get(i);
+		}
+		return minDate;
+	}
+	
+	public Date getMaxDate(){
+		Date maxDate = timeStamps.get(0);
+		for(int i=1; i<timeStamps.size(); i++){
+			if(timeStamps.get(i).after(maxDate))
+				maxDate = timeStamps.get(i);
+		}
+		return maxDate;
 	}
 	
 	public int getSize(){
 		return timeStamps.size();
 	}
 	
+	public void cutTimePeriod(Date start, Date end){
+		// loop through dates and delete those outside the time period
+		for(int i=0; i<timeStamps.size(); i++){
+			if(timeStamps.get(i).before(start)||timeStamps.get(i).after(end)){
+				timeStamps.remove(i);
+				winddirVals.remove(i);
+				windspeedVals.remove(i);
+				stabilityVals.remove(i);
+			}
+		}
+	}
+	
 	// meteorology values
 	// getters
-	public double[] getMeteorology(String timeStamp, String[] identifiers){
+	public double[] getMeteorology(Date timeStamp, String[] identifiers){
 		double[] values = new double[identifiers.length];
 		for(int i=0; i<identifiers.length; i++){
 			if(identifiers[i].contains("ra"))
@@ -63,7 +94,7 @@ public class MeteorologyTimeSeries {
 		return winddirVals.get(i);
 	}
 	
-	public Double getWindDirection(String timeStamp){
+	public Double getWindDirection(Date timeStamp){
 		return winddirVals.get(getTimeStampIndex(timeStamp));
 	}
 	
@@ -71,7 +102,7 @@ public class MeteorologyTimeSeries {
 		return windspeedVals.get(i);
 	}
 
-	public Double getWindSpeed(String timeStamp){
+	public Double getWindSpeed(Date timeStamp){
 		return windspeedVals.get(getTimeStampIndex(timeStamp));
 	}
 	
@@ -79,12 +110,12 @@ public class MeteorologyTimeSeries {
 		return stabilityVals.get(i);
 	}
 	
-	public Double getStabilityClass(String timeStamp){
+	public Double getStabilityClass(Date timeStamp){
 		return stabilityVals.get(getTimeStampIndex(timeStamp));
 	}
 	
 	// setters
-	public void addMeteorology(String timeStamp, String[] identifiers, double[] values){
+	public void addMeteorology(Date timeStamp, String[] identifiers, double[] values){
 		timeStamps.add(timeStamp);
 		for(int i=0; i<identifiers.length; i++){
 			if(identifiers[i].contains("ra"))
@@ -96,7 +127,7 @@ public class MeteorologyTimeSeries {
 		}		
 	}
 	
-	public void addMeteorology(String timeStamp, String[] identifiers, String[] values){
+	public void addMeteorology(Date timeStamp, String[] identifiers, String[] values){
 		timeStamps.add(timeStamp);
 		for(int i=0; i<identifiers.length; i++){
 			if(identifiers[i].contains("ra"))
@@ -108,42 +139,84 @@ public class MeteorologyTimeSeries {
 		}		
 	}
 	
-	public void addWindDirection(String timeStamp, Double value) {
-		timeStamps.add(timeStamp);
-		winddirVals.add(value);
+	// wind direction
+	public void addWindDirection(Date timeStamp, Double value) {
+		// check if timestamp is already in the list
+		int timeID = getTimeStampIndex(timeStamp);
+		if(timeID==-1){
+			timeStamps.add(timeStamp);
+			winddirVals.add(value);
+		}
+		else if(winddirVals.size()==timeID){
+			winddirVals.add(value);
+		}
+		else if(winddirVals.size()>timeID){
+			winddirVals.set(timeID, value);
+		}
+		else{
+			System.out.println("Missing observation in winddirection.");
+		}
 	}
 	
-	public void setWindDirection(int column, Double value) {
-		winddirVals.set(column, value);
-	}
+//	public void setWindDirection(int column, Double value) {
+//		winddirVals.set(column, value);
+//	}
 	
-	public void setWindDirection(String timeStamp, Double value) {
+	public void setWindDirection(Date timeStamp, Double value) {
 		winddirVals.set(getTimeStampIndex(timeStamp), value);
 	}
 	
-	public void addWindSpeed(String timeStamp, Double value) {
-		timeStamps.add(timeStamp);
-		windspeedVals.add(value);
+	// wind speed
+	public void addWindSpeed(Date timeStamp, Double value) {
+		// check if timestamp is already in the list
+		int timeID = getTimeStampIndex(timeStamp);
+		if(timeID==-1){
+			timeStamps.add(timeStamp);
+			windspeedVals.add(value);
+		}
+		else if(windspeedVals.size()==timeID){
+			windspeedVals.add(value);
+		}
+		else if(windspeedVals.size()>timeID){
+			windspeedVals.set(timeID, value);
+		}
+		else{
+			System.out.println("Missing observation in windspeed.");
+		}
 	}
 	
-	public void setWindSpeed(int column, Double value) {
-		windspeedVals.set(column, value);
-	}
+//	public void setWindSpeed(int column, Double value) {
+//		windspeedVals.set(column, value);
+//	}
 	
-	public void setWindSpeed(String timeStamp, Double value) {
+	public void setWindSpeed(Date timeStamp, Double value) {
 		windspeedVals.set(getTimeStampIndex(timeStamp), value);
 	}
 	
-	public void addStabilityClass(String timeStamp, Double value) {
-		timeStamps.add(timeStamp);
-		stabilityVals.add(value);
+	// stability class
+	public void addStabilityClass(Date timeStamp, Double value) {
+		// check if timestamp is already in the list
+		int timeID = getTimeStampIndex(timeStamp);
+		if(timeID==-1){
+			timeStamps.add(timeStamp);
+			stabilityVals.add(value);
+		}
+		else if(stabilityVals.size()==timeID){
+			stabilityVals.add(value);
+		}
+		else if(stabilityVals.size()>timeID){
+			stabilityVals.set(timeID, value);
+		}
+		else{
+			System.out.println("Missing observation in stability.");
+		}
 	}
 	
-	public void setStabilityClass(int column, Double value) {
-		stabilityVals.set(column, value);
-	}
+//	public void setStabilityClass(int column, Double value) {
+//		stabilityVals.set(column, value);
+//	}
 	
-	public void setStabilityClass(String timeStamp, Double value) {
+	public void setStabilityClass(Date timeStamp, Double value) {
 		stabilityVals.set(getTimeStampIndex(timeStamp), value);
 	}
 	
@@ -151,13 +224,13 @@ public class MeteorologyTimeSeries {
 	
 	
 	// utilities
-	private int getTimeStampIndex(String timeStamp){
+	private int getTimeStampIndex(Date timeStamp){
 		// loop through time series to find respective string
 		for(int i=0; i<timeStamps.size(); i++){
-			if(timeStamp.equalsIgnoreCase(timeStamps.get(i)))
+			if(timeStamp.equals(timeStamps.get(i)))
 				return i;
 		}
 		return -1;
 	}
-	
+
 }

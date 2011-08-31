@@ -2,11 +2,17 @@ package org.uncertweb.austalwps;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -49,11 +56,15 @@ import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.austalwps.util.AustalOutputReader;
 import org.uncertweb.austalwps.util.Point;
+import org.uncertweb.austalwps.util.StreamGobbler;
 import org.uncertweb.austalwps.util.Value;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.PrecisionModel;
 
 public class Austal2000Algorithm extends AbstractObservableAlgorithm{
@@ -134,7 +145,13 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {		
-
+		
+		File workDir = new File(workDirPath);
+		
+		if(!workDir.exists()){
+			workDir.mkdir();
+		}
+		
 		XBObservationEncoder encoder = new XBObservationEncoder();
 		
 		//1.a get input
@@ -192,7 +209,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			}			
 		}
 		
-		List<IData> receptorPointsDataList = inputData.get(inputIDMeteorology);
+		List<IData> receptorPointsDataList = inputData.get(inputIDReceptorPoints);
 		
 		if(!(receptorPointsDataList == null) && receptorPointsDataList.size() != 0){
 
@@ -200,11 +217,243 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			
 			if(receptorPointsData instanceof GTVectorDataBinding){
 				
-				FeatureCollection<?, ?> theData = ((GTVectorDataBinding)receptorPointsData).getPayload();
+				try {
+				URL austal2000FileURL = new URL(
+							"http://localhost:8080/wps2/res/" + austal2000FileName);
+				FeatureCollection<?, ?> featColl = ((GTVectorDataBinding)receptorPointsData).getPayload();
 				
+				BufferedReader bufferedReader = new BufferedReader(
+						new InputStreamReader(austal2000FileURL.openStream()));
+
+				String line = bufferedReader.readLine();
+
+				int gx = 0;
+				int gy = 0;
+
+				String xp = "";
+				String yp = "";
+				// String hp = "";
 				
+				String output = "";
+
+				int coordinateCount = 0;
+				while (line != null) {
+
+//					System.out.println(line);
+
+					if (line.contains(pointsXMarker)) {
+
+						FeatureIterator iterator = featColl.features();//Differentiate between point and line
+												
+						while (iterator.hasNext()) {
+
+							SimpleFeature feature = (SimpleFeature) iterator.next();
+
+							
+							if(feature.getDefaultGeometry() instanceof com.vividsolutions.jts.geom.Point){
+							
+							Coordinate coord = ((Geometry)feature.getDefaultGeometry())
+									.getCoordinate();
+
+							xp = xp.concat("" + (coord.x - gx) + " ");
+							yp = yp.concat("" + (coord.y - gy) + " ");
+							// hp = hp.concat("" + coord.z + " ");
+							}else if(feature.getDefaultGeometry() instanceof MultiLineString){
+								
+								MultiLineString lineString = (MultiLineString) feature
+										.getDefaultGeometry();
+
+
+								coordinateCount = lineString.getCoordinates().length;
+								
+								for (int i = 0; i < lineString.getCoordinates().length; i++) {
+									
+									if(i == 20){
+										coordinateCount = 20;
+										break;//TODO: check if we can go higher.
+									}
+									
+									Coordinate coord = lineString
+											.getCoordinates()[i];
+
+									xp = xp.concat("" + (coord.x - gx) + " ");
+									yp = yp.concat("" + (coord.y - gy) + " ");
+								}
+							}else if(feature.getDefaultGeometry() instanceof LineString){
+								
+								LineString lineString = (LineString) feature
+										.getDefaultGeometry();
+
+								coordinateCount = lineString.getCoordinates().length;
+								
+								for (int i = 0; i < lineString.getCoordinates().length; i++) {
+									
+									if(i == 20){
+										coordinateCount = 20;
+										break;//TODO: check if we can go higher. corresponding to the count of points
+												//we have to add heigh values in austal2000.txt
+									}
+									
+									Coordinate coord = lineString
+											.getCoordinates()[i];
+
+									xp = xp.concat("" + (coord.x - gx) + " ");
+									yp = yp.concat("" + (coord.y - gy) + " ");
+								}
+							}
+
+						}
+
+						line = line.concat(" " + xp);
+					} else if (line.contains(pointsYMarker)) {
+						line = line.concat(" " + yp);
+					}
+					else if (line.contains(pointsHMarker)) {
+						
+						String hp = "";
+						
+						for (int i = 0; i < coordinateCount; i++) {
+							hp = hp.concat(" 2");//for now just add height of two meters
+						}
+						
+						line = line.concat(" " + hp);
+					} 
+					else if (line.contains(gxMarker)) {
+						gx = Integer.valueOf(line.replace(gxMarker, "").trim());
+					} else if (line.contains(gyMarker)) {
+						gy = Integer.valueOf(line.replace(gyMarker, "").trim());
+					}
+					output = output.concat(line + "\n");
+					line = bufferedReader.readLine();
+				}
+
+				bufferedReader.close();
+
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			}			
 		}
+		
+		
+		//2. execute austal2000
+		
+		try {
+
+			File parentFile = workDir.getParentFile();
+			
+			String path = parentFile.getAbsolutePath() + fileSeparator;
+			
+			String command = austalHome + fileSeparator + "austal2000.exe " + workDir.getAbsolutePath();
+			
+			Runtime rt = Runtime.getRuntime();
+			
+			Process proc = rt.exec(command);
+			// any error message?
+			StreamGobbler errorGobbler = new StreamGobbler(proc
+					.getErrorStream(), "ERROR");
+			
+			// any output?
+			StreamGobbler outputGobbler = new StreamGobbler(proc
+					.getInputStream(), "OUTPUT");
+
+			// kick them off
+			errorGobbler.start();
+			outputGobbler.start();
+
+			// any error???
+			int exitVal;
+			try {
+				exitVal = proc.waitFor();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		//parse logfile and extract filenames TODO: maybe better list files in directory...			
+		
+		ArrayList<String> fileList = new ArrayList<String>();
+		
+		try{
+			
+			File logFile = new File(workDirPath + fileSeparator + "austal2000.log");
+			
+			BufferedReader bufferedFileReader = new BufferedReader(new FileReader(logFile));
+			
+			String line = bufferedFileReader.readLine();
+			
+			while(line != null){
+				
+				if(line.contains(logFileMarkerBeginningEnglish)&&line.contains(logFileMarkerEndEnglish)){
+					
+					int beginning = line.indexOf(logFileMarkerBeginningEnglish);
+					int end = line.indexOf(logFileMarkerEndEnglish);
+					
+					String fileName = line.substring(beginning, end);
+					
+					fileName = fileName.replace("\"", "");
+					
+					fileName = fileName.replace(logFileMarkerBeginningEnglish, "");
+					
+					fileName = fileName.trim();
+					
+					fileName = fileName.concat(".dmna");
+					
+					// store in list
+					if (!fileList.contains(fileName)) {
+
+						fileList.add(fileName);
+					}
+					
+				}else if(line.contains(logFileMarkerBeginningGerman)&&line.contains(logFileMarkerEndGerman)){
+					
+					int beginning = line.indexOf(logFileMarkerBeginningGerman);
+					int end = line.indexOf(logFileMarkerEndGerman);
+					
+					String fileName = line.substring(beginning, end);
+					
+					fileName = fileName.replace("\"", "");
+					
+					fileName = fileName.replace(logFileMarkerBeginningGerman, "");
+					
+					fileName = fileName.trim();
+					
+					fileName = fileName.concat(".dmna");
+					
+					// store in list
+					if (!fileList.contains(fileName)) {
+
+						fileList.add(fileName);
+					}
+				}
+				
+				line = bufferedFileReader.readLine();
+			}
+			
+			bufferedFileReader.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		try {
 

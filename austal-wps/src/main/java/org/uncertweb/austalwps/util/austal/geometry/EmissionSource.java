@@ -55,7 +55,11 @@ public class EmissionSource implements Serializable{
 		pm2 = pm;		
 	}
 	
-	public void setDynamic(int dynamicSourceID){
+	public boolean isDynamic(){
+		return dynamic;
+	}
+	
+	public void setDynamicSourceID(int dynamicSourceID){
 		dynamic = true;
 		this.dynamicSourceID = dynamicSourceID;		
 		this.pm2 = "?";

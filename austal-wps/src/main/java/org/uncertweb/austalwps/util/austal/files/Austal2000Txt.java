@@ -43,15 +43,18 @@ public class Austal2000Txt implements Serializable {
 	}
 	
 	// ***** MODIFICATION *****
-		// modify emission sources
-		public void setEmissionSources(List<EmissionSource> emissionList){
-			this.emissionSources = emissionList;
-		}
+	public List<EmissionSource> getEmissionSources(){
+		return emissionSources;
+	}
+	
+	public void setEmissionSources(List<EmissionSource> emisSources){
+		emissionSources = emisSources;
+	}
 		
-		// modify receptor points
-		public void setReceptorPoints(List<ReceptorPoint> pointList){
-			this.receptorPoints = pointList;
-		}
+	// modify receptor points
+	public void setReceptorPoints(List<ReceptorPoint> pointList){
+		this.receptorPoints = pointList;
+	}
 				
 	
 	// ***** PARSER *****
@@ -79,8 +82,24 @@ public class Austal2000Txt implements Serializable {
 	private void parseLine(String line){
 		if (line.length() ==0) return;
 		
-		// if current line is a comment, skip this line
-		if(line.startsWith("'")) return;
+		// if current line is a comment, look for source ids or skip this line
+		if(line.startsWith("'")){
+			if(line.contains("sourceid")){
+				// get single entries for this line
+				int startID = Integer.parseInt(line.split(" ")[1].split("-")[0].trim());
+				int endID = Integer.parseInt(line.split(":")[0].split(" ")[1].split("-")[1].trim());
+				String type = line.split(":")[1].trim();
+				
+				// assign source type to the sources within the specified range
+				for(int i=0; i<emissionSources.size(); i++){
+					int id = emissionSources.get(i).getDynamicSourceID();
+					if(id>=startID&&id<=endID){
+						emissionSources.get(i).setSourceType(type);
+					}
+				}
+				return;
+			}else return;
+		}
 		
 		// check if current line includes a comment at a later position
 		int commentPosition = line.indexOf("'");
@@ -201,7 +220,8 @@ public class Austal2000Txt implements Serializable {
 			int dynamicID = 1;
 			for(int i = 1; i<lineTokens.length; i++){
 				if(lineTokens[i].contains("?")){
-					emissionSources.get(i-1).setDynamic(dynamicID);
+					emissionSources.get(i-1).setDynamicSourceID(dynamicID);
+					dynamicID++;
 				}
 				else{
 					emissionSources.get(i-1).setStaticStrength(lineTokens[i]);
@@ -359,6 +379,7 @@ public class Austal2000Txt implements Serializable {
 	}
 	
 	// ***** UTILITIES *****
+	
 	public int getQs(){
 		return qs;
 	}
