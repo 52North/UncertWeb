@@ -7,8 +7,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,6 +37,7 @@ import org.n52.wps.io.data.binding.complex.OMDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
 import org.n52.wps.server.AbstractObservableAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
+import org.n52.wps.server.WebProcessingService;
 import org.opengis.feature.simple.SimpleFeature;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
@@ -87,15 +93,12 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private Austal2000Txt austal;
 	private Zeitreihe ts;
 	
-	private static final String FILE_PATH="C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\";
-	
-	public Austal2000Algorithm(){		
+	public Austal2000Algorithm(){	
 		
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
 		for(Property property : propertyArray){
 			if(property.getName().equalsIgnoreCase("Austal_Home")){
 				austalHome = property.getStringValue();
-				System.out.println(austalHome);
 				break;
 			}
 		}		
@@ -126,8 +129,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	@Override
 	public Class<?> getOutputDataType(String id) {
 		return OMDataBinding.class;
-//		return GTVectorDataBinding.class;
-//		return GenericFileDataBinding.class;
 	}
 
 	@Override
@@ -161,28 +162,13 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			if(streetEmissionData instanceof OMDataBinding){
 				
 				OMData theData = (OMData) ((OMDataBinding)streetEmissionData).getPayload();
-				
-//				List<? extends AbstractObservation> observations = theData.getObservationCollection().getObservations();
 
 				try {
 					handleObservationCollection(newEmissionSources, newEmisTS, theData.getObservationCollection());
 				} catch (Exception e) {
 					LOGGER.debug(e);
 					e.printStackTrace();
-				}
-				
-				
-//				for (AbstractObservation abstractObservation : observations) {
-//					Coordinate[] coordinates = abstractObservation.getFeatureOfInterest().getShape().getCoordinates();
-//					
-//					LOGGER.debug(coordinates[0] + " " + coordinates[1]);
-//					
-//					try {
-//						System.out.println(encoder.encodeObservation(abstractObservation));
-//					} catch (OMEncodingException e) {
-//						e.printStackTrace();
-//					}					
-//				}				
+				}			
 			}			
 		}
 		
@@ -200,22 +186,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					handleMeteorology(newMetList, theData.getObservationCollection());
 				} catch (Exception e) {
 					e.printStackTrace();
-				}
-				
-				
-//				List<? extends AbstractObservation> observations = theData.getObservationCollection().getObservations();
-//				
-//				for (AbstractObservation abstractObservation : observations) {
-//					Coordinate[] coordinates = abstractObservation.getFeatureOfInterest().getShape().getCoordinates();
-//					
-//					LOGGER.debug(coordinates[0] + " " + coordinates[1]);
-//					
-//					try {
-//						System.out.println(encoder.encodeObservation(abstractObservation));
-//					} catch (OMEncodingException e) {
-//						e.printStackTrace();
-//					}					
-//				}				
+				}			
 			}			
 		}
 		
@@ -243,7 +214,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		//2. execute austal2000
 		
 		try {
-			
+			//TODO: modify for linux use
 			String command = austalHome + fileSeparator + "austal2000.exe " + workDir.getAbsolutePath();
 			
 			Runtime rt = Runtime.getRuntime();
@@ -364,20 +335,55 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	}	
 	
 	private void readFiles(String austalFileName, String zeitreiheFileName){
-		// read austal2000.txt
-		File austalFile = new File(FILE_PATH+"//"+ austalFileName);
-		austal = new Austal2000Txt(austalFile);
-			
-		// read zeitreihe.dmna
-		File tsFile = new File(FILE_PATH+"//"+zeitreiheFileName);
-		ts = new Zeitreihe(tsFile);
+//		// read austal2000.txt
+//		File austalFile = new File(FILE_PATH+"//"+ austalFileName);
+//		austal = new Austal2000Txt(austalFile);
+//			
+//		// read zeitreihe.dmna
+//		File tsFile = new File(FILE_PATH+"//"+zeitreiheFileName);
+//		ts = new Zeitreihe(tsFile);
+		
+		String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
+		String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
+		if(host == null) {
+			try {
+				host = InetAddress.getLocalHost().getCanonicalHostName();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+		}		
+		String url = "http://" + host + ":" + hostPort + "/" + 
+		WebProcessingService.WEBAPP_PATH + "/" + "res" + "/" + "";
+		
+		try {
+			URL austalURL = new URL(url + austalFileName);
+			austal = new Austal2000Txt(austalURL.openStream());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			LOGGER.debug(e);
+		} catch (IOException e) {
+			LOGGER.debug(e);
+			e.printStackTrace();
+		}
+		
+		try {
+			URL zeitReiheURL = new URL(url + zeitreiheFileName);
+			ts = new Zeitreihe(zeitReiheURL.openStream());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			LOGGER.debug(e);
+		} catch (IOException e) {
+			LOGGER.debug(e);
+			e.printStackTrace();
+		}
+		
 	}
 	
 	private void writeFiles(String austalFileName, String zeitreiheFileName){
 		// test writer
-		File new_austalFile = new File(workDirPath+"//"+austalFileName);
+		File new_austalFile = new File(workDirPath+"/"+austalFileName);
 		austal.writeFile(new_austalFile);
-		File new_tsFile = new File(workDirPath+"//"+zeitreiheFileName);
+		File new_tsFile = new File(workDirPath+"/"+zeitreiheFileName);
 		ts.writeFile(new_tsFile);
 	}
 	
@@ -823,7 +829,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	         byte data[] = new byte[BUFFER];
 
 	         for (int i=0; i<files.length; i++) {
-	            System.out.println("Adding: "+files[i]);
+	            LOGGER.debug("Adding: "+files[i]);
 	            
 	            File f = new File(files[i]);
 	            

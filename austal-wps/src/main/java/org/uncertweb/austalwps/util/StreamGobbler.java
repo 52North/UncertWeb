@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import org.apache.log4j.Logger;
 import org.n52.wps.server.observerpattern.ISubject;
 
 /**
@@ -14,13 +15,14 @@ import org.n52.wps.server.observerpattern.ISubject;
  * http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html?page=4
  */
 public class StreamGobbler extends Thread{
-
+	
+	private static Logger LOGGER = Logger.getLogger(StreamGobbler.class);
 	InputStream is;
     String type;
     OutputStream os;
     ISubject subject;
-    
-	public StreamGobbler(InputStream is, String type)
+	
+    public StreamGobbler(InputStream is, String type)
     {
         this(is, type, null);
     }
@@ -49,7 +51,7 @@ public class StreamGobbler extends Thread{
                 if(subject != null){
                 	subject.update(line);
                 }
-                System.out.println(type + ">" + line);    
+                LOGGER.debug(type + ">" + line);    
             }
             if (pw != null){
                 pw.flush();

@@ -72,14 +72,6 @@ public class EmissionSource implements Serializable{
 			return 0;
 	}
 	
-	/**
-	 * Calculates Austal parameters from polyline or polygon geometry
-	 * @return AustalSource
-	 */
-	private void Geometry2AustalParams(){
-		
-	}
-	
 	// Getters & Setters
 	public void setSourceType(String sourceType){
 		this.sourceType = sourceType;

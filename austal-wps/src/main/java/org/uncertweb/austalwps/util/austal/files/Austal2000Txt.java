@@ -7,10 +7,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.uncertweb.austalwps.util.austal.geometry.EmissionSource;
 import org.uncertweb.austalwps.util.austal.geometry.ReceptorPoint;
 import org.uncertweb.austalwps.util.austal.geometry.StudyArea;
@@ -21,7 +24,8 @@ public class Austal2000Txt implements Serializable {
 	 * Class to read, write and manage austal2000.txt
 	 */
 	private static final long serialVersionUID = 1639886246212812488L;
-	private final String SEPARATOR = System.getProperty("line.separator");	
+	private final String SEPARATOR = System.getProperty("line.separator");		
+	private static Logger LOGGER = Logger.getLogger(Austal2000Txt.class);
 	
 	// Austal parameters 
 	private StudyArea studyArea;
@@ -36,6 +40,12 @@ public class Austal2000Txt implements Serializable {
 		parseFile(austalFile);
 	}
 
+	// constructor to create austal object from file
+	public Austal2000Txt(InputStream in){
+		parseFile(in);
+		LOGGER.debug("Parsing InputStream");
+	}
+	
 	public Austal2000Txt(Austal2000Txt austalTemplate) {
 		this.studyArea = austalTemplate.studyArea;
 		this.receptorPoints = copyReceptorPoints(austalTemplate.receptorPoints);
@@ -56,6 +66,23 @@ public class Austal2000Txt implements Serializable {
 		this.receptorPoints = pointList;
 	}
 				
+	// ***** PARSER *****
+	private void parseFile(InputStream in){
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line;
+			while((line = br.readLine())!= null){
+				this.parseLine(line);
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	
 	// ***** PARSER *****
 	private void parseFile(File austalFile){
@@ -67,12 +94,9 @@ public class Austal2000Txt implements Serializable {
 				this.parseLine(line);
 			}
 			br.close();
-			System.out.println();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -308,8 +332,7 @@ public class Austal2000Txt implements Serializable {
 			bw.write("cq "+parseEmissionSourceToString("cq")+SEPARATOR);
 			bw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e);
 		}		
 	}
 	

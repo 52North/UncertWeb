@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
-public class MeteorologyTimeSeries {
+import org.apache.log4j.Logger;
 
+public class MeteorologyTimeSeries {
+	
+	private static Logger LOGGER = Logger.getLogger(MeteorologyTimeSeries.class);
+	
 	private List<Double> winddirVals = new ArrayList<Double>();
 	private List<Double> windspeedVals = new ArrayList<Double>();
 	private List<Double> stabilityVals = new ArrayList<Double>();
@@ -160,7 +164,7 @@ public class MeteorologyTimeSeries {
 			winddirVals.set(timeID, value);
 		}
 		else{
-			System.out.println("Missing observation in winddirection.");
+			LOGGER.debug("Missing observation in winddirection.");
 		}
 	}
 	
@@ -187,7 +191,7 @@ public class MeteorologyTimeSeries {
 			windspeedVals.set(timeID, value);
 		}
 		else{
-			System.out.println("Missing observation in windspeed.");
+			LOGGER.debug("Missing observation in windspeed.");
 		}
 	}
 	
@@ -214,7 +218,7 @@ public class MeteorologyTimeSeries {
 			stabilityVals.set(timeID, value);
 		}
 		else{
-			System.out.println("Missing observation in stability.");
+			LOGGER.debug("Missing observation in stability.");
 		}
 	}
 	

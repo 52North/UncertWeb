@@ -8,9 +8,11 @@ import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-import javax.jms.Destination;
+import org.apache.log4j.Logger;
 
 public class AustalOutputReader {
+	
+	private static Logger LOGGER = Logger.getLogger(AustalOutputReader.class);
 	private String log = "";
 	private ArrayList<Point[]> points = new ArrayList<Point[]>();
 	private int noOfFiles;
@@ -309,14 +311,6 @@ public class AustalOutputReader {
 			
 		msg("Number of parsed files: " + (noOfFiles-1));
 		
-//		try {
-//			this.writePointCsv("csvOutput" + "/" + pointscsv);
-//			this.writeValueCsv("csvOutput" + "/"+ valscsv);
-//		} catch (Exception e) {
-//			msg("Input error during parsing csv: " + e.getClass()
-//					+ e.getMessage());
-//		}
-		
 		return points;
 	}
 	
@@ -326,7 +320,7 @@ public class AustalOutputReader {
 	}
 
 	private void msg(String message) {
-		System.out.println(message);
+		LOGGER.debug(message);
 	}
 
 }

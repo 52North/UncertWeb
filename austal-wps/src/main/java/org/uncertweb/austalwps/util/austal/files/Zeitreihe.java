@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.uncertweb.austalwps.util.austal.timeseries.EmissionTimeSeries;
 import org.uncertweb.austalwps.util.austal.timeseries.MeteorologyTimeSeries;
 
@@ -23,8 +26,10 @@ import org.uncertweb.austalwps.util.austal.timeseries.MeteorologyTimeSeries;
  */
 
 public class Zeitreihe implements Serializable{
+	
 	private static final long serialVersionUID = -7019593949581207831L;
 	private final String SEPERATOR = System.getProperty("line.separator");	
+	private static Logger LOGGER = Logger.getLogger(Zeitreihe.class);
 	
 	// Parameters in the zeitreihe.dmna file	
 	private List<String> forms = new ArrayList<String>();
@@ -78,6 +83,11 @@ public class Zeitreihe implements Serializable{
 		this.parseFile(zeitreiheFile, false);
 	}
 	
+	// constructor to create zeitreihe object from zeitreihe.dmna file
+	public Zeitreihe(InputStream in){
+		this.parseFile(in, false);
+	}
+	
 	// constructor with meteorology and emissions as inputs, header is parsed from file
 	public Zeitreihe(File zeitreiheFile, MeteorologyTimeSeries meteoTS, List<EmissionTimeSeries> emisListTS){
 		this.metList = meteoTS;
@@ -105,6 +115,31 @@ public class Zeitreihe implements Serializable{
 	 * Parses zeitreihe.dmna file
 	 * @param File zeitreihe
 	 */
+	private void parseFile(InputStream in, boolean onlyHeader){
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line;
+			while(!(line = br.readLine()).equals("*")){
+				this.parseHeader(line);
+			}
+			
+			while(!onlyHeader&&!(line = br.readLine()).equals("***")){
+				this.parseTimeStamps(line);
+			}
+			//if(metList.getSize()<1);
+			br.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
+	
+	// ***** PARSER *****
+	/**
+	 * Parses zeitreihe.dmna file
+	 * @param File zeitreihe
+	 */
 	private void parseFile(File zeitreiheFile, boolean onlyHeader){
 		try {
 			FileReader fr = new FileReader(zeitreiheFile);
@@ -119,12 +154,9 @@ public class Zeitreihe implements Serializable{
 			}
 			//if(metList.getSize()<1);
 			br.close();
-			System.out.println();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	}
@@ -148,8 +180,8 @@ public class Zeitreihe implements Serializable{
 		
 		// check if line has same length as forms in header
 		if(timeStampTokens.length!=forms.size()){
-			System.out.println("Length of header is "+forms.size()+" while lenght of line is "+timeStampTokens.length);
-			System.out.println("Error for line "+ timeStampTokens[this.getFormIndex(timeStampIdentifier)].trim());
+			LOGGER.debug("Length of header is "+forms.size()+" while lenght of line is "+timeStampTokens.length);
+			LOGGER.debug("Error for line "+ timeStampTokens[this.getFormIndex(timeStampIdentifier)].trim());
 		}
 		
 		// divide into meteorology and emissions
