@@ -1,6 +1,9 @@
 package org.n52.wps.io.datahandler.xml;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
@@ -71,13 +74,96 @@ public class OMParser extends AbstractXMLParser {
 
 	@Override
 	public IData parseXML(InputStream primaryFile) {
-		// TODO Auto-generated method stub
+		try {
+			OMData omData = null;
+			
+			BufferedReader bread = new BufferedReader(new InputStreamReader(primaryFile));
+			
+			String xmlString = "";
+			
+			String line = "";
+			
+			while((line = bread.readLine()) != null){
+				xmlString = xmlString.concat(line);
+			}
+			// differ between obs and obsCol (as String)
+			XmlObject xbDoc = XmlObject.Factory.parse(xmlString);
+
+			if (xbDoc instanceof OMObservationDocument) {
+				AbstractObservation obs = parser.parseObservation(xmlString);
+				omData = new OMData(obs);
+
+			} else if (xbDoc instanceof OMBooleanObservationCollectionDocument
+					|| xbDoc instanceof OMDiscreteNumericObservationCollectionDocument
+					|| xbDoc instanceof OMMeasurementCollectionDocument
+					|| xbDoc instanceof OMReferenceObservationCollectionDocument
+					|| xbDoc instanceof OMTextObservationCollectionDocument
+					|| xbDoc instanceof OMUncertaintyObservationCollectionDocument) {
+
+				// TODO missing: OMCategoryObservationCollectionDocument
+
+				IObservationCollection obsCol = parser
+						.parseObservationCollection(xmlString);
+				omData = new OMData(obsCol);
+			} else {
+				throw new Exception(
+						"The data is neither an observation nor an observation collection.");
+			}
+
+			OMDataBinding omDataBinding = new OMDataBinding(omData);
+			return omDataBinding;
+
+		} catch (Exception e) {
+			log.debug("XML Data could not be parsed: " + e.getMessage());
+		}
 		return null;
 	}
 
 	@Override
 	public IData parse(InputStream primaryFile, String mimeType) {
-		// TODO Auto-generated method stub
+		try {
+			OMData omData = null;
+
+			BufferedReader bread = new BufferedReader(new InputStreamReader(primaryFile));
+						
+			String xmlString = "";
+			
+			String line = "";
+			
+			while((line = bread.readLine()) != null){
+				xmlString = xmlString.concat(line);
+			}
+			
+			// differ between obs and obsCol (as String)
+			XmlObject xbDoc = XmlObject.Factory.parse(xmlString);
+
+			if (xbDoc instanceof OMObservationDocument) {
+				AbstractObservation obs = parser.parseObservation(xmlString);
+				omData = new OMData(obs);
+
+			} else if (xbDoc instanceof OMBooleanObservationCollectionDocument
+					|| xbDoc instanceof OMDiscreteNumericObservationCollectionDocument
+					|| xbDoc instanceof OMMeasurementCollectionDocument
+					|| xbDoc instanceof OMReferenceObservationCollectionDocument
+					|| xbDoc instanceof OMTextObservationCollectionDocument
+					|| xbDoc instanceof OMUncertaintyObservationCollectionDocument) {
+
+				// TODO missing: OMCategoryObservationCollectionDocument
+
+				IObservationCollection obsCol = parser
+						.parseObservationCollection(xmlString);
+				omData = new OMData(obsCol);
+			} else {
+				throw new Exception(
+						"The data is neither an observation nor an observation collection.");
+			}
+
+			OMDataBinding omDataBinding = new OMDataBinding(omData);
+			return omDataBinding;
+
+		} catch (Exception e) {
+			log.debug("XML Data could not be parsed: " + e.getMessage());
+		}
 		return null;
 	}
 
