@@ -387,7 +387,7 @@ public class AustalSetupControl {
 					/*
 					 * create EmissionSource
 					 */
-					EmissionSource tmpEMS = cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
+					EmissionSource tmpEMS = cellPolygonGK3ToLocalCoords(gx, gy, coords[2].x, coords[2].y, coords[4].x, coords[4].y);
 					tmpEMS.setDynamicSourceID(counter);
 					newEmissionSources.add(tmpEMS);					
 //					System.out.println(tmpEMS);
@@ -419,7 +419,7 @@ public class AustalSetupControl {
 						
 						Coordinate[] coords = mpoly.getCoordinates();
 						
-						EmissionSource tmpEMS = cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
+						EmissionSource tmpEMS = cellPolygonGK3ToLocalCoords(gx, gy, coords[2].x, coords[2].y, coords[4].x, coords[4].y);
 						tmpEMS.setDynamicSourceID(counter);
 						newEmissionSources.add(tmpEMS);
 //						System.out.println(tmpEMS);
@@ -514,7 +514,6 @@ public class AustalSetupControl {
 	
 	// method to calculate Gauss-Krüger-Coordinates to local austal coordinates
 	private EmissionSource cellPolygonGK3ToLocalCoords(double gx, double gy, double x1, double y1, double x2, double y2){
-			
 			EmissionSource source = new EmissionSource();		
 			double xq, yq;	
 			double bq = Math.abs(y1-y2); 	// extension in y direction
@@ -537,7 +536,8 @@ public class AustalSetupControl {
 			source.setCoordinates(xq, yq);
 			source.setExtent(aq, bq, cq, wq, hq);
 			return source;
-		}
+	}
+	
 	
 	private void substituteStreetEmissions(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS){
 		// get old emission lists

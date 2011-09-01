@@ -176,6 +176,8 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
 		ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
 
+		MeteorologyTimeSeries newMetList = new MeteorologyTimeSeries();
+		
 		List<ReceptorPoint> pointList = new ArrayList<ReceptorPoint>();
 		
 		//1.a get input
@@ -191,7 +193,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 				
 				OMData theData = (OMData) ((OMDataBinding)streetEmissionData).getPayload();
 				
-				List<? extends AbstractObservation> observations = theData.getObservationCollection().getObservations();
+//				List<? extends AbstractObservation> observations = theData.getObservationCollection().getObservations();
 
 				try {
 					handleObservationCollection(newEmissionSources, newEmisTS, theData.getObservationCollection());
@@ -225,19 +227,26 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 				
 				OMData theData = (OMData) ((OMDataBinding)meteorologyData).getPayload();
 				
-				List<? extends AbstractObservation> observations = theData.getObservationCollection().getObservations();
+				try {
+					handleMeteorology(newMetList, theData.getObservationCollection());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				
-				for (AbstractObservation abstractObservation : observations) {
-					Coordinate[] coordinates = abstractObservation.getFeatureOfInterest().getShape().getCoordinates();
-					
-					LOGGER.debug(coordinates[0] + " " + coordinates[1]);
-					
-					try {
-						System.out.println(encoder.encodeObservation(abstractObservation));
-					} catch (OMEncodingException e) {
-						e.printStackTrace();
-					}					
-				}				
+				
+//				List<? extends AbstractObservation> observations = theData.getObservationCollection().getObservations();
+//				
+//				for (AbstractObservation abstractObservation : observations) {
+//					Coordinate[] coordinates = abstractObservation.getFeatureOfInterest().getShape().getCoordinates();
+//					
+//					LOGGER.debug(coordinates[0] + " " + coordinates[1]);
+//					
+//					try {
+//						System.out.println(encoder.encodeObservation(abstractObservation));
+//					} catch (OMEncodingException e) {
+//						e.printStackTrace();
+//					}					
+//				}				
 			}			
 		}
 		
@@ -251,11 +260,16 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 				
 				handleReceptorPoints(pointList, (FeatureCollection<?, ?>)receptorPointsData.getPayload());
 				
-			}
-				
-				
+			}				
 		}
 		
+		austal.setReceptorPoints(pointList);
+		substituteStreetEmissions(newEmissionSources, newEmisTS);
+		substituteMeteoorology(newMetList);
+		
+		
+		// 4. write files
+		writeFiles("austal2000.txt", "zeitreihe.dmna");
 		
 		//2. execute austal2000
 		
@@ -357,22 +371,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			
 		}catch (Exception e) {
 			e.printStackTrace();
-		}	
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		}			
 		
 		try {
 
@@ -406,9 +405,9 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	
 	private void writeFiles(String austalFileName, String zeitreiheFileName){
 		// test writer
-		File new_austalFile = new File(FILE_PATH+"//"+austalFileName);
+		File new_austalFile = new File(workDirPath+"//"+austalFileName);
 		austal.writeFile(new_austalFile);
-		File new_tsFile = new File(FILE_PATH+"//"+zeitreiheFileName);
+		File new_tsFile = new File(workDirPath+"//"+zeitreiheFileName);
 		ts.writeFile(new_tsFile);
 	}
 	
@@ -597,8 +596,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					 */
 					EmissionSource tmpEMS = cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
 					tmpEMS.setDynamicSourceID(counter);
-					newEmissionSources.add(tmpEMS);					
-//					System.out.println(tmpEMS);
+					newEmissionSources.add(tmpEMS);	
 				}
 				
 				counter++;
@@ -607,8 +605,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					newEmisTS.add(lineTS);
 					lineTS = new EmissionTimeSeries(counter);// assign id of respective source
 					spsam = abstractObservation.getFeatureOfInterest();
-//					System.out.println(counter);
-//					counter++;
 					if (abstractObservation.getFeatureOfInterest().getShape() instanceof MultiLineString) {
 
 						MultiLineString mline = (MultiLineString) abstractObservation
@@ -618,7 +614,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 						EmissionSource tmpEMS = lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[1].x, coords[1].y);
 						tmpEMS.setDynamicSourceID(counter);
 						newEmissionSources.add(tmpEMS);
-//						System.out.println(tmpEMS);
 					} else if (abstractObservation.getFeatureOfInterest()
 							.getShape() instanceof MultiPolygon) {
 
@@ -630,7 +625,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 						EmissionSource tmpEMS = cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
 						tmpEMS.setDynamicSourceID(counter);
 						newEmissionSources.add(tmpEMS);
-//						System.out.println(tmpEMS);
 					}
 					counter++;
 				}
@@ -662,7 +656,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	}
 	
 	
-	// methods to calculate Gauss-Krüger-Coordinates to local austal coordinates
+	// methods to calculate Gauss-Krueger-Coordinates to local austal coordinates
 	private EmissionSource lineGK3ToLocalCoords(double gx, double gy, double x1, double y1, double x2, double y2){
 		
 		EmissionSource source = new EmissionSource();		
@@ -702,7 +696,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		return source;
 	}
 	
-	// method to calculate Gauss-Krüger-Coordinates to local austal coordinates
+	// method to calculate Gauss-Krueger-Coordinates to local austal coordinates
 	private EmissionSource cellPolygonGK3ToLocalCoords(double gx, double gy, double x1, double y1, double x2, double y2){
 			
 			EmissionSource source = new EmissionSource();		
@@ -731,8 +725,8 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	
 	private void substituteStreetEmissions(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS){
 		// get old emission lists
-		ArrayList<EmissionSource> emissionSources = (ArrayList) austal.getEmissionSources();
-		ArrayList<EmissionTimeSeries> emisList = (ArrayList) ts.getEmissionSourcesTimeSeries();
+		ArrayList<EmissionSource> emissionSources = (ArrayList<EmissionSource>) austal.getEmissionSources();
+		ArrayList<EmissionTimeSeries> emisList = (ArrayList<EmissionTimeSeries>) ts.getEmissionSourcesTimeSeries();
 		int newID = newEmissionSources.size()+1;
 		
 		//get length o
@@ -809,7 +803,8 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		AustalOutputReader austal = new AustalOutputReader();
 		
-		ArrayList<Point[]> points = austal.createPoints("C:/UncertWeb/workspace/AustalWPS/src/test/resources", true);
+//		ArrayList<Point[]> points = austal.createPoints("C:/UncertWeb/workspace/AustalWPS/src/test/resources", true);
+		ArrayList<Point[]> points = austal.createPoints(workDirPath, true);
 		
 		URI procedure = new URI("http://www.uncertweb.org/models/austal2000");
 		URI observedProperty = new URI("http://www.uncertweb.org/phenomenon/pm10");
@@ -848,22 +843,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			}
 		}
 		return mcoll;
-	}
-	
-	private void parseAustalOutput(){
-		
-		AustalOutputReader austal = new AustalOutputReader();
-		String destination = workDirPath + fileSeparator + "csvOutput";//"C:/SOS/AUSTAL/values";
-		
-		File destinationDir = new File(destination);
-		
-		if(!destinationDir.exists()){
-			destinationDir.mkdir();
-		}
-		
-		austal.readAustalFiles(workDirPath, true, destination);		
-	}
-	
+	}	
 	
 	public File zipFiles(String[] files){
 		

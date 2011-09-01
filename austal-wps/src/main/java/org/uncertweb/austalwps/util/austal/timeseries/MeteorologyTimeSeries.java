@@ -1,5 +1,6 @@
 package org.uncertweb.austalwps.util.austal.timeseries;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
@@ -87,7 +88,10 @@ public class MeteorologyTimeSeries {
 	}
 	
 	public String getMeteorologyToString(int index){
-		return (winddirVals.get(index) + " " + windspeedVals.get(index) + " " + stabilityVals.get(index));
+		DecimalFormat digit = new DecimalFormat("0.#");
+		String met = Math.round(winddirVals.get(index)) + " " + digit.format(windspeedVals.get(index)) + " " + stabilityVals.get(index);
+		String metNew = met.replace(",", ".");
+		return (metNew);
 	}
 	
 	public Double getWindDirection(int i){
@@ -111,7 +115,9 @@ public class MeteorologyTimeSeries {
 	}
 	
 	public Double getStabilityClass(Date timeStamp){
-		return stabilityVals.get(getTimeStampIndex(timeStamp));
+		int index = getTimeStampIndex(timeStamp);
+		double stab = stabilityVals.get(index);
+		return stab;
 	}
 	
 	// setters

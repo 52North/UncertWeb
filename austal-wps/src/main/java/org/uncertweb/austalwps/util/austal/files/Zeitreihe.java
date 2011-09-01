@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -137,6 +138,7 @@ public class Zeitreihe implements Serializable{
 			lineNoDoubleSpaces = lineNoDoubleSpaces.replaceAll("  ", " ");
 		}
 		//delete first space
+		if(lineNoDoubleSpaces.startsWith(" "))
 			lineNoDoubleSpaces = lineNoDoubleSpaces.replaceFirst(" ", "");
 		
 		String[] timeStampTokens = lineNoDoubleSpaces.split(" ");
@@ -267,11 +269,23 @@ public class Zeitreihe implements Serializable{
 	 * @param targetFile
 	 */
 	public void writeFile(File targetFile){
+		DecimalFormat scientific = new DecimalFormat("0.###E000");
 		try {
-			this.hghb = "hghb\t"+(this.metList.getSize());
+
+			List<Date> timestamps = metList.getTimeStamps();
+			// check that list starts with hour 01:00
+			int start = 0;
+			while(start<(timestamps.size()-1)&&timestamps.get(start).getHours()!=1){
+				start++;
+			}
+			
+			// get length of time series and emission sources
+			this.hghb = "hghb\t"+(this.metList.getSize() - start);
+			this.size = "size\t"+(emisList.size()*4 + 20);
+		
 			FileWriter fw = new FileWriter(targetFile);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write("form\t"+buildFormsString()+SEPERATOR);
+			bw.write(buildFormsString()+SEPERATOR);
 			bw.write(locl+SEPERATOR);
 			bw.write(mode+SEPERATOR);
 			bw.write(ha+SEPERATOR);
@@ -284,16 +298,22 @@ public class Zeitreihe implements Serializable{
 			bw.write(lowb+SEPERATOR);
 			bw.write(hghb+SEPERATOR);
 			bw.write("*"+SEPERATOR);
-			List<Date> timestamps = metList.getTimeStamps();
-			for(int i=0; i<timestamps.size(); i++){
+			
+			
+			for(int i=start; i<timestamps.size(); i++){
 				String time = dateFormat.format(timestamps.get(i));
 				bw.write(time+" ");
 				bw.write(metList.getMeteorologyToString(i));
 				String e = "";
 				for(EmissionTimeSeries ts : emisList){
-					e = e + " " + ts.getEmissionValue(i);
+					double emis = ts.getEmissionValue(i);
+					if(emis==0)
+						e = e + " " + "0.000e+000";
+					else
+						e = e + " " + scientific.format(ts.getEmissionValue(i));
 				}
-				bw.write(e + SEPERATOR);
+				String eNew = e.replace(",", ".");
+				bw.write(eNew + SEPERATOR);
 			}
 			bw.write("***");
 			bw.close();
