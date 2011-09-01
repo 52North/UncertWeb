@@ -7,13 +7,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,16 +18,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
-import org.geotools.data.DataUtilities;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.SchemaException;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
@@ -44,12 +33,8 @@ import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
 import org.n52.wps.server.AbstractObservableAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.uncertweb.api.gml.Identifier;
-import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
-import org.uncertweb.api.om.exceptions.OMEncodingException;
-import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
@@ -69,7 +54,6 @@ import org.uncertweb.austalwps.util.austal.timeseries.EmissionTimeSeries;
 import org.uncertweb.austalwps.util.austal.timeseries.MeteorologyTimeSeries;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
@@ -89,26 +73,15 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private final String inputIDEndTime = "end-time";
 	private final String outputIDResult = "result";
 	private final String fileSeparator = System.getProperty("file.separator");
-	private final String lineSeparator = System.getProperty("line.separator");
 	private final String logFileMarkerBeginningEnglish = "File";
 	private final String logFileMarkerEndEnglish = "written.";
 	private final String logFileMarkerBeginningGerman = "Datei";
 	private final String logFileMarkerEndGerman = "ausgeschrieben.";
-	private final CharSequence pointsXMarker = "xp";
-	private final CharSequence pointsYMarker = "yp";
-	private final CharSequence pointsHMarker = "hp";
-	private final CharSequence gxMarker = "gx";
-	private final CharSequence gyMarker = "gy";
-	private final String hghbVar = "hghb";
-	private final String countVar = "count";
-	private final String timeperiodFileName = "zeitreihe.dmna";
-	private final String austal2000FileName = "austal2000.txt";
 	private final String tmpDir = System.getenv("TMP");
 //	private final String tmpDir = System.getProperty("java.io.tmpdir");//TODO: maybe use apache temp. for that remove white space from path
 	private String workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
 	private String austalHome = "";
 	private List<String> errors = new ArrayList<String>();
-	private GeometryFactory geomFactory;
 	public static final int BUFFER = 2048;
 	// general Austal objects
 	private Austal2000Txt austal;
@@ -117,7 +90,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private static final String FILE_PATH="C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\";
 	
 	public Austal2000Algorithm(){		
-		geomFactory = JTSFactoryFinder.getGeometryFactory(null);
 		
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
 		for(Property property : propertyArray){
@@ -168,10 +140,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		}
 		
 		// 1. read files to create datamodel
-		this.readFiles("austal2000_template.txt", "zeitreihe_0810.dmna");
-		
-		XBObservationEncoder encoder = new XBObservationEncoder();
-		
+		this.readFiles("austal2000_template.txt", "zeitreihe_0810.dmna");		
 		
 		ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
 		ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
@@ -274,10 +243,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		//2. execute austal2000
 		
 		try {
-
-			File parentFile = workDir.getParentFile();
-			
-			String path = parentFile.getAbsolutePath() + fileSeparator;
 			
 			String command = austalHome + fileSeparator + "austal2000.exe " + workDir.getAbsolutePath();
 			
@@ -292,23 +257,28 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			StreamGobbler outputGobbler = new StreamGobbler(proc
 					.getInputStream(), "OUTPUT");
 
+			outputGobbler.setSubject(this);
+			
 			// kick them off
 			errorGobbler.start();
 			outputGobbler.start();
 
 			// any error???
-			int exitVal;
+			int exitVal = -1;
 			try {
 				exitVal = proc.waitFor();
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
+			if(exitVal == 0){
+				LOGGER.debug("Process finished normally.");
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		//parse logfile and extract filenames TODO: maybe better list files in directory...			
-		
 		ArrayList<String> fileList = new ArrayList<String>();
 		
 		try{
@@ -446,6 +416,8 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 				coordinateCount = lineString.getCoordinates().length;
 
+				LOGGER.debug("Linestring has " + coordinateCount + " coordinates.");
+				
 				for (int i = 0; i < lineString.getCoordinates().length; i++) {
 
 					if (i == 20) {
@@ -467,6 +439,8 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 						.getDefaultGeometry();
 
 				coordinateCount = lineString.getCoordinates().length;
+
+				LOGGER.debug("Linestring has " + coordinateCount + " coordinates.");
 
 				for (int i = 0; i < lineString.getCoordinates().length; i++) {
 
@@ -545,8 +519,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	
 	
 	private void handleObservationCollection(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS, IObservationCollection coll) throws Exception {
-		
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
 		
 		int gx = austal.getStudyArea().getGx();
 		int gy = austal.getStudyArea().getGy();
@@ -750,9 +722,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					ets.setSourceID(newID);
 					// cut timeseries to length of new one
 					ets.cutTimePeriod(minDate, maxDate);
-					//check
-					Date min = ets.getMinDate();
-					Date max = ets.getMaxDate();
+					//check					
 					newEmisTS.add(ets);
 				}else{ // in case the time series is not correct search for it
 					for(int j=0; j<emisList.size(); j++){
@@ -781,7 +751,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private void substituteMeteoorology(MeteorologyTimeSeries newMetList){
 		// get old meteorology list
 		MeteorologyTimeSeries metList = ts.getMeteorologyTimeSeries();
-		ArrayList<Date> timeStampList = (ArrayList) newMetList.getTimeStamps();
+		ArrayList<Date> timeStampList = (ArrayList<Date>) newMetList.getTimeStamps();
 		
 		// add stability class values to new list
 		for(int i=0; i<timeStampList.size(); i++){
@@ -791,11 +761,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		// finally add new list to ts object
 		ts.setMeteorologyTimeSeries(newMetList);
-	}
-	
-	
-	
-	
+	}	
 	
 	private IObservationCollection createResultCollection() throws URISyntaxException{
 		
@@ -803,7 +769,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		AustalOutputReader austal = new AustalOutputReader();
 		
-//		ArrayList<Point[]> points = austal.createPoints("C:/UncertWeb/workspace/AustalWPS/src/test/resources", true);
 		ArrayList<Point[]> points = austal.createPoints(workDirPath, true);
 		
 		URI procedure = new URI("http://www.uncertweb.org/models/austal2000");
