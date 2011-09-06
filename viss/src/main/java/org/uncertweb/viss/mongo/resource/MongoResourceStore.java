@@ -37,10 +37,10 @@ import javax.ws.rs.core.MediaType;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.resource.ResourceStore;
-import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualization;
 import org.uncertweb.viss.mongo.MongoDB;
@@ -59,10 +59,6 @@ public class MongoResourceStore implements ResourceStore {
 			super(MongoDB.getInstance().getDatastore());
 		}
 	}
-
-	private static final String RESOURCE_PATH = Constants.RESOURCE_PATH != null ? Constants.RESOURCE_PATH
-			: Utils.join(File.separator, System.getProperty("java.io.tmpdir"),
-					"VISS_TEMP");
 
 	private ResourceDAO dao = new ResourceDAO();
 	private File resourceDir;
@@ -149,7 +145,7 @@ public class MongoResourceStore implements ResourceStore {
 
 	public File getResourceDir(UUID uuid) {
 		if (resourceDir == null) {
-			resourceDir = new File(RESOURCE_PATH);
+			resourceDir = VissConfig.getInstance().getResourcePath();
 			if (!resourceDir.exists())
 				resourceDir.mkdirs();
 		}

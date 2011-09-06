@@ -37,6 +37,7 @@ import net.opengis.sld.StyledLayerDescriptorDocument;
 import org.apache.commons.io.IOUtils;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Constants;
 
@@ -59,7 +60,8 @@ public class SLDProvider extends
 			throws IOException, WebApplicationException {
 		try {
 			String s = IOUtils.toString(es);
-			return StyledLayerDescriptorDocument.Factory.parse(s, Constants.XML_OPTIONS);
+			return StyledLayerDescriptorDocument.Factory.parse(s, VissConfig
+					.getInstance().getDefaultXmlOptions());
 		} catch (XmlException e) {
 			throw VissError.internal(e);
 		}
@@ -75,7 +77,9 @@ public class SLDProvider extends
 	public void writeTo(StyledLayerDescriptorDocument x, Class<?> t, Type gt,
 			Annotation[] a, MediaType mt, MultivaluedMap<String, Object> hh,
 			OutputStream es) throws IOException {
-		writeToAsString(x.xmlText(Constants.XML_OPTIONS), es, mt);
+		writeToAsString(
+				x.xmlText(VissConfig.getInstance().getDefaultXmlOptions()), es,
+				mt);
 	}
-	
+
 }

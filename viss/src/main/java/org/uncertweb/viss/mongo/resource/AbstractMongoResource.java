@@ -64,24 +64,27 @@ public abstract class AbstractMongoResource<T> implements Resource {
 	protected static final Logger log = LoggerFactory
 			.getLogger(AbstractMongoResource.class);
 
-	public static final String TIME_PROPERTY = "last_usage";
+	public static final String TIME_PROPERTY = "lastUsage";
 	public static final String CHECKSUM_PROPERTY = "checksum";
+	public static final String MEDIA_TYPE_PROPERTY = "mediaType";
 
 	@Id
 	private UUID uuid;
+	@Property(MEDIA_TYPE_PROPERTY)
 	private MediaType mediaType;
 	@Indexed
 	@Property(TIME_PROPERTY)
 	private DateTime lastUsage;
 	private File file;
-	@Transient
-	private T content;
 	@Indexed
 	@Property(CHECKSUM_PROPERTY)
 	private long checksum;
 	private String phenomenon;
 	private TemporalExtent temporalExtent;
 
+	@Transient
+	private T content;
+	
 	@Embedded
 	private Set<Visualization> visualizations = Utils.set();;
 
@@ -173,7 +176,8 @@ public abstract class AbstractMongoResource<T> implements Resource {
 		this.checksum = checksum;
 	}
 
-	@PostLoad@PrePersist
+	@PostLoad
+	@PrePersist
 	public void setTime() {
 		setLastUsage(new DateTime());
 	}
@@ -198,8 +202,9 @@ public abstract class AbstractMongoResource<T> implements Resource {
 		}
 		return this.temporalExtent;
 	}
-	
-	public static TemporalExtent getExtent(Set<DateTime> instants, Set<Interval> intervals){
+
+	public static TemporalExtent getExtent(Set<DateTime> instants,
+			Set<Interval> intervals) {
 		if (instants == null || instants.isEmpty()) {
 			if (intervals == null || intervals.isEmpty()) {
 				return TemporalExtent.NO_TEMPORAL_EXTENT;
@@ -214,7 +219,8 @@ public abstract class AbstractMongoResource<T> implements Resource {
 						if (!irregular) {
 							if (duration == null) {
 								duration = Long.valueOf(i.toDurationMillis());
-							} else if (i.toDurationMillis() != duration.longValue()) {
+							} else if (i.toDurationMillis() != duration
+									.longValue()) {
 								irregular = true;
 								break;
 							}
@@ -227,9 +233,11 @@ public abstract class AbstractMongoResource<T> implements Resource {
 						}
 					}
 					if (irregular) {
-						return new IrregularTemporalIntervals(Utils.asList(intervals));
+						return new IrregularTemporalIntervals(
+								Utils.asList(intervals));
 					} else {
-						return new RegularTemporalIntervals(begin, end, new Duration(duration.longValue()));
+						return new RegularTemporalIntervals(begin, end,
+								new Duration(duration.longValue()));
 					}
 				}
 			}
@@ -238,18 +246,21 @@ public abstract class AbstractMongoResource<T> implements Resource {
 				if (instants.size() == 1) {
 					return new TemporalInstant(instants.iterator().next());
 				} else {
-					DateTime[] dts = Utils.sort(instants.toArray(new DateTime[instants.size()]));
+					DateTime[] dts = Utils.sort(instants
+							.toArray(new DateTime[instants.size()]));
 					Duration duration = new Duration(dts[0], dts[1]);
 					boolean irregular = false;
 					for (int i = 2; i < dts.length && !irregular; ++i) {
-						if (!duration.isEqual(new Duration(dts[i-1], dts[i]))) {
+						if (!duration.isEqual(new Duration(dts[i - 1], dts[i]))) {
 							irregular = true;
 						}
 					}
 					if (irregular) {
-						return new IrregularTemporalInstants(Utils.asList(instants));
+						return new IrregularTemporalInstants(
+								Utils.asList(instants));
 					} else {
-						return new RegularTemporalInstants(dts[0], dts[dts.length-1], duration);
+						return new RegularTemporalInstants(dts[0],
+								dts[dts.length - 1], duration);
 					}
 				}
 			} else {
@@ -266,6 +277,7 @@ public abstract class AbstractMongoResource<T> implements Resource {
 	}
 
 	protected abstract TemporalExtent getTemporalExtentForResource();
+
 	protected abstract String getPhenomenonForResource();
-	
+
 }

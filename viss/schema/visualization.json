@@ -2,34 +2,45 @@
 	"type": "object",
 	"description": "a visualization",
 	"properties": {
-		"id": { "type": "string", "required": true,
+		"id": {
+			"type": "string", "required": true,
 			"description": "resource dependent visualization identifier"
 		},
-		"visualizer": { "type": "string", "required": true,
+		"visualizer": {
+			"type": "string", "required": true,
 			"description": "visualizer identifier"
 		},
-		"minValue": { "type": "number", "required": true,
+		"minValue": {
+			"type": "number", "required": true,
 			"description": "the minimal value of the visualization",
 		},
-		"maxValue": { "type": "number", "required": true,
+		"maxValue": {
+			"type": "number", "required": true,
 			"description": "the maximal value of the visualization",
 		},
-		"customSLD": { "type": "boolean", "required": true,
+		"customSLD": {
+			"type": "boolean", "required": true,
 			"description": "whether a SLD is attached to the visualization or not",
 		},
-		"uom": { "type": "string", "required": true,
+		"uom": {
+			"type": "string", "required": true,
 			"description": "the unit of measurement of the visualization",
 		},
 		"reference": {
 			"type": "object",
 			"description": "a reference to a visualization",
 			"properties": {
-				"url": { "type": "string", "required": true, "format": "uri",
+				"url": {
+					"type": "string", "required": true,
+					"format": "uri",
 					"description": "the URL of the WMS"
 				},
-				"layers": { "type": "array", "required": true,
+				"layers": {
+					"type": "array", "required": true,
 					"description": "an array of layer names",
-					"items": { "type": "string", "minItems": 1,
+					"items": {
+						"type": "string",
+						"minItems": 1,
 						"description": "a layer name"
 					}
 				}

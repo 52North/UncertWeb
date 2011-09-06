@@ -55,6 +55,7 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertml.UncertML;
+import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 
 public class Utils {
@@ -271,7 +272,7 @@ public class Utils {
 	}
 
 	public static String stringifyJson(JSONObject json) throws JSONException {
-		if (Constants.PRETTY_PRINT_IO)
+		if (VissConfig.getInstance().doPrettyPrint())
 			return json.toString(4);
 		else
 			return json.toString();

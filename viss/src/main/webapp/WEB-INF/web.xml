@@ -12,7 +12,6 @@
 			<param-value>org.uncertweb.viss.core.web</param-value>
 		</init-param>
 
-
 		<init-param>
 			<param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
 			<param-value>${filter.request}</param-value>
@@ -25,10 +24,13 @@
 		
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	
+	<listener>
+		<listener-class>org.uncertweb.viss.core.VissConfig$ContextListener</listener-class>
+	</listener>
 
 	<servlet-mapping>
 		<servlet-name>jersey</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
-
 </web-app>

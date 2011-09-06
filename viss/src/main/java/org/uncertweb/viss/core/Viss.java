@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.resource.ResourceStore;
-import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.vis.Visualization;
 import org.uncertweb.viss.core.vis.Visualizer;
 import org.uncertweb.viss.core.vis.VisualizerFactory;
@@ -49,7 +48,7 @@ public class Viss {
 	private class CleanUpThread extends TimerTask {
 		@Override
 		public void run() {
-			DateTime dt = new DateTime().minus(Constants.DELETE_OLDER_THAN_PERIOD);
+			DateTime dt = new DateTime().minus(VissConfig.getInstance().getPeriodToDeleteAfterLastUse());
 			log.info("CleanUpThread running. Deleting Resources used before {}", dt);
 			int count = 0;
 			for (Resource r : getStore().getResourcesUsedBefore(dt)) {
@@ -76,7 +75,7 @@ public class Viss {
 		this.store = VissConfig.getInstance().getResourceStore();
 		this.wms = VissConfig.getInstance().getWMSAdapter();
 		VissConfig.getInstance().scheduleTask(new CleanUpThread(),
-				Constants.CLEAN_UP_INTERVAL);
+				VissConfig.getInstance().getCleanUpInterval());
 	}
 
 	public static Viss getInstance() {

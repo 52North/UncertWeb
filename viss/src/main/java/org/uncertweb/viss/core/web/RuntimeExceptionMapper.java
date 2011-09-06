@@ -31,13 +31,17 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Provider
 public class RuntimeExceptionMapper implements ExceptionMapper<Throwable> {
-
+	private static final Logger log = LoggerFactory.getLogger(RuntimeExceptionMapper.class);
+	
+	
 	@Override
 	public Response toResponse(Throwable exception) {
-
+		log.info("Mapping Exception", exception);
 		if (exception instanceof WebApplicationException) {
 			return ((WebApplicationException) exception).getResponse();
 		}

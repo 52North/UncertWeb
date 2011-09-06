@@ -32,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.util.Constants;
@@ -47,7 +48,7 @@ public class VisualizerFactory {
 	private static final Map<MediaType, Set<Class<? extends Visualizer>>> creatorsByMediaType = Utils.map();
 
 	static {
-		String packages = Constants.get(Constants.SEARCH_PACKAGES_KEY);
+		String packages = VissConfig.getInstance().get(Constants.SEARCH_PACKAGES_KEY);
 		if (packages != null && (packages = packages.trim()).length() != 0) {
 			for (String p : packages.split(",")) {
 				searchPackage(p);

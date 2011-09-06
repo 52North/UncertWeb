@@ -40,6 +40,9 @@ public class VisualizationReference {
 		this.layers = layers;
 	}
 
+	public VisualizationReference() {
+	}
+
 	/**
 	 * @return the wmsUrl
 	 */
@@ -52,6 +55,22 @@ public class VisualizationReference {
 	 */
 	public Set<String> getLayers() {
 		return layers;
+	}
+
+	/**
+	 * @param wmsUrl
+	 *            the wmsUrl to set
+	 */
+	public void setWmsUrl(URL wmsUrl) {
+		this.wmsUrl = wmsUrl;
+	}
+
+	/**
+	 * @param layers
+	 *            the layers to set
+	 */
+	public void setLayers(Set<String> layers) {
+		this.layers = layers;
 	}
 
 }

@@ -32,10 +32,10 @@ import static org.uncertweb.viss.core.util.Constants.STYLED_LAYER_DESCRIPTOR_TYP
 import static org.uncertweb.viss.core.web.Servlet.RESOURCES;
 import static org.uncertweb.viss.core.web.Servlet.RESOURCE_WITH_ID;
 import static org.uncertweb.viss.core.web.Servlet.RES_PARAM_P;
-import static org.uncertweb.viss.core.web.Servlet.VISUALIZATIONS;
 import static org.uncertweb.viss.core.web.Servlet.VISUALIZATION_SLD;
 import static org.uncertweb.viss.core.web.Servlet.VISUALIZERS_FOR_RESOURCE;
-import static org.uncertweb.viss.core.web.Servlet.VIS_PARAM_P;
+import static org.uncertweb.viss.core.web.Servlet.VISUALIZER_FOR_RESOURCE;
+import static org.uncertweb.viss.core.web.Servlet.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -137,13 +137,12 @@ public class VissTest extends JerseyTest {
 
 	private String createVisualization(UUID resource, String visualizer,
 			JSONObject params) throws JSONException {
-		JSONObject req = new JSONObject().put("visualizer", visualizer).put(
-				"params", params);
 		return getWebResource()
 				.path(getWebResource()
-						.path(VISUALIZATIONS.replace(RES_PARAM_P,
-								resource.toString()))
-						.entity(req, APPLICATION_JSON_TYPE)
+						.path(VISUALIZER_FOR_RESOURCE.replace(RES_PARAM_P,
+								resource.toString()).replace(VIR_PARAM_P,
+								visualizer))
+						.entity(params, APPLICATION_JSON_TYPE)
 						.post(ClientResponse.class).getLocation().getPath())
 				.get(JSONObject.class).getString("id");
 	}
