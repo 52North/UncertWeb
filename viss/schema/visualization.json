@@ -7,8 +7,20 @@
 			"description": "resource dependent visualization identifier"
 		},
 		"visualizer": {
-			"type": "string", "required": true,
-			"description": "visualizer identifier"
+			"type": "object", "required": true,
+			"description": "the visualizer that created this visualization",
+			"properties": {
+				"id": { 
+					"type": "string", "required": true,
+					"description": "the id of the visualizer"
+				},
+				"href": {
+					"type": "string", 
+					"required": true,
+					"format": "uri", 
+					"description": "the URI of the visualizer"
+				}
+			}
 		},
 		"minValue": {
 			"type": "number", "required": true,

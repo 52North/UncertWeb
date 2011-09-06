@@ -25,9 +25,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URI;
 
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
@@ -38,12 +41,20 @@ import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualization;
 import org.uncertweb.viss.core.vis.VisualizationReference;
+import org.uncertweb.viss.core.web.Servlet;
 
 import com.sun.jersey.core.util.ReaderWriter;
 
 @Provider
 public class VisualizationProvider implements MessageBodyWriter<Visualization> {
 
+	private UriInfo uriInfo;
+
+	@Context
+	public void setUriInfo(UriInfo uriInfo) {
+		this.uriInfo = uriInfo;
+	}
+	
 	@Override
 	public boolean isWriteable(Class<?> type, Type gt, Annotation[] a,
 			MediaType mt) {
@@ -58,42 +69,39 @@ public class VisualizationProvider implements MessageBodyWriter<Visualization> {
 	}
 
 	@Override
-	public void writeTo(Visualization o, Class<?> t, Type gt, Annotation[] a,
+	public void writeTo(Visualization v, Class<?> t, Type gt, Annotation[] a,
 			MediaType mt, MultivaluedMap<String, Object> hh, OutputStream es)
 			throws IOException {
 		try {
-			ReaderWriter
-					.writeToAsString(Utils.stringifyJson(toJson(o)), es, mt);
-		} catch (JSONException e) {
-			VissError.internal(e);
-		}
-	}
+				URI uri = uriInfo.getBaseUriBuilder()
+							.path(Servlet.VISUALIZER_FOR_RESOURCE)
+							.build(v.getUuid(),v.getCreator().getShortName());
+				JSONObject j = new JSONObject()
+						.put("id", v.getVisId())
+						.put("visualizer", new JSONObject()
+							.put("id", v.getCreator().getShortName())
+							.put("href", uri) )
+						.put("params", v.getParameters())
+						.put("minValue",v.getMinValue())
+						.put("maxValue", v.getMaxValue())
+						.put("uom",v.getUom())
+						.put("customSLD", v.getSld() != null);
 
-	static JSONObject toJson(Visualization v) {
-		try {
-			JSONObject j = new JSONObject()
-					.put("id", v.getVisId())
-					.put("visualizer", v.getCreator().getShortName())
-					.put("params", v.getParameters())
-					.put("minValue",v.getMinValue())
-					.put("maxValue", v.getMaxValue())
-					.put("uom",v.getUom())
-					.put("customSLD", v.getSld() != null);
+				VisualizationReference vr = v.getReference();
 
-			VisualizationReference vr = v.getReference();
-
-			if (vr != null) {
-				JSONArray a = new JSONArray();
-				for (String l : vr.getLayers())
-					a.put(l);
-				j.put("reference",
-						new JSONObject().put("url", vr.getWmsUrl())
-						.put("layers", a));
+				if (vr != null) {
+					JSONArray ar = new JSONArray();
+					for (String l : vr.getLayers()) {
+						ar.put(l);
+					}
+					j.put("reference", new JSONObject()
+						.put("url", vr.getWmsUrl())
+						.put("layers", ar));
+				}
+				ReaderWriter
+				.writeToAsString(Utils.stringifyJson(j), es, mt);
+			} catch (JSONException e) {
+				throw VissError.internal(e);
 			}
-			return j;
-		} catch (JSONException e) {
-			throw VissError.internal(e);
-		}
 	}
-
 }
