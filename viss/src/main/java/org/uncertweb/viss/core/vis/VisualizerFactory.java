@@ -43,12 +43,16 @@ public class VisualizerFactory {
 	private static final Logger log = LoggerFactory
 			.getLogger(VisualizerFactory.class);
 
-	private static final Map<String, Class<? extends Visualizer>> creatorsByShortName = Utils.map();
-	private static final Map<Class<? extends Visualizer>, String> shortNamesByCreator = Utils.map();
-	private static final Map<MediaType, Set<Class<? extends Visualizer>>> creatorsByMediaType = Utils.map();
+	private static final Map<String, Class<? extends Visualizer>> creatorsByShortName = Utils
+			.map();
+	private static final Map<Class<? extends Visualizer>, String> shortNamesByCreator = Utils
+			.map();
+	private static final Map<MediaType, Set<Class<? extends Visualizer>>> creatorsByMediaType = Utils
+			.map();
 
 	static {
-		String packages = VissConfig.getInstance().get(Constants.SEARCH_PACKAGES_KEY);
+		String packages = VissConfig.getInstance().get(
+				Constants.SEARCH_PACKAGES_KEY);
 		if (packages != null && (packages = packages.trim()).length() != 0) {
 			for (String p : packages.split(",")) {
 				searchPackage(p);
@@ -63,8 +67,9 @@ public class VisualizerFactory {
 		for (Class<? extends Visualizer> c : new Reflections(p)
 				.getSubTypesOf(Visualizer.class)) {
 			try {
-				if (!Modifier.isAbstract(c.getModifiers()) && !Modifier.isInterface(c.getModifiers())) {
-					
+				if (!Modifier.isAbstract(c.getModifiers())
+						&& !Modifier.isInterface(c.getModifiers())) {
+
 					Visualizer v = c.newInstance();
 					String sn = v.getShortName();
 					log.info("Registered Visualizer: {}", c.getName());
@@ -128,9 +133,29 @@ public class VisualizerFactory {
 				.values()));
 	}
 
-	public static Set<Visualizer> getVisualizerForResource(Resource resource) {
-		Set<Class<? extends Visualizer>> visualizerForMediaType = 
-				getVisualizerForMediaType(resource.getMediaType());
+	public static Visualizer getVisualizerForResource(Resource resource,
+			String visualizer) {
+		Visualizer v = fromName(visualizer, creatorsByShortName);
+		if (!resource.isLoaded()) {
+			try {
+				log.debug("Loading resource {}", resource.getUUID());
+				resource.load();
+			} catch (IOException e) {
+				VissError.internal(e);
+			}
+		}
+		if (v.isCompatible(resource)) {
+			v.setResource(resource);
+			return v;
+		} else {
+			throw VissError.invalidParameter("Visualizer " + v
+					+ " is not available for this resource");
+		}
+	}
+
+	public static Set<Visualizer> getVisualizersForResource(Resource resource) {
+		Set<Class<? extends Visualizer>> visualizerForMediaType = getVisualizerForMediaType(resource
+				.getMediaType());
 		log.debug("Found {} Visualizers for MediaType {}.",
 				visualizerForMediaType.size(), resource.getMediaType());
 		if (!visualizerForMediaType.isEmpty() && resource.isLoaded() == false) {

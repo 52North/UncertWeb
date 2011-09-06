@@ -25,10 +25,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URI;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
@@ -38,6 +41,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.util.Utils;
+import org.uncertweb.viss.core.web.Servlet;
 
 import com.sun.jersey.core.util.ReaderWriter;
 
@@ -45,6 +49,13 @@ import com.sun.jersey.core.util.ReaderWriter;
 public class ResourceCollectionProvider implements
 		MessageBodyWriter<Iterable<Resource>> {
 
+	private UriInfo uriInfo;
+
+	@Context
+	public void setUriInfo(UriInfo uriInfo) {
+		this.uriInfo = uriInfo;
+	}
+	
 	@Override
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
 		return mt.equals(MediaType.APPLICATION_JSON_TYPE)
@@ -65,7 +76,8 @@ public class ResourceCollectionProvider implements
 		try {
 			JSONArray aJ = new JSONArray();
 			for (Resource r : o) {
-				aJ.put(ResourceProvider.toJson(r));
+				URI uri = uriInfo.getBaseUriBuilder().path(Servlet.RESOURCE_WITH_ID).build(r.getUUID());
+				aJ.put(new JSONObject().put("id", r.getUUID()).put("href", uri));
 			}
 			JSONObject j = new JSONObject().put("resources", aJ);
 			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);

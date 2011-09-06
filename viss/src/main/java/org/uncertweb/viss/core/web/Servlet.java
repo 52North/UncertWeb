@@ -185,6 +185,15 @@ public class Servlet {
 		log.debug("Getting Visualizers for Resource with UUID \"{}\".", uuid);
 		return Viss.getInstance().getVisualizers(uuid);
 	}
+	
+	@GET
+	@Path(VISUALIZER_FOR_RESOURCE)
+	@Produces(APPLICATION_JSON)
+	public Visualizer getVisualizerForResource(
+			@PathParam(RES_PARAM) UUID uuid, @PathParam(VIR_PARAM) String visualizer) {
+		log.debug("Getting Visualizer with ID {} for Resource with UUID \"{}\".", visualizer, uuid);
+		return Viss.getInstance().getVisualizer(uuid, visualizer);
+	}
 
 	@GET
 	@Path(VISUALIZER_WITH_ID)
@@ -237,7 +246,7 @@ public class Servlet {
 	@POST
 	@Path(VISUALIZATION_SLD)
 	@Consumes(STYLED_LAYER_DESCRIPTOR)
-	public Response createSldForVisualization(@PathParam(RES_PARAM) UUID uuid,
+	public Response setSldForVisualization(@PathParam(RES_PARAM) UUID uuid,
 			@PathParam(VIS_PARAM) String vis, StyledLayerDescriptorDocument sld, 
 			@Context UriInfo uriI) {
 		log.debug("Posting SLD for visualization of resource with UUID \"{}\"", uuid);

@@ -25,11 +25,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URI;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
@@ -40,6 +43,7 @@ import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualization;
+import org.uncertweb.viss.core.web.Servlet;
 
 import com.sun.jersey.core.util.ReaderWriter;
 
@@ -47,33 +51,41 @@ import com.sun.jersey.core.util.ReaderWriter;
 @Produces(MediaType.APPLICATION_JSON)
 public class ResourceProvider implements MessageBodyWriter<Resource> {
 
+	private UriInfo uriInfo;
+
+	@Context
+	public void setUriInfo(UriInfo uriInfo) {
+		this.uriInfo = uriInfo;
+	}
+
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
 		return mt.equals(MediaType.APPLICATION_JSON_TYPE)
 				&& Resource.class.isAssignableFrom(t);
 	}
 
-	public void writeTo(Resource o, Class<?> t, Type gt, Annotation[] a,
+	public void writeTo(Resource r, Class<?> t, Type gt, Annotation[] a,
 			MediaType mt, MultivaluedMap<String, Object> h, OutputStream es)
 			throws IOException, WebApplicationException {
 		try {
-			ReaderWriter
-					.writeToAsString(Utils.stringifyJson(toJson(o)), es, mt);
+
+			JSONArray vis = new JSONArray();
+			for (Visualization v : r.getVisualizations()) {
+				URI uri = uriInfo.getBaseUriBuilder()
+						.path(Servlet.VISUALIZATION_FOR_RESOURCE_WITH_ID)
+						.build(r.getUUID(), v.getVisId());
+				vis.put(new JSONObject().put("id", v.getVisId()).put("href",
+						uri));
+			}
+			JSONObject j = new JSONObject().put("id", r.getUUID())
+					.put("mimeType", r.getMediaType())
+					.put("phenomenon", r.getPhenomenon())
+					.putOpt("temporalExtent", r.getTemporalExtent().toJson())
+					.put("visualizations", vis);
+
+			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);
 		} catch (JSONException e) {
 			throw VissError.internal(e);
 		}
-	}
-
-	static JSONObject toJson(Resource r) throws JSONException {
-		JSONArray a = new JSONArray();
-		for (Visualization v : r.getVisualizations()) {
-			a.put(VisualizationProvider.toJson(v));
-		}
-		return new JSONObject()
-			.put("id", r.getUUID())
-			.put("mimeType", r.getMediaType())
-			.put("phenomenon", r.getPhenomenon())
-			.putOpt("temporalExtent", r.getTemporalExtent().toJson())
-			.put("visualizations", a);
 	}
 
 	@Override

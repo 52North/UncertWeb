@@ -75,7 +75,20 @@
 			"type": "array", "required": true,
 			"description": "array of already generated visualizations",
 			"items": {
-				"$ref": "http://giv-uw.uni-muenster.de:8080/viss/schema/visualization"
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "the id of the visualization",
+						"required": true
+					}
+					"href": {
+						"type": "string",
+						"format": "uri",
+						"description": "the URI of the visualization",
+						"required":true
+					}
+				}
 			}
 		}
 	}

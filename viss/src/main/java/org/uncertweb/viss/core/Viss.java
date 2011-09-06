@@ -221,7 +221,7 @@ public class Viss {
 	}
 
 	public Set<Visualizer> getVisualizers(UUID uuid) {
-		return VisualizerFactory.getVisualizerForResource(getResource(uuid));
+		return VisualizerFactory.getVisualizersForResource(getResource(uuid));
 	}
 
 	public Resource getResource(UUID uuid) {
@@ -252,5 +252,9 @@ public class Viss {
 
 	protected WMSAdapter getWMS() {
 		return this.wms;
+	}
+
+	public Visualizer getVisualizer(UUID uuid, String visualizer) {
+		return VisualizerFactory.getVisualizerForResource(getResource(uuid), visualizer);
 	}
 }

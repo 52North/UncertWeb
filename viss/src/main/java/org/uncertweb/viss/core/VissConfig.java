@@ -30,7 +30,6 @@ import static org.uncertweb.viss.core.util.Constants.RESOURCE_STORE_KEY;
 import static org.uncertweb.viss.core.util.Constants.WMS_ADAPTER_KEY;
 import static org.uncertweb.viss.core.util.Constants.WORKING_DIR_KEY;
 
-import java.io.Console;
 import java.io.File;
 import java.util.Properties;
 import java.util.Timer;
@@ -42,8 +41,6 @@ import javax.servlet.ServletContextListener;
 import org.apache.xmlbeans.XmlOptions;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.resource.ResourceStore;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.wms.WMSAdapter;
@@ -187,7 +184,6 @@ public class VissConfig  {
 		this.webAppPath = webAppPath;
 	}
 
-	private static final Logger log = LoggerFactory.getLogger(VissConfig.class);
 	public File getResourcePath() {
 		if (resourcePath == null) {
 			resourcePath = Utils.to(getWorkingDirectory(), "resources");

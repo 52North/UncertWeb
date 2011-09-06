@@ -25,9 +25,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URI;
 
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
@@ -37,12 +40,20 @@ import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualizer;
+import org.uncertweb.viss.core.web.Servlet;
 
 import com.sun.jersey.core.util.ReaderWriter;
 
 @Provider
 public class VisualizerCollectionProvider implements
 		MessageBodyWriter<Iterable<Visualizer>> {
+
+	private UriInfo uriInfo;
+
+	@Context
+	public void setUriInfo(UriInfo uriInfo) {
+		this.uriInfo = uriInfo;
+	}
 
 	@Override
 	public boolean isWriteable(Class<?> type, Type gt, Annotation[] a,
@@ -58,9 +69,23 @@ public class VisualizerCollectionProvider implements
 			Annotation[] a, MediaType mt, MultivaluedMap<String, Object> hh,
 			OutputStream es) throws IOException {
 		try {
+
 			JSONArray j = new JSONArray();
-			for (Visualizer v : o)
-				j.put(VisualizerProvider.toJson(v));
+			for (Visualizer v : o) {
+				URI uri = null;
+				if (v.getResource() == null) {
+					uri = uriInfo.getBaseUriBuilder()
+							.path(Servlet.VISUALIZER_WITH_ID)
+							.build(v.getShortName());
+				} else {
+
+					uri = uriInfo.getBaseUriBuilder()
+							.path(Servlet.VISUALIZER_FOR_RESOURCE)
+							.build(v.getResource().getUUID(), v.getShortName());
+				}
+				j.put(new JSONObject().put("id", v.getShortName()).put("href",
+						uri));
+			}
 
 			ReaderWriter
 					.writeToAsString(Utils.stringifyJson(new JSONObject().put(

@@ -35,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.Response.Status;
@@ -112,7 +113,7 @@ public class Geoserver {
 			throws IOException {
 		log.debug("Creating Style '{}'.", name);
 		HttpURLConnection con;
-		if (getStyleList().contains(name)) {
+		if (getStyles().contains(name)) {
 			log.debug("Style '{}' already existent... updating.", name);
 
 			con = RestBuilder.path(url("styles/%s.json"), name)
@@ -137,34 +138,37 @@ public class Geoserver {
 		
 	}
 
-	public Set<String> getStyleList() throws IOException {
-		InputStream is = null;
-		HttpURLConnection con;
+	public List<String> getStyles() throws IOException {
 		try {
+			log.debug("Getting Styles");
+			HttpURLConnection con;
 
-			con = RestBuilder.path(url("styles.json")).auth(this.user, this.pass)
+			con = RestBuilder.path(url("styles.json"))
+					.auth(this.user, this.pass)
 					.responseType(APPLICATION_JSON_TYPE).get();
-			logCon("Style list fetch", con);
-			
-			if (!isOk(con)) {
-				throw VissError.internal("Could not fetch Style list.");
-			}
-			
-			is = con.getInputStream();
-			JSONObject j = new JSONObject(IOUtils.toString(is));
-			JSONArray a = j.getJSONObject("styles").getJSONArray("style");
-			Set<String> names = Utils.set();
-			for (int i = 0; i < a.length(); i++) {
-				names.add(a.getJSONObject(i).getString("name"));
-			}
-			return names;
-		} catch (JSONException e) {
-			throw VissError.internal(e);
-		} finally {
-			IOUtils.closeQuietly(is);
-		}
-	}
 
+			logCon("Style list fetch", con);
+
+			if (!isOk(con)) {
+				return Collections.emptyList();
+			}
+
+			JSONArray styles;
+			styles = new JSONObject(IOUtils.toString(con.getInputStream()))
+					.getJSONObject("styles").getJSONArray("style");
+			List<String> res = Utils.list();
+			for (int i = 0; i < styles.length(); ++i) {
+				res.add(styles.getJSONObject(i).getString("name"));
+			}
+			log.debug("Current Styles: {}", Utils.join(",", res));
+
+			return res;
+		} catch (JSONException e) {
+			throw new IOException(e);
+		}
+
+	}
+	
 	public boolean createCoverageStore(String name, String ws, String type,
 			boolean enabled) throws JSONException, IOException {
 		log.debug("Creating CoverageStore '{}' in Workspace '{}'", name, ws);
@@ -210,21 +214,23 @@ public class Geoserver {
 		HttpURLConnection con;
 		
 		// delete layer...
-		con = RestBuilder.path(url("layers/%s:%s"), ws, cs).auth(this.user, this.pass).delete();
-		logCon("Layer deletion", con);
+//		con = RestBuilder.path(url("layers/%s:%s"), ws, cs).auth(this.user, this.pass).delete();
+//		logCon("Layer deletion", con);
 		
 		// delete style...
-		con = RestBuilder.path(url("styles/%s-%s"), ws, cs).auth(this.user, this.pass)
-				.param("purge", true).delete();
-		logCon("Style deletion", con);
+		String name = ws + "-" + cs;
+		if (getStyles().contains(name)) {
+			deleteStyle(name);
+		}
 		
 		// delete coverage...
-		con = RestBuilder.path(url("workspaces/%s/coveragestores/%s/coverages/%s"), ws, cs, cs)
-				.auth(this.user, this.pass).delete();
-		logCon("Coverage deletion", con);
+//		con = RestBuilder.path(url("workspaces/%s/coveragestores/%s/coverages/%s"), ws, cs, cs)
+//				.auth(this.user, this.pass).delete();
+//		logCon("Coverage deletion", con);
 		
 		//delete store...
 		con = RestBuilder.path(url("workspaces/%s/coveragestores/%s"), ws, cs)
+				.param("recurse", true)
 				.auth(this.user, this.pass).delete();
 		logCon("CStore deletion", con);
 		
@@ -260,17 +266,23 @@ public class Geoserver {
 			throw VissError.internal(e);
 		}
 	}
-
+	
 	public boolean deleteWorkspace(String ws) throws IOException, JSONException {
 		log.debug("Deleting Workspace '{}'", ws);
 		HttpURLConnection con;
 		
-		// delete coverage stores...
-		for (String cs : getCoverageStores(ws)) {
-			deleteCoverageStore(ws, cs);
+		// delete styles...
+		for (String s : getStyles()) {
+			if (s.startsWith(ws)) {
+				deleteStyle(s);
+			}
 		}
-
-		con = RestBuilder.path(url("workspaces/%s.json"), ws).auth(this.user, this.pass).delete();
+		
+		con = RestBuilder.path(url("workspaces/%s.json"), ws)
+				.param("recurse", true)
+				.auth(this.user, this.pass)
+				.delete();
+		
 		logCon("Workspace deletion", con);
 		
 		boolean r = isOk(con);
@@ -284,6 +296,15 @@ public class Geoserver {
 		}
 		
 		return r;
+	}
+
+	public void deleteStyle(String s) throws IOException {
+		log.debug("Deleting Style '{}'", s);
+		HttpURLConnection con;
+		con = RestBuilder.path(url("styles/%s"), s)
+				.auth(this.user, this.pass)
+				.param("purge", true).delete();
+		logCon("Style deletion", con);
 	}
 
 	public Set<String> getCoverageStores(String ws) throws IOException,
