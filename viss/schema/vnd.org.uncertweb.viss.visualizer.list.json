@@ -3,7 +3,7 @@
 	"description": "a visualizer list",
 	"properties": {
 		"visualizers": { 
-			"type": "array", "required": false,
+			"type": "array", "required": true,
 			"description": "the list of visualizers",
 			"items": { "type": "object",
 				"description": "a reference to a visualizer",
