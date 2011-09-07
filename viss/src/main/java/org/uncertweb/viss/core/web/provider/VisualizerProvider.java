@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -34,18 +35,20 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualizer;
 
 import com.sun.jersey.core.util.ReaderWriter;
 
 @Provider
+@Produces(Constants.JSON_VISUALIZER)
 public class VisualizerProvider implements MessageBodyWriter<Visualizer> {
 
 	@Override
 	public boolean isWriteable(Class<?> type, Type gt, Annotation[] a,
 			MediaType mt) {
-		return mt.equals(MediaType.APPLICATION_JSON_TYPE)
+		return mt.equals(Constants.JSON_VISUALIZER_TYPE)
 				&& Visualizer.class.isAssignableFrom(type);
 	}
 

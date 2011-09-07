@@ -1,0 +1,20 @@
+{	"$schema" : "http://json-schema.org/draft-03/schema#",
+	"type": "object",
+	"description": "a visualization list",
+	"properties": {
+		"visualizations": { 
+			"type": "array", "required": false,
+			"description": "the list of visualizations",
+			"items": { "type": "object",
+				"description": "a reference to a visualization",
+				"id": { "type": "string", "required": true,
+					"description": "the id of the visualization"
+				},
+				"href": { "type": "string", "required": true,
+					"format": "uri", 
+					"description": "the URI of the visualization"
+				}
+			}
+		}
+	}
+}

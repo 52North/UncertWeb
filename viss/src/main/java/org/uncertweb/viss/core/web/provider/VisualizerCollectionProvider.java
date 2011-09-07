@@ -27,6 +27,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -38,13 +39,15 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualizer;
-import org.uncertweb.viss.core.web.Servlet;
+import org.uncertweb.viss.core.web.RESTServlet;
 
 import com.sun.jersey.core.util.ReaderWriter;
 
 @Provider
+@Produces(Constants.JSON_VISUALIZER_LIST)
 public class VisualizerCollectionProvider implements
 		MessageBodyWriter<Iterable<Visualizer>> {
 
@@ -58,7 +61,7 @@ public class VisualizerCollectionProvider implements
 	@Override
 	public boolean isWriteable(Class<?> type, Type gt, Annotation[] a,
 			MediaType mt) {
-		return mt.equals(MediaType.APPLICATION_JSON_TYPE)
+		return mt.equals(Constants.JSON_VISUALIZER_LIST_TYPE)
 				&& Iterable.class.isAssignableFrom(type)
 				&& Utils.isParameterizedWith(gt, Iterable.class,
 						Visualizer.class);
@@ -75,12 +78,12 @@ public class VisualizerCollectionProvider implements
 				URI uri = null;
 				if (v.getResource() == null) {
 					uri = uriInfo.getBaseUriBuilder()
-							.path(Servlet.VISUALIZER_WITH_ID)
+							.path(RESTServlet.VISUALIZER_WITH_ID)
 							.build(v.getShortName());
 				} else {
 
 					uri = uriInfo.getBaseUriBuilder()
-							.path(Servlet.VISUALIZER_FOR_RESOURCE)
+							.path(RESTServlet.VISUALIZER_FOR_RESOURCE)
 							.build(v.getResource().getUUID(), v.getShortName());
 				}
 				j.put(new JSONObject().put("id", v.getShortName()).put("href",

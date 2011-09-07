@@ -21,21 +21,25 @@
  */
 package org.uw.viss.core;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.uncertweb.viss.core.util.Constants.JSON_CREATE_TYPE;
+import static org.uncertweb.viss.core.util.Constants.JSON_RESOURCE_LIST_TYPE;
+import static org.uncertweb.viss.core.util.Constants.JSON_RESOURCE_TYPE;
+import static org.uncertweb.viss.core.util.Constants.JSON_VISUALIZER_LIST_TYPE;
 import static org.uncertweb.viss.core.util.Constants.NETCDF_TYPE;
 import static org.uncertweb.viss.core.util.Constants.OM_2_TYPE;
 import static org.uncertweb.viss.core.util.Constants.STYLED_LAYER_DESCRIPTOR_TYPE;
-import static org.uncertweb.viss.core.web.Servlet.RESOURCES;
-import static org.uncertweb.viss.core.web.Servlet.RESOURCE_WITH_ID;
-import static org.uncertweb.viss.core.web.Servlet.RES_PARAM_P;
-import static org.uncertweb.viss.core.web.Servlet.VISUALIZATION_SLD;
-import static org.uncertweb.viss.core.web.Servlet.VISUALIZERS_FOR_RESOURCE;
-import static org.uncertweb.viss.core.web.Servlet.VISUALIZER_FOR_RESOURCE;
-import static org.uncertweb.viss.core.web.Servlet.*;
+import static org.uncertweb.viss.core.web.RESTServlet.RESOURCES;
+import static org.uncertweb.viss.core.web.RESTServlet.RESOURCE_WITH_ID;
+import static org.uncertweb.viss.core.web.RESTServlet.RES_PARAM_P;
+import static org.uncertweb.viss.core.web.RESTServlet.VIR_PARAM_P;
+import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZATION_SLD;
+import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZERS_FOR_RESOURCE;
+import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZER_FOR_RESOURCE;
+import static org.uncertweb.viss.core.web.RESTServlet.VIS_PARAM_P;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -108,7 +112,7 @@ public class VissTest extends JerseyTest {
 
 	@Test
 	public void testEmpty() throws UniformInterfaceException, JSONException {
-		getWebResource().path(RESOURCES).accept(APPLICATION_JSON_TYPE)
+		getWebResource().path(RESOURCES).accept(JSON_RESOURCE_LIST_TYPE)
 				.get(JSONObject.class).getJSONArray("resources");
 	}
 
@@ -118,7 +122,7 @@ public class VissTest extends JerseyTest {
 			getWebResource()
 					.path(RESOURCE_WITH_ID.replace(RES_PARAM_P, UUID
 							.randomUUID().toString()))
-					.accept(APPLICATION_JSON_TYPE).get(Response.class);
+					.accept(JSON_RESOURCE_TYPE).get(Response.class);
 		} catch (UniformInterfaceException e) {
 			assertEquals(404, e.getResponse().getStatus());
 			return;
@@ -128,7 +132,7 @@ public class VissTest extends JerseyTest {
 
 	private UUID addResource(MediaType mt, InputStream is) throws JSONException {
 		JSONObject j = getWebResource().path(
-				getWebResource().path(RESOURCES).accept(APPLICATION_JSON_TYPE)
+				getWebResource().path(RESOURCES).accept(JSON_RESOURCE_TYPE)
 						.entity(is, mt).post(ClientResponse.class)
 						.getLocation().getPath()).get(JSONObject.class);
 
@@ -142,7 +146,7 @@ public class VissTest extends JerseyTest {
 						.path(VISUALIZER_FOR_RESOURCE.replace(RES_PARAM_P,
 								resource.toString()).replace(VIR_PARAM_P,
 								visualizer))
-						.entity(params, APPLICATION_JSON_TYPE)
+						.entity(params, JSON_CREATE_TYPE)
 						.post(ClientResponse.class).getLocation().getPath())
 				.get(JSONObject.class).getString("id");
 	}
@@ -186,7 +190,7 @@ public class VissTest extends JerseyTest {
 				.replace(VIS_PARAM_P, meanVisId);
 
 		StyledLayerDescriptorDocument.Factory.parse(getWebResource().path(
-				getWebResource().path(url).accept(APPLICATION_JSON_TYPE)
+				getWebResource().path(url)
 						.entity(getSLDStream(), STYLED_LAYER_DESCRIPTOR_TYPE)
 						.post(ClientResponse.class).getLocation().getPath())
 				.get(String.class));
@@ -198,8 +202,8 @@ public class VissTest extends JerseyTest {
 		deleteAll();
 		UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
 		JSONObject j = getWebResource()
-				.path(VISUALIZERS_FOR_RESOURCE.replace(RES_PARAM_P, uuid.toString()))
-				.accept(APPLICATION_JSON_TYPE)
+				.path(VISUALIZERS_FOR_RESOURCE.replace(RES_PARAM_P,
+						uuid.toString())).accept(JSON_VISUALIZER_LIST_TYPE)
 				.get(JSONObject.class);
 
 		System.out.println(j.toString(4));
@@ -245,7 +249,7 @@ public class VissTest extends JerseyTest {
 
 	public void deleteAll() throws JSONException {
 		JSONObject j = getWebResource().path(RESOURCES)
-				.accept(APPLICATION_JSON_TYPE).get(JSONObject.class);
+				.accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);
 		JSONArray a = j.optJSONArray("resources");
 		if (a != null) {
 			for (int i = 0; i < a.length(); i++) {

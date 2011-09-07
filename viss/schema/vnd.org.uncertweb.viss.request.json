@@ -1,0 +1,24 @@
+{	"$schema" : "http://json-schema.org/draft-03/schema#",
+	"type": "object",
+	"description": "an reference to a remote coverage",
+	"properties": {
+		"url": { "type": "string", "format": "uri",
+			"description": "the url", "required": true
+		},
+		"request": { "type": "string",
+			"description": "the message body which should be sent"
+		}
+		"requestMediaType": { "type": "string",
+			"description": "Content-Type header for the request"
+		}
+		"responseMediaType": { "type": "string", "required": true,
+			"description": "the media type of the response"
+			"enum": [ "application/vnd.ogc.om+xml", "application/netcdf", 
+			  "application/x-netcdf", "image/geotiff" ]
+		}
+		"method": { "type": "string", "default": "GET",
+			"description": "the HTTP method to use",
+			"enum": ["POST", "GET", "PUT"]
+		}
+	}
+}

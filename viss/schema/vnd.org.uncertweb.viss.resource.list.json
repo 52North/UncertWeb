@@ -1,0 +1,19 @@
+{	"$schema" : "http://json-schema.org/draft-03/schema#",
+	"type": "object",
+	"description": "a resource list",
+	"properties": {
+		"resources": { 
+			"type": "array", "required": false,
+			"description": "the list of resources",
+			"items": { "type": "object",
+				"description": "a reference to a resource",
+				"id": { "type": "string", "required": true,
+					"description": "the id of the resource"
+				},
+				"href": { "type": "string", "required": true, "format": "uri",
+					 "description": "the URI of the resource"
+				}
+			}
+		}
+	}
+}

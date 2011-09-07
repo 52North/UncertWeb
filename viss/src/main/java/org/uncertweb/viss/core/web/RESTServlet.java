@@ -21,12 +21,11 @@
  */
 package org.uncertweb.viss.core.web;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.uncertweb.viss.core.util.Constants.GEOTIFF;
 import static org.uncertweb.viss.core.util.Constants.NETCDF;
 import static org.uncertweb.viss.core.util.Constants.OM_2;
 import static org.uncertweb.viss.core.util.Constants.STYLED_LAYER_DESCRIPTOR;
-import static org.uncertweb.viss.core.util.Constants.X_NETCDF;
+import static org.uncertweb.viss.core.util.Constants.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -64,7 +63,7 @@ import org.uncertweb.viss.core.vis.Visualization;
 import org.uncertweb.viss.core.vis.Visualizer;
 
 @Path("/")
-public class Servlet {
+public class RESTServlet {
 
 	public static final String RES_PARAM = "resource";
 	public static final String VIS_PARAM = "visualization";
@@ -74,8 +73,6 @@ public class Servlet {
 	public static final String VIS_PARAM_P = "{" + VIS_PARAM + "}";
 	public static final String VIR_PARAM_P = "{" + VIR_PARAM + "}";
 
-	
-	
 	public static final String RESOURCES = "/resources";
 	public static final String VISUALIZATIONS = "/visualizations";
 	public static final String VISUALIZERS = "/visualizers";
@@ -91,7 +88,7 @@ public class Servlet {
 	public static final String VISUALIZATION_FOR_RESOURCE_WITH_ID = VISUALIZATIONS_FOR_RESOURCE + "/" + VIS_PARAM_P;
 	public static final String VISUALIZATION_SLD = VISUALIZATION_FOR_RESOURCE_WITH_ID + "/sld";
 
-	private static Logger log = LoggerFactory.getLogger(Servlet.class);
+	private static Logger log = LoggerFactory.getLogger(RESTServlet.class);
 
 	@GET
 	public Response wadl(@Context UriInfo uriI) {
@@ -102,24 +99,20 @@ public class Servlet {
 
 	@GET
 	@Path(RESOURCES)
-	@Produces(APPLICATION_JSON)
+	@Produces(JSON_RESOURCE_LIST)
 	public Set<Resource> getResources() {
 		log.debug("Getting Resources.");
 		return Viss.getInstance().getResources();
 	}
 
-	/*
-	 * [ "url", "request", "requestMediaType", "responseMediaType", "method" ]
-	 */
-	
 	@POST
 	@Path(RESOURCES)
-	@Produces(APPLICATION_JSON)
-	@Consumes({ APPLICATION_JSON, NETCDF, X_NETCDF, GEOTIFF, OM_2 })
+	@Produces(JSON_RESOURCE)
+	@Consumes({ JSON_REQUEST, NETCDF, X_NETCDF, GEOTIFF, OM_2 })
 	public Response createResource(InputStream is, @HeaderParam(HttpHeaders.CONTENT_TYPE) MediaType h, @Context UriInfo uriI) {
 		log.debug("Putting Resource.");
 		Resource r = null;
-		if (MediaType.APPLICATION_JSON_TYPE.equals(h)) {
+		if (JSON_REQUEST_TYPE.equals(h)) {
 			try {
 				JSONObject j = new JSONObject(IOUtils.toString(is));
 				log.debug("Fetching resource described as json: {}\n", j.toString(4));
@@ -156,7 +149,7 @@ public class Servlet {
 
 	@GET
 	@Path(RESOURCE_WITH_ID)
-	@Produces(APPLICATION_JSON)
+	@Produces(JSON_RESOURCE)
 	public Resource getResource(@PathParam("resource") UUID uuid) {
 		log.debug("Getting Resource with UUID \"{}\".", uuid);
 		return Viss.getInstance().getResource(uuid);
@@ -171,7 +164,7 @@ public class Servlet {
 
 	@GET
 	@Path(VISUALIZERS)
-	@Produces(APPLICATION_JSON)
+	@Produces(JSON_VISUALIZER_LIST)
 	public Set<Visualizer> getVisualizers() {
 		log.debug("Getting Visualizers.");
 		return Viss.getInstance().getVisualizers();
@@ -179,7 +172,7 @@ public class Servlet {
 
 	@GET
 	@Path(VISUALIZERS_FOR_RESOURCE)
-	@Produces(APPLICATION_JSON)
+	@Produces(JSON_VISUALIZER_LIST)
 	public Set<Visualizer> getVisualizersForResource(
 			@PathParam(RES_PARAM) UUID uuid) {
 		log.debug("Getting Visualizers for Resource with UUID \"{}\".", uuid);
@@ -188,7 +181,7 @@ public class Servlet {
 	
 	@GET
 	@Path(VISUALIZER_FOR_RESOURCE)
-	@Produces(APPLICATION_JSON)
+	@Produces(JSON_VISUALIZER)
 	public Visualizer getVisualizerForResource(
 			@PathParam(RES_PARAM) UUID uuid, @PathParam(VIR_PARAM) String visualizer) {
 		log.debug("Getting Visualizer with ID {} for Resource with UUID \"{}\".", visualizer, uuid);
@@ -197,7 +190,7 @@ public class Servlet {
 
 	@GET
 	@Path(VISUALIZER_WITH_ID)
-	@Produces(APPLICATION_JSON)
+	@Produces(JSON_VISUALIZER)
 	public Visualizer getVisualizer(@PathParam(VIR_PARAM) String visualizer) {
 		log.debug("Request for Description of \"{}\".", visualizer);
 		return Viss.getInstance().getVisualizer(visualizer);
@@ -205,7 +198,7 @@ public class Servlet {
 
 	@GET
 	@Path(VISUALIZATIONS_FOR_RESOURCE)
-	@Produces(APPLICATION_JSON)
+	@Produces(JSON_VISUALIZATION_LIST)
 	public Set<Visualization> getVisualizations(@PathParam(RES_PARAM) UUID uuid) {
 		log.debug("Getting Visualizations of resource with UUID \"{}\"", uuid);
 		return Viss.getInstance().getVisualizations(uuid);
@@ -213,8 +206,8 @@ public class Servlet {
 
 	@POST
 	@Path(VISUALIZER_FOR_RESOURCE)
-	@Produces(APPLICATION_JSON)
-	@Consumes(APPLICATION_JSON)
+	@Produces(JSON_VISUALIZATION)
+	@Consumes(JSON_CREATE)
 	public Response createVisualization(@PathParam(RES_PARAM) UUID uuid,
 			@PathParam(VIR_PARAM) String visualizer, JSONObject options,
 			@Context UriInfo uriI) {
@@ -228,7 +221,7 @@ public class Servlet {
 
 	@GET
 	@Path(VISUALIZATION_FOR_RESOURCE_WITH_ID)
-	@Produces(APPLICATION_JSON)
+	@Produces(JSON_VISUALIZATION)
 	public Visualization getVisualization(@PathParam(RES_PARAM) UUID resource,
 			@PathParam(VIS_PARAM) String vis) {
 		log.debug("Getting visualization for resource with UUID \"{}\".", resource);

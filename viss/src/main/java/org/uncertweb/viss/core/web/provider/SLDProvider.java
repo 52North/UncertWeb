@@ -27,6 +27,8 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -44,6 +46,8 @@ import org.uncertweb.viss.core.util.Constants;
 import com.sun.jersey.core.provider.AbstractMessageReaderWriterProvider;
 
 @Provider
+@Produces(Constants.STYLED_LAYER_DESCRIPTOR)
+@Consumes(Constants.STYLED_LAYER_DESCRIPTOR)
 public class SLDProvider extends
 		AbstractMessageReaderWriterProvider<StyledLayerDescriptorDocument> {
 

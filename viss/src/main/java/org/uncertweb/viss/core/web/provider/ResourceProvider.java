@@ -41,14 +41,15 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualization;
-import org.uncertweb.viss.core.web.Servlet;
+import org.uncertweb.viss.core.web.RESTServlet;
 
 import com.sun.jersey.core.util.ReaderWriter;
 
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(Constants.JSON_RESOURCE)
 public class ResourceProvider implements MessageBodyWriter<Resource> {
 
 	private UriInfo uriInfo;
@@ -59,7 +60,7 @@ public class ResourceProvider implements MessageBodyWriter<Resource> {
 	}
 
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return mt.equals(MediaType.APPLICATION_JSON_TYPE)
+		return mt.equals(Constants.JSON_RESOURCE_TYPE)
 				&& Resource.class.isAssignableFrom(t);
 	}
 
@@ -71,7 +72,7 @@ public class ResourceProvider implements MessageBodyWriter<Resource> {
 			JSONArray vis = new JSONArray();
 			for (Visualization v : r.getVisualizations()) {
 				URI uri = uriInfo.getBaseUriBuilder()
-						.path(Servlet.VISUALIZATION_FOR_RESOURCE_WITH_ID)
+						.path(RESTServlet.VISUALIZATION_FOR_RESOURCE_WITH_ID)
 						.build(r.getUUID(), v.getVisId());
 				vis.put(new JSONObject().put("id", v.getVisId()).put("href",
 						uri));

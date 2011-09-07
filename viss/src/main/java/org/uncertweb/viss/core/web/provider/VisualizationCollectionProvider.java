@@ -27,6 +27,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -39,13 +40,15 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.Visualization;
-import org.uncertweb.viss.core.web.Servlet;
+import org.uncertweb.viss.core.web.RESTServlet;
 
 import com.sun.jersey.core.util.ReaderWriter;
 
 @Provider
+@Produces(Constants.JSON_VISUALIZER_LIST)
 public class VisualizationCollectionProvider implements
 		MessageBodyWriter<Iterable<Visualization>> {
 
@@ -58,7 +61,7 @@ public class VisualizationCollectionProvider implements
 	
 	@Override
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return mt.equals(MediaType.APPLICATION_JSON_TYPE)
+		return mt.equals(Constants.JSON_VISUALIZER_LIST_TYPE)
 				&& Utils.isParameterizedWith(gt, Iterable.class,
 						Visualization.class);
 	}
@@ -79,7 +82,7 @@ public class VisualizationCollectionProvider implements
 			JSONArray vis = new JSONArray();
 			for (Visualization v : o) {
 				URI uri = uriInfo.getBaseUriBuilder()
-						.path(Servlet.VISUALIZATION_FOR_RESOURCE_WITH_ID)
+						.path(RESTServlet.VISUALIZATION_FOR_RESOURCE_WITH_ID)
 						.build(v.getUuid(), v.getVisId());
 				vis.put(new JSONObject().put("id", v.getVisId()).put("href", uri));
 			}

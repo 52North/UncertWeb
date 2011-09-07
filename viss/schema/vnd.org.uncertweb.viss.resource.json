@@ -77,16 +77,11 @@
 			"items": {
 				"type": "object",
 				"properties": {
-					"id": {
-						"type": "string",
-						"description": "the id of the visualization",
-						"required": true
+					"id": { "type": "string", "required": true,
+						"description": "the id of the visualization"
 					},
-					"href": {
-						"type": "string",
-						"format": "uri",
-						"description": "the URI of the visualization",
-						"required":true
+					"href": { "type": "string", "format": "uri", "required":true
+						"description": "the URI of the visualization"
 					}
 				}
 			}

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<application xmlns="http://research.sun.com/wadl/2006/10" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<resources base="http://localhost:9090/viss/">
+		<resource path="/">
+			<method id="wadl" name="GET" />
+			<resource path="/resources/{resource}">
+				<param name="resource" style="template" type="xs:string" />
+				<method id="getResource" name="GET">
+					<response>
+						<representation mediaType="application/vnd.org.uncertweb.viss.resource+json" />
+					</response>
+				</method>
+				<method id="deleteResource" name="DELETE" />
+			</resource>
+			<resource path="/resources">
+				<method id="getResources" name="GET">
+					<response>
+						<representation mediaType="application/vnd.org.uncertweb.viss.resource.list+json" />
+					</response>
+				</method>
+				<method id="createResource" name="POST">
+					<request>
+						<param name="Content-Type" style="header" type="xs:string" />
+						<representation mediaType="application/vnd.org.uncertweb.viss.request+json" />
+						<representation mediaType="application/netcdf" />
+						<representation mediaType="application/x-netcdf" />
+						<representation mediaType="image/geotiff" />
+						<representation mediaType="application/vnd.ogc.om+xml" />
+					</request>
+					<response>
+						<representation mediaType="application/vnd.org.uncertweb.viss.resource+json" />
+					</response>
+				</method>
+			</resource>
+			<resource path="/resources/{resource}/visualizations/{visualization}/sld">
+				<param name="visualization" style="template" type="xs:string" />
+				<param name="resource" style="template" type="xs:string" />
+				<method id="getSldForVisualization" name="GET">
+					<response>
+						<representation mediaType="application/vnd.ogc.sld+xml" />
+					</response>
+				</method>
+				<method id="setSldForVisualization" name="POST">
+					<request>
+						<representation mediaType="application/vnd.ogc.sld+xml" />
+					</request>
+				</method>
+			</resource>
+			<resource path="/visualizers">
+				<method id="getVisualizers" name="GET">
+					<response>
+						<representation	mediaType="application/vnd.org.uncertweb.viss.visualizer.list+json" />
+					</response>
+				</method>
+			</resource>
+			<resource path="/resources/{resource}/visualizers">
+				<param name="resource" style="template" type="xs:string" />
+				<method id="getVisualizersForResource" name="GET">
+					<response>
+						<representation mediaType="application/vnd.org.uncertweb.viss.visualizer.list+json" />
+					</response>
+				</method>
+			</resource>
+			<resource path="/resources/{resource}/visualizers/{visualizer}">
+				<param name="visualizer" style="template" type="xs:string" />
+				<param name="resource" style="template" type="xs:string" />
+				<method id="getVisualizerForResource" name="GET">
+					<response>
+						<representation mediaType="application/vnd.org.uncertweb.viss.visualizer+json" />
+					</response>
+				</method>
+				<method id="createVisualization" name="POST">
+					<request>
+						<representation mediaType="application/vnd.org.uncertweb.viss.create+json" />
+					</request>
+					<response>
+					<representation mediaType="application/vnd.org.uncertweb.viss.visualization+json" />
+					</response>
+				</method>
+			</resource>
+			<resource path="/visualizers/{visualizer}">
+				<param name="visualizer" style="template" type="xs:string" />
+				<method id="getVisualizer" name="GET">
+					<response>
+						<representation mediaType="application/vnd.org.uncertweb.viss.visualizer+json" />
+					</response>
+				</method>
+			</resource>
+			<resource path="/resources/{resource}/visualizations">
+				<param name="resource" style="template" type="xs:string" />
+				<method id="getVisualizations" name="GET">
+					<response>
+						<representation mediaType="application/vnd.org.uncertweb.viss.visualization.list+json" />
+					</response>
+				</method>
+			</resource>
+			<resource path="/resources/{resource}/visualizations/{visualization}">
+				<param name="visualization" style="template" type="xs:string" />
+				<param name="resource" style="template" type="xs:string" />
+				<method id="getVisualization" name="GET">
+					<response>
+						<representation mediaType="application/vnd.org.uncertweb.viss.visualization+json" />
+					</response>
+				</method>
+				<method id="deleteVisualization" name="DELETE" />
+			</resource>
+		</resource>
+	</resources>
+</application> 
