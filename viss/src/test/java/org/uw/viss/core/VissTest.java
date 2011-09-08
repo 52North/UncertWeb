@@ -225,6 +225,7 @@ public class VissTest extends JerseyTest {
 
 	@Test
 	public void testOMResource() throws JSONException {
+		deleteAll();
 		UUID uuid = addResource(OM_2_TYPE, getOMStream());
 		createVisualization(uuid,
 				MeanOfNormalDistributionOfMultiCoverages.class.getSimpleName(),

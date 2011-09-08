@@ -21,18 +21,9 @@
  */
 package org.uncertweb.viss.core.util;
 
-import java.net.URI;
-
 import javax.ws.rs.core.MediaType;
 
-import org.uncertml.UncertML;
-import org.uncertml.distribution.continuous.NormalDistribution;
-
 public class Constants {
-
-	public static final URI NORMAL_DISTRIBUTION = URI.create(UncertML.getURI(NormalDistribution.class));
-	public static final URI NORMAL_DISTRIBUTION_MEAN = URI.create(Utils.join("#", NORMAL_DISTRIBUTION.toString(), "mean"));
-	public static final URI NORMAL_DISTRIBUTION_VARIANCE = URI.create(Utils.join("#", NORMAL_DISTRIBUTION.toString(), "variance"));
 
 	public static final String JSON_RESOURCE = "application/vnd.org.uncertweb.viss.resource+json";
 	public static final MediaType JSON_RESOURCE_TYPE = MediaType.valueOf(JSON_RESOURCE);

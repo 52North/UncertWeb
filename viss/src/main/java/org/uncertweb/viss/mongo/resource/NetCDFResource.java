@@ -23,19 +23,17 @@ package org.uncertweb.viss.mongo.resource;
 
 import java.io.IOException;
 
-import org.uncertweb.api.netcdf.NetcdfUWFile;
-import org.uncertweb.api.netcdf.exception.NetcdfUWException;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.time.TemporalExtent;
 import org.uncertweb.viss.core.util.Constants;
-import org.uncertweb.viss.core.util.NetCDFHelper;
+import org.uncertweb.viss.core.vis.impl.netcdf.UncertaintyNetCDF;
 
 import ucar.nc2.NetcdfFile;
 
 import com.google.code.morphia.annotations.Polymorphic;
 
 @Polymorphic
-public class NetCDFResource extends AbstractMongoResource<NetcdfUWFile> {
+public class NetCDFResource extends AbstractMongoResource<UncertaintyNetCDF> {
 
 	public NetCDFResource() {
 		super(Constants.NETCDF_TYPE);
@@ -45,21 +43,16 @@ public class NetCDFResource extends AbstractMongoResource<NetcdfUWFile> {
 
 	@Override
 	public void load() throws IOException, VissError {
-		try {
-			log.debug("Size: {}",getFile().length());
-			String path = getFile().getAbsolutePath();
-			NetcdfFile f = (LOAD_TO_MEMORY) ? NetcdfFile.openInMemory(path)
-					: NetcdfFile.open(path);
-			setContent(new NetcdfUWFile(f));
-		} catch (NetcdfUWException e) {
-			throw VissError.internal(e);
-		}
+		log.debug("Size: {}",getFile().length());
+		String path = getFile().getAbsolutePath();
+		NetcdfFile f = (LOAD_TO_MEMORY) ? NetcdfFile.openInMemory(path)
+				: NetcdfFile.open(path);
+		setContent(new UncertaintyNetCDF(f));
 	}
 
 	@Override
 	protected String getPhenomenonForResource() {
-		return NetCDFHelper.getPrimaryVariable(getContent().getNetcdfFile())
-				.getName();
+		return getContent().getPrimaryVariable().getName();
 	}
 	
 	@Override
