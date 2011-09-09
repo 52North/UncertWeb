@@ -58,22 +58,24 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 		for (Value nv : getNetCDF()) {
 			Double value = null;
 			if (nv.getValue() != null) {
-				
 				double v = evaluate(nv.getValue());
 				if (!Double.isNaN(v) && !Double.isInfinite(v)) {
 					value = Double.valueOf(v);
-					if (min == null || min.doubleValue() > v) { min = Double.valueOf(v); }
-					if (max == null || max.doubleValue() < v) { max = Double.valueOf(v); }
+					if (min == null || min.doubleValue() > v)
+						min = Double.valueOf(v);
+					if (max == null || max.doubleValue() < v)
+						max = Double.valueOf(v);
 				}
 			}
-			Point2D.Double location = new Point2D.Double(nv.getLocation().getX(), nv.getLocation().getY());
+			Point2D.Double location = new Point2D.Double(
+					nv.getLocation().getX(), nv.getLocation().getY());
 			wgc.setValueAtPos(location, value);
 		}
 		log.debug("min: {}; max: {}", min, max);
 		return new Visualization(r.getUUID(), getId(params), this, params,
-				min.doubleValue(), max.doubleValue(), getUom(), wgc.getGridCoverage());
-		
-		
+				min.doubleValue(), max.doubleValue(), getUom(),
+				wgc.getGridCoverage());
+
 	}
 
 	@Override
@@ -85,7 +87,7 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 	public boolean isCompatible(Resource r) {
 		return getSupportedURI().contains(getNetCDF(r).getPrimaryURI());
 	}
-	
+
 	@Override
 	public String getId(JSONObject params) {
 		return this.getShortName();
@@ -133,11 +135,10 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 		return this.getNetCDF().getUnitAsString();
 	}
 
-
 	protected UncertaintyNetCDF getNetCDF() {
 		return getNetCDF(this.resource);
 	}
-	
+
 	protected UncertaintyNetCDF getNetCDF(Resource r) {
 		return (UncertaintyNetCDF) r.getResource();
 	}
@@ -149,7 +150,7 @@ public abstract class AbstractNetCDFVisualizer implements Visualizer {
 		}
 		return uris;
 	}
-	
+
 	protected abstract Set<UncertaintyType> getSupportedUncertainties();
 
 	protected abstract double evaluate(IUncertainty u);

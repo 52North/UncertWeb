@@ -23,7 +23,6 @@ package org.uncertweb.viss.core.vis.impl.netcdf;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -33,12 +32,9 @@ import javax.measure.unit.Unit;
 
 import org.apache.commons.lang.Validate;
 import org.geotools.coverage.grid.GridCoverageBuilder;
-import org.geotools.factory.FactoryRegistryException;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.referencing.CRS;
 import org.opengis.geometry.Envelope;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,12 +92,10 @@ import com.vividsolutions.jts.geom.Point;
 
 public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 	
-	public enum UncertaintyType {
-		
+	public static enum UncertaintyType {
 		SAMPLE(ISample.class),
 		DISTRIBUTION(IDistribution.class),
 		STATISTIC(IStatistic.class),
-		
 		
 		BETA_DISTRIBUTION(BetaDistribution.class),
 		CAUCHY_DISTRIBUTION(CauchyDistribution.class),
@@ -189,7 +183,8 @@ public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 		private final Map<Variable, Array> arrays = Utils.map();
 		private final Map<Variable, Index> indexes = Utils.map();
 		private final Map<Variable, URI> uris = Utils.map();
-
+		private final UncertaintyParser p = new UncertaintyParser();
+		
 		public NetCDFIterator() throws IOException {
 			this.lonValues = getLongitude().read();
 			this.latValues = getLatitude().read();
@@ -244,7 +239,7 @@ public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 			if (values.isEmpty()) {
 				return null;
 			} else {
-				return map(this.primaryURI, values);
+				return p.map(this.primaryURI, values);
 			}
 		}
 
@@ -293,9 +288,189 @@ public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 			this.location = location;
 		}
 	}
+	
+	protected static class UncertaintyParser {
+		
+		public IUncertainty map(URI main, Map<URI, Number> v) {
+			IUncertainty u = map(UncertaintyType.fromURI(main), v);
+			if (u == null)
+				throw new IllegalArgumentException("not (yet) supported: " + main);
+			return u;
+		}
+		
+		protected IUncertainty map(UncertaintyType t, Map<URI, Number> v) {
+			switch (t) {
+			case BETA_DISTRIBUTION:
+				return new BetaDistribution(
+						getDouble(t, v, "alpha"), 
+						getDouble(t, v, "beta"));
+			case CAUCHY_DISTRIBUTION:
+				return new CauchyDistribution(
+						getDouble(t, v, "location"),
+						getDouble(t, v, "scale"));
+			case CHI_SQUARE_DISTRIBUTION:
+				return new ChiSquareDistribution(
+						getIntegr(t, v, "degreesOfFreedom"));
+			case EXPONENTIAL_DISTRIBUTION:
+				return new ExponentialDistribution(
+						getIntegr(t, v, "rate"));
+			case F_DISTRIBUTION:
+				return new FDistribution(
+						getIntegr(t, v, "denominator"), 
+						getIntegr(t, v, "numerator"));
+			case GAMMA_DISTRIBUTION:
+				return new GammaDistribution(
+						getDouble(t, v, "shape"), 
+						getDouble(t, v, "scale"));
+			case INVERSE_GAMMA_DISTRIBUTION:
+				return new InverseGammaDistribution(
+						getDouble(t, v, "shape"),
+						getDouble(t, v, "scale"));
+			case LAPLACE_DISTRIBUTION:
+				return new LaplaceDistribution(
+						getDouble(t, v, "location"),
+						getDouble(t, v, "scale"));
+			case LOGISTIC_DISTRIBUTION:
+				return new LogisticDistribution(
+						getDouble(t, v, "location"),
+						getDouble(t, v, "scale"));
+			case LOG_NORMAL_DISTRIBUTION:
+				return new LogNormalDistribution(
+						getDouble(t, v, "logScale"),
+						getDouble(t, v, "shape"));
+			case NORMAL_DISTRIBUTION:
+				return new NormalDistribution(
+						getDouble(t, v, "mean"), 
+						getDouble(t, v, "variance"));
+			case NORMAL_INVERSE_GAMMA_DISTRIBUTION:
+				return new NormalInverseGammaDistribution(
+						getDouble(t, v, "mean"),
+						getDouble(t, v, "varianceScaling"),
+						getDouble(t, v, "shape"), 
+						getDouble(t, v, "scale"));
+			case PARETO_DISTRIBUTION:
+				return new ParetoDistribution(
+						getDouble(t, v, "scale"), 
+						getDouble(t, v, "shape"));
+			case POISSON_DISTRIBUTION:
+				return new PoissonDistribution(
+						getIntegr(t, v, "rate"));
+			case STUDENT_T_DISTRIBUTION:
+				return new StudentTDistribution(
+						getDouble(t, v, "mean"), 
+						getDouble(t, v, "variance"), 
+						getIntegr(t, v, "degreesOfFreedom"));
+			case UNIFORM_DISTRIBUTION:
+				return new UniformDistribution(
+						getDouble(t, v, "minimum"),
+						getDouble(t, v, "maximum"));
+			case WEIBULL_DISTRIBUTION:
+				return new WeibullDistribution(
+						getDouble(t, v, "scale"), 
+						getDouble(t, v, "shape"));
+			case CENTRED_MOMENT:
+				return new CentredMoment(
+						getIntegr(t, v, "order"), 
+						getDouble(t, v, "value"));
+			case INTERQUATILE_RANGE:
+				return new InterquartileRange(
+						getDouble(t, v, "lower"), 
+						getDouble(t, v, "upper"));
+			case MOMENT:
+				return new Moment(
+						getIntegr(t, v, "order"),
+						getDouble(t, v, "value"));
+			case DECILE:
+				return new Decile(
+						getIntegr(t, v, "level"),
+						getDouble(t, v, "value"));
+			case PERCENTILE:
+				return new Percentile(
+						getIntegr(t, v, "level"), 
+						getDouble(t, v, "value"));
+			case QUANTILE:
+				return new Quantile(
+						getIntegr(t, v, "level"), 
+						getDouble(t, v, "value"));
+			case QUARTILE:
+				return new Quartile(
+						getIntegr(t, v, "level"), 
+						getDouble(t, v, "value"));
+			case RANGE:
+				return new Range(
+						getDouble(t, v, "lower"), 
+						getDouble(t, v, "upper"));
+			case STANDARD_DEVIATION:
+				return new StandardDeviation(
+						getDouble(t, v));
+			case COEFFICIENT_OF_VARIATION:
+				return new CoefficientOfVariation(
+						getDouble(t, v));
+			case CORRELATION:
+				return new Correlation(
+						getDouble(t, v));
+			case KURTOSIS:
+				return new Kurtosis(
+						getDouble(t, v));
+			case MEAN:
+				return new Mean(
+						getDouble(t, v));
+			case MEDIAN:
+				return new Median(
+						getDouble(t, v));
+			case MODE:
+				return new Mode(
+						getDouble(t, v));
+			case SKEWNESS:
+				return new Skewness(
+						getDouble(t, v));
+			// TODO case CONFIDENCE_INTERVAL:
+			// TODO case CONFUSION_MATRIX:
+			// TODO case COVARIANCE_MATRIX:
+			// TODO case CREDIBLE_INTERVAL:
+			// TODO case PROBABILITY:
+			// TODO case MIXTURE_MODEL_DISTRIBUTION:
+			// TODO case STATISTIC_COLLECTION:
+			// TODO case RANDOM_SAMPLE:
+			// TODO case REALISATION:
+			// TODO case SYSTEMATIC_SAMPLE:
+			// TODO case UNKNOWN_SAMPLE:
+			default:
+				return null;
+			}
+		}
 
-	private static final Logger log = LoggerFactory
-			.getLogger(UncertaintyNetCDF.class);
+		protected static final Number getNumber(UncertaintyType t,
+				Map<URI, Number> v) {
+			return v.get(t.getURI());
+		}
+
+		protected static final Number getNumber(UncertaintyType t,
+				Map<URI, Number> v, String n) {
+			return v.get(t.getParamURI(n));
+		}
+
+		protected static final double getDouble(UncertaintyType t,
+				Map<URI, Number> v) {
+			return getNumber(t, v).doubleValue();
+		}
+
+		protected static final double getDouble(UncertaintyType t,
+				Map<URI, Number> v, String name) {
+			return getNumber(t, v, name).doubleValue();
+		}
+
+		protected static final int getIntegr(UncertaintyType t, Map<URI, Number> v) {
+			return getNumber(t, v).intValue();
+		}
+
+		protected static final int getIntegr(UncertaintyType t, Map<URI, Number> v,
+				String name) {
+			return getNumber(t, v, name).intValue();
+		}
+	}
+
+	private static final Logger log = LoggerFactory.getLogger(UncertaintyNetCDF.class);
 	private static final String MISSING_VALUE_ATTRIBUTE = "missing_value";
 	private static final String PRIMARY_VARIABLES_ATTRIBUTE = "primary_variables";
 	private static final String UNITS_ATTRIBUTE = "units";
@@ -309,39 +484,23 @@ public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 		try {
 			EPSG4326 = CRS.getAuthorityFactory(true)
 					.createCoordinateReferenceSystem("EPSG:4326");
-		} catch (NoSuchAuthorityCodeException e) {
-			throw VissError.internal(e);
-		} catch (FactoryRegistryException e) {
-			throw VissError.internal(e);
-		} catch (FactoryException e) {
+		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
 	}
-
-	protected IUncertainty map(URI main, Map<URI, Number> v) {
-		IUncertainty u = map(UncertaintyType.fromURI(main), v);
-		if (u == null)
-			throw new IllegalArgumentException("not (yet) supported: " + main);
-		return u;
+	
+	protected static boolean checkForUWConvention(NetcdfFile f) {
+		Attribute a = f.findGlobalAttribute(CONVENTIONS_ATTRIBUTE);
+		if (a == null)
+			return false;
+		for (String s : a.getStringValue().split(" "))
+			if (s.equals(UW_CONVENTION))
+				return true;
+		return false;
 	}
 
 	private NetcdfFile netCDF;
 	private Variable primaryVariable;
-
-	
-
-	
-
-	protected Set<URI> getURIs(NetcdfFile f) {
-		Set<URI> set = Utils.set();
-		for (Variable v : f.getVariables()) {
-			URI uri = getURI(v);
-			if (uri != null) {
-				set.add(uri);
-			}
-		}
-		return set;
-	}
 
 	public Set<Variable> getAnciallaryVariables(Variable v) {
 		Set<Variable> vars = Utils.set();
@@ -357,13 +516,8 @@ public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 
 	public URI getURI(Variable v) {
 		Attribute ref = v.findAttribute(REF_ATTRIBUTE);
-		if (ref != null) {
-			try {
-				return new URI(ref.getStringValue());
-			} catch (URISyntaxException e) {
-				VissError.internal(e);
-			}
-		}
+		if (ref != null)
+			return URI.create(ref.getStringValue());
 		return null;
 	}
 
@@ -379,32 +533,22 @@ public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 		return getURI(getPrimaryVariable());
 	}
 
-	protected Variable getNotNullVariable(String name) {
-		Variable v = getNetCDF().findVariable(name);
-		if (v == null) {
-			throw VissError.internal("Variable with name '" + name
-					+ "' could not be found.");
-		}
-		return v;
-	}
-
 	public Variable getPrimaryVariable() {
 		if (this.primaryVariable == null) {
-			Attribute a = getNetCDF().findGlobalAttribute(
-					PRIMARY_VARIABLES_ATTRIBUTE);
+			Attribute a = getNetCDF().findGlobalAttribute(PRIMARY_VARIABLES_ATTRIBUTE);
 			if (a.getLength() == 1) {
 				this.primaryVariable = getNotNullVariable(a.getStringValue(0));
 			} else {
-				throw VissError
-						.internal("Only a single primary value is currently supported");
+				throw VissError.internal("Only a single primary value is currently supported");
 			}
 		}
 		return this.primaryVariable;
 	}
-
+	
 	public UncertaintyNetCDF(NetcdfFile f) {
 		Validate.notNull(f);
-		checkForUWConvention(f);
+		if (!checkForUWConvention(f))
+			throw VissError.internal("NetCDF file is not " + UW_CONVENTION + " compliant.");
 		this.netCDF = f;
 	}
 
@@ -432,25 +576,14 @@ public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 			// X=LON,Y=LAT!!!
 			int lonSize = lon.getShape()[0];
 			int latSize = lat.getShape()[0];
-			double lonMin = lon.read(Utils.list(new ucar.ma2.Range(0, 0)))
-					.getDouble(0);
-			double lonMax = lon.read(
-					Utils.list(new ucar.ma2.Range(lonSize - 1, lonSize - 1)))
-					.getDouble(0);
-			double latMin = lat.read(Utils.list(new ucar.ma2.Range(0, 0)))
-					.getDouble(0);
-			double latMax = lat.read(
-					Utils.list(new ucar.ma2.Range(latSize - 1, latSize - 1)))
-					.getDouble(0);
-			return new Envelope2D(EPSG4326, lonMin, latMin, lonMax - lonMin,
-					latMax - latMin);
+			double lonMin = lon.read(Utils.list(new ucar.ma2.Range(0, 0))).getDouble(0);
+			double lonMax = lon.read(Utils.list(new ucar.ma2.Range(lonSize - 1, lonSize - 1))).getDouble(0);
+			double latMin = lat.read(Utils.list(new ucar.ma2.Range(0, 0))).getDouble(0);
+			double latMax = lat.read(Utils.list(new ucar.ma2.Range(latSize - 1, latSize - 1))).getDouble(0);
+			return new Envelope2D(EPSG4326, lonMin, latMin, lonMax - lonMin, latMax - latMin);
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
-	}
-
-	public void getWritableCoverage() {
-
 	}
 
 	public WriteableGridCoverage getCoverage(String layerName) {
@@ -471,8 +604,7 @@ public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 
 		int missingValue = -999;
 		for (String s : a.getStringValue().split(" ")) {
-			Attribute mv = getNotNullVariable(s).findAttribute(
-					MISSING_VALUE_ATTRIBUTE);
+			Attribute mv = getNotNullVariable(s).findAttribute(MISSING_VALUE_ATTRIBUTE);
 			if (mv != null) {
 				missingValue = mv.getNumericValue().intValue();
 				break;
@@ -522,18 +654,14 @@ public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 			return Unit.ONE;
 		}
 	}
-
-	protected void checkForUWConvention(NetcdfFile f) {
-		Attribute a = f.findGlobalAttribute(CONVENTIONS_ATTRIBUTE);
-		if (a == null) {
-			throw VissError.internal("No conventions attribute");
+	
+	protected Variable getNotNullVariable(String name) {
+		Variable v = getNetCDF().findVariable(name);
+		if (v == null) {
+			throw VissError.internal("Variable with name '" + name
+					+ "' could not be found.");
 		}
-		for (String s : a.getStringValue().split(" ")) {
-			if (s.equals(UW_CONVENTION))
-				return;
-		}
-		throw VissError.internal("NetCDF file is not " + UW_CONVENTION
-				+ " compliant.");
+		return v;
 	}
 
 	public Integer getMissingValue(Variable v) {
@@ -544,176 +672,4 @@ public class UncertaintyNetCDF implements Iterable<UncertaintyNetCDF.Value> {
 			return a.getNumericValue().intValue();
 		}
 	}
-
-	protected IUncertainty map(UncertaintyType t, Map<URI, Number> v) {
-		switch (t) {
-		case BETA_DISTRIBUTION:
-			return new BetaDistribution(
-					getDouble(t, v, "alpha"), 
-					getDouble(t, v, "beta"));
-		case CAUCHY_DISTRIBUTION:
-			return new CauchyDistribution(
-					getDouble(t, v, "location"),
-					getDouble(t, v, "scale"));
-		case CHI_SQUARE_DISTRIBUTION:
-			return new ChiSquareDistribution(
-					getIntegr(t, v, "degreesOfFreedom"));
-		case EXPONENTIAL_DISTRIBUTION:
-			return new ExponentialDistribution(
-					getIntegr(t, v, "rate"));
-		case F_DISTRIBUTION:
-			return new FDistribution(
-					getIntegr(t, v, "denominator"), 
-					getIntegr(t, v, "numerator"));
-		case GAMMA_DISTRIBUTION:
-			return new GammaDistribution(
-					getDouble(t, v, "shape"), 
-					getDouble(t, v, "scale"));
-		case INVERSE_GAMMA_DISTRIBUTION:
-			return new InverseGammaDistribution(
-					getDouble(t, v, "shape"),
-					getDouble(t, v, "scale"));
-		case LAPLACE_DISTRIBUTION:
-			return new LaplaceDistribution(
-					getDouble(t, v, "location"),
-					getDouble(t, v, "scale"));
-		case LOGISTIC_DISTRIBUTION:
-			return new LogisticDistribution(
-					getDouble(t, v, "location"),
-					getDouble(t, v, "scale"));
-		case LOG_NORMAL_DISTRIBUTION:
-			return new LogNormalDistribution(
-					getDouble(t, v, "logScale"),
-					getDouble(t, v, "shape"));
-		case NORMAL_DISTRIBUTION:
-			return new NormalDistribution(
-					getDouble(t, v, "mean"), 
-					getDouble(t, v, "variance"));
-		case NORMAL_INVERSE_GAMMA_DISTRIBUTION:
-			return new NormalInverseGammaDistribution(
-					getDouble(t, v, "mean"),
-					getDouble(t, v, "varianceScaling"),
-					getDouble(t, v, "shape"), 
-					getDouble(t, v, "scale"));
-		case PARETO_DISTRIBUTION:
-			return new ParetoDistribution(
-					getDouble(t, v, "scale"), 
-					getDouble(t, v, "shape"));
-		case POISSON_DISTRIBUTION:
-			return new PoissonDistribution(
-					getIntegr(t, v, "rate"));
-		case STUDENT_T_DISTRIBUTION:
-			return new StudentTDistribution(
-					getDouble(t, v, "mean"), 
-					getDouble(t, v, "variance"), 
-					getIntegr(t, v, "degreesOfFreedom"));
-		case UNIFORM_DISTRIBUTION:
-			return new UniformDistribution(
-					getDouble(t, v, "minimum"),
-					getDouble(t, v, "maximum"));
-		case WEIBULL_DISTRIBUTION:
-			return new WeibullDistribution(
-					getDouble(t, v, "scale"), 
-					getDouble(t, v, "shape"));
-		case CENTRED_MOMENT:
-			return new CentredMoment(
-					getIntegr(t, v, "order"), 
-					getDouble(t, v, "value"));
-		case INTERQUATILE_RANGE:
-			return new InterquartileRange(
-					getDouble(t, v, "lower"), 
-					getDouble(t, v, "upper"));
-		case MOMENT:
-			return new Moment(
-					getIntegr(t, v, "order"),
-					getDouble(t, v, "value"));
-		case DECILE:
-			return new Decile(
-					getIntegr(t, v, "level"),
-					getDouble(t, v, "value"));
-		case PERCENTILE:
-			return new Percentile(
-					getIntegr(t, v, "level"), 
-					getDouble(t, v, "value"));
-		case QUANTILE:
-			return new Quantile(
-					getIntegr(t, v, "level"), 
-					getDouble(t, v, "value"));
-		case QUARTILE:
-			return new Quartile(
-					getIntegr(t, v, "level"), 
-					getDouble(t, v, "value"));
-		case RANGE:
-			return new Range(
-					getDouble(t, v, "lower"), 
-					getDouble(t, v, "upper"));
-		case STANDARD_DEVIATION:
-			return new StandardDeviation(
-					getDouble(t, v));
-		case COEFFICIENT_OF_VARIATION:
-			return new CoefficientOfVariation(
-					getDouble(t, v));
-		case CORRELATION:
-			return new Correlation(
-					getDouble(t, v));
-		case KURTOSIS:
-			return new Kurtosis(
-					getDouble(t, v));
-		case MEAN:
-			return new Mean(
-					getDouble(t, v));
-		case MEDIAN:
-			return new Median(
-					getDouble(t, v));
-		case MODE:
-			return new Mode(
-					getDouble(t, v));
-		case SKEWNESS:
-			return new Skewness(
-					getDouble(t, v));
-		// TODO case CONFIDENCE_INTERVAL:
-		// TODO case CONFUSION_MATRIX:
-		// TODO case COVARIANCE_MATRIX:
-		// TODO case CREDIBLE_INTERVAL:
-		// TODO case PROBABILITY:
-		// TODO case MIXTURE_MODEL_DISTRIBUTION:
-		// TODO case STATISTIC_COLLECTION:
-		// TODO case RANDOM_SAMPLE:
-		// TODO case REALISATION:
-		// TODO case SYSTEMATIC_SAMPLE:
-		// TODO case UNKNOWN_SAMPLE:
-		default:
-			return null;
-		}
-	}
-
-	protected static final Number getNumber(UncertaintyType t,
-			Map<URI, Number> v) {
-		return v.get(t.getURI());
-	}
-
-	protected static final Number getNumber(UncertaintyType t,
-			Map<URI, Number> v, String n) {
-		return v.get(t.getParamURI(n));
-	}
-
-	protected static final double getDouble(UncertaintyType t,
-			Map<URI, Number> v) {
-		return getNumber(t, v).doubleValue();
-	}
-
-	protected static final double getDouble(UncertaintyType t,
-			Map<URI, Number> v, String name) {
-		return getNumber(t, v, name).doubleValue();
-	}
-
-	protected static final int getIntegr(UncertaintyType t, Map<URI, Number> v) {
-		return getNumber(t, v).intValue();
-	}
-
-	protected static final int getIntegr(UncertaintyType t, Map<URI, Number> v,
-			String name) {
-		return getNumber(t, v, name).intValue();
-	}
-
 }
