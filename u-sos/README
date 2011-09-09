@@ -1,8 +1,28 @@
-This project contains the uncertainty extension for the 52°North Sensor Observation Service.
+######################################################################
+## 52North SOS Uncertainty Enabled Sensor Observation Service
+######################################################################
 
-Folder structure:
+This project contains the uncertainty extension for the 52°North Sensor 
+Observation Service.
 
-Project configuration:
+This project is under construction and should be running in October 2011.
 
-Installation instructions:
+
+######################################################################
+## Folder structure:
+
+The project contains the following folders:
+52n-sos-dao-postgis-uncertainty: extension to the Data Access Objects for 
+  PostGIS to provide the ability to process data uncertainty
+db: SQL scripts to extend the data model and insert sample data
+examples: SOS requests to register sensors, insert observations and get 
+  observations
+
+
+######################################################################
+## Project configuration:
+
+
+######################################################################
+## Installation instructions:
 
