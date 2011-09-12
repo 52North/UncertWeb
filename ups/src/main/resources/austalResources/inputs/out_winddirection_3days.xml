@@ -1,0 +1,1185 @@
+<?xml version="1.0" ?>
+
+<uw:UncertainInput xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:uw="http://www.uncertweb.org" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.uncertweb.org http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd">
+		<ows:Identifier>input1</ows:Identifier>
+		<wps:Data>
+
+<OM_UncertaintyObservationCollection xmlns="http://www.opengis.net/om/2.0" xmlns:om="http://www.opengis.net/om/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:sa="http://www.opengis.net/sampling/2.0" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/om/2.0 http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"><om:OM_UncertaintyObservation gml:id="o_0" xmlns:om="http://www.opengis.net/om/2.0"     >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t0">
+      <gml:timePosition>2010-03-01T00:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t0"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest>
+    <sams:SF_SpatialSamplingFeature gml:id="sf0">
+      <gml:identifier codeSpace="http://www.uncertweb.org">meteorology.0</gml:identifier>
+      <sa:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface"/>
+      <sa:sampledFeature xsi:nil="true"/>
+      <sams:shape>
+        <gml:MultiPolygon gml:id="g0">
+          <gml:polygonMember>
+            <gml:Polygon gml:id="g1" srsName="http://www.opengis.net/def/crs/EPSG/0/0">
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:pos>3416040.0 5745768.0</gml:pos>
+                  <gml:pos>3395040.0 5745768.0</gml:pos>
+                  <gml:pos>3395040.0 5770768.0</gml:pos>
+                  <gml:pos>3416040.0 5770768.0</gml:pos>
+                  <gml:pos>3416040.0 5745768.0</gml:pos>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </gml:polygonMember>
+        </gml:MultiPolygon>
+      </sams:shape>
+    </sams:SF_SpatialSamplingFeature>
+  </om:featureOfInterest>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>261.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_1" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t1">
+      <gml:timePosition>2010-03-01T01:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t1"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>263.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_2" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t2">
+      <gml:timePosition>2010-03-01T02:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t2"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>256.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_3" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t3">
+      <gml:timePosition>2010-03-01T03:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t3"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>256.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_4" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t4">
+      <gml:timePosition>2010-03-01T04:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t4"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>257.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_5" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t5">
+      <gml:timePosition>2010-03-01T05:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t5"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>256.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_6" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t6">
+      <gml:timePosition>2010-03-01T06:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t6"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>258.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_7" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t7">
+      <gml:timePosition>2010-03-01T07:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t7"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>273.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_8" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t8">
+      <gml:timePosition>2010-03-01T08:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t8"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>279.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_9" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t9">
+      <gml:timePosition>2010-03-01T09:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t9"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>273.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_10" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t10">
+      <gml:timePosition>2010-03-01T10:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t10"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>267.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_11" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t11">
+      <gml:timePosition>2010-03-01T11:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t11"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>283.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_12" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t12">
+      <gml:timePosition>2010-03-01T12:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t12"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>289.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_13" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t13">
+      <gml:timePosition>2010-03-01T13:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t13"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>284.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_14" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t14">
+      <gml:timePosition>2010-03-01T14:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t14"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>287.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_15" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t15">
+      <gml:timePosition>2010-03-01T15:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t15"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>293.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_16" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t16">
+      <gml:timePosition>2010-03-01T16:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t16"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>284.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_17" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t17">
+      <gml:timePosition>2010-03-01T17:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t17"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>270.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_18" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t18">
+      <gml:timePosition>2010-03-01T18:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t18"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>268.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_19" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t19">
+      <gml:timePosition>2010-03-01T19:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t19"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>276.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_20" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t20">
+      <gml:timePosition>2010-03-01T20:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t20"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>264.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_21" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t21">
+      <gml:timePosition>2010-03-01T21:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t21"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>266.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_22" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t22">
+      <gml:timePosition>2010-03-01T22:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t22"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>279.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_23" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t23">
+      <gml:timePosition>2010-03-01T23:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t23"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>269.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_24" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t24">
+      <gml:timePosition>2010-03-02T00:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t24"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>273.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_25" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t25">
+      <gml:timePosition>2010-03-02T01:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t25"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>259.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_26" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t26">
+      <gml:timePosition>2010-03-02T02:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t26"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>268.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_27" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t27">
+      <gml:timePosition>2010-03-02T03:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t27"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>262.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_28" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t28">
+      <gml:timePosition>2010-03-02T04:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t28"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>248.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_29" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t29">
+      <gml:timePosition>2010-03-02T05:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t29"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>253.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_30" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t30">
+      <gml:timePosition>2010-03-02T06:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t30"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>246.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_31" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t31">
+      <gml:timePosition>2010-03-02T07:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t31"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>254.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_32" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t32">
+      <gml:timePosition>2010-03-02T08:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t32"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>267.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_33" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t33">
+      <gml:timePosition>2010-03-02T09:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t33"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>251.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_34" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t34">
+      <gml:timePosition>2010-03-02T10:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t34"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>239.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_35" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t35">
+      <gml:timePosition>2010-03-02T11:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t35"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>248.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_36" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t36">
+      <gml:timePosition>2010-03-02T12:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t36"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>264.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_37" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t37">
+      <gml:timePosition>2010-03-02T13:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t37"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>276.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_38" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t38">
+      <gml:timePosition>2010-03-02T14:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t38"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>279.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_39" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t39">
+      <gml:timePosition>2010-03-02T15:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t39"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>292.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_40" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t40">
+      <gml:timePosition>2010-03-02T16:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t40"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>294.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_41" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t41">
+      <gml:timePosition>2010-03-02T17:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t41"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>299.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_42" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t42">
+      <gml:timePosition>2010-03-02T18:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t42"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>292.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_43" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t43">
+      <gml:timePosition>2010-03-02T19:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t43"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>308.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_44" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t44">
+      <gml:timePosition>2010-03-02T20:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t44"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>292.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_45" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t45">
+      <gml:timePosition>2010-03-02T21:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t45"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>274.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_46" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t46">
+      <gml:timePosition>2010-03-02T22:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t46"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>278.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_47" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t47">
+      <gml:timePosition>2010-03-02T23:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t47"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>255.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_48" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t48">
+      <gml:timePosition>2010-03-03T00:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t48"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>269.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_49" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t49">
+      <gml:timePosition>2010-03-03T01:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t49"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>266.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_50" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t50">
+      <gml:timePosition>2010-03-03T02:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t50"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>265.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_51" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t51">
+      <gml:timePosition>2010-03-03T03:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t51"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>275.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_52" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t52">
+      <gml:timePosition>2010-03-03T04:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t52"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>267.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_53" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t53">
+      <gml:timePosition>2010-03-03T05:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t53"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>260.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_54" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t54">
+      <gml:timePosition>2010-03-03T06:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t54"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>260.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_55" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t55">
+      <gml:timePosition>2010-03-03T07:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t55"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>238.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_56" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t56">
+      <gml:timePosition>2010-03-03T08:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t56"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>216.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_57" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t57">
+      <gml:timePosition>2010-03-03T09:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t57"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>240.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_58" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t58">
+      <gml:timePosition>2010-03-03T10:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t58"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>253.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_59" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t59">
+      <gml:timePosition>2010-03-03T11:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t59"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>251.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_60" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t60">
+      <gml:timePosition>2010-03-03T12:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t60"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>271.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_61" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t61">
+      <gml:timePosition>2010-03-03T13:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t61"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>300.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_62" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t62">
+      <gml:timePosition>2010-03-03T14:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t62"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>348.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_63" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t63">
+      <gml:timePosition>2010-03-03T15:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t63"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>108.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_64" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t64">
+      <gml:timePosition>2010-03-03T16:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t64"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>323.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_65" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t65">
+      <gml:timePosition>2010-03-03T17:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t65"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>360.0</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_66" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t66">
+      <gml:timePosition>2010-03-03T18:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t66"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>339.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_67" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t67">
+      <gml:timePosition>2010-03-03T19:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t67"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>317.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_68" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t68">
+      <gml:timePosition>2010-03-03T20:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t68"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>343.8410418</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_69" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t69">
+      <gml:timePosition>2010-03-03T21:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t69"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>360.0</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_70" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t70">
+      <gml:timePosition>2010-03-03T22:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t70"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>23.84104177</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation><om:OM_UncertaintyObservation gml:id="o_71" xmlns:om="http://www.opengis.net/om/2.0"  >
+  <om:phenomenonTime>
+    <gml:TimeInstant gml:id="t71">
+      <gml:timePosition>2010-03-03T23:00:00.000+01:00</gml:timePosition>
+    </gml:TimeInstant>
+  </om:phenomenonTime>
+  <om:resultTime xlink:href="#t71"/>
+  <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
+  <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/winddirection"/>
+  <om:featureOfInterest xlink:href="#sf0"/>
+  <om:result>
+    <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+      <un:mean>360.0</un:mean>
+      <un:variance>225.0253709</un:variance>
+    </un:NormalDistribution>
+  </om:result>
+</om:OM_UncertaintyObservation></OM_UncertaintyObservationCollection>
+
+		</wps:Data>
+	</uw:UncertainInput>
