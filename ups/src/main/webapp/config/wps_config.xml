@@ -289,6 +289,7 @@
 	<AlgorithmRepositoryList>
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
 			<Property name="Algorithm" active="true">org.uncertweb.u_wps.MonteCarloSimulationAlgorithm</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.u_wps.MonteCarloAustal2000</Property>	
 		</Repository>
 		
 		<Repository name="UploadedAlgorithmRepository" className="org.n52.wps.server.UploadedAlgorithmRepository" active="false">
