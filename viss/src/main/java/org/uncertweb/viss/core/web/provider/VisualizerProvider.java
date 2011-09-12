@@ -32,8 +32,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.slf4j.LoggerFactory;
+import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.util.Utils;
@@ -53,32 +56,28 @@ public class VisualizerProvider implements MessageBodyWriter<Visualizer> {
 	}
 
 	@Override
-	public void writeTo(Visualizer o, Class<?> t, Type gt, Annotation[] a,
+	public void writeTo(Visualizer v, Class<?> t, Type gt, Annotation[] a,
 			MediaType mt, MultivaluedMap<String, Object> hh, OutputStream es)
 			throws IOException {
 		try {
-			ReaderWriter
-					.writeToAsString(Utils.stringifyJson(toJson(o)), es, mt);
-		} catch (JSONException e) {
-			VissError.internal(e);
-		}
-	}
 
-	static JSONObject toJson(Visualizer v) throws IOException {
-		try {
-			JSONObject j = new JSONObject()
-					.putOpt("description", v.getDescription())
-					.put("id", v.getShortName());
+			JSONObject j = new JSONObject().putOpt("description",
+					v.getDescription()).put("id", v.getShortName());
+			JSONArray ar = new JSONArray();
+			for (UncertaintyType ut : v.getCompatibleUncertaintyTypes()) {
+				ar.put(ut.getURI());
+			}
+			j.put("supportedUncertainties", ar);
 			if (v.getResource() != null) {
 				j.put("options", v.getOptionsForResource(v.getResource()));
 			} else {
+				LoggerFactory.getLogger(getClass()).info("{}", v.getOptions());
 				j.put("options", v.getOptions());
 			}
-			return j;
+			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);
 		} catch (JSONException e) {
-			throw VissError.internal(e);
+			VissError.internal(e);
 		}
-
 	}
 
 	@Override

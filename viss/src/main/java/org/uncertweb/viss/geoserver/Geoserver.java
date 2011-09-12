@@ -278,7 +278,7 @@ public class Geoserver {
 			}
 		}
 		
-		con = RestBuilder.path(url("workspaces/%s.json"), ws)
+		con = RestBuilder.path(url("workspaces/%s"), ws)
 				.param("recurse", true)
 				.auth(this.user, this.pass)
 				.delete();

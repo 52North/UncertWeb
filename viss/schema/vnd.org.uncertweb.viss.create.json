@@ -1,5 +1,1 @@
-{	"$schema" : "http://json-schema.org/draft-03/schema#",
-	"type": "object",
-	"description": "an associative array of input parameters defined by the visualizer",
-	"additionalProperties": true
-}
+{ "type": "object", "description": "an associative array of input parameters defined by the visualizer" }

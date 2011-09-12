@@ -58,7 +58,7 @@ public class VisualizerFactory {
 				searchPackage(p);
 			}
 		} else {
-			searchPackage(VisualizerFactory.class.getPackage().getName());
+			searchPackage("org.uncertweb.viss.vis");
 		}
 	}
 
@@ -144,7 +144,8 @@ public class VisualizerFactory {
 				VissError.internal(e);
 			}
 		}
-		if (v.isCompatible(resource)) {
+		if (v.getCompatibleUncertaintyTypes().contains(resource.getType()) && 
+			v.getCompatibleMediaTypes().contains(resource.getMediaType())) {
 			v.setResource(resource);
 			return v;
 		} else {
@@ -169,7 +170,7 @@ public class VisualizerFactory {
 		Set<Visualizer> set = Utils.set();
 		for (Class<? extends Visualizer> v : visualizerForMediaType) {
 			Visualizer vis = getVisualizer(shortNamesByCreator.get(v));
-			if (vis.isCompatible(resource)) {
+			if (vis.getCompatibleUncertaintyTypes().contains(resource.getType())) {
 				vis.setResource(resource);
 				set.add(vis);
 			}

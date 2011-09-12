@@ -1,5 +1,4 @@
-{	"$schema" : "http://json-schema.org/draft-03/schema#",
-	"type": "object",
+{	"type": "object",
 	"description": "an reference to a remote coverage",
 	"properties": {
 		"url": { "type": "string", "format": "uri",

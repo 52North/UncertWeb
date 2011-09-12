@@ -22,7 +22,7 @@
 package org.uw.viss.core;
 
 import static org.junit.Assert.assertEquals;
-import static org.uncertweb.viss.mongo.resource.AbstractMongoResource.getExtent;
+import static org.uncertweb.viss.core.resource.mongo.AbstractMongoResource.getExtent;
 
 import java.util.Set;
 
@@ -30,6 +30,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.junit.Test;
+import org.uncertweb.viss.core.resource.mongo.AbstractMongoResource;
 import org.uncertweb.viss.core.resource.time.IrregularTemporalInstants;
 import org.uncertweb.viss.core.resource.time.IrregularTemporalIntervals;
 import org.uncertweb.viss.core.resource.time.MixedTemporalExtent;
@@ -39,7 +40,6 @@ import org.uncertweb.viss.core.resource.time.TemporalExtent;
 import org.uncertweb.viss.core.resource.time.TemporalInstant;
 import org.uncertweb.viss.core.resource.time.TemporalInterval;
 import org.uncertweb.viss.core.util.Utils;
-import org.uncertweb.viss.mongo.resource.AbstractMongoResource;
 
 public class TemporalExtentTest {
 

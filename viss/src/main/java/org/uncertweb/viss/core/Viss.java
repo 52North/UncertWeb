@@ -117,8 +117,8 @@ public class Viss {
 				if (!resource.isLoaded()) {
 					resource.load();
 				}
-				
-				if (!v.isCompatible(resource)) {
+				if (!v.getCompatibleMediaTypes().contains(resource.getMediaType())
+						|| !v.getCompatibleUncertaintyTypes().contains(resource.getType())) {
 					throw VissError.incompatibleVisualizer();
 				}
 				

@@ -27,10 +27,12 @@ import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
+import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.resource.time.TemporalExtent;
 import org.uncertweb.viss.core.vis.Visualization;
 
 public interface Resource {
+	
 	/**
 	 * @return the UUID of the resource
 	 */
@@ -69,6 +71,9 @@ public interface Resource {
 	 */
 	public String getPhenomenon();
 
+	
+	public UncertaintyType getType();
+	
 	/**
 	 * Loads the resource.
 	 * 

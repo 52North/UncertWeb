@@ -1,5 +1,4 @@
-{	"$schema" : "http://json-schema.org/draft-03/schema#",
-	"type": "object",
+{	"type": "object",
 	"description": "a resource object",
 	"properties": {
 		"id": {
@@ -25,11 +24,13 @@
 					"description": "the time of the data"
 				},
 				"begin": {
-					"type": { "$ref": "timeinstant"},
+					"type": "string",
+					"format": "date-time",
 					"description": "the begin of the temporalExtent"
 				},
 				"end": {
-					"type": { "$ref": "timeinstant"},
+					"type": "string",
+					"format": "date-time",
 					"description": "the end of the temporalExtent"
 				},
 				"intervalSize": {
@@ -50,8 +51,14 @@
 					"items": {
 						"type": "object",
 						"properties": {
-							"begin": { "type": {"$ref": "timeinstant"} },
-							"end": { "type": {"$ref": "timeinstant"} },
+							"begin": {
+								"type": "string",
+								"format": "date-time"
+							},
+							"end": {
+								"type": "string",
+								"format": "date-time"
+							}
 						}
 					}
 				},

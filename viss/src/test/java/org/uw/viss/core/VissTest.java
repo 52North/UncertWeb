@@ -56,13 +56,12 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Test;
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.MeanOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.ProbabilityForIntervalOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.ProbabilityOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.StandardDeviationOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.netcdf.normal.VarianceOfNormalDistribution;
-import org.uncertweb.viss.core.vis.impl.om.impl.MeanOfNormalDistributionOfMultiCoverages;
-import org.uncertweb.viss.core.vis.impl.om.impl.ProbabilityOfNormalDistributionOfMultiCoverages;
+import org.uncertweb.viss.core.vis.Visualizer;
+import org.uncertweb.viss.vis.distribution.normal.Mean;
+import org.uncertweb.viss.vis.distribution.normal.Probability;
+import org.uncertweb.viss.vis.distribution.normal.ProbabilityForInterval;
+import org.uncertweb.viss.vis.distribution.normal.StandardDeviation;
+import org.uncertweb.viss.vis.distribution.normal.Variance;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -155,11 +154,11 @@ public class VissTest extends JerseyTest {
 	public void sameVisualizationWithParameters() throws JSONException {
 		UUID uuid = addResource(OM_2_TYPE, getOMStream());
 		String cdfVisId1 = createVisualization(uuid,
-				ProbabilityOfNormalDistributionOfMultiCoverages.class
-						.getSimpleName(), new JSONObject().put("max", 0.5D));
+				getNameForVisualizer(Probability.class)
+					, new JSONObject().put("max", 0.5D));
 		String cdfVisId2 = createVisualization(uuid,
-				ProbabilityOfNormalDistributionOfMultiCoverages.class
-						.getSimpleName(), new JSONObject().put("max", 0.5D));
+				getNameForVisualizer(Probability.class)
+						, new JSONObject().put("max", 0.5D));
 		assertEquals(cdfVisId1, cdfVisId2);
 	}
 
@@ -170,20 +169,20 @@ public class VissTest extends JerseyTest {
 		UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
 
 		String meanVisId = createVisualization(uuid,
-				MeanOfNormalDistribution.class.getSimpleName(),
+				getNameForVisualizer(Mean.class),
 				new JSONObject());
 		createVisualization(uuid,
-				VarianceOfNormalDistribution.class.getSimpleName(),
+				getNameForVisualizer(Variance.class),
 				new JSONObject());
 		createVisualization(uuid,
-				StandardDeviationOfNormalDistribution.class.getSimpleName(),
+				getNameForVisualizer(StandardDeviation.class),
 				new JSONObject());
 		createVisualization(uuid,
-				ProbabilityOfNormalDistribution.class.getSimpleName(),
+				getNameForVisualizer(Probability.class),
 				new JSONObject().put("max", 0.5D));
 		createVisualization(uuid,
-				ProbabilityForIntervalOfNormalDistribution.class
-						.getSimpleName(), new JSONObject().put("min", 0.3D)
+				getNameForVisualizer(ProbabilityForInterval.class)
+				, new JSONObject().put("min", 0.3D)
 						.put("max", 0.6D));
 
 		String url = VISUALIZATION_SLD.replace(RES_PARAM_P, uuid.toString())
@@ -228,7 +227,7 @@ public class VissTest extends JerseyTest {
 		deleteAll();
 		UUID uuid = addResource(OM_2_TYPE, getOMStream());
 		createVisualization(uuid,
-				MeanOfNormalDistributionOfMultiCoverages.class.getSimpleName(),
+				getNameForVisualizer(Mean.class),
 				new JSONObject());
 	}
 
@@ -236,14 +235,14 @@ public class VissTest extends JerseyTest {
 	public void testSameVisualization() throws JSONException {
 		UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
 		String visId1 = createVisualization(uuid,
-				MeanOfNormalDistribution.class.getSimpleName(),
+				getNameForVisualizer(Mean.class),
 				new JSONObject());
 		String visId2 = createVisualization(uuid,
-				MeanOfNormalDistribution.class.getSimpleName(),
+				getNameForVisualizer(Mean.class),
 				new JSONObject());
 		assertEquals(visId1, visId2);
 		String visId3 = createVisualization(uuid,
-				VarianceOfNormalDistribution.class.getSimpleName(),
+				getNameForVisualizer(Variance.class),
 				new JSONObject());
 		assertTrue(!visId2.equals(visId3));
 	}
@@ -259,7 +258,14 @@ public class VissTest extends JerseyTest {
 				deleteResource(id);
 			}
 		}
-
+	}
+	
+	private String getNameForVisualizer(Class<? extends Visualizer> vc) {
+		try {
+			return vc.newInstance().getShortName();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	void deleteResource(String id) {

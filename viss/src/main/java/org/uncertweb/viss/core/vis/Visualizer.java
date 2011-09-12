@@ -21,16 +21,20 @@
  */
 package org.uncertweb.viss.core.vis;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONObject;
+import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.resource.Resource;
 
 public interface Visualizer {
 	
 	public Set<MediaType> getCompatibleMediaTypes();
+	
+	public Set<UncertaintyType> getCompatibleUncertaintyTypes();
 
 	public String getShortName();
 
@@ -38,11 +42,9 @@ public interface Visualizer {
 
 	public String getId(JSONObject params);
 
-	public boolean isCompatible(Resource r);
-
-	public JSONObject getOptions();
+	public Map<String, JSONObject> getOptions();
 	
-	public JSONObject getOptionsForResource(Resource r);
+	public Map<String, JSONObject> getOptionsForResource(Resource r);
 
 	public Visualization visualize(Resource r, JSONObject params);
 	
