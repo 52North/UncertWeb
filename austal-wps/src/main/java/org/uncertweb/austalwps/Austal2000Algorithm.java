@@ -141,7 +141,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		}
 		
 		// 1. read files to create datamodel
-		this.readFiles("austal2000_template.txt", "zeitreihe_0810.dmna");		
+		this.readFiles("austal2000_template.txt", "zeitreihe_template.dmna");		
 		
 		ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
 		ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
