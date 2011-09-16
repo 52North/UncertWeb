@@ -22,7 +22,7 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<wps.version>2.0-RC7-SNAPSHOT</wps.version>
+		<wps.version>2.0-RC8-SNAPSHOT</wps.version>
 	</properties>
 
 	<dependencies>
@@ -43,23 +43,10 @@
 		</dependency>
 
 		<!-- Logging -->
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
-			<scope>runtime</scope>
-		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
-			<scope>runtime</scope>
 		</dependency>
 
 		<!-- WPS dependencies -->
@@ -92,8 +79,14 @@
     	<dependency>
       		<groupId>org.uncertweb</groupId>
       		<artifactId>om-api</artifactId>
-      		<version>0.0.4-SNAPSHOT</version>
+      		<version>0.0.5-SNAPSHOT</version>
     	</dependency>
+    	<dependency>
+       		<groupId>org.uncertweb</groupId>
+       		<artifactId>52n-wps-io-uncertweb</artifactId>
+   			<version>0.0.2-SNAPSHOT</version>
+   		</dependency>
+    	
 
 			<dependency> <groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-webapp</artifactId>
