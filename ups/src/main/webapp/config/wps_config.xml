@@ -117,7 +117,7 @@
 				<Property name="supportedFormat" active="true">application/x-zipped-wkt</Property>
 				<Property name="supportedEncoding" active="true">Base64</Property>
 			</Parser>
-			<Parser name="UncertMLParser" className="org.n52.wps.io.datahandler.xml.UncertMLParser" active="true">
+			<!-- <Parser name="UncertMLParser" className="org.n52.wps.io.datahandler.xml.UncertMLParser" active="true">
 				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd</Property>
 				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Quantile.xsd</Property>
 				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Property>
@@ -125,17 +125,20 @@
 				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInput.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Parser>
+			</Parser>  -->
 			<Parser name="SimpleXMLParser" className="org.n52.wps.io.datahandler.xml.SimpleXMLParser" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
-			<Parser name="UncertainInputParser" className="org.n52.wps.io.datahandler.xml.UncertainInputParser" active="true">
-				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Parser>
+			<Parser name="UncertWebIODataParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true">
+            	<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
+            	<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
+            	<Property name="supportedFormat" active="true">application/x-netcdf</Property>
+            	<Property name="supportedFormat" active="true">application/x-uncertml</Property>
+            	<Property name="supportedFormat" active="true">application/x-om-u</Property>
+            	<Property name="supportedEncoding" active="true">UTF-8</Property>
+   			</Parser>
 			<Parser name="StaticInputParser" className="org.n52.wps.io.datahandler.xml.StaticInputParser" active="true">
 				<Property name="supportedSchema" active="true">http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
