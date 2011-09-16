@@ -1,9 +1,4 @@
 <?xml version="1.0" ?>
-
-<uw:UncertainInput xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:uw="http://www.uncertweb.org" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.uncertweb.org http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd">
-		<ows:Identifier>input1</ows:Identifier>
-		<wps:Data>
-
 <OM_UncertaintyObservationCollection xmlns="http://www.opengis.net/om/2.0" xmlns:om="http://www.opengis.net/om/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:sa="http://www.opengis.net/sampling/2.0" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/om/2.0 http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"><om:OM_UncertaintyObservation gml:id="o_0" xmlns:om="http://www.opengis.net/om/2.0"     >
   <om:phenomenonTime>
     <gml:TimeInstant gml:id="t0">
@@ -1180,6 +1175,3 @@
     </un:NormalDistribution>
   </om:result>
 </om:OM_UncertaintyObservation></OM_UncertaintyObservationCollection>
-
-		</wps:Data>
-	</uw:UncertainInput>
