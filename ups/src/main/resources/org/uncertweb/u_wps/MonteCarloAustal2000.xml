@@ -14,15 +14,110 @@
 					</ows:AllowedValues>
 				</LiteralData>
 			</Input>
-			<Input minOccurs="0" maxOccurs="9999">
-				<ows:Identifier>UncertainProcessInputs</ows:Identifier>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>u_input1</ows:Identifier>
 				<ows:Title></ows:Title>
 				<ows:Abstract>Input data with probabilistic uncertainty. The UncertainInputType is structured similar to a normal WPS DataInputType, i.e. it has an identifier and a data element. The identifier is necessary to construct the executedocument for the model WPS.</ows:Abstract>
 				<ComplexData>
 					<Default>
 						<Format>
+							<MimeType>application/x-om-u</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
 							<MimeType>text/xml</MimeType>
 							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>u_input2</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty. The UncertainInputType is structured similar to a normal WPS DataInputType, i.e. it has an identifier and a data element. The identifier is necessary to construct the executedocument for the model WPS.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>u_input3</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty. The UncertainInputType is structured similar to a normal WPS DataInputType, i.e. it has an identifier and a data element. The identifier is necessary to construct the executedocument for the model WPS.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>u_input4</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty. The UncertainInputType is structured similar to a normal WPS DataInputType, i.e. it has an identifier and a data element. The identifier is necessary to construct the executedocument for the model WPS.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>u_input5</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty. The UncertainInputType is structured similar to a normal WPS DataInputType, i.e. it has an identifier and a data element. The identifier is necessary to construct the executedocument for the model WPS.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>u_input6</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty. The UncertainInputType is structured similar to a normal WPS DataInputType, i.e. it has an identifier and a data element. The identifier is necessary to construct the executedocument for the model WPS.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
 						</Format>
 					</Default>
 					<Supported>
