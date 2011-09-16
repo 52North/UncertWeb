@@ -15,44 +15,44 @@
 	
 	
 		<wps:Input>
-			<ows:Identifier>UncertainProcessInputs</ows:Identifier>
-			<wps:Reference xlink:href="http://localhost:8080/ups/resources/inputs/out_large_DE_3days.xml" mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd"></wps:Reference>
+			<ows:Identifier>u_input1</ows:Identifier>
+			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources2/inputs/out_large_DE_3days.xml" mimeType="application/x-om-u" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"></wps:Reference>
 		</wps:Input>
 	
 		<wps:Input>
-			<ows:Identifier>UncertainProcessInputs</ows:Identifier>
-			<wps:Reference xlink:href="http://localhost:8080/ups/resources/inputs/out_large_HFDE_3days.xml" mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd"></wps:Reference>
+			<ows:Identifier>u_input2</ows:Identifier>
+			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources2/inputs/out_large_HFDE_3days.xml" mimeType="application/x-om-u" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"></wps:Reference>
 		</wps:Input>
 	
 		<wps:Input>
-			<ows:Identifier>UncertainProcessInputs</ows:Identifier>
-			<wps:Reference xlink:href="http://localhost:8080/ups/resources/inputs/out_small_DE_3days.xml" mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd"></wps:Reference>
+			<ows:Identifier>u_input3</ows:Identifier>
+			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources2/inputs/out_small_DE_3days.xml" mimeType="application/x-om-u" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"></wps:Reference>
 		</wps:Input>
 	
 		<wps:Input>
-			<ows:Identifier>UncertainProcessInputs</ows:Identifier>
-			<wps:Reference xlink:href="http://localhost:8080/ups/resources/inputs/out_small_HFDE_3days.xml" mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd"></wps:Reference>
+			<ows:Identifier>u_input4</ows:Identifier>
+			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources2/inputs/out_small_HFDE_3days.xml" mimeType="application/x-om-u" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"></wps:Reference>
 		</wps:Input>
 	
 		<wps:Input>
-			<ows:Identifier>UncertainProcessInputs</ows:Identifier>
-			<wps:Reference xlink:href="http://localhost:8080/ups/resources/inputs/out_winddirection_3days.xml" mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd"></wps:Reference>
+			<ows:Identifier>u_input5</ows:Identifier>
+			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources2/inputs/out_winddirection_3days.xml" mimeType="application/x-om-u" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"></wps:Reference>
 		</wps:Input>
 	
 		<wps:Input>
-			<ows:Identifier>UncertainProcessInputs</ows:Identifier>
-			<wps:Reference xlink:href="http://localhost:8080/ups/resources/inputs/out_windspeed_3days.xml" mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd"></wps:Reference>
+			<ows:Identifier>u_input6</ows:Identifier>
+			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources2/inputs/out_windspeed_3days.xml" mimeType="application/x-om-u" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"></wps:Reference>
 		</wps:Input>
 	
 		<wps:Input>
 			<ows:Identifier>StaticProcessInputs</ows:Identifier>
-			<wps:Reference xlink:href="http://localhost:8080/ups/resources/inputs/staticInput.xml" mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd"></wps:Reference>
+			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources/inputs/staticInput.xml" mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd"></wps:Reference>
 		</wps:Input>
 	
 		<wps:Input>
 			<ows:Identifier>ServiceURL</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>http://localhost:8080/uts/WebProcessingService</wps:LiteralData>
+				<wps:LiteralData>http://localhost:8080/austalWPS/WebProcessingService</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
     
