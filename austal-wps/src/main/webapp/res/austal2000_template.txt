@@ -13,7 +13,7 @@ y0 -12500   'lower border of the study area in local coordinates
 qs 0	
 
 'option to get grid results for each hour
-os "NOSTANDARD;Kmax=1;Average=1;Interval=3600"
+'os "NOSTANDARD;Kmax=1;Average=1;Interval=3600"
 
 'local coordinates of receptor points (max 20)
 xp -2875 -2625 -2375 -2125 -1875 -1625 -1375 -1125 -875 -625 -375 -125 125 375 625 875 1125 1375 1625 1875
