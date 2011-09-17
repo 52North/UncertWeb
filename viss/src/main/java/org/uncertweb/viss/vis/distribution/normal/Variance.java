@@ -32,4 +32,8 @@ public class Variance extends AbstractNormalDistributionVisualizer {
 		return nd.getStandardDeviation() * nd.getStandardDeviation();
 	}
 
+	@Override
+	protected String getUom() {
+		return "(" + super.getUom() + ")^2";
+	}
 }

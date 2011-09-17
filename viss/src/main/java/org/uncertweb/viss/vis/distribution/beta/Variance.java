@@ -26,8 +26,14 @@ import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description
 
 @Description("Returns the variance.")
 public class Variance extends AbstractBetaDistributionVisualizer {
+	
 	@Override
 	protected double evaluate(BetaDistributionImpl d) {
 		return d.getNumericalVariance();
+	}
+
+	@Override
+	protected String getUom() {
+		return "(" + super.getUom() + ")^2";
 	}
 }

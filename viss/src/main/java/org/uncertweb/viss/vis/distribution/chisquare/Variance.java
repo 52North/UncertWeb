@@ -32,5 +32,9 @@ public class Variance extends
 	protected double evaluate(ChiSquaredDistributionImpl d) {
 		return d.getNumericalVariance();
 	}
-
+	
+	@Override
+	protected String getUom() {
+		return "(" + super.getUom() + ")^2";
+	}
 }
