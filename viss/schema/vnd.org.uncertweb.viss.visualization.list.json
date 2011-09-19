@@ -1,15 +1,22 @@
-{	"type": "object",
+{
+	"type": "object",
 	"description": "a visualization list",
 	"properties": {
 		"visualizations": { 
-			"type": "array", "required": true,
+			"type": "array",
+			"required": true,
 			"description": "the list of visualizations",
-			"items": { "type": "object",
+			"items": {
+				"type": "object",
 				"description": "a reference to a visualization",
-				"id": { "type": "string", "required": true,
+				"id": {
+					"type": "string",
+					"required": true,
 					"description": "the id of the visualization"
 				},
-				"href": { "type": "string", "required": true,
+				"href": {
+					"type": "string",
+					"required": true,
 					"format": "uri", 
 					"description": "the URI of the visualization"
 				}

@@ -1,16 +1,24 @@
-{	"type": "object",
+{
+	"type": "object",
 	"description": "a resource list",
 	"properties": {
 		"resources": { 
-			"type": "array", "required": true,
+			"type": "array",
+			"required": true,
 			"description": "the list of resources",
-			"items": { "type": "object",
+			"items": {
+				"type": "object",
 				"description": "a reference to a resource",
-				"id": { "type": "string", "required": true,
+				"id": {
+					"type": "string",
+					"required": true,
 					"description": "the id of the resource"
 				},
-				"href": { "type": "string", "required": true, "format": "uri",
-					 "description": "the URI of the resource"
+				"href": {
+					"type": "string",
+					"required": true,
+					"format": "uri",
+					"description": "the URI of the resource"
 				}
 			}
 		}

@@ -444,18 +444,11 @@ public class UncertaintyNetCDF implements Iterable<Value> {
 			// X=LON,Y=LAT!!!
 			int lonSize = lon.getShape()[0];
 			int latSize = lat.getShape()[0];
-			double lonMin = lon.read(Utils.list(new ucar.ma2.Range(0, 0)))
-					.getDouble(0);
-			double lonMax = lon.read(
-					Utils.list(new ucar.ma2.Range(lonSize - 1, lonSize - 1)))
-					.getDouble(0);
-			double latMin = lat.read(Utils.list(new ucar.ma2.Range(0, 0)))
-					.getDouble(0);
-			double latMax = lat.read(
-					Utils.list(new ucar.ma2.Range(latSize - 1, latSize - 1)))
-					.getDouble(0);
-			return new Envelope2D(EPSG4326, lonMin, latMin, lonMax - lonMin,
-					latMax - latMin);
+			double lonMin = lon.read(Utils.list(new ucar.ma2.Range(0, 0))).getDouble(0);
+			double lonMax = lon.read(Utils.list(new ucar.ma2.Range(lonSize - 1, lonSize - 1))).getDouble(0);
+			double latMin = lat.read(Utils.list(new ucar.ma2.Range(0, 0))).getDouble(0);
+			double latMax = lat.read(Utils.list(new ucar.ma2.Range(latSize - 1, latSize - 1))).getDouble(0);
+			return new Envelope2D(EPSG4326, lonMin, latMin, lonMax - lonMin, latMax - latMin);
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}

@@ -1,16 +1,24 @@
-{	"type": "object",
+{
+	"type": "object",
 	"description": "a visualizer list",
 	"properties": {
 		"visualizers": { 
-			"type": "array", "required": true,
+			"type": "array",
+			"required": true,
 			"description": "the list of visualizers",
-			"items": { "type": "object",
+			"items": {
+				"type": "object",
 				"description": "a reference to a visualizer",
-				"id": { "type": "string", "required": true,
+				"id": {
+					"type": "string",
+					"required": true,
 					"description": "the id of the visualizer"
 				},
-				"href": { "type": "string", "required": true,
-					"format": "uri", "description": "the URI of the visualizer"
+				"href": {
+					"type": "string",
+					"required": true,
+					"format": "uri",
+					"description": "the URI of the visualizer"
 				}
 			}
 		}

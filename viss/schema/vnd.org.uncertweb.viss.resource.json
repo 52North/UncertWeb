@@ -1,16 +1,20 @@
-{	"type": "object",
+{
+	"type": "object",
 	"description": "a resource object",
 	"properties": {
 		"id": {
-			"type": "string", "required": true,
+			"type": "string",
+			"required": true,
 			"description": "resource identifier"
 		},
 		"mimeType": {
-			"type": "string", "required": true,
+			"type": "string",
+			"required": true,
 			"description": "resource type"
 		},
 		"phenomenon": {
-			"type": "string", "required": true,
+			"type": "string",
+			"required": true,
 			"description": "the phenomenon of the visualization"
 		},
 		"temporalExtent": {
@@ -65,7 +69,11 @@
 				"instants": {
 					"type": "array",
 					"description": "the instants of irregular instants",
-					"items": { "type": {"$ref": "timeinstant"} },
+					"items": {
+						"type": {
+							"$ref": "timeinstant"
+						}
+					},
 					"minItems": 2
 				},
 			},
@@ -79,15 +87,21 @@
 			}
 		},
 		"visualizations": {
-			"type": "array", "required": true,
+			"type": "array",
+			"required": true,
 			"description": "array of already generated visualizations",
 			"items": {
 				"type": "object",
 				"properties": {
-					"id": { "type": "string", "required": true,
+					"id": {
+						"type": "string",
+						"required": true,
 						"description": "the id of the visualization"
 					},
-					"href": { "type": "string", "format": "uri", "required":true
+					"href": {
+						"type": "string",
+						"format": "uri",
+						"required":true,
 						"description": "the URI of the visualization"
 					}
 				}
