@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -11,9 +12,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.opengis.wps.x100.DataType;
+import net.opengis.wps.x100.DataInputsType;
 import net.opengis.wps.x100.ExecuteDocument;
 import net.opengis.wps.x100.ExecuteResponseDocument;
+import net.opengis.wps.x100.InputReferenceType;
 import net.opengis.wps.x100.InputType;
 import net.opengis.wps.x100.OutputDataType;
 
@@ -25,11 +27,10 @@ import org.n52.wps.client.WPSClientSession;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.OMData;
 import org.n52.wps.io.data.UncertWebIOData;
+import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.PlainStringBinding;
-import org.n52.wps.io.data.binding.complex.StaticInputDataBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
-import org.n52.wps.io.data.binding.complex.UncertainInputDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
@@ -39,16 +40,11 @@ import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.distribution.multivariate.IMultivariateDistribution;
 import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
 import org.uncertml.distribution.multivariate.MultivariateStudentTDistribution;
-import org.uncertweb.UncertainInputType;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
-import org.uncertweb.api.om.exceptions.OMParsingException;
-import org.uncertweb.api.om.io.IObservationEncoder;
 import org.uncertweb.api.om.io.StaxObservationEncoder;
-import org.uncertweb.api.om.io.XBObservationEncoder;
-import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
@@ -56,7 +52,6 @@ import org.uncertweb.api.om.observation.collections.MeasurementCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
-import org.uncertweb.impl.StaticInputTypeImpl;
 import org.uncertweb.ups.austal.AustalObservationInput;
 import org.uncertweb.ups.austal.DayDistribution;
 import org.uncertweb.ups.austal.DayEmissions;
@@ -149,7 +144,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		} else if (id.startsWith("u_")) {
 			return UncertWebIODataBinding.class;
 		} else if (id.equals(inputIDStaticProcessInputs)) {
-			return StaticInputDataBinding.class;
+			return GTVectorDataBinding.class;
 		} else if (id.equals(inputIDProcessExecuteRequest)) {
 			// return GenericFileDataBinding.class;
 			return PlainStringBinding.class;
@@ -222,6 +217,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		/* Treat PM10 data */
 
 		if (obsInputs.hasEmissionObs()) {
+			this.emissionsExist=true;
 
 			/*
 			 * for each observation, a new object is created - for the Daily
@@ -333,7 +329,12 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 				String filepath = resPath + "\\output_om";
 				filepath = filepath.concat("\\"+(i + 1) + ".xml");
 				File file = new File(filepath);
-				emissionsFiles.add(filepath);
+				try {
+					emissionsFiles.add(file.toURL().toString());
+				} catch (MalformedURLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
 				// encode, store (for using in austal request later)
 				try {
@@ -349,6 +350,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 
 		if (obsInputs.hasMeteoObs()) {
 
+			this.meteoExist=true;
 			// Store each observation as MeteoObject
 			for (UncertaintyObservation uncObs : obsInputs.getMeteoObs()
 					.getMembers()) {
@@ -385,7 +387,12 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 				String filepath = resPath + "\\output_om";
 				filepath = filepath.concat("\\meteo"+(i + 1) + ".xml");
 				File om_file = new File(filepath);
-				meteoFiles.add(filepath);
+				try {
+					meteoFiles.add(om_file.toURL().toString());
+				} catch (MalformedURLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
 				// encode, store (for using in austal request later)
 				try {
@@ -1136,114 +1143,47 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 			e1.printStackTrace();
 		}
 
-		// Set austal process identifier
-		Node owsIdentifier = execDoc.getExecute().getIdentifier().getDomNode();
-		Node contentNode = owsIdentifier.getChildNodes().item(0);
-		String content = contentNode.getNodeValue(); // for debugging
-		contentNode.setNodeValue(identifierAustal);
-		content = contentNode.getNodeValue(); // for debugging
 
 		// Set input data
-		Node wpsDataInputs = execDoc.getExecute().getDataInputs().getDomNode();
-		contentNode = wpsDataInputs.getChildNodes().item(0);
-		content = contentNode.getNodeValue(); // for debugging
-
+		DataInputsType wpsDataInputs = execDoc.getExecute().getDataInputs();
+		
+		
+		
 		// Make a long string including all inputs
 		String allInput = "";
 
-		if (emissionsExist) { // if emissions exist
-			// there can be only one per austal run, as all emissions are
-			// collected in one MeasurementCollection
-			// emissions input node ("insert") is made up of start, middle and
-			// end:
-			String start = "<wps:Input>\n<ows:Identifier>street-emissions</ows:Identifier>\n<wps:Data>\n<wps:ComplexData mimeType=\"text/xml\" schema=\"http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd\">";
-			String end = "</wps:ComplexData>\n</wps:Data>\n</wps:Input>\n\n\n";
-			String middle = emissionsFiles.get(runNumber);
-			String insert = start.concat(middle);
-			insert = insert.concat(end);
-			allInput = allInput.concat(insert);
+		if (emissionsExist) { 
+			
+			InputType wpsInput = wpsDataInputs.addNewInput();
+			wpsInput.addNewIdentifier().setStringValue("street-emissions");
+			InputReferenceType wpsReference = wpsInput.addNewReference();
+			wpsReference.setHref(emissionsFiles.get(runNumber));
+			wpsReference.setSchema("http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd");
+			wpsReference.setEncoding("UTF-8");
+			wpsReference.setMimeType("text/xml");
 		}
 		if (meteoExist) { // if meteorology exist
-			// there can be only one per austal run, as all meteorology
-			// observations are collected in one MeasurementCollection
-			// meteo input node ("insert") is made up of start, middle and end:
-			String start = "<wps:Input>\n<ows:Identifier>meteorology</ows:Identifier>\n<wps:Data>\n<wps:ComplexData mimeType=\"text/xml\" schema=\"http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInputType.xsd\">";
-			String end = "</wps:ComplexData>\n</wps:Data>\n</wps:Input>\n\n\n";
-			String middle = meteoFiles.get(runNumber);
-			String insert = start.concat(middle);
-			insert = insert.concat(end);
-			allInput = allInput.concat(insert);
+			InputType wpsInput = wpsDataInputs.addNewInput();
+			wpsInput.addNewIdentifier().setStringValue("meteorology");
+			InputReferenceType wpsReference = wpsInput.addNewReference();
+			wpsReference.setHref(meteoFiles.get(runNumber));
+			wpsReference.setSchema("http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd");
+			wpsReference.setEncoding("UTF-8");
+			wpsReference.setMimeType("text/xml");
 		}
-		if (staticInputsExist) { // if static inputs exist
-			// there can be several per austal run: receptor points, start-time,
-			// end-time, more receptor points...
-			int num = staticInputsList.size();
-			for (int i = 0; i < num; i++) {
-				// get static input
-				StaticInputDataBinding a = (StaticInputDataBinding) staticInputsList
-						.get(i);
-				StaticInputTypeImpl b = (StaticInputTypeImpl) a.getPayload();
-				String temp = b.toString();
-				// cut away tag <xml-fragment> etc. and closing tag
-				int begin = temp.indexOf("<ows:Identifier>");
-				int ending = temp.indexOf("</wps:Data>");
-				temp = temp.substring(begin, ending);
-				// add tags <wps:Input> and closing tag
-				String start = "<wps:Input>";
-				String end = "</wps:Input>\n\n\n";
-				String insert = start.concat(temp);
-				insert = insert.concat(end);
-				// add to whole string
-				allInput = allInput.concat(insert);
-			}
+		if (staticInputsExist){ 
+			InputType wpsInput = wpsDataInputs.addNewInput();
+			wpsInput.addNewIdentifier().setStringValue("receptor-points");
+			InputReferenceType wpsReference = wpsInput.addNewReference();
+			wpsReference.setHref("http://v-mars.uni-muenster.de/uncertweb/austalResources/inputs/staticInput.xml");
+			wpsReference.setSchema("http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd");
+			wpsReference.setMimeType("text/xml");
 		}
 
-		// debut
-		// Node node = null;
-		// try {
-		// node = DocumentBuilderFactory.newInstance()
-		// .newDocumentBuilder().parse(new ByteArrayInputStream(
-		// allInput.getBytes())).getDocumentElement();
-		// } catch (SAXException e1) {
-		// // TODO Auto-generated catch block
-		// e1.printStackTrace();
-		// } catch (IOException e1) {
-		// // TODO Auto-generated catch block
-		// e1.printStackTrace();
-		// } catch (ParserConfigurationException e1) {
-		// // TODO Auto-generated catch block
-		// e1.printStackTrace();
-		// }
-		// wpsDataInputs.replaceChild(node, contentNode);
-		// contentNode.setNodeValue(node);
-		// fin
-
-		// insert this long string to the request
-		contentNode.setNodeValue(allInput); // TODO here it puts some non-xml
-											// tags around my string...
-
-		// write the request to a file (one file per run)
-		/*
-		 * Not needed for running the whole process in the end, but used to
-		 * check the correctness of this request until the austal wps can be
-		 * used!
-		 */
-		// String filepath2 =
-		// "D:\\Eclipse_Workspace\\ups_wrapper\\src\\main\\resources\\output_austalrequests\\AustalRequest";
-		String filepath2 = resPath;
-		filepath2 = filepath2.concat(runNumber + ".txt");
-		File austalfile2 = new File(filepath2);
-		try {
-			BufferedWriter bw_austaloutput = new BufferedWriter(new FileWriter(
-					austalfile2));
-			String toFile = execDoc.xmlText();
-			bw_austaloutput.write(toFile);
-			bw_austaloutput.flush();
-			bw_austaloutput.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		
+		//TODO add running AUSTAL and checking of Response
+		
+		
 		// Run austal WPS and get output (Realisation object)
 		// ExecuteResponseDocument response1 = null;
 		// try {
