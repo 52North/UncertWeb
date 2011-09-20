@@ -1,0 +1,24 @@
+<wps:Execute service="WPS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0  http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ows:Identifier>org.uncertweb.austalwps.Austal2000Algorithm</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>street-emissions</ows:Identifier>
+      <wps:Reference xlink:href="file:/D:/uncertwebWorkspace/ups-trunk/src/main/resources/austalResources/output_om/1.xml" schema="http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd" encoding="UTF-8" mimeType="text/xml"/>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>meteorology</ows:Identifier>
+      <wps:Reference xlink:href="file:/D:/uncertwebWorkspace/ups-trunk/src/main/resources/austalResources/output_om/meteo1.xml" schema="http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd" encoding="UTF-8" mimeType="text/xml"/>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>receptor-points</ows:Identifier>
+      <wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources/inputs/staticInput.xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd" mimeType="text/xml"/>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:ResponseDocument>
+      <wps:Output mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/UncertML2.xsd">
+        <ows:Identifier>UncertainProcessOutputs</ows:Identifier>
+      </wps:Output>
+    </wps:ResponseDocument>
+  </wps:ResponseForm>
+</wps:Execute>
