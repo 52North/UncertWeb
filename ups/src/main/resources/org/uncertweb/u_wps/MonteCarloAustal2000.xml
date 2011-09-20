@@ -136,13 +136,13 @@
 					<Default>
 						<Format>
 							<MimeType>text/xml</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInput.xsd</Schema>
+							<Schema>http://schemas.opengis.net/gml/2.1.2/feature.xs</Schema>
 						</Format>
 					</Default>
 					<Supported>
 						<Format>
 							<MimeType>text/xml</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInput.xsd</Schema>
+							<Schema>http://schemas.opengis.net/gml/2.1.2/feature.xs</Schema>
 						</Format>
 					</Supported>
 				</ComplexData>

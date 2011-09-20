@@ -4,9 +4,6 @@
   <ows:Identifier>org.uncertweb.austalwps.Austal2000Algorithm</ows:Identifier>
   
   <wps:DataInputs>
-  
-  
-	<ows:Identifier>Content</ows:Identifier>
 	
 	
 
