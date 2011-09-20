@@ -79,18 +79,11 @@ public class OMParser extends AbstractXMLParser {
 			
 			BufferedReader bread = new BufferedReader(new InputStreamReader(primaryFile));
 			
-			String xmlString = "";
-			
-			String line = "";
-			
-			while((line = bread.readLine()) != null){
-				xmlString = xmlString.concat(line);
-			}
 			// differ between obs and obsCol (as String)
-			XmlObject xbDoc = XmlObject.Factory.parse(xmlString);
+			XmlObject xbDoc = XmlObject.Factory.parse(primaryFile);
 
 			if (xbDoc instanceof OMObservationDocument) {
-				AbstractObservation obs = parser.parseObservation(xmlString);
+				AbstractObservation obs = parser.parseObservationDocument((OMObservationDocument) xbDoc);
 				omData = new OMData(obs);
 
 			} else if (xbDoc instanceof OMBooleanObservationCollectionDocument
@@ -103,7 +96,7 @@ public class OMParser extends AbstractXMLParser {
 				// TODO missing: OMCategoryObservationCollectionDocument
 
 				IObservationCollection obsCol = parser
-						.parseObservationCollection(xmlString);
+						.parseObservationCollection(xbDoc);
 				omData = new OMData(obsCol);
 			} else {
 				throw new Exception(
@@ -126,19 +119,16 @@ public class OMParser extends AbstractXMLParser {
 
 			BufferedReader bread = new BufferedReader(new InputStreamReader(primaryFile));
 						
-			String xmlString = "";
-			
-			String line = "";
-			
-			while((line = bread.readLine()) != null){
-				xmlString = xmlString.concat(line);
-			}
+
+//			while((line = bread.readLine()) != null){
+//				xmlString = xmlString.concat(line);
+//			}
 			
 			// differ between obs and obsCol (as String)
-			XmlObject xbDoc = XmlObject.Factory.parse(xmlString);
+			XmlObject xbDoc = XmlObject.Factory.parse(primaryFile);
 
 			if (xbDoc instanceof OMObservationDocument) {
-				AbstractObservation obs = parser.parseObservation(xmlString);
+				AbstractObservation obs = parser.parseObservationDocument((OMObservationDocument) xbDoc);
 				omData = new OMData(obs);
 
 			} else if (xbDoc instanceof OMBooleanObservationCollectionDocument
@@ -151,7 +141,7 @@ public class OMParser extends AbstractXMLParser {
 				// TODO missing: OMCategoryObservationCollectionDocument
 
 				IObservationCollection obsCol = parser
-						.parseObservationCollection(xmlString);
+						.parseObservationCollection(xbDoc);
 				omData = new OMData(obsCol);
 			} else {
 				throw new Exception(
