@@ -11,7 +11,7 @@
     </wps:Input>
     <wps:Input>
       <ows:Identifier>receptor-points</ows:Identifier>
-      <wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources/inputs/staticInput.xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd" mimeType="text/xml"/>
+      <wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources/inputs/staticInput.xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd" mimeType="text/xml"/>
     </wps:Input>
   </wps:DataInputs>
   <wps:ResponseForm>
