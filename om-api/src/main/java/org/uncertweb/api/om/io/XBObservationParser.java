@@ -241,6 +241,118 @@ public class XBObservationParser implements IObservationParser {
 		}
 
 	}
+	
+	
+	/**
+	 * parses an observation collection
+	 * 
+	 * @param xmlObsCol
+	 *            XmlBeans XmlObject containing an XML encoded observation collection
+	 * @return POJO observation collection
+	 * @throws OMParsingException 
+	 */
+	public synchronized IObservationCollection parseObservationCollection(XmlObject xb_obsColDoc) throws OMParsingException {
+
+		IObservationCollection oc = null;
+		//Measurement collection
+		if (xb_obsColDoc instanceof OMMeasurementCollectionDocument) {
+			OMMeasurementCollection xb_ocType = ((OMMeasurementCollectionDocument)xb_obsColDoc).getOMMeasurementCollection();
+			UWMeasurementType[] xb_obsArray = xb_ocType.getOMMeasurementArray();
+			List<Measurement> obsList = new ArrayList<Measurement>(xb_obsArray.length);
+			for (UWMeasurementType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				Measurement obs = (Measurement)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			oc = new MeasurementCollection(obsList);
+			return oc;
+		}
+		//BooleanObservation collection
+		else if (xb_obsColDoc instanceof OMBooleanObservationCollectionDocument){
+			OMBooleanObservationCollection xb_ocType = ((OMBooleanObservationCollectionDocument)xb_obsColDoc).getOMBooleanObservationCollection();
+			UWBooleanObservationType[] xb_obsArray = xb_ocType.getOMBooleanObservationArray();
+			List<BooleanObservation> obsList = new ArrayList<BooleanObservation>(xb_obsArray.length);
+			for (UWBooleanObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				BooleanObservation obs = (BooleanObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			oc = new BooleanObservationCollection(obsList);
+			return oc;
+		}
+		//DiscreteNumericObservation collection
+		else if (xb_obsColDoc instanceof OMDiscreteNumericObservationCollectionDocument){
+			OMDiscreteNumericObservationCollection xb_ocType = ((OMDiscreteNumericObservationCollectionDocument)xb_obsColDoc).getOMDiscreteNumericObservationCollection();
+			UWDiscreteNumericObservationType[] xb_obsArray = xb_ocType.getOMDiscreteNumericObservationArray();
+			List<DiscreteNumericObservation> obsList = new ArrayList<DiscreteNumericObservation>(xb_obsArray.length);
+			for (UWDiscreteNumericObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				DiscreteNumericObservation obs = (DiscreteNumericObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			oc = new DiscreteNumericObservationCollection(obsList);
+			return oc;
+		}
+		//UncertaintyObservation collection
+		else if (xb_obsColDoc instanceof OMUncertaintyObservationCollectionDocument){
+			OMUncertaintyObservationCollection xb_ocType = ((OMUncertaintyObservationCollectionDocument)xb_obsColDoc).getOMUncertaintyObservationCollection();
+			UWUncertaintyObservationType[] xb_obsArray = xb_ocType.getOMUncertaintyObservationArray();
+			List<UncertaintyObservation> obsList = new ArrayList<UncertaintyObservation>(xb_obsArray.length);
+			for (UWUncertaintyObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				UncertaintyObservation obs = (UncertaintyObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			oc = new UncertaintyObservationCollection(obsList);
+			return oc;
+		}
+		//ReferenceObservation collection
+		else if (xb_obsColDoc instanceof OMReferenceObservationCollectionDocument){
+			OMReferenceObservationCollection xb_ocType = ((OMReferenceObservationCollectionDocument)xb_obsColDoc).getOMReferenceObservationCollection();
+			UWReferenceObservationType[] xb_obsArray = xb_ocType.getOMReferenceObservationArray();
+			List<ReferenceObservation> obsList = new ArrayList<ReferenceObservation>(xb_obsArray.length);
+			for (UWReferenceObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				ReferenceObservation obs = (ReferenceObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			oc = new ReferenceObservationCollection(obsList);
+			return oc;
+		}
+		//TextObservation collection
+		else if (xb_obsColDoc instanceof OMTextObservationCollectionDocument){
+			OMTextObservationCollection xb_ocType = ((OMTextObservationCollectionDocument)xb_obsColDoc).getOMTextObservationCollection();
+			UWTextObservationType[] xb_obsArray = xb_ocType.getOMTextObservationArray();
+			List<TextObservation> obsList = new ArrayList<TextObservation>(xb_obsArray.length);
+			for (UWTextObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				TextObservation obs = (TextObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			oc = new TextObservationCollection(obsList);
+			return oc;
+		}
+		
+		
+		else {
+			throw new OMParsingException("ObservationCollection type" + xb_obsColDoc.getClass() + "is not supported by this parser!");
+		}
+		
+		
+
+	}
 
 	/**
 	 * parses an Observation and it's SpatialSamplingFeature
