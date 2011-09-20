@@ -46,7 +46,7 @@
 	
 		<wps:Input>
 			<ows:Identifier>StaticProcessInputs</ows:Identifier>
-			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources/inputs/staticInput.xml" mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd"></wps:Reference>
+			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources2/inputs/staticInput.xml" mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"></wps:Reference>
 		</wps:Input>
 	
 		<wps:Input>
