@@ -51,7 +51,7 @@ import org.w3c.dom.Node;
 /**
  * process implements algorithm for executing monteCarlo simulation
  * 
- * @author staschc
+ * @author bpross
  *
  */
 public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
@@ -76,7 +76,7 @@ public class MonteCarloSimulationAlgorithm extends AbstractAlgorithm{
 	public Class<?> getInputDataType(String id) {
 		if(id.equals(inputIDIdentifierSimulatedProcess)){
 			return LiteralStringBinding.class;
-		}else if(id.equals(inputIDUncertainProcessInputs)){
+		}else if(id.startsWith("u_")){
 			return UncertainInputDataBinding.class;
 		}else if(id.equals(inputIDStaticProcessInputs)){
 			return StaticInputDataBinding.class;
