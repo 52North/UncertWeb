@@ -166,3 +166,22 @@ INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenom
 INSERT INTO obs_unc (observation_id, uncertainty_id)
 	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 'uncID-05');
 
+
+-- insert links from observation to uncertainty manually
+-- (observation_id has to be modified)
+
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (11, 'uncID-01');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (12, 'uncID-01');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (13, 'uncID-01');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (14, 'uncID-02');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (15, 'uncID-02');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (16, 'uncID-03');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (17, 'uncID-04');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (18, 'uncID-04');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (19, 'uncID-04');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (20, 'uncID-05');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (21, 'uncID-05');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (22, 'uncID-05');
+	
+	
+	
