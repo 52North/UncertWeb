@@ -94,3 +94,9 @@ ALTER TABLE u_normal ADD FOREIGN KEY (normal_id) REFERENCES u_uncertainty (uncer
 ALTER TABLE u_mean ADD FOREIGN KEY (mean_id) REFERENCES u_uncertainty (uncertainty_values_id) ON UPDATE CASCADE;
 ALTER TABLE u_mean ADD FOREIGN KEY (mean_values_id) REFERENCES u_mean_values (mean_values_id) ON UPDATE CASCADE;
 
+--------------------------------------------------
+-- Add and alter table constraints
+--------------------------------------------------
+-- add 'uncertaintyType' to checked phenomenons
+-- original check constraint may be dropped manually
+ALTER TABLE phenomenon CHECK (valuetype IN ('uncertaintyType', 'booleanType', 'countType', 'textType', 'categoryType', 'numericType', 'isoTimeType', 'spatialType', 'commonType','externalReferenceType'));
