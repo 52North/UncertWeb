@@ -1,4 +1,4 @@
-:package org.uncertweb.wps;
+package org.uncertweb.wps;
 
 import java.io.BufferedWriter;
 import java.io.File;
