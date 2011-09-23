@@ -83,7 +83,7 @@ public class ExtendedRConnection extends RConnection {
 	 */
 	public void tryVoidEval(String var, String cmd) throws RProcessException{
 		String tryCmd = var+" <- try("+cmd+")";
-		LOG.info("send R command: "+tryCmd);
+		LOG.debug("send R command: "+tryCmd);
 		try {
 			super.voidEval(tryCmd);
 			if (super.eval("class("+var+")").asString().equals("try-error")){
