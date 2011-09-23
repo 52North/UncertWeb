@@ -24,7 +24,7 @@ import org.n52.wps.io.datahandler.xml.UncertMLXmlParser;
  */
 public class UncertWebIODataParser extends AbstractUncertWebDataParser{
 			 
-	private static Logger LOGGER = Logger.getLogger(NetCDFGenerator.class);
+	private static Logger LOGGER = Logger.getLogger(UncertWebIODataParser.class);
 	
 	@Override
 	public Class<?>[] getSupportedInternalOutputDataType() {
