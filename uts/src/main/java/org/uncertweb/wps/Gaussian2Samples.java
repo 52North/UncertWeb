@@ -1,7 +1,6 @@
 package org.uncertweb.wps;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,10 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.n52.wps.io.data.GenericFileDataConstants;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.NetCDFData;
+import org.n52.wps.io.data.UncertWebData;
 import org.n52.wps.io.data.UncertWebIOData;
-import org.n52.wps.io.data.binding.complex.NetCDFDataBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.server.AbstractAlgorithm;
@@ -79,10 +80,14 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 			// create resultfile
 //			String fileLocation = resultFile.getNetcdfFile().getLocation();
 //			File file = new File(fileLocation);
-			NetCDFData uwNcdfOutput = new NetCDFData(resultFile);
 			
-			UncertWebIOData uwIOData = new UncertWebIOData(uwNcdfOutput);
-			result.put(OUTPUT_IDENTIFIER_SAMPLES, new UncertWebIODataBinding(uwIOData));
+			String fileLocation = resultFile.getNetcdfFile().getLocation();
+			File file = new File(fileLocation);
+			UncertWebData uwNcdfOutput = new UncertWebData(file,
+					GenericFileDataConstants.MIME_TYPE_NETCDFX);
+			UncertWebDataBinding uwData = new UncertWebDataBinding(uwNcdfOutput);
+			result.put(OUTPUT_IDENTIFIER_SAMPLES, uwData);
+			
 			}
 			//TODO add support for O&M and UncertML
 
@@ -112,7 +117,8 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 	@Override
 	public Class<?> getOutputDataType(String id) {
 		if (id.equals(OUTPUT_IDENTIFIER_SAMPLES)) {
-			return UncertWebIODataBinding.class;
+			return UncertWebDataBinding.class;
+			//return UncertWebIODataBinding.class;
 		}
 		return null;
 	}

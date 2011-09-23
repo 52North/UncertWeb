@@ -38,6 +38,7 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> directInput) {
 		
+		HashMap<String, IData> result = new HashMap<String, IData>();
 		// Get "number of realisations" input
 		List<IData> iDataList1 = directInput.get("numbReal");
 		IData iData1 = iDataList1.get(0);
@@ -72,13 +73,17 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 		Double logScale = logscalelist.get(0);
 		String logScaleString = logScale.toString();
 		
+		ExtendedRConnection c = null;
+		
 		try {
 			
 			// establish connection to Rserve
-			ExtendedRConnection c = new ExtendedRConnection("giv-uw.uni-muenster.de");
+			//c = new ExtendedRConnection("giv-uw.uni-muenster.de");
+			c = new ExtendedRConnection("127.0.0.1");
 			if (c.needLogin()) {
-				// if server requires authentication, send one		
-				c.login("rserve", "aI2)Jad$%");
+				// if server requires authentication, send one
+				//c.login("rserve", "aI2)Jad$%");
+				c.login("", "");
 			}
 
 			// Perform R computations
@@ -97,14 +102,20 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 			// Make and return result
 			UncertWebData uwd = new UncertWebData(r);
 			UncertWebDataBinding uwdb = new UncertWebDataBinding(uwd);
-			HashMap<String, IData> result = new HashMap<String, IData>();
+			
 			result.put("realisations", uwdb);
-			return result;
+			
 		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		return(null);
+		finally {
+			if (c != null) {
+				c.close();
+			}
+		}
+		
+		return result;
 	}
 }

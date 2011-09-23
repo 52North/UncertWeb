@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.UncertWebData;
 import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
@@ -18,6 +19,8 @@ import org.uncertml.statistic.CovarianceMatrix;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 
 public class UnivGaussianDist2Realisations extends AbstractAlgorithm {
+	
+	private static Logger logger = Logger.getLogger(UnivGaussianDist2Realisations.class);
 
 	@Override
 	public List<String> getErrors() {
@@ -37,6 +40,8 @@ public class UnivGaussianDist2Realisations extends AbstractAlgorithm {
 	
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> directInput) {
+		
+		HashMap<String, IData> result = new HashMap<String, IData>();
 		
 		// Get "number of realisations" input
 		List<IData> iDataList1 = directInput.get("numbReal");
@@ -73,15 +78,15 @@ public class UnivGaussianDist2Realisations extends AbstractAlgorithm {
 			mg.getVariance();
 		Double var = varlist.get(0);
 		String sdString = var.toString();
-		
+		ExtendedRConnection c = null;
 		try {
 			// Perform R computations
 			
-			// establish connection to Rserve
-			ExtendedRConnection c = new ExtendedRConnection("giv-uw.uni-muenster.de");
+			c = new ExtendedRConnection("127.0.0.1");
 			if (c.needLogin()) {
-				// if server requires authentication, send one		
-				c.login("rserve", "aI2)Jad$%");
+				// if server requires authentication, send one
+				//c.login("rserve", "aI2)Jad$%");
+				c.login("", "");
 			}
 		
 			c.tryVoidEval("i <- " + numberOfRealisations);
@@ -98,15 +103,20 @@ public class UnivGaussianDist2Realisations extends AbstractAlgorithm {
 			// Make and return result
 			UncertWebData uwd = new UncertWebData(r);
 			UncertWebDataBinding uwdb = new UncertWebDataBinding(uwd);
-			HashMap<String, IData> result = new HashMap<String, IData>();
 			result.put("realisations", uwdb);
-			return result;
+			
 		
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while calculating samples for Gaussian Distribution: "+e.getLocalizedMessage());
 		}
 		
-		return(null);
+		finally {
+			if (c != null) {
+				c.close();
+			}
+		}
+		
+		return result;
 		
 	}
 

@@ -214,7 +214,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				else if (statistic.equals("standard-deviation")){
 					Variable statisticVar = resultNCFile.addStatisticVariable(varName, DataType.DOUBLE, dims, org.uncertml.statistic.StandardDeviation.class);
 					statVars4statName.put(statistic, statisticVar);
-					resultNCFile.setPrimaryVariable(statisticVar);
+					//resultNCFile.setPrimaryVariable(statisticVar);
 				}
 			}
 
