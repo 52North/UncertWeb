@@ -138,8 +138,8 @@
 				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
 				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
 				<Property name="supportedFormat" active="true">application/x-netcdf</Property>
-				<Property name="supportedFormat" active="true">application/uncertml</Property>
-				<Property name="supportedFormat" active="true">application/gml+xml</Property>
+				<Property name="supportedFormat" active="true">application/x-uncertml</Property>
+				<Property name="supportedFormat" active="true">application/x-om-u</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>		
 		</ParserList>
@@ -431,7 +431,7 @@
 		
 	</AlgorithmRepositoryList>
 	<RemoteRepositoryList/>
-	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="uts" repoReloadInterval="0">
+	<Server hostname="giv-uw2.uni-muenster.de" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="uts" repoReloadInterval="0">
 		     <Database/>
 	</Server>
 </WPSConfiguration>
