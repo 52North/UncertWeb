@@ -351,6 +351,8 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		if (obsInputs.hasMeteoObs()) {
 
 			this.meteoExist=true;
+			
+			//obs.getMembers().get(0).getObservedProperty()
 			// Store each observation as MeteoObject
 			for (UncertaintyObservation uncObs : obsInputs.getMeteoObs()
 					.getMembers()) {
@@ -904,7 +906,12 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		// put into double array:
 		String[] temp = realisationsValue.split(" ");
 		for (int i = 0; i < temp.length; i++) {
-			samples[i] = Double.parseDouble(temp[i]);
+			// check for negative values
+			double v = Double.parseDouble(temp[i]);
+			if(v<0.1){
+				v=0.1;
+			}
+			samples[i] = v;
 		}
 
 		return samples;
@@ -1175,8 +1182,15 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 			InputType wpsInput = wpsDataInputs.addNewInput();
 			wpsInput.addNewIdentifier().setStringValue("receptor-points");
 			InputReferenceType wpsReference = wpsInput.addNewReference();
-			wpsReference.setHref("http://v-mars.uni-muenster.de/uncertweb/austalResources/inputs/staticInput.xml");
-			wpsReference.setSchema("http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd");
+			
+			//TODO the v-mars reference does not work yet (not parsed by the Austal WPS)
+			// <wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/austalResources/inputs/staticInput.xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd" mimeType="text/xml"/>
+			//wpsReference.setHref("http://v-mars.uni-muenster.de/uncertweb/austalResources/inputs/staticInput.xml");
+			//wpsReference.setSchema("http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd");
+	       
+			//<wps:Reference schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd" encoding="UTF-8" mimeType="text/xml" xlink:href="http://giv-wps.uni-muenster.de:8080/geoserver/wfs?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=cite2:schulweg"/>	    	
+			wpsReference.setHref("http://giv-wps.uni-muenster.de:8080/geoserver/wfs?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=cite2:schulweg");
+			wpsReference.setSchema("http://schemas.opengis.net/gml/2.1.2/feature.xsd");
 			wpsReference.setMimeType("text/xml");
 		}
 
