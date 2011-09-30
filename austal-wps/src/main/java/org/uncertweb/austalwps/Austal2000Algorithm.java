@@ -169,7 +169,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					LOGGER.debug(e);
 					e.printStackTrace();
 				}			
-			}			
+			}		
 		}
 		
 		List<IData> meteorologyDataList = inputData.get(inputIDMeteorology);
@@ -516,6 +516,16 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 //				} catch (ParseException e) {
 //					e.printStackTrace();
 //				}
+				
+				// correct wind speed and wind direction to natural boundaries
+				// 1) check if wind speed is not negative
+				if(windSpeed<0.1)
+					windSpeed = 0.1;
+				// 2) check if wind direction is between 1 and 360
+				if(windDirection>360)
+					windDirection = windDirection - 360;
+				else if(windDirection<1)
+					windDirection = windDirection + 360;
 				newMetList.addWindDirection(dt.toDate(), windDirection);
 				newMetList.addWindSpeed(dt.toDate(), windSpeed);
 				
@@ -759,9 +769,12 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		MeteorologyTimeSeries metList = ts.getMeteorologyTimeSeries();
 		ArrayList<Date> timeStampList = (ArrayList<Date>) newMetList.getTimeStamps();
 		
-		// add stability class values to new list
+		
 		for(int i=0; i<timeStampList.size(); i++){
 			Date d = timeStampList.get(i);
+			
+			
+			// add stability class values to new list
 			newMetList.addStabilityClass(d, metList.getStabilityClass(d));
 		}
 		
