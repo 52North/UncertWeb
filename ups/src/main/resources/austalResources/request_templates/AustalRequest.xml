@@ -12,7 +12,7 @@
   <wps:ResponseForm>
     <wps:ResponseDocument>
       <wps:Output mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/UncertML2.xsd">
-        <ows:Identifier>UncertainProcessOutputs</ows:Identifier>
+        <ows:Identifier>result</ows:Identifier>
       </wps:Output>
     </wps:ResponseDocument>
   </wps:ResponseForm>
