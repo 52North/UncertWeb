@@ -21,7 +21,7 @@
  */
 package org.uncertweb.viss.mongo;
 
-import org.uncertweb.viss.core.vis.Visualizer;
+import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.core.vis.VisualizerFactory;
 
 import com.google.code.morphia.converters.SimpleValueConverter;
@@ -31,23 +31,23 @@ import com.google.code.morphia.mapping.MappingException;
 
 @SuppressWarnings("rawtypes")
 public class VisualizerConverter extends TypeConverter implements
-		SimpleValueConverter {
+    SimpleValueConverter {
 
 	public VisualizerConverter() {
-		super(Visualizer.class);
+		super(IVisualizer.class);
 	}
 
 	@Override
 	public Object encode(Object value, MappedField optionalExtraInfo) {
 		if (value == null)
 			return null;
-		Visualizer v = (Visualizer) value;
+		IVisualizer v = (IVisualizer) value;
 		return v.getShortName();
 	}
 
 	@Override
 	public Object decode(Class c, Object o, MappedField i)
-			throws MappingException {
+	    throws MappingException {
 		if (o == null)
 			return null;
 		return VisualizerFactory.getVisualizer((String) o);

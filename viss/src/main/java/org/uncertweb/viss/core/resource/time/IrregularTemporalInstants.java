@@ -28,12 +28,12 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.uncertweb.viss.core.util.Utils;
 
-public class IrregularTemporalInstants extends IrregularTemporalExtent {
+public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent {
 
 	static final String INSTANTS_JSON_KEY = "instants";
 
 	protected static List<TemporalInstant> toTemporalInstantList(
-			List<DateTime> instants) {
+	    List<DateTime> instants) {
 		List<TemporalInstant> ti = Utils.list();
 		for (DateTime i : instants) {
 			ti.add(new TemporalInstant(i));
@@ -43,8 +43,7 @@ public class IrregularTemporalInstants extends IrregularTemporalExtent {
 
 	private List<TemporalInstant> instants;
 
-	public IrregularTemporalInstants() {
-	}
+	public IrregularTemporalInstants() {}
 
 	public IrregularTemporalInstants(List<DateTime> instants) {
 		setInstants(toTemporalInstantList(instants));
@@ -61,7 +60,6 @@ public class IrregularTemporalInstants extends IrregularTemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
-		return super.toJson()
-				.put(INSTANTS_JSON_KEY, toJSONArray(getInstants()));
+		return super.toJson().put(INSTANTS_JSON_KEY, toJSONArray(getInstants()));
 	}
 }

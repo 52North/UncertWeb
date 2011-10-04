@@ -21,10 +21,10 @@
  */
 package org.uncertweb.viss.vis;
 
-import static org.uncertweb.viss.core.util.Constants.GEOTIFF_TYPE;
-import static org.uncertweb.viss.core.util.Constants.NETCDF_TYPE;
-import static org.uncertweb.viss.core.util.Constants.OM_2_TYPE;
-import static org.uncertweb.viss.core.util.Constants.X_NETCDF_TYPE;
+import static org.uncertweb.viss.core.util.MediaTypes.GEOTIFF_TYPE;
+import static org.uncertweb.viss.core.util.MediaTypes.NETCDF_TYPE;
+import static org.uncertweb.viss.core.util.MediaTypes.OM_2_TYPE;
+import static org.uncertweb.viss.core.util.MediaTypes.X_NETCDF_TYPE;
 
 import java.awt.geom.Point2D;
 import java.util.Iterator;
@@ -36,29 +36,29 @@ import org.uncertml.IUncertainty;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.util.Utils;
-import org.uncertweb.viss.core.vis.Visualization;
+import org.uncertweb.viss.core.vis.IVisualization;
+import org.uncertweb.viss.core.vis.VisualizationFactory;
 import org.uncertweb.viss.core.vis.WriteableGridCoverage;
 
 public abstract class AbstractMultiResourceTypeVisualizer extends
-		AbstractVisualizer implements Iterable<Value> {
+    AbstractVisualizer implements Iterable<Value> {
 
 	public AbstractMultiResourceTypeVisualizer() {
 		super(GEOTIFF_TYPE, NETCDF_TYPE, X_NETCDF_TYPE, OM_2_TYPE);
 	}
 
-	
 	@Override
-	protected Visualization visualize() {
+	protected IVisualization visualize() {
 		return visualize(getResource().getResource());
 	}
 
-	protected Visualization visualize(Resource r) {
+	protected IVisualization visualize(IResource r) {
 		return visualize(r.getResource());
 	}
 
-	protected Visualization visualize(Object o) {
+	protected IVisualization visualize(Object o) {
 		if (o instanceof GridCoverage2D) {
 			return visualize((GridCoverage2D) o);
 		} else if (o instanceof UncertaintyNetCDF) {
@@ -70,11 +70,11 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		}
 	}
 
-	protected Visualization visualize(GridCoverage2D gc) {
+	protected IVisualization visualize(GridCoverage2D gc) {
 		throw VissError.internal("Not yet implemented");
 	}
 
-	protected Visualization visualize(UncertaintyNetCDF gc) {
+	protected IVisualization visualize(UncertaintyNetCDF gc) {
 		WriteableGridCoverage wgc = gc.getCoverage(getCoverageName(), getUom());
 		Double min = null, max = null;
 		for (Value nv : gc) {
@@ -89,26 +89,33 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 						max = Double.valueOf(v);
 				}
 			}
-			Point2D.Double location = new Point2D.Double(
-					nv.getLocation().getX(), nv.getLocation().getY());
+			Point2D.Double location = new Point2D.Double(nv.getLocation().getX(), nv
+			    .getLocation().getY());
 			wgc.setValueAtPos(location, value);
 		}
 		log.debug("min: {}; max: {}", min, max);
-		return new Visualization(getResource().getUUID(), getId(getParams()), this, getParams(),
-				min.doubleValue(), max.doubleValue(), getUom(),
-				wgc.getGridCoverage());
+		return VisualizationFactory.getBuilder()
+			.setUuid(getResource().getUUID())
+			.setId(getId(getParams()))
+			.setCreator(this)
+			.setParameters(getParams())
+			.setMin(min)
+			.setMax(max)
+			.setUom(getUom())
+			.setCoverage(wgc.getGridCoverage())
+			.build();
 	}
 
-	protected Visualization visualize(IObservationCollection gc) {
+	protected IVisualization visualize(IObservationCollection gc) {
 		Set<GridCoverage> coverages = Utils.set();
 		Double min = null, max = null;
 		String uom = null;
 		for (AbstractObservation ao : gc.getObservations()) {
-			if (!(ao.getResult().getValue() instanceof Resource)) {
+			if (!(ao.getResult().getValue() instanceof IResource)) {
 				throw VissError.internal("Resource is not compatible");
 			}
-			Resource rs = (Resource) ao.getResult().getValue();
-			Visualization v = visualize(rs);
+			IResource rs = (IResource) ao.getResult().getValue();
+			IVisualization v = visualize(rs);
 
 			if (uom == null) {
 				uom = v.getUom();
@@ -127,8 +134,16 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 
 			coverages.addAll(v.getCoverages());
 		}
-		return new Visualization(getResource().getUUID(), getId(getParams()), this, getParams(),
-				min.doubleValue(), max.doubleValue(), uom, coverages);
+		return VisualizationFactory.getBuilder()
+				.setUuid(getResource().getUUID())
+				.setId(getId(getParams()))
+				.setCreator(this)
+				.setParameters(getParams())
+				.setMin(min)
+				.setMax(max)
+				.setUom(uom)
+				.setCoverage(coverages)
+				.build();
 	}
 
 	private static class OMIterator implements Iterator<Value> {
@@ -146,7 +161,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		@Override
 		public boolean hasNext() {
 			return valueIterator != null
-					&& (valueIterator.hasNext() || resultIterator.hasNext());
+			    && (valueIterator.hasNext() || resultIterator.hasNext());
 		}
 
 		@Override
@@ -158,8 +173,8 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		}
 
 		private Iterator<Value> getNextObservation() {
-			return getIteratorForResource((Resource) this.resultIterator.next()
-					.getResult().getValue());
+			return getIteratorForResource((IResource) this.resultIterator.next()
+			    .getResult().getValue());
 		}
 
 		@Override
@@ -167,12 +182,12 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 			throw new UnsupportedOperationException();
 		}
 	}
-	
+
 	protected String getUom() {
 		return getUom(getResource());
 	}
-	
-	protected String getUom(Resource r) {
+
+	protected String getUom(IResource r) {
 		Object o = r.getResource();
 		if (o instanceof GridCoverage2D) {
 			throw VissError.internal("Not yet implemented");
@@ -180,8 +195,9 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 			return ((UncertaintyNetCDF) o).getUnitAsString();
 		} else if (o instanceof IObservationCollection) {
 			String uom = null;
-			for (AbstractObservation ao : ((IObservationCollection) o).getObservations()) {
-				Resource referencedResource = (Resource) ao.getResult().getValue();
+			for (AbstractObservation ao : ((IObservationCollection) o)
+			    .getObservations()) {
+				IResource referencedResource = (IResource) ao.getResult().getValue();
 				String uom2 = getUom(referencedResource);
 				if (uom == null) {
 					uom = uom2;
@@ -195,7 +211,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		}
 	}
 
-	protected static Iterator<Value> getIteratorForResource(Resource r) {
+	protected static Iterator<Value> getIteratorForResource(IResource r) {
 		Object o = r.getResource();
 		if (o instanceof GridCoverage2D) {
 			throw VissError.internal("Not yet implemented");

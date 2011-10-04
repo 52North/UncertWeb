@@ -26,15 +26,14 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-public class TemporalInterval implements TemporalExtent {
+public class TemporalInterval implements ITemporalExtent {
 
 	static final String BEGIN_JSON_KEY = "begin";
 	static final String END_JSON_KEY = "end";
 
 	private Interval interval;
 
-	public TemporalInterval() {
-	}
+	public TemporalInterval() {}
 
 	public TemporalInterval(DateTime begin, DateTime end) {
 		setInterval(begin, end);
@@ -47,7 +46,7 @@ public class TemporalInterval implements TemporalExtent {
 	public void setInterval(Interval interval) {
 		this.interval = interval;
 	}
-	
+
 	public Interval getInterval() {
 		return this.interval;
 	}
@@ -66,8 +65,8 @@ public class TemporalInterval implements TemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
-		return new JSONObject().put(BEGIN_JSON_KEY, getBegin()).put(
-				END_JSON_KEY, getEnd());
+		return new JSONObject().put(BEGIN_JSON_KEY, getBegin()).put(END_JSON_KEY,
+		    getEnd());
 	}
 
 	@Override

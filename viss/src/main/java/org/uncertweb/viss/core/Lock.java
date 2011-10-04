@@ -24,7 +24,7 @@ package org.uncertweb.viss.core;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
-import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.util.Utils;
 
 public class Lock {
@@ -34,8 +34,7 @@ public class Lock {
 		return (instance == null) ? instance = new Lock() : instance;
 	}
 
-	private Lock() {
-	}
+	private Lock() {}
 
 	private Map<UUID, Integer> useCounts = Utils.map();
 	private ReentrantLock useCountsLock = new ReentrantLock();
@@ -44,7 +43,7 @@ public class Lock {
 
 	}
 
-	public boolean usingResource(Resource resource, boolean use) {
+	public boolean usingResource(IResource resource, boolean use) {
 		useCountsLock.lock();
 		try {
 			if (use) {
@@ -52,8 +51,7 @@ public class Lock {
 				if (count != null && count.intValue() < 0) {
 					return false;
 				}
-				count = Integer.valueOf((count == null) ? 1
-						: count.intValue() + 1);
+				count = Integer.valueOf((count == null) ? 1 : count.intValue() + 1);
 				useCounts.put(resource.getUUID(), count);
 				return true;
 			} else {
@@ -70,7 +68,7 @@ public class Lock {
 		}
 	}
 
-	public void deleteResources(Resource resource) {
+	public void deleteResources(IResource resource) {
 		useCountsLock.lock();
 		try {
 			useCounts.remove(resource.getUUID());
@@ -80,7 +78,7 @@ public class Lock {
 
 	}
 
-	public boolean deletingResource(Resource resource) {
+	public boolean deletingResource(IResource resource) {
 		useCountsLock.lock();
 		try {
 			Integer count = useCounts.get(resource.getUUID());

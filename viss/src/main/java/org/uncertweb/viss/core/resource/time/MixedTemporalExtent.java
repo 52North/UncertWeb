@@ -28,23 +28,22 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.util.Utils;
 
-public class MixedTemporalExtent extends IrregularTemporalExtent {
+public class MixedTemporalExtent extends AbstractIrregularTemporalExtent {
 
-	private List<TemporalExtent> extents;
+	private List<ITemporalExtent> extents;
 
-	public MixedTemporalExtent() {
-	}
+	public MixedTemporalExtent() {}
 
-	public MixedTemporalExtent(List<TemporalExtent> l) {
+	public MixedTemporalExtent(List<ITemporalExtent> l) {
 		setExtents(l);
 	}
 
-	public void setExtents(List<TemporalExtent> extents) {
+	public void setExtents(List<ITemporalExtent> extents) {
 		setInterval(findOverallInterval(extents));
 		this.extents = extents;
 	}
 
-	public List<TemporalExtent> getExtents() {
+	public List<ITemporalExtent> getExtents() {
 		return this.extents;
 	}
 
@@ -52,7 +51,7 @@ public class MixedTemporalExtent extends IrregularTemporalExtent {
 	public JSONObject toJson() throws JSONException {
 		List<JSONObject> instants = Utils.list();
 		List<JSONObject> intervals = Utils.list();
-		for (TemporalExtent te : getExtents()) {
+		for (ITemporalExtent te : getExtents()) {
 			if (te instanceof TemporalInstant) {
 				instants.add(te.toJson());
 			} else if (te instanceof TemporalInterval) {
@@ -60,11 +59,11 @@ public class MixedTemporalExtent extends IrregularTemporalExtent {
 			}
 		}
 		return super
-				.toJson()
-				.put(IrregularTemporalInstants.INSTANTS_JSON_KEY,
-						new JSONArray(instants))
-				.put(IrregularTemporalIntervals.INTERVALS_JSON_KEY,
-						new JSONArray(intervals));
+		    .toJson()
+		    .put(IrregularTemporalInstants.INSTANTS_JSON_KEY,
+		        new JSONArray(instants))
+		    .put(IrregularTemporalIntervals.INTERVALS_JSON_KEY,
+		        new JSONArray(intervals));
 	}
 
 }

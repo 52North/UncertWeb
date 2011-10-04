@@ -41,28 +41,35 @@ import javax.servlet.ServletContextListener;
 import org.apache.xmlbeans.XmlOptions;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.uncertweb.viss.core.resource.ResourceStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.uncertweb.viss.core.resource.IResourceStore;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.wms.WMSAdapter;
 
-public class VissConfig  {
-	
+public class VissConfig {
+
 	public static class ContextListener implements ServletContextListener {
-		@Override public void contextDestroyed(ServletContextEvent arg0) {}
-		@Override public void contextInitialized(ServletContextEvent e) {
+		@Override
+		public void contextDestroyed(ServletContextEvent arg0) {}
+
+		@Override
+		public void contextInitialized(ServletContextEvent e) {
 			VissConfig.getInstance().setWebAppPath(
-					new File(e.getServletContext().getRealPath("/")));
+			    new File(e.getServletContext().getRealPath("/")));
 		}
 	}
 
+	private static final Logger log = LoggerFactory.getLogger(VissConfig.class);
 	private static VissConfig instance;
-
+	
 	public synchronized static VissConfig getInstance() {
+		log.info("Instantiating VissConfig");
 		return (instance == null) ? instance = new VissConfig() : instance;
 	}
 
 	private final Timer timer = new Timer(true);
-	private ResourceStore resourceStore;
+	private IResourceStore resourceStore;
 	private WMSAdapter wmsAdapter;
 	private Period cleanUpInterval;
 	private Period periodToDeleteAfterLastUse;
@@ -74,13 +81,14 @@ public class VissConfig  {
 	private File resourcePath;
 
 	private VissConfig() {
+		log.info("Instantiating VissConfig");
 	}
 
-	public ResourceStore getResourceStore() {
+	public IResourceStore getResourceStore() {
 		if (this.resourceStore == null) {
 			try {
-				this.resourceStore = (ResourceStore) Class.forName(
-						get(RESOURCE_STORE_KEY)).newInstance();
+				this.resourceStore = (IResourceStore) Class.forName(
+				    get(RESOURCE_STORE_KEY)).newInstance();
 			} catch (Exception e) {
 				throw VissError.internal(e);
 			}
@@ -91,8 +99,8 @@ public class VissConfig  {
 	public WMSAdapter getWMSAdapter() {
 		if (this.wmsAdapter == null) {
 			try {
-				this.wmsAdapter = (WMSAdapter) Class.forName(
-						get(WMS_ADAPTER_KEY)).newInstance();
+				this.wmsAdapter = (WMSAdapter) Class.forName(get(WMS_ADAPTER_KEY))
+				    .newInstance();
 			} catch (Exception e) {
 				throw VissError.internal(e);
 			}
@@ -102,8 +110,8 @@ public class VissConfig  {
 
 	public void scheduleTask(TimerTask tt, Period p) {
 		DateTime now = new DateTime();
-		this.timer.schedule(tt, now.plusSeconds(30).toDate(),
-				p.toDurationFrom(now).getMillis());
+		this.timer.schedule(tt, now.plusSeconds(30).toDate(), p.toDurationFrom(now)
+		    .getMillis());
 	}
 
 	public synchronized String get(String key) {
@@ -128,16 +136,15 @@ public class VissConfig  {
 	public Period getCleanUpInterval() {
 		if (cleanUpInterval == null) {
 			cleanUpInterval = new Period(get(CLEAN_UP_INTERVAL_KEY,
-					CLEAN_UP_INTERVAL_DEFAULT));
+			    CLEAN_UP_INTERVAL_DEFAULT));
 		}
 		return cleanUpInterval;
 	}
 
 	public Period getPeriodToDeleteAfterLastUse() {
 		if (periodToDeleteAfterLastUse == null) {
-			periodToDeleteAfterLastUse = new Period(get(
-					DELETE_OLDER_THAN_PERIOD_KEY,
-					DELETE_OLDER_THAN_PERIOD_DEFAULT));
+			periodToDeleteAfterLastUse = new Period(get(DELETE_OLDER_THAN_PERIOD_KEY,
+			    DELETE_OLDER_THAN_PERIOD_DEFAULT));
 		}
 		return periodToDeleteAfterLastUse;
 	}
@@ -152,8 +159,8 @@ public class VissConfig  {
 	public XmlOptions getDefaultXmlOptions() {
 		if (defaultXmlOptions == null) {
 			defaultXmlOptions = new XmlOptions().setLoadStripWhitespace()
-					.setLoadStripProcinsts().setLoadStripComments()
-					.setLoadTrimTextBuffer().setSaveAggressiveNamespaces();
+			    .setLoadStripProcinsts().setLoadStripComments()
+			    .setLoadTrimTextBuffer().setSaveAggressiveNamespaces();
 			if (doPrettyPrint()) {
 				defaultXmlOptions.setSavePrettyPrint();
 			}
@@ -169,7 +176,7 @@ public class VissConfig  {
 					path = this.webAppPath.getAbsolutePath();
 				} else {
 					path = Utils.join(File.separator,
-							System.getProperty("java.io.tmpdir"), "VISS");
+					    System.getProperty("java.io.tmpdir"), "VISS");
 				}
 			}
 			workingDirectory = new File(path);

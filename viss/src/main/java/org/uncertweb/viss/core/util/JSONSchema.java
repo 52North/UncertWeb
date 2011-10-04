@@ -1,9 +1,8 @@
 package org.uncertweb.viss.core.util;
 
 public class JSONSchema {
-	
+
 	public static final String BASE_SCHEMA_URL = "http://json-schema.org/draft-03/schema#";
-	
 
 	public static class Key {
 		public static final String DESCRIPTION = "description";
@@ -44,7 +43,7 @@ public class JSONSchema {
 		public static final String ARRAY = "array";
 		public static final String STRING = "string";
 	}
-	
+
 	public static class Format {
 		public static final String DATETIME = "date-time";
 		public static final String DATE = "date";

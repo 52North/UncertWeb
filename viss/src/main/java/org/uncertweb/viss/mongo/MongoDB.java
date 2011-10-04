@@ -40,7 +40,7 @@ public class MongoDB {
 	private static final Logger log = LoggerFactory.getLogger(MongoDB.class);
 
 	private static final String PROPERTIES_FILE = "/mongo.properties";
-	
+
 	private static final String HOST_PROPERTY = "host";
 	private static final String PORT_PROPERTY = "port";
 	private static final String AUTH_PROPERTY = "auth";
@@ -79,31 +79,30 @@ public class MongoDB {
 			port = (port == null || port.trim().isEmpty()) ? "27017" : port;
 
 			this.mongo = new Mongo(new ServerAddress(host, Integer.valueOf(port)));
-			
+
 			this.morphia = new Morphia();
 			String pkg = getClass().getPackage().getName();
 			Reflections r = new Reflections(pkg);
 			log.info("Search for Converters in {}", pkg);
 			DefaultConverters dc = this.morphia.getMapper().getConverters();
-			for (Class<? extends TypeConverter> c : r.getSubTypesOf(TypeConverter.class)) {
+			for (Class<? extends TypeConverter> c : r
+			    .getSubTypesOf(TypeConverter.class)) {
 				log.info("Registering Morphia TypeConverter {}", c.getName());
 				dc.addConverter(c);
 			}
-			
+
 			String auth = p.getProperty(AUTH_PROPERTY);
 			auth = (auth == null || auth.trim().isEmpty()) ? "false" : auth;
 			String dbna = p.getProperty(DATABASE_PROPERTY);
-			this.database = (auth == null || dbna.trim().isEmpty()) ? "viss"
-					: dbna;
+			this.database = (auth == null || dbna.trim().isEmpty()) ? "viss" : dbna;
 
 			if (Boolean.valueOf(auth)) {
 				this.datastore = this.morphia.createDatastore(this.mongo,
-						this.database, p.getProperty(USER_PROPERTY, "mongo"), p
-								.getProperty(PASS_PROPERTY, "mongo")
-								.toCharArray());
+				    this.database, p.getProperty(USER_PROPERTY, "mongo"), p
+				        .getProperty(PASS_PROPERTY, "mongo").toCharArray());
 			} else {
-				this.datastore = this.morphia.createDatastore(this.mongo,
-						this.database);
+				this.datastore = this.morphia
+				    .createDatastore(this.mongo, this.database);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

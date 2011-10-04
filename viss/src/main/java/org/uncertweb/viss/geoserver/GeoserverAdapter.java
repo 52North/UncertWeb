@@ -21,6 +21,8 @@
  */
 package org.uncertweb.viss.geoserver;
 
+import static org.uncertweb.viss.core.util.MediaTypes.GEOTIFF;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -46,11 +48,11 @@ import org.opengis.parameter.ParameterValueGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.resource.Resource;
-import org.uncertweb.viss.core.util.Constants;
+import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.util.Utils;
-import org.uncertweb.viss.core.vis.Visualization;
-import org.uncertweb.viss.core.vis.VisualizationReference;
+import org.uncertweb.viss.core.vis.DefaultVisualizationReference;
+import org.uncertweb.viss.core.vis.IVisualization;
+import org.uncertweb.viss.core.vis.IVisualizationReference;
 import org.uncertweb.viss.core.wms.WMSAdapter;
 
 public class GeoserverAdapter implements WMSAdapter {
@@ -58,12 +60,12 @@ public class GeoserverAdapter implements WMSAdapter {
 	private static Properties p;
 	private Geoserver wms;
 	private static final Logger log = LoggerFactory
-			.getLogger(GeoserverAdapter.class);
+	    .getLogger(GeoserverAdapter.class);
 
 	protected static String getProp(String key) {
 		if (p == null) {
 			InputStream is = GeoserverAdapter.class
-					.getResourceAsStream("/geoserver.properties");
+			    .getResourceAsStream("/geoserver.properties");
 			if (is == null)
 				throw new RuntimeException("Can not find configuration file");
 			p = new Properties();
@@ -101,29 +103,31 @@ public class GeoserverAdapter implements WMSAdapter {
 	}
 
 	@Override
-	public VisualizationReference addVisualization(Visualization vis) {
+	public IVisualizationReference addVisualization(IVisualization vis) {
 		try {
 			String ws = vis.getUuid().toString();
-			
+
 			if (!getGeoserver().containsWorkspace(ws)) {
 				if (!getGeoserver().createWorkspace(ws)) {
 					throw VissError.internal("Could not create Workspace");
 				}
 			}
-			
+
 			String[] layer = null;
 			String csBase = vis.getVisId();
 			String layerBase = vis.getUuid() + ":" + csBase;
 			Set<GridCoverage> coverages = vis.getCoverages();
-			
+
 			if (coverages.isEmpty()) {
 				throw VissError.internal("no coverages to insert");
 			} else if (coverages.size() == 1) {
-				insertCoverage(ws, csBase, toInputStream(vis.getCoverages().iterator().next()));
+				insertCoverage(ws, csBase, toInputStream(vis.getCoverages().iterator()
+				    .next()));
 				layer = new String[] { layerBase };
 			} else {
-				ArrayList<String> layers = new ArrayList<String>(vis.getCoverages().size());
-				int i = 0; 
+				ArrayList<String> layers = new ArrayList<String>(vis.getCoverages()
+				    .size());
+				int i = 0;
 				for (GridCoverage c : vis.getCoverages()) {
 					insertCoverage(ws, Utils.join("-", csBase, i), toInputStream(c));
 					layers.add(Utils.join("-", layerBase, i));
@@ -131,21 +135,23 @@ public class GeoserverAdapter implements WMSAdapter {
 				}
 				layer = layers.toArray(new String[layers.size()]);
 			}
-			return new VisualizationReference(getGeoserver().getUrl(), Utils.set(layer));
+			return new DefaultVisualizationReference(getGeoserver().getUrl(),
+			    Utils.set(layer));
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
 	}
-	
-	private void insertCoverage(String ws, String cs, InputStream is) throws IOException, JSONException {
+
+	private void insertCoverage(String ws, String cs, InputStream is)
+	    throws IOException, JSONException {
 		if (!getGeoserver().createCoverageStore(cs, ws, "GeoTIFF", true)) {
 			throw VissError.internal("Could not create CoverageStore");
 		}
-		if (!getGeoserver().insertCoverage(ws, cs, Constants.GEOTIFF, is)) {
+		if (!getGeoserver().insertCoverage(ws, cs, GEOTIFF, is)) {
 			throw VissError.internal("Could not insert Coverage");
 		}
 	}
-	
+
 	private InputStream toInputStream(GridCoverage c) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		GeoTiffWriter w = new GeoTiffWriter(out);
@@ -161,14 +167,20 @@ public class GeoserverAdapter implements WMSAdapter {
 		}
 		wp.setTiling(tileWidth, tileWidth);
 		ParameterValueGroup paramWrite = format.getWriteParameters();
-		paramWrite.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
-		JAI.getDefaultInstance().getTileCache().setMemoryCapacity(256 * 1024 * 1024);
-		w.write(c, (GeneralParameterValue[]) paramWrite.values().toArray(new GeneralParameterValue[1]));
+		paramWrite.parameter(
+		    AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
+		    .setValue(wp);
+		JAI.getDefaultInstance().getTileCache()
+		    .setMemoryCapacity(256 * 1024 * 1024);
+		w.write(
+		    c,
+		    (GeneralParameterValue[]) paramWrite.values().toArray(
+		        new GeneralParameterValue[1]));
 		return new ByteArrayInputStream(out.toByteArray());
 	}
-	
+
 	@Override
-	public boolean deleteResource(Resource resource) {
+	public boolean deleteResource(IResource resource) {
 		try {
 			return getGeoserver().deleteWorkspace(resource.getUUID().toString());
 		} catch (Exception e) {
@@ -177,11 +189,12 @@ public class GeoserverAdapter implements WMSAdapter {
 	}
 
 	@Override
-	public boolean setSldForVisualization(Visualization vis) {
+	public boolean setSldForVisualization(IVisualization vis) {
 		try {
 			String stylename = vis.getUuid() + "-" + vis.getVisId();
 			if (getGeoserver().createStyle(vis.getSld(), stylename)) {
-				return getGeoserver().setStyle(vis.getUuid().toString(), vis.getVisId(), stylename);
+				return getGeoserver().setStyle(vis.getUuid().toString(),
+				    vis.getVisId(), stylename);
 			}
 			return false;
 		} catch (IOException e) {
@@ -190,17 +203,17 @@ public class GeoserverAdapter implements WMSAdapter {
 	}
 
 	@Override
-	public boolean deleteVisualization(Visualization vis) {
+	public boolean deleteVisualization(IVisualization vis) {
 		try {
-			return getGeoserver().deleteCoverageStore(vis.getUuid().toString(), vis.getVisId());
+			return getGeoserver().deleteCoverageStore(vis.getUuid().toString(),
+			    vis.getVisId());
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
 	}
 
 	@Override
-	public StyledLayerDescriptorDocument getSldForVisualization(
-			Visualization vis) {
+	public StyledLayerDescriptorDocument getSldForVisualization(IVisualization vis) {
 		String stylename = vis.getUuid() + "-" + vis.getVisId();
 		StyledLayerDescriptorDocument sld;
 		try {

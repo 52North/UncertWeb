@@ -23,6 +23,7 @@ package org.uncertweb.viss.vis.distribution.cauchy;
 
 import org.apache.commons.math.distribution.CauchyDistributionImpl;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
+import org.uncertweb.viss.vis.distribution.AbstractCauchyDistributionVisualizer;
 
 @Description("Returns the scale.")
 public class Scale extends AbstractCauchyDistributionVisualizer {

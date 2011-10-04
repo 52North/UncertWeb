@@ -63,33 +63,32 @@ public class WriteableGridCoverage {
 
 	public void setValueAtPos(Point2D pos, Number value) {
 		pendingValues.add(new PendingValue(new Point2D.Double(pos.getX(), pos
-				.getY()), value));
+		    .getY()), value));
 		flushCache(false);
 	}
 
 	private void flushCache(boolean force) {
 		if (pendingValues.size() >= MAX_PENDING_VALUES
-				|| (force && pendingValues.size() > 0)) {
+		    || (force && pendingValues.size() > 0)) {
 			if (worldToGrid == null) {
 				try {
-					worldToGrid = gridCov.getGridGeometry().getGridToCRS2D()
-							.inverse();
+					worldToGrid = gridCov.getGridGeometry().getGridToCRS2D().inverse();
 				} catch (NoninvertibleTransformException e) {
 					throw VissError
-							.internal("Could not create geographic to grid coords transform");
+					    .internal("Could not create geographic to grid coords transform");
 				}
 			}
 			WritableRandomIter writeIter = RandomIterFactory.createWritable(
-					new TiledImage(gridCov.getRenderedImage(), true), null);
+			    new TiledImage(gridCov.getRenderedImage(), true), null);
 			final Point2D.Double gridPos = new Point2D.Double();
 			for (PendingValue pv : pendingValues) {
 				try {
 					worldToGrid.transform(pv.pos, gridPos);
 					writeIter.setSample((int) gridPos.x, (int) gridPos.y, 0,
-							pv.value == null ? Double.NaN : pv.value.doubleValue());
+					    pv.value == null ? Double.NaN : pv.value.doubleValue());
 				} catch (TransformException e) {
-					throw VissError.internal("Could not transform location ["
-							+ pv.pos + "] to grid coords");
+					throw VissError.internal("Could not transform location [" + pv.pos
+					    + "] to grid coords");
 				}
 			}
 			pendingValues.clear();

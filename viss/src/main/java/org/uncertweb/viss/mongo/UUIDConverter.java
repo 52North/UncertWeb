@@ -30,7 +30,7 @@ import com.google.code.morphia.mapping.MappingException;
 
 @SuppressWarnings("rawtypes")
 public class UUIDConverter extends TypeConverter implements
-		SimpleValueConverter {
+    SimpleValueConverter {
 	public UUIDConverter() {
 		super(UUID.class);
 	}
@@ -44,7 +44,7 @@ public class UUIDConverter extends TypeConverter implements
 
 	@Override
 	public Object decode(Class c, Object o, MappedField i)
-			throws MappingException {
+	    throws MappingException {
 		if (o == null)
 			return null;
 		return UUID.fromString(o.toString());

@@ -26,14 +26,13 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-public class TemporalInstant implements TemporalExtent {
+public class TemporalInstant implements ITemporalExtent {
 
 	static final String INSTANT_JSON_KEY = "instant";
 
 	private DateTime instant;
 
-	public TemporalInstant() {
-	}
+	public TemporalInstant() {}
 
 	public TemporalInstant(DateTime instant) {
 		setInstant(instant);
@@ -56,5 +55,5 @@ public class TemporalInstant implements TemporalExtent {
 	public Interval toInterval() {
 		return new Interval(getInstant(), getInstant());
 	}
-	
+
 }

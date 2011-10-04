@@ -23,16 +23,16 @@ package org.uncertweb.viss.vis.distribution.chisquare;
 
 import org.apache.commons.math.distribution.ChiSquaredDistributionImpl;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
+import org.uncertweb.viss.vis.distribution.AbstractChiSquareDistributionVisualizer;
 
 @Description("Returns the variance.")
-public class Variance extends
-		AbstractChiSquareDistributionVisualizer {
+public class Variance extends AbstractChiSquareDistributionVisualizer {
 
 	@Override
 	protected double evaluate(ChiSquaredDistributionImpl d) {
 		return d.getNumericalVariance();
 	}
-	
+
 	@Override
 	protected String getUom() {
 		return "(" + super.getUom() + ")^2";

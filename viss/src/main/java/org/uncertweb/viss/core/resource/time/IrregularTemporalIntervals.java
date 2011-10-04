@@ -28,12 +28,12 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.Interval;
 import org.uncertweb.viss.core.util.Utils;
 
-public class IrregularTemporalIntervals extends IrregularTemporalExtent {
+public class IrregularTemporalIntervals extends AbstractIrregularTemporalExtent {
 
 	static final String INTERVALS_JSON_KEY = "intervals";
 
 	protected static List<TemporalInterval> toTemporalIntervalList(
-			List<Interval> intervals) {
+	    List<Interval> intervals) {
 		List<TemporalInterval> ti = Utils.list();
 		for (Interval i : intervals) {
 			ti.add(new TemporalInterval(i));
@@ -43,8 +43,7 @@ public class IrregularTemporalIntervals extends IrregularTemporalExtent {
 
 	private List<TemporalInterval> intervals;
 
-	public IrregularTemporalIntervals() {
-	}
+	public IrregularTemporalIntervals() {}
 
 	public IrregularTemporalIntervals(List<Interval> instants) {
 		setIntervals(toTemporalIntervalList(instants));
@@ -61,8 +60,7 @@ public class IrregularTemporalIntervals extends IrregularTemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
-		return super.toJson().put(INTERVALS_JSON_KEY,
-				toJSONArray(getIntervals()));
+		return super.toJson().put(INTERVALS_JSON_KEY, toJSONArray(getIntervals()));
 	}
 
 }

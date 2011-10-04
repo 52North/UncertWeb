@@ -28,9 +28,10 @@ import org.apache.commons.math.distribution.NormalDistributionImpl;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.util.JSONSchema;
 import org.uncertweb.viss.core.util.Utils;
+import org.uncertweb.viss.vis.AbstractNormalDistributionVisualizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
 
 @Description("Returns P(X <= max).")
@@ -40,10 +41,9 @@ public class Probability extends AbstractNormalDistributionVisualizer {
 
 	private static JSONObject createMaxOption() {
 		try {
-			return new JSONObject()
-					.put(JSONSchema.Key.DESCRIPTION, MAX_DESCRIPTION)
-					.put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
-					.put(JSONSchema.Key.REQUIRED, true);
+			return new JSONObject().put(JSONSchema.Key.DESCRIPTION, MAX_DESCRIPTION)
+			    .put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
+			    .put(JSONSchema.Key.REQUIRED, true);
 		} catch (JSONException e) {
 			throw VissError.internal(e);
 		}
@@ -56,12 +56,13 @@ public class Probability extends AbstractNormalDistributionVisualizer {
 	}
 
 	@Override
-	public Map<String, JSONObject> getOptionsForResource(Resource r) {
+	public Map<String, JSONObject> getOptionsForResource(IResource r) {
 		try {
 			double[] minmax = getRange(r);
-			return Utils.map(MAX_PARAMETER, createMaxOption()
-					.put(JSONSchema.Key.MINIMUM, minmax[0])
-					.put(JSONSchema.Key.MAXIMUM, minmax[1]));
+			return Utils.map(
+			    MAX_PARAMETER,
+			    createMaxOption().put(JSONSchema.Key.MINIMUM, minmax[0]).put(
+			        JSONSchema.Key.MAXIMUM, minmax[1]));
 		} catch (JSONException e) {
 			throw VissError.internal(e);
 		}
@@ -91,7 +92,7 @@ public class Probability extends AbstractNormalDistributionVisualizer {
 	@Override
 	public String getId(JSONObject params) {
 		return Utils.join("-", getShortName(), MAX_PARAMETER,
-				String.valueOf(getMax(params)).replace('.', '-'));
+		    String.valueOf(getMax(params)).replace('.', '-'));
 	}
 
 	@Override

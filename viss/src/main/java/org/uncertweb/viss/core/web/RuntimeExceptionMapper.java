@@ -36,22 +36,22 @@ import org.slf4j.LoggerFactory;
 
 @Provider
 public class RuntimeExceptionMapper implements ExceptionMapper<Throwable> {
-	private static final Logger log = LoggerFactory.getLogger(RuntimeExceptionMapper.class);
-	
-	
+	private static final Logger log = LoggerFactory
+	    .getLogger(RuntimeExceptionMapper.class);
+
 	@Override
 	public Response toResponse(Throwable exception) {
 		log.info("Mapping Exception", exception);
 		if (exception instanceof WebApplicationException) {
 			return ((WebApplicationException) exception).getResponse();
 		}
-		
+
 		ByteArrayOutputStream out = null;
 		try {
 			out = new ByteArrayOutputStream();
 			exception.printStackTrace(new PrintStream(out));
 			return Response.serverError().entity(new String(out.toByteArray()))
-					.type(MediaType.TEXT_PLAIN).build();
+			    .type(MediaType.TEXT_PLAIN).build();
 		} catch (Throwable t) {
 			throw new RuntimeException(exception);
 		} finally {

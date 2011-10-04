@@ -22,6 +22,7 @@
 package org.uncertweb.viss.vis.distribution.normal;
 
 import org.apache.commons.math.distribution.NormalDistributionImpl;
+import org.uncertweb.viss.vis.AbstractNormalDistributionVisualizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
 
 @Description("Returns the variance.")

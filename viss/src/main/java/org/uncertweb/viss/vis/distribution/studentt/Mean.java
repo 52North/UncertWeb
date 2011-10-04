@@ -23,6 +23,7 @@ package org.uncertweb.viss.vis.distribution.studentt;
 
 import org.apache.commons.math.distribution.TDistributionImpl;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
+import org.uncertweb.viss.vis.distribution.AbstractStudentTDistributionVisualizer;
 
 @Description("Returns the variance.")
 public class Mean extends AbstractStudentTDistributionVisualizer {
@@ -31,5 +32,5 @@ public class Mean extends AbstractStudentTDistributionVisualizer {
 	protected double evaluate(TDistributionImpl d) {
 		return d.getNumericalVariance();
 	}
-	
+
 }

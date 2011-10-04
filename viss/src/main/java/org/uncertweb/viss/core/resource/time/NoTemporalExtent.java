@@ -28,8 +28,8 @@ import org.joda.time.Interval;
 /*
  * Has to be a top level class for MongoDB
  */
-public class NoTemporalExtent implements TemporalExtent {
-	
+public class NoTemporalExtent implements ITemporalExtent {
+
 	@Override
 	public JSONObject toJson() throws JSONException {
 		return null;

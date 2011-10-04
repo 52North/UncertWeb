@@ -23,21 +23,21 @@ package org.uncertweb.viss.core.wms;
 
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
-import org.uncertweb.viss.core.resource.Resource;
-import org.uncertweb.viss.core.vis.Visualization;
-import org.uncertweb.viss.core.vis.VisualizationReference;
+import org.uncertweb.viss.core.resource.IResource;
+import org.uncertweb.viss.core.vis.IVisualization;
+import org.uncertweb.viss.core.vis.IVisualizationReference;
 
 public interface WMSAdapter {
 
-	public boolean deleteResource(Resource res);
+	public boolean deleteResource(IResource res);
 
-	public VisualizationReference addVisualization(Visualization vis);
+	public IVisualizationReference addVisualization(IVisualization vis);
 
-	public boolean deleteVisualization(Visualization vis);
+	public boolean deleteVisualization(IVisualization vis);
 
-	public boolean setSldForVisualization(Visualization vis);
+	public boolean setSldForVisualization(IVisualization vis);
 
 	public StyledLayerDescriptorDocument getSldForVisualization(
-			Visualization visualization);
+	    IVisualization visualization);
 
 }

@@ -23,10 +23,11 @@ package org.uncertweb.viss.vis.distribution.beta;
 
 import org.apache.commons.math.distribution.BetaDistributionImpl;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
+import org.uncertweb.viss.vis.distribution.AbstractBetaDistributionVisualizer;
 
 @Description("Returns the variance.")
 public class Variance extends AbstractBetaDistributionVisualizer {
-	
+
 	@Override
 	protected double evaluate(BetaDistributionImpl d) {
 		return d.getNumericalVariance();

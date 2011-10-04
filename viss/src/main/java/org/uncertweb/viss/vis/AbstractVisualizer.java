@@ -9,22 +9,24 @@ import javax.ws.rs.core.MediaType;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.util.Utils;
-import org.uncertweb.viss.core.vis.Visualization;
-import org.uncertweb.viss.core.vis.Visualizer;
+import org.uncertweb.viss.core.vis.IVisualization;
+import org.uncertweb.viss.core.vis.IVisualizer;
 
-public abstract class AbstractVisualizer implements Visualizer {
-	
-	protected static final Logger log = LoggerFactory.getLogger(AbstractVisualizer.class);
+public abstract class AbstractVisualizer implements IVisualizer {
+
+	protected static final Logger log = LoggerFactory
+	    .getLogger(AbstractVisualizer.class);
 	private Set<MediaType> compatibleTypes;
-	private Resource resource;
+	private IResource resource;
 	private JSONObject params;
-	
+
 	public AbstractVisualizer(MediaType... compatibleTypes) {
-		this.compatibleTypes = Collections.unmodifiableSet(Utils.set(compatibleTypes));
+		this.compatibleTypes = Collections.unmodifiableSet(Utils
+		    .set(compatibleTypes));
 	}
-	
+
 	@Override
 	public Set<MediaType> getCompatibleMediaTypes() {
 		return this.compatibleTypes;
@@ -33,8 +35,7 @@ public abstract class AbstractVisualizer implements Visualizer {
 	@Override
 	public String getShortName() {
 		return this.getClass().getName()
-				.replace(getClass().getPackage().getName() + ".", "")
-				.replace('$', '.');
+		    .replace(getClass().getPackage().getName() + ".", "").replace('$', '.');
 	}
 
 	@Override
@@ -43,43 +44,43 @@ public abstract class AbstractVisualizer implements Visualizer {
 	}
 
 	@Override
-	public void setResource(Resource r) {
+	public void setResource(IResource r) {
 		this.resource = r;
 	}
 
 	@Override
-	public Resource getResource() {
+	public IResource getResource() {
 		return this.resource;
 	}
-	
+
 	protected JSONObject getParams() {
 		return this.params;
 	}
-	
+
 	protected void setParams(JSONObject params) {
 		this.params = params;
 	}
-	
+
 	@Override
 	public Map<String, JSONObject> getOptions() {
 		return Utils.map();
 	}
-	
+
 	@Override
-	public Map<String, JSONObject> getOptionsForResource(Resource r) {
+	public Map<String, JSONObject> getOptionsForResource(IResource r) {
 		return Utils.map();
 	}
-	
+
 	@Override
-	public Visualization visualize(Resource r, JSONObject params) {
+	public IVisualization visualize(IResource r, JSONObject params) {
 		setResource(r);
 		setParams(params);
 		return visualize();
 	}
-	
+
 	protected String getCoverageName() {
 		return this.getId(getParams());
 	}
 
-	protected abstract Visualization visualize();
+	protected abstract IVisualization visualize();
 }

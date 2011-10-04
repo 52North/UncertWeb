@@ -42,8 +42,7 @@ import org.uncertweb.viss.core.util.Utils;
 
 public class RestBuilder {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(RestBuilder.class);
+	private static final Logger log = LoggerFactory.getLogger(RestBuilder.class);
 
 	private static final boolean PRINT_CURL_COMMAND = Boolean.TRUE;
 
@@ -60,7 +59,7 @@ public class RestBuilder {
 		this.user = user;
 		this.pass = pass;
 		this.auth = "Basic "
-				+ Base64.encodeBase64String((user + ":" + pass).getBytes());
+		    + Base64.encodeBase64String((user + ":" + pass).getBytes());
 		return this;
 	}
 
@@ -141,14 +140,13 @@ public class RestBuilder {
 		URL url = new URL(path);
 
 		if (log.isDebugEnabled() && PRINT_CURL_COMMAND) {
-			log.debug(buildCurlString(user, pass, method, url, content,
-					response, (entity instanceof InputStream) ? "!DATA!"
-							: entity));
+			log.debug(buildCurlString(user, pass, method, url, content, response,
+			    (entity instanceof InputStream) ? "!DATA!" : entity));
 		}
 
 		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
 		httpCon.setRequestMethod(method.toString());
-		
+
 		if (response != null) {
 			httpCon.setRequestProperty("Accept", response.toString());
 		}
@@ -161,7 +159,7 @@ public class RestBuilder {
 			if (content != null) {
 				httpCon.setRequestProperty("Content-Type", content.toString());
 			}
-			
+
 			if (entity instanceof InputStream) {
 				OutputStream out = null;
 				try {
@@ -193,8 +191,8 @@ public class RestBuilder {
 	}
 
 	protected static String buildCurlString(String user, String pass,
-			HttpMethod method, URL url, MediaType mediaType,
-			MediaType returnType, Object content) {
+	    HttpMethod method, URL url, MediaType mediaType, MediaType returnType,
+	    Object content) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("curl -v");
 		if (user != null) {

@@ -28,32 +28,31 @@ import org.apache.commons.math.distribution.NormalDistributionImpl;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.resource.Resource;
+import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.util.JSONSchema;
 import org.uncertweb.viss.core.util.Utils;
+import org.uncertweb.viss.vis.AbstractNormalDistributionVisualizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
 
 @Description("Returns P(min <= X <= max).")
 public class ProbabilityForInterval extends
-		AbstractNormalDistributionVisualizer {
+    AbstractNormalDistributionVisualizer {
 	private static final String MIN_DESCRIPTION = "the (inclusive) lower bound";
 	private static final String MAX_DESCRIPTION = "the (inclusive) upper bound";
 	private static final String MIN_PARAMETER = "min";
 	private static final String MAX_PARAMETER = "max";
 
 	private static JSONObject createMinOption() throws JSONException {
-		return new JSONObject()
-				.put(JSONSchema.Key.DESCRIPTION, MIN_DESCRIPTION)
-				.put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
-				.put(JSONSchema.Key.REQUIRED, true);
+		return new JSONObject().put(JSONSchema.Key.DESCRIPTION, MIN_DESCRIPTION)
+		    .put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
+		    .put(JSONSchema.Key.REQUIRED, true);
 	}
 
 	private static JSONObject createMaxOption() throws JSONException {
 
-		return new JSONObject()
-				.put(JSONSchema.Key.DESCRIPTION, MAX_DESCRIPTION)
-				.put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
-				.put(JSONSchema.Key.REQUIRED, true);
+		return new JSONObject().put(JSONSchema.Key.DESCRIPTION, MAX_DESCRIPTION)
+		    .put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
+		    .put(JSONSchema.Key.REQUIRED, true);
 	}
 
 	@Override
@@ -62,16 +61,18 @@ public class ProbabilityForInterval extends
 	}
 
 	@Override
-	public Map<String, JSONObject> getOptionsForResource(Resource r) {
+	public Map<String, JSONObject> getOptionsForResource(IResource r) {
 		try {
 			Map<String, JSONObject> options = Utils.map();
 			double[] minmax = getRange(r);
-			options.put(MIN_PARAMETER,
-					createMinOption().put(JSONSchema.Key.MINIMUM, minmax[0])
-							.put(JSONSchema.Key.MAXIMUM, minmax[1]));
-			options.put(MAX_PARAMETER,
-					createMaxOption().put(JSONSchema.Key.MINIMUM, minmax[0])
-							.put(JSONSchema.Key.MAXIMUM, minmax[1]));
+			options.put(
+			    MIN_PARAMETER,
+			    createMinOption().put(JSONSchema.Key.MINIMUM, minmax[0]).put(
+			        JSONSchema.Key.MAXIMUM, minmax[1]));
+			options.put(
+			    MAX_PARAMETER,
+			    createMaxOption().put(JSONSchema.Key.MINIMUM, minmax[0]).put(
+			        JSONSchema.Key.MAXIMUM, minmax[1]));
 			return options;
 		} catch (JSONException e) {
 			throw VissError.internal(e);
@@ -113,11 +114,9 @@ public class ProbabilityForInterval extends
 
 	@Override
 	public String getId(JSONObject params) {
-		return Utils
-				.join("-", getShortName(), MIN_PARAMETER,
-						String.valueOf(getMin(params)).replace('.', '-'),
-						MAX_PARAMETER,
-						String.valueOf(getMax(params)).replace('.', '-'));
+		return Utils.join("-", getShortName(), MIN_PARAMETER,
+		    String.valueOf(getMin(params)).replace('.', '-'), MAX_PARAMETER, String
+		        .valueOf(getMax(params)).replace('.', '-'));
 	}
 
 	@Override

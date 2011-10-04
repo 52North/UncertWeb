@@ -32,7 +32,7 @@ import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.util.Utils;
 
 public abstract class AbstractAnnotatedUncertaintyViusalizer extends
-		AbstractMultiResourceTypeVisualizer {
+    AbstractMultiResourceTypeVisualizer {
 
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
@@ -66,7 +66,7 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 	}
 
 	private static <T extends Annotation> T findAnnotation(Class<T> annotation,
-			Class<?> c) {
+	    Class<?> c) {
 		T t = null;
 		while ((t = c.getAnnotation(annotation)) == null && c != null) {
 			if (t == null)

@@ -31,8 +31,9 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 @SuppressWarnings("rawtypes")
-public class IntervalConverter extends TypeConverter implements SimpleValueConverter {
-	
+public class IntervalConverter extends TypeConverter implements
+    SimpleValueConverter {
+
 	public IntervalConverter() {
 		super(Interval.class);
 	}
@@ -50,7 +51,7 @@ public class IntervalConverter extends TypeConverter implements SimpleValueConve
 
 	@Override
 	public Interval decode(Class c, Object o, MappedField i)
-			throws MappingException {
+	    throws MappingException {
 		if (o == null) {
 			return null;
 		} else if (o instanceof DBObject) {
@@ -59,7 +60,7 @@ public class IntervalConverter extends TypeConverter implements SimpleValueConve
 		}
 		return new Interval(o);
 	}
-	
+
 	private long getLong(Object o) {
 		if (o instanceof Number) {
 			return ((Number) o).longValue();

@@ -35,11 +35,11 @@ import com.google.code.morphia.mapping.MappingException;
 
 @SuppressWarnings("rawtypes")
 public class XmlObjectConverter extends TypeConverter implements
-		SimpleValueConverter {
+    SimpleValueConverter {
 
 	public XmlObjectConverter() {
 		super(XmlObject.class, StyledLayerDescriptorDocument.class,
-				StyledLayerDescriptorDocumentImpl.class);
+		    StyledLayerDescriptorDocumentImpl.class);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class XmlObjectConverter extends TypeConverter implements
 
 	@Override
 	public Object decode(Class c, Object o, MappedField i)
-			throws MappingException {
+	    throws MappingException {
 		if (o == null)
 			return null;
 		try {

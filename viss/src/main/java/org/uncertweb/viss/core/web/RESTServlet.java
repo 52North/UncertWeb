@@ -21,11 +21,20 @@
  */
 package org.uncertweb.viss.core.web;
 
-import static org.uncertweb.viss.core.util.Constants.GEOTIFF;
-import static org.uncertweb.viss.core.util.Constants.NETCDF;
-import static org.uncertweb.viss.core.util.Constants.OM_2;
-import static org.uncertweb.viss.core.util.Constants.STYLED_LAYER_DESCRIPTOR;
-import static org.uncertweb.viss.core.util.Constants.*;
+import static org.uncertweb.viss.core.util.MediaTypes.GEOTIFF;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_CREATE;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST_TYPE;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE_LIST;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_LIST;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER_LIST;
+import static org.uncertweb.viss.core.util.MediaTypes.NETCDF;
+import static org.uncertweb.viss.core.util.MediaTypes.OM_2;
+import static org.uncertweb.viss.core.util.MediaTypes.STYLED_LAYER_DESCRIPTOR;
+import static org.uncertweb.viss.core.util.MediaTypes.X_NETCDF;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -58,9 +67,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.Viss;
 import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.resource.Resource;
-import org.uncertweb.viss.core.vis.Visualization;
-import org.uncertweb.viss.core.vis.Visualizer;
+import org.uncertweb.viss.core.resource.IResource;
+import org.uncertweb.viss.core.vis.IVisualization;
+import org.uncertweb.viss.core.vis.IVisualizer;
 
 @Path("/")
 public class RESTServlet {
@@ -68,22 +77,17 @@ public class RESTServlet {
 	public static final String RES_PARAM = "resource";
 	public static final String VIS_PARAM = "visualization";
 	public static final String VIR_PARAM = "visualizer";
-
 	public static final String RES_PARAM_P = "{" + RES_PARAM + "}";
 	public static final String VIS_PARAM_P = "{" + VIS_PARAM + "}";
 	public static final String VIR_PARAM_P = "{" + VIR_PARAM + "}";
-
 	public static final String RESOURCES = "/resources";
 	public static final String VISUALIZATIONS = "/visualizations";
 	public static final String VISUALIZERS = "/visualizers";
-	
 	public static final String RESOURCE_WITH_ID = RESOURCES + "/" + RES_PARAM_P;
 	public static final String VISUALIZER_WITH_ID = VISUALIZERS + "/" + VIR_PARAM_P;
 	public static final String VISUALIZATION_WITH_ID = VISUALIZATIONS + "/" + VIS_PARAM_P;
-	
 	public static final String VISUALIZERS_FOR_RESOURCE = RESOURCE_WITH_ID + VISUALIZERS;
 	public static final String VISUALIZER_FOR_RESOURCE = RESOURCE_WITH_ID + VISUALIZER_WITH_ID;
-	
 	public static final String VISUALIZATIONS_FOR_RESOURCE = RESOURCE_WITH_ID + VISUALIZATIONS;
 	public static final String VISUALIZATION_FOR_RESOURCE_WITH_ID = VISUALIZATIONS_FOR_RESOURCE + "/" + VIS_PARAM_P;
 	public static final String VISUALIZATION_SLD = VISUALIZATION_FOR_RESOURCE_WITH_ID + "/sld";
@@ -93,14 +97,14 @@ public class RESTServlet {
 	@GET
 	public Response wadl(@Context UriInfo uriI) {
 		URI uri = uriI.getBaseUriBuilder().path("application.wadl").build();
-		return Response.noContent().location(uri)
-				.status(Status.MOVED_PERMANENTLY).build();
+		return Response.noContent().location(uri).status(Status.MOVED_PERMANENTLY)
+		    .build();
 	}
 
 	@GET
 	@Path(RESOURCES)
 	@Produces(JSON_RESOURCE_LIST)
-	public Set<Resource> getResources() {
+	public Set<IResource> getResources() {
 		log.debug("Getting Resources.");
 		return Viss.getInstance().getResources();
 	}
@@ -109,16 +113,16 @@ public class RESTServlet {
 	@Path(RESOURCES)
 	@Produces(JSON_RESOURCE)
 	@Consumes({ JSON_REQUEST, NETCDF, X_NETCDF, GEOTIFF, OM_2 })
-	public Response createResource(InputStream is, @HeaderParam(HttpHeaders.CONTENT_TYPE) MediaType h, @Context UriInfo uriI) {
+	public Response createResource(InputStream is,
+	    @HeaderParam(HttpHeaders.CONTENT_TYPE) MediaType h, @Context UriInfo uriI) {
 		log.debug("Putting Resource.");
-		Resource r = null;
+		IResource r = null;
 		if (JSON_REQUEST_TYPE.equals(h)) {
 			try {
 				JSONObject j = new JSONObject(IOUtils.toString(is));
 				log.debug("Fetching resource described as json: {}\n", j.toString(4));
 				URL url = new URL(j.getString("url"));
-				HttpURLConnection con = (HttpURLConnection) url
-						.openConnection();
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
 				con.setRequestMethod(j.getString("method"));
 				String req = j.optString("request");
 				if (req != null) {
@@ -134,7 +138,8 @@ public class RESTServlet {
 						IOUtils.closeQuietly(os);
 					}
 				}
-				r = Viss.getInstance().createResource(con.getInputStream(), MediaType.valueOf(j.getString("responseMediaType")));
+				r = Viss.getInstance().createResource(con.getInputStream(),
+				    MediaType.valueOf(j.getString("responseMediaType")));
 			} catch (Exception e) {
 				throw VissError.internal(e);
 			} finally {
@@ -143,14 +148,15 @@ public class RESTServlet {
 		} else {
 			r = Viss.getInstance().createResource(is, h);
 		}
-		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getResource").build(r.getUUID());
+		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getResource")
+		    .build(r.getUUID());
 		return Response.created(uri).entity(r).build();
 	}
 
 	@GET
 	@Path(RESOURCE_WITH_ID)
 	@Produces(JSON_RESOURCE)
-	public Resource getResource(@PathParam("resource") UUID uuid) {
+	public IResource getResource(@PathParam("resource") UUID uuid) {
 		log.debug("Getting Resource with UUID \"{}\".", uuid);
 		return Viss.getInstance().getResource(uuid);
 	}
@@ -165,7 +171,7 @@ public class RESTServlet {
 	@GET
 	@Path(VISUALIZERS)
 	@Produces(JSON_VISUALIZER_LIST)
-	public Set<Visualizer> getVisualizers() {
+	public Set<IVisualizer> getVisualizers() {
 		log.debug("Getting Visualizers.");
 		return Viss.getInstance().getVisualizers();
 	}
@@ -173,25 +179,26 @@ public class RESTServlet {
 	@GET
 	@Path(VISUALIZERS_FOR_RESOURCE)
 	@Produces(JSON_VISUALIZER_LIST)
-	public Set<Visualizer> getVisualizersForResource(
-			@PathParam(RES_PARAM) UUID uuid) {
+	public Set<IVisualizer> getVisualizersForResource(
+	    @PathParam(RES_PARAM) UUID uuid) {
 		log.debug("Getting Visualizers for Resource with UUID \"{}\".", uuid);
 		return Viss.getInstance().getVisualizers(uuid);
 	}
-	
+
 	@GET
 	@Path(VISUALIZER_FOR_RESOURCE)
 	@Produces(JSON_VISUALIZER)
-	public Visualizer getVisualizerForResource(
-			@PathParam(RES_PARAM) UUID uuid, @PathParam(VIR_PARAM) String visualizer) {
-		log.debug("Getting Visualizer with ID {} for Resource with UUID \"{}\".", visualizer, uuid);
+	public IVisualizer getVisualizerForResource(@PathParam(RES_PARAM) UUID uuid,
+	    @PathParam(VIR_PARAM) String visualizer) {
+		log.debug("Getting Visualizer with ID {} for Resource with UUID \"{}\".",
+		    visualizer, uuid);
 		return Viss.getInstance().getVisualizer(uuid, visualizer);
 	}
 
 	@GET
 	@Path(VISUALIZER_WITH_ID)
 	@Produces(JSON_VISUALIZER)
-	public Visualizer getVisualizer(@PathParam(VIR_PARAM) String visualizer) {
+	public IVisualizer getVisualizer(@PathParam(VIR_PARAM) String visualizer) {
 		log.debug("Request for Description of \"{}\".", visualizer);
 		return Viss.getInstance().getVisualizer(visualizer);
 	}
@@ -199,7 +206,7 @@ public class RESTServlet {
 	@GET
 	@Path(VISUALIZATIONS_FOR_RESOURCE)
 	@Produces(JSON_VISUALIZATION_LIST)
-	public Set<Visualization> getVisualizations(@PathParam(RES_PARAM) UUID uuid) {
+	public Set<IVisualization> getVisualizations(@PathParam(RES_PARAM) UUID uuid) {
 		log.debug("Getting Visualizations of resource with UUID \"{}\"", uuid);
 		return Viss.getInstance().getVisualizations(uuid);
 	}
@@ -209,21 +216,21 @@ public class RESTServlet {
 	@Produces(JSON_VISUALIZATION)
 	@Consumes(JSON_CREATE)
 	public Response createVisualization(@PathParam(RES_PARAM) UUID uuid,
-			@PathParam(VIR_PARAM) String visualizer, JSONObject options,
-			@Context UriInfo uriI) {
+	    @PathParam(VIR_PARAM) String visualizer, JSONObject options,
+	    @Context UriInfo uriI) {
 		log.debug("Creating Visualizaton for resource with UUID \"{}\".", uuid);
-		Visualization v = Viss.getInstance().getVisualization(visualizer, uuid,
-				options);
+		IVisualization v = Viss.getInstance().getVisualization(visualizer, uuid,
+		    options);
 		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getVisualization")
-				.build(v.getUuid(), v.getVisId());
+		    .build(v.getUuid(), v.getVisId());
 		return Response.created(uri).entity(v).build();
 	}
 
 	@GET
 	@Path(VISUALIZATION_FOR_RESOURCE_WITH_ID)
 	@Produces(JSON_VISUALIZATION)
-	public Visualization getVisualization(@PathParam(RES_PARAM) UUID resource,
-			@PathParam(VIS_PARAM) String vis) {
+	public IVisualization getVisualization(@PathParam(RES_PARAM) UUID resource,
+	    @PathParam(VIS_PARAM) String vis) {
 		log.debug("Getting visualization for resource with UUID \"{}\".", resource);
 		return Viss.getInstance().getVisualization(resource, vis);
 	}
@@ -231,20 +238,22 @@ public class RESTServlet {
 	@DELETE
 	@Path(VISUALIZATION_FOR_RESOURCE_WITH_ID)
 	public void deleteVisualization(@PathParam(RES_PARAM) UUID uuid,
-			@PathParam(VIS_PARAM) String vis) {
+	    @PathParam(VIS_PARAM) String vis) {
 		log.debug("Deleting visualization for resource with UUID \"{}\".");
 		Viss.getInstance().deleteVisualization(uuid, vis);
 	}
-	
+
 	@POST
 	@Path(VISUALIZATION_SLD)
 	@Consumes(STYLED_LAYER_DESCRIPTOR)
 	public Response setSldForVisualization(@PathParam(RES_PARAM) UUID uuid,
-			@PathParam(VIS_PARAM) String vis, StyledLayerDescriptorDocument sld, 
-			@Context UriInfo uriI) {
-		log.debug("Posting SLD for visualization of resource with UUID \"{}\"", uuid);
+	    @PathParam(VIS_PARAM) String vis, StyledLayerDescriptorDocument sld,
+	    @Context UriInfo uriI) {
+		log.debug("Posting SLD for visualization of resource with UUID \"{}\"",
+		    uuid);
 		Viss.getInstance().setSldForVisualization(uuid, vis, sld);
-		URI uri = uriI.getBaseUriBuilder().path(getClass(),"getSldForVisualization").build(uuid, vis);
+		URI uri = uriI.getBaseUriBuilder()
+		    .path(getClass(), "getSldForVisualization").build(uuid, vis);
 		return Response.created(uri).build();
 	}
 
@@ -252,9 +261,9 @@ public class RESTServlet {
 	@Path(VISUALIZATION_SLD)
 	@Produces(STYLED_LAYER_DESCRIPTOR)
 	public StyledLayerDescriptorDocument getSldForVisualization(
-			@PathParam(RES_PARAM) UUID uuid, @PathParam(VIS_PARAM) String vis) {
+	    @PathParam(RES_PARAM) UUID uuid, @PathParam(VIS_PARAM) String vis) {
 		log.debug("Getting SLD for Visualization with UUID \"{}\"", uuid);
 		return Viss.getInstance().getSldForVisualization(uuid, vis);
 	}
-	
+
 }

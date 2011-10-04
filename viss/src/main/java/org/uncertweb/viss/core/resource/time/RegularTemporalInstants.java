@@ -26,14 +26,14 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-public class RegularTemporalInstants extends RegularTemporalExtent {
+public class RegularTemporalInstants extends AbstractRegularTemporalExtent {
 
 	static final String SEPERATOR_JSON_KEY = "seperator";
 
 	public RegularTemporalInstants() {}
 
 	public RegularTemporalInstants(DateTime begin, DateTime end,
-			Duration seperator) {
+	    Duration seperator) {
 		super(begin, end, seperator);
 	}
 
@@ -47,7 +47,6 @@ public class RegularTemporalInstants extends RegularTemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
-		return super.toJson().put(SEPERATOR_JSON_KEY,
-				getSeperator().getMillis());
+		return super.toJson().put(SEPERATOR_JSON_KEY, getSeperator().getMillis());
 	}
 }

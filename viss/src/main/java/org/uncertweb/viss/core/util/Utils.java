@@ -59,7 +59,7 @@ import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 
 public class Utils {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
 	public static String join(String sep, Object... col) {
@@ -116,16 +116,18 @@ public class Utils {
 			}
 		};
 	}
-	
+
 	@SuppressWarnings("serial")
 	public static <T> Set<T> combineSets(final Set<T>... values) {
 		if (values == null || values.length == 0) {
 			return Collections.emptySet();
 		}
-		return new HashSet<T>() {{
-			for (Set<T> s : values)
-				addAll(s);
-		}};
+		return new HashSet<T>() {
+			{
+				for (Set<T> s : values)
+					addAll(s);
+			}
+		};
 	}
 
 	public static <T> Set<T> asSet(Iterable<? extends T> col) {
@@ -138,7 +140,7 @@ public class Utils {
 		}
 		return set;
 	}
-	
+
 	public static <T> List<T> asList(Iterable<? extends T> col) {
 		Iterator<? extends T> i;
 		if (col == null || (!(i = col.iterator()).hasNext()))
@@ -153,19 +155,19 @@ public class Utils {
 	public static <T> List<T> list() {
 		return new LinkedList<T>();
 	}
-	
+
 	public static <T> T[] sort(T[] t) {
 		Arrays.sort(t);
 		return t;
 	}
-	
+
 	@SuppressWarnings("serial")
 	public static <T> List<T> list(final T... elements) {
 		if (elements == null || elements.length == 0)
 			return new LinkedList<T>();
 		return new ArrayList<T>(elements.length) {
 			{
-				for (T t : elements) 
+				for (T t : elements)
 					add(t);
 			}
 		};
@@ -189,8 +191,9 @@ public class Utils {
 			IOUtils.closeQuietly(os);
 		}
 	}
-	
-	public static long saveToFileWithChecksum(File f, InputStream is) throws IOException {
+
+	public static long saveToFileWithChecksum(File f, InputStream is)
+	    throws IOException {
 		CheckedOutputStream cos = null;
 		try {
 			cos = new CheckedOutputStream(new FileOutputStream(f), new CRC32());
@@ -279,7 +282,7 @@ public class Utils {
 	}
 
 	public static boolean isParameterizedWith(Type t, Class<?> collClass,
-			Class<?> itemClass) {
+	    Class<?> itemClass) {
 		if (t instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) t;
 			if (collClass.isAssignableFrom((Class<?>) pt.getRawType())) {
@@ -297,11 +300,16 @@ public class Utils {
 		}
 		return false;
 	}
+
 	/**
 	 * 
-	 * <pre>flatJSON("one","two","three","four")</pre>
-	 * creates 
-	 * <pre>    
+	 * <pre>
+	 * flatJSON(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;, &quot;four&quot;)
+	 * </pre>
+	 * 
+	 * creates
+	 * 
+	 * <pre>
 	 * { "one": { "two": { "three": "four" } } }
 	 * </pre>
 	 * 
@@ -310,12 +318,12 @@ public class Utils {
 	 * @return
 	 * @throws JSONException
 	 */
-	public static final JSONObject flatJSON(String... s) throws JSONException{
+	public static final JSONObject flatJSON(String... s) throws JSONException {
 		int l = s.length;
 		if (s.length < 2)
 			throw VissError.internal("Invalid parameter number");
-		JSONObject j = new JSONObject().put(s[l-2], s[l-1]);
-		for (int i = l-3; i >= 0; --i) {
+		JSONObject j = new JSONObject().put(s[l - 2], s[l - 1]);
+		for (int i = l - 3; i >= 0; --i) {
 			j = new JSONObject().put(s[i], j);
 		}
 		return j;

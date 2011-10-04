@@ -23,6 +23,7 @@ package org.uncertweb.viss.vis.distribution.chisquare;
 
 import org.apache.commons.math.distribution.ChiSquaredDistributionImpl;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
+import org.uncertweb.viss.vis.distribution.AbstractChiSquareDistributionVisualizer;
 
 @Description("Returns the mean.")
 public class Mean extends AbstractChiSquareDistributionVisualizer {

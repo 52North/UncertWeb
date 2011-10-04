@@ -34,24 +34,22 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uncertweb.viss.core.resource.Resource;
-import org.uncertweb.viss.core.resource.ResourceStore;
-import org.uncertweb.viss.core.vis.Visualization;
-import org.uncertweb.viss.core.vis.Visualizer;
+import org.uncertweb.viss.core.resource.IResource;
+import org.uncertweb.viss.core.resource.IResourceStore;
+import org.uncertweb.viss.core.vis.IVisualization;
+import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.core.vis.VisualizerFactory;
 import org.uncertweb.viss.core.wms.WMSAdapter;
 
-import com.sun.jersey.spi.resource.Singleton;
-
-@Singleton
 public class Viss {
 	private class CleanUpThread extends TimerTask {
 		@Override
 		public void run() {
-			DateTime dt = new DateTime().minus(VissConfig.getInstance().getPeriodToDeleteAfterLastUse());
+			DateTime dt = new DateTime().minus(VissConfig.getInstance()
+			    .getPeriodToDeleteAfterLastUse());
 			log.info("CleanUpThread running. Deleting Resources used before {}", dt);
 			int count = 0;
-			for (Resource r : getStore().getResourcesUsedBefore(dt)) {
+			for (IResource r : getStore().getResourcesUsedBefore(dt)) {
 				try {
 					delete(r);
 					count++;
@@ -68,21 +66,21 @@ public class Viss {
 
 	private Lock lock = Lock.getInstance();
 	private WMSAdapter wms = null;
-	private ResourceStore store = null;
+	private IResourceStore store = null;
 
 	private Viss() {
 		log.info("Starting up application...");
 		this.store = VissConfig.getInstance().getResourceStore();
 		this.wms = VissConfig.getInstance().getWMSAdapter();
 		VissConfig.getInstance().scheduleTask(new CleanUpThread(),
-				VissConfig.getInstance().getCleanUpInterval());
+		    VissConfig.getInstance().getCleanUpInterval());
 	}
 
 	public static Viss getInstance() {
 		return (instance == null) ? instance = new Viss() : instance;
 	}
 
-	public void delete(Resource resource) {
+	public void delete(IResource resource) {
 		if (lock.deletingResource(resource)) {
 			try {
 				getStore().deleteResource(resource);
@@ -95,7 +93,7 @@ public class Viss {
 			}
 		} else {
 			throw VissError
-					.internal("Resource is already marked for deletion or is in use.");
+			    .internal("Resource is already marked for deletion or is in use.");
 		}
 	}
 
@@ -103,36 +101,37 @@ public class Viss {
 		delete(getResource(uuid));
 	}
 
-	public Visualization getVisualization(String visualizer, UUID uuid,
-			final JSONObject param) {
-		Resource resource = this.getResource(uuid);
+	public IVisualization getVisualization(String visualizer, UUID uuid,
+	    final JSONObject param) {
+		IResource resource = this.getResource(uuid);
 		if (lock.usingResource(resource, true)) {
 			try {
-				Visualization existentVis = getVisualization(resource, visualizer, param);
+				IVisualization existentVis = getVisualization(resource, visualizer,
+				    param);
 				if (existentVis != null) {
 					return existentVis;
 				}
-				
-				Visualizer v = VisualizerFactory.getVisualizer(visualizer);
+
+				IVisualizer v = VisualizerFactory.getVisualizer(visualizer);
 				if (!resource.isLoaded()) {
 					resource.load();
 				}
 				if (!v.getCompatibleMediaTypes().contains(resource.getMediaType())
-						|| !v.getCompatibleUncertaintyTypes().contains(resource.getType())) {
+				    || !v.getCompatibleUncertaintyTypes().contains(resource.getType())) {
 					throw VissError.incompatibleVisualizer();
 				}
-				
-				Visualization vis = v.visualize(resource, param);
-			
+
+				IVisualization vis = v.visualize(resource, param);
+
 				if (param != null && vis.getParameters() == null)
 					throw new NullPointerException();
-				
+
 				vis.setReference(getWMS().addVisualization(vis));
-				
+
 				resource.addVisualization(vis);
-				
+
 				getStore().saveResource(resource);
-				
+
 				return vis;
 			} catch (RuntimeException e) {
 				log.warn("Error while retrieving Visualization", e);
@@ -147,20 +146,18 @@ public class Viss {
 		}
 	}
 
-	protected Visualization getVisualization(Resource r, String visualizer,
-			JSONObject param) {
-		log.debug(
-				"Searching for Visualizer {} in Resource {} with parameters {}",
-				new Object[] { visualizer, r.getUUID(), param });
+	protected IVisualization getVisualization(IResource r, String visualizer,
+	    JSONObject param) {
+		log.debug("Searching for Visualizer {} in Resource {} with parameters {}",
+		    new Object[] { visualizer, r.getUUID(), param });
 		String paramS = null;
 		if (param != null) {
 			paramS = param.toString();
 		}
-		for (Visualization v : r.getVisualizations()) {
+		for (IVisualization v : r.getVisualizations()) {
 			if (v.getCreator().getShortName().equals(visualizer)) {
 				log.debug("Found Visualizer {}", visualizer);
-				log.debug("ID: {}; Parameters: {}", v.getVisId(),
-						v.getParameters());
+				log.debug("ID: {}; Parameters: {}", v.getVisId(), v.getParameters());
 				if (param == v.getParameters()) {
 					return v;
 				}
@@ -174,44 +171,44 @@ public class Viss {
 		}
 		return null;
 	}
-	
+
 	public void deleteVisualization(UUID uuid, String vis) {
-		Resource r = getResource(uuid);
-		Visualization v = getVisualization(r, vis);
+		IResource r = getResource(uuid);
+		IVisualization v = getVisualization(r, vis);
 		getStore().deleteVisualizationForResource(r, v);
 	}
 
-	public Set<Visualization> getVisualizations(UUID uuid) {
+	public Set<IVisualization> getVisualizations(UUID uuid) {
 		return getResource(uuid).getVisualizations();
 	}
 
-	public Visualization getVisualization(UUID uuid, String vis) {
+	public IVisualization getVisualization(UUID uuid, String vis) {
 		return getVisualization(getResource(uuid), vis);
 	}
 
-	public Visualization getVisualization(Resource r, String vis) {
-		for (Visualization v : r.getVisualizations()) {
+	public IVisualization getVisualization(IResource r, String vis) {
+		for (IVisualization v : r.getVisualizations()) {
 			if (v.getVisId().equals(vis))
 				return v;
 		}
 		throw VissError.noSuchVisualization();
 	}
 
-	public Resource createResource(InputStream is, MediaType mt) {
+	public IResource createResource(InputStream is, MediaType mt) {
 		return getStore().addResource(is, mt);
 	}
 
-	public Visualizer getVisualizer(String shortName) {
+	public IVisualizer getVisualizer(String shortName) {
 		try {
 			return VisualizerFactory.getVisualizer(shortName);
 		} catch (RuntimeException t) {
-			log.warn("Error while retrieving VisualizerDescription for "
-					+ shortName, t);
+			log.warn("Error while retrieving VisualizerDescription for " + shortName,
+			    t);
 			throw t;
 		}
 	}
 
-	public Set<Visualizer> getVisualizers() {
+	public Set<IVisualizer> getVisualizers() {
 		try {
 			return VisualizerFactory.getVisualizers();
 		} catch (RuntimeException t) {
@@ -220,33 +217,34 @@ public class Viss {
 		}
 	}
 
-	public Set<Visualizer> getVisualizers(UUID uuid) {
+	public Set<IVisualizer> getVisualizers(UUID uuid) {
 		return VisualizerFactory.getVisualizersForResource(getResource(uuid));
 	}
 
-	public Resource getResource(UUID uuid) {
+	public IResource getResource(UUID uuid) {
 		return getStore().get(uuid);
 	}
 
-	public Set<Resource> getResources() {
+	public Set<IResource> getResources() {
 		return getStore().getAllResources();
 	}
 
-	public StyledLayerDescriptorDocument getSldForVisualization(UUID uuid, String vis) {
+	public StyledLayerDescriptorDocument getSldForVisualization(UUID uuid,
+	    String vis) {
 		return getWMS().getSldForVisualization(getVisualization(uuid, vis));
 	}
 
 	public void setSldForVisualization(UUID uuid, String vis,
-			StyledLayerDescriptorDocument sld) {
-		Resource r = getResource(uuid);
-		Visualization v = getVisualization(r, vis);
+	    StyledLayerDescriptorDocument sld) {
+		IResource r = getResource(uuid);
+		IVisualization v = getVisualization(r, vis);
 		v.setSld(sld);
 		getWMS().setSldForVisualization(v);
 		getStore().saveResource(r);
 
 	}
 
-	protected ResourceStore getStore() {
+	protected IResourceStore getStore() {
 		return this.store;
 	}
 
@@ -254,7 +252,8 @@ public class Viss {
 		return this.wms;
 	}
 
-	public Visualizer getVisualizer(UUID uuid, String visualizer) {
-		return VisualizerFactory.getVisualizerForResource(getResource(uuid), visualizer);
+	public IVisualizer getVisualizer(UUID uuid, String visualizer) {
+		return VisualizerFactory.getVisualizerForResource(getResource(uuid),
+		    visualizer);
 	}
 }

@@ -32,13 +32,13 @@ public class VissError extends WebApplicationException {
 	private static final long serialVersionUID = 5597652128019474217L;
 
 	public VissError(Status status, String message) {
-		super(Response.status(status).entity(message)
-				.type(MediaType.TEXT_PLAIN).build());
+		super(Response.status(status).entity(message).type(MediaType.TEXT_PLAIN)
+		    .build());
 	}
 
 	public VissError(Status status, JSONObject json) {
 		super(Response.status(status).entity(json.toString())
-				.type(MediaType.APPLICATION_JSON).build());
+		    .type(MediaType.APPLICATION_JSON).build());
 	}
 
 	public VissError(Status code, Throwable cause) {
@@ -87,11 +87,12 @@ public class VissError extends WebApplicationException {
 	public static VissError noSuchVisualization() {
 		return notFound("No such Visualization.");
 	}
-	
+
 	public static VissError invalidParameter(String name) {
-		return new VissError(Status.BAD_REQUEST, "Invalid Visualizer Parameter: '" + name + "'");
+		return new VissError(Status.BAD_REQUEST, "Invalid Visualizer Parameter: '"
+		    + name + "'");
 	}
-	
+
 	public static VissError incompatibleVisualizer() {
 		return new VissError(Status.BAD_REQUEST, "Visualizer is not compatible");
 	}

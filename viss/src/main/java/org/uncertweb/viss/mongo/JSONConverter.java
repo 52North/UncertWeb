@@ -34,7 +34,8 @@ import com.google.code.morphia.mapping.MappingException;
 import com.mongodb.util.JSON;
 
 @SuppressWarnings("rawtypes")
-public class JSONConverter extends TypeConverter implements SimpleValueConverter {
+public class JSONConverter extends TypeConverter implements
+    SimpleValueConverter {
 	private static final Logger log = LoggerFactory.getLogger(JSONObject.class);
 
 	public JSONConverter() {
@@ -53,7 +54,7 @@ public class JSONConverter extends TypeConverter implements SimpleValueConverter
 
 	@Override
 	public Object decode(Class c, Object o, MappedField i)
-			throws MappingException {
+	    throws MappingException {
 		if (o == null)
 			return null;
 		try {

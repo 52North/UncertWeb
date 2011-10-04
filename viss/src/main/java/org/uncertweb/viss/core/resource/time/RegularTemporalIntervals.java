@@ -26,15 +26,14 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-public class RegularTemporalIntervals extends RegularTemporalExtent {
+public class RegularTemporalIntervals extends AbstractRegularTemporalExtent {
 
 	static final String INTERVAL_SIZE_JSON_KEY = "intervalSize";
 
-	public RegularTemporalIntervals() {
-	}
+	public RegularTemporalIntervals() {}
 
 	public RegularTemporalIntervals(DateTime begin, DateTime end,
-			Duration intervalSize) {
+	    Duration intervalSize) {
 		super(begin, end, intervalSize);
 	}
 
@@ -49,6 +48,6 @@ public class RegularTemporalIntervals extends RegularTemporalExtent {
 	@Override
 	public JSONObject toJson() throws JSONException {
 		return super.toJson().put(INTERVAL_SIZE_JSON_KEY,
-				getIntervalSize().getMillis());
+		    getIntervalSize().getMillis());
 	}
 }
