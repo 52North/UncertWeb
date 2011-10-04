@@ -73,32 +73,9 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 
 	// Attributes
 	// Store PM10 distributions and emissions:
-	private LinkedList<DayDistribution> daydist = new LinkedList<DayDistribution>(); // day
-																						// sum
-																						// distributions
-																						// for
-																						// each
-																						// source
-																						// /
-																						// each
-																						// day
-	private LinkedList<HourDistribution> hourdist = new LinkedList<HourDistribution>(); // hour
-																						// fraction
-																						// distributions
-																						// for
-																						// each
-																						// source
-																						// /
-																						// each
-																						// day
-	private LinkedList<DayEmissions> emissions = new LinkedList<DayEmissions>(); // emission
-																					// values
-																					// for
-																					// each
-																					// source
-																					// /
-																					// each
-																					// day
+	private LinkedList<DayDistribution> daydist = new LinkedList<DayDistribution>(); // day sum distributions for each source and each day
+	private LinkedList<HourDistribution> hourdist = new LinkedList<HourDistribution>(); // hour fraction distributions for each source and each day
+	private LinkedList<DayEmissions> emissions = new LinkedList<DayEmissions>(); // emission values for each source and each day
 	private ArrayList<String> emissionsFiles;
 	private ArrayList<String> meteoFiles;
 	
@@ -1150,7 +1127,6 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 			e1.printStackTrace();
 		}
 
-
 		// Set input data
 		DataInputsType wpsDataInputs = execDoc.getExecute().getDataInputs();
 		
@@ -1193,11 +1169,8 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 			wpsReference.setSchema("http://schemas.opengis.net/gml/2.1.2/feature.xsd");
 			wpsReference.setMimeType("text/xml");
 		}
-
 		
-		//TODO add running AUSTAL and checking of Response
-		
-		
+		//TODO add running AUSTAL and checking of Response		
 		// Run austal WPS and get output (Realisation object)
 		// ExecuteResponseDocument response1 = null;
 		// try {
