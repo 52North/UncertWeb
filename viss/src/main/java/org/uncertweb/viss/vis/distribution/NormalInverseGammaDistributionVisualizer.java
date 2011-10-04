@@ -22,17 +22,19 @@
 package org.uncertweb.viss.vis.distribution;
 
 import org.uncertml.IUncertainty;
-import org.uncertml.distribution.continuous.LogisticDistribution;
+import org.uncertml.distribution.continuous.NormalInverseGammaDistribution;
 import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.LOGISTIC_DISTRIBUTION)
-public abstract class AbstractLogisticDistributionVisualizer extends
-    AbstractDistributionVisualizer {
+@Type(UncertaintyType.NORMAL_INVERSE_GAMMA_DISTRIBUTION)
+public abstract class NormalInverseGammaDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
+	
 	@Override
 	public double evaluate(IUncertainty u) {
-		return evaluate((LogisticDistribution) u);
+		return evaluate((NormalInverseGammaDistribution) u);
 	}
 
-	protected abstract double evaluate(LogisticDistribution d);
+	protected abstract double evaluate(NormalInverseGammaDistribution d);
 }

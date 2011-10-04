@@ -19,16 +19,21 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.vis.distribution.beta;
+package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.BetaDistributionImpl;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
-import org.uncertweb.viss.vis.distribution.AbstractBetaDistributionVisualizer;
+import org.uncertml.IUncertainty;
+import org.uncertml.distribution.continuous.LogNormalDistribution;
+import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Description("Returns alpha.")
-public class Alpha extends AbstractBetaDistributionVisualizer {
+@Type(UncertaintyType.LOG_NORMAL_DISTRIBUTION)
+public abstract class LogNormalDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
 	@Override
-	protected double evaluate(BetaDistributionImpl d) {
-		return d.getAlpha();
+	public double evaluate(IUncertainty u) {
+		return evaluate((LogNormalDistribution) u);
 	}
+
+	protected abstract double evaluate(LogNormalDistribution d);
 }

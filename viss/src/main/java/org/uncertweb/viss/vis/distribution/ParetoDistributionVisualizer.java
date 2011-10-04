@@ -19,17 +19,21 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.vis.distribution.cauchy;
+package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.CauchyDistributionImpl;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
-import org.uncertweb.viss.vis.distribution.AbstractCauchyDistributionVisualizer;
+import org.uncertml.IUncertainty;
+import org.uncertml.distribution.continuous.ParetoDistribution;
+import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Description("Returns the median.")
-public class Median extends AbstractCauchyDistributionVisualizer {
-
+@Type(UncertaintyType.PARETO_DISTRIBUTION)
+public abstract class ParetoDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
 	@Override
-	protected double evaluate(CauchyDistributionImpl d) {
-		return d.getMedian();
+	public double evaluate(IUncertainty u) {
+		return evaluate((ParetoDistribution) u);
 	}
+
+	protected abstract double evaluate(ParetoDistribution d);
 }

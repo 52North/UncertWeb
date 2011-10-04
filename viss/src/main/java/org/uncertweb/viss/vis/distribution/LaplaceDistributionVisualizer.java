@@ -19,22 +19,21 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.vis.distribution.normal;
+package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.NormalDistributionImpl;
-import org.uncertweb.viss.vis.AbstractNormalDistributionVisualizer;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
+import org.uncertml.IUncertainty;
+import org.uncertml.distribution.continuous.LaplaceDistribution;
+import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Description("Returns the variance.")
-public class Variance extends AbstractNormalDistributionVisualizer {
-
+@Type(UncertaintyType.LAPLACE_DISTRIBUTION)
+public abstract class LaplaceDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
 	@Override
-	protected double evaluate(NormalDistributionImpl nd) {
-		return nd.getStandardDeviation() * nd.getStandardDeviation();
+	public double evaluate(IUncertainty u) {
+		return evaluate((LaplaceDistribution) u);
 	}
 
-	@Override
-	protected String getUom() {
-		return "(" + super.getUom() + ")^2";
-	}
+	protected abstract double evaluate(LaplaceDistribution d);
 }

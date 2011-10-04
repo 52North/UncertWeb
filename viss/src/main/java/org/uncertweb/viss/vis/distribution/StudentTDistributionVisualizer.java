@@ -21,21 +21,33 @@
  */
 package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.FDistributionImpl;
+import org.apache.commons.math.distribution.TDistributionImpl;
 import org.uncertml.IUncertainty;
-import org.uncertml.distribution.continuous.FDistribution;
+import org.uncertml.distribution.continuous.StudentTDistribution;
 import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.F_DISTRIBUTION)
-public abstract class AbstractFDistributionVisualizer extends
-    AbstractDistributionVisualizer {
-	@Override
-	public double evaluate(IUncertainty u) {
-		FDistribution d = (FDistribution) u;
-		return evaluate(new FDistributionImpl(d.getNumerator().get(0), d
-		    .getDenominator().get(0)));
+@Type(UncertaintyType.STUDENT_T_DISTRIBUTION)
+public abstract class StudentTDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
+
+	@Id("Distribution-StudentT-Mean")
+	@Description("Returns the variance.")
+	public class Mean extends StudentTDistributionVisualizer {
+
+		@Override
+		protected double evaluate(TDistributionImpl d) {
+			return d.getNumericalVariance();
+		}
+
 	}
 
-	protected abstract double evaluate(FDistributionImpl d);
+	@Override
+	public double evaluate(IUncertainty u) {
+		StudentTDistribution d = (StudentTDistribution) u;
+		return evaluate(new TDistributionImpl(d.getDegreesOfFreedom().get(0)));
+	}
+
+	protected abstract double evaluate(TDistributionImpl d);
 }

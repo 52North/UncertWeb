@@ -21,21 +21,49 @@
  */
 package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.GammaDistributionImpl;
+import org.apache.commons.math.distribution.ChiSquaredDistributionImpl;
 import org.uncertml.IUncertainty;
-import org.uncertml.distribution.continuous.GammaDistribution;
+import org.uncertml.distribution.continuous.ChiSquareDistribution;
 import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.GAMMA_DISTRIBUTION)
-public abstract class AbstractGammaDistributionVisualizer extends
-    AbstractDistributionVisualizer {
-	@Override
-	public double evaluate(IUncertainty u) {
-		GammaDistribution d = (GammaDistribution) u;
-		return evaluate(new GammaDistributionImpl(d.getShape().get(0), d.getScale()
-		    .get(0)));
+@Type(UncertaintyType.CHI_SQUARE_DISTRIBUTION)
+public abstract class ChiSquareDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
+
+	@Id("Distribution-ChiSquare-Variance")
+	@Description("Returns the variance.")
+	public static class Variance extends ChiSquareDistributionVisualizer {
+
+		@Override
+		protected double evaluate(ChiSquaredDistributionImpl d) {
+			return d.getNumericalVariance();
+		}
+
+		@Override
+		protected String getUom() {
+			return "(" + super.getUom() + ")^2";
+		}
 	}
 
-	protected abstract double evaluate(GammaDistributionImpl d);
+	@Id("Distribution-ChiSquare-Mean")
+	@Description("Returns the mean.")
+	public static class Mean extends ChiSquareDistributionVisualizer {
+
+		@Override
+		protected double evaluate(ChiSquaredDistributionImpl d) {
+			return d.getNumericalMean();
+		}
+
+	}
+
+	@Override
+	public double evaluate(IUncertainty u) {
+		ChiSquareDistribution d = (ChiSquareDistribution) u;
+		return evaluate(new ChiSquaredDistributionImpl(Double.valueOf(d
+		    .getDegreesOfFreedom().get(0))));
+	}
+
+	protected abstract double evaluate(ChiSquaredDistributionImpl d);
 }

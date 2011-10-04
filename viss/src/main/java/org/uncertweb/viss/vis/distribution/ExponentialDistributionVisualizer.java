@@ -19,16 +19,24 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.vis.distribution.beta;
+package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.BetaDistributionImpl;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
-import org.uncertweb.viss.vis.distribution.AbstractBetaDistributionVisualizer;
+import org.apache.commons.math.distribution.ExponentialDistributionImpl;
+import org.uncertml.IUncertainty;
+import org.uncertml.distribution.continuous.ExponentialDistribution;
+import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Description("Returns beta.")
-public class Beta extends AbstractBetaDistributionVisualizer {
+@Type(UncertaintyType.EXPONENTIAL_DISTRIBUTION)
+public abstract class ExponentialDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
+
 	@Override
-	protected double evaluate(BetaDistributionImpl d) {
-		return d.getBeta();
+	public double evaluate(IUncertainty u) {
+		ExponentialDistribution d = (ExponentialDistribution) u;
+		return evaluate(new ExponentialDistributionImpl(d.getRate().get(0)));
 	}
+
+	protected abstract double evaluate(ExponentialDistributionImpl d);
 }

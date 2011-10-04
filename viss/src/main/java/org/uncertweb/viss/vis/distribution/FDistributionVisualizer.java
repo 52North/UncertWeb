@@ -19,18 +19,25 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.vis.distribution.normal;
+package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.NormalDistributionImpl;
-import org.uncertweb.viss.vis.AbstractNormalDistributionVisualizer;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
+import org.apache.commons.math.distribution.FDistributionImpl;
+import org.uncertml.IUncertainty;
+import org.uncertml.distribution.continuous.FDistribution;
+import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Description("Returns the mean of the distribution.")
-public class Mean extends AbstractNormalDistributionVisualizer {
+@Type(UncertaintyType.F_DISTRIBUTION)
+public abstract class FDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
 
 	@Override
-	protected double evaluate(NormalDistributionImpl nd) {
-		return nd.getMean();
+	public double evaluate(IUncertainty u) {
+		FDistribution d = (FDistribution) u;
+		return evaluate(new FDistributionImpl(d.getNumerator().get(0), d
+		    .getDenominator().get(0)));
 	}
 
+	protected abstract double evaluate(FDistributionImpl d);
 }

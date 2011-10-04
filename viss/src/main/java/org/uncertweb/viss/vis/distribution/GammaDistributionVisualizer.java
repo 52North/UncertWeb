@@ -19,18 +19,25 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.vis.distribution.chisquare;
+package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.ChiSquaredDistributionImpl;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
-import org.uncertweb.viss.vis.distribution.AbstractChiSquareDistributionVisualizer;
+import org.apache.commons.math.distribution.GammaDistributionImpl;
+import org.uncertml.IUncertainty;
+import org.uncertml.distribution.continuous.GammaDistribution;
+import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Description("Returns the mean.")
-public class Mean extends AbstractChiSquareDistributionVisualizer {
+@Type(UncertaintyType.GAMMA_DISTRIBUTION)
+public abstract class GammaDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
 
 	@Override
-	protected double evaluate(ChiSquaredDistributionImpl d) {
-		return d.getNumericalMean();
+	public double evaluate(IUncertainty u) {
+		GammaDistribution d = (GammaDistribution) u;
+		return evaluate(new GammaDistributionImpl(d.getShape().get(0), d.getScale()
+		    .get(0)));
 	}
 
+	protected abstract double evaluate(GammaDistributionImpl d);
 }

@@ -26,7 +26,7 @@ import org.uncertml.statistic.ContinuousStatistic;
 import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 
-public abstract class AbstractSimpleStatisticVisualizer extends
+public abstract class SimpleStatisticVisualizer extends
     AbstractAnnotatedUncertaintyViusalizer {
 
 	@Override
@@ -42,40 +42,40 @@ public abstract class AbstractSimpleStatisticVisualizer extends
 	@Type(UncertaintyType.STANDARD_DEVIATION)
 	@Description("Returns the Standard Deviation.")
 	public static class StandardDeviationStatistic extends
-	    AbstractSimpleStatisticVisualizer {}
+	    SimpleStatisticVisualizer {}
 
 	@Type(UncertaintyType.COEFFICIENT_OF_VARIATION)
 	@Description("Returns the coefficient of variation.")
 	public static class CoefficientOfVariationStatistic extends
-	    AbstractSimpleStatisticVisualizer {}
+	    SimpleStatisticVisualizer {}
 
 	@Type(UncertaintyType.CORRELATION)
 	@Description("Returns the correalation")
 	public static class CorrelationStatistic extends
-	    AbstractSimpleStatisticVisualizer {}
+	    SimpleStatisticVisualizer {}
 
 	@Type(UncertaintyType.KURTOSIS)
 	@Description("Returns the kutosis.")
 	public static class KurtosisStatistic extends
-	    AbstractSimpleStatisticVisualizer {}
+	    SimpleStatisticVisualizer {}
 
 	@Type(UncertaintyType.MEAN)
 	@Description("Returns the mean.")
 	public static class MeanStatistic extends 
-			AbstractSimpleStatisticVisualizer {}
+			SimpleStatisticVisualizer {}
 
 	@Type(UncertaintyType.MEDIAN)
 	@Description("Returns the median.")
 	public static class MedianStatistic extends 
-			AbstractSimpleStatisticVisualizer {}
+			SimpleStatisticVisualizer {}
 
 	@Type(UncertaintyType.MODE)
 	@Description("Returns the mode.")
 	public static class ModeStatistic extends 
-			AbstractSimpleStatisticVisualizer {}
+			SimpleStatisticVisualizer {}
 
 	@Type(UncertaintyType.SKEWNESS)
 	@Description("Returns the skewness.")
 	public static class SkewnessStatistic extends
-	    AbstractSimpleStatisticVisualizer {}
+	    SimpleStatisticVisualizer {}
 }

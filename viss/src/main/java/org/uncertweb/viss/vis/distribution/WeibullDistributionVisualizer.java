@@ -19,18 +19,24 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.vis.distribution.cauchy;
+package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.CauchyDistributionImpl;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
-import org.uncertweb.viss.vis.distribution.AbstractCauchyDistributionVisualizer;
+import org.apache.commons.math.distribution.WeibullDistributionImpl;
+import org.uncertml.IUncertainty;
+import org.uncertml.distribution.continuous.WeibullDistribution;
+import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Description("Returns the scale.")
-public class Scale extends AbstractCauchyDistributionVisualizer {
-
+@Type(UncertaintyType.WEIBULL_DISTRIBUTION)
+public abstract class WeibullDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
 	@Override
-	protected double evaluate(CauchyDistributionImpl d) {
-		return d.getScale();
+	public double evaluate(IUncertainty u) {
+		WeibullDistribution d = (WeibullDistribution) u;
+		return evaluate(new WeibullDistributionImpl(d.getShape().get(0), d
+		    .getScale().get(0)));
 	}
 
+	protected abstract double evaluate(WeibullDistributionImpl d);
 }

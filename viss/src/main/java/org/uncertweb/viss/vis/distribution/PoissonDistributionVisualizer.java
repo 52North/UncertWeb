@@ -21,18 +21,21 @@
  */
 package org.uncertweb.viss.vis.distribution;
 
+import org.apache.commons.math.distribution.PoissonDistributionImpl;
 import org.uncertml.IUncertainty;
-import org.uncertml.distribution.continuous.InverseGammaDistribution;
+import org.uncertml.distribution.continuous.PoissonDistribution;
 import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.INVERSE_GAMMA_DISTRIBUTION)
-public abstract class AbstractInverseGammaDistributionVisualizer extends
-    AbstractDistributionVisualizer {
+@Type(UncertaintyType.POISSON_DISTRIBUTION)
+public abstract class PoissonDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
 	@Override
 	public double evaluate(IUncertainty u) {
-		return evaluate((InverseGammaDistribution) u);
+		PoissonDistribution d = (PoissonDistribution) u;
+		return evaluate(new PoissonDistributionImpl(d.getRate().get(0)));
 	}
 
-	protected abstract double evaluate(InverseGammaDistribution d);
+	protected abstract double evaluate(PoissonDistributionImpl d);
 }

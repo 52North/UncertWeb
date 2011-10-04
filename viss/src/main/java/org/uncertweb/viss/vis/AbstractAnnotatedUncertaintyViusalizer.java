@@ -46,6 +46,12 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 		String value();
 	}
 
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	public static @interface Id {
+		String value();
+	}
+
 	@Override
 	public Set<UncertaintyType> getCompatibleUncertaintyTypes() {
 		Type t = findAnnotation(Type.class, getClass());
@@ -73,5 +79,13 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 				c = c.getSuperclass();
 		}
 		return t;
+	}
+
+	@Override
+	public String getShortName() {
+		Id id = findAnnotation(Id.class, getClass());
+		if (id != null)
+			return id.value();
+		return null;
 	}
 }

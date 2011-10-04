@@ -19,18 +19,21 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.vis.distribution.studentt;
+package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.TDistributionImpl;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
-import org.uncertweb.viss.vis.distribution.AbstractStudentTDistributionVisualizer;
+import org.uncertml.IUncertainty;
+import org.uncertml.distribution.continuous.LogisticDistribution;
+import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Description("Returns the variance.")
-public class Mean extends AbstractStudentTDistributionVisualizer {
-
+@Type(UncertaintyType.LOGISTIC_DISTRIBUTION)
+public abstract class LogisticDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
 	@Override
-	protected double evaluate(TDistributionImpl d) {
-		return d.getNumericalVariance();
+	public double evaluate(IUncertainty u) {
+		return evaluate((LogisticDistribution) u);
 	}
 
+	protected abstract double evaluate(LogisticDistribution d);
 }

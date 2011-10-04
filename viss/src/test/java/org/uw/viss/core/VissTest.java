@@ -57,11 +57,11 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Test;
 import org.uncertweb.viss.core.vis.IVisualizer;
-import org.uncertweb.viss.vis.distribution.normal.Mean;
-import org.uncertweb.viss.vis.distribution.normal.Probability;
-import org.uncertweb.viss.vis.distribution.normal.ProbabilityForInterval;
-import org.uncertweb.viss.vis.distribution.normal.StandardDeviation;
-import org.uncertweb.viss.vis.distribution.normal.Variance;
+import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Mean;
+import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Probability;
+import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.ProbabilityForInterval;
+import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.StandardDeviation;
+import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Variance;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;

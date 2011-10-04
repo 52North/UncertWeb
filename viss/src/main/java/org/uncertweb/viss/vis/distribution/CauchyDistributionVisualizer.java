@@ -21,22 +21,45 @@
  */
 package org.uncertweb.viss.vis.distribution;
 
-import org.apache.commons.math.distribution.BetaDistributionImpl;
+import org.apache.commons.math.distribution.CauchyDistributionImpl;
 import org.uncertml.IUncertainty;
-import org.uncertml.distribution.continuous.BetaDistribution;
+import org.uncertml.distribution.continuous.CauchyDistribution;
 import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.BETA_DISTRIBUTION)
-public abstract class AbstractBetaDistributionVisualizer extends
-    AbstractDistributionVisualizer {
+@Type(UncertaintyType.CAUCHY_DISTRIBUTION)
+public abstract class CauchyDistributionVisualizer extends
+    AbstractAnnotatedUncertaintyViusalizer {
+
+	@Id("Distribution-Cauchy-Scale")
+	@Description("Returns the scale.")
+	public static class Scale extends CauchyDistributionVisualizer {
+
+		@Override
+		protected double evaluate(CauchyDistributionImpl d) {
+			return d.getScale();
+		}
+
+	}
+
+	@Id("Distribution-Cauchy-Median")
+	@Description("Returns the median.")
+	public static class Median extends CauchyDistributionVisualizer {
+
+		@Override
+		protected double evaluate(CauchyDistributionImpl d) {
+			return d.getMedian();
+		}
+	}
 
 	@Override
 	public double evaluate(IUncertainty u) {
-		BetaDistribution d = (BetaDistribution) u;
-		return evaluate(new BetaDistributionImpl(d.getAlpha().get(0), d.getBeta()
-		    .get(0)));
+		CauchyDistribution d = (CauchyDistribution) u;
+		return evaluate(new CauchyDistributionImpl(d.getLocation().get(0), d
+		    .getScale().get(0)));
 	}
 
-	protected abstract double evaluate(BetaDistributionImpl d);
+	protected abstract double evaluate(CauchyDistributionImpl d);
+
 }
