@@ -31,9 +31,11 @@ import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.OMData;
+import org.n52.wps.io.data.UncertWebIOData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.complex.OMDataBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
 import org.n52.wps.server.AbstractObservableAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
@@ -112,9 +114,9 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	@Override
 	public Class<?> getInputDataType(String id) {
 		if(id.equals(inputIDStreetEmissions)){
-			return OMDataBinding.class;
+			return UncertWebIODataBinding.class;
 		}else if(id.equals(inputIDMeteorology)){
-			return OMDataBinding.class;		}
+			return UncertWebIODataBinding.class;		}
 		else if(id.equals(inputIDStartTime)){
 			return LiteralDateTimeBinding.class;
 		}else if(id.equals(inputIDEndTime)){
@@ -128,7 +130,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 	@Override
 	public Class<?> getOutputDataType(String id) {
-		return OMDataBinding.class;
+		return UncertWebIODataBinding.class;
 	}
 
 	@Override
@@ -141,7 +143,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		}
 		
 		// 1. read files to create datamodel
-		this.readFiles("austal2000_template.txt", "zeitreihe_template.dmna");		
+		this.readFiles("austal2000_template.txt", "zeitreihe_0810.dmna");		
 		
 		ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
 		ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
@@ -155,21 +157,32 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		List<IData> streetEmissionDataList = inputData.get(inputIDStreetEmissions);
 		
+
+
+		
 		if(!(streetEmissionDataList == null) && streetEmissionDataList.size() != 0){
 
 			IData streetEmissionData = streetEmissionDataList.get(0);
 			
-			if(streetEmissionData instanceof OMDataBinding){
+			if(streetEmissionData instanceof UncertWebIODataBinding){
 				
-				OMData theData = (OMData) ((OMDataBinding)streetEmissionData).getPayload();
+				//Casting the payload to UncertWebIOData, the wrapper for the data supported in the API
+				UncertWebIOData uwIOInput = (UncertWebIOData) streetEmissionData.getPayload();
+				
+				if (uwIOInput.getData() instanceof OMData){
+					   //input is O&M UncertWeb profile and can be processed now
+					OMData theData = (OMData)uwIOInput.getData();
+					
+//					OMData theData = (OMData) ((OMDataBinding)streetEmissionData).getPayload();
 
-				try {
-					handleObservationCollection(newEmissionSources, newEmisTS, theData.getObservationCollection());
-				} catch (Exception e) {
-					LOGGER.debug(e);
-					e.printStackTrace();
+					try {
+						handleObservationCollection(newEmissionSources, newEmisTS, theData.getObservationCollection());
+					} catch (Exception e) {
+						LOGGER.debug(e);
+						e.printStackTrace();
+					}
 				}			
-			}		
+			}			
 		}
 		
 		List<IData> meteorologyDataList = inputData.get(inputIDMeteorology);
@@ -178,15 +191,23 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 			IData meteorologyData = meteorologyDataList.get(0);
 			
-			if(meteorologyData instanceof OMDataBinding){
+			if(meteorologyData instanceof UncertWebIODataBinding){
 				
-				OMData theData = (OMData) ((OMDataBinding)meteorologyData).getPayload();
+				//Casting the payload to UncertWebIOData, the wrapper for the data supported in the API
+				UncertWebIOData uwIOInput = (UncertWebIOData) meteorologyData.getPayload();
+				
+				if (uwIOInput.getData() instanceof OMData){
+					   //input is O&M UncertWeb profile and can be processed now
+					OMData theData = (OMData)uwIOInput.getData();
+				
+//				OMData theData = (OMData) ((OMDataBinding)meteorologyData).getPayload();
 				
 				try {
 					handleMeteorology(newMetList, theData.getObservationCollection());
 				} catch (Exception e) {
 					e.printStackTrace();
-				}			
+				}		
+				}
 			}			
 		}
 		
@@ -318,9 +339,11 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 			IObservationCollection mcoll = createResultCollection();
 			
-			OMData omd = new OMData(mcoll);
+			OMData omd = new OMData(mcoll, "application/x-om-u");
 			
-			result.put(outputIDResult, new OMDataBinding(omd));
+			UncertWebIOData outputUWData = new UncertWebIOData(omd);
+			
+			result.put(outputIDResult, new UncertWebIODataBinding(outputUWData));
 			
 			return result;
 		} catch (Exception e) {
@@ -516,16 +539,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 //				} catch (ParseException e) {
 //					e.printStackTrace();
 //				}
-				
-				// correct wind speed and wind direction to natural boundaries
-				// 1) check if wind speed is not negative
-				if(windSpeed<0.1)
-					windSpeed = 0.1;
-				// 2) check if wind direction is between 1 and 360
-				if(windDirection>360)
-					windDirection = windDirection - 360;
-				else if(windDirection<1)
-					windDirection = windDirection + 360;
 				newMetList.addWindDirection(dt.toDate(), windDirection);
 				newMetList.addWindSpeed(dt.toDate(), windSpeed);
 				
@@ -769,12 +782,9 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		MeteorologyTimeSeries metList = ts.getMeteorologyTimeSeries();
 		ArrayList<Date> timeStampList = (ArrayList<Date>) newMetList.getTimeStamps();
 		
-		
+		// add stability class values to new list
 		for(int i=0; i<timeStampList.size(); i++){
 			Date d = timeStampList.get(i);
-			
-			
-			// add stability class values to new list
 			newMetList.addStabilityClass(d, metList.getStabilityClass(d));
 		}
 		
