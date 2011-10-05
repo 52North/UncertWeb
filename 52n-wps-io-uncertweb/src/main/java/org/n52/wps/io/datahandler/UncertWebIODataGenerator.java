@@ -108,6 +108,10 @@ public class UncertWebIODataGenerator extends AbstractUncertWebDataGenerator imp
 		} 
 		return xb_unc.getDomNode();
 		}
+		else if (data instanceof OMData){
+			OMXmlGenerator gen= new OMXmlGenerator();
+			return gen.generateXML(new OMDataBinding((OMData)data), UncertWebDataConstants.MIME_TYPE_OMX);
+		}
 		else {
 			throw new RuntimeException("XML encoding is only supported for UncertML data!");
 		}
