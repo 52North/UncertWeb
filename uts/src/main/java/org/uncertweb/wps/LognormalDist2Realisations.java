@@ -82,8 +82,8 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 			c = new ExtendedRConnection("127.0.0.1");
 			if (c.needLogin()) {
 				// if server requires authentication, send one
-				//c.login("rserve", "aI2)Jad$%");
-				c.login("", "");
+				c.login("rserve", "aI2)Jad$%");
+//				c.login("", "");
 			}
 
 			// Perform R computations
