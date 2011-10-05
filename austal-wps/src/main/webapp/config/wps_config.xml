@@ -116,6 +116,15 @@
 				<Property name="supportedFormat" active="true">application/x-zipped-wkt</Property>
 				<Property name="supportedEncoding" active="true">Base64</Property>
 			</Parser>
+		 <Parser name="UncertWebIODataParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true">
+            <Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
+            <Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
+            <Property name="supportedFormat" active="true">application/x-netcdf</Property>
+            <Property name="supportedFormat" active="true">application/x-uncertml</Property>
+            <Property name="supportedFormat" active="true">application/gml+xml</Property>
+				<Property name="supportedFormat" active="true">application/x-om-u</Property>
+            <Property name="supportedEncoding" active="true">UTF-8</Property>
+  		 </Parser>   
 			
 			
 		</ParserList>
@@ -249,6 +258,15 @@
 				<Property name="supportedFormat" active="true">application/vnd.google-earth.kml+xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>
+		       <Generator name="UncertWebIODataGenerator" className="org.n52.wps.io.datahandler.UncertWebIODataGenerator" active="true">
+            	<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
+            	<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
+            	<Property name="supportedFormat" active="true">application/x-netcdf</Property>
+            	<Property name="supportedFormat" active="true">application/uncertml</Property>
+            	<Property name="supportedFormat" active="true">application/gml+xml</Property>
+				<Property name="supportedFormat" active="true">application/x-om-u</Property>
+            	<Property name="supportedEncoding" active="true">UTF-8</Property>
+   			</Generator>
 				
 			
 		</GeneratorList>
