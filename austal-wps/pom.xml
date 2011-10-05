@@ -56,7 +56,12 @@
       		<groupId>org.uncertweb</groupId>
       		<artifactId>om-api</artifactId>
       		<version>0.0.5-SNAPSHOT</version>
-    	</dependency>
+    	</dependency>    
+    	<dependency>
+       		<groupId>org.uncertweb</groupId>
+       		<artifactId>52n-wps-io-uncertweb</artifactId>
+   			<version>0.0.2-SNAPSHOT</version>
+   		</dependency>
 
 		<!-- WPS dependencies -->
 
