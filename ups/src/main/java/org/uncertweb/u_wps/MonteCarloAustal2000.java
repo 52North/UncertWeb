@@ -163,7 +163,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		} else if (id.startsWith("u_")) {
 			return UncertWebIODataBinding.class;
 		} else if (id.equals(inputIDStaticProcessInputs)) {
-			return GTVectorDataBinding.class;
+			return LiteralStringBinding.class;
 		} else if (id.equals(inputIDProcessExecuteRequest)) {
 			// return GenericFileDataBinding.class;
 			return PlainStringBinding.class;
@@ -433,7 +433,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 				
 			} // end of treating meteo inputs
 		} // end of treating uncertain process inputs
-
+		
 		/* Treat static inputs */
 		staticInputsList = inputMap.get(inputIDStaticProcessInputs);
 		if ((staticInputsList != null) && (staticInputsList.size() > 0)) {
@@ -1323,6 +1323,9 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 			wpsReference.setMimeType("application/x-om-u");
 		}
 		if (staticInputsExist){ 
+			
+			String url = (String) staticInputsList.get(0).getPayload();
+			
 			InputType wpsInput = wpsDataInputs.addNewInput();
 			wpsInput.addNewIdentifier().setStringValue("receptor-points");
 			InputReferenceType wpsReference = wpsInput.addNewReference();
@@ -1333,7 +1336,8 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 			//wpsReference.setSchema("http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd");
 	       
 			//<wps:Reference schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd" encoding="UTF-8" mimeType="text/xml" xlink:href="http://giv-wps.uni-muenster.de:8080/geoserver/wfs?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=cite2:schulweg"/>	    	
-			wpsReference.setHref("file:/C:/UncertWeb/workspace/uWPS4/src/main/resources/austalResources/inputs/staticInput.xml");
+			wpsReference.setHref(url);
+//			wpsReference.setHref("file:/C:/UncertWeb/workspace/uWPS4/src/main/resources/austalResources/inputs/staticInput.xml");
 			wpsReference.setSchema("http://schemas.opengis.net/gml/2.1.2/feature.xsd");
 			wpsReference.setMimeType("text/xml");
 		}		
