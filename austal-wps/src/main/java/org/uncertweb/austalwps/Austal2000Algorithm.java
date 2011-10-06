@@ -85,7 +85,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private final String logFileMarkerBeginningGerman = "Datei";
 	private final String logFileMarkerEndGerman = "ausgeschrieben.";
 	private final String tmpDir = System.getenv("TMP");
-//	private final String tmpDir = System.getProperty("java.io.tmpdir");//TODO: maybe use apache temp. for that remove white space from path
 	private String workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
 	private String austalHome = "";
 	private List<String> errors = new ArrayList<String>();

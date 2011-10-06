@@ -170,25 +170,6 @@
 		</testResources>
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>xmlbeans-maven-plugin</artifactId>
-				<version>2.3.3</version>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals><goal>xmlbeans</goal></goals>
-					</execution>
-				</executions>
-				<!--configuration>
-					<download>true</download>
-					<javaSource>1.5</javaSource>
-					<sourceSchemas>
-						<sourceSchema>wfs/1.1.0/wfs.xsd</sourceSchema>
-						<sourceSchema>parameter/parameter.xsd</sourceSchema>
-					</sourceSchemas>
-				</configuration-->
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1-alpha-1</version>
