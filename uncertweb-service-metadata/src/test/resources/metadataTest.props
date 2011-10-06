@@ -1,0 +1,12 @@
+@spatial-resolutions 1km by 1km to 10km by 10km
+@spatial-support-types mean cell
+@spatial-crss epsg:42332, epsg:3220
+@spatial-geometry-types rectified grid
+@spatial-domain 42N 7W to 62N 7E
+@temporal-resolutions 1 min, 10 min, 1 hour 
+@temporal-support-types point value
+@temporal-domain 1 Jan 1970 to 31 Dec 2010
+@variable-phenomena 2m surface air temperature
+@variable-uncertainty-types realisations
+@variable-units-of-measure degrees Celcius
+@misc this is something we forgot to add in the structured metadata, this is something else
