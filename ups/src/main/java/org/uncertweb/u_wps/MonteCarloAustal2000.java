@@ -4,13 +4,23 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import net.opengis.wps.x100.DataInputsType;
 import net.opengis.wps.x100.ExecuteDocument;
@@ -22,10 +32,13 @@ import net.opengis.wps.x100.OutputDataType;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.joda.time.DateTime;
+import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.client.WPSClientException;
 import org.n52.wps.client.WPSClientSession;
+import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.OMData;
+import org.n52.wps.io.data.UncertWebDataConstants;
 import org.n52.wps.io.data.UncertWebIOData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.PlainStringBinding;
@@ -40,17 +53,22 @@ import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.distribution.multivariate.IMultivariateDistribution;
 import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
 import org.uncertml.distribution.multivariate.MultivariateStudentTDistribution;
+import org.uncertml.sample.Realisation;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
+import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.io.StaxObservationEncoder;
+import org.uncertweb.api.om.io.XBObservationParser;
+import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.MeasureResult;
+import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.ups.austal.AustalObservationInput;
 import org.uncertweb.ups.austal.DayDistribution;
@@ -67,15 +85,40 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 	private static Logger logger = Logger.getLogger(MonteCarloAustal2000.class);
 
 	// Path to resources
-	private String localPath = "D:\\uncertwebWorkspace\\ups-trunk";
+	private String localPath = "C:\\UncertWeb\\workspace\\uWPS4";
 	private String resPath = localPath
 			+ "\\src\\main\\resources\\austalResources";
-
+//	private String utsAddress = "http://localhost:8081/uts/WebProcessingService";
+	private String utsAddress = "http://giv-uw2.uni-muenster.de:8080/uts/WebProcessingService";
+	
 	// Attributes
 	// Store PM10 distributions and emissions:
-	private LinkedList<DayDistribution> daydist = new LinkedList<DayDistribution>(); // day sum distributions for each source and each day
-	private LinkedList<HourDistribution> hourdist = new LinkedList<HourDistribution>(); // hour fraction distributions for each source and each day
-	private LinkedList<DayEmissions> emissions = new LinkedList<DayEmissions>(); // emission values for each source and each day
+	private LinkedList<DayDistribution> daydist = new LinkedList<DayDistribution>(); // day
+																						// sum
+																						// distributions
+																						// for
+																						// each
+																						// source
+																						// /
+																						// each
+																						// day
+	private LinkedList<HourDistribution> hourdist = new LinkedList<HourDistribution>(); // hour
+																						// fraction
+																						// distributions
+																						// for
+																						// each
+																						// source
+																						// /
+																						// each
+																						// day
+	private LinkedList<DayEmissions> emissions = new LinkedList<DayEmissions>(); // emission
+																					// values
+																					// for
+																					// each
+																					// source
+																					// /
+																					// each
+																					// day
 	private ArrayList<String> emissionsFiles;
 	private ArrayList<String> meteoFiles;
 	
@@ -106,16 +149,15 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 																		// durchgereicht
 	private String inputIDProcessExecuteRequest = "ProcessExecuteRequest";
 	private String inputIDOutputUncertaintyType = "OutputUncertaintyType";
-	private String outputIDUncertainProcessOutputs = "StaticProcessOutputs";
+	private String outputIDUncertainProcessOutputs = "UncertainProcessOutputs";
 
 	@Override
 	public List<String> getErrors() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Class getInputDataType(String id) {
+	public Class<?> getInputDataType(String id) {
 		if (id.equals(inputIDIdentifierSimulatedProcess)) {
 			return LiteralStringBinding.class;
 		} else if (id.startsWith("u_")) {
@@ -136,9 +178,9 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 	}
 
 	@Override
-	public Class getOutputDataType(String id) {
+	public Class<UncertWebIODataBinding> getOutputDataType(String id) {
 		if (id.equals(outputIDUncertainProcessOutputs)) {
-			return UncertWebDataBinding.class;
+			return UncertWebIODataBinding.class;
 		}
 		return null;
 	}
@@ -150,6 +192,18 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 	public Map<String, IData> run(Map<String, List<IData>> inputMap) {
 		logger.debug("Start of process"); // for debugging
 
+		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(this.getClass().getCanonicalName());
+		for(Property property : propertyArray){
+			// check the name and active state
+			if(property.getName().equalsIgnoreCase("localPath") && property.getActive()){
+				localPath = property.getStringValue();
+				resPath = localPath
+				+ "\\src\\main\\resources\\austalResources";
+			}else if(property.getName().equalsIgnoreCase("FullUTSAddress") && property.getActive()){
+				utsAddress = property.getStringValue();
+			}
+		}
+		
 		emissionsFiles = new ArrayList<String>();
 		meteoFiles = new ArrayList<String>();
 		/* Retrieve some inputs */
@@ -247,8 +301,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 						hourdist.add(new HourDistribution(source, uncObs
 								.getPhenomenonTime(), iMulti));
 					} catch (Exception e) {
-						System.out
-								.println("Error while adding hourdistribution: "
+						logger.error("Error while adding hourdistribution: "
 										+ e.getMessage());
 					}
 				}
@@ -309,7 +362,6 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 				try {
 					emissionsFiles.add(file.toURL().toString());
 				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 
@@ -369,7 +421,6 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 				try {
 					meteoFiles.add(om_file.toURL().toString());
 				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 
@@ -388,19 +439,137 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		if ((staticInputsList != null) && (staticInputsList.size() > 0)) {
 			staticInputsExist = true;
 		}
-
+		
+		ArrayList<IObservationCollection> observationList  = new ArrayList<IObservationCollection>(3);
+		
 		/* Make Austal requests and run Austal n times */
 		for (int i = 0; i < numberOfRealisations; i++) {
-			makeRequestAndRunAustal(i);
+			IObservationCollection tmpioc = makeRequestAndRunAustal(i);
+			observationList.add(tmpioc);
 		}
 
 		/*
-		 * TODO Here, treat the austal results and make e.g. distribution out of
+		 * Here, treat the austal results and make e.g. distribution out of
 		 * them. Then make the OutputMap to return!
 		 */
+		HashMap<String, HashMap<DateTime, ArrayList<Double>>> mightyMap = new HashMap<String, HashMap<DateTime, ArrayList<Double>>>();
+		
+		HashMap<String, SpatialSamplingFeature> idSpSFMap = new HashMap<String, SpatialSamplingFeature>();
+		
+		for (IObservationCollection iObservationCollection : observationList) {
+			
+			/*
+			 * run through every collection
+			 */
+			for (AbstractObservation abob : iObservationCollection.getObservations()) {
+				
+				/*
+				 * check spatialsamplingfeatures
+				 */
+				String id = abob.getFeatureOfInterest().getIdentifier().getIdentifier();
+				
+				if(!idSpSFMap.containsKey(id)){
+					
+					idSpSFMap.put(id, abob.getFeatureOfInterest());
+					
+					/*
+					 * create first entry in mightymap
+					 */
+					HashMap<DateTime, ArrayList<Double>> timeValueMap = new HashMap<DateTime, ArrayList<Double>>();
+					
+					ArrayList<Double> values = new ArrayList<Double>();
+					
+					DateTime ti = abob.getPhenomenonTime().getDateTime();
+					Double d = (Double)abob.getResult().getValue();
+					
+					values.add(d);
+					
+					timeValueMap.put(ti, values);
+					
+					mightyMap.put(id, timeValueMap);
+					
+				}else{
+					
+					/*
+					 * spatialfeature exists
+					 * now we have to check the datetime
+					 */					
+					HashMap<DateTime, ArrayList<Double>> timeValueMap = mightyMap.get(id);
+					
+					DateTime ti = abob.getPhenomenonTime().getDateTime();
+					
+					ArrayList<Double> values = new ArrayList<Double>(); 
+					
+					if(timeValueMap.containsKey(ti)){
+						
+						values = timeValueMap.get(ti);
+						
+					}
+					Double d = (Double)abob.getResult().getValue();
+					
+					values.add(d);
+					
+					timeValueMap.put(ti, values);
+					
+					mightyMap.put(id, timeValueMap);
+					
+				}
+				
+				
+			}			
+			
+		}
+		
+		UncertaintyObservationCollection mcoll = new UncertaintyObservationCollection();
+		
+		try {
 
-		System.out.println("End of process"); // for debugging
-		return null;
+			URI procedure = new URI(
+					"http://www.uncertweb.org/models/austal2000");
+			URI observedProperty = new URI(
+					"http://www.uncertweb.org/phenomenon/pm10");
+
+			for (String id : mightyMap.keySet()) {
+
+				HashMap<DateTime, ArrayList<Double>> tmpList = mightyMap
+						.get(id);
+
+				SpatialSamplingFeature tmpSF = idSpSFMap.get(id);
+
+				for (DateTime dateTime : tmpList.keySet()) {
+
+					TimeObject newT = new TimeObject(dateTime);
+
+					ArrayList<Double> values = tmpList.get(dateTime);
+
+					Realisation r = new Realisation(values, -1.0d, "id");
+
+					UncertaintyResult uResult = new UncertaintyResult(r);
+					UncertaintyObservation uObs = new UncertaintyObservation(
+							newT, newT, procedure, observedProperty, tmpSF,
+							uResult);
+					mcoll.addObservation(uObs);
+				}
+
+			}
+			
+			HashMap<String, IData> resultMap = new HashMap<String, IData>();
+			
+			OMData omd = new OMData(mcoll, UncertWebDataConstants.MIME_TYPE_OMX);
+			
+			UncertWebIOData resultData = new UncertWebIOData(omd);
+			
+			resultMap.put(outputIDUncertainProcessOutputs, new UncertWebIODataBinding(resultData));
+			
+
+			logger.debug("End of process"); // for debugging
+			return resultMap;
+			
+		} catch (Exception e) {
+			logger.error(e);
+			throw new RuntimeException(
+					"An Exception occurred while creating the result collection.");
+		}
 	}
 
 	/* UTS methods */
@@ -432,7 +601,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		ExecuteDocument execDocUTSday = null;
 
 		try {
-			session.connect("http://localhost:8080/uts/WebProcessingService");
+			session.connect(utsAddress);
 		} catch (WPSClientException e) {
 			e.printStackTrace();
 		}
@@ -511,7 +680,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		ExecuteResponseDocument responseUTSday = null;
 		try {
 			responseUTSday = (ExecuteResponseDocument) session.execute(
-					"http://localhost:8080/uts/WebProcessingService",
+					utsAddress,
 					execDocUTSday);
 		} catch (WPSClientException e) {
 			e.printStackTrace();
@@ -591,7 +760,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		ExecuteDocument execDocUTShours = null;
 
 		try {
-			session.connect("http://localhost:8080/uts/WebProcessingService");
+			session.connect(utsAddress);
 		} catch (WPSClientException e) {
 			e.printStackTrace();
 		}
@@ -687,7 +856,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		ExecuteResponseDocument responseUTShours = null;
 		try {
 			responseUTShours = (ExecuteResponseDocument) session.execute(
-					"http://localhost:8080/uts/WebProcessingService",
+					utsAddress,
 					execDocUTShours);
 		} catch (WPSClientException e) {// Auto-generated catch block
 			e.printStackTrace();
@@ -769,7 +938,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		// connect to UTS
 		WPSClientSession session = WPSClientSession.getInstance();
 		try {
-			session.connect("http://localhost:8080/uts/WebProcessingService");
+			session.connect(utsAddress);
 		} catch (WPSClientException e1) {
 			e1.printStackTrace();
 		}
@@ -847,7 +1016,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		ExecuteResponseDocument responseUTSmeteo = null;
 		try {
 			responseUTSmeteo = (ExecuteResponseDocument) session.execute(
-					"http://localhost:8080/uts/WebProcessingService",
+					utsAddress,
 					execDocUTSmeteo);
 		} catch (WPSClientException e) {// Auto-generated catch block
 			e.printStackTrace();
@@ -994,7 +1163,6 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 				try {
 					uri = new URI("platzhalter_codespace");
 				} catch (URISyntaxException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				Identifier identifier = new Identifier(uri, ident);
@@ -1026,7 +1194,6 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 
 				// add to collection
 				collection.addObservation(me);
-				System.out.println("");
 			}
 		}
 		return collection;
@@ -1103,7 +1270,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 	 * The method is not finished! It uses locally stored request files, so the
 	 * paths have to be adapted!
 	 */
-	private void makeRequestAndRunAustal(int runNumber) {
+	private IObservationCollection makeRequestAndRunAustal(int runNumber) {
 
 		// connect to austal WPS
 		WPSClientSession session = WPSClientSession.getInstance();
@@ -1127,6 +1294,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 			e1.printStackTrace();
 		}
 
+
 		// Set input data
 		DataInputsType wpsDataInputs = execDoc.getExecute().getDataInputs();
 		
@@ -1141,18 +1309,18 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 			wpsInput.addNewIdentifier().setStringValue("street-emissions");
 			InputReferenceType wpsReference = wpsInput.addNewReference();
 			wpsReference.setHref(emissionsFiles.get(runNumber));
-			wpsReference.setSchema("http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd");
+			wpsReference.setSchema("http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd");
 			wpsReference.setEncoding("UTF-8");
-			wpsReference.setMimeType("text/xml");
+			wpsReference.setMimeType("application/x-om-u");
 		}
 		if (meteoExist) { // if meteorology exist
 			InputType wpsInput = wpsDataInputs.addNewInput();
 			wpsInput.addNewIdentifier().setStringValue("meteorology");
 			InputReferenceType wpsReference = wpsInput.addNewReference();
 			wpsReference.setHref(meteoFiles.get(runNumber));
-			wpsReference.setSchema("http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd");
+			wpsReference.setSchema("http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd");
 			wpsReference.setEncoding("UTF-8");
-			wpsReference.setMimeType("text/xml");
+			wpsReference.setMimeType("application/x-om-u");
 		}
 		if (staticInputsExist){ 
 			InputType wpsInput = wpsDataInputs.addNewInput();
@@ -1165,20 +1333,40 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 			//wpsReference.setSchema("http://giv-uw.uni-muenster.de:8080/uts/schemas/StaticInputType.xsd");
 	       
 			//<wps:Reference schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd" encoding="UTF-8" mimeType="text/xml" xlink:href="http://giv-wps.uni-muenster.de:8080/geoserver/wfs?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=cite2:schulweg"/>	    	
-			wpsReference.setHref("http://giv-wps.uni-muenster.de:8080/geoserver/wfs?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=cite2:schulweg");
+			wpsReference.setHref("file:/C:/UncertWeb/workspace/uWPS4/src/main/resources/austalResources/inputs/staticInput.xml");
 			wpsReference.setSchema("http://schemas.opengis.net/gml/2.1.2/feature.xsd");
 			wpsReference.setMimeType("text/xml");
-		}
+		}		
 		
-		//TODO add running AUSTAL and checking of Response		
-		// Run austal WPS and get output (Realisation object)
-		// ExecuteResponseDocument response1 = null;
-		// try {
-		// response1 = (ExecuteResponseDocument) session.execute(serviceURL,
-		// execDoc);
-		// } catch (WPSClientException e) {
-		// e.printStackTrace();
-		// }
+		 //Run austal WPS and get output (Realisation object)
+		 ExecuteResponseDocument response1 = null;
+		 try {
+		 response1 = (ExecuteResponseDocument) session.execute(serviceURL,
+		 execDoc);
+		 
+		 OutputDataType oType =
+			 response1.getExecuteResponse().getProcessOutputs().getOutputArray(0);
+			 // all output elements
+			 Node wpsComplexData = oType.getData().getComplexData().getDomNode();
+			 // the complex data node
+			 Node unRealisation = wpsComplexData.getChildNodes().item(0); 
+			 // the realisation node			 
+			 IObservationCollection iobs = new XBObservationParser().parseObservationCollection(nodeToString(unRealisation));
+		 
+			 return iobs;
+			 
+		 } catch (WPSClientException e) {
+			 logger.error(e);
+		 } catch (OMParsingException e) {
+			 logger.error(e);
+		} catch (TransformerFactoryConfigurationError e) {
+			 logger.error(e);
+		} catch (TransformerException e) {
+			 logger.error(e);
+		}
+		 
+		return null;
+		 
 		//		
 		// // Handle austal wps output
 		// /* I have no idea whether this works, because I could not test it
@@ -1234,8 +1422,8 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 					"http://www.uncertweb.org/phenomenon/winddirection");
 			obsPropWindSpeed = new URI(
 					"http://www.uncertweb.org/phenomenon/windspeed");
-		} catch (URISyntaxException e) { // Auto-generated catch block
-			e.printStackTrace();
+		} catch (URISyntaxException e) { 
+				logger.error(e);
 		}
 
 		// Retrieve source and meteo data from input map
@@ -1287,5 +1475,14 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 		OMData omData = (OMData) payload;
 		return (UncertaintyObservationCollection) omData
 				.getObservationCollection();
+	}
+	
+	private String nodeToString(Node node) throws TransformerFactoryConfigurationError, TransformerException {
+		StringWriter stringWriter = new StringWriter();
+		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		transformer.transform(new DOMSource(node), new StreamResult(stringWriter));
+		
+		return stringWriter.toString();
 	}
 }
