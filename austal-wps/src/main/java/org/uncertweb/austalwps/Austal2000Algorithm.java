@@ -143,7 +143,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		}
 		
 		// 1. read files to create datamodel
-		this.readFiles("austal2000_template.txt", "zeitreihe_0810.dmna");		
+		this.readFiles("austal2000_template.txt", "zeitreihe_template.dmna");		
 		
 		ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
 		ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
@@ -493,7 +493,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	}
 	
 	private void handleMeteorology(MeteorologyTimeSeries newMetList, IObservationCollection coll) throws Exception{
-	
+		
 		Map<TimeObject, AbstractObservation> timeObservationMap = new HashMap<TimeObject, AbstractObservation>();
 				
 		/*
@@ -539,6 +539,16 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 //				} catch (ParseException e) {
 //					e.printStackTrace();
 //				}
+				
+				// correct wind speed and wind direction to natural boundaries
+				// 1) check if wind speed is not negative
+				if(windSpeed<0.1)
+					windSpeed = 0.1;
+				// 2) check if wind direction is between 1 and 360
+				if(windDirection>360)
+					windDirection = windDirection - 360;
+				else if(windDirection<1)
+					windDirection = windDirection + 360;
 				newMetList.addWindDirection(dt.toDate(), windDirection);
 				newMetList.addWindSpeed(dt.toDate(), windSpeed);
 				
@@ -782,9 +792,12 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		MeteorologyTimeSeries metList = ts.getMeteorologyTimeSeries();
 		ArrayList<Date> timeStampList = (ArrayList<Date>) newMetList.getTimeStamps();
 		
-		// add stability class values to new list
+		
 		for(int i=0; i<timeStampList.size(); i++){
 			Date d = timeStampList.get(i);
+			
+			
+			// add stability class values to new list
 			newMetList.addStabilityClass(d, metList.getStabilityClass(d));
 		}
 		
