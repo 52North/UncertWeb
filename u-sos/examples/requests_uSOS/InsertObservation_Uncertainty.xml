@@ -24,7 +24,7 @@
   
 	<AssignedSensorId>urn:ogc:object:feature:Sensor:IFGI:uw-sensor-2</AssignedSensorId>
   
-	<om:OM_Measurement>
+	<om:OM_UncertaintyObservation>
 		<gml:identifier codeSpace="http://www.uncertweb.org">obsTest2</gml:identifier>
        
 		<!--=============================================================
@@ -73,6 +73,6 @@
 				<un:variance>2.32</un:variance>
 			</un:GaussianDistribution> 
 		</om:result>
-	</om:OM_Measurement>
+	</om:OM_UncertaintyObservation>
   
 </InsertObservation>

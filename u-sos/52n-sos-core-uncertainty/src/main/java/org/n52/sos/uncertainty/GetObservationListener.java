@@ -14,7 +14,7 @@ import org.n52.sos.resp.ISosResponse;
  */
 public class GetObservationListener extends org.n52.sos.GetObservationListener implements ISosRequestListener {
 	
-	//TODO Kommentare prüfen 
+	//TODO check comments 
 
     /**
      * method receives the GetObservation request and sends back a repsonse

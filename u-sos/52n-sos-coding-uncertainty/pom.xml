@@ -19,11 +19,23 @@
 
 		<!-- Uncertainty dependencies -->
 		<dependency>
-		      <groupId>org.uncertweb</groupId>
-		      <artifactId>uncertml-api</artifactId>
-		      <version>0.0.1-SNAPSHOT</version>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>xb-uw-profiles</artifactId>
+			<version>0.0.3</version>
+			<scope>compile</scope>
+			<type>jar</type>
+		</dependency>
+		    	<dependency>
+      		<groupId>org.uncertweb</groupId>
+      		<artifactId>om-api</artifactId>
+      		<version>0.0.4-SNAPSHOT</version>
     	</dependency>
-	
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>52n-sos-coding</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>52n-sos-core</artifactId>
@@ -51,34 +63,34 @@
 		</dependency>
 		<!-- XML Beans Generated Classes -->
 		<dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>52n-sos-xml-gml</artifactId>
-                <version>3.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>52n-sos-xml-sweCommon</artifactId>
-                <version>1.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>52n-sos-xml-sensorML</artifactId>
-                <version>1.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>52n-sos-xml-om</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>52n-sos-xml-ows</artifactId>
-                <version>1.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>52n-sos-xml-sos</artifactId>
-                <version>1.0.0</version>
-            </dependency>   
+			<groupId>${project.groupId}</groupId>
+			<artifactId>52n-sos-xml-gml</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>52n-sos-xml-sweCommon</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>52n-sos-xml-sensorML</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>52n-sos-xml-om</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>52n-sos-xml-ows</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>52n-sos-xml-sos</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 </project>

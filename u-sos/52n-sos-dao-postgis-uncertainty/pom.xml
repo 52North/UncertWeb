@@ -13,7 +13,7 @@
 	<name>52North SOS Uncertainty Enabled PostGIS DAO</name>
 	<description>52North Sensor Observation Service Data Access Objects for
 		PostGIS enhanced with the ability to process data uncertainty</description>
-	<version>3.1</version>
+	<version>${parent.version}</version>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
@@ -33,6 +33,11 @@
       		<artifactId>om-api</artifactId>
       		<version>0.0.4-SNAPSHOT</version>
     	</dependency>
+    	<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>52n-sos-coding-uncertainty</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
