@@ -477,7 +477,6 @@ public class XBObservationParser implements IObservationParser {
 
 				UncertaintyPropertyType xb_uncPropType = ((UWUncertaintyObservationType) xb_obsType).getResult();
 
-				System.out.println(xb_uncPropType.toString());
 				XMLParser uncertaintyParser = new XMLParser();
 				IUncertainty uncertainty = uncertaintyParser
 						.parse(xb_uncPropType.toString());
