@@ -132,20 +132,12 @@
 				<ows:Identifier>StaticProcessInputs</ows:Identifier>
 				<ows:Title></ows:Title>
 				<ows:Abstract>Input data with probabilistic uncertainty. The StaticInputType is structured similar to a normal WPS DataInputType, i.e. it has an identifier and a data element. The identifier is necessary to construct the executedocument for the model WPS.</ows:Abstract>
-				<ComplexData>
-					<Default>
-						<Format>
-							<MimeType>text/xml</MimeType>
-							<Schema>http://schemas.opengis.net/gml/2.1.2/feature.xs</Schema>
-						</Format>
-					</Default>
-					<Supported>
-						<Format>
-							<MimeType>text/xml</MimeType>
-							<Schema>http://schemas.opengis.net/gml/2.1.2/feature.xs</Schema>
-						</Format>
-					</Supported>
-				</ComplexData>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AllowedValues>
+						<ows:Value/>
+					</ows:AllowedValues>
+				</LiteralData>
 			</Input>
 			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>ServiceURL</ows:Identifier>
