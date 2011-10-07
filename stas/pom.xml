@@ -2,7 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
+	<parent>
+		<groupId>org.uncertweb</groupId>
+		<artifactId>uncertweb-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 	<groupId>org.uncertweb</groupId>
 	<artifactId>stas</artifactId>
 	<version>0.0.1</version>
@@ -11,7 +15,7 @@
 	<name>Spatiotemporal Aggregation Service</name>
 	<url>http://www.uncertweb.org</url>
 	<inceptionYear>2010</inceptionYear>
-	<description>WPS Process for spatiotemporal aggregation of sensor data.</description>
+	<description>WPS for spatiotemporal aggregation of data in UncertWeb project.</description>
 
 	<organization>
 		<name>Institute for Geoinformatics</name>
@@ -27,23 +31,19 @@
 			<timezone>GMT+1</timezone>
 			<id>ChristianAutermann</id>
 		</developer>
+		<developer>
+			<name>Christoph Stasch</name>
+			<email>staschc@uni-muenster.de</email>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<timezone>GMT+1</timezone>
+			<id>staschc</id>
+		</developer>
 	</developers>
 	
-	<scm>
-		<developerConnection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/STAS/trunk/STAS</developerConnection>
-	</scm>
-
-	<distributionManagement>
-		<repository>
-			<id>UncertWebMavenDeployRepository</id>
-			<name>UncertWeb Maven Repository</name>
-			<url>scp://giv-uw.uni-muenster.de:/var/www/m2/repo</url>
-		</repository>
-	</distributionManagement>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<wps.version>2.0-RC7-SNAPSHOT</wps.version>
+		<wps.version>2.0-RC8-SNAPSHOT</wps.version>
 	</properties>
 
 	<dependencies>
@@ -120,14 +120,12 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.6.1</version>
-			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
-			<scope>runtime</scope>
 		</dependency>
 
 		<!-- WPS dependencies -->
@@ -159,16 +157,15 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>52n-wps-io-uncertweb</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
 
 	</dependencies>
 	<repositories>
-		<repository>
-			<id>UncertWebMavenRepository</id>
-			<name>UncertWeb Maven Repository</name>
-			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
-			<snapshots><enabled>true</enabled></snapshots>
-			<releases><enabled>true</enabled></releases>
-		</repository>
 		<repository>
 			<id>geotools.fr</id>
 			<name>Geotools Repository</name>
