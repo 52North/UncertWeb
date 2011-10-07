@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This example describes a process of an aggregation process that aggregates spatio-temporal points measurements to polygons in space and time grids in time
+ -->
+<wps:ProcessDescriptions xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="en-US" service="WPS" version="1.0.0">
+	<ProcessDescription wps:processVersion="2" storeSupported="true" statusSupported="false">
+		<ows:Identifier>urn:ogc:def:aggregationProcess:polygonContainment:spatialMean:temporalGridding:temporalMax</ows:Identifier>
+		<ows:Title>Aggregation Process with spatial grouping to polygons and spatial aggregation function mean as well as temporal gridding and aggregation function max for temporal groups.</ows:Title>
+		<ows:Abstract>Computes some probabilities for a given gaussian distribution.</ows:Abstract>
+		<ows:Metadata xlink:title="spatial"/>
+		<DataInputs>
+			<Input minOccurs="1" maxOccurs="10">
+				<ows:Identifier>Variable</ows:Identifier>
+				<ows:Title>Variable</ows:Title>
+				<ows:Abstract>Identifier of variable whose values should be aggregated </ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue/>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>InputData</ows:Identifier>
+				<ows:Title>Input data</ows:Title>
+				<ows:Abstract>Input data which should be aggregated</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>SpatialFirst</ows:Identifier>
+				<ows:Title>SpatialFirst</ows:Title>
+				<ows:Abstract>Spatial first flag indicates whether spatial aggregation should be done first (true).</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:boolean"/>
+					<ows:AllowedValues>
+						<ows:Value>true</ows:Value>
+						<ows:Value>false</ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>TargetServer</ows:Identifier>
+				<ows:Title>TargetServer</ows:Title>
+				<ows:Abstract>URL of Server where the aggregated data should be published</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue/>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>TargetServerType</ows:Identifier>
+				<ows:Title>TargetServerType</ows:Title>
+				<ows:Abstract>Type of Server where the aggregated data should be published</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue/>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>FeatureCollection</ows:Identifier>
+				<ows:Title>FeatureCollection</ows:Title>
+				<ows:Abstract>GML Feature collection containing the polygons to which the data should be aggregated spatially</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>Duration</ows:Identifier>
+				<ows:Title>Duration</ows:Title>
+				<ows:Abstract>duration of time intervals to which temporal extent should be divided</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue/>
+				</LiteralData>
+			</Input>
+		</DataInputs>
+		<ProcessOutputs>
+			<Output>
+				<ows:Identifier>AggregatedData</ows:Identifier>
+				<ows:Title>AggregatedData</ows:Title>
+				<ows:Abstract>aggregated data output</ows:Abstract>
+				<ComplexOutput>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
+		</ProcessOutputs>
+	</ProcessDescription>
+</wps:ProcessDescriptions>
