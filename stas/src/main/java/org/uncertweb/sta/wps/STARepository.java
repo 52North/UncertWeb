@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.sta.utils.Constants;
+import org.uncertweb.sta.wps.algorithms.GenericObservationAggregationProcess;
 import org.uncertweb.sta.wps.api.annotation.Ignore;
 import org.uncertweb.sta.wps.api.annotation.IsOnlyCompatibleWith;
 import org.uncertweb.sta.wps.api.annotation.SpatialAggregationFunction;
