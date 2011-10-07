@@ -63,7 +63,8 @@
 		</GeneratorList>
 	</Datahandlers>
 	<AlgorithmRepositoryList>
-		<Repository name="STARepository" className="org.uncertweb.sta.wps.STARepository" active="true" />
+		<!-- <Repository name="STARepository" className="org.uncertweb.sta.wps.STARepository" active="true" /> -->
+		<Repository name="AggregationAlgorithmRepository" className="org.uncertweb.sta.wps.AggregationAlgorithmRepository" active="true" />
 	</AlgorithmRepositoryList>
 	<Server hostname="localhost"
 			hostport="8080"
