@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by Institut für Geoinformatik (Institut für Geoinformatik) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:uw="http://www.uncertweb.org" targetNamespace="http://www.uncertweb.org" attributeFormDefault="unqualified">
+	<xs:element name="AggregationConfiguration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="AggregationProcess" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ProcessIdentifier"/>
+							<xs:element name="ClassName"/>
+							<xs:element name="Semantics"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
