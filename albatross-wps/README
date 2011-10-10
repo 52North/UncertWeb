@@ -1,0 +1,29 @@
+######################################################
+## Albatross Web Processing Service
+######################################################
+
+The Albatross WPS is an extension of the 52N WPS that provides
+a Web interface for the Albatross model.
+
+
+####################################
+##Project Structure
+The project contains the following folders:
+
+(i) src: contains the Java sources as well as necessary additional files in resources subfolders
+
+####################################
+##Required Software
+
+Following Software needs to be installed:
+
+-TBD
+
+Optional:
+
+-M2Eclipse http://maven.apache.org/eclipse-plugin.html
+
+###################################
+## Questions? Issues?
+
+You can contact steffan.voss@uni-muenster.de. 
