@@ -96,10 +96,17 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 
 		/** Process inputs. */
 		public static interface Inputs {
+			
+			public final static String VARIABLE = "Variable";
+			public final static String INPUT_DATA = "InputData";
+			public final static String TARGET_SERVER = "TargetServer";
+			public final static String TARGET_SERVER_TYPE = "TargetServerType";
+			
+			
 			public static final String OBSERVATION_COLLECTION_INPUT_ID = "observationCollectionCompositeInput";
 			public static final String FEATURE_COLLECTION_INPUT_ID = "featureCollectionCompositeInput";
 
-			public static final String SPATIAL_BEFORE_TEMPORAL = "spatialFirst";
+			public static final String SPATIAL_BEFORE_TEMPORAL = "SpatialFirst";
 			
 
 			public static final String GROUP_BY_OBSERVED_PROPERTY_ID = "GroupByObservedProperty";
@@ -116,6 +123,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 		/** Process outputs. */
 		public static interface Outputs {
 
+			public static final String AGGREGATED_DATA = "AggregatedData";
 			public static final String AGGREGATED_OBSERVATIONS_ID = "AggregatedObservations";
 			public static final String AGGREGATED_OBSERVATIONS_REFERENCE_ID = "AggregatedObservationsReference";
 		}
