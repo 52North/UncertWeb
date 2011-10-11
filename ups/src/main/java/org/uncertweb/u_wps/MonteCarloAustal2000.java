@@ -546,7 +546,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 
 					Realisation r = new Realisation(values, -1.0d, "id");
 
-					UncertaintyResult uResult = new UncertaintyResult(r);
+					UncertaintyResult uResult = new UncertaintyResult(r, "ug/m3");
 					UncertaintyObservation uObs = new UncertaintyObservation(
 							newT, newT, procedure, observedProperty, tmpSF,
 							uResult);
