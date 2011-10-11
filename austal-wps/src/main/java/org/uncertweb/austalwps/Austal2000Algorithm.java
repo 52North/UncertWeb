@@ -23,6 +23,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.FeatureIterator;
@@ -36,12 +38,14 @@ import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
+import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractObservableAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
 import org.n52.wps.server.WebProcessingService;
 import org.opengis.feature.simple.SimpleFeature;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
@@ -84,7 +88,8 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private final String logFileMarkerEndEnglish = "written.";
 	private final String logFileMarkerBeginningGerman = "Datei";
 	private final String logFileMarkerEndGerman = "ausgeschrieben.";
-	private final String tmpDir = System.getenv("TMP");
+	//private final String tmpDir = System.getenv("TMP");
+	private final String tmpDir = "D:/PhD/WP1.1_AirQualityModel/WebServiceChain/AustalWPS/AustalRun";
 	private String workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
 	private String austalHome = "";
 	private List<String> errors = new ArrayList<String>();
@@ -121,6 +126,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			return LiteralDateTimeBinding.class;
 		}else if(id.equals(inputIDReceptorPoints)){
 			return GTVectorDataBinding.class;
+			//return LiteralStringBinding.class;
 		}else{
 			return GenericFileDataBinding.class;			
 		}
@@ -133,7 +139,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {		
-		
+	
 		File workDir = new File(workDirPath);
 		
 		if(!workDir.exists()){
@@ -141,7 +147,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		}
 		
 		// 1. read files to create datamodel
-		this.readFiles("austal2000_template.txt", "zeitreihe_0810.dmna");		
+		this.readFiles("austal2000_template.txt", "zeitreihe_template.dmna");		
 		
 		ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
 		ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
@@ -218,11 +224,12 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			if(receptorPointsData instanceof GTVectorDataBinding){
 				
 				handleReceptorPoints(pointList, (FeatureCollection<?, ?>)receptorPointsData.getPayload());
-				
-			}				
+			}	
 		}
 		
-		austal.setReceptorPoints(pointList);
+		if(pointList.size()>0)
+			austal.setReceptorPoints(pointList);
+		
 		substituteStreetEmissions(newEmissionSources, newEmisTS);
 		substituteMeteoorology(newMetList);
 		
@@ -518,7 +525,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					windDirection = (Double)abstractObservation.getResult().getValue();
 				}
 				/*
-				 * check for wind sped value
+				 * check for wind speed value
 				 */				
 				Double windSpeed = 0.0d;
 				if(obs1.getObservedProperty().getPath().contains("windspeed")){
@@ -796,7 +803,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		AustalOutputReader austal = new AustalOutputReader();
 		
-		ArrayList<Point[]> points = austal.createPoints(workDirPath, true);
+		ArrayList<Point[]> points = austal.createPoints(workDirPath, false);
 		
 		URI procedure = new URI("http://www.uncertweb.org/models/austal2000");
 		URI observedProperty = new URI("http://www.uncertweb.org/phenomenon/pm10");
@@ -828,7 +835,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					timeStamp = timeStamp.replace(" ", "T");
 					
 					TimeObject phenomenonTime = new TimeObject(timeStamp);						
-					MeasureResult resultm = new MeasureResult(vals.get(k).PM10val(), "");						
+					MeasureResult resultm = new MeasureResult(vals.get(k).PM10val(), "ug/m3");						
 					Measurement m1 = new Measurement(identifier, null, phenomenonTime, phenomenonTime, null, procedure, observedProperty, featureOfInterest, null, resultm);
 					mcoll.addObservation(m1);
 				}					
