@@ -59,6 +59,7 @@ import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.exceptions.OMParsingException;
+import org.uncertweb.api.om.io.JSONObservationEncoder;
 import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -85,11 +86,12 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 	private static Logger logger = Logger.getLogger(MonteCarloAustal2000.class);
 
 	// Path to resources
-	private String localPath = "C:\\UncertWeb\\workspace\\uWPS4";
+	//private String localPath = "C:\\UncertWeb\\workspace\\uWPS4";
+	private String localPath = "D:\\JavaProjects\\ups";
 	private String resPath = localPath
 			+ "\\src\\main\\resources\\austalResources";
-//	private String utsAddress = "http://localhost:8081/uts/WebProcessingService";
-	private String utsAddress = "http://giv-uw2.uni-muenster.de:8080/uts/WebProcessingService";
+	private String utsAddress = "http://localhost:8080/uts/WebProcessingService";
+//	private String utsAddress = "http://giv-uw2.uni-muenster.de:8080/uts/WebProcessingService";
 	
 	// Attributes
 	// Store PM10 distributions and emissions:
@@ -357,7 +359,7 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 				// String filepath =
 				// "D:\\Eclipse_Workspace\\ups_wrapper\\src\\main\\resources\\output_om\\Streets";
 				String filepath = resPath + "\\output_om";
-				filepath = filepath.concat("\\"+(i + 1) + ".xml");
+				filepath = filepath.concat("\\streets"+(i + 1) + ".xml");
 				File file = new File(filepath);
 				try {
 					emissionsFiles.add(file.toURL().toString());
@@ -553,6 +555,22 @@ public class MonteCarloAustal2000 extends AbstractAlgorithm {
 
 			}
 			
+			// write uncertainty observation as XML and JSON
+			String filepath = resPath + "\\output_om";
+			String xmlFilepath = filepath.concat("\\realisations.xml");
+			File xmlFile = new File(xmlFilepath);
+			String jsonFilepath = filepath.concat("\\realisations.json");
+			File jsonFile = new File(jsonFilepath);
+			// encode, store (for using in austal request later)
+			try {
+				new StaxObservationEncoder().encodeObservationCollection(mcoll,xmlFile);
+				new JSONObservationEncoder().encodeObservationCollection(mcoll, jsonFile);
+			} catch (OMEncodingException e) {
+				e.printStackTrace();
+			}
+
+			
+			// make UPS result
 			HashMap<String, IData> resultMap = new HashMap<String, IData>();
 			
 			OMData omd = new OMData(mcoll, UncertWebDataConstants.MIME_TYPE_OMX);
