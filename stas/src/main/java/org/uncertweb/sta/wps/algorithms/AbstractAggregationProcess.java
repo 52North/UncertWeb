@@ -96,4 +96,47 @@ public abstract class AbstractAggregationProcess extends AbstractAlgorithm{
 		return result;
 	}
 
+	/**
+	 * returns type of data binding class for passed input identifier
+	 * 
+	 * @param identifier
+	 * 			identifier of input
+	 * @return data binding class 
+	 */
+	protected Class<?> getCommonInputType(String identifier){
+		if (identifier.equals(INPUT_IDENTIFIER_INPUT_DATA)){
+			return UncertWebIODataBinding.class;
+		}
+		else if (identifier.equals(INPUT_IDENTIFIER_VARIABLE)){
+			return LiteralStringBinding.class;
+		}
+		else if (identifier.equals(INPUT_IDENTIFIER_SPATIAL_FIRST)){
+			return LiteralStringBinding.class;
+		}
+		else if (identifier.equals(INPUT_IDENTIFIER_SPATIAL_FIRST)){
+			return LiteralBooleanBinding.class;
+		}
+		else if (identifier.equals(INPUT_IDENTIFIER_TARGET_SERVER)){
+			return LiteralStringBinding.class;
+		}
+		else if (identifier.equals(INPUT_IDENTIFIER_TARGET_SERVER_TYPE)){
+			return LiteralStringBinding.class;
+		}
+		else return null;
+	}
+	
+	/**
+	 * returns type of data binding class for passed output identifier
+	 * 
+	 * @param identifier
+	 * 			identifier of output
+	 * @return data binding class 
+	 */
+	protected Class<?> getCommonOutputType(String identifier){
+		if (identifier.equals(OUTPUT_IDENTIFIER_AGGREGATED_DATA )){
+			return UncertWebIODataBinding.class;
+		}
+		else return null;
+	}
+
 }
