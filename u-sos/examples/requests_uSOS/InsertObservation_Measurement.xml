@@ -41,6 +41,12 @@
 		</om:phenomenonTime>
        
 		<!--=============================================================
+			result time represents the time when the result value was produced; might differ for example in case of a soil sample;
+			sample has been taken during phenomenonTime and then evaluate later in a laboratory during resultTime
+			==============================================================-->
+		<om:resultTime xlink:href="#ot1t"/>
+		
+		<!--=============================================================
 			procedure has produced the observation's result (usually a sensor)
 			==============================================================-->
 		<om:procedure xlink:href="urn:ogc:object:feature:Sensor:IFGI:uw-sensor-1"/>

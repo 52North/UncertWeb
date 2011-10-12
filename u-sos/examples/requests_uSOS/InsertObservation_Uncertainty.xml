@@ -38,7 +38,13 @@
 				<gml:timePosition>2005-01-21T16:22:25.000+01</gml:timePosition>
 			</gml:TimeInstant>
 		</om:phenomenonTime>
-       
+        
+		<!--=============================================================
+		    result time represents the time when the result value was produced; might differ for example in case of a soil sample;
+	        sample has been taken during phenomenonTime and then evaluate later in a laboratory during resultTime
+	        ==============================================================-->
+	    <om:resultTime xlink:href="#ot1t"/>
+		       
 		<!--=============================================================
 			procedure has produced the observation's result (usually a sensor)
 			==============================================================-->
@@ -70,10 +76,10 @@
 			observation result is a single measured value
 			==============================================================-->
 		<om:result uom="cm">
-			<un:GaussianDistribution>
+			<un:NormalDistribution>
 				<un:mean>10.123</un:mean>
 				<un:variance>2.32</un:variance>
-			</un:GaussianDistribution> 
+			</un:NormalDistribution> 
 		</om:result>
 	</om:OM_UncertaintyObservation>
   
