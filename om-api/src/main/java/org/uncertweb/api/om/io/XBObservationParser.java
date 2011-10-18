@@ -477,9 +477,22 @@ public class XBObservationParser implements IObservationParser {
 
 				UncertaintyPropertyType xb_uncPropType = ((UWUncertaintyObservationType) xb_obsType).getResult();
 
+				//Workaround for parsing uncertainties
+				//TODO test and maybe re-implement
+				String uncertaintyText = xb_uncPropType.toString();
+				if (uncertaintyText.startsWith("<xml-fragment")){
+					
+					//removing xml fragments
+					int start = uncertaintyText.indexOf("<un:");
+					int end = uncertaintyText.indexOf("</xml-fragment");
+					uncertaintyText = uncertaintyText.substring(start,end);
+					
+					//add namespace uncertml
+					uncertaintyText = uncertaintyText.replaceFirst(">", " xmlns:un=\"http://www.uncertml.org/2.0\">");
+				}
 				XMLParser uncertaintyParser = new XMLParser();
 				IUncertainty uncertainty = uncertaintyParser
-						.parse(xb_uncPropType.toString());
+						.parse(uncertaintyText);
 				UncertaintyResult result = new UncertaintyResult(uncertainty);
 				obs = new UncertaintyObservation(identifier, boundedBy,
 						phenomenonTime, resultTime, validTime, procedure,
