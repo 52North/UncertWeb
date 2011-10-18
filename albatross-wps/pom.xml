@@ -16,6 +16,15 @@
 <properties>
 <wps.version>2.0-RC8-SNAPSHOT</wps.version>
   </properties>
+  
+  <distributionManagement>
+		<repository>
+			<id>UncertWebMavenDeployRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>scp://giv-uw.uni-muenster.de:/var/www/m2/repo</url>
+		</repository>
+	</distributionManagement>
+	
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
