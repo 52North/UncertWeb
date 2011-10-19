@@ -14,19 +14,18 @@
 	<description>Adapter classes to 52North Sensor Observation Service OGC classes and uncertainty enabled versions</description>
 	<version>${parent.version}</version>
 	<url>http://maven.apache.org</url>
+
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>52n-sos-ogc</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<!-- Uncertainty dependencies -->
 		<dependency>
-			<groupId>org.uncertweb</groupId>
-			<artifactId>om-api</artifactId>
-			<version>0.0.4-SNAPSHOT</version>
-		</dependency>
+      		<groupId>org.uncertweb</groupId>
+      		<artifactId>om-api</artifactId>
+      		<version>0.0.5-SNAPSHOT</version>
+    	</dependency>
 	</dependencies>
 
 	<build>
