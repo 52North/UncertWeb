@@ -86,10 +86,10 @@
 							</gml:UnitDefinition>
 						</gmd:valueUnit>
 						<gmd:value>
-							<un:GaussianDistribution>
+							<un:NormalDistribution>
 								<un:mean>9.564</un:mean>
 								<un:variance>1.45</un:variance>
-							</un:GaussianDistribution> 
+							</un:NormalDistribution> 
 						</gmd:value>
 					</gmd:DQ_UncertaintyResult>
 				</gmd:result>
