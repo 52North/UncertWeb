@@ -8,6 +8,7 @@ import javax.xml.namespace.QName;
 
 import net.opengis.gml.FeaturePropertyType;
 import net.opengis.gml.TimePositionType;
+import net.opengis.gml.x32.UncertaintyPropertyType;
 import net.opengis.om.x10.CategoryObservationDocument;
 import net.opengis.om.x10.CategoryObservationType;
 import net.opengis.om.x10.GeometryObservationDocument;
@@ -16,10 +17,22 @@ import net.opengis.om.x10.MeasurementDocument;
 import net.opengis.om.x10.MeasurementType;
 import net.opengis.om.x10.ObservationDocument;
 import net.opengis.om.x10.ObservationType;
+import net.opengis.om.x20.OMBooleanObservationDocument;
 import net.opengis.om.x20.OMCategoryObservationDocument;
+import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
+import net.opengis.om.x20.OMMeasurementCollectionDocument;
 import net.opengis.om.x20.OMMeasurementDocument;
 import net.opengis.om.x20.OMObservationDocument;
+import net.opengis.om.x20.OMReferenceObservationDocument;
+import net.opengis.om.x20.OMTextObservationDocument;
+import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 import net.opengis.om.x20.OMUncertaintyObservationDocument;
+import net.opengis.om.x20.UWBooleanObservationType;
+import net.opengis.om.x20.UWDiscreteNumericObservationType;
+import net.opengis.om.x20.UWMeasurementType;
+import net.opengis.om.x20.UWReferenceObservationType;
+import net.opengis.om.x20.UWTextObservationType;
+import net.opengis.om.x20.UWUncertaintyObservationType;
 import net.opengis.sensorML.x101.AbstractProcessType;
 import net.opengis.sensorML.x101.SensorMLDocument;
 import net.opengis.sensorML.x101.SensorMLDocument.SensorML.Member;
@@ -107,38 +120,48 @@ public class HttpPostRequestDecoderMobile extends
 		boolean mobileEnabled = xb_insertObs.getMobileEnabled();
 
 		ObservationType xb_obsType = xb_insertObs.getObservation();
-		String om2ObsText = null;
-		String ob2ObsType = null;
+		OMObservationDocument om2ObsDoc = null;
+		
+		// TODO ObservationCollection accepted?
+		try {
 		if (xb_obsType == null) {
-			if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_UncertaintyObservation")) != null) {
-				om2ObsText = xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_UncertaintyObservation"))[0].xmlText();
-				ob2ObsType = "OM_UncertaintyObservation";
-			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_Measurement")) != null) {
-				om2ObsText = xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_Measurement"))[0].xmlText();
-				ob2ObsType = "OM_Measurement";
-			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_BooleanObservation")) != null) {
-				om2ObsText = xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_BooleanObservation"))[0].xmlText();
-				ob2ObsType = "OM_BooleanObservation";
-			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_DiscreteNumericObservation")) != null) {
-				om2ObsText = xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_DiscreteNumericObservation"))[0].xmlText();
-				ob2ObsType = "OM_DiscreteNumericObservation";
-			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_ReferenceObservation")) != null) {
-				om2ObsText = xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_ReferenceObservation"))[0].xmlText();
-				ob2ObsType = "OM_ReferenceObservation";
-			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_TextObservation")) != null) {
-				om2ObsText = xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", "OM_TextObservation"))[0].xmlText();
-				ob2ObsType = "OM_TextObservation";
+			
+			if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0",  OM2Constants.OBS_TYPE_UNCERTAINTY)).length > 0) {	
+				om2ObsDoc = OMUncertaintyObservationDocument.Factory.newInstance();
+				((OMUncertaintyObservationDocument) om2ObsDoc).addNewOMUncertaintyObservation().set(UWUncertaintyObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_UNCERTAINTY))[0].xmlText()));
+			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_MEASUREMENT)).length > 0) {
+				om2ObsDoc = OMMeasurementDocument.Factory.newInstance();
+				((OMMeasurementDocument) om2ObsDoc).addNewOMMeasurement().set(UWMeasurementType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_MEASUREMENT))[0].xmlText()));
+//			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_BOOLEAN)).length > 0) {
+//				om2ObsDoc = OMBooleanObservationDocument.Factory.newInstance();
+//				((OMBooleanObservationDocument) om2ObsDoc).addNewOMBooleanObservation().set(UWBooleanObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_BOOLEAN))[0].xmlText()));
+//			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_DISCNUM)).length > 0) {
+//				om2ObsDoc = OMDiscreteNumericObservationDocument.Factory.newInstance();
+//				((OMDiscreteNumericObservationDocument) om2ObsDoc).addNewOMDiscreteNumericObservation().set(UWDiscreteNumericObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_DISCNUM))[0].xmlText()));
+//			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_REFERENCE)).length > 0) {
+//				om2ObsDoc = OMReferenceObservationDocument.Factory.newInstance();
+//				((OMReferenceObservationDocument) om2ObsDoc).addNewOMReferenceObservation().set(UWReferenceObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_REFERENCE))[0].xmlText()));
+//			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_TEXT)).length > 0) {
+//				om2ObsDoc = OMTextObservationDocument.Factory.newInstance();
+//				((OMTextObservationDocument) om2ObsDoc).addNewOMTextObservation().set(UWTextObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_TEXT))[0].xmlText()));
 			}			
 		}
-		// TODO ObservationCollection accepted?
-
+		} catch (XmlException xmle) {
+			OwsExceptionReport se = new OwsExceptionReport();
+			se.addCodedException(
+					ExceptionCode.InvalidParameterValue,
+					null,
+					"Error while parsing: " + xmle.getLocalizedMessage());
+			throw se;
+		}
+		
 		Collection<AbstractSosObservation> obsCol = null;
-
-		if (om2ObsText != null) {
+		
+		if (om2ObsDoc != null) {
 
 			AbstractObservation om2Obs = null;
 			try {
-				om2Obs = om2Decoder.parseObservation(om2ObsText);
+				om2Obs = om2Decoder.parseObservation(om2ObsDoc.xmlText());
 			} catch (Exception e) {
 				OwsExceptionReport se = new OwsExceptionReport();
 				se.addCodedException(
@@ -148,9 +171,9 @@ public class HttpPostRequestDecoderMobile extends
 				throw se;
 			}
 			
-			// convert om2->om1 Observation mit om2Obs + om2ObsType
+			// convert om2->om1 Observation
 			obsCol = new ArrayList<AbstractSosObservation>();
-			obsCol.add(ObservationConverter.getOM1Obs(om2Obs, ob2ObsType));
+			obsCol.add(ObservationConverter.getOM1Obs(om2Obs));
 			
 		} else if (xb_obsType instanceof MeasurementType) {
 			obsCol = om1Decoder.parseMeasurement((MeasurementType) xb_obsType,
