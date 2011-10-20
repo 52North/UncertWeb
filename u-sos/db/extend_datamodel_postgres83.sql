@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 -- SQL script for extending the datamodel to accept observations with uncertainties
 -- author:       Martin Kiesow
--- last changes: 2011-09-06
+-- last changes: 2011-10-19
 ----------------------------------------------------------------------------------------------------
 
 --------------------------------------------------
@@ -21,17 +21,17 @@ DROP TABLE IF EXISTS u_mean_values CASCADE;
 -- represents an n:m relation between observation and uncertainty
 CREATE TABLE obs_unc (
   observation_id INTEGER NOT NULL,
-  uncertainty_id VARCHAR(100) NOT NULL,
+  uncertainty_id INTEGER NOT NULL,
   PRIMARY KEY (observation_id, uncertainty_id)
 );
 
 -- table: u_uncertainty
 -- represents a super type of the different uncertainty types
 CREATE TABLE u_uncertainty (
-  uncertainty_id VARCHAR(100) NOT NULL,
-  uncertainty_values_id VARCHAR(100) NOT NULL,
+  uncertainty_id SERIAL NOT NULL,
+  uncertainty_values_id SERIAL NOT NULL,
   uncertainty_type VARCHAR (10) NOT NULL,
-  value_unit_id VARCHAR(100) NOT NULL,
+  value_unit_id INTEGER NOT NULL,
   PRIMARY KEY (uncertainty_id),
   UNIQUE (uncertainty_values_id)
 );
@@ -39,7 +39,7 @@ CREATE TABLE u_uncertainty (
 -- table: u_value_unit
 -- represents the uncertainty's value unit
 CREATE TABLE u_value_unit (
-  value_unit_id VARCHAR(100) NOT NULL,
+  value_unit_id SERIAL NOT NULL,
   value_unit TEXT,
   PRIMARY KEY (value_unit_id)
 );
@@ -48,7 +48,7 @@ CREATE TABLE u_value_unit (
 -- represents the normal distribution uncertainty type
 -- normal_id maps u_uncertainty uncertainty_values_id
 CREATE TABLE u_normal (
-  normal_id VARCHAR(100) NOT NULL,
+  normal_id INTEGER NOT NULL,
   mean NUMERIC NOT NULL,
   standardDeviation NUMERIC NOT NULL,
   PRIMARY KEY (normal_id, mean, standardDeviation)
@@ -58,15 +58,15 @@ CREATE TABLE u_normal (
 -- represents the mean uncertainty type
 -- mean_id maps u_uncertainty uncertainty_values_id
 CREATE TABLE u_mean (
-  mean_id VARCHAR(100) NOT NULL,
-  mean_values_id VARCHAR(100) NOT NULL,
+  mean_id INTEGER NOT NULL,
+  mean_values_id INTEGER NOT NULL,
   PRIMARY KEY (mean_id, mean_values_id)
 );
 
 -- table: u_mean_values
 -- represents a list of mean values
 CREATE TABLE u_mean_values (
-  mean_values_id VARCHAR(100) NOT NULL,
+  mean_values_id SERIAL NOT NULL,
   mean_value NUMERIC NOT NULL,
   PRIMARY KEY (mean_values_id)
 );
@@ -99,4 +99,4 @@ ALTER TABLE u_mean ADD FOREIGN KEY (mean_values_id) REFERENCES u_mean_values (me
 --------------------------------------------------
 -- add 'uncertaintyType' to checked phenomenons
 -- original check constraint may be dropped manually
-ALTER TABLE phenomenon CHECK (valuetype IN ('uncertaintyType', 'booleanType', 'countType', 'textType', 'categoryType', 'numericType', 'isoTimeType', 'spatialType', 'commonType','externalReferenceType'));
+ALTER TABLE phenomenon ADD CHECK (valuetype IN ('uncertaintyType', 'booleanType', 'countType', 'textType', 'categoryType', 'numericType', 'isoTimeType', 'spatialType', 'commonType','externalReferenceType'));
