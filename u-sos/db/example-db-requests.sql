@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 -- Example database request to get observations with uncertainty information
 -- author:       Martin Kiesow
--- last changes: 2011-09-07
+-- last changes: 2011-10-20
 ----------------------------------------------------------------------------------------------------
 
 
@@ -140,7 +140,7 @@ WHERE
 
 -- optional
 	AND (observation.procedure_id = 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-1')
-	
+
 
 ----------------------------------------------------------------------------------------------------
 -- Request including uncertainty information
@@ -150,6 +150,7 @@ WHERE
 SELECT iso_timestamp(observation.time_stamp) AS time_stamp,
 	observation.text_value,
 	observation.observation_id,
+	obs_unc.gml_identifier,
     observation.numeric_value,
     observation.spatial_value,
     observation.mime_type,
@@ -205,20 +206,21 @@ WHERE
 
 -- mandatory offering parameter
 	AND (offering_id = 'GAUGE_HEIGHT' OR offering_id = 'WATER_SPEED')
-	
-	
+
+
 ----------------------------------------------------------------------------------------------------
 -- Request for uncertainty information of given observation IDs
 ----------------------------------------------------------------------------------------------------
 
 SELECT obs_unc.observation_id,
+	obs_unc.gml_identifier,
 	u_uncertainty.uncertainty_id,
 	u_uncertainty.uncertainty_values_id,
 	u_value_unit.value_unit,
 
 	-- mean type
 	u_mean_values.mean_value,
-	
+
 	-- normal type
 	u_normal.mean,
 	u_normal.standardDeviation
@@ -233,7 +235,7 @@ FROM (obs_unc
 	LEFT OUTER JOIN u_mean ON u_mean.mean_id = u_uncertainty.uncertainty_values_id
 	LEFT OUTER JOIN u_mean_values ON u_mean_values.mean_values_id = u_mean.mean_values_id
 	)
-	
+
 WHERE (obs_unc.observation_id = 12
 	OR obs_unc.observation_id = 15
 	OR obs_unc.observation_id = 22)

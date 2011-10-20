@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 -- SQL script for extending the datamodel to accept observations with uncertainties
 -- author:       Martin Kiesow
--- last changes: 2011-10-19
+-- last changes: 2011-10-20
 ----------------------------------------------------------------------------------------------------
 
 --------------------------------------------------
@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS u_mean_values CASCADE;
 CREATE TABLE obs_unc (
   observation_id INTEGER NOT NULL,
   uncertainty_id INTEGER NOT NULL,
+  gml_identifier VARCHAR(100) UNIQUE NOT NULL,
   PRIMARY KEY (observation_id, uncertainty_id)
 );
 

@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 -- SQL script for inserting example observations with uncertainties
 -- author:       Martin Kiesow
--- last changes: 2011-10-19
+-- last changes: 2011-10-20
 ----------------------------------------------------------------------------------------------------
 
 --------------------------------------------------
@@ -14,7 +14,7 @@ INSERT INTO phenomenon VALUES ('urn:ogc:def:phenomenon:OGC:1.0.30:waterspeed', '
 
 --sample offering
 INSERT INTO offering VALUES ('GAUGE_HEIGHT','The water level in a river');
-INSERT INTO offering VALUES ('WATER_SPEED','The waterspeed at a gage in a river');
+INSERT INTO offering VALUES ('WATER_SPEED','The waterspeed at a gauge in a river');
 
 -- sample featureofinterest
 INSERT INTO feature_of_interest (feature_of_interest_id, feature_of_interest_name, feature_of_interest_description, geom, feature_type, schema_link)
@@ -102,82 +102,82 @@ INSERT INTO u_mean (mean_id, mean_values_id) VALUES (5, 5);
 -- gauge height values and observations (incl. relationship)
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,numeric_value)
 	VALUES ('2008-04-01 17:44', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-1', 'foi_1001','urn:ogc:def:phenomenon:OGC:1.0.30:waterlevel','GAUGE_HEIGHT','50.0');
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 1);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 1, 'testObs01');
 
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,numeric_value)
 	VALUES ('2008-04-01 17:45', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-1', 'foi_1001','urn:ogc:def:phenomenon:OGC:1.0.30:waterlevel','GAUGE_HEIGHT', '40.2');
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 1);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 1, 'testObs02');
 
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,numeric_value)
 	VALUES ('2008-04-01 17:46', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-1', 'foi_1001','urn:ogc:def:phenomenon:OGC:1.0.30:waterlevel','GAUGE_HEIGHT', '70.4');
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 1);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 1, 'testObs03');
 
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,numeric_value)
 	VALUES ('2008-04-01 17:47', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-1', 'foi_1001','urn:ogc:def:phenomenon:OGC:1.0.30:waterlevel','GAUGE_HEIGHT', '60.5');
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 2);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 2, 'testObs04');
 
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,numeric_value)
 	VALUES ('2008-04-01 17:48', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-1', 'foi_1001','urn:ogc:def:phenomenon:OGC:1.0.30:waterlevel','GAUGE_HEIGHT', '45.456');
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 2);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 2, 'testObs05');
 
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,numeric_value)
 	VALUES ('2008-04-01 17:49', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-1', 'foi_1001','urn:ogc:def:phenomenon:OGC:1.0.30:waterlevel','GAUGE_HEIGHT', '110.1213');
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 3);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 3, 'testObs06');
 
 
 -- water speed values and observations
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,text_value)
 	VALUES ('2008-04-01 17:44', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-2', 'foi_2001','urn:ogc:def:phenomenon:OGC:1.0.30:waterspeed','WATER_SPEED', '10.1');
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 4);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 4, 'testObs07');
 
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,text_value)
 	VALUES ('2008-04-01 17:45', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-2', 'foi_2001','urn:ogc:def:phenomenon:OGC:1.0.30:waterspeed','WATER_SPEED', '12.0');
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 4);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 4, 'testObs08');
 
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,text_value)
 	VALUES ('2008-04-01 17:46', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-2', 'foi_2001','urn:ogc:def:phenomenon:OGC:1.0.30:waterspeed','WATER_SPEED', '10.5');
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 4);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 4, 'testObs09');
 
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,text_value)
 	VALUES ('2008-04-01 17:47', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-2', 'foi_2001','urn:ogc:def:phenomenon:OGC:1.0.30:waterspeed','WATER_SPEED', '9.2');
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 5);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 5, 'testObs10');
 
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,text_value)
 	VALUES ('2008-04-01 17:51', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-2', 'foi_2001','urn:ogc:def:phenomenon:OGC:1.0.30:waterspeed','WATER_SPEED', null);
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 5);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 5, 'testObs11');
 
 INSERT INTO observation (time_stamp, procedure_id, feature_of_interest_id,phenomenon_id,offering_id,text_value)
 	VALUES ('2008-04-01 17:43', 'urn:ogc:object:feature:Sensor:IFGI:uw-sensor-2', 'foi_2001','urn:ogc:def:phenomenon:OGC:1.0.30:waterspeed','WATER_SPEED', 11.2);
-INSERT INTO obs_unc (observation_id, uncertainty_id)
-	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 5);
+INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier)
+	VALUES (currval(pg_get_serial_sequence('observation','observation_id')), 5, 'testObs12');
 
 
 -- insert links from observation to uncertainty manually
 -- (observation_id has to be modified)
 
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (11, 1);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (12, 1);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (13, 1);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (14, 2);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (15, 2);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (16, 3);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (17, 4);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (18, 4);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (19, 4);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (20, 5);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (21, 5);
--- INSERT INTO obs_unc (observation_id, uncertainty_id) VALUES (22, 5);
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (11, 1, 'testObs01');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (12, 1, 'testObs02');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (13, 1, 'testObs03');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (14, 2, 'testObs04');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (15, 2, 'testObs05');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (16, 3, 'testObs06');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (17, 4, 'testObs07');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (18, 4, 'testObs08');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (19, 4, 'testObs09');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (20, 5, 'testObs10');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (21, 5, 'testObs11');
+-- INSERT INTO obs_unc (observation_id, uncertainty_id, gml_identifier) VALUES (22, 5, 'testObs12');
 
 
 
