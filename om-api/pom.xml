@@ -8,6 +8,15 @@
 	<groupId>org.uncertweb</groupId>
 	<artifactId>om-api</artifactId>
 	<version>0.0.5-SNAPSHOT</version>
+	
+	<repositories>
+         <repository>
+             <id>UncertWebMavenRepository</id>
+             <name>UncertWeb Maven Repository</name>
+             <url>http://giv-uw.uni-muenster.de/m2/repo</url>
+     </repository>
+     </repositories>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.uncertweb</groupId>
