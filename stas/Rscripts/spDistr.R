@@ -5,12 +5,14 @@
 # "q" -> confidence bounds potentially derived from simulations
 
 ## stationary random variable
+install.packages("distr")
 library(distr)
 library(gstat)
 
 setClass("spDistr",
   representation = representation(distr="Distribution", sp="Spatial", spDep="data.frame"),
 )
+
 
 spatialDistr <- function(distr, sp=NULL, spDep=vgm(0,"Nug",0,(distr@param@sd)^2)){
   if(is.null(sp)) {
@@ -62,6 +64,9 @@ plot(variogram(sim1~1,spSims),vgm(psill=(4.3)^2-1,"Sph",range=400,1))
 spSims <- r(spDistr)(100,meuse)
 hist(as.numeric(spSims[1,]@data),n=20,freq=F)
 curve(dnorm(x,12,4.3), add=T, col="red")
+
+show.vgms()
+vgm()
 
 # points in distr
 spDistr <-  spatialDistr(Norm(12,4.3), sp=as(meuse,"SpatialPoints"), spDep=vgm(psill=.8,"Sph",range=400,0.1))
