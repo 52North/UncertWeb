@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!--identifier of aggregation process; in this example, the observations are grouped spatially to polygons and then the maximum temperature for each polygon is computed-->
+	<ows:Identifier>urn:ogc:def:aggregationProcess:sGridding:sMean:noTG:noTA</ows:Identifier>
+	<!--
+########################
+##Inputs
+########################
+-->
+	<wps:DataInputs>
+		<!--Variable whose values should be aggregated-->
+		<wps:Input>
+			<ows:Identifier>Variable</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData dataType="xs:string">biotemperature_mean</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<!-- URL to Input NetCDF file-->
+		<wps:Input>
+			<ows:Identifier>InputData</ows:Identifier>
+			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/data/biotemperature_normalDistr.nc" mimeType="application/x-netcdf"/>
+		</wps:Input>
+		<!-- original observations are queried from SOS -->
+		<wps:Input>
+			<ows:Identifier>TargetGrid</ows:Identifier>
+			<wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/data/targetGrid.nc" mimeType="application/x-netcdf"/>
+		</wps:Input>
+	</wps:DataInputs>
+	<wps:ResponseForm>
+    <wps:RawDataOutput>
+        <ows:Identifier>AggregatedData</ows:Identifier>
+    </wps:RawDataOutput>
+  </wps:ResponseForm>
+</wps:Execute>
