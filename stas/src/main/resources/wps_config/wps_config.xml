@@ -43,6 +43,10 @@
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
+			<Parser name="UncertWebNetCDFParser" className="org.n52.wps.io.datahandler.binary.UncertWebNetCDFParser" active="true">
+	            <Property name="supportedFormat" active="true">application/x-netcdf</Property>
+	            <Property name="supportedEncoding" active="true">UTF-8</Property>
+  			 </Parser>   
 		</ParserList>
 		<GeneratorList>
 			<Generator name="ObservationCollectionGenerator" className="org.uncertweb.sta.wps.xml.io.enc.ObservationCollectionGenerator" active="true">
@@ -60,11 +64,15 @@
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>
+			<Generator name="UncertWebNetCDFGenerator" className="org.n52.wps.io.datahandler.binary.UncertWebNetCDFGenerator" active="true">
+	            <Property name="supportedFormat" active="true">application/x-netcdf</Property>
+	            <Property name="supportedEncoding" active="true">UTF-8</Property>
+   			</Generator>	
 		</GeneratorList>
 	</Datahandlers>
 	<AlgorithmRepositoryList>
 		<!-- <Repository name="STARepository" className="org.uncertweb.sta.wps.STARepository" active="true" /> -->
-		<Repository name="AggregationAlgorithmRepository" className="org.uncertweb.sta.wps.AggregationAlgorithmRepository" active="true" />
+		<Repository name="AggregationAlgorithmRepository" className="org.uncertweb.sta.wps.AggregationAlgorithmRepository" active="true" /> 
 	</AlgorithmRepositoryList>
 	<Server hostname="localhost"
 			hostport="8080"
