@@ -16,9 +16,7 @@ public class AggregationInputs {
 	
 	/**variables whose data should be aggregated*/
 	private List<String> variables;
-	
-	/**input data that should be aggregated*/
-	private UncertWebIOData input;
+
 	
 	/**indicates whether spatial aggregation should be done first; default is false*/
 	private boolean isSpatialFirst=false;
@@ -39,9 +37,8 @@ public class AggregationInputs {
 	 * @param inputp
 	 * 			data that should be aggregated
 	 */
-	public AggregationInputs(List<String> variablesp, UncertWebIOData inputp){
+	public AggregationInputs(List<String> variablesp){
 		setVariables(variablesp);
-		setInput(inputp);
 	}
 
 	/**
@@ -56,20 +53,6 @@ public class AggregationInputs {
 	 */
 	public void setVariables(List<String> variables) {
 		this.variables = variables;
-	}
-
-	/**
-	 * @return the input
-	 */
-	public UncertWebIOData getInput() {
-		return input;
-	}
-
-	/**
-	 * @param input the input to set
-	 */
-	public void setInput(UncertWebIOData input) {
-		this.input = input;
 	}
 
 	/**

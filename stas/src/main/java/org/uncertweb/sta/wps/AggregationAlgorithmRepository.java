@@ -2,7 +2,6 @@ package org.uncertweb.sta.wps;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import net.opengis.wps.x100.ProcessDescriptionType;
@@ -11,7 +10,8 @@ import org.apache.log4j.Logger;
 import org.n52.wps.server.IAlgorithm;
 import org.n52.wps.server.IAlgorithmRepository;
 import org.n52.wps.server.request.ExecuteRequest;
-import org.uncertweb.sta.wps.algorithms.vector2vector.PolyConMeanTempGridMax;
+import org.reflections.Reflections;
+import org.uncertweb.sta.wps.algorithms.AbstractAggregationProcess;
 
 /**
  * 
@@ -22,7 +22,7 @@ import org.uncertweb.sta.wps.algorithms.vector2vector.PolyConMeanTempGridMax;
  */
 public class AggregationAlgorithmRepository implements IAlgorithmRepository{
 	
-	private static Logger LOGGER = Logger.getLogger(PolyConMeanTempGridMax.class);
+	private static Logger LOGGER = Logger.getLogger(AggregationAlgorithmRepository.class);
 	
 	/**
 	 * Mapping between process identifier and methods.
@@ -68,19 +68,22 @@ public class AggregationAlgorithmRepository implements IAlgorithmRepository{
 	 */
 	private static Map<String, IAlgorithm> loadComplexProcesses() {
 		Map<String, IAlgorithm> result = new HashMap<String,IAlgorithm>();
-		AggregationServiceConfiguration processConfig = AggregationServiceConfiguration.getInstance();
-		Iterator<String> processIter = processConfig.getAllProcessIdentifiers().iterator();
-		while (processIter.hasNext()){
-			String processID = processIter.next();
-			String clazz = processConfig.getClassName4ProcIdentifier(processID);
+		
+		Reflections r = new Reflections("org.uncertweb.sta.wps.algorithms");
+		
+		for (Class<? extends AbstractAggregationProcess> c : r
+				.getSubTypesOf(AbstractAggregationProcess.class)) {
 			try {
-				IAlgorithm algo = (IAlgorithm) AggregationAlgorithmRepository.class.getClassLoader().loadClass(clazz).newInstance();
-				result.put(processID, algo);
+				
+				AbstractAggregationProcess algo = c.newInstance();
+				result.put(algo.getIdentifier(), algo);
 			} catch (Exception e) {
-				LOGGER.debug("Error while loading aggregation algorithms: "+e.getLocalizedMessage());			 
-			}
+				String errorMsg = "Error while loading aggregation algorithms:"+e.getLocalizedMessage();
+				throw new RuntimeException(errorMsg);
+			}	
 		}
 		return result;
+
 	}
 	
 	
