@@ -3,17 +3,25 @@ package org.uncertweb.sta.wps.algorithms;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.UncertWebIOData;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.n52.wps.server.AbstractAlgorithm;
+import org.uncertweb.intamap.om.ObservationCollection;
+import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.AggregationInputs;
+import org.uncertweb.sta.wps.api.AbstractProcessInput;
+import org.uncertweb.sta.wps.api.ExtendedSelfDescribingAlgorithm;
+import org.uncertweb.sta.wps.api.ProcessOutput;
+import org.uncertweb.sta.wps.api.SingleProcessInput;
+import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
 
 
 /**
@@ -23,21 +31,55 @@ import org.uncertweb.sta.wps.AggregationInputs;
  * @author staschc
  *
  */
-public abstract class AbstractAggregationProcess extends AbstractAlgorithm{
+public abstract class AbstractAggregationProcess extends ExtendedSelfDescribingAlgorithm {
 	
 	
-	////////////////////////////////////
-	//Identifiers of common aggregation inputs
-	protected final static String INPUT_IDENTIFIER_VARIABLE = "Variable";
-	protected final static String INPUT_IDENTIFIER_INPUT_DATA = "InputData";
-	protected final static String INPUT_IDENTIFIER_SPATIAL_FIRST = "SpatialFirst";
-	protected final static String INPUT_IDENTIFIER_TARGET_SERVER = "TargetServer";
-	protected final static String INPUT_IDENTIFIER_TARGET_SERVER_TYPE = "TargetServerType";
-		
 	
-	////////////////////////////////////
-	//Identifiers of common aggregation outputs
-	protected final static String OUTPUT_IDENTIFIER_AGGREGATED_DATA = "AggregatedData";
+	
+	////////////////////////////////////////////////////////////////////////////7
+	// Common Aggregation Process Inputs as described in Profile
+	/**
+	 * The URL of the SOS from which the {@link ObservationCollection} will be
+	 * fetched. Can also be a GET request.
+	 */
+	public static final SingleProcessInput<String> VARIABLE = new SingleProcessInput<String>(
+			Constants.Process.Inputs.VARIABLE,
+			LiteralStringBinding.class, 1, 100, null, null);
+
+	
+
+	/**
+	 * Indicates if the temporal aggregation should run before the spatial
+	 * aggregation.
+	 */
+	public static final SingleProcessInput<Boolean> SPATIAL_BEFORE_TEMPORAL = new SingleProcessInput<Boolean>(
+			Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL,
+			LiteralBooleanBinding.class, 0, 1, null,
+			Constants.getDefaultFlag(Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL));
+
+	
+	/**
+	 * The URL of the TargetServer to which aggregated data should be written
+	 * 
+	 */
+	public static final SingleProcessInput<String> TARGET_SERVER = new SingleProcessInput<String>(
+			Constants.Process.Inputs.TARGET_SERVER,
+			LiteralStringBinding.class, 0, 1, null, null);
+	
+	/**
+	 * The URL of the TargetServer to which aggregated data should be written
+	 * 
+	 */
+	public static final SingleProcessInput<String> TARGET_SERVER_TYPE = new SingleProcessInput<String>(
+			Constants.Process.Inputs.TARGET_SERVER_TYPE,
+			LiteralStringBinding.class, 0, 1, null, null);
+	
+	/**
+	 * 
+	 * @return the identifier of the process
+	 */
+	public abstract String getIdentifier();
+	
 	
 	/**
 	 * returns the standard parameters of every aggregation process
@@ -51,7 +93,7 @@ public abstract class AbstractAggregationProcess extends AbstractAlgorithm{
 		AggregationInputs result = null;
 		
 		//extract Variable
-		List<IData> variableList = inputData.get(INPUT_IDENTIFIER_VARIABLE);
+		List<IData> variableList = inputData.get(Constants.Process.Inputs.VARIABLE);
 		ArrayList<String> variables = new ArrayList<String>(variableList.size());
 		Iterator<IData> variableIter = variableList.iterator();
 		while (variableIter.hasNext()){
@@ -59,24 +101,18 @@ public abstract class AbstractAggregationProcess extends AbstractAlgorithm{
 			variables.add(variable);
 		}
 		
-		//extract InputData
-		UncertWebIOData uwDataInput = null;
-		Object dataInput = ((UncertWebIODataBinding)inputData.get(INPUT_IDENTIFIER_INPUT_DATA).get(0)).getPayload();
-		if (dataInput instanceof UncertWebIOData){
-			uwDataInput = (UncertWebIOData) dataInput;
-		}
 		//create Aggregation Inputs object
-		result = new AggregationInputs(variables,uwDataInput);
+		result = new AggregationInputs(variables);
 		
 		//extract SpatialFirst
-		List<IData> spatialFirstList = inputData.get(INPUT_IDENTIFIER_SPATIAL_FIRST);
+		List<IData> spatialFirstList = inputData.get(Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL);
 		if (spatialFirstList!=null&&spatialFirstList.size()==1){
 			LiteralBooleanBinding spfBb = (LiteralBooleanBinding)spatialFirstList.get(0);
 			result.setSpatialFirst(spfBb.getPayload());
 		}
 		
 		//extract TargetServer
-		List<IData> targetServerList = inputData.get(INPUT_IDENTIFIER_TARGET_SERVER);
+		List<IData> targetServerList = inputData.get(Constants.Process.Inputs.TARGET_SERVER);
 		if (targetServerList!=null&&targetServerList.size()==1){
 			LiteralStringBinding tsSb = (LiteralStringBinding)targetServerList.get(0);
 			try {
@@ -87,7 +123,7 @@ public abstract class AbstractAggregationProcess extends AbstractAlgorithm{
 		}
 		
 		//extract TargetServerType
-		List<IData> targetServerType = inputData.get(INPUT_IDENTIFIER_TARGET_SERVER_TYPE);
+		List<IData> targetServerType = inputData.get(Constants.Process.Inputs.TARGET_SERVER_TYPE);
 		if (targetServerType!=null&&targetServerType.size()==1){
 			LiteralStringBinding spfBb = (LiteralStringBinding)targetServerType.get(0);
 			result.setTargetServerType(spfBb.getPayload());
@@ -104,39 +140,38 @@ public abstract class AbstractAggregationProcess extends AbstractAlgorithm{
 	 * @return data binding class 
 	 */
 	protected Class<?> getCommonInputType(String identifier){
-		if (identifier.equals(INPUT_IDENTIFIER_INPUT_DATA)){
+		if (identifier.equals(Constants.Process.Inputs.INPUT_DATA)){
 			return UncertWebIODataBinding.class;
 		}
-		else if (identifier.equals(INPUT_IDENTIFIER_VARIABLE)){
+		else if (identifier.equals(Constants.Process.Inputs.VARIABLE)){
 			return LiteralStringBinding.class;
 		}
-		else if (identifier.equals(INPUT_IDENTIFIER_SPATIAL_FIRST)){
+		else if (identifier.equals(Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL)){
 			return LiteralStringBinding.class;
 		}
-		else if (identifier.equals(INPUT_IDENTIFIER_SPATIAL_FIRST)){
-			return LiteralBooleanBinding.class;
-		}
-		else if (identifier.equals(INPUT_IDENTIFIER_TARGET_SERVER)){
+		
+		else if (identifier.equals(Constants.Process.Inputs.TARGET_SERVER)){
 			return LiteralStringBinding.class;
 		}
-		else if (identifier.equals(INPUT_IDENTIFIER_TARGET_SERVER_TYPE)){
+		else if (identifier.equals(Constants.Process.Inputs.TARGET_SERVER_TYPE)){
 			return LiteralStringBinding.class;
 		}
 		else return null;
 	}
 	
+	
 	/**
-	 * returns type of data binding class for passed output identifier
 	 * 
-	 * @param identifier
-	 * 			identifier of output
-	 * @return data binding class 
+	 * 
+	 * @return {@link Set} containing the common process inputs of all aggregation processes
 	 */
-	protected Class<?> getCommonOutputType(String identifier){
-		if (identifier.equals(OUTPUT_IDENTIFIER_AGGREGATED_DATA )){
-			return UncertWebIODataBinding.class;
-		}
-		else return null;
+	protected Set<AbstractProcessInput<?>> getCommonProcessInputs(){
+		Set<AbstractProcessInput<?>> set = new HashSet<AbstractProcessInput<?>>();
+		set.add(VARIABLE);
+		set.add(SPATIAL_BEFORE_TEMPORAL);
+		set.add(TARGET_SERVER);
+		set.add(TARGET_SERVER_TYPE);
+		return set;	
 	}
 
 }
