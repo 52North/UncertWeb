@@ -149,6 +149,20 @@
 			<type>war</type>
 		</dependency>
 
+		<!-- RServe dependencies -->
+		
+		<dependency>
+	    	<groupId>org.nuiton.thirdparty</groupId>
+	    	<artifactId>REngine</artifactId>
+	    	<version>0.6-1</version>
+    	</dependency>
+    	
+    	<dependency>
+	    	<groupId>org.nuiton.thirdparty</groupId>
+	    	<artifactId>Rserve</artifactId>
+	    	<version>0.6-1</version>
+    	</dependency>
+
 		<!-- Testing dependencies -->
 
 		<dependency>
@@ -182,6 +196,11 @@
 			<name>Reflections Maven2 Repository</name>
 			<url>http://reflections.googlecode.com/svn/repo</url>
 		</repository>
+         <repository>
+             <id>UncertWebMavenRepository</id>
+             <name>UncertWeb Maven Repository</name>
+             <url>http://giv-uw.uni-muenster.de/m2/repo</url>
+     </repository>
 	</repositories>
 	<build>
 		<finalName>${project.artifactId}</finalName>
