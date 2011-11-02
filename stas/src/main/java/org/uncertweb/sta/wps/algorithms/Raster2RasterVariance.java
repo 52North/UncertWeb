@@ -51,7 +51,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 	/**
 	 * identifier of aggregation process
 	 */
-	public static final String IDENTIFIER = "urn:ogc:def:aggregationProcess:sGridding:sMean:noTG:noTA";
+	public static final String IDENTIFIER = "urn:ogc:def:aggregationProcess:sGridding:sVar:noTG:noTA";
 
 	/**
 	 * The URL of the SOS from which the {@link ObservationCollection} will be
@@ -267,7 +267,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 			}
 			
 			//executing aggregation
-			c.tryVoidEval("spAgg <- aggregate.Spatial(spUNetCDF,newPixels,mean)");
+			c.tryVoidEval("spAgg <- aggregate.Spatial(spUNetCDF,newPixels,var)");
 			
 			//Create response
 			c.tryVoidEval("writeUNetCDF(newfile=\""+outputFilePath+"\", spAgg)");
