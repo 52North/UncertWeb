@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.uncertweb</groupId>
+		<artifactId>uncertweb-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>uncertweb-utils</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>UncertWeb Utilities</name>
+	<description>Utility classes for the uncertweb project</description>
+	<organization>
+		<name>Institute for Geoinformatics</name>
+		<url>http://ifgi.uni-muenster.de</url>
+	</organization>
+	<developers>
+		<developer>
+			<name>Christian Autermann</name>
+			<email>autermann@uni-muenster.de</email>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<timezone>GMT+1</timezone>
+			<id>ChristianAutermann</id>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/uncertweb-utils/trunk</connection>
+	</scm>
+	<repositories>
+		<repository>
+			<id>UncertWebMavenRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.vividsolutions</groupId>
+			<artifactId>jts</artifactId>
+			<version>1.12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+	</dependencies>
+</project>
