@@ -21,27 +21,9 @@
  */
 package org.uncertweb.utils;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
-public class UwReflectionUtils extends UwUtils {
-	public static boolean isParameterizedWith(Type t, Class<?> collClass,
-			Class<?> itemClass) {
-		if (t instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) t;
-			if (collClass.isAssignableFrom((Class<?>) pt.getRawType())) {
-				Type argT = pt.getActualTypeArguments()[0];
-				Class<?> tV = null;
-				if (argT instanceof ParameterizedType) {
-					tV = (Class<?>) ((ParameterizedType) argT).getRawType();
-				} else if (argT instanceof Class) {
-					tV = (Class<?>) argT;
-				} else {
-					return false;
-				}
-				return itemClass.isAssignableFrom(tV);
-			}
-		}
-		return false;
-	}
+public class UwUrlConstants {
+	public static final String INAPPLICABLE = "http://www.opengis.net/def/nil/OGC/0/inapplicable";
+	public static final String SAMPLING_TIME = "http://www.opengis.net/def/property/OGC/0/SamplingTime";
+	public static final String FEATURE_OF_INTEREST = "http://www.opengis.net/def/property/OGC/0/FeatureOfInterest";
 }

@@ -21,27 +21,16 @@
  */
 package org.uncertweb.utils;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
-public class UwReflectionUtils extends UwUtils {
-	public static boolean isParameterizedWith(Type t, Class<?> collClass,
-			Class<?> itemClass) {
-		if (t instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) t;
-			if (collClass.isAssignableFrom((Class<?>) pt.getRawType())) {
-				Type argT = pt.getActualTypeArguments()[0];
-				Class<?> tV = null;
-				if (argT instanceof ParameterizedType) {
-					tV = (Class<?>) ((ParameterizedType) argT).getRawType();
-				} else if (argT instanceof Class) {
-					tV = (Class<?>) argT;
-				} else {
-					return false;
-				}
-				return itemClass.isAssignableFrom(tV);
-			}
-		}
-		return false;
-	}
+public class UwUrnConstants {
+	public static final String OGC_UNIQUE_ID_DEFINITION = "urn:ogc:def:identifier:OGC:1.0:uniqueID";
+	public static final String OGC_LONG_NAME_DEFINITION = "urn:ogc:def:identifier:OGC:1.0:longName";
+	public static final String OGC_SHORT_NAME_DEFINITION = "urn:ogc:def:identifier:OGC:1.0:shortName";
+	public static final String EPSG_SRS_PREFIX = "urn:ogc:def:crs:EPSG::";
+	public static final String BBOX_DEFINITION = "urn:ogc:def:property:OGC:1.0:observedBBOX";
+	public static final String IS_ACTIVE = "urn:ogc:def:property:OGC:1.0:isActive";
+	public static final String NULL = "urn:ogc:def:nil:OGC:unknown";
+	public static final String FEATURE_DEFINITION = "urn:ogc:data:feature";
+	public static final String ISO8601_DEFINITION = "urn:ogc:data:time:iso8601";
+	public static final String FOI_DEFINITION = "urn:ogc:data:feature";
+	public static final String CAPABILITIES_DEFINITION = "urn:ogc:def:property:capabilities";
 }
