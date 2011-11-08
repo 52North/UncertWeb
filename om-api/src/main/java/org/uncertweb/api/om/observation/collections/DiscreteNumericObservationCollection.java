@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.DiscreteNumericObservation;
-import org.uncertweb.api.om.observation.DiscreteNumericObservation;
 
 /**
  * Collection for DiscreteNumericObservation

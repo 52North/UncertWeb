@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.TextObservation;
-import org.uncertweb.api.om.observation.TextObservation;
 
 /**
  * collection for TextObservations

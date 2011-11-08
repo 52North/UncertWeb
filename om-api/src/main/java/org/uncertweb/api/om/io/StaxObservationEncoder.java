@@ -80,7 +80,6 @@ public class StaxObservationEncoder implements IObservationEncoder{
 		}
 	}
 
-	@SuppressWarnings("restriction")
 	@Override
 	public void encodeObservationCollection(IObservationCollection obsCol,
 			OutputStream out) throws OMEncodingException {

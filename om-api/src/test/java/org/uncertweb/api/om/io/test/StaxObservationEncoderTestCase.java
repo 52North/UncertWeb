@@ -1,20 +1,16 @@
 package org.uncertweb.api.om.io.test;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+
+import junit.framework.TestCase;
 
 import org.uncertweb.api.om.io.JSONObservationEncoder;
 import org.uncertweb.api.om.io.StaxObservationEncoder;
-import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.result.MeasureResult;
 
 import com.vividsolutions.jts.geom.Point;
-
-import junit.framework.TestCase;
 
 
 public class StaxObservationEncoderTestCase extends TestCase {

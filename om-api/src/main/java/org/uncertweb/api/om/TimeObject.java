@@ -16,7 +16,6 @@ import org.joda.time.format.ISODateTimeFormat;
  */
 public class TimeObject {
 
-	
 	/** timeInstant of time object; if href attribute is set, this attribute is null */
 	private DateTime dateTime;
 	
@@ -140,7 +139,7 @@ public class TimeObject {
 	 *            time as a string e.g. 1970-01-01T00:00:00Z
 	 * @return time as an Object
 	 */
-	private DateTime parseTimePosition(String timePosition) {
+	private static DateTime parseTimePosition(String timePosition) {
 		DateTime dateTime = null;
 
 		DateTimeFormatter dtf = ISODateTimeFormat.dateTimeParser();
@@ -149,8 +148,28 @@ public class TimeObject {
 		return dateTime;
 	}
 	
-	
-	
-	
+	/**
+	 * @return <code>getDateTime() != null</code>
+	 */
+	public boolean isInstant() {
+		return getDateTime() != null;
+	}
+
+	/**
+	 * @return <code> getInterval() != null </code>
+	 */
+	public boolean isInterval() {
+		return getInterval() != null;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((dateTime == null) ? 0 : dateTime.hashCode());
+		result = prime * result + ((href == null) ? 0 : href.hashCode());
+		result = prime * result	+ ((interval == null) ? 0 : interval.hashCode());
+		return result;
+	}
 
 }

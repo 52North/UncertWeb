@@ -42,7 +42,7 @@ public class MeasureResult implements IResult {
 	}
 
 	// generic getter and setter
-	public Object getValue() {
+	public Double getValue() {
 		return new Double(getMeasureValue());
 	}
 

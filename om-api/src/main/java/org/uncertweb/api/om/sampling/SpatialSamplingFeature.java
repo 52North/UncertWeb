@@ -40,9 +40,6 @@ public class SpatialSamplingFeature {
 	/**indicates the type of the sampling feature*/
 	private String featureType;
 	
-	/**indicates the name of the type of the sampling feature*/
-	private String typeName;
-	
 	/**geometry of the sampling feature*/
 	private Geometry shape;
 	
@@ -60,19 +57,15 @@ public class SpatialSamplingFeature {
 
 		if (shape instanceof Point){
 			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint";
-			this.typeName="SF_SamplingPoint";
 		}
 		else if (shape instanceof LineString){
 			this.featureType="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingCurve";
-			this.typeName="SF_SamplingCurve";
 		}
 		else if (shape instanceof Polygon){
 			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface";
-			this.typeName="SF_SamplingSurface";
 		}
 		else if (shape instanceof RectifiedGrid){
 			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingGrid";
-			this.typeName="SF_SamplingGrid";
 		}
 		this.setSampledFeature(sampledFeature);
 		this.setShape(shape);
@@ -94,19 +87,15 @@ public class SpatialSamplingFeature {
 
 		if (shape instanceof Point||shape instanceof MultiPoint){
 			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint";
-			this.typeName="SF_SamplingPoint";
 		}
 		else if (shape instanceof LineString||shape instanceof MultiLineString){
 			this.featureType="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingCurve";
-			this.typeName="SF_SamplingCurve";
 		}
 		else if (shape instanceof Polygon||shape instanceof MultiPolygon){
 			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface";
-			this.typeName="SF_SamplingSurface";
 		}
 		else if (shape instanceof RectifiedGrid){
 			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingGrid";
-			this.typeName="SF_SamplingGrid";
 		}
 		this.setIdentifier(identifier);
 		this.setSampledFeature(sampledFeature);
@@ -204,13 +193,5 @@ public class SpatialSamplingFeature {
 	 */
 	public String getFeatureType() {
 		return featureType;
-	}
-	
-	/**
-	 * 
-	 * @returns typename (e.g. SamplingPoint)
-	 */
-	public String getTypeName(){
-		return typeName;
 	}
 }
