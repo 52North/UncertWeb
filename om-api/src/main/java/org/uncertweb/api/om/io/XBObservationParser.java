@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import net.opengis.gml.x32.AbstractTimePrimitiveType;
 import net.opengis.gml.x32.CodeWithAuthorityType;
 import net.opengis.gml.x32.DirectPositionType;
@@ -480,7 +482,13 @@ public class XBObservationParser implements IObservationParser {
 				//Workaround for parsing uncertainties
 				//TODO test and maybe re-implement
 				String uncertaintyText = xb_uncPropType.toString();
+				String uom = null;
 				if (uncertaintyText.startsWith("<xml-fragment")){
+					
+					//preserve uom
+					if (uncertaintyText.contains("uom=") || uncertaintyText.contains("uom =")) {
+						uom = XmlObject.Factory.parse(uncertaintyText).selectAttribute(new QName("uom")).getDomNode().getNodeValue();
+					}
 					
 					//removing xml fragments
 					int start = uncertaintyText.indexOf("<un:");
@@ -493,7 +501,7 @@ public class XBObservationParser implements IObservationParser {
 				XMLParser uncertaintyParser = new XMLParser();
 				IUncertainty uncertainty = uncertaintyParser
 						.parse(uncertaintyText);
-				UncertaintyResult result = new UncertaintyResult(uncertainty);
+				UncertaintyResult result = new UncertaintyResult(uncertainty, uom);
 				obs = new UncertaintyObservation(identifier, boundedBy,
 						phenomenonTime, resultTime, validTime, procedure,
 						observedProperty, featureOfInterest, resultQuality,
