@@ -1,11 +1,9 @@
 package org.n52.wps.io.datahandler.json;
 
-import java.io.OutputStream;
 import java.util.List;
 
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.io.IGenerator;
-import org.n52.wps.io.data.IData;
 
 public abstract class AbstractJsonGenerator implements IGenerator{
 	

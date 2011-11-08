@@ -1,8 +1,5 @@
 package org.n52.wps.io.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.uncertml.IUncertainty;
 
 /**

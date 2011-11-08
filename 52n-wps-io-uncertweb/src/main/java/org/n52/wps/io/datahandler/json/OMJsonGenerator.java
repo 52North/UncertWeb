@@ -50,7 +50,7 @@ public class OMJsonGenerator implements IGenerator{
 	}
 
 	@Override
-	public Class[] getSupportedInternalInputDataType() {
+	public Class<?>[] getSupportedInternalInputDataType() {
 		// TODO Auto-generated method stub
 		return null;
 	}
