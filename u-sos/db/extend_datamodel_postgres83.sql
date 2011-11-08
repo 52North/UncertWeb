@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 -- SQL script for extending the datamodel to accept observations with uncertainties
 -- author:       Martin Kiesow
--- last changes: 2011-10-20
+-- last changes: 2011-10-31
 ----------------------------------------------------------------------------------------------------
 
 --------------------------------------------------
@@ -22,7 +22,7 @@ DROP TABLE IF EXISTS u_mean_values CASCADE;
 CREATE TABLE obs_unc (
   observation_id INTEGER NOT NULL,
   uncertainty_id INTEGER NOT NULL,
-  gml_identifier VARCHAR(100) UNIQUE NOT NULL,
+  gml_identifier VARCHAR(100) NOT NULL,
   PRIMARY KEY (observation_id, uncertainty_id)
 );
 
@@ -31,7 +31,7 @@ CREATE TABLE obs_unc (
 CREATE TABLE u_uncertainty (
   uncertainty_id SERIAL NOT NULL,
   uncertainty_values_id SERIAL NOT NULL,
-  uncertainty_type VARCHAR (10) NOT NULL,
+  uncertainty_type VARCHAR (100) NOT NULL,
   value_unit_id INTEGER NOT NULL,
   PRIMARY KEY (uncertainty_id),
   UNIQUE (uncertainty_values_id)
@@ -41,7 +41,7 @@ CREATE TABLE u_uncertainty (
 -- represents the uncertainty's value unit
 CREATE TABLE u_value_unit (
   value_unit_id SERIAL NOT NULL,
-  value_unit TEXT,
+  value_unit TEXT UNIQUE NOT NULL,
   PRIMARY KEY (value_unit_id)
 );
 
@@ -51,8 +51,8 @@ CREATE TABLE u_value_unit (
 CREATE TABLE u_normal (
   normal_id INTEGER NOT NULL,
   mean NUMERIC NOT NULL,
-  standardDeviation NUMERIC NOT NULL,
-  PRIMARY KEY (normal_id, mean, standardDeviation)
+  var NUMERIC NOT NULL,
+  PRIMARY KEY (normal_id, mean, var)
 );
 
 -- table: u_mean
@@ -69,7 +69,8 @@ CREATE TABLE u_mean (
 CREATE TABLE u_mean_values (
   mean_values_id SERIAL NOT NULL,
   mean_value NUMERIC NOT NULL,
-  PRIMARY KEY (mean_values_id)
+  PRIMARY KEY (mean_values_id),
+  UNIQUE (mean_value)
 );
 
 

@@ -173,7 +173,7 @@ SELECT iso_timestamp(observation.time_stamp) AS time_stamp,
 
 -- add uncertainties
 	u_normal.mean AS u_nd_mean,
-	u_normal.standardDeviation AS u_nd_standardDeviation,
+	u_normal.var AS u_nd_var,
 	u_mean_values.mean_value AS u_mean,
 
 -- add geometry column to list
@@ -223,7 +223,7 @@ SELECT obs_unc.observation_id,
 
 	-- normal type
 	u_normal.mean,
-	u_normal.standardDeviation
+	u_normal.var
 
 FROM (obs_unc
 --	LEFT OUTER JOIN obs_unc ON obs_unc.observation_id = observation.observation_id

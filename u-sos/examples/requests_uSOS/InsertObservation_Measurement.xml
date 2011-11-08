@@ -93,6 +93,21 @@
 						</gmd:value>
 					</gmd:DQ_UncertaintyResult>
 				</gmd:result>
+				<gmd:result>
+					<gmd:DQ_UncertaintyResult>
+						<gmd:valueUnit>
+							<gml:UnitDefinition gml:id="cm">
+								<gml:identifier codeSpace="http://unitsofmeasure.org/">cm</gml:identifier>
+							</gml:UnitDefinition>
+						</gmd:valueUnit>
+						<gmd:value>
+							<un:NormalDistribution>
+								<un:mean>8.123</un:mean>
+								<un:variance>1.40</un:variance>
+							</un:NormalDistribution> 
+						</gmd:value>
+					</gmd:DQ_UncertaintyResult>
+				</gmd:result>
 			</gmd:DQ_QuantitativeAttributeAccuracy>
 		</om:resultQuality>
        

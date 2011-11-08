@@ -33,7 +33,7 @@ INSERT INTO procedure VALUES ('urn:ogc:object:feature:Sensor:IFGI:uw-sensor-3', 
 ---- sample relationships between phenomena, procedures and features of interest
 
 -- sample phen_off relationship
--- INSERT INTO phen_off VALUES ('urn:ogc:def:phenomenon:OGC:1.0.30:waterlevel','GAUGE_HEIGHT');
+INSERT INTO phen_off VALUES ('urn:ogc:def:phenomenon:OGC:1.0.30:waterlevel','GAUGE_HEIGHT');
 INSERT INTO phen_off VALUES ('urn:ogc:def:phenomenon:OGC:1.0.30:waterspeed','WATER_SPEED');
 
 -- sample foi_off relationship
@@ -75,19 +75,19 @@ INSERT INTO u_uncertainty (uncertainty_id, uncertainty_values_id, uncertainty_ty
 	VALUES (5, 5, 'mean', 2);
 
 -- sample normal distribution values
-INSERT INTO u_normal (normal_id, mean, standardDeviation) VALUES (1, 9.123, 1.23);
-INSERT INTO u_normal (normal_id, mean, standardDeviation) VALUES (1, 9.456, 1.45);
-INSERT INTO u_normal (normal_id, mean, standardDeviation) VALUES (1, 9.789, 1.67);
-INSERT INTO u_normal (normal_id, mean, standardDeviation) VALUES (2, 8.654, 2.34);
-INSERT INTO u_normal (normal_id, mean, standardDeviation) VALUES (2, 8.123, 2.89);
-INSERT INTO u_normal (normal_id, mean, standardDeviation) VALUES (3, 7.345, 3.33);
+INSERT INTO u_normal (normal_id, mean, var) VALUES (1, 9.123, 1.23);
+INSERT INTO u_normal (normal_id, mean, var) VALUES (1, 9.456, 1.45);
+INSERT INTO u_normal (normal_id, mean, var) VALUES (1, 9.789, 1.67);
+INSERT INTO u_normal (normal_id, mean, var) VALUES (2, 8.654, 2.34);
+INSERT INTO u_normal (normal_id, mean, var) VALUES (2, 8.123, 2.89);
+INSERT INTO u_normal (normal_id, mean, var) VALUES (3, 7.345, 3.33);
 
 -- sample mean values
 INSERT INTO u_mean_values (mean_values_id, mean_value) VALUES (1, 10);
 INSERT INTO u_mean_values (mean_values_id, mean_value) VALUES (2, 11);
 INSERT INTO u_mean_values (mean_values_id, mean_value) VALUES (3, 12);
 INSERT INTO u_mean_values (mean_values_id, mean_value) VALUES (4, 9);
-INSERT INTO u_mean_values (mean_values_id, mean_value) VALUES (5, 11);
+INSERT INTO u_mean_values (mean_values_id, mean_value) VALUES (5, 13);
 
 INSERT INTO u_mean (mean_id, mean_values_id) VALUES (4, 1);
 INSERT INTO u_mean (mean_id, mean_values_id) VALUES (4, 2);

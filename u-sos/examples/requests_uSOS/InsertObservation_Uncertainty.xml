@@ -76,10 +76,9 @@
 			observation result is a single measured value
 			==============================================================-->
 		<om:result uom="cm">
-			<un:NormalDistribution>
-				<un:mean>10.123</un:mean>
-				<un:variance>2.32</un:variance>
-			</un:NormalDistribution> 
+			<un:Mean>
+				<un:values>23.123 22.234 21.345 24.456 23.123</un:values>
+			</un:Mean> 
 		</om:result>
 	</om:OM_UncertaintyObservation>
   
