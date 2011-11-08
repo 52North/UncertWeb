@@ -2,10 +2,10 @@ package org.n52.sos.ds.pgsql.uncertainty;
 
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.n52.sos.ds.IConfigDAO;
 import org.n52.sos.ds.IDAOFactory;
+import org.n52.sos.ds.IInsertObservationOperationDAO;
 import org.n52.sos.ds.IRegisterSensorDAO;
-import org.n52.sos.ds.pgsql.PGConnectionPool;
 import org.n52.sos.ds.pgsql.PGDAOConstants;
 import org.n52.sos.ds.pgsql.PGSQLRegisterSensorDAO;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
@@ -175,23 +175,23 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
 //    public IGetFeatureOfInterestTimeDAO getFeatureOfInterestTimeDAO() {
 //        return new PGSQLGetFeatureOfInterestTimeDAO(cpool);
 //    }
-//
-//    /**
-//     * method intitializes and returns a PostgreSQLGetTargetFeatureDAO
-//     * 
-//     * @param logLevel
-//     *            Level for logging, parameter is necessary cause the
-//     *            PGSQLConfigDAO is used in the SosConfigurator's constructor
-//     * @param handler
-//     *            MemoryHandler for logging, parameter is necessary cause the
-//     *            PGSQLConfigDAO is used in the SosConfigurator's constructor
-//     * @return PostgreSQLGetTargetFeatureDAO DAO for the GetTargetFeature
-//     *         operation
-//     */
-//    public IConfigDAO getConfigDAO() {
-//        return new PGSQLConfigDAO(cpool);
-//    }
-//
+
+    /**
+     * method intitializes and returns a PostgreSQLGetTargetFeatureDAO
+     * 
+     * @param logLevel
+     *            Level for logging, parameter is necessary cause the
+     *            PGSQLConfigDAO is used in the SosConfigurator's constructor
+     * @param handler
+     *            MemoryHandler for logging, parameter is necessary cause the
+     *            PGSQLConfigDAO is used in the SosConfigurator's constructor
+     * @return PostgreSQLGetTargetFeatureDAO DAO for the GetTargetFeature
+     *         operation
+     */
+    public IConfigDAO getConfigDAO() {
+        return new PGSQLConfigDAO(cpool);
+    }
+
 //    /**
 //     * 
 //     * @return Returns the GetObservationByIdDAO
@@ -232,15 +232,15 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
 //    public IUpdateSensorDAO getUpdateSensorDAO() {
 //        return new PGSQLUpdateSensorDAO(cpool);
 //    }
-//
-//    /**
-//     * 
-//     * @return Returns the insertObservation DAO
-//     */
-//    public IInsertObservationOperationDAO getInsertObservationOperationDAO() {
-//        return new PGSQLInsertObservationOperationDAO(cpool);
-//    }
-//
+
+    /**
+     * 
+     * @return Returns the insertObservation DAO
+     */
+    public IInsertObservationOperationDAO getInsertObservationOperationDAO() {
+        return new PGSQLInsertObservationOperationDAO(cpool);
+    }
+
 //    /**
 //     * method returns connection pool used by this DAO Factory
 //     * 

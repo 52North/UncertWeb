@@ -21,6 +21,11 @@
 			<artifactId>52n-sos-dao-postgis</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>52n-sos-ogc</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		
 		<!-- Uncertainty dependencies -->
 		<dependency>
@@ -36,6 +41,11 @@
     	<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>52n-sos-coding-uncertainty</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>52n-sos-core-uncertainty</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
