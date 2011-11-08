@@ -42,6 +42,7 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.uncertweb.utils.UwReflectionUtils;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.IVisualization;
@@ -51,7 +52,7 @@ import com.sun.jersey.core.util.ReaderWriter;
 @Provider
 @Produces(JSON_VISUALIZER_LIST)
 public class VisualizationCollectionProvider implements
-    MessageBodyWriter<Iterable<IVisualization>> {
+		MessageBodyWriter<Iterable<IVisualization>> {
 
 	private UriInfo uriInfo;
 
@@ -63,26 +64,28 @@ public class VisualizationCollectionProvider implements
 	@Override
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
 		return mt.equals(JSON_VISUALIZER_LIST_TYPE)
-		    && Utils.isParameterizedWith(gt, Iterable.class, IVisualization.class);
+				&& UwReflectionUtils.isParameterizedWith(gt, Iterable.class,
+						IVisualization.class);
 	}
 
 	@Override
 	public long getSize(Iterable<IVisualization> t, Class<?> type,
-	    Type genericType, Annotation[] annotations, MediaType mediaType) {
+			Type genericType, Annotation[] annotations, MediaType mediaType) {
 		return -1;
 	}
 
 	@Override
 	public void writeTo(Iterable<IVisualization> o, Class<?> t, Type gt,
-	    Annotation[] a, MediaType mt, MultivaluedMap<String, Object> h,
-	    OutputStream es) throws IOException, WebApplicationException {
+			Annotation[] a, MediaType mt, MultivaluedMap<String, Object> h,
+			OutputStream es) throws IOException, WebApplicationException {
 		try {
 			JSONArray vis = new JSONArray();
 			for (IVisualization v : o) {
 				URI uri = uriInfo.getBaseUriBuilder()
-				    .path(RESTServlet.VISUALIZATION_FOR_RESOURCE_WITH_ID)
-				    .build(v.getUuid(), v.getVisId());
-				vis.put(new JSONObject().put("id", v.getVisId()).put("href", uri));
+						.path(RESTServlet.VISUALIZATION_FOR_RESOURCE_WITH_ID)
+						.build(v.getUuid(), v.getVisId());
+				vis.put(new JSONObject().put("id", v.getVisId()).put("href",
+						uri));
 			}
 			JSONObject j = new JSONObject().put("visualizations", vis);
 			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);

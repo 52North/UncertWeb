@@ -26,7 +26,7 @@ import java.util.List;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
-import org.uncertweb.viss.core.util.Utils;
+import org.uncertweb.utils.UwCollectionUtils;
 
 public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent {
 
@@ -34,7 +34,7 @@ public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent {
 
 	protected static List<TemporalInstant> toTemporalInstantList(
 	    List<DateTime> instants) {
-		List<TemporalInstant> ti = Utils.list();
+		List<TemporalInstant> ti = UwCollectionUtils.list();
 		for (DateTime i : instants) {
 			ti.add(new TemporalInstant(i));
 		}

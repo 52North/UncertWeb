@@ -91,14 +91,12 @@ public class RESTServlet {
 	public static final String VISUALIZATIONS_FOR_RESOURCE = RESOURCE_WITH_ID + VISUALIZATIONS;
 	public static final String VISUALIZATION_FOR_RESOURCE_WITH_ID = VISUALIZATIONS_FOR_RESOURCE + "/" + VIS_PARAM_P;
 	public static final String VISUALIZATION_SLD = VISUALIZATION_FOR_RESOURCE_WITH_ID + "/sld";
-
 	private static Logger log = LoggerFactory.getLogger(RESTServlet.class);
 
 	@GET
 	public Response wadl(@Context UriInfo uriI) {
 		URI uri = uriI.getBaseUriBuilder().path("application.wadl").build();
-		return Response.noContent().location(uri).status(Status.MOVED_PERMANENTLY)
-		    .build();
+		return Response.noContent().location(uri).status(Status.MOVED_PERMANENTLY).build();
 	}
 
 	@GET
@@ -112,9 +110,9 @@ public class RESTServlet {
 	@POST
 	@Path(RESOURCES)
 	@Produces(JSON_RESOURCE)
-	@Consumes({ JSON_REQUEST, NETCDF, X_NETCDF, GEOTIFF, OM_2 })
+	@Consumes({JSON_REQUEST, NETCDF, X_NETCDF, GEOTIFF, OM_2})
 	public Response createResource(InputStream is,
-	    @HeaderParam(HttpHeaders.CONTENT_TYPE) MediaType h, @Context UriInfo uriI) {
+			@HeaderParam(HttpHeaders.CONTENT_TYPE) MediaType h, @Context UriInfo uriI) {
 		log.debug("Putting Resource.");
 		IResource r = null;
 		if (JSON_REQUEST_TYPE.equals(h)) {
@@ -127,8 +125,9 @@ public class RESTServlet {
 				String req = j.optString("request");
 				if (req != null) {
 					String reqMt = j.optString("requestMediaType");
-					if (reqMt != null)
+					if (reqMt != null) {
 						con.setRequestProperty("Content-Type", reqMt);
+					}
 					con.setDoOutput(true);
 					OutputStream os = null;
 					try {
@@ -139,7 +138,7 @@ public class RESTServlet {
 					}
 				}
 				r = Viss.getInstance().createResource(con.getInputStream(),
-				    MediaType.valueOf(j.getString("responseMediaType")));
+						MediaType.valueOf(j.getString("responseMediaType")));
 			} catch (Exception e) {
 				throw VissError.internal(e);
 			} finally {
@@ -148,8 +147,7 @@ public class RESTServlet {
 		} else {
 			r = Viss.getInstance().createResource(is, h);
 		}
-		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getResource")
-		    .build(r.getUUID());
+		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getResource").build(r.getUUID());
 		return Response.created(uri).entity(r).build();
 	}
 
@@ -180,7 +178,7 @@ public class RESTServlet {
 	@Path(VISUALIZERS_FOR_RESOURCE)
 	@Produces(JSON_VISUALIZER_LIST)
 	public Set<IVisualizer> getVisualizersForResource(
-	    @PathParam(RES_PARAM) UUID uuid) {
+			@PathParam(RES_PARAM) UUID uuid) {
 		log.debug("Getting Visualizers for Resource with UUID \"{}\".", uuid);
 		return Viss.getInstance().getVisualizers(uuid);
 	}
@@ -189,9 +187,9 @@ public class RESTServlet {
 	@Path(VISUALIZER_FOR_RESOURCE)
 	@Produces(JSON_VISUALIZER)
 	public IVisualizer getVisualizerForResource(@PathParam(RES_PARAM) UUID uuid,
-	    @PathParam(VIR_PARAM) String visualizer) {
+			@PathParam(VIR_PARAM) String visualizer) {
 		log.debug("Getting Visualizer with ID {} for Resource with UUID \"{}\".",
-		    visualizer, uuid);
+				visualizer, uuid);
 		return Viss.getInstance().getVisualizer(uuid, visualizer);
 	}
 
@@ -216,13 +214,12 @@ public class RESTServlet {
 	@Produces(JSON_VISUALIZATION)
 	@Consumes(JSON_CREATE)
 	public Response createVisualization(@PathParam(RES_PARAM) UUID uuid,
-	    @PathParam(VIR_PARAM) String visualizer, JSONObject options,
-	    @Context UriInfo uriI) {
+			@PathParam(VIR_PARAM) String visualizer, JSONObject options,
+			@Context UriInfo uriI) {
 		log.debug("Creating Visualizaton for resource with UUID \"{}\".", uuid);
 		IVisualization v = Viss.getInstance().getVisualization(visualizer, uuid,
-		    options);
-		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getVisualization")
-		    .build(v.getUuid(), v.getVisId());
+				options);
+		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getVisualization").build(v.getUuid(), v.getVisId());
 		return Response.created(uri).entity(v).build();
 	}
 
@@ -230,7 +227,7 @@ public class RESTServlet {
 	@Path(VISUALIZATION_FOR_RESOURCE_WITH_ID)
 	@Produces(JSON_VISUALIZATION)
 	public IVisualization getVisualization(@PathParam(RES_PARAM) UUID resource,
-	    @PathParam(VIS_PARAM) String vis) {
+			@PathParam(VIS_PARAM) String vis) {
 		log.debug("Getting visualization for resource with UUID \"{}\".", resource);
 		return Viss.getInstance().getVisualization(resource, vis);
 	}
@@ -238,7 +235,7 @@ public class RESTServlet {
 	@DELETE
 	@Path(VISUALIZATION_FOR_RESOURCE_WITH_ID)
 	public void deleteVisualization(@PathParam(RES_PARAM) UUID uuid,
-	    @PathParam(VIS_PARAM) String vis) {
+			@PathParam(VIS_PARAM) String vis) {
 		log.debug("Deleting visualization for resource with UUID \"{}\".");
 		Viss.getInstance().deleteVisualization(uuid, vis);
 	}
@@ -247,13 +244,12 @@ public class RESTServlet {
 	@Path(VISUALIZATION_SLD)
 	@Consumes(STYLED_LAYER_DESCRIPTOR)
 	public Response setSldForVisualization(@PathParam(RES_PARAM) UUID uuid,
-	    @PathParam(VIS_PARAM) String vis, StyledLayerDescriptorDocument sld,
-	    @Context UriInfo uriI) {
+			@PathParam(VIS_PARAM) String vis, StyledLayerDescriptorDocument sld,
+			@Context UriInfo uriI) {
 		log.debug("Posting SLD for visualization of resource with UUID \"{}\"",
-		    uuid);
+				uuid);
 		Viss.getInstance().setSldForVisualization(uuid, vis, sld);
-		URI uri = uriI.getBaseUriBuilder()
-		    .path(getClass(), "getSldForVisualization").build(uuid, vis);
+		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getSldForVisualization").build(uuid, vis);
 		return Response.created(uri).build();
 	}
 
@@ -261,9 +257,8 @@ public class RESTServlet {
 	@Path(VISUALIZATION_SLD)
 	@Produces(STYLED_LAYER_DESCRIPTOR)
 	public StyledLayerDescriptorDocument getSldForVisualization(
-	    @PathParam(RES_PARAM) UUID uuid, @PathParam(VIS_PARAM) String vis) {
+			@PathParam(RES_PARAM) UUID uuid, @PathParam(VIS_PARAM) String vis) {
 		log.debug("Getting SLD for Visualization with UUID \"{}\"", uuid);
 		return Viss.getInstance().getSldForVisualization(uuid, vis);
 	}
-
 }

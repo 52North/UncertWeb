@@ -33,19 +33,19 @@ import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.util.Constants;
-import org.uncertweb.viss.core.util.Utils;
 
 public class VisualizerFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(VisualizerFactory.class);
 
-	private static final Map<String, Class<? extends IVisualizer>> creatorsByShortName = Utils.map();
-	private static final Map<Class<? extends IVisualizer>, String> shortNamesByCreator = Utils.map();
-	private static final Map<MediaType, Set<Class<? extends IVisualizer>>> creatorsByMediaType = Utils.map();
+	private static final Map<String, Class<? extends IVisualizer>> creatorsByShortName = UwCollectionUtils.map();
+	private static final Map<Class<? extends IVisualizer>, String> shortNamesByCreator = UwCollectionUtils.map();
+	private static final Map<MediaType, Set<Class<? extends IVisualizer>>> creatorsByMediaType = UwCollectionUtils.map();
 
 	static {
 		String packages = VissConfig.getInstance().get(
@@ -77,7 +77,7 @@ public class VisualizerFactory {
 					for (MediaType mt : v.getCompatibleMediaTypes()) {
 						Set<Class<? extends IVisualizer>> set = creatorsByMediaType.get(mt);
 						if (set == null) {
-							creatorsByMediaType.put(mt, set = Utils.set());
+							creatorsByMediaType.put(mt, set = UwCollectionUtils.set());
 						}
 						set.add(c);
 					}
@@ -89,7 +89,7 @@ public class VisualizerFactory {
 	}
 
 	public static Set<IVisualizer> getVisualizers() {
-		Set<IVisualizer> vs = Utils.set();
+		Set<IVisualizer> vs = UwCollectionUtils.set();
 		for (String name : getNames()) {
 			vs.add(getVisualizer(name));
 		}
@@ -111,7 +111,7 @@ public class VisualizerFactory {
 	    MediaType mt) {
 		Set<Class<? extends IVisualizer>> set = creatorsByMediaType.get(mt);
 		if (set == null)
-			set = Utils.set();
+			set = UwCollectionUtils.set();
 		return Collections.unmodifiableSet(set);
 	}
 
@@ -121,7 +121,7 @@ public class VisualizerFactory {
 
 	public static Set<Class<? extends IVisualizer>> getClasses() {
 		return Collections
-		    .unmodifiableSet(Utils.asSet(creatorsByShortName.values()));
+		    .unmodifiableSet(UwCollectionUtils.asSet(creatorsByShortName.values()));
 	}
 
 	public static IVisualizer getVisualizerForResource(IResource resource,
@@ -158,7 +158,7 @@ public class VisualizerFactory {
 				VissError.internal(e);
 			}
 		}
-		Set<IVisualizer> set = Utils.set();
+		Set<IVisualizer> set = UwCollectionUtils.set();
 		for (Class<? extends IVisualizer> v : visualizerForMediaType) {
 			IVisualizer vis = getVisualizer(shortNamesByCreator.get(v));
 			if (vis.getCompatibleUncertaintyTypes().contains(resource.getType())) {

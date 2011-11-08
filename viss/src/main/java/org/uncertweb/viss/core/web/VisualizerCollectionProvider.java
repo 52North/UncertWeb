@@ -41,17 +41,17 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.uncertweb.utils.UwReflectionUtils;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.IVisualizer;
 
 import com.sun.jersey.core.util.ReaderWriter;
 
-
 @Provider
 @Produces(JSON_VISUALIZER_LIST)
 public class VisualizerCollectionProvider implements
-    MessageBodyWriter<Iterable<IVisualizer>> {
+		MessageBodyWriter<Iterable<IVisualizer>> {
 
 	private UriInfo uriInfo;
 
@@ -62,16 +62,17 @@ public class VisualizerCollectionProvider implements
 
 	@Override
 	public boolean isWriteable(Class<?> type, Type gt, Annotation[] a,
-	    MediaType mt) {
+			MediaType mt) {
 		return mt.equals(JSON_VISUALIZER_LIST_TYPE)
-		    && Iterable.class.isAssignableFrom(type)
-		    && Utils.isParameterizedWith(gt, Iterable.class, IVisualizer.class);
+				&& Iterable.class.isAssignableFrom(type)
+				&& UwReflectionUtils.isParameterizedWith(gt, Iterable.class,
+						IVisualizer.class);
 	}
 
 	@Override
 	public void writeTo(Iterable<IVisualizer> o, Class<?> t, Type gt,
-	    Annotation[] a, MediaType mt, MultivaluedMap<String, Object> hh,
-	    OutputStream es) throws IOException {
+			Annotation[] a, MediaType mt, MultivaluedMap<String, Object> hh,
+			OutputStream es) throws IOException {
 		try {
 
 			JSONArray j = new JSONArray();
@@ -79,26 +80,29 @@ public class VisualizerCollectionProvider implements
 				URI uri = null;
 				if (v.getResource() == null) {
 					uri = uriInfo.getBaseUriBuilder()
-					    .path(RESTServlet.VISUALIZER_WITH_ID).build(v.getShortName());
+							.path(RESTServlet.VISUALIZER_WITH_ID)
+							.build(v.getShortName());
 				} else {
 
 					uri = uriInfo.getBaseUriBuilder()
-					    .path(RESTServlet.VISUALIZER_FOR_RESOURCE)
-					    .build(v.getResource().getUUID(), v.getShortName());
+							.path(RESTServlet.VISUALIZER_FOR_RESOURCE)
+							.build(v.getResource().getUUID(), v.getShortName());
 				}
-				j.put(new JSONObject().put("id", v.getShortName()).put("href", uri));
+				j.put(new JSONObject().put("id", v.getShortName()).put("href",
+						uri));
 			}
 
-			ReaderWriter.writeToAsString(
-			    Utils.stringifyJson(new JSONObject().put("visualizers", j)), es, mt);
+			ReaderWriter
+					.writeToAsString(Utils.stringifyJson(new JSONObject().put(
+							"visualizers", j)), es, mt);
 		} catch (JSONException e) {
 			VissError.internal(e);
 		}
 	}
 
 	@Override
-	public long getSize(Iterable<IVisualizer> t, Class<?> type, Type genericType,
-	    Annotation[] annotations, MediaType mediaType) {
+	public long getSize(Iterable<IVisualizer> t, Class<?> type,
+			Type genericType, Annotation[] annotations, MediaType mediaType) {
 		return -1;
 	}
 

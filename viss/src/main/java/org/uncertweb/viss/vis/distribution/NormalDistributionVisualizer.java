@@ -30,39 +30,42 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
+import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.utils.UwStringUtils;
 import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.util.JSONSchema;
-import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 import org.uncertweb.viss.vis.Value;
 
 @Type(UncertaintyType.NORMAL_DISTRIBUTION)
 public abstract class NormalDistributionVisualizer extends
-    AbstractAnnotatedUncertaintyViusalizer {
+		AbstractAnnotatedUncertaintyViusalizer {
 
 	@Id("Distribution-Normal-ProbabilityForInterval")
 	@Description("Returns P(min <= X <= max).")
 	public static class ProbabilityForInterval extends
-	    NormalDistributionVisualizer {
+			NormalDistributionVisualizer {
 		private static final String MIN_DESCRIPTION = "the (inclusive) lower bound";
 		private static final String MAX_DESCRIPTION = "the (inclusive) upper bound";
 		private static final String MIN_PARAMETER = "min";
 		private static final String MAX_PARAMETER = "max";
 
 		private static JSONObject createMinOption() throws JSONException {
-			return new JSONObject().put(JSONSchema.Key.DESCRIPTION, MIN_DESCRIPTION)
-			    .put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
-			    .put(JSONSchema.Key.REQUIRED, true);
+			return new JSONObject()
+					.put(JSONSchema.Key.DESCRIPTION, MIN_DESCRIPTION)
+					.put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
+					.put(JSONSchema.Key.REQUIRED, true);
 		}
 
 		private static JSONObject createMaxOption() throws JSONException {
 
-			return new JSONObject().put(JSONSchema.Key.DESCRIPTION, MAX_DESCRIPTION)
-			    .put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
-			    .put(JSONSchema.Key.REQUIRED, true);
+			return new JSONObject()
+					.put(JSONSchema.Key.DESCRIPTION, MAX_DESCRIPTION)
+					.put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
+					.put(JSONSchema.Key.REQUIRED, true);
 		}
 
 		@Override
@@ -73,16 +76,18 @@ public abstract class NormalDistributionVisualizer extends
 		@Override
 		public Map<String, JSONObject> getOptionsForResource(IResource r) {
 			try {
-				Map<String, JSONObject> options = Utils.map();
+				Map<String, JSONObject> options = UwCollectionUtils.map();
 				double[] minmax = getRange(r);
 				options.put(
-				    MIN_PARAMETER,
-				    createMinOption().put(JSONSchema.Key.MINIMUM, minmax[0]).put(
-				        JSONSchema.Key.MAXIMUM, minmax[1]));
+						MIN_PARAMETER,
+						createMinOption()
+								.put(JSONSchema.Key.MINIMUM, minmax[0]).put(
+										JSONSchema.Key.MAXIMUM, minmax[1]));
 				options.put(
-				    MAX_PARAMETER,
-				    createMaxOption().put(JSONSchema.Key.MINIMUM, minmax[0]).put(
-				        JSONSchema.Key.MAXIMUM, minmax[1]));
+						MAX_PARAMETER,
+						createMaxOption()
+								.put(JSONSchema.Key.MINIMUM, minmax[0]).put(
+										JSONSchema.Key.MAXIMUM, minmax[1]));
 				return options;
 			} catch (JSONException e) {
 				throw VissError.internal(e);
@@ -124,15 +129,16 @@ public abstract class NormalDistributionVisualizer extends
 
 		@Override
 		public String getId(JSONObject params) {
-			return Utils.join("-", getShortName(), MIN_PARAMETER,
-			    String.valueOf(getMin(params)).replace('.', '-'), MAX_PARAMETER,
-			    String.valueOf(getMax(params)).replace('.', '-'));
+			return UwStringUtils.join("-", getShortName(), MIN_PARAMETER,
+					String.valueOf(getMin(params)).replace('.', '-'),
+					MAX_PARAMETER,
+					String.valueOf(getMax(params)).replace('.', '-'));
 		}
 
 		@Override
 		public Map<String, JSONObject> getOptions() {
 			try {
-				Map<String, JSONObject> options = Utils.map();
+				Map<String, JSONObject> options = UwCollectionUtils.map();
 				options.put(MIN_PARAMETER, createMinOption());
 				options.put(MAX_PARAMETER, createMaxOption());
 				return options;
@@ -151,9 +157,9 @@ public abstract class NormalDistributionVisualizer extends
 		private static JSONObject createMaxOption() {
 			try {
 				return new JSONObject()
-				    .put(JSONSchema.Key.DESCRIPTION, MAX_DESCRIPTION)
-				    .put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
-				    .put(JSONSchema.Key.REQUIRED, true);
+						.put(JSONSchema.Key.DESCRIPTION, MAX_DESCRIPTION)
+						.put(JSONSchema.Key.TYPE, JSONSchema.Type.NUMBER)
+						.put(JSONSchema.Key.REQUIRED, true);
 			} catch (JSONException e) {
 				throw VissError.internal(e);
 			}
@@ -169,10 +175,11 @@ public abstract class NormalDistributionVisualizer extends
 		public Map<String, JSONObject> getOptionsForResource(IResource r) {
 			try {
 				double[] minmax = getRange(r);
-				return Utils.map(
-				    MAX_PARAMETER,
-				    createMaxOption().put(JSONSchema.Key.MINIMUM, minmax[0]).put(
-				        JSONSchema.Key.MAXIMUM, minmax[1]));
+				return UwCollectionUtils.map(
+						MAX_PARAMETER,
+						createMaxOption()
+								.put(JSONSchema.Key.MINIMUM, minmax[0]).put(
+										JSONSchema.Key.MAXIMUM, minmax[1]));
 			} catch (JSONException e) {
 				throw VissError.internal(e);
 			}
@@ -201,21 +208,20 @@ public abstract class NormalDistributionVisualizer extends
 
 		@Override
 		public String getId(JSONObject params) {
-			return Utils.join("-", getShortName(), MAX_PARAMETER,
-			    String.valueOf(getMax(params)).replace('.', '-'));
+			return UwStringUtils.join("-", getShortName(), MAX_PARAMETER,
+					String.valueOf(getMax(params)).replace('.', '-'));
 		}
 
 		@Override
 		public Map<String, JSONObject> getOptions() {
-			return Utils.map(MAX_PARAMETER, createMaxOption());
+			return UwCollectionUtils.map(MAX_PARAMETER, createMaxOption());
 		}
 
 	}
 
 	@Id("Distribution-Normal-StandardDeviation")
 	@Description("Returns the standard deviation.")
-	public static class StandardDeviation extends
-	    NormalDistributionVisualizer {
+	public static class StandardDeviation extends NormalDistributionVisualizer {
 
 		@Override
 		protected double evaluate(NormalDistributionImpl nd) {
@@ -252,7 +258,7 @@ public abstract class NormalDistributionVisualizer extends
 	@Id("Distribution-Normal-ExceedanceProbabilityForInterval")
 	@Description("Returns 1-P(min <= X <= max).")
 	public static class ExceedanceProbabilityForInterval extends
-	    ProbabilityForInterval {
+			ProbabilityForInterval {
 
 		@Override
 		protected double evaluate(NormalDistributionImpl nd) {
@@ -276,7 +282,7 @@ public abstract class NormalDistributionVisualizer extends
 	public double evaluate(IUncertainty u) {
 		NormalDistribution d = (NormalDistribution) u;
 		return evaluate(new NormalDistributionImpl(d.getMean().get(0),
-		    FastMath.sqrt(d.getVariance().get(0))));
+				FastMath.sqrt(d.getVariance().get(0))));
 	}
 
 	protected double[] getRange(IResource r) {

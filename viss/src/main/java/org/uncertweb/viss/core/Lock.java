@@ -24,8 +24,9 @@ package org.uncertweb.viss.core;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.resource.IResource;
-import org.uncertweb.viss.core.util.Utils;
 
 public class Lock {
 	private static Lock instance;
@@ -36,7 +37,7 @@ public class Lock {
 
 	private Lock() {}
 
-	private Map<UUID, Integer> useCounts = Utils.map();
+	private Map<UUID, Integer> useCounts = UwCollectionUtils.map();
 	private ReentrantLock useCountsLock = new ReentrantLock();
 
 	public void usingResources(boolean allowed) {

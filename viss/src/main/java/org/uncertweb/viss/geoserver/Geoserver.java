@@ -49,13 +49,16 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.utils.UwIOUtils;
+import org.uncertweb.utils.UwStringUtils;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Utils;
 
 public class Geoserver {
 
 	private static final Logger log = LoggerFactory
-	    .getLogger(GeoserverAdapter.class);
+			.getLogger(GeoserverAdapter.class);
 
 	private String baseUrl;
 	private URL wmsUrl;
@@ -68,7 +71,8 @@ public class Geoserver {
 	private Set<String> workspaces = null;
 
 	public Geoserver(String user, String pass, String baseurl,
-	    boolean cacheWorkspaceList, File path) throws IOException, JSONException {
+			boolean cacheWorkspaceList, File path) throws IOException,
+			JSONException {
 		this.user = user;
 		this.pass = pass;
 		this.baseUrl = baseurl;
@@ -79,23 +83,23 @@ public class Geoserver {
 		if (sameServer && !path.exists()) {
 			if (!path.mkdirs()) {
 				throw VissError.internal("Could not create directory: "
-				    + path.getAbsolutePath());
+						+ path.getAbsolutePath());
 			}
 		}
 		this.cacheWorkspaceList = cacheWorkspaceList;
 		if (cacheWorkspaceList) {
-			workspaces = Utils.setMT();
+			workspaces = UwCollectionUtils.tsSet();
 			workspaces.addAll(requestWorkspaces());
 		}
 	}
 
 	public Geoserver(String user, String pass, String baseurl,
-	    boolean cacheWorkspaceList) throws IOException, JSONException {
+			boolean cacheWorkspaceList) throws IOException, JSONException {
 		this(user, pass, baseurl, cacheWorkspaceList, null);
 	}
 
 	public boolean containsWorkspace(String name) throws IOException,
-	    JSONException {
+			JSONException {
 		return getWorkspaces().contains(name);
 	}
 
@@ -112,15 +116,16 @@ public class Geoserver {
 	}
 
 	public boolean createStyle(StyledLayerDescriptorDocument style, String name)
-	    throws IOException {
+			throws IOException {
 		log.debug("Creating Style '{}'.", name);
 		HttpURLConnection con;
 		if (getStyles().contains(name)) {
 			log.debug("Style '{}' already existent... updating.", name);
 
 			con = RestBuilder.path(url("styles/%s.json"), name)
-			    .auth(this.user, this.pass).contentType(STYLED_LAYER_DESCRIPTOR_TYPE)
-			    .responseType(APPLICATION_JSON_TYPE).entity(style).put();
+					.auth(this.user, this.pass)
+					.contentType(STYLED_LAYER_DESCRIPTOR_TYPE)
+					.responseType(APPLICATION_JSON_TYPE).entity(style).put();
 
 			logCon("Style updating", con);
 
@@ -128,9 +133,9 @@ public class Geoserver {
 
 		} else {
 			con = RestBuilder.path(url("styles.json")).entity(style)
-			    .auth(this.user, this.pass).param("name", name)
-			    .contentType(STYLED_LAYER_DESCRIPTOR_TYPE)
-			    .responseType(APPLICATION_JSON_TYPE).post();
+					.auth(this.user, this.pass).param("name", name)
+					.contentType(STYLED_LAYER_DESCRIPTOR_TYPE)
+					.responseType(APPLICATION_JSON_TYPE).post();
 			logCon("Style creation", con);
 
 			return isCreated(con);
@@ -143,8 +148,9 @@ public class Geoserver {
 			log.debug("Getting Styles");
 			HttpURLConnection con;
 
-			con = RestBuilder.path(url("styles.json")).auth(this.user, this.pass)
-			    .responseType(APPLICATION_JSON_TYPE).get();
+			con = RestBuilder.path(url("styles.json"))
+					.auth(this.user, this.pass)
+					.responseType(APPLICATION_JSON_TYPE).get();
 
 			logCon("Style list fetch", con);
 
@@ -154,12 +160,12 @@ public class Geoserver {
 
 			JSONArray styles;
 			styles = new JSONObject(IOUtils.toString(con.getInputStream()))
-			    .getJSONObject("styles").getJSONArray("style");
-			List<String> res = Utils.list();
+					.getJSONObject("styles").getJSONArray("style");
+			List<String> res = UwCollectionUtils.list();
 			for (int i = 0; i < styles.length(); ++i) {
 				res.add(styles.getJSONObject(i).getString("name"));
 			}
-			log.debug("Current Styles: {}", Utils.join(",", res));
+			log.debug("Current Styles: {}", UwStringUtils.join(",", res));
 
 			return res;
 		} catch (JSONException e) {
@@ -169,32 +175,33 @@ public class Geoserver {
 	}
 
 	public boolean createCoverageStore(String name, String ws, String type,
-	    boolean enabled) throws JSONException, IOException {
+			boolean enabled) throws JSONException, IOException {
 		log.debug("Creating CoverageStore '{}' in Workspace '{}'", name, ws);
 		HttpURLConnection con;
 
 		JSONObject json = new JSONObject().put(
-		    "coverageStore",
-		    new JSONObject().put("name", name).put("type", type)
-		        .put("enabled", enabled).put("workspace", ws));
+				"coverageStore",
+				new JSONObject().put("name", name).put("type", type)
+						.put("enabled", enabled).put("workspace", ws));
 
 		con = RestBuilder.path(url("workspaces/%s/coveragestores.json"), ws)
-		    .auth(this.user, this.pass).contentType(APPLICATION_JSON_TYPE)
-		    .entity(json).post();
+				.auth(this.user, this.pass).contentType(APPLICATION_JSON_TYPE)
+				.entity(json).post();
 		logCon("CStore creation", con);
 
 		return isCreated(con);
 	}
 
-	public boolean createWorkspace(String name) throws IOException, JSONException {
+	public boolean createWorkspace(String name) throws IOException,
+			JSONException {
 		log.debug("Creating Workspace '{}'", name);
 		HttpURLConnection con;
 
 		JSONObject json = Utils.flatJSON("workspace", "name", name);
 
 		con = RestBuilder.path(url("workspaces.json"))
-		    .contentType(APPLICATION_JSON_TYPE).entity(json)
-		    .auth(this.user, this.pass).post();
+				.contentType(APPLICATION_JSON_TYPE).entity(json)
+				.auth(this.user, this.pass).post();
 
 		logCon("Workspaces creation", con);
 
@@ -224,37 +231,39 @@ public class Geoserver {
 
 		// delete coverage...
 		// con =
-		// RestBuilder.path(url("workspaces/%s/coveragestores/%s/coverages/%s"), ws,
+		// RestBuilder.path(url("workspaces/%s/coveragestores/%s/coverages/%s"),
+		// ws,
 		// cs, cs)
 		// .auth(this.user, this.pass).delete();
 		// logCon("Coverage deletion", con);
 
 		// delete store...
 		con = RestBuilder.path(url("workspaces/%s/coveragestores/%s"), ws, cs)
-		    .param("recurse", true).auth(this.user, this.pass).delete();
+				.param("recurse", true).auth(this.user, this.pass).delete();
 		logCon("CStore deletion", con);
 
 		if (sameServer && path != null) {
-			Utils.deleteRecursively(getCoverageFile(ws, cs));
+			UwIOUtils.deleteRecursively(getCoverageFile(ws, cs));
 		}
 
 		return isOk(con);
 	}
 
 	public boolean setStyle(String ws, String layer, String style)
-	    throws IOException {
+			throws IOException {
 		try {
 			log.debug("Setting style '{}' for layer '{}'", style, layer);
 			HttpURLConnection con;
 
 			JSONObject j = new JSONObject().put(
-			    "layer",
-			    new JSONObject().put("enabled", true).put("defaultStyle",
-			        new JSONObject().put("name", style)));
+					"layer",
+					new JSONObject().put("enabled", true).put("defaultStyle",
+							new JSONObject().put("name", style)));
 
 			con = RestBuilder.path(url("layers/%s:%s.json"), ws, layer)
-			    .auth(this.user, this.pass).responseType(APPLICATION_JSON_TYPE)
-			    .contentType(APPLICATION_JSON_TYPE).entity(j).put();
+					.auth(this.user, this.pass)
+					.responseType(APPLICATION_JSON_TYPE)
+					.contentType(APPLICATION_JSON_TYPE).entity(j).put();
 
 			logCon("Setting of Layer style", con);
 
@@ -277,7 +286,7 @@ public class Geoserver {
 		}
 
 		con = RestBuilder.path(url("workspaces/%s"), ws).param("recurse", true)
-		    .auth(this.user, this.pass).delete();
+				.auth(this.user, this.pass).delete();
 
 		logCon("Workspace deletion", con);
 
@@ -288,7 +297,7 @@ public class Geoserver {
 		}
 
 		if (sameServer && path != null) {
-			Utils.deleteRecursively(new File(getWorkspacePath(ws)));
+			UwIOUtils.deleteRecursively(new File(getWorkspacePath(ws)));
 		}
 
 		return r;
@@ -298,17 +307,18 @@ public class Geoserver {
 		log.debug("Deleting Style '{}'", s);
 		HttpURLConnection con;
 		con = RestBuilder.path(url("styles/%s"), s).auth(this.user, this.pass)
-		    .param("purge", true).delete();
+				.param("purge", true).delete();
 		logCon("Style deletion", con);
 	}
 
 	public Set<String> getCoverageStores(String ws) throws IOException,
-	    JSONException {
+			JSONException {
 		log.debug("Requesting CoverageStores");
 		HttpURLConnection con;
 
 		con = RestBuilder.path(url("workspaces/%s/coveragestores.json"), ws)
-		    .auth(this.user, this.pass).responseType(APPLICATION_JSON_TYPE).get();
+				.auth(this.user, this.pass).responseType(APPLICATION_JSON_TYPE)
+				.get();
 
 		logCon("CStore list fetch", con);
 
@@ -317,7 +327,7 @@ public class Geoserver {
 		}
 
 		Object cs = new JSONObject(IOUtils.toString(con.getInputStream()))
-		    .get("coverageStores");
+				.get("coverageStores");
 
 		if (cs instanceof String) {
 			return Collections.emptySet();
@@ -331,13 +341,13 @@ public class Geoserver {
 		}
 
 		log.debug("Current CoverageStores in Workspace '{}': {}", ws,
-		    Utils.join(",", res));
+				UwStringUtils.join(",", res));
 
 		return res;
 	}
 
 	public boolean insertCoverage(String ws, String cs, String mime,
-	    InputStream is) throws IOException {
+			InputStream is) throws IOException {
 		if (createCoverage(ws, cs, mime, is)) {
 			return enableLayer(ws, cs, true);
 		}
@@ -345,16 +355,18 @@ public class Geoserver {
 	}
 
 	private boolean enableLayer(String ws, String layerName, boolean enable)
-	    throws IOException {
+			throws IOException {
 		log.debug("Enabling layer {}", layerName);
 		try {
 			HttpURLConnection con;
 
-			JSONObject j = Utils.flatJSON("layer", "enabled", String.valueOf(enable));
+			JSONObject j = Utils.flatJSON("layer", "enabled",
+					String.valueOf(enable));
 
 			con = RestBuilder.path(url("layers/%s:%s.json"), ws, layerName)
-			    .auth(this.user, this.pass).contentType(APPLICATION_JSON_TYPE)
-			    .responseType(APPLICATION_JSON_TYPE).entity(j).put();
+					.auth(this.user, this.pass)
+					.contentType(APPLICATION_JSON_TYPE)
+					.responseType(APPLICATION_JSON_TYPE).entity(j).put();
 
 			logCon("Layer enablement", con);
 
@@ -366,15 +378,16 @@ public class Geoserver {
 	}
 
 	private String getWorkspacePath(String ws) {
-		return Utils.join(File.separator, path.getAbsolutePath(), ws);
+		return UwStringUtils.join(File.separator, path.getAbsolutePath(), ws);
 	}
 
 	private File getCoverageFile(String ws, String c) {
-		return new File(Utils.join(File.separator, getWorkspacePath(ws), c));
+		return new File(UwStringUtils.join(File.separator,
+				getWorkspacePath(ws), c));
 	}
 
 	private boolean createCoverage(String ws, String cs, String mime,
-	    InputStream is) throws IOException {
+			InputStream is) throws IOException {
 		String name = "file";
 		String contentType = mime;
 		Object content = is;
@@ -401,9 +414,10 @@ public class Geoserver {
 			}
 
 			con = RestBuilder
-			    .path(url("workspaces/%s/coveragestores/%s/%s.geotiff"), ws, cs, name)
-			    .auth(this.user, this.pass).contentType(valueOf(contentType))
-			    .responseType(APPLICATION_JSON_TYPE).entity(content).put();
+					.path(url("workspaces/%s/coveragestores/%s/%s.geotiff"),
+							ws, cs, name).auth(this.user, this.pass)
+					.contentType(valueOf(contentType))
+					.responseType(APPLICATION_JSON_TYPE).entity(content).put();
 
 			logCon("Coverage creation", con);
 
@@ -418,8 +432,9 @@ public class Geoserver {
 		InputStream is = null;
 		HttpURLConnection con;
 		try {
-			con = RestBuilder.path(url("workspaces.json")).auth(this.user, this.pass)
-			    .responseType(APPLICATION_JSON_TYPE).get();
+			con = RestBuilder.path(url("workspaces.json"))
+					.auth(this.user, this.pass)
+					.responseType(APPLICATION_JSON_TYPE).get();
 
 			logCon("Workspace list fetch", con);
 
@@ -434,7 +449,8 @@ public class Geoserver {
 				return Collections.emptySet();
 			}
 
-			JSONArray a = j.getJSONObject("workspaces").getJSONArray("workspace");
+			JSONArray a = j.getJSONObject("workspaces").getJSONArray(
+					"workspace");
 
 			HashSet<String> list = new HashSet<String>(a.length());
 			for (int i = 0; i < a.length(); i++) {
@@ -450,13 +466,13 @@ public class Geoserver {
 	}
 
 	public StyledLayerDescriptorDocument getStyle(String stylename)
-	    throws IOException, XmlException {
+			throws IOException, XmlException {
 
 		HttpURLConnection con;
 
 		con = RestBuilder.path(url("styles/%s.sld"), stylename)
-		    .responseType(STYLED_LAYER_DESCRIPTOR_TYPE).auth(this.user, this.pass)
-		    .get();
+				.responseType(STYLED_LAYER_DESCRIPTOR_TYPE)
+				.auth(this.user, this.pass).get();
 
 		logCon("style fetch", con);
 
@@ -465,17 +481,18 @@ public class Geoserver {
 		}
 		InputStream is = null;
 		try {
-			return StyledLayerDescriptorDocument.Factory.parse(con.getInputStream());
+			return StyledLayerDescriptorDocument.Factory.parse(con
+					.getInputStream());
 		} finally {
 			IOUtils.closeQuietly(is);
 		}
 	}
 
 	protected static void logCon(String requestDesc, HttpURLConnection con)
-	    throws IOException {
+			throws IOException {
 		if (con.getResponseCode() >= 300) {
 			log.warn(requestDesc + " status: " + con.getResponseCode() + " "
-			    + con.getResponseMessage());
+					+ con.getResponseMessage());
 		}
 	}
 
@@ -483,12 +500,13 @@ public class Geoserver {
 		return isStatus(con, Status.OK);
 	}
 
-	protected static boolean isCreated(HttpURLConnection con) throws IOException {
+	protected static boolean isCreated(HttpURLConnection con)
+			throws IOException {
 		return isStatus(con, Status.CREATED);
 	}
 
 	protected static boolean isStatus(HttpURLConnection con, Status s)
-	    throws IOException {
+			throws IOException {
 		return con.getResponseCode() == s.getStatusCode();
 	}
 }

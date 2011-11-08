@@ -42,6 +42,7 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.uncertweb.utils.UwReflectionUtils;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.util.Utils;
@@ -63,7 +64,7 @@ public class ResourceCollectionProvider implements
 	@Override
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
 		return mt.equals(JSON_RESOURCE_LIST_TYPE)
-		    && Utils.isParameterizedWith(gt, Iterable.class, IResource.class);
+		    && UwReflectionUtils.isParameterizedWith(gt, Iterable.class, IResource.class);
 	}
 
 	@Override

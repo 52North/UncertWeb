@@ -37,6 +37,8 @@ import javax.ws.rs.core.MediaType;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.utils.UwIOUtils;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IResource;
@@ -52,7 +54,7 @@ import com.google.code.morphia.mapping.Mapper;
 public class MongoResourceStore implements IResourceStore {
 
 	private static final Logger log = LoggerFactory
-	    .getLogger(MongoResourceStore.class);
+			.getLogger(MongoResourceStore.class);
 
 	@SuppressWarnings("rawtypes")
 	private class ResourceDAO extends BasicDAO<AbstractMongoResource, UUID> {
@@ -84,9 +86,9 @@ public class MongoResourceStore implements IResourceStore {
 		// does not work... don't know why....
 		// getDao().delete((AbstractMongoResource) resource);
 		Datastore ds = getDao().getDatastore();
-		ds.delete(ds.createQuery(AbstractMongoResource.class).field(Mapper.ID_KEY)
-		    .equal(resource.getUUID()));
-		Utils.deleteRecursively(getResourceDir(resource.getUUID()));
+		ds.delete(ds.createQuery(AbstractMongoResource.class)
+				.field(Mapper.ID_KEY).equal(resource.getUUID()));
+		UwIOUtils.deleteRecursively(getResourceDir(resource.getUUID()));
 	}
 
 	@Override
@@ -115,18 +117,20 @@ public class MongoResourceStore implements IResourceStore {
 
 	protected AbstractMongoResource<?> getResourceWithChecksum(long crc) {
 		return getDao().createQuery()
-		    .field(AbstractMongoResource.CHECKSUM_PROPERTY).equal(crc).get();
+				.field(AbstractMongoResource.CHECKSUM_PROPERTY).equal(crc)
+				.get();
 	}
 
 	@Override
 	public Set<IResource> getAllResources() {
-		return Utils.<IResource> asSet(getDao().find().asList());
+		return UwCollectionUtils.<IResource> asSet(getDao().find().asList());
 	}
 
 	@Override
 	public Set<IResource> getResourcesUsedBefore(DateTime dt) {
-		return Utils.<IResource> asSet(getDao().createQuery()
-		    .field(AbstractMongoResource.TIME_PROPERTY).lessThanOrEq(dt).asList());
+		return UwCollectionUtils.<IResource> asSet(getDao().createQuery()
+				.field(AbstractMongoResource.TIME_PROPERTY).lessThanOrEq(dt)
+				.asList());
 	}
 
 	@Override
@@ -154,7 +158,7 @@ public class MongoResourceStore implements IResourceStore {
 	}
 
 	public AbstractMongoResource<?> getResourceForMediaType(MediaType mt)
-	    throws IOException {
+			throws IOException {
 		if (mt.equals(GEOTIFF_TYPE)) {
 			return new GeoTIFFResource();
 		} else if (mt.equals(NETCDF_TYPE) || mt.equals(X_NETCDF_TYPE)) {

@@ -28,7 +28,7 @@ import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.codehaus.jettison.json.JSONObject;
 import org.opengis.coverage.grid.GridCoverage;
-import org.uncertweb.viss.core.util.Utils;
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizationReference;
 import org.uncertweb.viss.core.vis.IVisualizer;
@@ -50,7 +50,7 @@ public class MongoVisualization implements IVisualization {
 	private StyledLayerDescriptorDocument sld;
 
 	@Transient
-	private Set<GridCoverage> coverages = Utils.set();
+	private Set<GridCoverage> coverages = UwCollectionUtils.set();
 
 	@Override
   public UUID getUuid() {

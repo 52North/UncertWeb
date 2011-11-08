@@ -9,8 +9,8 @@ import javax.ws.rs.core.MediaType;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.resource.IResource;
-import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizer;
 
@@ -23,7 +23,7 @@ public abstract class AbstractVisualizer implements IVisualizer {
 	private JSONObject params;
 
 	public AbstractVisualizer(MediaType... compatibleTypes) {
-		this.compatibleTypes = Collections.unmodifiableSet(Utils
+		this.compatibleTypes = Collections.unmodifiableSet(UwCollectionUtils
 		    .set(compatibleTypes));
 	}
 
@@ -63,12 +63,12 @@ public abstract class AbstractVisualizer implements IVisualizer {
 
 	@Override
 	public Map<String, JSONObject> getOptions() {
-		return Utils.map();
+		return UwCollectionUtils.map();
 	}
 
 	@Override
 	public Map<String, JSONObject> getOptionsForResource(IResource r) {
-		return Utils.map();
+		return UwCollectionUtils.map();
 	}
 
 	@Override

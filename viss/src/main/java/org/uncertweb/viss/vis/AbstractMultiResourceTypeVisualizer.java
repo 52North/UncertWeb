@@ -35,9 +35,9 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.uncertml.IUncertainty;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IResource;
-import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.VisualizationFactory;
 import org.uncertweb.viss.core.vis.WriteableGridCoverage;
@@ -107,7 +107,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 	}
 
 	protected IVisualization visualize(IObservationCollection gc) {
-		Set<GridCoverage> coverages = Utils.set();
+		Set<GridCoverage> coverages = UwCollectionUtils.set();
 		Double min = null, max = null;
 		String uom = null;
 		for (AbstractObservation ao : gc.getObservations()) {

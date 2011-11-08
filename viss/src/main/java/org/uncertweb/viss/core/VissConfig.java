@@ -43,6 +43,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.utils.UwStringUtils;
 import org.uncertweb.viss.core.resource.IResourceStore;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.wms.WMSAdapter;
@@ -175,7 +176,7 @@ public class VissConfig {
 				if (this.webAppPath != null) {
 					path = this.webAppPath.getAbsolutePath();
 				} else {
-					path = Utils.join(File.separator,
+					path = UwStringUtils.join(File.separator,
 					    System.getProperty("java.io.tmpdir"), "VISS");
 				}
 			}

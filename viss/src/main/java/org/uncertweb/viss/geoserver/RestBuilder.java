@@ -37,12 +37,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.util.HttpMethod;
-import org.uncertweb.viss.core.util.Utils;
 
 public class RestBuilder {
 
-	private static final Logger log = LoggerFactory.getLogger(RestBuilder.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(RestBuilder.class);
 
 	private static final boolean PRINT_CURL_COMMAND = Boolean.TRUE;
 
@@ -53,13 +54,13 @@ public class RestBuilder {
 	private String user;
 	private String pass;
 	private String auth;
-	private Map<String, String> map = Utils.map();
+	private Map<String, String> map = UwCollectionUtils.map();
 
 	public RestBuilder auth(String user, String pass) {
 		this.user = user;
 		this.pass = pass;
 		this.auth = "Basic "
-		    + Base64.encodeBase64String((user + ":" + pass).getBytes());
+				+ Base64.encodeBase64String((user + ":" + pass).getBytes());
 		return this;
 	}
 
@@ -140,8 +141,9 @@ public class RestBuilder {
 		URL url = new URL(path);
 
 		if (log.isDebugEnabled() && PRINT_CURL_COMMAND) {
-			log.debug(buildCurlString(user, pass, method, url, content, response,
-			    (entity instanceof InputStream) ? "!DATA!" : entity));
+			log.debug(buildCurlString(user, pass, method, url, content,
+					response, (entity instanceof InputStream) ? "!DATA!"
+							: entity));
 		}
 
 		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
@@ -191,8 +193,8 @@ public class RestBuilder {
 	}
 
 	protected static String buildCurlString(String user, String pass,
-	    HttpMethod method, URL url, MediaType mediaType, MediaType returnType,
-	    Object content) {
+			HttpMethod method, URL url, MediaType mediaType,
+			MediaType returnType, Object content) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("curl -v");
 		if (user != null) {

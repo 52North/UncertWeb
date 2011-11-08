@@ -7,14 +7,14 @@ import java.util.UUID;
 import org.apache.commons.lang.Validate;
 import org.codehaus.jettison.json.JSONObject;
 import org.opengis.coverage.grid.GridCoverage;
-import org.uncertweb.viss.core.util.Utils;
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.mongo.vis.MongoVisualization;
 
 public class VisualizationFactory {
 
 	public static class VisualizationBuilder {
 		private IVisualization vis = createEmptyVisualization();
-		private Set<GridCoverage> coverages = Utils.set();
+		private Set<GridCoverage> coverages = UwCollectionUtils.set();
 
 		public IVisualization build() {
 			this.vis.setCoverages(this.coverages);
@@ -67,7 +67,7 @@ public class VisualizationFactory {
 		}
 
 		public VisualizationBuilder setCoverage(GridCoverage coverage) {
-			this.coverages = Utils.set(coverage);
+			this.coverages = UwCollectionUtils.set(coverage);
 			return this;
 		}
 
@@ -80,7 +80,7 @@ public class VisualizationFactory {
 
 	public static class VisualizationReferenceBuilder {
 		private IVisualizationReference vis = createEmptyReference();
-		private Set<String> layers = Utils.set();
+		private Set<String> layers = UwCollectionUtils.set();
 
 		public IVisualizationReference build() {
 			this.vis.setLayers(this.layers);

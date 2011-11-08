@@ -34,6 +34,7 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.resource.time.ITemporalExtent;
@@ -44,7 +45,6 @@ import org.uncertweb.viss.core.resource.time.RegularTemporalInstants;
 import org.uncertweb.viss.core.resource.time.RegularTemporalIntervals;
 import org.uncertweb.viss.core.resource.time.TemporalInstant;
 import org.uncertweb.viss.core.resource.time.TemporalInterval;
-import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.IVisualization;
 
 import com.google.code.morphia.annotations.Embedded;
@@ -62,7 +62,7 @@ import com.google.code.morphia.annotations.Transient;
 public abstract class AbstractMongoResource<T> implements IResource {
 
 	protected static final Logger log = LoggerFactory
-	    .getLogger(AbstractMongoResource.class);
+			.getLogger(AbstractMongoResource.class);
 
 	public static final String TIME_PROPERTY = "lastUsage";
 	public static final String CHECKSUM_PROPERTY = "checksum";
@@ -86,7 +86,7 @@ public abstract class AbstractMongoResource<T> implements IResource {
 	private T content;
 
 	@Embedded
-	private Set<IVisualization> visualizations = Utils.set();;
+	private Set<IVisualization> visualizations = UwCollectionUtils.set();;
 
 	public AbstractMongoResource(MediaType mt) {
 		this.mediaType = mt;
@@ -204,7 +204,7 @@ public abstract class AbstractMongoResource<T> implements IResource {
 	}
 
 	public static ITemporalExtent getExtent(Set<DateTime> instants,
-	    Set<Interval> intervals) {
+			Set<Interval> intervals) {
 		if (instants == null || instants.isEmpty()) {
 			if (intervals == null || intervals.isEmpty()) {
 				return ITemporalExtent.NO_TEMPORAL_EXTENT;
@@ -219,7 +219,8 @@ public abstract class AbstractMongoResource<T> implements IResource {
 						if (!irregular) {
 							if (duration == null) {
 								duration = Long.valueOf(i.toDurationMillis());
-							} else if (i.toDurationMillis() != duration.longValue()) {
+							} else if (i.toDurationMillis() != duration
+									.longValue()) {
 								irregular = true;
 								break;
 							}
@@ -232,10 +233,11 @@ public abstract class AbstractMongoResource<T> implements IResource {
 						}
 					}
 					if (irregular) {
-						return new IrregularTemporalIntervals(Utils.asList(intervals));
+						return new IrregularTemporalIntervals(
+								UwCollectionUtils.asList(intervals));
 					} else {
-						return new RegularTemporalIntervals(begin, end, new Duration(
-						    duration.longValue()));
+						return new RegularTemporalIntervals(begin, end,
+								new Duration(duration.longValue()));
 					}
 				}
 			}
@@ -244,8 +246,8 @@ public abstract class AbstractMongoResource<T> implements IResource {
 				if (instants.size() == 1) {
 					return new TemporalInstant(instants.iterator().next());
 				} else {
-					DateTime[] dts = Utils.sort(instants.toArray(new DateTime[instants
-					    .size()]));
+					DateTime[] dts = UwCollectionUtils.sort(instants
+							.toArray(new DateTime[instants.size()]));
 					Duration duration = new Duration(dts[0], dts[1]);
 					boolean irregular = false;
 					for (int i = 2; i < dts.length && !irregular; ++i) {
@@ -254,14 +256,15 @@ public abstract class AbstractMongoResource<T> implements IResource {
 						}
 					}
 					if (irregular) {
-						return new IrregularTemporalInstants(Utils.asList(instants));
+						return new IrregularTemporalInstants(
+								UwCollectionUtils.asList(instants));
 					} else {
-						return new RegularTemporalInstants(dts[0], dts[dts.length - 1],
-						    duration);
+						return new RegularTemporalInstants(dts[0],
+								dts[dts.length - 1], duration);
 					}
 				}
 			} else {
-				List<ITemporalExtent> l = Utils.list();
+				List<ITemporalExtent> l = UwCollectionUtils.list();
 				for (DateTime t : instants) {
 					l.add(new TemporalInstant(t));
 				}

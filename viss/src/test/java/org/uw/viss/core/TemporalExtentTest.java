@@ -30,60 +30,66 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.junit.Test;
+import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.viss.core.resource.time.ITemporalExtent;
 import org.uncertweb.viss.core.resource.time.IrregularTemporalInstants;
 import org.uncertweb.viss.core.resource.time.IrregularTemporalIntervals;
 import org.uncertweb.viss.core.resource.time.MixedTemporalExtent;
 import org.uncertweb.viss.core.resource.time.RegularTemporalInstants;
 import org.uncertweb.viss.core.resource.time.RegularTemporalIntervals;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent;
 import org.uncertweb.viss.core.resource.time.TemporalInstant;
 import org.uncertweb.viss.core.resource.time.TemporalInterval;
-import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.mongo.resource.AbstractMongoResource;
 
 public class TemporalExtentTest {
 
-  @Test
-  public void test() {
+	@Test
+	public void test() {
 
-    DateTime begin = new DateTime();
-    Set<DateTime> instants = Utils.set(begin);
-    for (int i = 0; i <= 1000; ++i) {
-      instants.add(begin.plusHours(i));
-    }
-    assertEquals(RegularTemporalInstants.class, getExtent(instants, null)
-        .getClass());
-    instants.add(begin.plusSeconds(1));
-    assertEquals(IrregularTemporalInstants.class, getExtent(instants, null)
-        .getClass());
+		DateTime begin = new DateTime();
+		Set<DateTime> instants = UwCollectionUtils.set(begin);
+		for (int i = 0; i <= 1000; ++i) {
+			instants.add(begin.plusHours(i));
+		}
+		assertEquals(RegularTemporalInstants.class, getExtent(instants, null)
+				.getClass());
+		instants.add(begin.plusSeconds(1));
+		assertEquals(IrregularTemporalInstants.class, getExtent(instants, null)
+				.getClass());
 
-    Duration d = new Duration(1000 * 60 * 60);
-    Set<Interval> intervals = Utils.set();
-    for (int i = 0; i < 200; ++i) {
-      DateTime s = begin;
-      for (int j = 0; j <= i; ++j) {
-        s = s.plus(d);
-      }
-      intervals.add(new Interval(s, d));
-    }
-    assertEquals(RegularTemporalIntervals.class, getExtent(null, intervals)
-        .getClass());
+		Duration d = new Duration(1000 * 60 * 60);
+		Set<Interval> intervals = UwCollectionUtils.set();
+		for (int i = 0; i < 200; ++i) {
+			DateTime s = begin;
+			for (int j = 0; j <= i; ++j) {
+				s = s.plus(d);
+			}
+			intervals.add(new Interval(s, d));
+		}
+		assertEquals(RegularTemporalIntervals.class, getExtent(null, intervals)
+				.getClass());
 
-    intervals.add(new Interval(begin, d.plus(1)));
-    assertEquals(IrregularTemporalIntervals.class, getExtent(null, intervals)
-        .getClass());
+		intervals.add(new Interval(begin, d.plus(1)));
+		assertEquals(IrregularTemporalIntervals.class,
+				getExtent(null, intervals).getClass());
 
-    assertEquals(ITemporalExtent.NO_TEMPORAL_EXTENT, getExtent(null, null));
-    assertEquals(ITemporalExtent.NO_TEMPORAL_EXTENT,
-        getExtent(Utils.<DateTime> set(), Utils.<Interval> set()));
-    assertEquals(MixedTemporalExtent.class, getExtent(instants, intervals)
-        .getClass());
-    assertEquals(TemporalInstant.class,
-        AbstractMongoResource.getExtent(Utils.set(new DateTime()), null)
-            .getClass());
-    assertEquals(
-        TemporalInterval.class,
-        AbstractMongoResource.getExtent(null,
-            Utils.set(new Interval(begin, begin.plus(d)))).getClass());
-  }
+		assertEquals(ITemporalExtent.NO_TEMPORAL_EXTENT, getExtent(null, null));
+		assertEquals(
+				ITemporalExtent.NO_TEMPORAL_EXTENT,
+				getExtent(UwCollectionUtils.<DateTime> set(),
+						UwCollectionUtils.<Interval> set()));
+		assertEquals(MixedTemporalExtent.class, getExtent(instants, intervals)
+				.getClass());
+		assertEquals(
+				TemporalInstant.class,
+				AbstractMongoResource.getExtent(
+						UwCollectionUtils.set(new DateTime()), null).getClass());
+		assertEquals(
+				TemporalInterval.class,
+				AbstractMongoResource
+						.getExtent(
+								null,
+								UwCollectionUtils.set(new Interval(begin, begin
+										.plus(d)))).getClass());
+	}
 }

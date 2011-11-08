@@ -26,7 +26,7 @@ import java.util.List;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.uncertweb.viss.core.util.Utils;
+import org.uncertweb.utils.UwCollectionUtils;
 
 public class MixedTemporalExtent extends AbstractIrregularTemporalExtent {
 
@@ -49,8 +49,8 @@ public class MixedTemporalExtent extends AbstractIrregularTemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
-		List<JSONObject> instants = Utils.list();
-		List<JSONObject> intervals = Utils.list();
+		List<JSONObject> instants = UwCollectionUtils.list();
+		List<JSONObject> intervals = UwCollectionUtils.list();
 		for (ITemporalExtent te : getExtents()) {
 			if (te instanceof TemporalInstant) {
 				instants.add(te.toJson());

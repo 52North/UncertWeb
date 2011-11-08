@@ -42,13 +42,14 @@ import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.ReferenceObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.result.ReferenceResult;
+import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.utils.UwIOUtils;
 import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.resource.time.ITemporalExtent;
 import org.uncertweb.viss.core.util.MediaTypes;
-import org.uncertweb.viss.core.util.Utils;
 
 import com.google.code.morphia.annotations.Polymorphic;
 import com.google.code.morphia.annotations.PostLoad;
@@ -62,12 +63,12 @@ public class OMResource extends AbstractMongoResource<IObservationCollection> {
 		super(MediaTypes.OM_2_TYPE);
 	}
 
-	private Set<ResourceFile> savedResourceFiles = Utils.set();
+	private Set<ResourceFile> savedResourceFiles = UwCollectionUtils.set();
 
 	@Transient
 	private Set<AbstractMongoResource<?>> resources = null;
 	@Transient
-	private Map<String, File> resourceFiles = Utils.map();
+	private Map<String, File> resourceFiles = UwCollectionUtils.map();
 
 	@PostLoad
 	public void postLoad() {
@@ -90,9 +91,9 @@ public class OMResource extends AbstractMongoResource<IObservationCollection> {
 		setContent(col);
 
 		if (resources == null)
-			resources = Utils.set();
+			resources = UwCollectionUtils.set();
 		if (resourceFiles == null)
-			resourceFiles = Utils.map();
+			resourceFiles = UwCollectionUtils.map();
 
 		for (AbstractObservation ao : col.getObservations()) {
 			if (ao instanceof ReferenceObservation) {
@@ -133,7 +134,7 @@ public class OMResource extends AbstractMongoResource<IObservationCollection> {
 			/* fetch the referenced file */
 			URL url = new URL(rr.getHref());
 			f = mrs.createResourceFile(getUUID(), mt);
-			Utils.saveToFile(f, url);
+			UwIOUtils.saveToFile(f, url);
 			log.debug("Resource saved to {}", f.getAbsolutePath());
 			resourceFiles.put(rr.getHref(), f);
 		} else {
@@ -176,8 +177,8 @@ public class OMResource extends AbstractMongoResource<IObservationCollection> {
 
 	@Override
 	protected ITemporalExtent getTemporalExtentForResource() {
-		Set<DateTime> instants = Utils.set();
-		Set<Interval> intervals = Utils.set();
+		Set<DateTime> instants = UwCollectionUtils.set();
+		Set<Interval> intervals = UwCollectionUtils.set();
 		for (AbstractObservation ao : getContent().getObservations()) {
 			TimeObject to = ao.getPhenomenonTime();
 			if (to.getInterval() != null) {
@@ -191,7 +192,7 @@ public class OMResource extends AbstractMongoResource<IObservationCollection> {
 
 	@Override
 	public UncertaintyType getType() {
-		Set<UncertaintyType> set = Utils.set();
+		Set<UncertaintyType> set = UwCollectionUtils.set();
 		for (AbstractObservation ao : getContent().getObservations()) {
 			IResource r = (IResource) ao.getResult().getValue();
 			if (!r.isLoaded()) {

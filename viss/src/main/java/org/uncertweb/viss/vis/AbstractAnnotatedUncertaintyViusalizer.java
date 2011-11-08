@@ -28,8 +28,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Set;
 
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.UncertaintyType;
-import org.uncertweb.viss.core.util.Utils;
 
 public abstract class AbstractAnnotatedUncertaintyViusalizer extends
     AbstractMultiResourceTypeVisualizer {
@@ -56,9 +56,9 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 	public Set<UncertaintyType> getCompatibleUncertaintyTypes() {
 		Type t = findAnnotation(Type.class, getClass());
 		if (t == null)
-			return Utils.set();
+			return UwCollectionUtils.set();
 		else
-			return Utils.set(t.value());
+			return UwCollectionUtils.set(t.value());
 	}
 
 	@Override
