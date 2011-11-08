@@ -12,7 +12,20 @@ public interface IUncertainObservation extends IUncertainObject {
 
 	/** get the xml type name of this observation */
 	public String getName();
-	
-	/** returns data quality as uncertainties, replacing om1 observations quality */
+
+	/**
+	 * get the gml id of this observation (consisting of code space and
+	 * identifier; not to be confused with observation id/obsID)
+	 */
+	public String getIdentifier();
+
+	/**
+	 * returns data quality as uncertainties, replacing om1 observations quality
+	 */
 	public DQ_UncertaintyResult[] getUncQuality();
+
+	/**
+	 * returns unit of measurement
+	 */
+	public String getUnitsOfMeasurement();
 }

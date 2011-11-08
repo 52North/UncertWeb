@@ -23,7 +23,8 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 		IUncertainObservation {
 
 	/**
-	 * gml identifier
+	 * gml identifier (consisting of code space and
+	 * identifier)
 	 */
 	private String identifier;
 	
@@ -80,7 +81,7 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 	}
 
 	/**
-	 * returns gml identifier
+	 * returns gml identifier (not to be confused with observation id/obsID)
 	 */
 	public String getIdentifier() {
 		return identifier;
