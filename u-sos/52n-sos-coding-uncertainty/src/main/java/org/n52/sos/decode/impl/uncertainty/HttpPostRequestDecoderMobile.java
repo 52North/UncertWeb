@@ -132,6 +132,8 @@ public class HttpPostRequestDecoderMobile extends
 			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_MEASUREMENT)).length > 0) {
 				om2ObsDoc = OMMeasurementDocument.Factory.newInstance();
 				((OMMeasurementDocument) om2ObsDoc).addNewOMMeasurement().set(UWMeasurementType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_MEASUREMENT))[0].xmlText()));
+				
+				// TODO add further uncertainty types here
 //			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_BOOLEAN)).length > 0) {
 //				om2ObsDoc = OMBooleanObservationDocument.Factory.newInstance();
 //				((OMBooleanObservationDocument) om2ObsDoc).addNewOMBooleanObservation().set(UWBooleanObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_BOOLEAN))[0].xmlText()));
