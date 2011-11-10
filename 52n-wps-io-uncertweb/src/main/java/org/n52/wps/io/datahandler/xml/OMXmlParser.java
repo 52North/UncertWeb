@@ -3,6 +3,8 @@ package org.n52.wps.io.datahandler.xml;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.opengis.om.x10.ObservationCollectionDocument;
+import net.opengis.om.x10.ObservationDocument;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
@@ -22,6 +24,7 @@ import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.om.io.v1.XBv1ObservationParser;
 
 /**
  * Observation parser, handling observations encoded in XML according the
@@ -119,6 +122,10 @@ public class OMXmlParser extends AbstractXMLParser {
 			IObservationCollection obsCol = parser
 					.parseObservationCollection(xbDoc.toString());
 			omData = new OMData(obsCol, UncertWebDataConstants.MIME_TYPE_OMX);
+		} else if (xbDoc instanceof ObservationDocument
+				|| xbDoc instanceof ObservationCollectionDocument) {
+			IObservationCollection obsCol = new XBv1ObservationParser().parse(xbDoc.xmlText());
+			omData = new OMData(obsCol, UncertWebDataConstants.MIME_TYPE_OM_V1);
 		} else {
 			throw new RuntimeException(
 					"The data is neither an observation nor an observation collection.");

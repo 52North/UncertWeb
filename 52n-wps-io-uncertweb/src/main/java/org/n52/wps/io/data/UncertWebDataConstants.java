@@ -16,4 +16,7 @@ public class UncertWebDataConstants {
 
 	/**mime type of UncertML in/outputs*/
 	public static final String MIME_TYPE_UNCERTML = "application/x-uncertml";
+	
+	/**mime type of O&M v1 files*/
+	public static final String MIME_TYPE_OM_V1 = "text/xml;subtype=\"om/1.0.0\"";
 }

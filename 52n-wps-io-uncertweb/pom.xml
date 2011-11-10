@@ -14,6 +14,11 @@
 			<artifactId>om-api</artifactId>
 			<version>0.0.5-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>om-api-legacy</artifactId>
+			<version>0.9-SNAPSHOT</version>
+		</dependency>
 		<dependency> 
 			<groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-io</artifactId>
