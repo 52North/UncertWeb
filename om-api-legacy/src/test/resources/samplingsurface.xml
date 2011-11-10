@@ -14,7 +14,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.786" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -42,7 +42,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.783" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -70,7 +70,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.782" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -165,7 +165,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.785" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -193,7 +193,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.784" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -221,7 +221,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.773" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -262,7 +262,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.774" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -290,7 +290,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.771" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -331,7 +331,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.772" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -359,7 +359,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.777" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -387,7 +387,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.775" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -415,7 +415,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.776" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -510,7 +510,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.781" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -538,7 +538,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.780" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -633,7 +633,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.779" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>
@@ -661,7 +661,7 @@
         </gml:TimeInstant>
       </om:samplingTime>
       <om:procedure xlink:href="urn:ogc:object:sensor:STAS:1.0.0:SlUECjJoeeRSYGLvZ84r"/>
-      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]"/>
+      <om:observedProperty xlink:href="http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)"/>
       <om:featureOfInterest>
         <sa:SamplingSurface gml:id="boundary.778" xsi:schemaLocation=" http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd">
           <gml:description>NOT_SET</gml:description>

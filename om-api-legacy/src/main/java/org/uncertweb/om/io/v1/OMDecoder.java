@@ -5,6 +5,7 @@ import static org.uncertweb.utils.UwCollectionUtils.in;
 import static org.uncertweb.utils.UwCollectionUtils.list;
 import static org.uncertweb.utils.UwCollectionUtils.map;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -32,7 +33,6 @@ import net.opengis.gml.FeaturePropertyType;
 import net.opengis.gml.LineStringType;
 import net.opengis.gml.LinearRingType;
 import net.opengis.gml.MeasureType;
-import net.opengis.gml.ObservationDocument;
 import net.opengis.gml.PointType;
 import net.opengis.gml.PolygonType;
 import net.opengis.gml.SurfacePropertyType;
@@ -45,9 +45,12 @@ import net.opengis.gml.impl.PolygonTypeImpl;
 import net.opengis.om.x10.CategoryObservationType;
 import net.opengis.om.x10.MeasurementType;
 import net.opengis.om.x10.ObservationCollectionDocument;
+import net.opengis.om.x10.ObservationCollectionType;
+import net.opengis.om.x10.ObservationDocument;
 import net.opengis.om.x10.ObservationPropertyType;
 import net.opengis.om.x10.ObservationType;
 import net.opengis.om.x10.ProcessPropertyType;
+import net.opengis.sampling.x10.SamplingFeatureDocument;
 import net.opengis.sampling.x10.SamplingFeatureType;
 import net.opengis.sampling.x10.SamplingPointType;
 import net.opengis.sampling.x10.SamplingSurfaceType;
@@ -62,8 +65,6 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMParsingException;
@@ -71,6 +72,8 @@ import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.CategoryObservation;
 import org.uncertweb.api.om.observation.Measurement;
+import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
+import org.uncertweb.api.om.observation.collections.CategoryObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
 import org.uncertweb.api.om.result.BooleanResult;
@@ -93,49 +96,32 @@ public class OMDecoder {
 
 	protected static final String NO_DATA_VALUE = "noData";
 
-	protected static final String[] FEATURE_OF_INTEREST_DEFINITION = { 
+	protected static final String[] FEATURE_OF_INTEREST_DEFINITION = {
 		UwUrlConstants.FEATURE_OF_INTEREST,
-		UwUrnConstants.FEATURE_DEFINITION
+		UwUrnConstants.FEATURE_DEFINITION 
 	};
-	
-	protected static final String[] SAMPLING_TIME_DEFINITION = { 
-		UwUrlConstants.SAMPLING_TIME, 
+
+	protected static final String[] SAMPLING_TIME_DEFINITION = {
+		UwUrlConstants.SAMPLING_TIME,
 		UwUrnConstants.ISO8601_DEFINITION
 	};
-	
-	protected static final String[] EPSG_PREFIXES = {
+
+	protected static final String[] EPSG_PREFIXES = { 
 		"urn:ogc:def:crs:EPSG::",
 		"urn:ogc:def:crs:EPSG:",
 		"http://www.opengis.net/def/crs/EPSG/0/",
 		"EPSG:"
 	};
-	
-	private static final String DECIMAL = ".", TS = " ", CS = ",";
-	
-	protected static final URI DEFAULT_CODE_SPACE = URI.create(UwUrlConstants.INAPPLICABLE);
-	
-	protected static final Logger log = LoggerFactory.getLogger(OMDecoder.class);
 
-	public IObservationCollection parse(InputStream is) throws OMParsingException {
-		IObservationCollection col = new MeasurementCollection();
+	private static final String DECIMAL = ".", TS = " ", CS = ",";
+
+	protected static final URI DEFAULT_CODE_SPACE = URI
+			.create(UwUrlConstants.INAPPLICABLE);
+
+	public IObservationCollection parse(File f)
+			throws OMParsingException {
 		try {
-			XmlObject object = XmlObject.Factory.parse(is);
-			
-			if (object instanceof ObservationCollectionDocument) {
-				
-				ObservationCollectionDocument doc = (ObservationCollectionDocument) object;
-				for (ObservationPropertyType opt : doc.getObservationCollection().getMemberArray()) {
-					opt.getObservation();
-				}
-				
-			} else  if (object instanceof ObservationDocument) {
-				((ObservationDocument) object).getObservation();
-			}
-			
-			ObservationType ot = null;
-			
-			return null;
-			
+			return parse(XmlObject.Factory.parse(f));
 		} catch (XmlException e) {
 			throw new OMParsingException(e);
 		} catch (IOException e) {
@@ -143,16 +129,124 @@ public class OMDecoder {
 		}
 	}
 	
-	public static Collection<AbstractObservation> parseMeasurement(
+	public IObservationCollection parse(InputStream is)
+			throws OMParsingException {
+		try {
+			return parse(XmlObject.Factory.parse(is));
+		} catch (XmlException e) {
+			throw new OMParsingException(e);
+		} catch (IOException e) {
+			throw new OMParsingException(e);
+		}
+	}
+
+	public IObservationCollection parse(String xml) throws OMParsingException {
+		try {
+			return parse(XmlObject.Factory.parse(xml));
+		} catch (XmlException e) {
+			throw new OMParsingException(e);
+		}
+	}
+
+	public static IObservationCollection parse(XmlObject xml)
+			throws OMParsingException {
+		Collection<AbstractObservation> col = null;
+		if (xml instanceof ObservationCollectionDocument) {
+			col = parse((ObservationCollectionDocument) xml);
+		} else if (xml instanceof ObservationCollectionType) {
+			col = parse((ObservationCollectionType) xml);
+		} else if (xml instanceof ObservationDocument) {
+			col = parse((ObservationDocument) xml);
+		} else if (xml instanceof ObservationType) {
+			col = parse((ObservationType) xml);
+		} else {
+			throw new OMParsingException("Unknown type: "
+					+ xml.getClass().getName());
+		}
+		IObservationCollection ioc = null;
+		for (AbstractObservation ao : col) {
+			if (ioc == null) {
+				if (ao instanceof Measurement) {
+					ioc = new MeasurementCollection();
+				} else if (ao instanceof CategoryObservation) {
+					ioc = new CategoryObservationCollection();
+				} else if (ao instanceof BooleanObservation) {
+					ioc = new BooleanObservationCollection();
+				} else {
+					throw new OMParsingException("Can not handle "
+							+ ao.getClass().getName());
+				}
+			}
+			ioc.addObservation(ao);
+		}
+
+		return ioc;
+	}
+
+	public static Collection<AbstractObservation> parse(ObservationDocument od)
+			throws OMParsingException {
+		if (od == null)
+			return list();
+		ObservationType ot = od.getObservation();
+		return parse(ot);
+	}
+
+	public static Collection<AbstractObservation> parse(
+			ObservationCollectionDocument ocd) throws OMParsingException {
+		if (ocd == null)
+			return list();
+		return parse(ocd.getObservationCollection());
+	}
+
+	public static Collection<AbstractObservation> parse(
+			ObservationCollectionType oct) throws OMParsingException {
+		if (oct == null)
+			return list();
+		return parse(oct.getMemberArray());
+
+	}
+
+	public static Collection<AbstractObservation> parse(
+			ObservationPropertyType[] opts) throws OMParsingException {
+		if (opts == null)
+			return list();
+		Collection<AbstractObservation> all = list();
+		for (ObservationPropertyType opt : opts) {
+			all.addAll(parse(opt));
+		}
+		return all;
+	}
+
+	public static Collection<AbstractObservation> parse(ObservationType ot)
+			throws OMParsingException {
+		if (ot == null)
+			return list();
+		if (ot.getResult() instanceof CategoryObservationType) {
+			return parseCategoryObservation((CategoryObservationType) ot);
+		} else if (ot instanceof MeasurementType) {
+			return parseMeasurement((MeasurementType) ot);
+		} else {
+			return parseGenericObservation(ot);
+		}
+	}
+
+	public static Collection<AbstractObservation> parse(
+			ObservationPropertyType opt) throws OMParsingException {
+		if (opt == null)
+			return list();
+		return parse(opt.getObservation());
+	}
+
+	protected static Collection<AbstractObservation> parseMeasurement(
 			MeasurementType xb_measType) throws OMParsingException {
 
-		URI procID = parseProcedure(xb_measType.getProcedure());
+		URI procID = parseProcess(xb_measType.getProcedure());
 		URI phenID = parseObservedProperty(xb_measType.getObservedProperty());
 		TimeObject samplingTime = parseSamplingTime(xb_measType
 				.getSamplingTime());
 		SpatialSamplingFeature foi = parseFeature(xb_measType
 				.getFeatureOfInterest());
-		Identifier identifier = parseIdentifier(xb_measType);
+		Identifier identifier = parseIdentifier(xb_measType.getId());
 
 		// result
 		MeasureResult result = null;
@@ -160,14 +254,16 @@ public class OMDecoder {
 			MeasureType xb_result = (MeasureType) xb_measType.getResult();
 			String valueString = xb_result.getStringValue();
 			String uom = xb_result.getUom();
+
 			double value = Double.parseDouble(valueString);
 			result = new MeasureResult(value, uom);
+			// TODO category etc.
 		} catch (Exception e) {
 			throw new OMParsingException(
 					"Error while parsing result value of Measurement in insertObservation request: "
 							+ e.getMessage());
 		}
-		final AbstractObservation ao = new Measurement(identifier, null,
+		AbstractObservation ao = new Measurement(identifier, null,
 				samplingTime, samplingTime, null, procID, phenID, foi, null,
 				result);
 		return list(ao);
@@ -183,7 +279,7 @@ public class OMDecoder {
 		}
 	}
 
-	protected static URI parseProcedure(ProcessPropertyType xb_proc)
+	protected static URI parseProcess(ProcessPropertyType xb_proc)
 			throws OMParsingException {
 		try {
 			if (xb_proc == null || !xb_proc.isSetHref()
@@ -209,43 +305,36 @@ public class OMDecoder {
 		}
 	}
 
-	protected static Identifier parseIdentifier(ObservationType xb_observation) {
-		String id = xb_observation.getId();
-		if (id != null && !id.trim().isEmpty()) {
-			return new Identifier(DEFAULT_CODE_SPACE, id);
-		}
-		return null;
-	}
-
-	public static Collection<AbstractObservation> parseCategoryObservation(
+	protected static Collection<AbstractObservation> parseCategoryObservation(
 			CategoryObservationType xb_catObsType) throws OMParsingException {
 
-		URI procID = parseProcedure(xb_catObsType.getProcedure());
+		URI procID = parseProcess(xb_catObsType.getProcedure());
 		URI phenID = parseObservedProperty(xb_catObsType.getObservedProperty());
 		TimeObject samplingTime = parseSamplingTime(xb_catObsType
 				.getSamplingTime());
 		SpatialSamplingFeature foi = parseFeature(xb_catObsType
 				.getFeatureOfInterest());
-		Identifier identifier = parseIdentifier(xb_catObsType);
+		Identifier identifier = parseIdentifier(xb_catObsType.getId());
 
 		ScopedNameType xb_result = (ScopedNameType) xb_catObsType.getResult();
 
 		CategoryResult result = new CategoryResult(xb_result.getStringValue(),
 				xb_result.getCodeSpace());
 
-		final AbstractObservation ao = new CategoryObservation(identifier,
-				null, samplingTime, samplingTime, null, procID, phenID, foi,
-				null, result);
+		AbstractObservation ao = new CategoryObservation(identifier, null,
+				samplingTime, samplingTime, null, procID, phenID, foi, null,
+				result);
 
 		return list(ao);
 	}
 
-	public static Collection<AbstractObservation> parseGenericObservation(
+	protected static Collection<AbstractObservation> parseGenericObservation(
 			ObservationType xb_obsType) throws OMParsingException {
 
 		Collection<AbstractObservation> obs = collection();
+		String obsId = xb_obsType.getId();
 
-		URI procId = parseProcedure(xb_obsType.getProcedure());
+		URI procId = parseProcess(xb_obsType.getProcedure());
 
 		// features of interest
 		Map<String, SpatialSamplingFeature> foiMap = parseFeaturesOfInterest(xb_obsType);
@@ -317,7 +406,8 @@ public class OMDecoder {
 				units4Phens.put(def, s.getQuantity().getUom().getCode());
 			} else if (s.isSetTime()) {
 				if (s.getName().equalsIgnoreCase("time")
-						|| in(s.getTime().getDefinition(), SAMPLING_TIME_DEFINITION)) {
+						|| in(s.getTime().getDefinition(),
+								SAMPLING_TIME_DEFINITION)) {
 					tstIdx = i;
 				} else {
 					URI def;
@@ -356,9 +446,11 @@ public class OMDecoder {
 					"Feature is not specified in SimpleDataRecord.");
 
 		// evaluate the separators of the SOS instance
-		String tokenSepLocal = xb_dataArrayDoc.getDataArray1().getEncoding().getTextBlock().getTokenSeparator();
-		String blockSepLocal = xb_dataArrayDoc.getDataArray1().getEncoding().getTextBlock().getBlockSeparator();
-		
+		String tokenSepLocal = xb_dataArrayDoc.getDataArray1().getEncoding()
+				.getTextBlock().getTokenSeparator();
+		String blockSepLocal = xb_dataArrayDoc.getDataArray1().getEncoding()
+				.getTextBlock().getBlockSeparator();
+
 		String resultText = xb_dataArrayDoc.getDataArray1().getValues()
 				.getDomNode().getFirstChild().getNodeValue();
 
@@ -367,7 +459,7 @@ public class OMDecoder {
 		if (tupels.length == 0) {
 			throw new OMParsingException("No values specified in DataRecord.");
 		}
-
+		int idCount = 0;
 		for (String t : tupels) {
 			String[] v = t.split(tokenSepLocal);
 
@@ -383,7 +475,8 @@ public class OMDecoder {
 				throw new OMParsingException("Invalid date format: "
 						+ v[tstIdx].trim());
 			}
-
+			
+			
 			for (int j : phens.keySet()) {
 				URI phenId = phens.get(j);
 				SpatialSamplingFeature sap = foiMap.get(v[foiIdx]);
@@ -392,30 +485,30 @@ public class OMDecoder {
 							"The Feature Of Interest id is not valid: "
 									+ v[foiIdx]);
 				}
-				String phenValueType = valueTypes4Phens.get(phens.get(j))
-						.name();
+				Identifier id = parseIdentifier(obsId + String.valueOf(idCount++));
+				
+				String phenValueType = valueTypes4Phens.get(phens.get(j)).name();
 				if (phenValueType.equalsIgnoreCase(ValueType.NUMERIC.name())
-						|| phenValueType.equalsIgnoreCase(ValueType.COUNT
-								.name())) {
+						|| phenValueType.equalsIgnoreCase(ValueType.COUNT.name())) {
 					double val = Double.NaN;
 					if (v[j] != null && !v[j].equalsIgnoreCase(NO_DATA_VALUE)) {
 						val = Double.parseDouble(v[j]);
 					}
 					String uom = units4Phens.get(phens.get(j));
 					MeasureResult result = new MeasureResult(val, uom);
-					obs.add(new Measurement(null, null, to, to, null, procId,
+					obs.add(new Measurement(id, null, to, to, null, procId,
 							phenId, sap, null, result));
 				} else if (phenValueType.equalsIgnoreCase(ValueType.CATEGORIAL
 						.name())) {
 					String uom = units4Phens.get(phens.get(j));
 					CategoryResult result = new CategoryResult(v[j], uom);
-					obs.add(new CategoryObservation(null, null, to, to, null,
+					obs.add(new CategoryObservation(id, null, to, to, null,
 							procId, phenId, sap, null, result));
 				} else if (phenValueType
 						.equalsIgnoreCase(ValueType.BOOL.name())) {
 					BooleanResult result = new BooleanResult(
 							Boolean.valueOf(v[j]));
-					obs.add(new BooleanObservation(null, null, to, to, null,
+					obs.add(new BooleanObservation(id, null, to, to, null,
 							procId, phenId, sap, null, result));
 				}
 			}
@@ -475,11 +568,18 @@ public class OMDecoder {
 					.toArray(new Geometry[geoms.size()]));
 			return new SpatialSamplingFeature(null, geom);
 		} else {
-			return parseSamplingFeature((SamplingFeatureType) object);
+			SamplingFeatureType sft = null;
+			if (object instanceof SamplingFeatureDocument) {
+				sft = ((SamplingFeatureDocument) object).getSamplingFeature();
+			} else if (object instanceof SamplingFeatureType) {
+				sft = (SamplingFeatureType) object;
+			}
+			
+			return parseSpatialSamplingFeature(sft);
 		}
 	}
 
-	protected static SpatialSamplingFeature parseSamplingFeature(
+	protected static SpatialSamplingFeature parseSpatialSamplingFeature(
 			SamplingFeatureType xb_sfType) throws OMParsingException {
 		String id = xb_sfType.getId();
 		try {
@@ -502,14 +602,14 @@ public class OMDecoder {
 
 			Geometry geom = null;
 			if (xb_sfType instanceof SamplingPointType) {
-				geom = getGeometry4XmlGeometry(((SamplingPointType) xb_sfType)
-						.getPosition().getPoint());
+				geom = parsePoint(((SamplingPointType) xb_sfType).getPosition()
+						.getPoint());
 			} else if (xb_sfType instanceof SamplingSurfaceType) {
 				SamplingSurfaceType xb_spType = (SamplingSurfaceType) xb_sfType;
 				if (xb_spType.getShape() != null) {
 					SurfacePropertyType xb_surfPropType = xb_spType.getShape();
 					AbstractSurfaceType xb_agt = xb_surfPropType.getSurface();
-					geom = getGeometry4XmlGeometry(xb_agt);
+					geom = parseGeometry(xb_agt);
 				}
 			} else {
 				throw new OMParsingException("Unknown SamplingFeatureType: "
@@ -553,8 +653,8 @@ public class OMDecoder {
 		return new TimeObject(beginString, endString);
 	}
 
-	protected static Geometry getGeometry4XmlGeometry(
-			AbstractGeometryType xb_geometry) throws OMParsingException {
+	protected static Geometry parseGeometry(AbstractGeometryType xb_geometry)
+			throws OMParsingException {
 
 		Geometry geometry = null;
 		// parse srid; if not set, throw exception!
@@ -562,19 +662,19 @@ public class OMDecoder {
 		// point
 		if (xb_geometry instanceof PointTypeImpl) {
 			PointType xb_point = (PointType) xb_geometry;
-			geometry = getGeometry4Point(xb_point);
+			geometry = parsePoint(xb_point);
 		} // LineString
 		else if (xb_geometry instanceof LineStringTypeImpl) {
 			LineStringType xb_lineString = (LineStringType) xb_geometry;
-			geometry = getGeometry4LineString(xb_lineString);
+			geometry = parseLineString(xb_lineString);
 		} // polygon
 		else if (xb_geometry instanceof PolygonTypeImpl) {
 			PolygonType xb_polygon = (PolygonType) xb_geometry;
-			geometry = getGeometry4Polygon(xb_polygon);
+			geometry = parsePolygon(xb_polygon);
 		} // multi surface
 		else if (xb_geometry instanceof CompositeSurfaceType) {
 			CompositeSurfaceType xb_compositeSurface = (CompositeSurfaceType) xb_geometry;
-			geometry = getGeometry4CompositeSurface(xb_compositeSurface);
+			geometry = parseCompositeSurface(xb_compositeSurface);
 		} else {
 			throw new OMParsingException("The FeatureType: " + xb_geometry
 					+ " is not supportted! Only PointType and PolygonType");
@@ -587,7 +687,7 @@ public class OMDecoder {
 		return geometry;
 	}// end getGeometry4XmlGeometry
 
-	protected static Geometry getGeometry4CompositeSurface(
+	protected static Geometry parseCompositeSurface(
 			CompositeSurfaceType xb_compositeSurface) throws OMParsingException {
 		SurfacePropertyType[] xb_surfaceProperties = xb_compositeSurface
 				.getSurfaceMemberArray();
@@ -603,7 +703,7 @@ public class OMDecoder {
 				srid = parseSrsName(xb_abstractSurface.getSrsName());
 			}
 			if (xb_abstractSurface instanceof PolygonType) {
-				polygons.add((Polygon) getGeometry4Polygon((PolygonType) xb_abstractSurface));
+				polygons.add((Polygon) parsePolygon((PolygonType) xb_abstractSurface));
 			} else {
 				throw new OMParsingException("The FeatureType: "
 						+ xb_abstractSurface
@@ -625,7 +725,7 @@ public class OMDecoder {
 		return geom;
 	}
 
-	protected static Geometry getGeometry4Point(PointType xb_pointType)
+	protected static Geometry parsePoint(PointType xb_pointType)
 			throws OMParsingException {
 
 		Geometry geom = null;
@@ -640,11 +740,11 @@ public class OMDecoder {
 			if (srid == -1 && xb_pos.getSrsName() != null) {
 				srid = parseSrsName(xb_pos.getSrsName());
 			}
-			String directPosition = getString4Pos(xb_pos);
+			String directPosition = parsePos(xb_pos);
 			geomWKT = "POINT(" + directPosition + ")";
 		} else if (xb_pointType.getCoordinates() != null) {
 			CoordinatesType xb_coords = xb_pointType.getCoordinates();
-			String directPosition = getString4Coordinates(xb_coords);
+			String directPosition = parseCoordinate(xb_coords);
 			geomWKT = "POINT" + directPosition;
 		} else {
 			throw new OMParsingException(
@@ -657,14 +757,14 @@ public class OMDecoder {
 			throw new OMParsingException("No SrsName ist specified!");
 
 		}
-		geom = createGeometryFromWKT(geomWKT);
+		geom = parseWKT(geomWKT);
 		geom.setSRID(srid);
 
 		return geom;
 	}
 
-	protected static Geometry getGeometry4LineString(
-			LineStringType xb_lineSringType) throws OMParsingException {
+	protected static Geometry parseLineString(LineStringType xb_lineSringType)
+			throws OMParsingException {
 
 		Geometry geom = null;
 		String geomWKT = null;
@@ -681,8 +781,7 @@ public class OMDecoder {
 					&& !(xb_positions[0].getSrsName().equals(""))) {
 				srid = parseSrsName(xb_positions[0].getSrsName());
 			}
-			positions
-					.append(getString4PosArray(xb_lineSringType.getPosArray()));
+			positions.append(parsePosArray(xb_lineSringType.getPosArray()));
 		}
 		geomWKT = "LINESTRING" + positions.toString() + "";
 
@@ -690,13 +789,13 @@ public class OMDecoder {
 			throw new OMParsingException("No SrsName ist specified!");
 		}
 
-		geom = createGeometryFromWKT(geomWKT);
+		geom = parseWKT(geomWKT);
 		geom.setSRID(srid);
 
 		return geom;
 	}
 
-	protected static Geometry getGeometry4Polygon(PolygonType xb_polygonType)
+	protected static Geometry parsePolygon(PolygonType xb_polygonType)
 			throws OMParsingException {
 		Geometry geom = null;
 		int srid = -1;
@@ -716,7 +815,7 @@ public class OMDecoder {
 				if (srid == -1 && xb_linearRing.getSrsName() != null) {
 					srid = parseSrsName(xb_linearRing.getSrsName());
 				}
-				exteriorCoordString = getCoordString4LinearRing(xb_linearRing);
+				exteriorCoordString = parseLinearRing(xb_linearRing);
 			} else {
 				throw new OMParsingException(
 						"The Polygon must contain the following elements <gml:exterior><gml:LinearRing><gml:posList>!");
@@ -732,7 +831,7 @@ public class OMDecoder {
 				if (xb_interiorRing instanceof LinearRingType) {
 					interiorCoordString
 							.append(", "
-									+ getCoordString4LinearRing((LinearRingType) xb_interiorRing));
+									+ parseLinearRing((LinearRingType) xb_interiorRing));
 				}
 			}
 		}
@@ -747,51 +846,26 @@ public class OMDecoder {
 		if (srid == 0) {
 			throw new OMParsingException("No SrsName ist specified!");
 		}
-		geom = createGeometryFromWKT(geomWKT.toString());
+		geom = parseWKT(geomWKT.toString());
 		geom.setSRID(srid);
 
 		return geom;
 	}
 
-	protected static int parseSrsName(String srsName) throws OMParsingException {
-		int srid = Integer.MIN_VALUE;
-		if (!(srsName == null || srsName.equals(""))) {
-			try {
-				for (String pre : EPSG_PREFIXES) {
-					if (srsName.startsWith(pre)) {
-						srsName.replace(pre, "");
-						break;
-					}
-				}
-				srid = Integer.valueOf(srsName).intValue();
-			} catch (Exception e) {
-				throw new OMParsingException(
-						"For geometry of the feature of interest parameter has to have a srsName attribute, which contains the Srs Name as EPSGcode following the following schema:"
-								+ EPSG_PREFIXES + "number!");
-			}
-		} else {
-			throw new OMParsingException(
-					"For geometry of the feature of interest parameter has to have a srsName attribute, which contains the Srs Name as EPSGcode following the following schema:"
-							+ EPSG_PREFIXES + "number!");
-
-		}
-		return srid;
-	}
-
-	protected static String getCoordString4LinearRing(
-			LinearRingType xb_linearRing) throws OMParsingException {
+	protected static String parseLinearRing(LinearRingType xb_linearRing)
+			throws OMParsingException {
 
 		String result = "";
 		DirectPositionListType xb_posList = xb_linearRing.getPosList();
 		CoordinatesType xb_coordinates = xb_linearRing.getCoordinates();
 		DirectPositionType[] xb_posArray = xb_linearRing.getPosArray();
 		if (xb_posList != null && !(xb_posList.getStringValue().equals(""))) {
-			result = getString4PosList(xb_posList);
+			result = parsePosList(xb_posList);
 		} else if (xb_coordinates != null
 				&& !(xb_coordinates.getStringValue().equals(""))) {
-			result = getString4Coordinates(xb_coordinates);
+			result = parseCoordinate(xb_coordinates);
 		} else if (xb_posArray != null && xb_posArray.length > 0) {
-			result = getString4PosArray(xb_posArray);
+			result = parsePosArray(xb_posArray);
 		} else {
 			throw new OMParsingException(
 					"The Polygon must contain the following elements <gml:exterior><gml:LinearRing><gml:posList>, <gml:exterior><gml:LinearRing><gml:coordinates> or <gml:exterior><gml:LinearRing><gml:pos>{<gml:pos>}!");
@@ -800,7 +874,7 @@ public class OMDecoder {
 		return result;
 	}
 
-	protected static String getString4Pos(DirectPositionType xb_pos) {
+	protected static String parsePos(DirectPositionType xb_pos) {
 		StringBuilder coordinateString = new StringBuilder();
 
 		coordinateString.append(xb_pos.getStringValue());
@@ -808,7 +882,7 @@ public class OMDecoder {
 		return coordinateString.toString();
 	}
 
-	protected static String getString4PosArray(DirectPositionType[] xb_posArray) {
+	protected static String parsePosArray(DirectPositionType[] xb_posArray) {
 		StringBuilder coordinateString = new StringBuilder();
 		coordinateString.append("(");
 		for (DirectPositionType directPositionType : xb_posArray) {
@@ -821,7 +895,7 @@ public class OMDecoder {
 		return coordinateString.toString();
 	}
 
-	protected static String getString4PosList(DirectPositionListType xb_posList)
+	protected static String parsePosList(DirectPositionListType xb_posList)
 			throws OMParsingException {
 		StringBuilder coordinateString = new StringBuilder("(");
 		List<?> values = xb_posList.getListValue();
@@ -853,7 +927,7 @@ public class OMDecoder {
 	 *            XmlBeans generated Coordinates.
 	 * @return Returns String with coordinates for WKT.
 	 */
-	protected static String getString4Coordinates(CoordinatesType xb_coordinates) {
+	protected static String parseCoordinate(CoordinatesType xb_coordinates) {
 		String coordinateString = "";
 
 		coordinateString = "(" + xb_coordinates.getStringValue() + ")";
@@ -875,12 +949,39 @@ public class OMDecoder {
 		return coordinateString;
 	}
 
-	protected static Geometry createGeometryFromWKT(String wktString)
+	protected static int parseSrsName(String srsName) throws OMParsingException {
+		int srid = Integer.MIN_VALUE;
+		if (!(srsName == null || srsName.equals(""))) {
+			srsName = srsName.trim();
+			try {
+				for (String pre : EPSG_PREFIXES) {
+					if (srsName.startsWith(pre)) {
+						srsName = srsName.replace(pre, "");
+						break;
+					}
+				}
+				srid = Integer.valueOf(srsName).intValue();
+			} catch (Exception e) {
+				throw new OMParsingException("Can not parse reference system: "+ srsName);
+			}
+		} else {
+			throw new OMParsingException("Can not parse reference system: "+ srsName);
+		}
+		return srid;
+	}
+
+	protected static Identifier parseIdentifier(String id) {
+		if (id != null && !id.trim().isEmpty()) {
+			return new Identifier(DEFAULT_CODE_SPACE, id);
+		}
+		return null;
+	}
+
+	protected static Geometry parseWKT(String wktString)
 			throws OMParsingException {
 		WKTReader wktReader = new WKTReader();
 		Geometry geom = null;
 		try {
-			log.debug("FOI Geometry: {}", wktString);
 			geom = wktReader.read(wktString);
 		} catch (com.vividsolutions.jts.io.ParseException pe) {
 			throw new OMParsingException(
@@ -890,7 +991,5 @@ public class OMDecoder {
 
 		return geom;
 	}
-
-
 
 }
