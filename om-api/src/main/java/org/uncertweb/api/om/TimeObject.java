@@ -172,4 +172,15 @@ public class TimeObject {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		DateTimeFormatter dtp = ISODateTimeFormat.dateTime();
+		if (isInterval()) {
+			return dtp.print(getInterval().getStart()) + " - "
+					+ dtp.print(getInterval().getEnd());
+		} else {
+			return dtp.print(getDateTime());
+		}
+	}
+	
 }
