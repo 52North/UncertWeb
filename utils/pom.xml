@@ -23,6 +23,14 @@
 			<timezone>GMT+1</timezone>
 			<id>ChristianAutermann</id>
 		</developer>
+		<developer>
+			<name>Christoph Stasch</name>
+			<email>staschc@uni-muenster.de</email>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<timezone>GMT+1</timezone>
+			<id>staschc</id>
+		</developer>
 	</developers>
 	<scm>
 		<connection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/uncertweb-utils/trunk</connection>
