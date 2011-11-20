@@ -55,6 +55,13 @@ public class UwCollectionUtils extends UwUtils {
 		};
 	}
 
+	
+	public static <T> void addAll(Collection<T> col, T[] elem) {
+		for (T t : elem) {
+			col.add(t);
+		}
+	}
+	
 	@SuppressWarnings("serial")
 	public static <T> Set<T> combineSets(final Set<T>... values) {
 		if (values == null || values.length == 0) {
@@ -78,6 +85,15 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return set;
 	}
+	
+	public static <T> Set<T> asSet(T[] col) {
+		if (col == null || col.length == 0)
+			return Collections.emptySet();
+		Set<T> set = set();
+		for (T t : col)
+			set.add(t);
+		return set;
+	}
 
 	public static <T> List<T> asList(Iterable<? extends T> col) {
 		Iterator<? extends T> i;
@@ -87,6 +103,15 @@ public class UwCollectionUtils extends UwUtils {
 		while (i.hasNext()) {
 			list.add(i.next());
 		}
+		return list;
+	}
+	
+	public static <T> List<T> asList(T[] col) {
+		if (col == null || col.length == 0)
+			return Collections.emptyList();
+		List<T> list = list();
+		for (T t : col)
+			list.add(t);
 		return list;
 	}
 
