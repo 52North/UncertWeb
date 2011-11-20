@@ -30,29 +30,25 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
 
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
-import org.n52.wps.io.IOHandler;
+import org.opengis.observation.Observation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.api.om.observation.AbstractObservation;
 
 /**
  * Utilities class.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class Utils extends org.uncertweb.intamap.utils.Utils {
+public class Utils {
 
 	/**
 	 * The Logger.
@@ -77,10 +73,6 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 		.appendMillis().appendSuffix(" ms", " ms").toFormatter();
 	/* @formatter on */
 
-	/**
-	 * RNG.
-	 */
-	private static final Random random = new Random();
 
 	/**
 	 * Formats the time elapsed since {@code start}.
@@ -118,7 +110,7 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 					.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestMethod(Constants.Http.Method.POST.name());
-			conn.setRequestProperty(Constants.Http.Header.CONTENT_TYPE, IOHandler.DEFAULT_MIMETYPE);
+			conn.setRequestProperty(Constants.Http.Header.CONTENT_TYPE, "text/xml");
 			wr = new OutputStreamWriter(conn.getOutputStream());
 			wr.write(request);
 			wr.flush();
@@ -210,121 +202,31 @@ public class Utils extends org.uncertweb.intamap.utils.Utils {
 			System.getProperties().remove(Constants.Http.Timeout.READ_PROPERTY);
 		}
 	}
-
-	/**
-	 * Helper method for creating a {@link Collection}.
-	 * 
-	 * @param <T> type of elements in collection
-	 * @param ts elements of collection
-	 * @return collection
-	 */
-	public static <T> Collection<T> collection(T... ts) {
-		return list(ts);
-	}
-
-	/**
-	 * Helper method for creating a {@link Set}.
-	 * 
-	 * @param <T> type of elements in set
-	 * @param ts elements of set
-	 * @return set containing the passed elements
-	 */
-	public static <T> Set<T> set(T... ts) {
-		Set<T> set = new HashSet<T>();
-		if (ts != null) {
-			for (int i = 0; i < ts.length; i++) {
-				set.add(ts[i]);
-			}
-		}
-		return set;
-	}
-
-	/**
-	 * Returns an mutable {@link List} containing only the specified object.
-	 * 
-	 * @param <T> type of t
-	 * @param t the sole object to be stored in the returned set.
-	 * @return an mutable {@code List} containing only the specified object.
-	 * @see Collections#singletonList(Object)
-	 */
-	public static <T> List<T> list(T t) {
-		LinkedList<T> l = new LinkedList<T>();
-		l.add(t);
-		return l;
-	}
 	
 	/**
-	 * Helper method for creating a {@link List}.
+	 * Generates GetObservationById GET request for the give observation Id's.
 	 * 
-	 * @param <T> type of elements in list
-	 * @param ts elements of list
-	 * @return list containing the passed elements
+	 * @param url the base URL
+	 * @param observationIds the Id's of the {@link Observation}s
+	 * @return the generated request
 	 */
-	public static <T> List<T> list(T... ts) {
-		LinkedList<T> list = new LinkedList<T>();
-		Collections.addAll(list, ts);
-		return list;
-	}
-
-	/**
-	 * Helper method to merge multiple {@link Set}s.
-	 * 
-	 * @param <T> type of elements
-	 * @param ts {@code Set}s of elements of the {@code Set} returned
-	 * @return the {@code Set} containing all elements
-	 */
-	public static <T> Set<T> multiSet(Set<T>... ts) {
-		HashSet<T> set = new HashSet<T>();
-		if (ts != null) {
-			for (Set<T> s : ts) {
-				set.addAll(s);
+	public static String getObservationByIdUrl(String url, Collection<? extends AbstractObservation> observations) {
+		HashMap<Constants.Sos.Parameter, Object> props = new HashMap<Constants.Sos.Parameter, Object>();
+		props.put(Constants.Sos.Parameter.REQUEST, Constants.Sos.Operation.GET_OBSERVATION_BY_ID);
+		props.put(Constants.Sos.Parameter.SERVICE, Constants.Sos.SERVICE_NAME);
+		props.put(Constants.Sos.Parameter.VERSION, Constants.Sos.SERVICE_VERSION);
+		props.put(Constants.Sos.Parameter.OUTPUT_FORMAT, Constants.Sos.SENSOR_OUTPUT_FORMAT);
+		StringBuilder sb = new StringBuilder();
+		int size = observations.size(), i = 1;
+		for (AbstractObservation id : observations) {
+			String s = id.getIdentifier().getIdentifier();
+			sb.append(s.trim());
+			if (size != i) {
+				sb.append(",");
 			}
+			i++;
 		}
-		return set;
-	}
-
-	/**
-	 * Generates a random {@code double} between {@code min} and {@code max}.
-	 * 
-	 * @param min the minimum {@code double} (inclusive)
-	 * @param max the maximum {@code double} (inclusive)
-	 * @return a random {@code double} between {@code min} and {@code max}.
-	 */
-	public static double randomBetween(double min, double max) {
-		return Math.min(min, max) + random.nextDouble() * Math.abs(max - min);
-	}
-
-	/**
-	 * Creates a camel case {@code String} from an upper case, underscore
-	 * separated {@code String}
-	 * 
-	 * <pre>
-	 * camelize(&quot;THIS_IS_UPPER_CASE&quot;, false);
-	 * </pre>
-	 * 
-	 * results in <code>ThisIsUpperCase</code> and
-	 * 
-	 * <pre>
-	 * camelize(&quot;THIS_IS_UPPER_CASE&quot;, true);
-	 * </pre>
-	 * 
-	 * results in <code>thisIsUpperCase</code>.
-	 * 
-	 * @param str the {@code String}
-	 * @param lowFirstLetter if the first letter should be lower case
-	 * 
-	 * @return the camelized {@code String}
-	 */
-	public static String camelize(String str, boolean lowFirstLetter) {
-		String[] split = str.toLowerCase().split("_");
-		for (int i = (lowFirstLetter) ? 1 : 0; i < split.length; i++) {
-			split[i] = Character.toUpperCase(split[i].charAt(0))
-					+ split[i].substring(1);
-		}
-		StringBuilder buf = new StringBuilder(str.length());
-		for (String s : split)
-			buf.append(s);
-		return buf.toString();
-	}
-	
+		props.put(Constants.Sos.Parameter.OBSERVATION_ID, sb.toString());
+		return Utils.buildGetRequest(url, props);
+	}	
 }

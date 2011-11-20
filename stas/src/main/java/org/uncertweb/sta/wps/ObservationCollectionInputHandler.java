@@ -27,13 +27,14 @@ import java.util.Map;
 import net.opengis.sos.x10.GetObservationDocument;
 
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.server.AlgorithmParameterException;
-import org.uncertweb.intamap.om.ObservationCollection;
-import org.uncertweb.intamap.utils.Namespace;
+import org.opengis.observation.ObservationCollection;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.api.ProcessInputHandler;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
-import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
+import org.uncertweb.utils.UwXmlUtils.Namespace;
 
 /**
  * Class that handles a {@code String}-URL and a {@code GetObservationDocument}
@@ -42,14 +43,16 @@ import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class ObservationCollectionInputHandler extends
-		ProcessInputHandler<ObservationCollection> {
+		ProcessInputHandler<IObservationCollection> {
 
 	/**
-	 * Cache for GetObservation requests. 
+	 * Cache for GetObservation requests.
 	 */
-	private static final RequestCache<GetObservationDocument, ObservationCollection> CACHE = new RequestCache<GetObservationDocument, ObservationCollection>(
-			Namespace.OM.SCHEMA, ObservationCollectionBinding.class, Constants.MAX_CACHED_REQUESTS);
-	
+	private static final RequestCache<GetObservationDocument, IObservationCollection> CACHE 
+		= new RequestCache<GetObservationDocument, IObservationCollection>(
+			Namespace.OM.SCHEMA, OMBinding.class,
+			Constants.MAX_CACHED_REQUESTS);
+
 	/**
 	 * 
 	 */
@@ -71,7 +74,7 @@ public class ObservationCollectionInputHandler extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected ObservationCollection processInputs(
+	protected IObservationCollection processInputs(
 			Map<String, List<IData>> inputs) {
 		String sosUrl = urlInput.handle(inputs);
 		GetObservationDocument sosReq = requestInput.handle(inputs);

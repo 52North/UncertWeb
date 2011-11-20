@@ -21,15 +21,17 @@
  */
 package org.uncertweb.sta.wps.sos;
 
-import java.util.HashSet;
+import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 import net.opengis.sos.x10.GetObservationDocument;
 import net.opengis.sos.x10.GetObservationDocument.GetObservation;
 import net.opengis.sos.x10.ResponseModeType;
 
-import org.uncertweb.intamap.om.Observation;
+import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.utils.Constants;
+import org.uncertweb.utils.UwCollectionUtils;
 
 /**
  * TODO JavaDoc
@@ -49,7 +51,7 @@ public class GetObservationBuilder {
 
 	private GetObservationBuilder() {}
 
-	public GetObservationDocument build(String process, List<Observation> obs) {
+	public GetObservationDocument build(URI process, List<? extends AbstractObservation> obs) {
 		GetObservationDocument getObsDoc = GetObservationDocument.Factory.newInstance();
 		GetObservation getObs = getObsDoc.addNewGetObservation();
 		getObs.setService(Constants.Sos.SERVICE_NAME);
@@ -58,11 +60,11 @@ public class GetObservationBuilder {
 		getObs.setOffering(Constants.Sos.AGGREGATION_OFFERING_ID);
 		getObs.setResponseFormat(Constants.Sos.OBSERVATION_OUTPUT_FORMAT);
 		getObs.setResponseMode(ResponseModeType.INLINE);
-		getObs.addNewProcedure().setStringValue(process);
+		getObs.addNewProcedure().setStringValue(process.toString());
 
-		HashSet<String> obsProps = new HashSet<String>();
-		for (Observation o : obs) {
-			obsProps.add(o.getObservedProperty());
+		Set<String> obsProps = UwCollectionUtils.set();
+		for (AbstractObservation o : obs) {
+			obsProps.add(o.getObservedProperty().toString());
 		}
 
 		for (String s : obsProps) {

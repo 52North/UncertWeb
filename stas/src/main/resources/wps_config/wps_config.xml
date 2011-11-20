@@ -2,11 +2,6 @@
 <WPSConfiguration xmlns="http://n52.org/wps">
 	<Datahandlers>
 		<ParserList>
-			<Parser name="ObservationCollectionParser" className="org.uncertweb.sta.wps.xml.io.dec.ObservationCollectionParser" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/1.0.0/om.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Parser>
 			<Parser name="GetObservationRequestParser" className="org.uncertweb.sta.wps.xml.io.dec.GetObservationRequestParser" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
@@ -45,15 +40,24 @@
 			</Parser>
 			<Parser name="UncertWebNetCDFParser" className="org.n52.wps.io.datahandler.binary.UncertWebNetCDFParser" active="true">
 	            <Property name="supportedFormat" active="true">application/x-netcdf</Property>
+	            <Property name="supportedFormat" active="true">application/netcdf</Property>
 	            <Property name="supportedEncoding" active="true">UTF-8</Property>
   			 </Parser>   
+  			 <Parser name="OMXmlParser" className="org.n52.wps.io.datahandler.xml.OMXmlParser" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/2.0/observation.xsd</Property>
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/1.0.0/om.xsd</Property>
+				<Property name="supportedFormat" active="true">application/x-om-u+xml</Property>
+				<Property name="supportedFormat" active="true">application/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
+			<Parser name="OMJsonParser" className="org.n52.wps.io.datahandler.json.OMJsonParser" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/2.0/observation.xsd</Property>
+				<Property name="supportedFormat" active="true">application/x-om-u+json</Property>
+				<Property name="supportedFormat" active="true">application/json</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Parser>
 		</ParserList>
 		<GeneratorList>
-			<Generator name="ObservationCollectionGenerator" className="org.uncertweb.sta.wps.xml.io.enc.ObservationCollectionGenerator" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/1.0.0/om.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Generator>
 			<Generator name="GetObservationRequestGenerator" className="org.uncertweb.sta.wps.xml.io.enc.GetObservationRequestGenerator" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
@@ -66,8 +70,26 @@
 			</Generator>
 			<Generator name="UncertWebNetCDFGenerator" className="org.n52.wps.io.datahandler.binary.UncertWebNetCDFGenerator" active="true">
 	            <Property name="supportedFormat" active="true">application/x-netcdf</Property>
+	            <Property name="supportedFormat" active="true">application/netcdf</Property>
 	            <Property name="supportedEncoding" active="true">UTF-8</Property>
-   			</Generator>	
+   			</Generator>
+   			<Generator name="OMv1XmlGenerator" className="org.uncertweb.sta.wps.xml.io.enc.ObservationCollectionGenerator" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/1.0.0/om.xsd</Property>
+				<Property name="supportedFormat" active="true">text/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>
+			<Generator name="OMv2XmlGenerator" className="org.n52.wps.io.datahandler.xml.OMXmlGenerator" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/2.0/observation.xsd</Property>
+				<Property name="supportedFormat" active="true">application/x-om-u+xml</Property>
+				<Property name="supportedFormat" active="true">application/xml</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>
+			<Generator name="OMv2JsonGenerator" className="org.n52.wps.io.datahandler.json.OMJsonGenerator" active="true">
+				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/2.0/observation.xsd</Property>
+				<Property name="supportedFormat" active="true">application/x-om-u+json</Property>
+				<Property name="supportedFormat" active="true">application/json</Property>
+				<Property name="supportedEncoding" active="true">UTF-8</Property>
+			</Generator>	
 		</GeneratorList>
 	</Datahandlers>
 	<AlgorithmRepositoryList>

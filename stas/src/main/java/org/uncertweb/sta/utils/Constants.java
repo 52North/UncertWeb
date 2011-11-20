@@ -30,65 +30,70 @@ import javax.xml.namespace.QName;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.sta.wps.RequestCache;
 import org.uncertweb.sta.wps.algorithms.GenericObservationAggregationProcess;
 import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
+import org.uncertweb.utils.UwStringUtils;
+import org.uncertweb.utils.UwXmlUtils;
 
 /**
  * Constants.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class Constants extends org.uncertweb.intamap.utils.Constants {
+public class Constants {
 
 	public static interface MethodNames {
 		public static interface Aggregation {
 			public static interface Temporal {
 				static final String TEMPORAL_PREFIX = "temporal";
-				public static final String ARITHMETIC_MEAN = TEMPORAL_PREFIX + "Mean";
+				public static final String ARITHMETIC_MEAN = TEMPORAL_PREFIX
+						+ "Mean";
 				public static final String MINIMUM = TEMPORAL_PREFIX + "Min";
 				public static final String MAXIMUM = TEMPORAL_PREFIX + "Max";
 				public static final String MEDIAN = TEMPORAL_PREFIX + "Median";
 				public static final String SUM = TEMPORAL_PREFIX + "Sum";
-				
+
 			}
 
 			public static interface Spatial {
 				static final String SPATIAL_PREFIX = "spatial";
-				public static final String ARITHMETIC_MEAN = SPATIAL_PREFIX + "Mean";
+				public static final String ARITHMETIC_MEAN = SPATIAL_PREFIX
+						+ "Mean";
 				public static final String MINIMUM = SPATIAL_PREFIX + "Min";
 				public static final String MAXIMUM = SPATIAL_PREFIX + "Max";
 				public static final String MEDIAN = SPATIAL_PREFIX + "Median";
 				public static final String SUM = SPATIAL_PREFIX + "Sum";
-				
+
 			}
-			
+
 		}
+
 		public static interface Grouping {
 			public static interface Temporal {
 				public static final String TEMPORAL_GRIDDING = "temporalGridding";
 				public static final String NO_GROUPING = "noPartitioning";
 				public static final String ONE_CONTAINING_TIME_RANGE = "oneContainingTimeRange";
 			}
+
 			public static interface Spatial {
 				public static final String POLYGON_CONTAINMENT = "polygonContainment";
 				public static final String NO_GROUPING = "noPartitioning";
 				public static final String CONVEX_HULL = "convexHull";
 			}
-			
-			
+
 		}
 	}
-	
+
 	/** The Logger. */
-	protected static final Logger log = LoggerFactory.getLogger(Constants.class);
+	protected static final Logger log = LoggerFactory
+			.getLogger(Constants.class);
 
 	/** {@link GenericObservationAggregationProcess} related constants. */
 	public static interface Process {
-		
+
 		public static final String PROCESS_PREFIX = get("process.urn.prefix");
 
 		/** Description of all {@link GenericObservationAggregationProcess}. */
@@ -96,18 +101,16 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 
 		/** Process inputs. */
 		public static interface Inputs {
-			
+
 			public final static String VARIABLE = "Variable";
 			public final static String INPUT_DATA = "InputData";
 			public final static String TARGET_SERVER = "TargetServer";
 			public final static String TARGET_SERVER_TYPE = "TargetServerType";
-			
-			
+
 			public static final String OBSERVATION_COLLECTION_INPUT_ID = "observationCollectionCompositeInput";
 			public static final String FEATURE_COLLECTION_INPUT_ID = "featureCollectionCompositeInput";
 
 			public static final String SPATIAL_BEFORE_TEMPORAL = "SpatialFirst";
-			
 
 			public static final String GROUP_BY_OBSERVED_PROPERTY_ID = "GroupByObservedProperty";
 			public static final String SOS_DESTINATION_URL_ID = "SOSDestinationUrl";
@@ -171,6 +174,8 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 			OPTIONS;
 		}
 	}
+	
+	public static final String OBSERVATION_PARAMETER_AGGREGATED_OF = "aggregatedOf";
 
 	/**
 	 * STAS version that will be inserted in URN's
@@ -190,18 +195,19 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 		 * The offering name for which the aggregated observations will be
 		 * registered.
 		 */
-		public static final String AGGREGATION_OFFERING_NAME = get("stas.sos.offeringName", AGGREGATION_OFFERING_ID);
+		public static final String AGGREGATION_OFFERING_NAME = get(
+				"stas.sos.offeringName", AGGREGATION_OFFERING_ID);
 
 		/** The URN prefix of registered virtual sensor processes. */
 		public static final String AGGREGATED_PROCESS = get("stas.sos.urn.process")
 				+ STAS_VERSION + ":";
 
 		/** Indicates that we want an <om:Observation> */
-		public static final QName OBSERVATION_RESULT_MODEL = Namespace.OM
+		public static final QName OBSERVATION_RESULT_MODEL = UwXmlUtils.Namespace.OM
 				.q("Observation");
 
 		/** Indicates that we want an <om:Measurement> */
-		public static final QName MEASUREMENT_RESULT_MODEL = Namespace.OM
+		public static final QName MEASUREMENT_RESULT_MODEL = UwXmlUtils.Namespace.OM
 				.q("Measurement");
 
 		/** The service type of the SOS: "SOS". */
@@ -246,7 +252,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 			 */
 			public String toString() {
 				if (this.camelcase == null) {
-					this.camelcase = Utils.camelize(this.name(), false);
+					this.camelcase = UwStringUtils.camelize(this.name(), false);
 				}
 				return this.camelcase;
 			}
@@ -274,7 +280,7 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 			 */
 			public String toString() {
 				if (this.camelcase == null) {
-					this.camelcase = Utils.camelize(this.name(), false);
+					this.camelcase = UwStringUtils.camelize(this.name(), false);
 				}
 				return this.camelcase;
 			}
@@ -345,9 +351,10 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 
 	/** Number of threads to fetch process inputs. */
 	public static final int THREADS_TO_FETCH_INPUTS = getInt("stas.threadsToFetchInputs");
-	
+
 	/**
-	 * Numbers of cached SOS requests. 
+	 * Numbers of cached SOS requests.
+	 * 
 	 * @see RequestCache
 	 */
 	public static final int MAX_CACHED_REQUESTS = getInt("stas.requestCache.max");
@@ -372,7 +379,8 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	/**
 	 * Loads a configuration property.
 	 * 
-	 * @param key the property key
+	 * @param key
+	 *            the property key
 	 * @return the property
 	 */
 	public static String get(String key) {
@@ -387,12 +395,14 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 		}
 		return prop;
 	}
-	
+
 	/**
 	 * Loads a configuration property.
 	 * 
-	 * @param key the property key
-	 * @param defaultValue the default value
+	 * @param key
+	 *            the property key
+	 * @param defaultValue
+	 *            the default value
 	 * @return the property or <code>defaultValue</code> if the property is
 	 *         <code>null</code> or empty
 	 */
@@ -413,14 +423,15 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	/**
 	 * Loads a boolean configuration property.
 	 * 
-	 * @param key the property key
+	 * @param key
+	 *            the property key
 	 * @return the property
 	 */
-	public static boolean getDefaultFlag(String input) {
+	public static boolean getDefaultFlag(String input, boolean value) {
 		String key = "stas.default." + input;
 		String s = get(key);
 		if (s == null) {
-			throw new RuntimeException("Can not parse property: {}" + key);
+			return value;
 		}
 		return Boolean.parseBoolean(s);
 	}
@@ -428,7 +439,8 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	/**
 	 * Loads a integer configuration property.
 	 * 
-	 * @param key the property key
+	 * @param key
+	 *            the property key
 	 * @return the property
 	 */
 	protected static int getInt(String key) {
@@ -442,7 +454,8 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	/**
 	 * Loads a property from {@link Constants#COMMON_PROPERTIES}
 	 * 
-	 * @param key the property key
+	 * @param key
+	 *            the property key
 	 * @return the property
 	 */
 	protected static String getCommonProperty(String key) {
@@ -468,7 +481,8 @@ public class Constants extends org.uncertweb.intamap.utils.Constants {
 	/**
 	 * Loads a property from {@link Constants#PROCESS_PROPERTIES}
 	 * 
-	 * @param key the property key
+	 * @param key
+	 *            the property key
 	 * @return the property
 	 */
 	protected static String getProcessProperty(String key) {

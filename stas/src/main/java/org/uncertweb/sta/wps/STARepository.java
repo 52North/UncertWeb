@@ -34,11 +34,11 @@ import org.n52.wps.server.IAlgorithmRepository;
 import org.n52.wps.server.request.ExecuteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.algorithms.GenericObservationAggregationProcess;
 import org.uncertweb.sta.wps.api.annotation.Ignore;
 import org.uncertweb.sta.wps.api.annotation.IsOnlyCompatibleWith;
+import org.uncertweb.sta.wps.api.annotation.NotCompatibleWith;
 import org.uncertweb.sta.wps.api.annotation.SpatialAggregationFunction;
 import org.uncertweb.sta.wps.api.annotation.SpatialOnly;
 import org.uncertweb.sta.wps.api.annotation.SpatialPartitioningPredicate;
@@ -50,6 +50,7 @@ import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 import org.uncertweb.sta.wps.method.grouping.GroupingMethod;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
+import org.uncertweb.utils.UwXmlUtils;
 
 /**
  * {@link IAlgorithmRepository} for all instances of
@@ -108,12 +109,14 @@ public class STARepository implements IAlgorithmRepository {
 		MethodFactory mf = MethodFactory.getInstance();
 		
 		for (Class<? extends SpatialGrouping> sg : mf.getSpatialGroupingMethods()) {
+			log.debug("Processing SpatialGrouping {}", sg.getName());
 			if (sg.getAnnotation(Ignore.class) != null) { continue; }
 			SpatialPartitioningPredicate spp = sg.getAnnotation(SpatialPartitioningPredicate.class);
 			String sppName = (spp == null) ? sg.getSimpleName() : spp.value();
 			IsOnlyCompatibleWith sgIocw = sg.getAnnotation(IsOnlyCompatibleWith.class);
 			
 			for (Class<? extends AggregationMethod> sm : mf.getAggregationMethods()) {
+				log.debug("Processing AggregationMethod {} for SpatialGrouping.", sm.getName());
 				if (sm.getAnnotation(Ignore.class) != null) { continue; }
 				if (sm.getAnnotation(TemporalOnly.class) != null) { continue; }
 				if (!isCompatible(sgIocw, sm)) { continue; }
@@ -121,12 +124,15 @@ public class STARepository implements IAlgorithmRepository {
 				String samName = (sam == null) ? sm.getSimpleName() : sam.value();
 				
 				for (Class<? extends TemporalGrouping> tg : mf.getTemporalGroupingMethods()) {
+					log.debug("Processing TemporalGrouping {} for SpatialGrouping {}.", tg.getName(), sg.getName());
 					if (tg.getAnnotation(Ignore.class) != null) { continue; }
+					if (!isCompatible(sg, tg)) { continue; }
 					TemporalPartitioningPredicate tpp = tg.getAnnotation(TemporalPartitioningPredicate.class);
 					String tppName = (tpp == null) ? tg.getSimpleName() : tpp.value();
 					IsOnlyCompatibleWith tgIocw = tg.getAnnotation(IsOnlyCompatibleWith.class);
 				
 					for (Class<? extends AggregationMethod> tm : mf.getAggregationMethods()) {
+						log.debug("Processing AggregationMethod {} for TemporalGrouping.", tm.getName());
 						if (tm.getAnnotation(Ignore.class) != null) { continue; }
 						if (tm.getAnnotation(SpatialOnly.class) != null) { continue; }
 						if (!isCompatible(tgIocw, tm)) { continue; }
@@ -146,6 +152,21 @@ public class STARepository implements IAlgorithmRepository {
 		return algos;
 	}
 	
+	private static boolean isCompatible(Class<? extends SpatialGrouping> sg, Class<? extends TemporalGrouping> tg) {
+		return isCompatible(sg.getAnnotation(NotCompatibleWith.class), tg)
+				&& isCompatible(tg.getAnnotation(NotCompatibleWith.class), sg);
+	}
+
+	private static boolean isCompatible(NotCompatibleWith ncw, Class<?> clazz) {
+		if (clazz == null || ncw == null)
+			return true;
+		for (Class<?> c : ncw.value()) {
+			if (clazz.equals(c))
+				return true;
+		}
+		return true;
+	}
+
 	private static boolean isCompatible(IsOnlyCompatibleWith iocw, Class<?> a) {
 		if (iocw == null) { 
 			return true;
@@ -187,7 +208,7 @@ public class STARepository implements IAlgorithmRepository {
 		if (!a.processDescriptionIsValid()) {
 			String msg = "ProcessDescription is not valid for " + id;
 			log.error(msg + ":\n"
-					+ a.getDescription().xmlText(Namespace.defaultOptions()));
+					+ a.getDescription().xmlText(UwXmlUtils.defaultOptions()));
 			throw new RuntimeException(msg);
 		}
 		return a;

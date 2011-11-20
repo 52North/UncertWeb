@@ -2,7 +2,6 @@ package org.uncertweb.sta.wps.algorithms;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,19 +10,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.NetCDFData;
-import org.n52.wps.io.data.UncertWebIOData;
-import org.n52.wps.io.data.binding.complex.NetCDFDataBinding;
-import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
+import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDoubleBinding;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.n52.wps.util.r.process.RProcessException;
+import org.opengis.observation.ObservationCollection;
 import org.rosuda.REngine.Rserve.RserveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.exception.NetcdfUWException;
-import org.uncertweb.intamap.om.ObservationCollection;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.AggregationInputs;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
@@ -59,7 +55,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 	 */
 	public static final SingleProcessInput<String> TARGETGRID = new SingleProcessInput<String>(
 			"TargetGrid",
-			NetCDFDataBinding.class, 0, 1, null, null);
+			NetCDFBinding.class, 0, 1, null, null);
 	
 	/**
 	 * xoffset of target grid
@@ -87,7 +83,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 	 */
 	public static final SingleProcessInput<String> INPUT_DATA = new SingleProcessInput<String>(
 			Constants.Process.Inputs.INPUT_DATA,
-			NetCDFDataBinding.class, 1, 1, null, null);
+			NetCDFBinding.class, 1, 1, null, null);
 	
 	/**
 	 * Process output that contains a {@code GetObservation} request to fetch
@@ -97,7 +93,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 	 */
 	public static final ProcessOutput AGGREGATED_OUTPUT = new ProcessOutput(
 			Constants.Process.Outputs.AGGREGATED_DATA,
-			NetCDFDataBinding.class);
+			NetCDFBinding.class);
 	
 	/**
 	 * constructor
@@ -180,8 +176,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 		//targetGrid
 		List<IData> targetGridInput = inputData.get(TARGETGRID.getId());
 		if (targetGridInput!=null&&targetGridInput.size()==1){
-			NetCDFData ncInput = (NetCDFData) ((NetCDFDataBinding)targetGridInput.get(0)).getPayload();
-			NetcdfUWFile ncFile = ncInput.getNetcdfUWFile();
+			NetcdfUWFile ncFile = ((NetCDFBinding)targetGridInput.get(0)).getPayload();
 			targetGridFilePath = ncFile.getNetcdfFile().getLocation();
 			targetGridFilePath = targetGridFilePath.replace("\\","/");
 		}
@@ -189,8 +184,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 		//getInputFilePath
 		List<IData> inputDataInput = inputData.get(INPUT_DATA.getId());
 		if (inputDataInput!=null&&inputDataInput.size()==1){
-			NetCDFData ncInput = (NetCDFData) ((NetCDFDataBinding)inputDataInput.get(0)).getPayload();
-			NetcdfUWFile ncFile = ncInput.getNetcdfUWFile();
+			NetcdfUWFile ncFile = ((NetCDFBinding)inputDataInput.get(0)).getPayload();
 			inputFilePath = ncFile.getNetcdfFile().getLocation();
 			inputFilePath = inputFilePath.replace("\\","/");
 		}
@@ -274,8 +268,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 		
 			NetcdfFile ncFile = NetcdfFile.open(outputFilePath);
 			NetcdfUWFile uwFile = new NetcdfUWFile(ncFile);
-			NetCDFData ncData = new NetCDFData(uwFile);
-			result.put(AGGREGATED_OUTPUT.getId(), new NetCDFDataBinding(ncData));
+			result.put(AGGREGATED_OUTPUT.getId(), new NetCDFBinding(uwFile));
 		
 		} catch (RserveException e) {
 			String msg = "Error while establishing RServe connection: "+e.getLocalizedMessage();

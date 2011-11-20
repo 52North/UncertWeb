@@ -26,14 +26,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.uncertweb.intamap.om.Observation;
-import org.uncertweb.intamap.om.ObservationTime;
+import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.utils.Constants;
-import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
+import org.uncertweb.sta.wps.api.annotation.NotCompatibleWith;
 import org.uncertweb.sta.wps.api.annotation.TemporalPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
+import org.uncertweb.utils.UwCollectionUtils;
 
 /**
  * Groups a collection of {@code Observation}s by their {@code SamplingTime}.
@@ -43,6 +44,7 @@ import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 @TemporalPartitioningPredicate(Constants.MethodNames.Grouping.Temporal.NO_GROUPING)
+@NotCompatibleWith(NoSpatialGrouping.class)
 public class NoTemporalGrouping extends TemporalGrouping {
 
 	/**
@@ -50,29 +52,28 @@ public class NoTemporalGrouping extends TemporalGrouping {
 	 * {@code SamplingTime} and iterates over them.
 	 */
 	private class MappingIterator implements
-			Iterator<ObservationMapping<ObservationTime>> {
+			Iterator<ObservationMapping<TimeObject>> {
 
 		/**
 		 * The {@code List}-{@code Iterator} we delegate to.
 		 */
-		private Iterator<LinkedList<Observation>> i = null;
+		private Iterator<LinkedList<AbstractObservation>> i = null;
 
 		/**
 		 * Creates a new {@code Iterator}.
 		 */
 		public MappingIterator() {
-			LinkedList<LinkedList<Observation>> list = new LinkedList<LinkedList<Observation>>();
-			for (Observation o : getObservations()) {
+			LinkedList<LinkedList<AbstractObservation>> list = new LinkedList<LinkedList<AbstractObservation>>();
+			for (AbstractObservation o : getObservations()) {
 				/* due some mystery in HashMap we have to do it this way... */
-				LinkedList<Observation> toAddTo = null;
-				for (LinkedList<Observation> lo : list) {
-					if (lo.element().getObservationTime().hashCode() == o
-							.getObservationTime().hashCode()) {
+				LinkedList<AbstractObservation> toAddTo = null;
+				for (LinkedList<AbstractObservation> lo : list) {
+					if (lo.element().getPhenomenonTime().hashCode() == o.getPhenomenonTime().hashCode()) {
 						toAddTo = lo;
 					}
 				}
 				if (toAddTo == null) {
-					toAddTo = new LinkedList<Observation>();
+					toAddTo = new LinkedList<AbstractObservation>();
 					list.add(toAddTo);
 				}
 				toAddTo.add(o);
@@ -93,10 +94,9 @@ public class NoTemporalGrouping extends TemporalGrouping {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public ObservationMapping<ObservationTime> next() {
-			LinkedList<Observation> list = i.next();
-			return new ObservationMapping<ObservationTime>(list.element()
-					.getObservationTime(), list);
+		public ObservationMapping<TimeObject> next() {
+			LinkedList<AbstractObservation> list = i.next();
+			return new ObservationMapping<TimeObject>(list.element().getPhenomenonTime(), list);
 		}
 
 		/**
@@ -112,7 +112,7 @@ public class NoTemporalGrouping extends TemporalGrouping {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Iterator<ObservationMapping<ObservationTime>> iterator() {
+	public Iterator<ObservationMapping<TimeObject>> iterator() {
 		return new MappingIterator();
 	}
 
@@ -121,7 +121,7 @@ public class NoTemporalGrouping extends TemporalGrouping {
 	 */
 	@Override
 	public Set<AbstractProcessInput<?>> getAdditionalInputDeclarations() {
-		return Utils.set();
+		return UwCollectionUtils.set();
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class NoTemporalGrouping extends TemporalGrouping {
 	 * 
 	 * @param obs the observations to group
 	 */
-	public NoTemporalGrouping(List<Observation> obs) {
+	public NoTemporalGrouping(List<? extends AbstractObservation> obs) {
 		setInputs(obs, null);
 	}
 

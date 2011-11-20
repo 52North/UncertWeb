@@ -21,6 +21,7 @@
  */
 package org.uncertweb.sta.wps.method.grouping.impl;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -36,9 +37,10 @@ import org.n52.wps.server.AlgorithmParameterException;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
-import org.uncertweb.intamap.om.ISamplingFeature;
-import org.uncertweb.intamap.om.Observation;
-import org.uncertweb.intamap.om.SamplingSurface;
+import org.opengis.observation.Observation;
+import org.uncertweb.api.gml.Identifier;
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.FeatureCollectionInputHandler;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
@@ -48,6 +50,7 @@ import org.uncertweb.sta.wps.api.annotation.SpatialPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
+import org.uncertweb.utils.UwConstants;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -59,6 +62,8 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 @SpatialPartitioningPredicate(Constants.MethodNames.Grouping.Spatial.POLYGON_CONTAINMENT)
 public class PolygonContainment extends SpatialGrouping {
+
+	private static final URI DEFAULT_CODE_SPACE = UwConstants.URL.INAPPLICABLE.uri;
 
 	/**
 	 * The {@link FeatureCollection} which will be merged with the
@@ -115,7 +120,7 @@ public class PolygonContainment extends SpatialGrouping {
 	 * every {@code Feature} a {@code ObservationMapping}.
 	 */
 	protected class LazyMappingIterator implements
-			Iterator<ObservationMapping<ISamplingFeature>> {
+			Iterator<ObservationMapping<SpatialSamplingFeature>> {
 
 		/**
 		 * The iterator of the {@code Feature}s.
@@ -133,8 +138,8 @@ public class PolygonContainment extends SpatialGrouping {
 						"No FeatureCollection found.");
 			}
 			this.iterator = features.features();
-			log.info("Grouping {} Observations with {} Features.", getObservations()
-					.size(), features.size());
+			log.info("Grouping {} Observations with {} Features.",
+					getObservations().size(), features.size());
 		}
 
 		/**
@@ -149,7 +154,7 @@ public class PolygonContainment extends SpatialGrouping {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public ObservationMapping<ISamplingFeature> next() {
+		public ObservationMapping<SpatialSamplingFeature> next() {
 			return map(iterator.next());
 		}
 
@@ -166,7 +171,7 @@ public class PolygonContainment extends SpatialGrouping {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Iterator<ObservationMapping<ISamplingFeature>> iterator() {
+	public Iterator<ObservationMapping<SpatialSamplingFeature>> iterator() {
 		return new LazyMappingIterator();
 	}
 
@@ -174,10 +179,11 @@ public class PolygonContainment extends SpatialGrouping {
 	 * Gets all {@link Observation}s that are located in the given
 	 * {@link Feature} and creates a {@link ObservationMapping}.
 	 * 
-	 * @param feature the feature
+	 * @param feature
+	 *            the feature
 	 * @return the mapping
 	 */
-	protected ObservationMapping<ISamplingFeature> map(Feature feature) {
+	protected ObservationMapping<SpatialSamplingFeature> map(Feature feature) {
 		SimpleFeature f = (SimpleFeature) feature;
 		if (f.getDefaultGeometry() == null) {
 			throw new NullPointerException(
@@ -189,28 +195,32 @@ public class PolygonContainment extends SpatialGrouping {
 			return null;
 		} else {
 			Geometry geom = (Geometry) f.getDefaultGeometry();
-			LinkedList<Observation> result = new LinkedList<Observation>();
+			LinkedList<AbstractObservation> result = new LinkedList<AbstractObservation>();
 			if (!this.getObservations().isEmpty()) {
-				int srid = getObservations().get(0).getSRID();
-				geom.setSRID(srid); /* FIXME enable SRID parsing in WPS Parser
-									 * class */
-				for (Observation o : getObservations()) {
-					log.debug("{}: Observation Geom: {}", geom.contains(o
-							.getFeatureOfInterest().getLocation()), o
-							.getFeatureOfInterest().getLocation());
+				int srid = getObservations().get(0).getFeatureOfInterest()
+						.getShape().getSRID();
+				geom.setSRID(srid); /*
+									 * FIXME enable SRID parsing in WPS Parser
+									 * class
+									 */
+				for (AbstractObservation o : getObservations()) {
+					log.debug("{}: Observation Geom: {}",
+							geom.contains(o.getFeatureOfInterest().getShape()),
+							o.getFeatureOfInterest().getShape());
 
-					if (geom.contains(o.getFeatureOfInterest().getLocation())) {
+					if (geom.contains(o.getFeatureOfInterest().getShape())) {
 						result.add(o);
 					}
 				}
 			}
-			log.info("Feature-SRID: {}; Observation-SRID: {}", geom.getSRID(), getObservations()
-					.get(0).getSRID());
+			log.info("Feature-SRID: {}; Observation-SRID: {}", geom.getSRID(),
+					getObservations().get(0).getFeatureOfInterest().getShape()
+							.getSRID());
 			log.info("{} Observations for Feature: {}", result.size(), geom);
-			return new ObservationMapping<ISamplingFeature>(
-					new SamplingSurface((Geometry) f.getDefaultGeometry(),
-							null, f.getID(), (f.getName() == null) ? f.getID()
-									: f.getName().getLocalPart()), result);
+			return new ObservationMapping<SpatialSamplingFeature>(
+					new SpatialSamplingFeature(new Identifier(
+							DEFAULT_CODE_SPACE, f.getID()), null,
+							(Geometry) f.getDefaultGeometry()), result);
 		}
 	}
 }

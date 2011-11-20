@@ -25,16 +25,15 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.joda.time.DateTime;
-import org.uncertweb.intamap.om.Observation;
-import org.uncertweb.intamap.om.ObservationTime;
-import org.uncertweb.intamap.om.ObservationTimeInstant;
-import org.uncertweb.intamap.om.ObservationTimeInterval;
+import org.opengis.observation.Observation;
+import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.utils.Constants;
-import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
 import org.uncertweb.sta.wps.api.annotation.TemporalPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
+import org.uncertweb.utils.UwCollectionUtils;
 
 /**
  * {@link TemporalGrouping} that maps all {@link Observation}s to one single
@@ -49,37 +48,38 @@ public class OneContainingTimeRangeGrouping extends TemporalGrouping {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Iterator<ObservationMapping<ObservationTime>> iterator() {
+	public Iterator<ObservationMapping<TimeObject>> iterator() {
 		DateTime start = null, end = null;
-		log.info("Calculating TimeRange for {} Observations.", getObservations()
-				.size());
-		for (Observation o : getObservations()) {
-			if (o.getObservationTime() instanceof ObservationTimeInterval) {
-				ObservationTimeInterval time = (ObservationTimeInterval) o
-						.getObservationTime();
-				if (start == null || time.getStart().isBefore(start)) {
-					start = time.getStart();
+		log.info("Calculating TimeRange for {} Observations.",
+				getObservations().size());
+		for (AbstractObservation o : getObservations()) {
+
+			if (o.getPhenomenonTime().isInterval()) {
+				if (start == null
+						|| o.getPhenomenonTime().getInterval().getStart()
+								.isBefore(start)) {
+					start = o.getPhenomenonTime().getInterval().getStart();
 				}
-				if (end == null || time.getEnd().isAfter(end)) {
-					end = time.getEnd();
+				if (end == null
+						|| o.getPhenomenonTime().getInterval().getEnd()
+								.isAfter(end)) {
+					end = o.getPhenomenonTime().getInterval().getEnd();
 				}
 			} else {
-				ObservationTimeInstant time = (ObservationTimeInstant) o
-						.getObservationTime();
-				if (start == null || time.isBefore(start)) {
-					start = time.getDateTime();
+
+				if (start == null
+						|| o.getPhenomenonTime().getDateTime().isBefore(start)) {
+					start = o.getPhenomenonTime().getDateTime();
 				}
-				if (end == null || time.isAfter(end)) {
-					end = time.getDateTime();
+				if (end == null
+						|| o.getPhenomenonTime().getDateTime().isAfter(end)) {
+					end = o.getPhenomenonTime().getDateTime();
 				}
 			}
 		}
-		ObservationTime time = (start.equals(end))
-				? new ObservationTimeInstant(start)
-				: new ObservationTimeInterval(start, end);
-		return Utils
-				.list(new ObservationMapping<ObservationTime>(
-						time, getObservations())).iterator();
+		TimeObject time = (start.equals(end)) ? new TimeObject(start) : new TimeObject(start, end);
+		return UwCollectionUtils.list(new ObservationMapping<TimeObject>(time,
+						getObservations())).iterator();
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class OneContainingTimeRangeGrouping extends TemporalGrouping {
 	 */
 	@Override
 	public Set<AbstractProcessInput<?>> getAdditionalInputDeclarations() {
-		return Utils.set();
+		return UwCollectionUtils.set();
 	}
 
 }

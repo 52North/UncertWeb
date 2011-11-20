@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.junit.Test;
-import org.uncertweb.intamap.utils.TimeUtils;
+import org.uncertweb.utils.UwTimeUtils;
 
 public class TimeUtilsTest {
 
@@ -40,7 +40,7 @@ public class TimeUtilsTest {
 
 	@Test
 	public void testPeriodParsing() {
-		Period p = TimeUtils.parsePeriod(PERIOD_LONG).toPeriod();
+		Period p = UwTimeUtils.parsePeriod(PERIOD_LONG).toPeriod();
 		assertEquals(1, p.getYears());
 		assertEquals(3, p.getMonths());
 		assertEquals(5, p.getWeeks());
@@ -53,22 +53,22 @@ public class TimeUtilsTest {
 
 	@Test
 	public void testPeriodFormatting() {
-		assertEquals(PERIOD_LONG, TimeUtils.format(TimeUtils
+		assertEquals(PERIOD_LONG, UwTimeUtils.format(UwTimeUtils
 				.parsePeriod(PERIOD_LONG)));
 	}
 
 	@Test
 	public void testWithinRange() {
-		DateTime d1 = TimeUtils.parseDateTime(TIME1);
-		DateTime d2 = TimeUtils.parseDateTime(TIME2);
-		DateTime d3 = TimeUtils.parseDateTime(TIME3);
-		Period p = TimeUtils.parsePeriod(PERIOD_SHORT).toPeriod();
-		assertTrue(TimeUtils.withinRange(d1, d3, d2));
-		assertTrue(TimeUtils.withinRange(d1, d3, d1));
-		assertTrue(TimeUtils.withinRange(d1, d3, d3));
-		assertTrue(TimeUtils.withinRange(d1, d1, d1));
-		assertFalse(TimeUtils.withinRange(d1, d2, d3));
-		assertFalse(TimeUtils.withinRange(d1, d2, d3));
-		assertTrue(TimeUtils.withinRange(d1, p, d2));
+		DateTime d1 = UwTimeUtils.parseDateTime(TIME1);
+		DateTime d2 = UwTimeUtils.parseDateTime(TIME2);
+		DateTime d3 = UwTimeUtils.parseDateTime(TIME3);
+		Period p = UwTimeUtils.parsePeriod(PERIOD_SHORT).toPeriod();
+		assertTrue(UwTimeUtils.withinRange(d1, d3, d2));
+		assertTrue(UwTimeUtils.withinRange(d1, d3, d1));
+		assertTrue(UwTimeUtils.withinRange(d1, d3, d3));
+		assertTrue(UwTimeUtils.withinRange(d1, d1, d1));
+		assertFalse(UwTimeUtils.withinRange(d1, d2, d3));
+		assertFalse(UwTimeUtils.withinRange(d1, d2, d3));
+		assertTrue(UwTimeUtils.withinRange(d1, p, d2));
 	}
 }

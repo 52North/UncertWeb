@@ -3,8 +3,6 @@ package org.uncertweb.sta.wps;
 import java.net.URL;
 import java.util.List;
 
-import org.n52.wps.io.data.UncertWebIOData;
-
 /**
  * class represents common aggregation inputs of all Input Parameters
  * 

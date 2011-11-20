@@ -23,11 +23,11 @@ package org.uncertweb.sta.wps.method.aggregation.impl;
 
 import java.util.List;
 
-import org.uncertweb.intamap.om.Observation;
+import org.opengis.observation.Observation;
+import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.sta.utils.Constants.MethodNames.Aggregation;
 import org.uncertweb.sta.wps.api.annotation.SpatialAggregationFunction;
 import org.uncertweb.sta.wps.api.annotation.TemporalAggregationFunction;
-import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 
 /**
  * Method which uses the sum to aggregate {@link Observation}s.
@@ -36,19 +36,19 @@ import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
  */
 @SpatialAggregationFunction(Aggregation.Spatial.SUM)
 @TemporalAggregationFunction(Aggregation.Temporal.SUM)
-public class Sum implements AggregationMethod {
+public class Sum extends AbstractMeasurementAggregationMethod {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public double aggregate(List<Observation> oc) {
+	public double aggregate1(List<Measurement> oc) {
 		if (oc.isEmpty())
 			throw new RuntimeException(
 					"Can not aggregate empty ObservationCollection.");
 		double result = 0;
-		for (Observation o : oc) {
-			result += o.getResult();
+		for (Measurement o : oc) {
+			result += o.getResult().getMeasureValue();
 		}
 		return result;
 	}

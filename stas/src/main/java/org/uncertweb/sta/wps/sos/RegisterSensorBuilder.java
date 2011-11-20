@@ -21,16 +21,17 @@
  */
 package org.uncertweb.sta.wps.sos;
 
-import static org.uncertweb.intamap.utils.Namespace.OM;
-import static org.uncertweb.intamap.utils.Namespace.SML;
-import static org.uncertweb.intamap.utils.Namespace.SML_VERSION;
-import static org.uncertweb.intamap.utils.Namespace.SWE;
+import static org.uncertweb.utils.UwXmlUtils.Namespace.OM;
+import static org.uncertweb.utils.UwXmlUtils.Namespace.SML;
+import static org.uncertweb.utils.UwXmlUtils.Namespace.SML_VERSION;
+import static org.uncertweb.utils.UwXmlUtils.Namespace.SWE;
 
+import java.net.URI;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import net.opengis.gml.MetaDataPropertyType;
 import net.opengis.gml.TimePeriodType;
@@ -73,13 +74,15 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uncertweb.intamap.om.Observation;
-import org.uncertweb.intamap.om.ObservationTimeInstant;
-import org.uncertweb.intamap.om.ObservationTimeInterval;
-import org.uncertweb.intamap.utils.TimeUtils;
+import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
-import org.uncertweb.sta.wps.om.OriginAwareObservation;
+import org.uncertweb.sta.wps.om.Origin;
+import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.utils.UwConstants;
+import org.uncertweb.utils.UwTimeUtils;
 
 /**
  * TODO JavaDoc
@@ -87,19 +90,29 @@ import org.uncertweb.sta.wps.om.OriginAwareObservation;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class RegisterSensorBuilder {
+
+	public static final String SWE_DATA_ARRAY_BLOCK_SEPERATOR = ";";
+	public static final String SWE_DATA_ARRAY_TOKEN_SEPERATOR = ",";
+	public static final String SWE_DATA_ARRAY_DECIMAL_SEPERATOR = ".";
+	public static final String FIELD_NAME_BBOX = "observedBBOX";
+    public static final String ELEMENT_NAME_OFFERING = "offering";
+    public static final String ELEMENT_NAME_ID = "id";
+    public static final String ELEMENT_NAME_NAME = "name";
+    public static final String FIELD_NAME_STATUS = "status";
+    public static final String ATTRIBUTE_NAME_UOM = "uom";
 	
-	protected static final Logger log = LoggerFactory.getLogger(RegisterSensorBuilder.class);
-    protected static final String COORD_NAME_LAT = "latitude";
-    protected static final String COORD_NAME_LON = "longitude";
-    protected static final String QUANTITY_AXIS_ID_LAT = "y";
-    protected static final String QUANTITY_AXIS_ID_LON = "x";
-    protected static final String QUANTITY_AXIS_ID_ALTITUDE = "z";
-    protected static final String COORD_NAME_ALTITUDE = "altitude";
-    protected static final String EPSG_4326_REFERENCE_SYSTEM_DEFINITION = Constants.URN_EPSG_SRS_PREFIX + "4326";
-    protected static final String COORDINATE_UOM = "degree";
-    protected static final String METER_UOM = "m";	
-    protected static final double lat = 0, lon = 0, alt = 0;
+    public static final String COORD_NAME_LAT = "latitude";
+    public static final String COORD_NAME_LON = "longitude";
+    public static final String QUANTITY_AXIS_ID_LAT = "y";
+    public static final String QUANTITY_AXIS_ID_LON = "x";
+    public static final String QUANTITY_AXIS_ID_ALTITUDE = "z";
+    public static final String COORD_NAME_ALTITUDE = "altitude";
+    public static final String EPSG_4326_REFERENCE_SYSTEM_DEFINITION = UwConstants.URN.EPSG_SRS_PREFIX.value + "4326";
+    public static final String COORDINATE_UOM = "degree";
+    public static final String METER_UOM = "m";	
+    public static final double lat = 0, lon = 0, alt = 0;
     
+    protected static final Logger log = LoggerFactory.getLogger(RegisterSensorBuilder.class);
 	private static RegisterSensorBuilder singleton;
 
 	public static RegisterSensorBuilder getInstance() {
@@ -111,7 +124,7 @@ public class RegisterSensorBuilder {
 	
 	private RegisterSensorBuilder(){}
 	
-	public RegisterSensorDocument build(String process, List<Observation> obs, Map<String,Object> meta) {
+	public RegisterSensorDocument build(URI process, List<AbstractObservation> obs, Map<String,Object> meta) {
 		RegisterSensorDocument regSenDoc = RegisterSensorDocument.Factory.newInstance();
 		RegisterSensor regSen = regSenDoc.addNewRegisterSensor();
 		regSen.setService(Constants.Sos.SERVICE_NAME);
@@ -133,13 +146,13 @@ public class RegisterSensorBuilder {
 		        ((Boolean) adrt).setValue((java.lang.Boolean) o);
 			} else if (o instanceof DateTime) {
 				adrt = field.addNewTime();
-				((Time) adrt).setValue(TimeUtils.format((DateTime) o));
+				((Time) adrt).setValue(UwTimeUtils.format((DateTime) o));
 			} else if (o instanceof Interval) {
 				adrt = field.addNewTimeRange();
 				Interval i = (Interval) o;
-				((TimeRange) adrt).setValue(Utils.list(
-						TimeUtils.format(i.getStart()),
-						TimeUtils.format(i.getEnd())));
+				((TimeRange) adrt).setValue(UwCollectionUtils.list(
+						UwTimeUtils.format(i.getStart()),
+						UwTimeUtils.format(i.getEnd())));
 			} else if (o instanceof Class) {
 				adrt = field.addNewText();
 				((Text) adrt).setValue(((Class<?>) o).getName());
@@ -155,7 +168,7 @@ public class RegisterSensorBuilder {
 	}
 	
 	protected void buildSensorDescription(RegisterSensor regSen,
-			String process, List<Observation> obs, Map<String,Object> meta) {
+			URI process, List<AbstractObservation> obs, Map<String,Object> meta) {
 		SensorDescription description = regSen.addNewSensorDescription();
 		SensorMLDocument smlDocument = SensorMLDocument.Factory.newInstance();
 		SensorML sml = smlDocument.addNewSensorML();
@@ -171,8 +184,8 @@ public class RegisterSensorBuilder {
 		IdentifierList idenList = processType.addNewIdentification().addNewIdentifierList();
 		Identifier ident = idenList.addNewIdentifier();
 		Term term = ident.addNewTerm();
-		term.setDefinition(Constants.URN_UNIQUE_ID_DEFINITION);
-		term.setValue(process);
+		term.setDefinition(UwConstants.URN.OGC_UNIQUE_ID_DEFINITION.value);
+		term.setValue(process.toString());
 
 		processType.addNewDescription().setStringValue(Constants.Sos.ProcessDescription.SENSOR_DESCRIPTION);
 		buildValidTime(processType, obs);
@@ -221,7 +234,7 @@ public class RegisterSensorBuilder {
 	}
 
 
-	protected void buildInputOutputLists(XmlObject systemType, List<Observation> obs) {
+	protected void buildInputOutputLists(XmlObject systemType, List<AbstractObservation> obs) {
 		InputList inputList = null;
 		OutputList outputList = null;
 		if (systemType instanceof AbstractPureProcessType) {
@@ -234,41 +247,41 @@ public class RegisterSensorBuilder {
 			throw new RuntimeException("Can only handle AbstractComponentType and AbstractPureProcessType");
 		}
 		
-		HashSet<String> processes = new HashSet<String>();
+		Set<URI> processes = UwCollectionUtils.set();
 		
 		String url = null;		
-		for (Observation o : obs) {
-			if (o instanceof OriginAwareObservation) {
-				OriginAwareObservation oao = (OriginAwareObservation) o;
+		for (AbstractObservation o : obs) {
+			Origin origin = (Origin) o.getParameter(Constants.OBSERVATION_PARAMETER_AGGREGATED_OF);
+			if (origin != null) {
 				if (url == null) {
-					url = oao.getSourceUrl();
+					url = origin.getSourceUrl();
 					int i = url.lastIndexOf('?');
 					if (i < url.length() && i > 0) 
 						url = url.substring(0, i); /* cut off old parameters */
 				}
-				processes.addAll(oao.getSourceSensors());
+				processes.addAll(origin.getSourceSensors());
 			}
 		}
 		
         /* inputs */
 		int j = 0;
-		for (String s : processes) {
+		for (URI s : processes) {
 			IoComponentPropertyType ioComp = inputList.addNewInput();
 			ioComp.setName("inputSensor" + String.valueOf(j++));
-			ioComp.setHref(getDescribeSensorUrl(url, s));
+			ioComp.setHref(getDescribeSensorUrl(url, s.toString()));
 		}
 
-		HashMap<String, String> obsProps = new HashMap<String, String>();
-		for (Observation o : obs) {
-			obsProps.put(o.getObservedProperty(), o.getUom());
+		Map<URI, String> obsProps = UwCollectionUtils.map();
+		for (AbstractObservation o : obs) {
+			obsProps.put(o.getObservedProperty(), ((MeasureResult)o.getResult()).getUnitOfMeasurement());
 		}
 		int i = 0;
         /* outputs */
-		for (String obsProp : obsProps.keySet()) {
+		for (URI obsProp : obsProps.keySet()) {
 			IoComponentPropertyType output = outputList.addNewOutput();
 			output.setName("output" + String.valueOf(i++));
 			Quantity quantity = output.addNewQuantity();
-			quantity.setDefinition(obsProp);
+			quantity.setDefinition(obsProp.toString());
 			quantity.addNewUom().setCode(obsProps.get(obsProp));
 			MetaDataPropertyType metaDataProperty = quantity
 					.addNewMetaDataProperty();
@@ -276,9 +289,9 @@ public class RegisterSensorBuilder {
 			/* offering. there will be only one offering for all observations */
 			XmlCursor cursor = metaDataProperty.newCursor();
 			cursor.toNextToken();
-			cursor.beginElement(Constants.ELEMENT_NAME_OFFERING);
-			cursor.insertElementWithText(Constants.ELEMENT_NAME_ID, Constants.Sos.AGGREGATION_OFFERING_ID);
-			cursor.insertElementWithText(Constants.ELEMENT_NAME_NAME, Constants.Sos.AGGREGATION_OFFERING_NAME);
+			cursor.beginElement(ELEMENT_NAME_OFFERING);
+			cursor.insertElementWithText(ELEMENT_NAME_ID, Constants.Sos.AGGREGATION_OFFERING_ID);
+			cursor.insertElementWithText(ELEMENT_NAME_NAME, Constants.Sos.AGGREGATION_OFFERING_NAME);
 		}
 	}
 	
@@ -293,27 +306,29 @@ public class RegisterSensorBuilder {
 	}
 	
 	
-	protected void buildValidTime(AbstractProcessType systemType, List<Observation> obs) {
+	protected void buildValidTime(AbstractProcessType systemType, List<? extends AbstractObservation> obs) {
 		DateTime start = null, end = null;
-		for (Observation o : obs) {
-			if (o.getObservationTime() instanceof ObservationTimeInstant) {
-				DateTime t = ((ObservationTimeInstant) o.getObservationTime()).getDateTime();
+		for (AbstractObservation o : obs) {
+			TimeObject to = o.getPhenomenonTime();
+			
+			if (to.isInstant()) {
+				DateTime t = to.getDateTime();
 				if (start == null || t.isBefore(start))
 					start = t;
 				if (end == null || t.isAfter(end))
 					end = t;
-			} else if (o.getObservationTime() instanceof ObservationTimeInterval) {
-				DateTime s = ((ObservationTimeInterval) o.getObservationTime()).getStart();
+			} else if (to.isInterval()) {
+				DateTime s = to.getInterval().getStart();
 				if (start == null || s.isBefore(start))
 					start = s;
-				DateTime e = ((ObservationTimeInterval) o.getObservationTime()).getEnd();
+				DateTime e = to.getInterval().getEnd();
 				if (end == null || e.isAfter(end)) 
 					end = e;
 			}
 		}
 		TimePeriodType validTime = systemType.addNewValidTime().addNewTimePeriod();
-		validTime.addNewBeginPosition().setStringValue(TimeUtils.format(start));
-		validTime.addNewEndPosition().setStringValue(TimeUtils.format(end));
+		validTime.addNewBeginPosition().setStringValue(UwTimeUtils.format(start));
+		validTime.addNewEndPosition().setStringValue(UwTimeUtils.format(end));
 	}
 
 	protected void buildObservationTemplate(RegisterSensor regSen) {
@@ -328,7 +343,7 @@ public class RegisterSensorBuilder {
 		XmlObject result = measurementType.addNewResult();
 		XmlCursor resultCursor = result.newCursor();
 		resultCursor.toNextToken();
-		resultCursor.insertAttributeWithValue(Constants.ATTRIBUTE_NAME_UOM, "");
+		resultCursor.insertAttributeWithValue(ATTRIBUTE_NAME_UOM, "");
 		resultCursor.insertChars("0.0");
 		resultCursor.dispose();
 	}
@@ -338,7 +353,7 @@ public class RegisterSensorBuilder {
 		AbstractDataRecordType abstractDataRecord = capabilities.addNewAbstractDataRecord();
 		DataRecordType dataRecord = (DataRecordType) abstractDataRecord
 				.substitute(SWE.q("DataRecord"), DataRecordType.type);
-		dataRecord.setDefinition(Constants.URN_CAPABILITIES_DEFINITION);
+		dataRecord.setDefinition(UwConstants.URN.CAPABILITIES_DEFINITION.value);
 		
 
 		/* TODO generate BBOX 
@@ -347,9 +362,9 @@ public class RegisterSensorBuilder {
 		*/
 		
 		DataComponentPropertyType statusField = dataRecord.addNewField();
-        statusField.setName(Constants.FIELD_NAME_STATUS);
+        statusField.setName(FIELD_NAME_STATUS);
         Boolean statusBoolean = statusField.addNewBoolean();
-        statusBoolean.setDefinition(Constants.URN_IS_ACTIVE);
+        statusBoolean.setDefinition(UwConstants.URN.IS_ACTIVE.value);
         statusBoolean.setValue(false);
         
 //        // spatial grouping method
@@ -399,6 +414,6 @@ public class RegisterSensorBuilder {
         toaField.setName(Constants.Sos.ProcessDescription.Capabilities.TIME_OF_AGGREGATION);
         Time toaTime = toaField.addNewTime();
         toaTime.setDefinition(Constants.Sos.ProcessDescription.Capabilities.URN_PREFIX + Constants.Sos.ProcessDescription.Capabilities.TIME_OF_AGGREGATION);
-        toaTime.setValue(TimeUtils.format(new DateTime()));
+        toaTime.setValue(UwTimeUtils.format(new DateTime()));
 	}
 }

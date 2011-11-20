@@ -23,7 +23,7 @@ package org.uncertweb.sta.wps.sos;
 
 import net.opengis.sos.x10.InsertObservationDocument;
 
-import org.uncertweb.intamap.om.Observation;
+import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.wps.xml.io.enc.ObservationGenerator;
 
 /**
@@ -42,14 +42,17 @@ public class InsertObservationBuilder {
 		return singleton;
 	}
 
-	private InsertObservationBuilder() {}
+	private InsertObservationBuilder() {
+	}
 
 	private ObservationGenerator generator = new ObservationGenerator();
 
-	public InsertObservationDocument build(Observation o) {
-		InsertObservationDocument insObsDoc = InsertObservationDocument.Factory.newInstance();
+	public InsertObservationDocument build(AbstractObservation o) {
+		InsertObservationDocument insObsDoc = InsertObservationDocument.Factory
+				.newInstance();
 		insObsDoc.addNewInsertObservation().set(generator.generateXML(o));
-		insObsDoc.getInsertObservation().setAssignedSensorId(o.getSensorModel());
+		insObsDoc.getInsertObservation().setAssignedSensorId(
+				o.getProcedure().toString());
 		return insObsDoc;
 	}
 }

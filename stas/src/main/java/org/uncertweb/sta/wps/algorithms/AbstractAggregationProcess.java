@@ -10,18 +10,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.UncertWebIOData;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.uncertweb.intamap.om.ObservationCollection;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.AggregationInputs;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
 import org.uncertweb.sta.wps.api.ExtendedSelfDescribingAlgorithm;
-import org.uncertweb.sta.wps.api.ProcessOutput;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
-import org.uncertweb.sta.wps.xml.binding.ObservationCollectionBinding;
 
 
 /**
@@ -55,7 +51,7 @@ public abstract class AbstractAggregationProcess extends ExtendedSelfDescribingA
 	public static final SingleProcessInput<Boolean> SPATIAL_BEFORE_TEMPORAL = new SingleProcessInput<Boolean>(
 			Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL,
 			LiteralBooleanBinding.class, 0, 1, null,
-			Constants.getDefaultFlag(Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL));
+			Constants.getDefaultFlag(Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL, true));
 
 	
 	/**

@@ -23,11 +23,11 @@ package org.uncertweb.sta.wps.method.aggregation.impl;
 
 import java.util.List;
 
-import org.uncertweb.intamap.om.Observation;
+import org.opengis.observation.Observation;
+import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.sta.utils.Constants.MethodNames.Aggregation;
 import org.uncertweb.sta.wps.api.annotation.SpatialAggregationFunction;
 import org.uncertweb.sta.wps.api.annotation.TemporalAggregationFunction;
-import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 
 /**
  * Method which uses the maximal result value to aggregate {@link Observation}s.
@@ -36,17 +36,17 @@ import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
  */
 @TemporalAggregationFunction(Aggregation.Temporal.MAXIMUM)
 @SpatialAggregationFunction(Aggregation.Spatial.MAXIMUM)
-public class Maximum implements AggregationMethod {
+public class Maximum extends AbstractMeasurementAggregationMethod {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public double aggregate(List<Observation> oc) {
+	protected double aggregate1(List<Measurement> oc) {
 		double max = Double.NEGATIVE_INFINITY;
-		for (Observation o : oc) {
-			if (o.getResult() > max) {
-				max = o.getResult();
+		for (Measurement o : oc) {
+			if (o.getResult().getMeasureValue() > max) {
+				max = o.getResult().getMeasureValue();
 			}
 		}
 		return max;

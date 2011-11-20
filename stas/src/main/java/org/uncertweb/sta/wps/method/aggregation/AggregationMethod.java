@@ -23,7 +23,9 @@ package org.uncertweb.sta.wps.method.aggregation;
 
 import java.util.List;
 
-import org.uncertweb.intamap.om.Observation;
+import org.opengis.observation.Observation;
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.result.IResult;
 import org.uncertweb.sta.wps.method.aggregation.impl.ArithmeticMean;
 import org.uncertweb.sta.wps.method.aggregation.impl.Median;
 import org.uncertweb.sta.wps.method.aggregation.impl.Sum;
@@ -43,6 +45,6 @@ public interface AggregationMethod {
 	 * @param oc the {@code Observation}s
 	 * @return the aggregated result value
 	 */
-	public double aggregate(List<Observation> oc);
+	public IResult aggregate(List<? extends AbstractObservation> oc);
 
 }

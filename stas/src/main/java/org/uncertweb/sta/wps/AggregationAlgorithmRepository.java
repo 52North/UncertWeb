@@ -22,7 +22,7 @@ import org.uncertweb.sta.wps.algorithms.AbstractAggregationProcess;
  */
 public class AggregationAlgorithmRepository implements IAlgorithmRepository{
 	
-	private static Logger LOGGER = Logger.getLogger(AggregationAlgorithmRepository.class);
+	protected static Logger log = Logger.getLogger(AggregationAlgorithmRepository.class);
 	
 	/**
 	 * Mapping between process identifier and methods.

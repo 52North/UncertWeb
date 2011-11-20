@@ -21,6 +21,7 @@
  */
 package org.uncertweb.sta.wps.method;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -87,6 +88,8 @@ public class MethodFactory {
 	}
 
 	private void searchPackage(String p) {
+		log.debug("Searching package {} for methods.", p);
+		log.debug(new File(".").getAbsoluteFile().getPath());
 		Reflections r = new Reflections(p);
 		
 		for (Class<? extends TemporalGrouping> c : r

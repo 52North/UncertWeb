@@ -28,8 +28,8 @@ import java.util.Map;
 import org.joda.time.Period;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.server.AlgorithmParameterException;
-import org.uncertweb.intamap.utils.TimeUtils;
 import org.uncertweb.sta.wps.api.ProcessInputHandler;
+import org.uncertweb.utils.UwTimeUtils;
 
 /**
  * Class that handles a {@code String} input and creates a {@link Period}
@@ -55,7 +55,7 @@ public class PeriodInputHandler extends ProcessInputHandler<Period> {
 				throw new AlgorithmParameterException(
 						MessageFormat.format("Parameter '{1}' not found.", id));
 			}
-			return TimeUtils.parsePeriod(parameter).toPeriod();
+			return UwTimeUtils.parsePeriod(parameter);
 		}
 		return null;
 	}

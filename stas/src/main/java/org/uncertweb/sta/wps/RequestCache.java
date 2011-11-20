@@ -35,7 +35,7 @@ import org.joda.time.DateTime;
 import org.n52.wps.io.IOHandler;
 import org.n52.wps.io.ParserFactory;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.datahandler.xml.AbstractXMLParser;
+import org.n52.wps.io.datahandler.parser.AbstractParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.sta.utils.Utils;
@@ -180,10 +180,10 @@ public class RequestCache<T extends XmlObject, U> {
 
 	@SuppressWarnings("unchecked")
 	private U parse(InputStream is) {
-		AbstractXMLParser p = (AbstractXMLParser) ParserFactory.getInstance()
-			.getParser(this.schema, IOHandler.DEFAULT_MIMETYPE, 
+		AbstractParser p = (AbstractParser) ParserFactory.getInstance()
+			.getParser(this.schema, "text/xml", 
 						IOHandler.DEFAULT_ENCODING, this.binding);
-		return (U) p.parseXML(is).getPayload();
+		return (U) p.parse(is, "text/xml", IOHandler.DEFAULT_ENCODING);
 	}
 
 }

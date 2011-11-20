@@ -22,6 +22,7 @@
 package org.uncertweb.sta.wps.sos;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -37,10 +38,10 @@ import org.apache.xmlbeans.XmlObject;
 import org.n52.wps.server.ExceptionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uncertweb.intamap.om.Observation;
-import org.uncertweb.intamap.utils.Namespace;
+import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
+import org.uncertweb.utils.UwXmlUtils;
 
 /**
  * TODO JavaDoc
@@ -54,12 +55,12 @@ public class SOSClient {
 			.getLogger(SOSClient.class);
 
 	public GetObservationRequestBinding registerAggregatedObservations(
-			List<Observation> obs, String url, String process,
+			List<AbstractObservation> obs, String url, URI process,
 			Map<String, Object> meta) throws IOException {
 		RegisterSensorDocument regSenDoc = RegisterSensorBuilder.getInstance()
 				.build(process, obs, meta);
 		log.info("Sending RegisterSensor request:\n{}", regSenDoc
-				.xmlText(Namespace.defaultOptions()));
+				.xmlText(UwXmlUtils.defaultOptions()));
 		try {
 			sendPostRequests(url, regSenDoc);
 		} catch (Throwable e) {
@@ -68,13 +69,13 @@ public class SOSClient {
 		}
 		boolean printed = false;
 		log.info("Sending RegisterSensor requests.");
-		for (Observation o : obs) {
+		for (AbstractObservation o : obs) {
 			InsertObservationDocument insObsDoc = InsertObservationBuilder
 					.getInstance().build(o);
 			if (!printed) {
 				printed = true;
 				log.debug("InstertObservation:\n{}", insObsDoc
-						.xmlText(Namespace.defaultOptions()));
+						.xmlText(UwXmlUtils.defaultOptions()));
 			}
 			try {
 				sendPostRequests(url, insObsDoc);

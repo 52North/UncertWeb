@@ -29,8 +29,8 @@ import java.net.URLConnection;
 
 import net.opengis.wfs.GetFeatureDocument;
 
-import org.n52.wps.io.IStreamableParser;
-import org.n52.wps.io.datahandler.xml.AbstractXMLParser;
+import org.n52.wps.io.data.IData;
+import org.n52.wps.io.datahandler.parser.AbstractParser;
 import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
 
 /**
@@ -38,26 +38,15 @@ import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class GetFeatureRequestParser extends AbstractXMLParser implements
-		IStreamableParser {
-
-	/**
-	 * The supported output format.
-	 */
-	private static final Class<?>[] SUPPORTED_INTERNAT_OUTPUT_DATA_TYPE = new Class<?>[] { GetFeatureRequestBinding.class };
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Class<?>[] getSupportedInternalOutputDataType() {
-		return SUPPORTED_INTERNAT_OUTPUT_DATA_TYPE;
+public class GetFeatureRequestParser extends AbstractParser { 
+	
+	public GetFeatureRequestParser() {
+		this.supportedIDataTypes.add(GetFeatureRequestBinding.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public GetFeatureRequestBinding parse(InputStream is, String mime) {
 		if (!isSupportedFormat(mime)) {
 			throw new RuntimeException("Not a compatible mime type: " + mime);
@@ -68,7 +57,6 @@ public class GetFeatureRequestParser extends AbstractXMLParser implements
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public GetFeatureRequestBinding parseXML(String xml) {
 		return parseXML(new ByteArrayInputStream(xml.getBytes()));
 	}
@@ -76,7 +64,6 @@ public class GetFeatureRequestParser extends AbstractXMLParser implements
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public GetFeatureRequestBinding parseXML(InputStream is) {
 		try {
 			return new GetFeatureRequestBinding(
@@ -89,7 +76,6 @@ public class GetFeatureRequestParser extends AbstractXMLParser implements
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public GetFeatureRequestBinding parseXML(URI uri) {
 		try {
 			URLConnection connection = uri.toURL().openConnection();
@@ -100,6 +86,11 @@ public class GetFeatureRequestParser extends AbstractXMLParser implements
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public IData parse(InputStream arg0, String arg1, String arg2) {
+		return this.parse(arg0, arg1);
 	}
 
 }

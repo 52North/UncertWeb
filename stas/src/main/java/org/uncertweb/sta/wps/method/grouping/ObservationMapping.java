@@ -23,7 +23,8 @@ package org.uncertweb.sta.wps.method.grouping;
 
 import java.util.List;
 
-import org.uncertweb.intamap.om.Observation;
+import org.opengis.observation.Observation;
+import org.uncertweb.api.om.observation.AbstractObservation;
 
 /**
  * A {@link ObservationMapping} maps an {@link Observation} collection with an
@@ -37,7 +38,7 @@ public class ObservationMapping<T> {
 	/**
 	 * The {@link Observation}s.
 	 */
-	private List<Observation> observations;
+	private List<? extends AbstractObservation> observations;
 
 	/**
 	 * The attribute.
@@ -50,7 +51,7 @@ public class ObservationMapping<T> {
 	 * @param t the attribute
 	 * @param observations the {@code Observation} collection
 	 */
-	public ObservationMapping(T t, List<Observation> observations) {
+	public ObservationMapping(T t, List<? extends AbstractObservation> observations) {
 		this.observations = observations;
 		this.t = t;
 	}
@@ -58,7 +59,7 @@ public class ObservationMapping<T> {
 	/**
 	 * @return the mapped {@code Observation}s
 	 */
-	public List<Observation> getObservations() {
+	public List<? extends AbstractObservation> getObservations() {
 		return observations;
 	}
 

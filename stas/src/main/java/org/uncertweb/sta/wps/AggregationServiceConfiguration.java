@@ -1,10 +1,7 @@
 package org.uncertweb.sta.wps;
 
 import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -163,9 +160,11 @@ public class AggregationServiceConfiguration {
 		/**
 		 * @return the identifier
 		 */
+		@SuppressWarnings("unused")
 		public String getIdentifier() {
 			return identifier;
 		}
+		
 		/**
 		 * @param identifier the identifier to set
 		 */

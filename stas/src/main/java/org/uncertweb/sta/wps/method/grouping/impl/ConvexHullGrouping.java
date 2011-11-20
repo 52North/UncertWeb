@@ -21,22 +21,25 @@
  */
 package org.uncertweb.sta.wps.method.grouping.impl;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.uncertweb.intamap.om.ISamplingFeature;
-import org.uncertweb.intamap.om.Observation;
-import org.uncertweb.intamap.om.SamplingSurface;
+import org.opengis.observation.Observation;
+import org.uncertweb.api.gml.Identifier;
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.RandomStringGenerator;
-import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
 import org.uncertweb.sta.wps.api.annotation.SpatialPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
+import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.utils.UwConstants;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -51,42 +54,45 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  */
 @SpatialPartitioningPredicate(Constants.MethodNames.Grouping.Spatial.CONVEX_HULL)
 public class ConvexHullGrouping extends SpatialGrouping {
+	
+	private static final URI DEFAULT_IDENTIFIER_CODE_SPACE = UwConstants.URL.INAPPLICABLE.uri;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Iterator<ObservationMapping<ISamplingFeature>> iterator() {
+	public Iterator<ObservationMapping<SpatialSamplingFeature>> iterator() {
 
-		List<Observation> obs = getObservations();
-		ISamplingFeature f = null;
+		List<? extends AbstractObservation> obs = getObservations();
+		SpatialSamplingFeature f = null;
 		log.info("Calculating Convex Hull for {} Observations.", obs.size());
 		switch (obs.size()) {
 		case 0:
-			return new LinkedList<ObservationMapping<ISamplingFeature>>()
+			return new LinkedList<ObservationMapping<SpatialSamplingFeature>>()
 					.iterator();
 		case 1:
 			f = obs.get(0).getFeatureOfInterest();
-		break;
+			break;
 		default:
 			ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
-			for (Observation o : obs) {
-				for (Coordinate c : o.getObservationLocation().getCoordinates()) {
+			for (AbstractObservation o : obs) {
+				for (Coordinate c : o.getFeatureOfInterest().getShape()
+						.getCoordinates()) {
 					coordinates.add(c);
 				}
 			}
 			GeometryFactory gf = new GeometryFactory();
-			Geometry ch = gf
-					.createMultiPoint(coordinates.toArray(new Coordinate[0]))
-					.convexHull();
+			Geometry ch = gf.createMultiPoint(
+					coordinates.toArray(new Coordinate[0])).convexHull();
 			String id = "foi_"
 					+ RandomStringGenerator.getInstance().generate(20);
-			f = new SamplingSurface(ch, Constants.NULL_URN, id, id);
+			f = new SpatialSamplingFeature(new Identifier(
+					DEFAULT_IDENTIFIER_CODE_SPACE, id), UwConstants.URN.NULL.value, ch);
 		}
 
-		return Utils
-				.list(new ObservationMapping<ISamplingFeature>(
-						f, obs)).iterator();
+		return UwCollectionUtils.list(
+				new ObservationMapping<SpatialSamplingFeature>(f, obs))
+				.iterator();
 	}
 
 	/**
@@ -94,7 +100,7 @@ public class ConvexHullGrouping extends SpatialGrouping {
 	 */
 	@Override
 	public Set<AbstractProcessInput<?>> getAdditionalInputDeclarations() {
-		return Utils.set();
+		return UwCollectionUtils.set();
 	}
 
 }

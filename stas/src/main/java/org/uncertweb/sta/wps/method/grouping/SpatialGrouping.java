@@ -21,7 +21,7 @@
  */
 package org.uncertweb.sta.wps.method.grouping;
 
-import org.uncertweb.intamap.om.ISamplingFeature;
+import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
 /**
  * A {@code SpatialGrouping} maps a {@code FeatureOfInterest} to an
@@ -29,4 +29,4 @@ import org.uncertweb.intamap.om.ISamplingFeature;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public abstract class SpatialGrouping extends GroupingMethod<ISamplingFeature> {}
+public abstract class SpatialGrouping extends GroupingMethod<SpatialSamplingFeature> {}

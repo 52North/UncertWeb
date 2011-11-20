@@ -82,11 +82,11 @@ public class ExtendedRConnection extends RConnection {
 	 * @throws RProcessException if the evaluation failed
 	 */
 	public void tryVoidEval(String var, String cmd) throws RProcessException{
-		String tryCmd = var+" <- try("+cmd+")";
-		LOG.debug("send R command: "+tryCmd);
+		String tryCmd = var + " <- try(" + cmd + ")";
+		LOG.debug("send R command: " + tryCmd);
 		try {
 			super.voidEval(tryCmd);
-			if (super.eval("class("+var+")").asString().equals("try-error")){
+			if (super.eval("class(" + var + ")").asString().equals("try-error")){
 				throw new RProcessException(super.eval(var).asString());
 			}
 		} catch (REXPMismatchException e) {

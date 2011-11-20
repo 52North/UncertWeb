@@ -21,11 +21,13 @@
  */
 package org.uncertweb.sta.wps;
 
+
 import java.util.List;
 import java.util.Map;
 
 import net.opengis.wfs.GetFeatureDocument;
 
+import org.uncertweb.utils.UwXmlUtils.Namespace;
 import org.geotools.feature.FeatureCollection;
 import org.n52.wps.io.IOHandler;
 import org.n52.wps.io.IParser;
@@ -34,7 +36,6 @@ import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
-import org.uncertweb.intamap.utils.Namespace;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.ProcessInputHandler;
@@ -105,7 +106,7 @@ public class FeatureCollectionInputHandler extends
 		if (wfsUrl != null && wfsReq != null) {
 			IParser p = ParserFactory
 					.getInstance()
-					.getParser(Namespace.GML.SCHEMA, IOHandler.DEFAULT_MIMETYPE, IOHandler.DEFAULT_ENCODING, GTVectorDataBinding.class);
+					.getParser(Namespace.GML.SCHEMA, "text/xml", IOHandler.DEFAULT_ENCODING, GTVectorDataBinding.class);
 			if (p == null) {
 				throw new NullPointerException(
 						"No Parser found to parse FeatureCollection.");

@@ -29,8 +29,8 @@ import java.net.URLConnection;
 
 import net.opengis.sos.x10.GetObservationDocument;
 
-import org.n52.wps.io.IStreamableParser;
-import org.n52.wps.io.datahandler.xml.AbstractXMLParser;
+import org.n52.wps.io.data.IData;
+import org.n52.wps.io.datahandler.parser.AbstractParser;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 
 /**
@@ -38,26 +38,16 @@ import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class GetObservationRequestParser extends AbstractXMLParser implements
-		IStreamableParser {
+public class GetObservationRequestParser extends AbstractParser {
 
-	/**
-	 * The supported output format.
-	 */
-	private static final Class<?>[] SUPPORTED_INTERNAT_OUTPUT_DATA_TYPE = new Class<?>[] { GetObservationRequestBinding.class };
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Class<?>[] getSupportedInternalOutputDataType() {
-		return SUPPORTED_INTERNAT_OUTPUT_DATA_TYPE;
+	
+	public GetObservationRequestParser() {
+		this.supportedIDataTypes.add(GetObservationRequestBinding.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public GetObservationRequestBinding parse(InputStream is, String mime) {
 		if (!isSupportedFormat(mime)) {
 			throw new RuntimeException("Not a compatible mime type: " + mime);
@@ -68,7 +58,6 @@ public class GetObservationRequestParser extends AbstractXMLParser implements
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public GetObservationRequestBinding parseXML(String xml) {
 		return parseXML(new ByteArrayInputStream(xml.getBytes()));
 	}
@@ -76,7 +65,6 @@ public class GetObservationRequestParser extends AbstractXMLParser implements
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public GetObservationRequestBinding parseXML(InputStream is) {
 		try {
 			return new GetObservationRequestBinding(
@@ -89,7 +77,6 @@ public class GetObservationRequestParser extends AbstractXMLParser implements
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public GetObservationRequestBinding parseXML(URI uri) {
 		try {
 			URLConnection connection = uri.toURL().openConnection();
@@ -102,4 +89,8 @@ public class GetObservationRequestParser extends AbstractXMLParser implements
 		}
 	}
 
+	@Override
+	public IData parse(InputStream arg0, String arg1, String arg2) {
+		return this.parse(arg0, arg1);
+	}
 }

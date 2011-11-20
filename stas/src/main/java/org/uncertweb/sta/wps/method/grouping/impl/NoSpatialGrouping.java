@@ -27,14 +27,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.uncertweb.intamap.om.ISamplingFeature;
-import org.uncertweb.intamap.om.Observation;
+import org.opengis.observation.Observation;
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.sta.utils.Constants;
-import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
+import org.uncertweb.sta.wps.api.annotation.NotCompatibleWith;
 import org.uncertweb.sta.wps.api.annotation.SpatialPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
+import org.uncertweb.utils.UwCollectionUtils;
 
 /**
  * Groups a collection of {@code Observation}s by their {@code ISamplingFeature}
@@ -44,6 +46,7 @@ import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 @SpatialPartitioningPredicate(Constants.MethodNames.Grouping.Spatial.NO_GROUPING)
+@NotCompatibleWith(NoTemporalGrouping.class)
 public class NoSpatialGrouping extends SpatialGrouping {
 
 	/**
@@ -51,7 +54,7 @@ public class NoSpatialGrouping extends SpatialGrouping {
 	 * {@code ISamplingFeature} and iterates over them.
 	 */
 	private class MappingIterator implements
-			Iterator<ObservationMapping<ISamplingFeature>> {
+			Iterator<ObservationMapping<SpatialSamplingFeature>> {
 
 		/**
 		 * A {@code Feature}/{@code Observation} pair.
@@ -61,12 +64,12 @@ public class NoSpatialGrouping extends SpatialGrouping {
 			/**
 			 * The feature.
 			 */
-			ISamplingFeature f;
+			SpatialSamplingFeature f;
 
 			/**
 			 * The observations
 			 */
-			LinkedList<Observation> obs = new LinkedList<Observation>();
+			LinkedList<AbstractObservation> obs = new LinkedList<AbstractObservation>();
 
 			/**
 			 * Creates a new {@code Pair}
@@ -74,7 +77,7 @@ public class NoSpatialGrouping extends SpatialGrouping {
 			 * @param f
 			 * @param o
 			 */
-			public Pair(ISamplingFeature f, Observation o) {
+			public Pair(SpatialSamplingFeature f, AbstractObservation o) {
 				this.f = f;
 				this.obs.add(o);
 			}
@@ -91,8 +94,8 @@ public class NoSpatialGrouping extends SpatialGrouping {
 		 */
 		public MappingIterator() {
 			HashMap<String, Pair> map = new HashMap<String, Pair>();
-			for (Observation o : getObservations()) {
-				String id = o.getFeatureOfInterest().getId();
+			for (AbstractObservation o : getObservations()) {
+				String id = o.getFeatureOfInterest().getIdentifier().getIdentifier();
 				Pair p = map.get(id);
 				if (p == null) {
 					map.put(id, new Pair(o.getFeatureOfInterest(), o));
@@ -115,9 +118,9 @@ public class NoSpatialGrouping extends SpatialGrouping {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public ObservationMapping<ISamplingFeature> next() {
+		public ObservationMapping<SpatialSamplingFeature> next() {
 			Pair p = iterator.next();
-			return new ObservationMapping<ISamplingFeature>(p.f, p.obs);
+			return new ObservationMapping<SpatialSamplingFeature>(p.f, p.obs);
 		}
 
 		/**
@@ -133,7 +136,7 @@ public class NoSpatialGrouping extends SpatialGrouping {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Iterator<ObservationMapping<ISamplingFeature>> iterator() {
+	public Iterator<ObservationMapping<SpatialSamplingFeature>> iterator() {
 		return new MappingIterator();
 	}
 
@@ -142,7 +145,7 @@ public class NoSpatialGrouping extends SpatialGrouping {
 	 */
 	@Override
 	public Set<AbstractProcessInput<?>> getAdditionalInputDeclarations() {
-		return Utils.set();
+		return UwCollectionUtils.set();
 	}
 
 	/**
@@ -155,7 +158,7 @@ public class NoSpatialGrouping extends SpatialGrouping {
 	 * 
 	 * @param obs the {@link Observation}s to group.
 	 */
-	public NoSpatialGrouping(List<Observation> obs) {
+	public NoSpatialGrouping(List<? extends AbstractObservation> obs) {
 		setInputs(obs, null);
 	}
 

@@ -25,11 +25,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.uncertweb.intamap.om.Observation;
+import org.opengis.observation.Observation;
+import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.sta.utils.Constants.MethodNames.Aggregation;
 import org.uncertweb.sta.wps.api.annotation.SpatialAggregationFunction;
 import org.uncertweb.sta.wps.api.annotation.TemporalAggregationFunction;
-import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 
 /**
  * Method which uses the median to aggregate {@link Observation}s.
@@ -38,28 +38,28 @@ import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
  */
 @SpatialAggregationFunction(Aggregation.Spatial.MEDIAN)
 @TemporalAggregationFunction(Aggregation.Temporal.MEDIAN)
-public class Median implements AggregationMethod {
+public class Median extends AbstractMeasurementAggregationMethod {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public double aggregate(List<Observation> oc) {
+	protected double aggregate1(List<Measurement> oc) {
 		if (oc.isEmpty())
 			throw new RuntimeException(
 					"Can not aggregate empty ObservationCollection.");
-		Collections.sort(oc, new Comparator<Observation>() {
+		Collections.sort(oc, new Comparator<Measurement>() {
 			@Override
-			public int compare(Observation o1, Observation o2) {
-				return Double.compare(o1.getResult(), o2.getResult());
+			public int compare(Measurement o1, Measurement o2) {
+				return Double.compare(o1.getResult().getMeasureValue(), o2.getResult().getMeasureValue());
 			}
 		});
 		int size = oc.size();
 		if (size % 2 == 0) {
-			return 0.5 * (oc.get((size / 2) - 1).getResult() + oc.get(
-					((size / 2) + 1) - 1).getResult());
+			return 0.5 * (oc.get((size / 2) - 1).getResult().getMeasureValue() + oc.get(
+					((size / 2) + 1) - 1).getResult().getMeasureValue());
 		} else {
-			return oc.get(((size + 1) / 2) - 1).getResult();
+			return oc.get(((size + 1) / 2) - 1).getResult().getMeasureValue();
 		}
 	}
 }

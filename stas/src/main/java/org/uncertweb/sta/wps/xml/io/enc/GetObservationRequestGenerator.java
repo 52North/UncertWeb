@@ -22,7 +22,10 @@
 package org.uncertweb.sta.wps.xml.io.enc;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -30,10 +33,9 @@ import java.io.Writer;
 import net.opengis.sos.x10.GetObservationDocument;
 
 import org.apache.xmlbeans.XmlOptions;
-import org.n52.wps.io.IStreamableGenerator;
+import org.n52.wps.io.LargeBufferStream;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.datahandler.binary.LargeBufferStream;
-import org.n52.wps.io.datahandler.xml.AbstractXMLGenerator;
+import org.n52.wps.io.datahandler.generator.AbstractGenerator;
 import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 import org.w3c.dom.Node;
 
@@ -42,13 +44,15 @@ import org.w3c.dom.Node;
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class GetObservationRequestGenerator extends AbstractXMLGenerator
-		implements IStreamableGenerator {
+public class GetObservationRequestGenerator extends AbstractGenerator {
+	
+	public GetObservationRequestGenerator() {
+		this.supportedIDataTypes.add(GetObservationRequestBinding.class);
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public OutputStream generate(IData arg0) {
 		LargeBufferStream baos = new LargeBufferStream();
 		this.writeToStream(arg0, baos);
@@ -58,15 +62,6 @@ public class GetObservationRequestGenerator extends AbstractXMLGenerator
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public Class<?>[] getSupportedInternalInputDataType() {
-		return new Class<?>[] { GetObservationRequestBinding.class };
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public Node generateXML(IData data, String arg1) {
 		return ((GetObservationRequestBinding) data).getPayload().getDomNode();
 	}
@@ -93,10 +88,16 @@ public class GetObservationRequestGenerator extends AbstractXMLGenerator
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void writeToStream(IData coll, OutputStream os) {
 		OutputStreamWriter w = new OutputStreamWriter(os);
 		write(coll, w);
 	}
 
+	@Override
+	public InputStream generateStream(IData arg0, String arg1, String arg2)
+			throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		writeToStream(arg0, out);
+		return new ByteArrayInputStream(out.toByteArray());
+	}
 }

@@ -23,11 +23,11 @@ package org.uncertweb.sta.wps.method.aggregation.impl;
 
 import java.util.List;
 
-import org.uncertweb.intamap.om.Observation;
+import org.opengis.observation.Observation;
+import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.sta.utils.Constants.MethodNames.Aggregation;
 import org.uncertweb.sta.wps.api.annotation.SpatialAggregationFunction;
 import org.uncertweb.sta.wps.api.annotation.TemporalAggregationFunction;
-import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 
 /**
  * Method which uses the minimal result value to aggregate {@link Observation}s.
@@ -36,17 +36,17 @@ import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
  */
 @SpatialAggregationFunction(Aggregation.Spatial.MINIMUM)
 @TemporalAggregationFunction(Aggregation.Temporal.MINIMUM)
-public class Minimum implements AggregationMethod {
+public class Minimum extends AbstractMeasurementAggregationMethod {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public double aggregate(List<Observation> oc) {
+	protected double aggregate1(List<Measurement> oc) {
 		double min = Double.POSITIVE_INFINITY;
-		for (Observation o : oc) {
-			if (o.getResult() > min) {
-				min = o.getResult();
+		for (Measurement o : oc) {
+			if (o.getResult().getMeasureValue() > min) {
+				min = o.getResult().getMeasureValue();
 			}
 		}
 		return min;

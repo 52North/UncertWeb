@@ -24,31 +24,28 @@ package org.uncertweb.sta.wps.method.grouping.impl;
 import java.util.Comparator;
 
 import org.joda.time.DateTime;
-import org.uncertweb.intamap.om.Observation;
-import org.uncertweb.intamap.om.ObservationTimeInstant;
-import org.uncertweb.intamap.om.ObservationTimeInterval;
+import org.uncertweb.api.om.observation.AbstractObservation;
 
 /**
- * Compares the {@code SamplingTime}s of {@link Observation}s.
+ * Compares the {@code TimeObject }s of {@link AbstractObservation}s.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class ObservationTimeComparator implements Comparator<Observation> {
+public class ObservationTimeComparator implements
+		Comparator<AbstractObservation> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int compare(Observation o1, Observation o2) {
+	public int compare(AbstractObservation o1, AbstractObservation o2) {
 		DateTime a, b;
-		//@formatter off
-		a = (o1.getObservationTime() instanceof ObservationTimeInstant) ? 
-			((ObservationTimeInstant) o1.getObservationTime()).getDateTime() : 
-			((ObservationTimeInterval) o1.getObservationTime()).getStart();
-		b = (o2.getObservationTime() instanceof ObservationTimeInstant) ? 
-			((ObservationTimeInstant) o2.getObservationTime()).getDateTime() :
-			((ObservationTimeInterval) o2.getObservationTime()).getStart();
-		//@formatter on
+		a = (o1.getPhenomenonTime().isInstant()) ? o1.getPhenomenonTime()
+				.getDateTime() : o1.getPhenomenonTime().getInterval()
+				.getStart();
+		b = (o2.getPhenomenonTime().isInstant()) ? o2.getPhenomenonTime()
+				.getDateTime() : o2.getPhenomenonTime().getInterval()
+				.getStart();
 		return a.compareTo(b);
 	}
 }

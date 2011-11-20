@@ -5,11 +5,10 @@
 	<parent>
 		<groupId>org.uncertweb</groupId>
 		<artifactId>uncertweb-parent</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
-	<groupId>org.uncertweb</groupId>
 	<artifactId>stas</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<packaging>war</packaging>
 
 	<name>Spatiotemporal Aggregation Service</name>
@@ -40,7 +39,7 @@
 			<id>staschc</id>
 		</developer>
 	</developers>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<wps.version>2.0-RC8-SNAPSHOT</wps.version>
@@ -62,12 +61,6 @@
 					<artifactId>logback-classic</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.uncertweb</groupId>
-			<artifactId>intamap-om</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -119,7 +112,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
 		</dependency>
 
 		<dependency>
@@ -150,18 +142,18 @@
 		</dependency>
 
 		<!-- RServe dependencies -->
-		
+
 		<dependency>
-	    	<groupId>org.nuiton.thirdparty</groupId>
-	    	<artifactId>REngine</artifactId>
-	    	<version>0.6-1</version>
-    	</dependency>
-    	
-    	<dependency>
-	    	<groupId>org.nuiton.thirdparty</groupId>
-	    	<artifactId>Rserve</artifactId>
-	    	<version>0.6-1</version>
-    	</dependency>
+			<groupId>org.nuiton.thirdparty</groupId>
+			<artifactId>REngine</artifactId>
+			<version>0.6-1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nuiton.thirdparty</groupId>
+			<artifactId>Rserve</artifactId>
+			<version>0.6-1</version>
+		</dependency>
 
 		<!-- Testing dependencies -->
 
@@ -171,36 +163,32 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
-			<groupId>org.uncertweb</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>52n-wps-io-uncertweb</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>uncertweb-utils</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>om-api-legacy</artifactId>
+			<version>0.9-SNAPSHOT</version>
 		</dependency>
 
 	</dependencies>
 	<repositories>
 		<repository>
-			<id>geotools.fr</id>
-			<name>Geotools Repository</name>
-			<url>http://maven.geotools.fr/repository</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
+			<id>UncertWebMavenRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
 		</repository>
-		<repository>
-			<id>reflections-repo</id>
-			<name>Reflections Maven2 Repository</name>
-			<url>http://reflections.googlecode.com/svn/repo</url>
-		</repository>
-         <repository>
-             <id>UncertWebMavenRepository</id>
-             <name>UncertWeb Maven Repository</name>
-             <url>http://giv-uw.uni-muenster.de/m2/repo</url>
-     </repository>
 	</repositories>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -292,16 +280,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<compilerVersion>1.6</compilerVersion>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
@@ -311,18 +289,6 @@
 						<include>**/*Tests.java</include>
 					</includes>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.5</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.wagon</groupId>
-						<artifactId>wagon-ssh</artifactId>
-						<version>1.0-beta-7</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

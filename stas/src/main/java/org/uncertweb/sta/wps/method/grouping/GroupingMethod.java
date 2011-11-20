@@ -25,9 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opengis.observation.Observation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uncertweb.intamap.om.Observation;
+import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
 
 /**
@@ -48,7 +49,7 @@ public abstract class GroupingMethod<T> implements
 	/**
 	 * The observation collection input.
 	 */
-	private List<Observation> observations;
+	private List<? extends AbstractObservation> observations;
 
 	/**
 	 * Inputs specific for this class.
@@ -61,7 +62,7 @@ public abstract class GroupingMethod<T> implements
 	 * @param observations the observations to group
 	 * @param inputs inputs needed by this {@code GroupingMethod}
 	 */
-	public void setInputs(List<Observation> observations,
+	public void setInputs(List<? extends AbstractObservation> observations,
 			Map<AbstractProcessInput<?>, Object> inputs) {
 		this.observations = observations;
 		this.inputs = inputs;
@@ -70,7 +71,7 @@ public abstract class GroupingMethod<T> implements
 	/**
 	 * @return the observations to group
 	 */
-	protected List<Observation> getObservations() {
+	protected List<? extends AbstractObservation> getObservations() {
 		return this.observations;
 	}
 
