@@ -1,8 +1,6 @@
 package org.n52.wps.io.datahandler.uncertml;
 
 import static org.n52.wps.io.data.UncertWebDataConstants.ENCODING_UTF_8;
-import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_APPLICATION_XML;
-import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_TEXT_XML;
 import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_UNCERTML_XML;
 import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_UNCERTML;
 import static org.uncertweb.utils.UwCollectionUtils.set;
@@ -32,7 +30,7 @@ public class UncertMLXmlGenerator extends AbstractUwGenerator {
 		super(
 			set(SCHEMA_UNCERTML), 
 			set(ENCODING_UTF_8),
-			set(MIME_TYPE_UNCERTML_XML, MIME_TYPE_APPLICATION_XML, MIME_TYPE_TEXT_XML), 
+			set(MIME_TYPE_UNCERTML_XML), 
 			UwCollectionUtils.<Class<?>>set(UncertMLBinding.class)
 		);
 	}

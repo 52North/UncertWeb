@@ -1,7 +1,6 @@
 package org.n52.wps.io.datahandler.om;
 
 import static org.n52.wps.io.data.UncertWebDataConstants.ENCODING_UTF_8;
-import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_JSON;
 import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_OMX_JSON;
 import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_OM_V2;
 import static org.uncertweb.utils.UwCollectionUtils.set;
@@ -21,7 +20,7 @@ public class OMJsonGenerator extends AbstractUwGenerator {
 		super(
 			set(SCHEMA_OM_V2), 
 			set(ENCODING_UTF_8), 
-			set(MIME_TYPE_JSON, MIME_TYPE_OMX_JSON), 
+			set(MIME_TYPE_OMX_JSON), 
 			UwCollectionUtils.<Class<?>> set(OMBinding.class)
 		);
 	}

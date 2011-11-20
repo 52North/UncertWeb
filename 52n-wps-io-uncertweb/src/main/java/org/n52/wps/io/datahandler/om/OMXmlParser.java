@@ -1,10 +1,7 @@
 package org.n52.wps.io.datahandler.om;
 
 import static org.n52.wps.io.data.UncertWebDataConstants.ENCODING_UTF_8;
-import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_APPLICATION_XML;
-import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_OMX_XML;
-import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_OM_V1;
-import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_TEXT_XML;
+import static org.n52.wps.io.data.UncertWebDataConstants.*;
 import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_OM_V2;
 import static org.uncertweb.utils.UwCollectionUtils.set;
 
@@ -47,9 +44,9 @@ public class OMXmlParser extends AbstractUwParser {
 
 	public OMXmlParser() {
 		super(
-			set(SCHEMA_OM_V2), 
+			set(SCHEMA_OM_V2, SCHEMA_OM_V1), 
 			set(ENCODING_UTF_8),
-			set(MIME_TYPE_OMX_XML, MIME_TYPE_OM_V1,MIME_TYPE_APPLICATION_XML, MIME_TYPE_TEXT_XML), 
+			set(MIME_TYPE_OMX_XML, MIME_TYPE_TEXT_XML), 
 			UwCollectionUtils.<Class<?>>set(OMBinding.class)
 		);
 	}

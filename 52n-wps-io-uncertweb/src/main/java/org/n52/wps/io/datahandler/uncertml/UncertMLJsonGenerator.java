@@ -1,7 +1,6 @@
 package org.n52.wps.io.datahandler.uncertml;
 
 import static org.n52.wps.io.data.UncertWebDataConstants.ENCODING_UTF_8;
-import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_JSON;
 import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_UNCERTML_JSON;
 import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_UNCERTML;
 import static org.uncertweb.utils.UwCollectionUtils.set;
@@ -22,7 +21,7 @@ public class UncertMLJsonGenerator extends AbstractUwGenerator {
 		super(
 			set(SCHEMA_UNCERTML), 
 			set(ENCODING_UTF_8),
-			set(MIME_TYPE_UNCERTML_JSON, MIME_TYPE_JSON), 
+			set(MIME_TYPE_UNCERTML_JSON), 
 			UwCollectionUtils.<Class<?>>set(UncertMLBinding.class)
 		);
 	}
