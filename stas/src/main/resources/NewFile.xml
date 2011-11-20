@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:ProcessDescriptions 
+	xmlns:wps="http://www.opengis.net/wps/1.0.0"
+	xmlns:ows="http://www.opengis.net/ows/1.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd">
+	<ProcessDescription statusSupported="false"
+		storeSupported="false" wps:processVersion="1.0.0">
+		<ows:Identifier>urn:ogc:def:aggregationProcess:convexHull:spatialMedian:oneContainingTimeRange:temporalMax</ows:Identifier>
+		<ows:Title>urn:ogc:def:aggregationProcess:convexHull:spatialMedian:oneContainingTimeRange:temporalMax</ows:Title>
+		<ows:Abstract>Process to aggregate Observations by different Grouping
+			and Aggregation methods. The Observations can be passed to the
+			process or fetched from a SOS.
+			SpatialPartitioningPredicate: Calculates the convex hull of all given observations and use this
+			polygon as the SamplingFeature of all aggregated observations.
+			SpatialAggregationFunction: Chooses the median of the result values.
+			TemporalPartitioningPredicate: Calculates the time frame of all given
+			observations and use this as the ObservationTime for all aggregated
+			observations.
+			TemporalAggregationFunction: Chooses the maximum result value.</ows:Abstract>
+		<DataInputs>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>GroupByObservedProperty</ows:Identifier>
+				<ows:Title>Group By Observed Property</ows:Title>
+				<ows:Abstract>Whether the process should group Observations by
+					ObservedProperty.</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:boolean" />
+					<ows:AllowedValues>
+						<ows:Value>true</ows:Value>
+						<ows:Value>false</ows:Value>
+					</ows:AllowedValues>
+					<DefaultValue>true</DefaultValue>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>SOSDestinationUrl</ows:Identifier>
+				<ows:Title>SOS Destination URL</ows:Title>
+				<ows:Abstract>The URL of a Sensor Observation Service, where the
+					output collection should be stored.</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string" />
+					<ows:AnyValue />
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>SOSSourceUrl</ows:Identifier>
+				<ows:Title>SOS Source URL</ows:Title>
+				<ows:Abstract>The URL of a Sensor Observation Service. If the
+					SOSRequest input is not present a GET-request will be send. If the
+					ObservationCollection input is present the collections will be
+					merged.</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string" />
+					<ows:AnyValue />
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>SOSRequest</ows:Identifier>
+				<ows:Title>SOS GetObservation Request</ows:Title>
+				<ows:Abstract>SOS GetObservation request which will be send to
+					SOSUrl. If the ObservationCollection input is present the
+					collections will be merged.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>SpatialFirst</ows:Identifier>
+				<ows:Title>SpatialFirst</ows:Title>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:boolean" />
+					<ows:AllowedValues>
+						<ows:Value>true</ows:Value>
+						<ows:Value>false</ows:Value>
+					</ows:AllowedValues>
+					<DefaultValue>true</DefaultValue>
+				</LiteralData>
+			</Input>
+		</DataInputs>
+		<ProcessOutputs>
+			<Output>
+				<ows:Identifier>AggregatedObservationsReference</ows:Identifier>
+				<ows:Title>Aggregated Observations Reference</ows:Title>
+				<ows:Abstract>A GetObservation request, which can be send to
+					SOSDestinationUrl to obtain the observation collection.</ows:Abstract>
+				<ComplexOutput>
+					<Default>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
+			<Output>
+				<ows:Identifier>AggregatedObservations</ows:Identifier>
+				<ows:Title>Aggregated Observations</ows:Title>
+				<ows:Abstract>The aggregated Observations in an OM
+					ObservationCollection. The resulting type will be om:Measurement.</ows:Abstract>
+			</Output>
+		</ProcessOutputs>
+	</ProcessDescription>
+</wps:ProcessDescriptions>

@@ -35,12 +35,12 @@ import net.opengis.sos.x10.RegisterSensorResponseDocument;
 
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.n52.wps.io.data.binding.complex.GetObservationRequestBinding;
 import org.n52.wps.server.ExceptionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.utils.Utils;
-import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 import org.uncertweb.utils.UwXmlUtils;
 
 /**

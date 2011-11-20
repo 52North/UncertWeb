@@ -19,40 +19,40 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.sta.wps.xml.binding;
+package org.n52.wps.io.data.binding.complex;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringWriter;
 
-import net.opengis.wfs.GetFeatureDocument;
+import net.opengis.sos.x10.GetObservationDocument;
 
 import org.n52.wps.io.data.IComplexData;
 import org.n52.wps.io.data.IData;
-import org.uncertweb.sta.wps.xml.io.dec.GetFeatureRequestParser;
-import org.uncertweb.sta.wps.xml.io.enc.GetFeatureRequestGenerator;
+import org.n52.wps.io.datahandler.generator.GetObservationRequestGenerator;
+import org.n52.wps.io.datahandler.parser.GetObservationRequestParser;
 
 /**
- * {@link IData} binding for {@link GetFeatureDocument}s.
+ * {@link IData} binding for {@link GetObservationDocument}s.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class GetFeatureRequestBinding implements IComplexData {
+public class GetObservationRequestBinding implements IComplexData {
 
 	private static final long serialVersionUID = 2249930191625226883L;
-	private transient GetFeatureDocument doc;
+	private transient GetObservationDocument getObs;
 
-	public GetFeatureRequestBinding(GetFeatureDocument doc) {
-		this.doc = doc;
+	public GetObservationRequestBinding(GetObservationDocument getObs) {
+		this.getObs = getObs;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public GetFeatureDocument getPayload() {
-		return this.doc;
+	public GetObservationDocument getPayload() {
+		return getObs;
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class GetFeatureRequestBinding implements IComplexData {
 	 */
 	@Override
 	public Class<?> getSupportedClass() {
-		return String.class;
+		return GetObservationDocument.class;
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class GetFeatureRequestBinding implements IComplexData {
 	private synchronized void writeObject(ObjectOutputStream oos)
 			throws IOException {
 		StringWriter buffer = new StringWriter();
-		GetFeatureRequestGenerator g = new GetFeatureRequestGenerator();
+		GetObservationRequestGenerator g = new GetObservationRequestGenerator();
 		g.write(this, buffer);
 		oos.writeObject(buffer.toString());
 	}
@@ -87,7 +87,7 @@ public class GetFeatureRequestBinding implements IComplexData {
 	 */
 	private synchronized void readObject(ObjectInputStream oos)
 			throws IOException, ClassNotFoundException {
-		this.doc = new GetFeatureRequestParser()
+		this.getObs = new GetObservationRequestParser()
 				.parseXML((String) oos.readObject()).getPayload();
 	}
 

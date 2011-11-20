@@ -19,7 +19,7 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.sta.wps.xml.io.dec;
+package org.n52.wps.io.datahandler.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,8 +30,8 @@ import java.net.URLConnection;
 import net.opengis.wfs.GetFeatureDocument;
 
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.complex.GetFeatureRequestBinding;
 import org.n52.wps.io.datahandler.parser.AbstractParser;
-import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
 
 /**
  * Parser for {@link GetFeatureDocument}s.

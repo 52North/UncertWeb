@@ -23,8 +23,8 @@ package org.uncertweb.sta.wps.sos;
 
 import net.opengis.sos.x10.InsertObservationDocument;
 
+import org.n52.wps.io.datahandler.generator.ObservationGenerator;
 import org.uncertweb.api.om.observation.AbstractObservation;
-import org.uncertweb.sta.wps.xml.io.enc.ObservationGenerator;
 
 /**
  * TODO JavaDoc

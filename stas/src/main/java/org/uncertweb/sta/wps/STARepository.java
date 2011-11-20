@@ -21,6 +21,8 @@
  */
 package org.uncertweb.sta.wps;
 
+import static org.uncertweb.utils.UwReflectionUtils.isAbstractOrInterface;
+
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,7 +52,6 @@ import org.uncertweb.sta.wps.method.aggregation.AggregationMethod;
 import org.uncertweb.sta.wps.method.grouping.GroupingMethod;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
 import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
-import org.uncertweb.utils.UwXmlUtils;
 
 /**
  * {@link IAlgorithmRepository} for all instances of
@@ -109,31 +110,35 @@ public class STARepository implements IAlgorithmRepository {
 		MethodFactory mf = MethodFactory.getInstance();
 		
 		for (Class<? extends SpatialGrouping> sg : mf.getSpatialGroupingMethods()) {
-			log.debug("Processing SpatialGrouping {}", sg.getName());
+//			log.debug("Processing SpatialGrouping {}", sg.getName());
 			if (sg.getAnnotation(Ignore.class) != null) { continue; }
+			if (isAbstractOrInterface(sg)) { continue; }
 			SpatialPartitioningPredicate spp = sg.getAnnotation(SpatialPartitioningPredicate.class);
 			String sppName = (spp == null) ? sg.getSimpleName() : spp.value();
 			IsOnlyCompatibleWith sgIocw = sg.getAnnotation(IsOnlyCompatibleWith.class);
 			
 			for (Class<? extends AggregationMethod> sm : mf.getAggregationMethods()) {
-				log.debug("Processing AggregationMethod {} for SpatialGrouping.", sm.getName());
+//				log.debug("Processing AggregationMethod {} for SpatialGrouping.", sm.getName());
 				if (sm.getAnnotation(Ignore.class) != null) { continue; }
 				if (sm.getAnnotation(TemporalOnly.class) != null) { continue; }
+				if (isAbstractOrInterface(sm)) { continue; }
 				if (!isCompatible(sgIocw, sm)) { continue; }
 				SpatialAggregationFunction sam = sm.getAnnotation(SpatialAggregationFunction.class);
 				String samName = (sam == null) ? sm.getSimpleName() : sam.value();
 				
 				for (Class<? extends TemporalGrouping> tg : mf.getTemporalGroupingMethods()) {
-					log.debug("Processing TemporalGrouping {} for SpatialGrouping {}.", tg.getName(), sg.getName());
+//					log.debug("Processing TemporalGrouping {} for SpatialGrouping {}.", tg.getName(), sg.getName());
 					if (tg.getAnnotation(Ignore.class) != null) { continue; }
+					if (isAbstractOrInterface(tg)) { continue; }
 					if (!isCompatible(sg, tg)) { continue; }
 					TemporalPartitioningPredicate tpp = tg.getAnnotation(TemporalPartitioningPredicate.class);
 					String tppName = (tpp == null) ? tg.getSimpleName() : tpp.value();
 					IsOnlyCompatibleWith tgIocw = tg.getAnnotation(IsOnlyCompatibleWith.class);
 				
 					for (Class<? extends AggregationMethod> tm : mf.getAggregationMethods()) {
-						log.debug("Processing AggregationMethod {} for TemporalGrouping.", tm.getName());
+//						log.debug("Processing AggregationMethod {} for TemporalGrouping.", tm.getName());
 						if (tm.getAnnotation(Ignore.class) != null) { continue; }
+						if (isAbstractOrInterface(tm)) { continue; }
 						if (tm.getAnnotation(SpatialOnly.class) != null) { continue; }
 						if (!isCompatible(tgIocw, tm)) { continue; }
 						TemporalAggregationFunction tam = tm.getAnnotation(TemporalAggregationFunction.class);
@@ -151,7 +156,7 @@ public class STARepository implements IAlgorithmRepository {
 		}
 		return algos;
 	}
-	
+
 	private static boolean isCompatible(Class<? extends SpatialGrouping> sg, Class<? extends TemporalGrouping> tg) {
 		return isCompatible(sg.getAnnotation(NotCompatibleWith.class), tg)
 				&& isCompatible(tg.getAnnotation(NotCompatibleWith.class), sg);
@@ -207,8 +212,9 @@ public class STARepository implements IAlgorithmRepository {
 				id, methods.sg, methods.tg, methods.sam, methods.tam);
 		if (!a.processDescriptionIsValid()) {
 			String msg = "ProcessDescription is not valid for " + id;
-			log.error(msg + ":\n"
-					+ a.getDescription().xmlText(UwXmlUtils.defaultOptions()));
+//			ProcessDescriptionsDocument doc = ProcessDescriptionsDocument.Factory.newInstance();
+//			doc.addNewProcessDescriptions().addNewProcessDescription().set(a.getDescription());
+//			log.error(msg + ":\n" + doc.xmlText(UwXmlUtils.defaultOptions()));
 			throw new RuntimeException(msg);
 		}
 		return a;
@@ -236,7 +242,7 @@ public class STARepository implements IAlgorithmRepository {
 	public boolean containsAlgorithm(String processID) {
 		return STARepository.ALGORITHMS.containsKey(processID);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */

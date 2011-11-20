@@ -252,108 +252,105 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject,
 						dataInput.addNewAbstract().setStringValue(input.getDescription());
 					}
 					Class<? extends IData> inputDataTypeClass = input.getBindingClass();
-					Class<?>[] interfaces = inputDataTypeClass.getInterfaces();
-					for (Class<?> implementedInterface : interfaces) {
-						if (implementedInterface.equals(ILiteralData.class)) {
-							LiteralInputType literalData = dataInput.addNewLiteralData();
-							String inputClassType = "";
-							Constructor<?>[] constructors = inputDataTypeClass.getConstructors();
-							for (Constructor<?> constructor : constructors) {
-								Class<?>[] parameters = constructor.getParameterTypes();
-								if (parameters.length == 1) {
-									inputClassType = parameters[0].getSimpleName();
-								}
+					if (ILiteralData.class.isAssignableFrom(inputDataTypeClass)) {
+						LiteralInputType literalData = dataInput.addNewLiteralData();
+						String inputClassType = "";
+						Constructor<?>[] constructors = inputDataTypeClass.getConstructors();
+						for (Constructor<?> constructor : constructors) {
+							Class<?>[] parameters = constructor.getParameterTypes();
+							if (parameters.length == 1) {
+								inputClassType = parameters[0].getSimpleName();
 							}
-							if (inputClassType.length() > 0) {
-								DomainMetadataType datatype = literalData.addNewDataType();
-								datatype.setReference("xs:" + inputClassType.toLowerCase());
-								AllowedValues vals = input.getAllowedValues();
-								if (vals == null) {
-									if (inputDataTypeClass.equals(LiteralBooleanBinding.class)) {
-										AllowedValues av = literalData.addNewAllowedValues();
-										av.addNewValue().setStringValue(String.valueOf(true));
-										av.addNewValue().setStringValue(String.valueOf(false));
-									} else {
-										literalData.addNewAnyValue();
-									}
+						}
+						if (inputClassType.length() > 0) {
+							DomainMetadataType datatype = literalData.addNewDataType();
+							datatype.setReference("xs:" + inputClassType.toLowerCase());
+							AllowedValues vals = input.getAllowedValues();
+							if (vals == null) {
+								if (inputDataTypeClass.equals(LiteralBooleanBinding.class)) {
+									AllowedValues av = literalData.addNewAllowedValues();
+									av.addNewValue().setStringValue(String.valueOf(true));
+									av.addNewValue().setStringValue(String.valueOf(false));
 								} else {
-									literalData.setAllowedValues(vals);
+									literalData.addNewAnyValue();
 								}
-								if (input.getDefaultValue() != null) {
-									literalData.setDefaultValue(String.valueOf(input.getDefaultValue()));
+							} else {
+								literalData.setAllowedValues(vals);
+							}
+							if (input.getDefaultValue() != null) {
+								literalData.setDefaultValue(String.valueOf(input.getDefaultValue()));
+							}
+						}
+					} else if (IComplexData.class.isAssignableFrom(IComplexData.class)) {
+						SupportedComplexDataInputType complexData = dataInput.addNewComplexData();
+						ComplexDataCombinationType defaultInputFormat = complexData.addNewDefault();
+						ComplexDataCombinationsType supportedtInputFormat = complexData.addNewSupported();
+						List<IParser> parsers = ParserFactory.getInstance().getAllParsers();
+						List<IParser> foundParsers = new ArrayList<IParser>();
+						for (IParser parser : parsers) {
+							Class<?>[] supportedClasses = parser.getSupportedDataBindings();
+							for (Class<?> clazz : supportedClasses) {
+								if (clazz.equals(inputDataTypeClass)) {
+									foundParsers.add(parser);
 								}
 							}
-						} else if (implementedInterface.equals(IComplexData.class)) {
-							SupportedComplexDataInputType complexData = dataInput.addNewComplexData();
-							ComplexDataCombinationType defaultInputFormat = complexData.addNewDefault();
-							ComplexDataCombinationsType supportedtInputFormat = complexData.addNewSupported();
-							List<IParser> parsers = ParserFactory.getInstance().getAllParsers();
-							List<IParser> foundParsers = new ArrayList<IParser>();
-							for (IParser parser : parsers) {
-								Class<?>[] supportedClasses = parser.getSupportedDataBindings();
-								for (Class<?> clazz : supportedClasses) {
-									if (clazz.equals(inputDataTypeClass)) {
-										foundParsers.add(parser);
-									}
-								}
+						}
+						for (int i = 0; i < foundParsers.size(); i++) {
+							IParser parser = foundParsers.get(i);
+							String[] supportedFormats = parser.getSupportedFormats();
+							String[] supportedSchemas = parser.getSupportedSchemas();
+							if (supportedSchemas == null) {
+								supportedSchemas = new String[0];
 							}
-							for (int i = 0; i < foundParsers.size(); i++) {
-								IParser parser = foundParsers.get(i);
-								String[] supportedFormats = parser.getSupportedFormats();
-								String[] supportedSchemas = parser.getSupportedSchemas();
-								if (supportedSchemas == null) {
-									supportedSchemas = new String[0];
-								}
-								String[] supportedEncodings = parser.getSupportedEncodings();
-								for (int j = 0; j < supportedFormats.length; j++) {
-									for (int k = 0; k < supportedEncodings.length; k++) {
-										if (j == 0 && k == 0 && i == 0) {
-											String supportedFormat = supportedFormats[j];
-											ComplexDataDescriptionType defaultFormat = defaultInputFormat.addNewFormat();
-											defaultFormat.setMimeType(supportedFormat);
-											defaultFormat.setEncoding(supportedEncodings[k]);
-											for (int t = 0; t < supportedSchemas.length; t++) {
-												if (t == 0) {
-													defaultFormat.setSchema(supportedSchemas[t]);
-												} else {
-													ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
-													supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
-													supportedCreatedFormatAdditional.setMimeType(supportedFormat);
-													supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
-												}
-											}
-										} else {
-											String supportedFormat = supportedFormats[j];
-											ComplexDataDescriptionType supportedCreatedFormat = supportedtInputFormat.addNewFormat();
-											supportedCreatedFormat.setMimeType(supportedFormat);
-											supportedCreatedFormat.setEncoding(supportedEncodings[k]);
-											for (int t = 0; t < supportedSchemas.length; t++) {
-												if (t == 0) {
-													supportedCreatedFormat.setSchema(supportedSchemas[t]);
-												}
-												if (t > 0) {
-													ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
-													supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
-													supportedCreatedFormatAdditional.setMimeType(supportedFormat);
-													supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
-												}
+							String[] supportedEncodings = parser.getSupportedEncodings();
+							for (int j = 0; j < supportedFormats.length; j++) {
+								for (int k = 0; k < supportedEncodings.length; k++) {
+									if (j == 0 && k == 0 && i == 0) {
+										String supportedFormat = supportedFormats[j];
+										ComplexDataDescriptionType defaultFormat = defaultInputFormat.addNewFormat();
+										defaultFormat.setMimeType(supportedFormat);
+										defaultFormat.setEncoding(supportedEncodings[k]);
+										for (int t = 0; t < supportedSchemas.length; t++) {
+											if (t == 0) {
+												defaultFormat.setSchema(supportedSchemas[t]);
+											} else {
+												ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
+												supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+												supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+												supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
 											}
 										}
-										if (supportedFormats.length == 1 && supportedEncodings.length == 1) {
-											String supportedFormat = supportedFormats[j];
-											ComplexDataDescriptionType supportedCreatedFormat = supportedtInputFormat.addNewFormat();
-											supportedCreatedFormat.setMimeType(supportedFormat);
-											supportedCreatedFormat.setEncoding(supportedEncodings[k]);
-											for (int t = 0; t < supportedSchemas.length; t++) {
-												if (t == 0) {
-													supportedCreatedFormat.setSchema(supportedSchemas[t]);
-												}
-												if (t > 0) {
-													ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
-													supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
-													supportedCreatedFormatAdditional.setMimeType(supportedFormat);
-													supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
-												}
+									} else {
+										String supportedFormat = supportedFormats[j];
+										ComplexDataDescriptionType supportedCreatedFormat = supportedtInputFormat.addNewFormat();
+										supportedCreatedFormat.setMimeType(supportedFormat);
+										supportedCreatedFormat.setEncoding(supportedEncodings[k]);
+										for (int t = 0; t < supportedSchemas.length; t++) {
+											if (t == 0) {
+												supportedCreatedFormat.setSchema(supportedSchemas[t]);
+											}
+											if (t > 0) {
+												ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
+												supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+												supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+												supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
+											}
+										}
+									}
+									if (supportedFormats.length == 1 && supportedEncodings.length == 1) {
+										String supportedFormat = supportedFormats[j];
+										ComplexDataDescriptionType supportedCreatedFormat = supportedtInputFormat.addNewFormat();
+										supportedCreatedFormat.setMimeType(supportedFormat);
+										supportedCreatedFormat.setEncoding(supportedEncodings[k]);
+										for (int t = 0; t < supportedSchemas.length; t++) {
+											if (t == 0) {
+												supportedCreatedFormat.setSchema(supportedSchemas[t]);
+											}
+											if (t > 0) {
+												ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtInputFormat.addNewFormat();
+												supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+												supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+												supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
 											}
 										}
 									}
@@ -379,93 +376,94 @@ public abstract class ExtendedSelfDescribingAlgorithm implements ISubject,
 					dataOutput.addNewAbstract().setStringValue(output.getDescription());
 				}
 				Class<? extends IData> outputDataTypeClass = output.getBindingClass();
-				Class<?>[] interfaces = outputDataTypeClass.getInterfaces();
-				for (Class<?> implementedInterface : interfaces) {
-					if (implementedInterface.equals(ILiteralData.class)) {
-						LiteralOutputType literalData = dataOutput.addNewLiteralOutput();
-						String outputClassType = "";
-						Constructor<?>[] constructors = outputDataTypeClass.getConstructors();
-						for (Constructor<?> constructor : constructors) {
-							Class<?>[] parameters = constructor.getParameterTypes();
-							if (parameters.length == 1) {
-								outputClassType = parameters[0].getSimpleName();
+				System.out.println("Output-Id: "+output.getId());
+				System.out.println("Output-BindingClass: "+output.getBindingClass().getName());
+				
+				if (ILiteralData.class.isAssignableFrom(outputDataTypeClass)) {
+					LiteralOutputType literalData = dataOutput.addNewLiteralOutput();
+					String outputClassType = "";
+					Constructor<?>[] constructors = outputDataTypeClass.getConstructors();
+					for (Constructor<?> constructor : constructors) {
+						Class<?>[] parameters = constructor.getParameterTypes();
+						if (parameters.length == 1) {
+							outputClassType = parameters[0].getSimpleName();
+						}
+					}
+					if (outputClassType.length() > 0) {
+						literalData.addNewDataType().setReference("xs:" + outputClassType.toLowerCase());
+					}
+				} else if (IComplexData.class.isAssignableFrom(outputDataTypeClass)) {
+					
+					SupportedComplexDataType complexData = dataOutput.addNewComplexOutput();
+					ComplexDataCombinationType defaultInputFormat = complexData.addNewDefault();
+					ComplexDataCombinationsType supportedtOutputFormat = complexData.addNewSupported();
+					List<IGenerator> generators = GeneratorFactory.getInstance().getAllGenerators();
+					List<IGenerator> foundGenerators = new ArrayList<IGenerator>();
+					for (IGenerator generator : generators) {
+						Class<?>[] supportedClasses = generator.getSupportedDataBindings();
+						for (Class<?> clazz : supportedClasses) {
+							if (clazz.equals(outputDataTypeClass)) {
+								foundGenerators.add(generator);
 							}
 						}
-						if (outputClassType.length() > 0) {
-							literalData.addNewDataType().setReference("xs:" + outputClassType.toLowerCase());
+					}
+					for (int i = 0; i < foundGenerators.size(); i++) {
+						IGenerator generator = foundGenerators.get(i);
+						String[] supportedFormats = generator.getSupportedFormats();
+						String[] supportedSchemas = generator.getSupportedSchemas();
+						if (supportedSchemas == null) {
+							supportedSchemas = new String[0];
 						}
-					} else if (implementedInterface.equals(IComplexData.class)) {
-						SupportedComplexDataType complexData = dataOutput.addNewComplexOutput();
-						ComplexDataCombinationType defaultInputFormat = complexData.addNewDefault();
-						ComplexDataCombinationsType supportedtOutputFormat = complexData.addNewSupported();
-						List<IGenerator> generators = GeneratorFactory.getInstance().getAllGenerators();
-						List<IGenerator> foundGenerators = new ArrayList<IGenerator>();
-						for (IGenerator generator : generators) {
-							Class<?>[] supportedClasses = generator.getSupportedDataBindings();
-							for (Class<?> clazz : supportedClasses) {
-								if (clazz.equals(outputDataTypeClass)) {
-									foundGenerators.add(generator);
-								}
-							}
-						}
-						for (int i = 0; i < foundGenerators.size(); i++) {
-							IGenerator generator = foundGenerators.get(i);
-							String[] supportedFormats = generator.getSupportedFormats();
-							String[] supportedSchemas = generator.getSupportedSchemas();
-							if (supportedSchemas == null) {
-								supportedSchemas = new String[0];
-							}
-							String[] supportedEncodings = generator.getSupportedEncodings();
-							for (int j = 0; j < supportedFormats.length; j++) {
-								for (int k = 0; k < supportedEncodings.length; k++) {
-									if (j == 0 && k == 0 && i == 0) {
-										String supportedFormat = supportedFormats[j];
-										ComplexDataDescriptionType defaultFormat = defaultInputFormat
-												.addNewFormat();
-										defaultFormat.setMimeType(supportedFormat);
-										defaultFormat.setEncoding(supportedEncodings[k]);
-										for (int t = 0; t < supportedSchemas.length; t++) {
-											if (t == 0) {
-												defaultFormat.setSchema(supportedSchemas[t]);
-											} else {
-												ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtOutputFormat.addNewFormat();
-												supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
-												supportedCreatedFormatAdditional.setMimeType(supportedFormat);
-												supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
-											}
-										}
-									} else {
-										String supportedFormat = supportedFormats[j];
-										ComplexDataDescriptionType supportedCreatedFormat = supportedtOutputFormat.addNewFormat();
-										supportedCreatedFormat.setMimeType(supportedFormat);
-										supportedCreatedFormat.setEncoding(supportedEncodings[k]);
-										for (int t = 0; t < supportedSchemas.length; t++) {
-											if (t == 0) {
-												supportedCreatedFormat.setSchema(supportedSchemas[t]);
-											}
-											if (t > 0) {
-												ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtOutputFormat.addNewFormat();
-												supportedCreatedFormatAdditional.setMimeType(supportedFormat);
-												supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
-												supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
-											}
+						String[] supportedEncodings = generator.getSupportedEncodings();
+						for (int j = 0; j < supportedFormats.length; j++) {
+							for (int k = 0; k < supportedEncodings.length; k++) {
+								if (j == 0 && k == 0 && i == 0) {
+									String supportedFormat = supportedFormats[j];
+									ComplexDataDescriptionType defaultFormat = defaultInputFormat
+											.addNewFormat();
+									defaultFormat.setMimeType(supportedFormat);
+									defaultFormat.setEncoding(supportedEncodings[k]);
+									for (int t = 0; t < supportedSchemas.length; t++) {
+										if (t == 0) {
+											defaultFormat.setSchema(supportedSchemas[t]);
+										} else {
+											ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtOutputFormat.addNewFormat();
+											supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+											supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+											supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
 										}
 									}
-									if (supportedFormats.length == 1 && supportedEncodings.length == 1) {
-										String supportedFormat = supportedFormats[j];
-										ComplexDataDescriptionType supportedCreatedFormat = supportedtOutputFormat.addNewFormat();
-										supportedCreatedFormat.setMimeType(supportedFormat);
-										supportedCreatedFormat.setEncoding(supportedEncodings[k]);
-										for (int t = 0; t < supportedSchemas.length; t++) {
-											if (t == 0) {
-												supportedCreatedFormat.setSchema(supportedSchemas[t]);
-											}
-											if (t > 0) {
-												ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtOutputFormat.addNewFormat();
-												supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
-												supportedCreatedFormatAdditional.setMimeType(supportedFormat);
-												supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
-											}
+								} else {
+									String supportedFormat = supportedFormats[j];
+									ComplexDataDescriptionType supportedCreatedFormat = supportedtOutputFormat.addNewFormat();
+									supportedCreatedFormat.setMimeType(supportedFormat);
+									supportedCreatedFormat.setEncoding(supportedEncodings[k]);
+									for (int t = 0; t < supportedSchemas.length; t++) {
+										if (t == 0) {
+											supportedCreatedFormat.setSchema(supportedSchemas[t]);
+										}
+										if (t > 0) {
+											ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtOutputFormat.addNewFormat();
+											supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+											supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
+											supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+										}
+									}
+								}
+								if (supportedFormats.length == 1 && supportedEncodings.length == 1) {
+									String supportedFormat = supportedFormats[j];
+									ComplexDataDescriptionType supportedCreatedFormat = supportedtOutputFormat.addNewFormat();
+									supportedCreatedFormat.setMimeType(supportedFormat);
+									supportedCreatedFormat.setEncoding(supportedEncodings[k]);
+									for (int t = 0; t < supportedSchemas.length; t++) {
+										if (t == 0) {
+											supportedCreatedFormat.setSchema(supportedSchemas[t]);
+										}
+										if (t > 0) {
+											ComplexDataDescriptionType supportedCreatedFormatAdditional = supportedtOutputFormat.addNewFormat();
+											supportedCreatedFormatAdditional.setEncoding(supportedEncodings[k]);
+											supportedCreatedFormatAdditional.setMimeType(supportedFormat);
+											supportedCreatedFormatAdditional.setSchema(supportedSchemas[t]);
 										}
 									}
 								}

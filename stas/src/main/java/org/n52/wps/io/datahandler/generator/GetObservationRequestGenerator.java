@@ -19,7 +19,7 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.sta.wps.xml.io.enc;
+package org.n52.wps.io.datahandler.generator;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -35,8 +35,8 @@ import net.opengis.sos.x10.GetObservationDocument;
 import org.apache.xmlbeans.XmlOptions;
 import org.n52.wps.io.LargeBufferStream;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.complex.GetObservationRequestBinding;
 import org.n52.wps.io.datahandler.generator.AbstractGenerator;
-import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 import org.w3c.dom.Node;
 
 /**

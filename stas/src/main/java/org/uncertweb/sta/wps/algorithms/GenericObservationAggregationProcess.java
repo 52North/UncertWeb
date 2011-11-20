@@ -43,6 +43,7 @@ import net.opengis.om.x20.ObservationContextType;
 import net.opengis.sos.x10.GetObservationDocument;
 
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.complex.GetObservationRequestBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
@@ -91,7 +92,6 @@ import org.uncertweb.sta.wps.method.grouping.impl.NoTemporalGrouping;
 import org.uncertweb.sta.wps.method.grouping.impl.ObservedPropertyGrouping;
 import org.uncertweb.sta.wps.om.Origin;
 import org.uncertweb.sta.wps.sos.SOSClient;
-import org.uncertweb.sta.wps.xml.binding.GetObservationRequestBinding;
 import org.uncertweb.utils.UwConstants;
 
 /**

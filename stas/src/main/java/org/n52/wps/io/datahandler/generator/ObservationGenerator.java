@@ -19,7 +19,7 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.sta.wps.xml.io.enc;
+package org.n52.wps.io.datahandler.generator;
 
 import static org.uncertweb.utils.UwXmlUtils.Namespace.GML;
 import static org.uncertweb.utils.UwXmlUtils.Namespace.OM;

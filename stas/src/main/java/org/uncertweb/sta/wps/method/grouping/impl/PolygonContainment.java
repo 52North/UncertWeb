@@ -32,6 +32,7 @@ import net.opengis.wfs.GetFeatureDocument;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
+import org.n52.wps.io.data.binding.complex.GetFeatureRequestBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AlgorithmParameterException;
 import org.opengis.feature.Feature;
@@ -49,7 +50,6 @@ import org.uncertweb.sta.wps.api.SingleProcessInput;
 import org.uncertweb.sta.wps.api.annotation.SpatialPartitioningPredicate;
 import org.uncertweb.sta.wps.method.grouping.ObservationMapping;
 import org.uncertweb.sta.wps.method.grouping.SpatialGrouping;
-import org.uncertweb.sta.wps.xml.binding.GetFeatureRequestBinding;
 import org.uncertweb.utils.UwConstants;
 
 import com.vividsolutions.jts.geom.Geometry;

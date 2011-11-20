@@ -2,23 +2,23 @@
 <WPSConfiguration xmlns="http://n52.org/wps">
 	<Datahandlers>
 		<ParserList>
-			<Parser name="GetObservationRequestParser" className="org.uncertweb.sta.wps.xml.io.dec.GetObservationRequestParser" active="true">
+			<Parser name="GetObservationRequestParser" className="org.n52.wps.io.datahandler.parser.GetObservationRequestParser" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
-			<Parser name="GetFeatureRequestParser" className="org.uncertweb.sta.wps.xml.io.dec.GetFeatureRequestParser" active="true">
+			<Parser name="GetFeatureRequestParser" className="org.n52.wps.io.datahandler.parser.GetFeatureRequestParser" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/wfs/1.1.0/wfs.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
-			<Parser name="GML3BasicParser" className="org.n52.wps.io.datahandler.xml.GML3BasicParser" active="true">
+			<Parser name="GML3BasicParser" className="org.n52.wps.io.datahandler.parser.GML3BasicParser" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Property>
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.2.1/gml.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
-			<Parser name="GML2BasicParser" className="org.n52.wps.io.datahandler.xml.GML2BasicParser" active="true">
+			<Parser name="GML2BasicParser" className="org.n52.wps.io.datahandler.parser.GML2BasicParser" active="true">
 				<Property name="supportedSchema" active="false">http://schemas.opengis.net/gml/2.0.0/feature.xsd</Property>
 				<Property name="supportedSchema" active="false">http://schemas.opengis.net/gml/2.1.1/feature.xsd</Property>
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2/feature.xsd</Property>
@@ -26,13 +26,13 @@
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
-			<Parser name="KMLParser" className="org.n52.wps.io.datahandler.xml.KMLParser" active="false">
+			<Parser name="KMLParser" className="org.n52.wps.io.datahandler.parser.KMLParser" active="false">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd</Property>
 				<Property name="supportedFormat" active="false">application/vnd.google-earth.kml+xml</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
-			<Parser name="SimpleGMLParser" className="org.n52.wps.io.datahandler.xml.SimpleGMLParser" active="true">
+			<Parser name="SimpleGMLParser" className="org.n52.wps.io.datahandler.parser.SimpleGMLParser" active="true">
 				<Property name="supportedSchema" active="false">http://www.opengeospatial.org/gmlpacket.xsd</Property>
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
@@ -42,22 +42,22 @@
   			<Parser name="OMParser" className="org.n52.wps.io.datahandler.om.OMParser" active="true" />
 		</ParserList>
 		<GeneratorList>
-			<Generator name="GetObservationRequestGenerator" className="org.uncertweb.sta.wps.xml.io.enc.GetObservationRequestGenerator" active="true">
+			<Generator name="GetObservationRequestGenerator" className="org.n52.wps.io.datahandler.generator.GetObservationRequestGenerator" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>
-			<Generator name="GetFeatureRequestGenerator" className="org.uncertweb.sta.wps.xml.io.enc.GetFeatureRequestGenerator" active="true">
+			<Generator name="GetFeatureRequestGenerator" className="org.n52.wps.io.datahandler.generator.GetFeatureRequestGenerator" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/wfs/1.1.0/wfs.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>
-			<Generator name="UncertWebNetCDFGenerator" className="org.n52.wps.io.datahandler.binary.UncertWebNetCDFGenerator" active="true">
+			<Generator name="UncertWebNetCDFGenerator" className="org.n52.wps.io.datahandler.netcdf.NetCDFGenerator" active="true">
 	            <Property name="supportedFormat" active="true">application/x-netcdf</Property>
 	            <Property name="supportedFormat" active="true">application/netcdf</Property>
 	            <Property name="supportedEncoding" active="true">UTF-8</Property>
    			</Generator>
-   			<Generator name="OMv1Generator" className="org.uncertweb.sta.wps.xml.io.enc.ObservationCollectionGenerator" active="true">
+   			<Generator name="OMv1Generator" className="org.n52.wps.io.datahandler.generator.ObservationCollectionGenerator" active="true">
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/1.0.0/om.xsd</Property>
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
@@ -66,7 +66,7 @@
 		</GeneratorList>
 	</Datahandlers>
 	<AlgorithmRepositoryList>
-		<!-- <Repository name="STARepository" className="org.uncertweb.sta.wps.STARepository" active="true" /> -->
+		<Repository name="STARepository" className="org.uncertweb.sta.wps.STARepository" active="true" />
 		<Repository name="AggregationAlgorithmRepository" className="org.uncertweb.sta.wps.AggregationAlgorithmRepository" active="true" /> 
 	</AlgorithmRepositoryList>
 	<Server hostname="localhost"
