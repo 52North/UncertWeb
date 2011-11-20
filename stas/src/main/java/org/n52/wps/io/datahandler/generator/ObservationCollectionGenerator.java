@@ -21,97 +21,42 @@
  */
 package org.n52.wps.io.datahandler.generator;
 
+import static org.n52.wps.io.data.UncertWebDataConstants.*;
+import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_OM_V1;
+import static org.uncertweb.utils.UwCollectionUtils.set;
+
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.Collection;
 
 import net.opengis.om.x10.ObservationCollectionDocument;
 import net.opengis.om.x10.ObservationCollectionType;
 import net.opengis.om.x10.ObservationDocument;
 
-import org.n52.wps.io.LargeBufferStream;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.OMBinding;
-import org.n52.wps.io.datahandler.generator.AbstractGenerator;
+import org.n52.wps.io.datahandler.AbstractUwGenerator;
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.utils.UwXmlUtils;
-import org.w3c.dom.Node;
 
 /**
  * Generator for {@link ObservationCollectionDocument}s.
  * 
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
-public class ObservationCollectionGenerator extends AbstractGenerator {
+public class ObservationCollectionGenerator extends AbstractUwGenerator {
 
-	
 	public ObservationCollectionGenerator() {
-		this.supportedIDataTypes.add(OMBinding.class);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public OutputStream generate(IData arg0) {
-		LargeBufferStream baos = new LargeBufferStream();
-		this.writeToStream(arg0, baos);
-		return baos;
+		super(set(SCHEMA_OM_V1), set(ENCODING_UTF_8), set(MIME_TYPE_TEXT_XML),
+				UwCollectionUtils.<Class<?>> set(OMBinding.class));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Node generateXML(IData arg0, String arg1) {
-		return generateXML(arg0).getDomNode();
-	}
-
-	/**
-	 * Writes the given {@code IData} (which should be a
-	 * {@link ObservationCollectionBinding}) to a {@code Writer}.
-	 * 
-	 * @param data
-	 *            the data
-	 * @param writer
-	 *            the writer
-	 */
-	public void write(IData coll, Writer writer) {
-		ObservationCollectionDocument xml = generateXML(coll);
-		try {
-			BufferedWriter bufferedWriter = new BufferedWriter(writer);
-			bufferedWriter
-					.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-			xml.save(bufferedWriter, UwXmlUtils.defaultOptions());
-			bufferedWriter.write("\n");
-			bufferedWriter.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void writeToStream(IData coll, OutputStream os) {
 		OutputStreamWriter w = new OutputStreamWriter(os);
-		write(coll, w);
-	}
-
-	/**
-	 * Generates an {@code ObservationCollectionDocument} out of the given
-	 * {@code IData} (which should be a {@link ObservationCollectionBinding}).
-	 * 
-	 * @param om
-	 *            the {@code IData}
-	 * @return the generated XmlBean
-	 */
-	public ObservationCollectionDocument generateXML(IData om) {
-		Collection<? extends AbstractObservation> oc = ((OMBinding) om)
+		Collection<? extends AbstractObservation> oc = ((OMBinding) coll)
 				.getObservationCollection().getObservations();
 		ObservationCollectionDocument doc = ObservationCollectionDocument.Factory
 				.newInstance();
@@ -121,15 +66,16 @@ public class ObservationCollectionGenerator extends AbstractGenerator {
 			ObservationDocument oDoc = og.generateXML(o);
 			xboc.addNewMember().set(oDoc);
 		}
-		return doc;
-	}
-	
-	@Override
-	public InputStream generateStream(IData arg0, String arg1, String arg2)
-			throws IOException {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		writeToStream(arg0, out);
-		return new ByteArrayInputStream(out.toByteArray());
+		try {
+			BufferedWriter bufferedWriter = new BufferedWriter(w);
+			bufferedWriter
+					.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+			doc.save(bufferedWriter, UwXmlUtils.defaultOptions());
+			bufferedWriter.write("\n");
+			bufferedWriter.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

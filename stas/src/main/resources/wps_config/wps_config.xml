@@ -52,16 +52,8 @@
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Generator>
-			<Generator name="UncertWebNetCDFGenerator" className="org.n52.wps.io.datahandler.netcdf.NetCDFGenerator" active="true">
-	            <Property name="supportedFormat" active="true">application/x-netcdf</Property>
-	            <Property name="supportedFormat" active="true">application/netcdf</Property>
-	            <Property name="supportedEncoding" active="true">UTF-8</Property>
-   			</Generator>
-   			<Generator name="OMv1Generator" className="org.n52.wps.io.datahandler.generator.ObservationCollectionGenerator" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/1.0.0/om.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Generator>
+			<Generator name="NetCDFGenerator" className="org.n52.wps.io.datahandler.netcdf.NetCDFGenerator" active="true" />
+   			<Generator name="OMv1Generator" className="org.n52.wps.io.datahandler.generator.ObservationCollectionGenerator" active="true" />
 			<Generator name="OMv2Generator" className="org.n52.wps.io.datahandler.om.OMGenerator" active="true" />
 		</GeneratorList>
 	</Datahandlers>
