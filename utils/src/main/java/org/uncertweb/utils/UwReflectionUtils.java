@@ -21,10 +21,17 @@
  */
 package org.uncertweb.utils;
 
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public class UwReflectionUtils extends UwUtils {
+	
+	public static boolean isAbstractOrInterface(Class<?> c) {
+		 return c != null && (c.isInterface() || Modifier.isAbstract(c.getModifiers()));
+	}
+	
+	
 	public static boolean isParameterizedWith(Type t, Class<?> collClass,
 			Class<?> itemClass) {
 		if (t instanceof ParameterizedType) {
