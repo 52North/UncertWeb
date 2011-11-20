@@ -41,8 +41,8 @@ public class UncertWebDataConstants {
 	public static final String ENCODING_UTF_8 = "UTF-8";
 	
 	
-	public static final String SCHEMA_OM_V2 = ""; //TODO
-	public static final String SCHEMA_OM_V1 = ""; //TODO
-	public static final String SCHEMA_UNCERTML = ""; //TODO
+	public static final String SCHEMA_OM_V2 = "http://schemas.opengis.net/om/2.0/observation.xsd";
+	public static final String SCHEMA_OM_V1 = "http://schemas.opengis.net/om/1.0.0/om.xsd";
+	public static final String SCHEMA_UNCERTML = "http://uncertml.org/uncertml.xsd";
 	public static final String SCHEMA_NETCDF_U = ""; //TODO
 }
