@@ -1,7 +1,6 @@
 package org.uncertweb.api.om.observation.collections;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -77,7 +76,9 @@ public class DiscreteNumericObservationCollection implements
 	@Override
 	public void addObservationCollection(IObservationCollection obsCol) {
 		if (obsCol.getObservations().get(0) instanceof DiscreteNumericObservation){
-			this.members.addAll((Collection<DiscreteNumericObservation>) obsCol.getObservations());
+			for (AbstractObservation ao : obsCol.getObservations()) {
+				this.members.add((DiscreteNumericObservation) ao);
+			}
 		}
 		else {
 			throw new RuntimeException("ObservationCollection with type"+obsCol.getObservations().get(0).getName()+ " cannot be added to DiscreteNumericObservationCollection!!");

@@ -36,11 +36,12 @@ public class CategoryObservation extends AbstractObservation{
 	 * @param result
 	 *            result
 	 */
-	public CategoryObservation(Identifier identifier, TimeObject phenomenonTime, TimeObject resultTime,
-			URI procedure, URI observedProperty,
-			SpatialSamplingFeature featureOfInterest, CategoryResult result){
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setResult(result);
+	public CategoryObservation(Identifier identifier,
+			TimeObject phenomenonTime, TimeObject resultTime, URI procedure,
+			URI observedProperty, SpatialSamplingFeature featureOfInterest,
+			CategoryResult result) {
+		super(phenomenonTime, resultTime, procedure, observedProperty,
+				featureOfInterest, result);
 	}
 
 	/**
@@ -68,17 +69,15 @@ public class CategoryObservation extends AbstractObservation{
 	 * 			  (optional) result qualities as UncertaintyResults
 	 * @throws Exception 
 	 */
-	public CategoryObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
-			TimeObject resultTime, TimeObject validTime, URI procedure,
-			URI observedProperty, SpatialSamplingFeature featureOfInterest,
-			DQ_UncertaintyResult[] resultQuality, CategoryResult result){
-		
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setIdentifier(identifier);
-		setBoundedBy(boundedBy);
-		setValidTime(validTime);
-		setResultQuality(resultQuality);
-		setResult(result);
+	public CategoryObservation(Identifier identifier, Envelope boundedBy,
+			TimeObject phenomenonTime, TimeObject resultTime,
+			TimeObject validTime, URI procedure, URI observedProperty,
+			SpatialSamplingFeature featureOfInterest,
+			DQ_UncertaintyResult[] resultQuality, CategoryResult result) {
+
+		super(identifier, boundedBy, phenomenonTime, resultTime, validTime,
+				procedure, observedProperty, featureOfInterest, resultQuality,
+				result);
 	}
 
 	@Override

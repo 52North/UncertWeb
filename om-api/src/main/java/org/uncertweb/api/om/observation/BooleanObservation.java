@@ -45,9 +45,7 @@ public class BooleanObservation extends AbstractObservation{
 	public BooleanObservation(TimeObject phenomenonTime, TimeObject resultTime,
 			URI procedure, URI observedProperty,
 			SpatialSamplingFeature featureOfInterest, BooleanResult result){
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setResult(result);
-		
+		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest,result);
 	}
 
 	/**
@@ -75,21 +73,14 @@ public class BooleanObservation extends AbstractObservation{
 	 * 			  (optional) result qualities as UncertaintyResults
 	 * @throws Exception 
 	 */
-	public BooleanObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
-			TimeObject resultTime, TimeObject validTime, URI procedure,
-			URI observedProperty, SpatialSamplingFeature featureOfInterest,
-			DQ_UncertaintyResult[] resultQuality, BooleanResult result){
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setIdentifier(identifier);
-		setBoundedBy(boundedBy);
-		setValidTime(validTime);
-		setResultQuality(resultQuality);
-		try {
-			setResult(result);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public BooleanObservation(Identifier identifier, Envelope boundedBy,
+			TimeObject phenomenonTime, TimeObject resultTime,
+			TimeObject validTime, URI procedure, URI observedProperty,
+			SpatialSamplingFeature featureOfInterest,
+			DQ_UncertaintyResult[] resultQuality, BooleanResult result) {
+		super(identifier, boundedBy, phenomenonTime, resultTime, validTime,
+				procedure, observedProperty, featureOfInterest, resultQuality,
+				result);
 	}
 
 	@Override

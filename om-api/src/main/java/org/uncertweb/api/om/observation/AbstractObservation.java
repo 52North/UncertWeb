@@ -1,6 +1,8 @@
 package org.uncertweb.api.om.observation;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
@@ -26,6 +28,7 @@ public abstract class AbstractObservation {
 	protected URI procedure;
 	protected URI observedProperty;
 	protected SpatialSamplingFeature featureOfInterest;
+	protected Map<String, Object> parameters = new HashMap<String, Object>();
 
 	/**
 	 * Data quality uncertainty result is an optional property of an
@@ -33,7 +36,7 @@ public abstract class AbstractObservation {
 	 * intends to provide it as resultQuality > AbstractDQ_Element > result >
 	 * AbstractDQ_Result
 	 */
-	private DQ_UncertaintyResult[] resultQuality;
+	protected DQ_UncertaintyResult[] resultQuality;
 
 	
 	
@@ -55,13 +58,13 @@ public abstract class AbstractObservation {
 	 */
 	public AbstractObservation(TimeObject phenomenonTime, TimeObject resultTime,
 			URI procedure, URI observedProperty,
-			SpatialSamplingFeature featureOfInterest) {
-
-		this.phenomenonTime = phenomenonTime;
-		this.resultTime = resultTime;
-		this.procedure = procedure;
-		this.observedProperty = observedProperty;
-		this.featureOfInterest = featureOfInterest;
+			SpatialSamplingFeature featureOfInterest, IResult result) {
+		setPhenomenonTime(phenomenonTime);
+		setResultTime(resultTime);
+		setProcedure(procedure);
+		setObservedProperty(observedProperty);
+		setFeatureOfInterest(featureOfInterest);
+		setResult(result);
 	}
 
 	/**
@@ -91,13 +94,12 @@ public abstract class AbstractObservation {
 	public AbstractObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
 			TimeObject resultTime, TimeObject validTime, URI procedure,
 			URI observedProperty, SpatialSamplingFeature featureOfInterest,
-			DQ_UncertaintyResult[] resultQuality) {
-		this(phenomenonTime, resultTime, procedure, observedProperty,
-				featureOfInterest);
-		this.identifier = identifier;
-		this.boundedBy = boundedBy;
-		this.validTime = validTime;
-		this.resultQuality = resultQuality;
+			DQ_UncertaintyResult[] resultQuality, IResult result) {
+		this(phenomenonTime, resultTime, procedure, observedProperty, featureOfInterest,result);
+		setIdentifier(identifier);
+		setBoundedBy(boundedBy);
+		setValidTime(validTime);
+		setResultQuality(resultQuality);
 	}
 	
 	///////////////////////////////////////////////////
@@ -244,6 +246,36 @@ public abstract class AbstractObservation {
 		this.resultQuality = resultQuality;
 	}
 
+	/**
+	 * @return the parameters
+	 */
+	public Map<String, Object> getParameters() {
+		return parameters;
+	}
+	
+	/**
+	 * @param id the name of the parameter
+	 * @return the parameter with the specified name
+	 */
+	public Object getParameter(String key) {
+		return parameters.get(key);
+	}
+
+	/**
+	 * @param key the key of the parameter
+	 * @param value the value of the parameter
+	 */
+	public void addParameter(String key, Object value) { 
+		this.parameters.put(key, value);
+	}
+	
+	/**
+	 * @param parameters the parameters to set
+	 */
+	public void setParameters(Map<String, Object> parameters) {
+		this.parameters = parameters;
+	}
+	
 	/**
 	 * returns the name of observation
 	 * 

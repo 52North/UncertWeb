@@ -43,9 +43,9 @@ public class TextObservation extends AbstractObservation {
 	 */
 	public TextObservation(TimeObject phenomenonTime, TimeObject resultTime,
 			URI procedure, URI observedProperty,
-			SpatialSamplingFeature featureOfInterest, TextResult result){
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setResult(result);
+			SpatialSamplingFeature featureOfInterest, TextResult result) {
+		super(phenomenonTime, resultTime, procedure, observedProperty,
+				featureOfInterest, result);
 	}
 
 	/**
@@ -70,24 +70,17 @@ public class TextObservation extends AbstractObservation {
 	 * @param result
 	 *            result
 	 * @param resultQuality
-	 * 			  (optional) result qualities as UncertaintyResults
-	 * @throws Exception 
+	 *            (optional) result qualities as UncertaintyResults
+	 * @throws Exception
 	 */
-	public TextObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
-			TimeObject resultTime, TimeObject validTime, URI procedure,
-			URI observedProperty, SpatialSamplingFeature featureOfInterest,
-			DQ_UncertaintyResult[] resultQuality, TextResult result){
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setIdentifier(identifier);
-		setBoundedBy(boundedBy);
-		setValidTime(validTime);
-		setResultQuality(resultQuality);
-		try {
-			setResult(result);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public TextObservation(Identifier identifier, Envelope boundedBy,
+			TimeObject phenomenonTime, TimeObject resultTime,
+			TimeObject validTime, URI procedure, URI observedProperty,
+			SpatialSamplingFeature featureOfInterest,
+			DQ_UncertaintyResult[] resultQuality, TextResult result) {
+		super(identifier, boundedBy, phenomenonTime, resultTime, validTime,
+				procedure, observedProperty, featureOfInterest, resultQuality,
+				result);
 	}
 
 	@Override

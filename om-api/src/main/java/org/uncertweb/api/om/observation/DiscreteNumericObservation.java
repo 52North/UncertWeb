@@ -42,11 +42,11 @@ public class DiscreteNumericObservation extends AbstractObservation{
 	 * @param result
 	 *            result
 	 */
-	public DiscreteNumericObservation(TimeObject phenomenonTime, TimeObject resultTime,
-			URI procedure, URI observedProperty,
-			SpatialSamplingFeature featureOfInterest, IntegerResult result){
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setResult(result);
+	public DiscreteNumericObservation(TimeObject phenomenonTime,
+			TimeObject resultTime, URI procedure, URI observedProperty,
+			SpatialSamplingFeature featureOfInterest, IntegerResult result) {
+		super(phenomenonTime, resultTime, procedure, observedProperty,
+				featureOfInterest, result);
 	}
 
 	/**
@@ -78,13 +78,9 @@ public class DiscreteNumericObservation extends AbstractObservation{
 			TimeObject resultTime, TimeObject validTime, URI procedure,
 			URI observedProperty, SpatialSamplingFeature featureOfInterest,
 			DQ_UncertaintyResult[] resultQuality, IntegerResult result){
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setIdentifier(identifier);
-		setBoundedBy(boundedBy);
-		setValidTime(validTime);
-		setResultQuality(resultQuality);
-		setResult(result);
-		
+		super(identifier, boundedBy, phenomenonTime, resultTime, validTime,
+				procedure, observedProperty, featureOfInterest, resultQuality,
+				result);
 	}
 
 	@Override

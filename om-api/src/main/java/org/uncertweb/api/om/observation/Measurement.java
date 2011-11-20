@@ -44,9 +44,10 @@ public class Measurement extends AbstractObservation {
 	 */
 	public Measurement(TimeObject phenomenonTime, TimeObject resultTime,
 			URI procedure, URI observedProperty,
-			SpatialSamplingFeature featureOfInterest, MeasureResult result) throws Exception{
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setResult(result);
+			SpatialSamplingFeature featureOfInterest, MeasureResult result)
+			 {
+		super(phenomenonTime, resultTime, procedure, observedProperty,
+				featureOfInterest, result);
 	}
 
 	/**
@@ -74,16 +75,14 @@ public class Measurement extends AbstractObservation {
 	 * 			  (optional) result qualities as UncertaintyResults
 	 * @throws Exception 
 	 */
-	public Measurement(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
-			TimeObject resultTime, TimeObject validTime, URI procedure,
-			URI observedProperty, SpatialSamplingFeature featureOfInterest,
-			DQ_UncertaintyResult[] resultQuality, MeasureResult result){
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setIdentifier(identifier);
-		setBoundedBy(boundedBy);
-		setValidTime(validTime);
-		setResultQuality(resultQuality);
-		setResult(result);
+	public Measurement(Identifier identifier, Envelope boundedBy,
+			TimeObject phenomenonTime, TimeObject resultTime,
+			TimeObject validTime, URI procedure, URI observedProperty,
+			SpatialSamplingFeature featureOfInterest,
+			DQ_UncertaintyResult[] resultQuality, MeasureResult result) {
+		super(identifier, boundedBy, phenomenonTime, resultTime, validTime,
+				procedure, observedProperty, featureOfInterest, resultQuality,
+				result);
 	}
 
 	@Override

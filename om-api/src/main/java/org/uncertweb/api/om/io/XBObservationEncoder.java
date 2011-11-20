@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -111,6 +114,16 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  */
 public class XBObservationEncoder implements IObservationEncoder {
+	
+	private static final Set<EncoderHook> hooks = new HashSet<EncoderHook>();
+	
+	public static final Set<EncoderHook> getHooks() {
+		return Collections.unmodifiableSet(hooks);
+	}
+	
+	public static final void registerHook(EncoderHook hook) {
+		synchronized (hooks) { hooks.add(hook); }
+	}
 
 	// ////////////////////////////////////////////
 	// counters used for generating gml IDs
@@ -535,6 +548,11 @@ public class XBObservationEncoder implements IObservationEncoder {
 		  cursor.setAttributeText(new QName("http://www.w3.org/2001/XMLSchema-instance","schemaLocation"), OMConstants.NS_OM + " " + OMConstants.OM_SCHEMA_LOCATION);
 		}
 		}
+		
+		for (EncoderHook hook : getHooks()) {
+			hook.encode(obs, xb_obsDoc);
+		}
+		
 		return xb_obsDoc;
 	}
 	

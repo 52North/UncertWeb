@@ -44,7 +44,7 @@ public class SpatialSamplingFeature {
 	private Geometry shape;
 	
 	/**
-	 * Constructor with mandatory attributes plus identifier
+	 * Constructor with mandatory attributes
 	 * 
 	 * @param sampledFeature
 	 *            sampled feature

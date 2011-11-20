@@ -1,7 +1,6 @@
 package org.uncertweb.api.om.observation.collections;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -75,7 +74,9 @@ public class ReferenceObservationCollection implements IObservationCollection {
 	@Override
 	public void addObservationCollection(IObservationCollection obsCol) {
 		if (obsCol.getObservations().get(0) instanceof ReferenceObservation){
-			this.members.addAll((Collection<ReferenceObservation>) obsCol.getObservations());
+			for (AbstractObservation ao : obsCol.getObservations()) {
+				this.members.add((ReferenceObservation) ao);
+			}
 		}
 		else {
 			throw new RuntimeException("ObservationCollection with type"+obsCol.getObservations().get(0).getName()+ " cannot be added to ReferenceObservationCollection!!");

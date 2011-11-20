@@ -42,12 +42,11 @@ public class ReferenceObservation extends AbstractObservation{
 	 * @param result
 	 *            result
 	 */
-	public ReferenceObservation(TimeObject phenomenonTime, TimeObject resultTime,
-			URI procedure, URI observedProperty,
-			SpatialSamplingFeature featureOfInterest, ReferenceResult result){
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setResult(result);
-		
+	public ReferenceObservation(TimeObject phenomenonTime,
+			TimeObject resultTime, URI procedure, URI observedProperty,
+			SpatialSamplingFeature featureOfInterest, ReferenceResult result) {
+		super(phenomenonTime, resultTime, procedure, observedProperty,
+				featureOfInterest, result);
 	}
 
 	/**
@@ -75,16 +74,14 @@ public class ReferenceObservation extends AbstractObservation{
 	 * 			  (optional) result qualities as UncertaintyResults
 	 * @throws Exception 
 	 */
-	public ReferenceObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
-			TimeObject resultTime, TimeObject validTime, URI procedure,
-			URI observedProperty, SpatialSamplingFeature featureOfInterest,
-			DQ_UncertaintyResult[] resultQuality, ReferenceResult result){
-		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
-		setIdentifier(identifier);
-		setBoundedBy(boundedBy);
-		setValidTime(validTime);
-		setResultQuality(resultQuality);
-		setResult(result);
+	public ReferenceObservation(Identifier identifier, Envelope boundedBy,
+			TimeObject phenomenonTime, TimeObject resultTime,
+			TimeObject validTime, URI procedure, URI observedProperty,
+			SpatialSamplingFeature featureOfInterest,
+			DQ_UncertaintyResult[] resultQuality, ReferenceResult result) {
+		super(identifier, boundedBy, phenomenonTime, resultTime, validTime,
+				procedure, observedProperty, featureOfInterest, resultQuality,
+				result);
 	}
 
 	@Override
