@@ -1,4 +1,4 @@
-package org.n52.wps.io.data;
+package org.n52.wps.io.data.binding.complex;
 
 import org.apache.log4j.Logger;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -19,41 +19,34 @@ import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 
 /**
- * O&M Data, using UncertWeb O&M profile
- * {@link org.uncertweb.api.om.observation.Observation Observations} and
- * {@link org.uncertweb.api.om.observation.ObservationCollection
- * ObservationCollections}
- * 
- * @author Kiesow, staschc
- * 
+ * Binding for {@link OMData}
+ * @author Kiesow
+ *
  */
-public class OMData {
-
-	private static Logger log = Logger.getLogger(OMData.class);
+public class OMBinding extends UncertWebIODataBinding {
+	private static final long serialVersionUID = -3033594002991918048L;
+	
+	private static final Logger log = Logger.getLogger(OMBinding.class);
 	private IObservationCollection obsCol;
 	private AbstractObservation obs;
-	private String mimeType;
-
-	// private InputStream dataStream;
-	// private String mimeType;
-	// private String fileExtension;
-
-	public OMData(IObservationCollection obsCol, String mimeType) {
+	
+	public OMBinding(IObservationCollection obsCol) {
 		this.obsCol = obsCol;
-		this.mimeType=mimeType;
 	}
 
-	public OMData(AbstractObservation obs, String mimeType) {
+	public OMBinding(AbstractObservation obs) {
 		this.obs = obs;
-		this.mimeType=mimeType;
+	}
+	
+	@Override
+	public IObservationCollection getPayload() {
+		return getObservationCollection();
 	}
 
-	// public OMData(InputStream stream, String mimeType) {
-	// this.dataStream = stream;
-	// this.mimeType = mimeType;
-	// this.fileExtension = GenericFileDataConstants.mimeTypeFileTypeLUT()
-	// .get(mimeType);
-	// }
+	@Override
+	public Class<?> getSupportedClass() {
+		return IObservationCollection.class;
+	}
 
 	/**
 	 * gets the observation collection, if available; if there is only one
@@ -106,11 +99,5 @@ public class OMData {
 		return obs;
 	}
 
-	/**
-	 * @return the mimeType
-	 */
-	public String getMimeType() {
-		return mimeType;
-	}
 }
 

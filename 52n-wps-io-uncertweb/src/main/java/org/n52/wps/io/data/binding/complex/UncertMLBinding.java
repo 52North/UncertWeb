@@ -1,41 +1,38 @@
 package org.n52.wps.io.data.binding.complex;
 
-import org.n52.wps.io.data.IComplexData;
-import org.n52.wps.io.data.UncertMLData;
+import org.uncertml.IUncertainty;
 
 /**
  * data binding for uncertainties encoded as UncertML
  * 
  * @author staschc
- *
+ * 
  */
-public class UncertMLDataBinding implements IComplexData{
-	
-	private static final long serialVersionUID = 1L;
-	
+public class UncertMLBinding extends UncertWebIODataBinding {
+	private static final long serialVersionUID = -4919512307491127757L;
+
 	/**
 	 * payload is UncertML uncertainties
-	 * 
 	 */
-	private UncertMLData payload;
-	
+	private IUncertainty payload;
+
 	/**
 	 * constructor
 	 * 
 	 * @param data
 	 */
-	public UncertMLDataBinding(UncertMLData data){
+	public UncertMLBinding(IUncertainty data) {
 		this.payload = data;
 	}
 
 	@Override
-	public Object getPayload() {
+	public IUncertainty getPayload() {
 		return payload;
 	}
 
 	@Override
 	public Class<?> getSupportedClass() {
-		return UncertMLData.class;
+		return IUncertainty.class;
 	}
 
 }
