@@ -16,10 +16,14 @@ public abstract class AbstractUwGenerator extends AbstractGenerator {
 			Set<String> supportedEncodings, Set<String> supportedFormats,
 			Set<Class<?>> supportedBindings) {
 		super();
-		this.supportedEncodings.addAll(supportedEncodings);
-		this.supportedFormats.addAll(supportedFormats);
-		this.supportedIDataTypes.addAll(supportedBindings);
-		this.supportedSchemas.addAll(supportedSchemas);
+		if (supportedEncodings != null)
+			this.supportedEncodings.addAll(supportedEncodings);
+		if (supportedFormats != null)
+			this.supportedFormats.addAll(supportedFormats);
+		if (supportedBindings != null)
+			this.supportedIDataTypes.addAll(supportedBindings);
+		if (supportedSchemas != null)
+			this.supportedSchemas.addAll(supportedSchemas);
 	}
 	
 	@Override
