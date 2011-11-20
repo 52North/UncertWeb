@@ -80,9 +80,8 @@ import org.uncertweb.api.om.result.BooleanResult;
 import org.uncertweb.api.om.result.CategoryResult;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
+import org.uncertweb.utils.UwConstants;
 import org.uncertweb.utils.UwGeometryUtils;
-import org.uncertweb.utils.UwUrlConstants;
-import org.uncertweb.utils.UwUrnConstants;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -97,26 +96,26 @@ public class OMDecoder {
 	protected static final String NO_DATA_VALUE = "noData";
 
 	protected static final String[] FEATURE_OF_INTEREST_DEFINITION = {
-		UwUrlConstants.FEATURE_OF_INTEREST,
-		UwUrnConstants.FEATURE_DEFINITION 
+		UwConstants.URL.FEATURE_OF_INTEREST.value,
+		UwConstants.URN.FEATURE_DEFINITION.value 
 	};
 
 	protected static final String[] SAMPLING_TIME_DEFINITION = {
-		UwUrlConstants.SAMPLING_TIME,
-		UwUrnConstants.ISO8601_DEFINITION
+		UwConstants.URL.SAMPLING_TIME.value,
+		UwConstants.URN.ISO8601_DEFINITION.value
 	};
 
 	protected static final String[] EPSG_PREFIXES = { 
-		"urn:ogc:def:crs:EPSG::",
-		"urn:ogc:def:crs:EPSG:",
-		"http://www.opengis.net/def/crs/EPSG/0/",
-		"EPSG:"
+		UwConstants.URN.EPSG_SRS_PREFIX.value,
+		UwConstants.URN.EPSG_SRS_NO_VERSION_PREFIX.value,
+		UwConstants.URL.EPSG_SRS_PREFIX.value,
+		"EPSG:",
+		"EPSG"
 	};
 
 	private static final String DECIMAL = ".", TS = " ", CS = ",";
 
-	protected static final URI DEFAULT_CODE_SPACE = URI
-			.create(UwUrlConstants.INAPPLICABLE);
+	protected static final URI DEFAULT_CODE_SPACE = UwConstants.URL.INAPPLICABLE.uri;
 
 	public IObservationCollection parse(File f)
 			throws OMParsingException {
