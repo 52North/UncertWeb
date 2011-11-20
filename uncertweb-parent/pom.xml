@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.uncertweb</groupId>
 	<artifactId>uncertweb-parent</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>UncertWeb Parent POM</name>
@@ -27,7 +28,7 @@
 		<slf4j-version>1.6.1</slf4j-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
 	<developers>
 		<developer>
 			<id>bigagli</id>
@@ -116,6 +117,19 @@
 			<id>UncertWebMavenRepository</id>
 			<name>UncertWeb Maven Repository</name>
 			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+		</repository>
+		<repository>
+			<id>52NorthReleaseRepo</id>
+			<name>52° North Release Repository</name>
+			<url>http://52north.org/maven/repo/releases</url>
+		</repository>
+		<repository>
+			<id>52NorthSnapshotRepository</id>
+			<name>52° North Snapshot Repository</name>
+			<url>http://52north.org/maven/repo/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
