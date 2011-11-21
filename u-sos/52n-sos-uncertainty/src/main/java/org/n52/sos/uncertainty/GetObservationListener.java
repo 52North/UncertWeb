@@ -17,8 +17,8 @@ import org.n52.sos.request.SosGetObservationRequest;
 import org.n52.sos.resp.ExceptionResp;
 import org.n52.sos.resp.ISosResponse;
 import org.n52.sos.resp.ObservationResponse;
+import org.n52.sos.uncertainty.ds.pgsql.PGSQLGetObservationDAO;
 import org.omg.CORBA.NameValuePair;
-import org.n52.sos.ds.pgsql.uncertainty.PGSQLGetObservationDAO;
 
 /**
  * class parses and validates the GetObservation requests and forwards them to

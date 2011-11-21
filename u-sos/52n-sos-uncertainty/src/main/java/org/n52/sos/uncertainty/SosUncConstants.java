@@ -3,8 +3,8 @@ package org.n52.sos.uncertainty;
 import javax.xml.namespace.QName;
 
 import org.n52.sos.SosConstants;
-import org.n52.sos.decode.impl.uncertainty.OM2Constants;
 import org.n52.sos.ogc.om.OMConstants;
+import org.n52.sos.uncertainty.decode.impl.OM2Constants;
 
 
 public final class SosUncConstants {

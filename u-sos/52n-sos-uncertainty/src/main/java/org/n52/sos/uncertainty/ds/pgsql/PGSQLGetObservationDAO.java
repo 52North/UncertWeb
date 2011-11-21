@@ -14,17 +14,13 @@ import org.apache.log4j.Logger;
 import org.n52.sos.SosConfigurator;
 import org.n52.sos.SosConstants.GetObservationParams;
 import org.n52.sos.SosConstants.ValueTypes;
-import org.n52.sos.decode.impl.uncertainty.ObservationConverter;
 import org.n52.sos.ds.IGetObservationDAO;
 import org.n52.sos.ds.pgsql.PGConnectionPool;
 import org.n52.sos.ogc.om.AbstractSosObservation;
 import org.n52.sos.ogc.om.SosObservationCollection;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
-import org.n52.sos.request.SosGetObservationRequest;
 import org.n52.sos.uncertainty.SosUncConstants;
 import org.omg.CORBA.NameValuePair;
-import org.uncertml.IUncertainty;
-import org.uncertweb.api.om.observation.collections.IObservationCollection;
 
 /**
  * DAO of PostgreSQL DB for GetObservation Operation. Central method is

@@ -3,7 +3,6 @@ package org.n52.sos.uncertainty.ds.pgsql;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
-import org.n52.sos.decode.impl.uncertainty.OM2Constants;
 import org.n52.sos.ogc.om.OMConstants;
 import org.n52.sos.ogc.om.features.SosAbstractFeature;
 import org.n52.sos.ogc.om.features.domainFeatures.SosDomainArea;
@@ -14,6 +13,7 @@ import org.n52.sos.ogc.om.features.samplingFeatures.SosSamplingSurface;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionCode;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionLevel;
+import org.n52.sos.uncertainty.decode.impl.OM2Constants;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
 
 import com.vividsolutions.jts.geom.Geometry;

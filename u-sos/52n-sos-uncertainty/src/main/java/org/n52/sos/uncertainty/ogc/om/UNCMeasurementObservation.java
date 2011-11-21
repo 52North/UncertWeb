@@ -6,7 +6,7 @@ import org.n52.sos.ogc.gml.time.ISosTime;
 import org.n52.sos.ogc.om.SosMeasurement;
 import org.n52.sos.ogc.om.features.SosAbstractFeature;
 import org.n52.sos.ogc.om.quality.SosQuality;
-import org.n52.sos.ogc.uncertainty.IUncertainObservation;
+import org.n52.sos.uncertainty.ogc.IUncertainObservation;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.observation.Measurement;
 

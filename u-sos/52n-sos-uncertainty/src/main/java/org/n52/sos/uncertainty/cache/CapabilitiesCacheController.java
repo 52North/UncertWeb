@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.n52.sos.SosConstants;
-import org.n52.sos.ds.uncertainty.IConfigDAO;
 import org.n52.sos.ogc.om.AbstractSosObservation;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
+import org.n52.sos.uncertainty.ds.IConfigDAO;
 
 /**
  * CapabilitiesCacheController implements all methods to request all objects and

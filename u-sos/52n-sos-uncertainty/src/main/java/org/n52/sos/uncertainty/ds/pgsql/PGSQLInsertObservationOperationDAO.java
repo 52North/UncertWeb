@@ -5,17 +5,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.n52.sos.ds.insert.pgsql.uncertainty.InsertUncertaintyDAO;
 import org.n52.sos.ds.pgsql.PGConnectionPool;
 import org.n52.sos.ogc.om.AbstractSosObservation;
 import org.n52.sos.ogc.om.SosObservationCollection;
-import org.n52.sos.ogc.om.uncertainty.UNCUncertaintyObservation;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionCode;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionLevel;
-import org.n52.sos.ogc.uncertainty.IUncertainObservation;
-import org.uncertml.IUncertainty;
-import org.uncertweb.api.om.DQ_UncertaintyResult;
+import org.n52.sos.uncertainty.ds.insert.pgsql.InsertUncertaintyDAO;
+import org.n52.sos.uncertainty.ogc.IUncertainObservation;
+import org.n52.sos.uncertainty.ogc.om.UNCUncertaintyObservation;
 
 /**
  * data access object for InsertObservation operation

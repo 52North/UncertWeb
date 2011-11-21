@@ -14,9 +14,9 @@ import javax.xml.namespace.QName;
 import org.n52.sos.SosConstants;
 import org.n52.sos.ds.pgsql.PGConnectionPool;
 import org.n52.sos.ds.pgsql.PGDAOConstants;
-import org.n52.sos.ds.uncertainty.IConfigDAO;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
 import org.n52.sos.uncertainty.SosUncConstants;
+import org.n52.sos.uncertainty.ds.IConfigDAO;
 
 /**
  * Config DAO wrapper to add uncertainty enablement
