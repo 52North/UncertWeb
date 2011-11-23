@@ -13,7 +13,7 @@ import org.n52.wps.io.data.binding.complex.UncertMLBinding;
 import org.n52.wps.io.datahandler.AbstractUwParser;
 import org.uncertml.IUncertainty;
 import org.uncertml.exception.UncertaintyParserException;
-import org.uncertml.io.XMLParser;
+import org.uncertml.io.ExtendedXMLParser;
 import org.uncertweb.utils.UwCollectionUtils;
 
 /**
@@ -40,7 +40,7 @@ public class UncertMLXmlParser extends AbstractUwParser {
 	@Override
 	public IData parse(InputStream stream, String mimeType) {
 		UncertMLBinding result = null;
-		XMLParser parser = new XMLParser();
+		ExtendedXMLParser parser = new ExtendedXMLParser();
 		try {
 			IUncertainty uncertainty = parser.parse(stream);
 			result = new UncertMLBinding(uncertainty);
