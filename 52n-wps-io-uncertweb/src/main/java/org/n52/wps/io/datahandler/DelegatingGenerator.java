@@ -1,7 +1,6 @@
 package org.n52.wps.io.datahandler;
 
-import static org.uncertweb.utils.UwCollectionUtils.asSet;
-
+import org.uncertweb.utils.UwCollectionUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -16,7 +15,7 @@ public abstract class DelegatingGenerator extends DelegatingHandler implements I
 
 	public DelegatingGenerator(IGenerator... generators) {
 		super(generators);
-		this.generators = asSet(generators);
+		this.generators = UwCollectionUtils.asSet(generators);
 	}
 
 	@Override

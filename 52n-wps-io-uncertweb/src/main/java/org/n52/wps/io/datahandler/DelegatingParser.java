@@ -1,6 +1,6 @@
 package org.n52.wps.io.datahandler;
 
-import static org.uncertweb.utils.UwCollectionUtils.asSet;
+import org.uncertweb.utils.UwCollectionUtils;
 
 import java.io.InputStream;
 import java.util.Set;
@@ -14,7 +14,7 @@ public abstract class DelegatingParser extends DelegatingHandler implements IPar
 	
 	public DelegatingParser(IParser... parsers) {
 		super();
-		this.parsers = asSet(parsers);
+		this.parsers = UwCollectionUtils.asSet(parsers);
 		
 	}
 

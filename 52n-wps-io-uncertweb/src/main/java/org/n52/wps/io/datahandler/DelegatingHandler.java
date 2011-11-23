@@ -1,8 +1,6 @@
 package org.n52.wps.io.datahandler;
 
-import static org.uncertweb.utils.UwCollectionUtils.addAll;
-import static org.uncertweb.utils.UwCollectionUtils.set;
-
+import org.uncertweb.utils.UwCollectionUtils;
 import java.util.Set;
 
 import org.n52.wps.io.IOHandler;
@@ -16,16 +14,16 @@ public abstract class DelegatingHandler implements IOHandler {
 
 	public DelegatingHandler(IOHandler... handler) {
 		
-		Set<String> formats = set();
-		Set<String> schemas = set();
-		Set<String> encodings = set();
-		Set<Class<?>> bindings = set();
+		Set<String> formats = UwCollectionUtils.set();
+		Set<String> schemas = UwCollectionUtils.set();
+		Set<String> encodings = UwCollectionUtils.set();
+		Set<Class<?>> bindings = UwCollectionUtils.set();
 		
 		for (IOHandler g : handler) {
-			addAll(formats, g.getSupportedFormats());
-			addAll(schemas, g.getSupportedSchemas());
-			addAll(encodings, g.getSupportedEncodings());
-			addAll(bindings, g.getSupportedDataBindings());
+			UwCollectionUtils.addAll(formats, g.getSupportedFormats());
+			UwCollectionUtils.addAll(schemas, g.getSupportedSchemas());
+			UwCollectionUtils.addAll(encodings, g.getSupportedEncodings());
+			UwCollectionUtils.addAll(bindings, g.getSupportedDataBindings());
 		}
 		
 		this.supportedFormats = formats.toArray(new String[formats.size()]);
