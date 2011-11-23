@@ -97,10 +97,10 @@ public class JSONObservationEncoder implements IObservationEncoder{
 		encodeTime(writer,obs.getPhenomenonTime());
 		//encode ResultTime
 		writer.key("resultTime");
-		encodeTime(writer,obs.getPhenomenonTime());
+		encodeTime(writer,obs.getResultTime());
 		if (obs.getValidTime()!=null){
 			writer.key("validTime");
-			encodeTime(writer,obs.getPhenomenonTime());
+			encodeTime(writer,obs.getValidTime());
 		}
 		//encode observed property
 		writer.key("observedProperty");
@@ -230,14 +230,14 @@ public class JSONObservationEncoder implements IObservationEncoder{
 
 	private void encodeTime(JSONStringer writer, TimeObject time) throws JSONException {
 		writer.object();
-		if (time.getDateTime()!=null){
+		if (time.isInstant()){
 			writer.key("TimeInstant");
 			writer.object();
 			writer.key("timePosition");
 			writer.value(time.getDateTime().toString());
 			writer.endObject();
 		}
-		else if (time.getInterval()!=null){
+		else if (time.isInterval()){
 			writer.key("TimePeriod");
 			writer.object();
 			writer.key("begin");
