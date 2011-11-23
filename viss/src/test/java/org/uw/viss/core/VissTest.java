@@ -55,6 +55,7 @@ import org.apache.xmlbeans.XmlException;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Mean;
@@ -70,195 +71,206 @@ import com.sun.jersey.test.framework.JerseyTest;
 
 public class VissTest extends JerseyTest {
 
-  public VissTest() throws Exception {
-    super("org.uncertweb.viss");
-  }
+	@BeforeClass
+	public static void initLogger() {
+		java.util.logging.Logger rootLogger = java.util.logging.LogManager
+				.getLogManager().getLogger("");
+		java.util.logging.Handler[] handlers = rootLogger.getHandlers();
+		for (int i = 0; i < handlers.length; i++) {
+			rootLogger.removeHandler(handlers[i]);
+		}
+		org.slf4j.bridge.SLF4JBridgeHandler.install();
+	}
 
-  private InputStream getNetCDFStream() {
-    return getClass().getResourceAsStream("/biotemp.nc");
-  }
+	public VissTest() throws Exception {
+		super("org.uncertweb.viss");
+	}
 
-  private InputStream getSLDStream() {
-    return getClass().getResourceAsStream("/raster.xml");
-  }
+	private InputStream getNetCDFStream() {
+		return getClass().getResourceAsStream("/biotemp.nc");
+	}
 
-  private InputStream getOMStream() {
-    return getClass().getResourceAsStream("/reference-observation.xml");
-  }
+	private InputStream getSLDStream() {
+		return getClass().getResourceAsStream("/raster.xml");
+	}
 
-  @Test
-  public void testIS() {
-    InputStream is = null;
-    is = getNetCDFStream();
-    assertNotNull(is);
-    IOUtils.closeQuietly(is);
-    is = getSLDStream();
-    assertNotNull(is);
-    IOUtils.closeQuietly(is);
-    is = getOMStream();
-    assertNotNull(is);
-    IOUtils.closeQuietly(is);
-  }
+	private InputStream getOMStream() {
+		return getClass().getResourceAsStream("/reference-observation.xml");
+	}
 
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-  }
+	@Test
+	public void testIS() {
+		InputStream is = null;
+		is = getNetCDFStream();
+		assertNotNull(is);
+		IOUtils.closeQuietly(is);
+		is = getSLDStream();
+		assertNotNull(is);
+		IOUtils.closeQuietly(is);
+		is = getOMStream();
+		assertNotNull(is);
+		IOUtils.closeQuietly(is);
+	}
 
-  WebResource getWebResource() {
-    return this.client().resource(getBaseURI());
-  }
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+	}
 
-  @Test
-  public void testEmpty() throws UniformInterfaceException, JSONException {
-    getWebResource().path(RESOURCES).accept(JSON_RESOURCE_LIST_TYPE)
-        .get(JSONObject.class).getJSONArray("resources");
-  }
+	WebResource getWebResource() {
+		return this.client().resource(getBaseURI());
+	}
 
-  @Test
-  public void testNotExistingResource() {
-    try {
-      getWebResource()
-          .path(
-              RESOURCE_WITH_ID.replace(RES_PARAM_P, UUID.randomUUID()
-                  .toString())).accept(JSON_RESOURCE_TYPE).get(Response.class);
-    } catch (UniformInterfaceException e) {
-      assertEquals(404, e.getResponse().getStatus());
-      return;
-    }
-    fail();
-  }
+	@Test
+	public void testEmpty() throws UniformInterfaceException, JSONException {
+		getWebResource().path(RESOURCES).accept(JSON_RESOURCE_LIST_TYPE)
+				.get(JSONObject.class).getJSONArray("resources");
+	}
 
-  private UUID addResource(MediaType mt, InputStream is) throws JSONException {
-    JSONObject j = getWebResource().path(
-        getWebResource().path(RESOURCES).accept(JSON_RESOURCE_TYPE)
-            .entity(is, mt).post(ClientResponse.class).getLocation().getPath())
-        .get(JSONObject.class);
+	@Test
+	public void testNotExistingResource() {
+		try {
+			getWebResource()
+					.path(RESOURCE_WITH_ID.replace(RES_PARAM_P, UUID
+							.randomUUID().toString()))
+					.accept(JSON_RESOURCE_TYPE).get(Response.class);
+		} catch (UniformInterfaceException e) {
+			assertEquals(404, e.getResponse().getStatus());
+			return;
+		}
+		fail();
+	}
 
-    return UUID.fromString(j.getString("id"));
-  }
+	private UUID addResource(MediaType mt, InputStream is) throws JSONException {
+		JSONObject j = getWebResource().path(
+				getWebResource().path(RESOURCES).accept(JSON_RESOURCE_TYPE)
+						.entity(is, mt).post(ClientResponse.class)
+						.getLocation().getPath()).get(JSONObject.class);
 
-  private String createVisualization(UUID resource, String visualizer,
-      JSONObject params) throws JSONException {
-    return getWebResource()
-        .path(
-            getWebResource()
-                .path(
-                    VISUALIZER_FOR_RESOURCE.replace(RES_PARAM_P,
-                        resource.toString()).replace(VIR_PARAM_P, visualizer))
-                .entity(params, JSON_CREATE_TYPE).post(ClientResponse.class)
-                .getLocation().getPath()).get(JSONObject.class).getString("id");
-  }
+		return UUID.fromString(j.getString("id"));
+	}
 
-  @Test
-  public void sameVisualizationWithParameters() throws JSONException {
-    UUID uuid = addResource(OM_2_TYPE, getOMStream());
-    String cdfVisId1 = createVisualization(uuid,
-        getNameForVisualizer(Probability.class),
-        new JSONObject().put("max", 0.5D));
-    String cdfVisId2 = createVisualization(uuid,
-        getNameForVisualizer(Probability.class),
-        new JSONObject().put("max", 0.5D));
-    assertEquals(cdfVisId1, cdfVisId2);
-  }
+	private String createVisualization(UUID resource, String visualizer,
+			JSONObject params) throws JSONException {
+		return getWebResource()
+				.path(getWebResource()
+						.path(VISUALIZER_FOR_RESOURCE.replace(RES_PARAM_P,
+								resource.toString()).replace(VIR_PARAM_P,
+								visualizer)).entity(params, JSON_CREATE_TYPE)
+						.post(ClientResponse.class).getLocation().getPath())
+				.get(JSONObject.class).getString("id");
+	}
 
-  @Test
-  public void addResourceAndCreateVisualizations() throws JSONException,
-      UniformInterfaceException, XmlException {
-    deleteAll();
-    UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
+	@Test
+	public void sameVisualizationWithParameters() throws JSONException {
+		UUID uuid = addResource(OM_2_TYPE, getOMStream());
+		String cdfVisId1 = createVisualization(uuid,
+				getNameForVisualizer(Probability.class),
+				new JSONObject().put("max", 0.5D));
+		String cdfVisId2 = createVisualization(uuid,
+				getNameForVisualizer(Probability.class),
+				new JSONObject().put("max", 0.5D));
+		assertEquals(cdfVisId1, cdfVisId2);
+	}
 
-    String meanVisId = createVisualization(uuid,
-        getNameForVisualizer(Mean.class), new JSONObject());
-    createVisualization(uuid, getNameForVisualizer(Variance.class),
-        new JSONObject());
-    createVisualization(uuid, getNameForVisualizer(StandardDeviation.class),
-        new JSONObject());
-    createVisualization(uuid, getNameForVisualizer(Probability.class),
-        new JSONObject().put("max", 0.5D));
-    createVisualization(uuid,
-        getNameForVisualizer(ProbabilityForInterval.class), new JSONObject()
-            .put("min", 0.3D).put("max", 0.6D));
+	@Test
+	public void addResourceAndCreateVisualizations() throws JSONException,
+			UniformInterfaceException, XmlException {
+		deleteAll();
+		UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
 
-    String url = VISUALIZATION_SLD.replace(RES_PARAM_P, uuid.toString())
-        .replace(VIS_PARAM_P, meanVisId);
+		String meanVisId = createVisualization(uuid,
+				getNameForVisualizer(Mean.class), new JSONObject());
+		createVisualization(uuid, getNameForVisualizer(Variance.class),
+				new JSONObject());
+		createVisualization(uuid,
+				getNameForVisualizer(StandardDeviation.class), new JSONObject());
+		createVisualization(uuid, getNameForVisualizer(Probability.class),
+				new JSONObject().put("max", 0.5D));
+		createVisualization(uuid,
+				getNameForVisualizer(ProbabilityForInterval.class),
+				new JSONObject().put("min", 0.3D).put("max", 0.6D));
 
-    StyledLayerDescriptorDocument.Factory.parse(getWebResource().path(
-        getWebResource().path(url)
-            .entity(getSLDStream(), STYLED_LAYER_DESCRIPTOR_TYPE)
-            .post(ClientResponse.class).getLocation().getPath()).get(
-        String.class));
+		String url = VISUALIZATION_SLD.replace(RES_PARAM_P, uuid.toString())
+				.replace(VIS_PARAM_P, meanVisId);
 
-  }
+		StyledLayerDescriptorDocument.Factory.parse(getWebResource().path(
+				getWebResource().path(url)
+						.entity(getSLDStream(), STYLED_LAYER_DESCRIPTOR_TYPE)
+						.post(ClientResponse.class).getLocation().getPath())
+				.get(String.class));
 
-  @Test
-  public void visualizersForResource() throws JSONException {
-    deleteAll();
-    UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
-    JSONObject j = getWebResource()
-        .path(VISUALIZERS_FOR_RESOURCE.replace(RES_PARAM_P, uuid.toString()))
-        .accept(JSON_VISUALIZER_LIST_TYPE).get(JSONObject.class);
+	}
 
-    System.out.println(j.toString(4));
-  }
+	@Test
+	public void visualizersForResource() throws JSONException {
+		UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
+		JSONObject j = getWebResource()
+				.path(VISUALIZERS_FOR_RESOURCE.replace(RES_PARAM_P,
+						uuid.toString())).accept(JSON_VISUALIZER_LIST_TYPE)
+				.get(JSONObject.class);
 
-  @Test
-  public void testSameResource() throws JSONException {
-    UUID uuid1 = addResource(NETCDF_TYPE, getNetCDFStream());
-    UUID uuid2 = addResource(NETCDF_TYPE, getNetCDFStream());
-    UUID uuid3 = addResource(OM_2_TYPE, getOMStream());
-    assertEquals(uuid1, uuid2);
-    assertTrue(!uuid1.equals(uuid3));
-  }
+		System.out.println(j.toString(4));
+	}
 
-  @Test
-  public void testSldFile() throws XmlException, IOException {
-    StyledLayerDescriptorDocument.Factory.parse(getSLDStream());
-  }
+	@Test
+	public void testSameResource() throws JSONException {
+		UUID uuid1 = addResource(NETCDF_TYPE, getNetCDFStream());
+		UUID uuid2 = addResource(NETCDF_TYPE, getNetCDFStream());
+		UUID uuid3 = addResource(OM_2_TYPE, getOMStream());
+		assertEquals(uuid1, uuid2);
+		assertTrue(!uuid1.equals(uuid3));
+	}
 
-  @Test
-  public void testOMResource() throws JSONException {
-    deleteAll();
-    UUID uuid = addResource(OM_2_TYPE, getOMStream());
-    createVisualization(uuid, getNameForVisualizer(Mean.class),
-        new JSONObject());
-  }
+	@Test
+	public void testSldFile() throws XmlException, IOException {
+		StyledLayerDescriptorDocument.Factory.parse(getSLDStream());
+	}
 
-  @Test
-  public void testSameVisualization() throws JSONException {
-    UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
-    String visId1 = createVisualization(uuid, getNameForVisualizer(Mean.class),
-        new JSONObject());
-    String visId2 = createVisualization(uuid, getNameForVisualizer(Mean.class),
-        new JSONObject());
-    assertEquals(visId1, visId2);
-    String visId3 = createVisualization(uuid,
-        getNameForVisualizer(Variance.class), new JSONObject());
-    assertTrue(!visId2.equals(visId3));
-  }
+	@Test
+	public void testOMResource() throws JSONException {
+		deleteAll();
+		UUID uuid = addResource(OM_2_TYPE, getOMStream());
+		createVisualization(uuid, getNameForVisualizer(Mean.class),
+				new JSONObject());
+	}
 
-  public void deleteAll() throws JSONException {
-    JSONObject j = getWebResource().path(RESOURCES)
-        .accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);
-    JSONArray a = j.optJSONArray("resources");
-    if (a != null) {
-      for (int i = 0; i < a.length(); i++) {
-        String id = a.getJSONObject(i).getString("id");
-        System.out.println("Deleting resource " + id);
-        deleteResource(id);
-      }
-    }
-  }
+	@Test
+	public void testSameVisualization() throws JSONException {
+		UUID uuid = addResource(NETCDF_TYPE, getNetCDFStream());
+		String visId1 = createVisualization(uuid,
+				getNameForVisualizer(Mean.class), new JSONObject());
+		String visId2 = createVisualization(uuid,
+				getNameForVisualizer(Mean.class), new JSONObject());
+		assertEquals(visId1, visId2);
+		String visId3 = createVisualization(uuid,
+				getNameForVisualizer(Variance.class), new JSONObject());
+		assertTrue(!visId2.equals(visId3));
+	}
 
-  private String getNameForVisualizer(Class<? extends IVisualizer> vc) {
-    try {
-      return vc.newInstance().getShortName();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+	public void deleteAll() throws JSONException {
+		JSONObject j = getWebResource().path(RESOURCES)
+				.accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);
+		JSONArray a = j.optJSONArray("resources");
+		if (a != null) {
+			for (int i = 0; i < a.length(); i++) {
+				String id = a.getJSONObject(i).getString("id");
+				System.out.println("Deleting resource " + id);
+				deleteResource(id);
+			}
+		}
+	}
 
-  void deleteResource(String id) {
-    getWebResource().path(RESOURCE_WITH_ID.replace(RES_PARAM_P, id)).delete();
-  }
+	private String getNameForVisualizer(Class<? extends IVisualizer> vc) {
+		try {
+			return vc.newInstance().getShortName();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	void deleteResource(String id) {
+		getWebResource().path(RESOURCE_WITH_ID.replace(RES_PARAM_P, id))
+				.delete();
+	}
 }

@@ -34,7 +34,7 @@ public abstract class StudentTDistributionVisualizer extends
 
 	@Id("Distribution-StudentT-Mean")
 	@Description("Returns the variance.")
-	public class Mean extends StudentTDistributionVisualizer {
+	public static class Mean extends StudentTDistributionVisualizer {
 
 		@Override
 		protected double evaluate(TDistributionImpl d) {
