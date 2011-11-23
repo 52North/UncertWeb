@@ -68,5 +68,10 @@
 			<artifactId>om-api</artifactId>
 			<version>0.0.5-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>xb-uncertml-rv</artifactId>
+			<version>0.0.2</version>
+		</dependency>
 	</dependencies>
 </project>
