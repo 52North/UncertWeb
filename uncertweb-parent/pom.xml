@@ -131,6 +131,19 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<!-- disable obsolete ifgi repositories -->
+		<repository>
+			<id>ifgi.releases</id>
+			<url>http://ifgi-redundance.uni-muenster.de/mvn-repository/releases/</url>
+			<releases><enabled>false</enabled></releases>
+			<snapshots><enabled>false</enabled></snapshots>
+		</repository>
+		<repository>
+			<id>ifgi.snapshots</id>
+			<url>http://ifgi-redundance.uni-muenster.de/mvn-repository/snapshots/</url>
+			<releases><enabled>false</enabled></releases>
+			<snapshots><enabled>false</enabled></snapshots>
+		</repository>
 	</repositories>
 
 	<distributionManagement>
