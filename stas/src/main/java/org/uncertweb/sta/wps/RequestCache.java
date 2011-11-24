@@ -33,9 +33,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
 import org.n52.wps.io.IOHandler;
+import org.n52.wps.io.IParser;
 import org.n52.wps.io.ParserFactory;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.datahandler.parser.AbstractParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.sta.utils.Utils;
@@ -88,15 +88,16 @@ public class RequestCache<T extends XmlObject, U> {
 	private TreeSet<CachedRequest> allCachedRequests = new TreeSet<CachedRequest>();
 	private Map<String, Map<T, CachedRequest>> cachedPostRequests = new HashMap<String, Map<T, CachedRequest>>();;
 	private Map<String, CachedRequest> cachedGetRequests = new HashMap<String, CachedRequest>();
-	private String schema;
 	private int cachedRequests;
-	private Class<? extends IData> binding;
-
+	private IParser parser;
+	
 	public RequestCache(String schema, Class<? extends IData> binding, int cachedRequests) {
-		this.schema = schema;
+		this(ParserFactory.getInstance().getParser(schema, "text/xml", IOHandler.DEFAULT_ENCODING, binding), cachedRequests);
+	}
+	
+	public RequestCache(IParser parser, int cachedRequests) {
 		this.cachedRequests = cachedRequests;
-		this.binding = binding;
-
+		this.parser = parser;
 	}
 
 	public synchronized U getResponse(String url, T request, boolean dropCache) {
@@ -180,10 +181,7 @@ public class RequestCache<T extends XmlObject, U> {
 
 	@SuppressWarnings("unchecked")
 	private U parse(InputStream is) {
-		AbstractParser p = (AbstractParser) ParserFactory.getInstance()
-			.getParser(this.schema, "text/xml", 
-						IOHandler.DEFAULT_ENCODING, this.binding);
-		return (U) p.parse(is, "text/xml", IOHandler.DEFAULT_ENCODING);
+		return (U) this.parser.parse(is, "text/xml", IOHandler.DEFAULT_ENCODING);
 	}
 
 }
