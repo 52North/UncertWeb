@@ -51,21 +51,21 @@ public class ObservationCollectionInputHandler extends
 		= new RequestCache<GetObservationDocument, IObservationCollection>(new OMParser(),
 			Constants.MAX_CACHED_REQUESTS);
 
-	/**
-	 * 
-	 */
 	private SingleProcessInput<String> urlInput;
-
-	/**
-	 * The input containing the {@link GetObservationDocument} request.
-	 */
 	private SingleProcessInput<GetObservationDocument> requestInput;
+	private SingleProcessInput<String> responseMimeTypeInput;
+	private SingleProcessInput<String> responseSchemaInput;
 
-	public ObservationCollectionInputHandler(SingleProcessInput<String> url,
-			SingleProcessInput<GetObservationDocument> request) {
-		super(url, request);
+	public ObservationCollectionInputHandler(
+			SingleProcessInput<String> url,
+			SingleProcessInput<GetObservationDocument> request, 
+			SingleProcessInput<String> responseMimeType,
+			SingleProcessInput<String> responseSchema) {
+		super(url, request, responseMimeType, responseSchema);
 		this.urlInput = url;
 		this.requestInput = request;
+		this.responseMimeTypeInput = responseMimeType;
+		this.responseSchemaInput = responseSchema;
 	}
 
 	/**
@@ -76,10 +76,12 @@ public class ObservationCollectionInputHandler extends
 			Map<String, List<IData>> inputs) {
 		String sosUrl = urlInput.handle(inputs);
 		GetObservationDocument sosReq = requestInput.handle(inputs);
+		String mimeType = responseMimeTypeInput.handle(inputs);
+		String schema = responseSchemaInput.handle(inputs);
 		if (sosUrl == null) {
 			throw new AlgorithmParameterException("No Source SOS Url.");
 		}
-		return CACHE.getResponse(sosUrl, sosReq, false);
+		return CACHE.getResponse(sosUrl, sosReq, mimeType, schema, false);
 	}
 
 }

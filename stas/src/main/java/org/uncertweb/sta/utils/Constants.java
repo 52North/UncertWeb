@@ -118,6 +118,8 @@ public class Constants {
 			public static final String TIME_RANGE_ID = "TimeRange";
 			public static final String SOS_SOURCE_URL_ID = "SOSSourceUrl";
 			public static final String SOS_REQUEST_ID = "SOSRequest";
+			public static final String SOS_REQUEST_RETURN_MIME_TYPE = "SOSResponseMimeType";
+			public static final String SOS_REQUEST_RETURN_SCHEMA = "SOSResponseSchema";
 			public static final String WFS_REQUEST_ID = "WFSRequest";
 			public static final String WFS_URL_ID = "WFSUrl";
 

@@ -53,8 +53,9 @@ public class FeatureCollectionInputHandler extends
 	/**
 	 * Cache for GetFeature requests.
 	 */
-	private static final RequestCache<GetFeatureDocument, FeatureCollection<FeatureType, Feature>> CACHE = new RequestCache<GetFeatureDocument, FeatureCollection<FeatureType, Feature>>(
-			Namespace.GML.SCHEMA, GTVectorDataBinding.class, Constants.MAX_CACHED_REQUESTS);
+	private static final RequestCache<GetFeatureDocument, FeatureCollection<FeatureType, Feature>> CACHE 
+		= new RequestCache<GetFeatureDocument, FeatureCollection<FeatureType, Feature>>(
+			GTVectorDataBinding.class, Constants.MAX_CACHED_REQUESTS);
 
 	/**
 	 * The input containing the WFS URL.
@@ -98,8 +99,7 @@ public class FeatureCollectionInputHandler extends
 
 		String wfsUrl = this.urlInput.handle(inputs);
 		GetFeatureDocument wfsReq = this.requestInput.handle(inputs);
-		FeatureCollection<FeatureType, Feature> paramPolColl = this.collectionInput
-				.handle(inputs);
+		FeatureCollection<FeatureType, Feature> paramPolColl = this.collectionInput.handle(inputs);
 
 		FeatureCollection<FeatureType, Feature> requestPolColl = null;
 
@@ -111,7 +111,7 @@ public class FeatureCollectionInputHandler extends
 				throw new NullPointerException(
 						"No Parser found to parse FeatureCollection.");
 			}
-			requestPolColl = CACHE.getResponse(wfsUrl, wfsReq, false);
+			requestPolColl = CACHE.getResponse(wfsUrl, wfsReq, "text/xml", Namespace.GML.SCHEMA, false);
 		}
 
 		FeatureCollection<FeatureType, Feature> result = null;

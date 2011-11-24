@@ -32,7 +32,6 @@ import java.util.TreeSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
-import org.n52.wps.io.IOHandler;
 import org.n52.wps.io.IParser;
 import org.n52.wps.io.ParserFactory;
 import org.n52.wps.io.data.IData;
@@ -90,9 +89,11 @@ public class RequestCache<T extends XmlObject, U> {
 	private Map<String, CachedRequest> cachedGetRequests = new HashMap<String, CachedRequest>();
 	private int cachedRequests;
 	private IParser parser;
+	private Class<? extends IData> binding;
 	
-	public RequestCache(String schema, Class<? extends IData> binding, int cachedRequests) {
-		this(ParserFactory.getInstance().getParser(schema, "text/xml", IOHandler.DEFAULT_ENCODING, binding), cachedRequests);
+	public RequestCache(Class<? extends IData> binding, int cachedRequests) {
+		this.cachedRequests = cachedRequests;
+		this.binding = binding;
 	}
 	
 	public RequestCache(IParser parser, int cachedRequests) {
@@ -100,7 +101,7 @@ public class RequestCache<T extends XmlObject, U> {
 		this.parser = parser;
 	}
 
-	public synchronized U getResponse(String url, T request, boolean dropCache) {
+	public synchronized U getResponse(String url, T request, String mimeType, String schema, boolean dropCache) {
 		CachedRequest c = getCachedRequest(url, request);
 		if (dropCache || c == null) {
 			InputStream is = null;
@@ -111,7 +112,7 @@ public class RequestCache<T extends XmlObject, U> {
 				} else {
 					is = Utils.sendPostRequest(url, request.xmlText());
 				}
-				putCachedRequest(c = new CachedRequest(url, request, parse(is)));
+				putCachedRequest(c = new CachedRequest(url, request, parse(is, mimeType, schema)));
 				log.info("Fetching took {}.", Utils.timeElapsed(start));
 			} catch (IOException e) {
 				log.error("Error while fetching response from " + url, e);
@@ -180,8 +181,14 @@ public class RequestCache<T extends XmlObject, U> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private U parse(InputStream is) {
-		return (U) this.parser.parse(is, "text/xml", IOHandler.DEFAULT_ENCODING);
+	private U parse(InputStream is, String mimeType, String schema) {
+		IParser p = null;
+		if (this.parser == null) {
+			p = ParserFactory.getInstance().getParser(schema, mimeType, "UTF-8", this.binding);
+		} else {
+			p = this.parser;
+		}
+		return (U) p.parse(is, mimeType, schema);
 	}
 
 }

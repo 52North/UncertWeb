@@ -160,6 +160,15 @@ public class GenericObservationAggregationProcess extends
 	public static final SingleProcessInput<GetObservationDocument> SOS_REQUEST = new SingleProcessInput<GetObservationDocument>(
 			Constants.Process.Inputs.SOS_REQUEST_ID,
 			GetObservationRequestBinding.class, 0, 1, null, null);
+	
+	
+	public static final SingleProcessInput<String> SOS_REQUEST_RETURN_MIME_TYPE = new SingleProcessInput<String>(
+			Constants.Process.Inputs.SOS_REQUEST_RETURN_MIME_TYPE,
+			LiteralStringBinding.class, 0, 1, null, null);
+	
+	public static final SingleProcessInput<String> SOS_REQUEST_RETURN_SCHEMA = new SingleProcessInput<String>(
+			Constants.Process.Inputs.SOS_REQUEST_RETURN_SCHEMA,
+			LiteralStringBinding.class, 0, 1, null, null);
 
 	/**
 	 * Composite input which combines {@link #SOS_URL} and {@link #SOS_REQUEST}.
@@ -169,7 +178,7 @@ public class GenericObservationAggregationProcess extends
 	public static final AbstractProcessInput<IObservationCollection> OBSERVATION_COLLECTION_INPUT = 
 			new CompositeProcessInput<IObservationCollection>(
 			Constants.Process.Inputs.OBSERVATION_COLLECTION_INPUT_ID,
-			new ObservationCollectionInputHandler(SOS_URL, SOS_REQUEST));
+			new ObservationCollectionInputHandler(SOS_URL, SOS_REQUEST, SOS_REQUEST_RETURN_MIME_TYPE, SOS_REQUEST_RETURN_SCHEMA));
 
 	/** Process output that contains the aggregated observations. */
 	public static final ProcessOutput AGGREGATED_OBSERVATIONS = new ProcessOutput(
@@ -343,12 +352,25 @@ public class GenericObservationAggregationProcess extends
 		return set(AGGREGATED_OBSERVATIONS, 
 						 AGGREGATED_OBSERVATIONS_REFERENCE);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Map<String, IData> run(final Map<String, List<IData>> inputs) {
+		try {
+			return run1(inputs);
+		} catch (Error e) {
+			log.warn("Error while executing process", e);
+			throw e;
+		} catch (RuntimeException e) {
+			log.warn("Error while executing process", e);
+			throw e;
+		}
+	}
+
+
+	private Map<String, IData> run1(final Map<String, List<IData>> inputs) {
 		final long start = System.currentTimeMillis();
 		final String random = RandomStringGenerator.getInstance().generate(20);
 		final URI process = URI.create(Constants.Sos.AGGREGATED_PROCESS	+ random);
