@@ -35,6 +35,7 @@ import org.opengis.observation.Observation;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.utils.Constants;
+import org.uncertweb.sta.utils.ObservationTimeComparator;
 import org.uncertweb.sta.wps.PeriodInputHandler;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
