@@ -26,6 +26,7 @@ public class UncertWebDataConstants {
 	/**mime type of O&M v1 files*/
 	public static final String MIME_TYPE_TEXT_XML = "text/xml";
 	public static final String ENCODING_UTF_8 = "UTF-8";
+	public static final String ENCODING_BINARY = "binary";
 	
 	
 	public static final String SCHEMA_OM_V2 = "http://schemas.opengis.net/om/2.0/observation.xsd";
