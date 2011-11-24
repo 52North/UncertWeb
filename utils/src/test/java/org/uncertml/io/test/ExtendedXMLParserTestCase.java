@@ -6,10 +6,9 @@ import junit.framework.TestCase;
 
 import org.uncertml.IUncertainty;
 import org.uncertml.io.ExtendedXMLParser;
-import org.uncertweb.api.om.io.test.TestUtils;
 import org.uncertweb.utils.UwFileUtils;
 
-public class ExtUncertXMLParserTestCase extends TestCase {
+public class ExtendedXMLParserTestCase extends TestCase {
 
 	private String localPath = "D:/uncertwebWorkspace/uncertweb-utils-trunk/";
 	private String pathToExamples = "src/test/resources";
