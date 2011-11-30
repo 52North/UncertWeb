@@ -26,7 +26,7 @@ public class Unzipper {
 	
 	//private static final String AIRBASE_FILE_VERSION = "v4";
 	//TODO needs to be updated to newer version
-	private static final String AIRBASE_FILE_VERSION = "v5";
+	private static final String AIRBASE_FILE_VERSION = "v4";
 	private static final String AIRBASE_FILE_SEPERATOR = "_";
 	private static final String AIRBASE_STATISTICS_FILE_SUFFIX = "statistics.csv";
 	private static final String AIRBASE_STATIONS_FILE_SUFFIX = "stations.csv";
