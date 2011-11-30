@@ -17,8 +17,6 @@
 			<groupId>org.uncertweb</groupId>
 			<artifactId>xb-uw-profiles</artifactId>
 			<version>0.0.4</version>
-			<scope>compile</scope>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>com.vividsolutions</groupId>
