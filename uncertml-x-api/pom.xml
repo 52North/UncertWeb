@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.uncertweb</groupId>
+		<artifactId>uncertweb-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>uncertml-x-api</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Extended UncertML API</name>
+	<description>Provides parsers and encoders for extended UncertML</description>
+	<organization>
+		<name>Institute for Geoinformatics</name>
+		<url>http://ifgi.uni-muenster.de</url>
+	</organization>
+	<developers>
+		<developer>
+			<name>Christoph Stasch</name>
+			<email>staschc@uni-muenster.de</email>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<timezone>GMT+1</timezone>
+			<id>staschc</id>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/uncertweb-utils/trunk</connection>
+	</scm>
+	<repositories>
+		<repository>
+			<id>UncertWebMavenRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.uncertml</groupId>
+			<artifactId>uncertml</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>xb-uncertml-rv</artifactId>
+			<version>0.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>uncertweb-utils</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>
