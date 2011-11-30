@@ -47,7 +47,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 	/**
 	 * identifier of aggregation process
 	 */
-	public static final String IDENTIFIER = "urn:ogc:def:aggregationProcess:sGridding:sVariance:noTG:noTA";
+	public static final String IDENTIFIER = "urn:ogc:def:aggregationProcess:sGridding:sMean:noTG:noTA";
 
 	/**
 	 * The URL of the SOS from which the {@link ObservationCollection} will be
@@ -124,6 +124,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 		result.add(TARGETGRID);
 		result.add(XOFFSET);
 		result.add(YOFFSET);
+		result.add(SCALEFACTOR);
 		return result;
 	}
 
@@ -236,7 +237,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 				c.tryVoidEval("newPixels <- as(newSpatialGrid,\"SpatialPixels\")");
 			}
 			
-			if (xoffset!=Double.NaN&&yoffset!=Double.NaN){
+			if (!Double.isNaN(xoffset)&&!Double.isNaN(yoffset)){
 				c.tryVoidEval("newCellsize <- spUNetCDF@grid@cellsize");
 				c.tryVoidEval("newCellsize[[1]] <- "+xoffset);
 				c.tryVoidEval("newCellsize[[2]] <- "+yoffset);
