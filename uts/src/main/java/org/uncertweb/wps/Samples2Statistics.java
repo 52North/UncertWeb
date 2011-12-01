@@ -9,9 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.n52.wps.io.data.GenericFileDataConstants;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.UncertWebData;
+import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
@@ -67,18 +66,19 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			IData ncdfInput = inputData.get(INPUT_IDENTIFIER_SAMPLES).get(0);
 
 			String errorMsg = "No NetCDF-U data can be loaded from input reference!";
-			if (!(ncdfInput.getPayload() instanceof UncertWebData)) {
+			if (!(ncdfInput instanceof NetCDFBinding)) {
 				LOGGER.error(errorMsg);
 				throw new IOException(errorMsg);
 			}
-			UncertWebData uwNcdfInput = (UncertWebData) ncdfInput.getPayload();
-			if (!uwNcdfInput.getMimeType().equalsIgnoreCase(
-					GenericFileDataConstants.MIME_TYPE_NETCDFX)) {
-				LOGGER.error(errorMsg);
-				throw new IOException(errorMsg);
-			}
+			
+//			NetCDFBinding uwNcdfInput = 
+//			if (!uwNcdfInput.getMimeType().equalsIgnoreCase(
+//					GenericFileDataConstants.MIME_TYPE_NETCDFX)) {
+//				LOGGER.error(errorMsg);
+//				throw new IOException(errorMsg);
+//			}
 
-			NetcdfUWFile uwNcdfFile = uwNcdfInput.getNcdfFile();
+			NetcdfUWFile uwNcdfFile = ((NetCDFBinding) ncdfInput).getPayload();
 			
 			//extract statistics parameters
 			List<IData> statistics = inputData.get(INPUT_IDENTIFIER_STAT);
@@ -92,12 +92,11 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				statParams);
 
 			// create resultfile
-			String fileLocation = resultFile.getNetcdfFile().getLocation();
-			File file = new File(fileLocation);
-			UncertWebData uwNcdfOutput = new UncertWebData(file,
-					GenericFileDataConstants.MIME_TYPE_NETCDFX);
-			UncertWebDataBinding uwData = new UncertWebDataBinding(uwNcdfOutput);
-			result.put(OUTPUT_IDENTIFIER_STAT, uwData);
+//			String fileLocation = resultFile.getNetcdfFile().getLocation();
+//			File file = new File(fileLocation);
+			NetCDFBinding uwNcdfOutput = new NetCDFBinding(resultFile);
+//			UncertWebDataBinding uwData = new UncertWebDataBinding(uwNcdfOutput);
+			result.put(OUTPUT_IDENTIFIER_STAT, uwNcdfOutput);
 
 		} catch (Exception e) {
 			LOGGER

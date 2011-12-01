@@ -1,13 +1,10 @@
 package org.uncertweb.wps;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.axis2.util.FileWriter;
 import org.n52.wps.io.data.GenericFileData;
 import org.n52.wps.io.data.GenericFileDataConstants;
 import org.n52.wps.io.data.IData;
@@ -17,8 +14,6 @@ import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.server.WebProcessingService;
 import org.n52.wps.util.r.process.ExtendedRConnection;
-import org.n52.wps.util.r.process.RProcessException;
-import org.rosuda.REngine.Rserve.RserveException;
 
 public class Distribution2Probabilities extends AbstractAlgorithm {
 

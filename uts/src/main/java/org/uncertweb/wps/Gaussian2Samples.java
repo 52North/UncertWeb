@@ -8,12 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.n52.wps.io.data.GenericFileDataConstants;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.NetCDFData;
-import org.n52.wps.io.data.UncertWebData;
-import org.n52.wps.io.data.UncertWebIOData;
-import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
+import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.server.AbstractAlgorithm;
@@ -62,14 +58,12 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 			// get netCDF file containing the Gaussian Distributions
 			IData dataInput = inputData.get(INPUT_IDENTIFIER_DIST).get(0);
 
-			String errorMsg = "No uncertainty data can be loaded from input reference!";
+		
+//			UncertWebIODataBinding data = (UncertWebIODataBinding) dataInput.getPayload();
+//			
+			if (dataInput instanceof NetCDFBinding){
 			
-			UncertWebIOData uwIOInput = (UncertWebIOData) dataInput.getPayload();
-			Object data = uwIOInput.getData();
-			
-			if (data instanceof NetCDFData){
-			
-			NetcdfUWFile uwNcdfFile = ((NetCDFData)data).getNetcdfUWFile();
+			NetcdfUWFile uwNcdfFile = ((NetCDFBinding)dataInput).getPayload();
 			IData numbRealsInput = inputData.get(INPUT_IDENTIFIER_NUMB_REAL)
 					.get(0);
 			Integer intNRealisations = ((LiteralIntBinding) numbRealsInput)
@@ -81,11 +75,10 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 //			String fileLocation = resultFile.getNetcdfFile().getLocation();
 //			File file = new File(fileLocation);
 			
-			String fileLocation = resultFile.getNetcdfFile().getLocation();
-			File file = new File(fileLocation);
-			UncertWebData uwNcdfOutput = new UncertWebData(file,
-					GenericFileDataConstants.MIME_TYPE_NETCDFX);
-			UncertWebDataBinding uwData = new UncertWebDataBinding(uwNcdfOutput);
+//			String fileLocation = resultFile.getNetcdfFile().getLocation();
+//			File file = new File(fileLocation);
+//		
+			NetCDFBinding uwData = new NetCDFBinding(resultFile);
 			result.put(OUTPUT_IDENTIFIER_SAMPLES, uwData);
 			
 			}
@@ -117,7 +110,7 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 	@Override
 	public Class<?> getOutputDataType(String id) {
 		if (id.equals(OUTPUT_IDENTIFIER_SAMPLES)) {
-			return UncertWebDataBinding.class;
+			return UncertWebIODataBinding.class;
 			//return UncertWebIODataBinding.class;
 		}
 		return null;
