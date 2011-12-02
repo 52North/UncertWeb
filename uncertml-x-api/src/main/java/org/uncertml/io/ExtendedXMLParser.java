@@ -31,6 +31,10 @@ import org.uncertml.x20.VariogramFunctionType.Anisotropy;
  */
 public class ExtendedXMLParser implements IUncertaintyParser {
 	
+	/**
+	 * common uncertml parser from UncertML API
+	 * 
+	 */
 	private XMLParser uncertMLparser;
 
 	@Override
@@ -44,7 +48,6 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 			throw new RuntimeException(message);
 		}
 	}
-	
 	
 
 	@Override
@@ -90,7 +93,21 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 		}
 	}
 	
+	/**
+	 * helper method for parsing and XML Object and returning the Uncertainty object;
+	 * method first try to parse the extended elements and, if none is matched, passes the object to 
+	 * the usual XmlParser of the UncertML API
+	 * 
+	 * @param xb_object
+	 * 			XMLBeans representation of uncertainty
+	 * @return
+	 * 			Java representation of uncertainty
+	 * @throws UncertaintyParserException
+	 * 			if parsing fails
+	 */
 	private IUncertainty parseXmlObject(XmlObject xb_object) throws UncertaintyParserException {
+		
+		//parse extended elements
 		if (xb_object instanceof VariogramFunctionDocument){
 			return parseVariogramFunction((VariogramFunctionDocument)xb_object);
 		}
