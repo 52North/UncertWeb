@@ -9,7 +9,7 @@
   <artifactId>shape-om-converter</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <properties>
-    <geotools.version>2.5-SNAPSHOT</geotools.version>
+    <geotools.version>2.6.2</geotools.version>
   </properties>
   <dependencies>
      <dependency>
