@@ -49,8 +49,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.uncertweb</groupId>
-			<artifactId>uncertweb-utils</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<artifactId>uncertml-x-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
