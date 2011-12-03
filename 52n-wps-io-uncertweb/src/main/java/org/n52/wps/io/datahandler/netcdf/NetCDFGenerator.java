@@ -1,5 +1,6 @@
 package org.n52.wps.io.datahandler.netcdf;
 
+import static org.n52.wps.io.data.UncertWebDataConstants.ENCODING_BINARY;
 import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_NETCDF;
 import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_NETCDFX;
 import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_NETCDF_U;
@@ -29,7 +30,7 @@ public class NetCDFGenerator extends AbstractUwGenerator {
 	public NetCDFGenerator() {
 		super(
 			set(SCHEMA_NETCDF_U), 
-			null,
+			set(ENCODING_BINARY),
 			set(MIME_TYPE_NETCDFX, MIME_TYPE_NETCDF), 
 			UwCollectionUtils.<Class<?>>set(NetCDFBinding.class)
 		);
