@@ -4,14 +4,19 @@
 	==============================================================-->
 
 <GetObservation xmlns="http://www.opengis.net/sos/1.0"
+    xmlns:om="http://www.opengis.net/om/2.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.opengis.net/sos/1.0
+	http://www.opengis.net/om/2.0
+	http://v-mars.uni-muenster.de/uncertweb/schema/profiles/om/UncertWeb_OM.xsd
 	http://schemas.opengis.net/sos/1.0.0/sosGetObservation.xsd"
-	service="SOS" version="1.0.0" srsName="urn:ogc:def:crs:EPSG:4326">
+	service="SOS" version="1.0.0" srsName="urn:ogc:def:crs:EPSG::4326"> 
 
 
 	<offering>GAUGE_HEIGHT</offering>
 	<observedProperty>urn:ogc:def:phenomenon:OGC:1.0.30:waterlevel</observedProperty>
-	<responseFormat>text/xml;subtype=&quot;om/1.0.0&quot;</responseFormat>
+	<responseFormat>text/xml;subtype=&quot;om/2.0.0&quot;</responseFormat>
+	
+	<resultModel>om:OM_Measurement</resultModel>
 
 </GetObservation>

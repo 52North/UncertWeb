@@ -213,10 +213,10 @@ WHERE
 ----------------------------------------------------------------------------------------------------
 
 SELECT obs_unc.observation_id,
-	obs_unc.gml_identifier,
 	u_uncertainty.uncertainty_id,
-	u_uncertainty.uncertainty_values_id,
+	obs_unc.gml_identifier,
 	u_value_unit.value_unit,
+	u_uncertainty.uncertainty_type,
 
 	-- mean type
 	u_mean_values.mean_value,

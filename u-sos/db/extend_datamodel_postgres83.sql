@@ -100,5 +100,6 @@ ALTER TABLE u_mean ADD FOREIGN KEY (mean_values_id) REFERENCES u_mean_values (me
 -- Add and alter table constraints
 --------------------------------------------------
 -- add 'uncertaintyType' to checked phenomenons
--- original check constraint may be dropped manually
+-- original check constraint will be replaced
+ALTER TABLE phenomenon DROP CHECK phenomenon_valuetype_check;
 ALTER TABLE phenomenon ADD CHECK (valuetype IN ('uncertaintyType', 'booleanType', 'countType', 'textType', 'categoryType', 'numericType', 'isoTimeType', 'spatialType', 'commonType','externalReferenceType'));

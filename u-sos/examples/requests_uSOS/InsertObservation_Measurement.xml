@@ -18,8 +18,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.opengis.net/sos/1.0
 	http://schemas.opengis.net/sos/1.0.0/sosInsert.xsd
-	http://www.opengis.net/sampling/1.0
-	http://schemas.opengis.net/sampling/1.0.0/sampling.xsd
+	http://www.opengis.net/sampling/2.0
+	http://schemas.opengis.net/sampling/2.0/samplingFeature.xsd
 	http://schemas.opengis.net/om/2.0.0/extensions/observationSpecialization_override.xsd
 	http://www.opengis.net/om/2.0
 	http://v-mars.uni-muenster.de/uncertweb/schema/profiles/om/UncertWeb_OM.xsd"
@@ -28,7 +28,7 @@
 	<AssignedSensorId>urn:ogc:object:feature:Sensor:IFGI:uw-sensor-1</AssignedSensorId>
   
 	<om:OM_Measurement>
-		<gml:identifier codeSpace="http://www.uncertweb.org">obsTest1</gml:identifier>
+		<gml:identifier codeSpace="http://www.uncertweb.org">obsTest101</gml:identifier>
        
 		<!--=============================================================
 			phenomenon time represents the time when the observation was taken (so when the sensor 
@@ -36,7 +36,7 @@
 			==============================================================-->
 		<om:phenomenonTime>
 			<gml:TimeInstant gml:id="ot1t">
-				<gml:timePosition>2005-01-11T16:22:25.000+01</gml:timePosition>
+				<gml:timePosition>2011-01-01T16:02:25.000+01</gml:timePosition>
 			</gml:TimeInstant>
 		</om:phenomenonTime>
        
@@ -114,7 +114,7 @@
 		<!--=============================================================
 			observation result is a single measured value
 			==============================================================-->
-		<om:result uom="cm">10.0</om:result>
+		<om:result uom="cm">9.0</om:result>
 	</om:OM_Measurement>
   
 </InsertObservation>
