@@ -15,8 +15,8 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 				<ComplexData>
 					<Default>
 						<Format>
-							<MimeType>text/xml</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd</Schema>
+							<MimeType>application/x-uncertml+xml</MimeType>
+							<Schema>http://uncertml.org/uncertml.xsd</Schema>
 						</Format>
 					</Default>
 					<Supported>
@@ -44,7 +44,10 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 				<LiteralData>
 					<ows:DataType ows:reference="xs:integer"/>
 					<ows:AllowedValues>
-						<ows:Value/>
+						<ows:Range>
+							<ows:MinimumValue>9</ows:MinimumValue>
+							<ows:MaximumValue>10000</ows:MaximumValue>
+						</ows:Range>
 					</ows:AllowedValues>
 					<DefaultValue>10</DefaultValue>
 				</LiteralData>
@@ -144,8 +147,8 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 				<ComplexOutput>
 					<Default>
 						<Format>
-							<MimeType>text/xml</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Schema>
+							<MimeType>application/x-uncertml+xml</MimeType>
+							<Schema>http://uncertml.org/uncertml.xsd</Schema>
 						</Format>
 					</Default>
 					<Supported>
