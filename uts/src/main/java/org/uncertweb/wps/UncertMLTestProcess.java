@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.UncertWebData;
-import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
+import org.n52.wps.io.data.binding.complex.UncertMLBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.uncertml.IUncertainty;
 
@@ -14,12 +14,12 @@ public class UncertMLTestProcess extends AbstractAlgorithm {
 
 	@Override
 	public Class<?> getInputDataType(String arg0) {		
-		return UncertWebDataBinding.class;
+		return UncertWebIODataBinding.class;
 	}
 
 	@Override
 	public Class<?> getOutputDataType(String arg0) {		
-		return UncertWebDataBinding.class;
+		return UncertWebIODataBinding.class;
 	}
 
 	@Override
@@ -29,21 +29,15 @@ public class UncertMLTestProcess extends AbstractAlgorithm {
 		
 		IData firstData = inputDataList.get(0);
 		
-		if(!(firstData instanceof UncertWebDataBinding)){
+		if(!(firstData instanceof UncertMLBinding)){
 			return null;			
 		}
 		
-		UncertWebData uwDataInput = ((UncertWebDataBinding)firstData).getPayload();
-		
-		if(uwDataInput.getUncertaintyType() == null){
-			return null;
-		}
-		
-		IUncertainty uncertaintyType = uwDataInput.getUncertaintyType();
+		IUncertainty uncertaintyType = ((UncertMLBinding)firstData).getPayload();
 		
 		HashMap<String, IData> result = new HashMap<String, IData>();
 		
-		result.put("output", (UncertWebDataBinding)firstData);
+		result.put("output", (UncertMLBinding)firstData);
 		
 		return result;
 	}

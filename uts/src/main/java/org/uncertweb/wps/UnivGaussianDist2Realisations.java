@@ -6,9 +6,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.UncertWebData;
 import org.n52.wps.io.data.binding.complex.UncertMLBinding;
-import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.util.r.process.ExtendedRConnection;

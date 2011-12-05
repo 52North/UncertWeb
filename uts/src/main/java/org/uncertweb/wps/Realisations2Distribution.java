@@ -1,17 +1,13 @@
 package org.uncertweb.wps;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.UncertWebData;
-import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
-import org.n52.wps.io.data.binding.literal.LiteralDoubleBinding;
-import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
+import org.n52.wps.io.data.binding.complex.UncertMLBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.server.AbstractAlgorithm;
-import org.n52.wps.server.WebProcessingService;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPDouble;
@@ -35,7 +31,7 @@ public class Realisations2Distribution extends AbstractAlgorithm {
 	@Override
 	public Class<?> getInputDataType(String arg0) {
 		if(arg0.equals(inputIDNumberOfRealisations)){
-			return UncertWebDataBinding.class;
+			return UncertWebIODataBinding.class;
 		}
 		return null;
 	}
@@ -43,34 +39,26 @@ public class Realisations2Distribution extends AbstractAlgorithm {
 	@Override
 	public Class<?> getOutputDataType(String arg0) {
 //		return LiteralDoubleBinding.class;
-		return UncertWebDataBinding.class;
+		return UncertWebIODataBinding.class;
 	}
 
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 		
 		
-		List<IData> inputDataList = inputData.get("realisations");
+		IData realInput = inputData.get("realisations").get(0);
 		
-		IData firstData = inputDataList.get(0);
-		
-		if(!(firstData instanceof UncertWebDataBinding)){
+		if(!(realInput instanceof UncertMLBinding)){
 			return null;			
 		}
 		
-		UncertWebData uwDataInput = ((UncertWebDataBinding)firstData).getPayload();
-		
-		if(uwDataInput.getUncertaintyType() == null){
-			return null;
-		}
-		
-		IUncertainty uncertaintyType = uwDataInput.getUncertaintyType();
+		IUncertainty uncertainty = ((UncertMLBinding)realInput).getPayload();
 		
 		Realisation r = null;
 		
-		if(uncertaintyType instanceof Realisation){
+		if(uncertainty instanceof Realisation){
 			
-			r = (Realisation) uncertaintyType;
+			r = (Realisation) uncertainty;
 			
 		}else{
 			throw new RuntimeException("Input with ID realisation must be an UncertML realisation.");
@@ -115,9 +103,9 @@ public class Realisations2Distribution extends AbstractAlgorithm {
 			
 			NormalDistribution gd = new NormalDistribution(m_gauss_est.asDouble(), s_gauss_est.asDouble());
 			
-			UncertWebData uwd = new UncertWebData(gd);
+			UncertMLBinding uwd = new UncertMLBinding(gd);
 			
-			result.put("output_distribution", new UncertWebDataBinding(uwd));
+			result.put("output_distribution", uwd);
 			
 //			LiteralDoubleBinding outputBinding_estimated_mean = new LiteralDoubleBinding(m_gauss_est.asDouble());
 //			LiteralDoubleBinding outputBindingestimated_standard_deviation = new LiteralDoubleBinding(s_gauss_est.asDouble());
