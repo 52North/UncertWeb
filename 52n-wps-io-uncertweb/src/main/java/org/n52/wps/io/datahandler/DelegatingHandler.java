@@ -4,13 +4,14 @@ import org.uncertweb.utils.UwCollectionUtils;
 import java.util.Set;
 
 import org.n52.wps.io.IOHandler;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 
 public abstract class DelegatingHandler implements IOHandler {
 
-	private final Class<?>[] supportedBindings;
-	private final String[] supportedFormats;
-	private final String[] supportedSchemas;
-	private final String[] supportedEncodings;
+	protected Class<?>[] supportedBindings;
+	protected final String[] supportedFormats;
+	protected final String[] supportedSchemas;
+	protected final String[] supportedEncodings;
 
 	public DelegatingHandler(IOHandler... handler) {
 		
