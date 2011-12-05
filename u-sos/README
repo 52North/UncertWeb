@@ -5,24 +5,72 @@
 This project contains the uncertainty extension for the 52°North Sensor 
 Observation Service.
 
-This project is under construction and should be running in October 2011.
+This project is still under construction.
 
 
 ######################################################################
 ## Folder structure:
 
 The project contains the following folders:
-52n-sos-dao-postgis-uncertainty: extension to the Data Access Objects for 
-  PostGIS to provide the ability to process data uncertainty
-db: SQL scripts to extend the data model and insert sample data
-examples: SOS requests to register sensors, insert observations and get 
-  observations
-
+52n-sos-uncertainty:	extensions to different SOS packages
+conf:					customized build properties
+db:						SQL scripts to extend the data model and insert
+						sample data
+examples:				SOS requests to register sensors, insert
+						observations and get observations
 
 ######################################################################
 ## Project configuration:
+
+Adjust the following properties in your conf\build.properties file and
+copy it into your SOS configuration directory (52n-sos\conf).
+
+conf.sos.ds.connectionstring=jdbc:postgresql://localhost:5432/SosDatabase
+							connection string to the DB
+conf.sos.ds.user=postgres	your DB-username
+conf.sos.ds.password=*****	your DB-password
 
 
 ######################################################################
 ## Installation instructions:
 
+#1 Checkout this project and 52North SOS (https://svn.52north.org/svn/swe/
+main/SOS/Service/trunk/SOS/52n-sos , documentation: /doc/how2install_SOS).
+
+#2 Extend your DB's datamodel by executing the following SQL script on
+your database:
+db/extend_datamodel_postgres83.sql
+
+#3 Configure this project (see above).
+
+#4 Add this project's module to your SOS pom (52n-sos/pom.xml) modules,
+e.g. add:
+
+<module>../u-sos/52n-sos-uncertainty</module>
+
+to:
+
+<modules>
+	<module>52n-sos-ogc</module>
+	<module>52n-sos-core</module>
+	<module>52n-sos-coding</module>
+	<module>52n-sos-dao-postgis</module>
+	<module>52n-sos-service</module>
+</modules>
+
+Don't forget to use the correct relative path from SOS project to u-SOS
+project. 
+
+#5 Add this project as a dependency to your SOS service module's pom
+(52n-sos\52n-sos-service\pom.xml).
+Add:
+
+<dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>52n-sos-uncertainty</artifactId>
+	<version>${project.version}</version>
+</dependency>
+
+to:
+
+<dependencies></dependencies>
