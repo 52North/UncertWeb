@@ -11,7 +11,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.NetCDFBinding;
-import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
@@ -54,6 +54,10 @@ public class Samples2Statistics extends AbstractAlgorithm {
 	private final static String MV_ATTR_NAME = "missing_value";
 	private final static String REF_ATTR_NAME = "ref";
 	private static final String REAL_VAR_NAME = "realisation";
+	
+	public Samples2Statistics(){
+		super();
+	}
 
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
@@ -286,7 +290,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 	@Override
 	public Class getInputDataType(String id) {
 		if (id.equals(INPUT_IDENTIFIER_SAMPLES)) {
-			return UncertWebDataBinding.class;
+			return UncertWebIODataBinding.class;
 		} else if (id.equals(INPUT_IDENTIFIER_STAT)) {
 			return LiteralIntBinding.class;
 		}
@@ -296,7 +300,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 	@Override
 	public Class getOutputDataType(String id) {
 		if (id.equals(OUTPUT_IDENTIFIER_STAT)) {
-			return UncertWebDataBinding.class;
+			return UncertWebIODataBinding.class;
 		}
 		return null;
 	}
@@ -321,6 +325,21 @@ public class Samples2Statistics extends AbstractAlgorithm {
 		
 		return params;
 	}
+
+//	@Override
+//	public List<String> getInputIdentifiers() {
+//		List<String> identifiers = new ArrayList<String>();
+//		identifiers.add(INPUT_IDENTIFIER_SAMPLES);
+//		identifiers.add(INPUT_IDENTIFIER_STAT);
+//		return identifiers;
+//	}
+//
+//	@Override
+//	public List<String> getOutputIdentifiers() {
+//		List<String> identifiers = new ArrayList<String>();
+//		identifiers.add(OUTPUT_IDENTIFIER_STAT);
+//		return identifiers;
+//	}
 
 }
 

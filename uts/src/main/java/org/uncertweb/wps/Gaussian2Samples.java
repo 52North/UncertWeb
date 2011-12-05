@@ -13,6 +13,7 @@ import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.server.AbstractAlgorithm;
+import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.rosuda.REngine.REXP;
 import org.uncertml.sample.RandomSample;
@@ -47,6 +48,10 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 	private final static String UNITS_ATTR_NAME = "units";
 	private final static String MV_ATTR_NAME = "missing_value";
 	private final static String REF_ATTR_NAME = "ref";
+	
+	public Gaussian2Samples(){
+		super();
+	}
 
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
@@ -111,7 +116,6 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 	public Class<?> getOutputDataType(String id) {
 		if (id.equals(OUTPUT_IDENTIFIER_SAMPLES)) {
 			return UncertWebIODataBinding.class;
-			//return UncertWebIODataBinding.class;
 		}
 		return null;
 	}
@@ -275,5 +279,20 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 		}
 		return resultNCFile;
 	}
+
+//	@Override
+//	public List<String> getInputIdentifiers() {
+//		ArrayList<String> inputIdentifiers = new ArrayList<String>(2);
+//		inputIdentifiers.add(INPUT_IDENTIFIER_DIST);
+//		inputIdentifiers.add(INPUT_IDENTIFIER_NUMB_REAL);
+//		return inputIdentifiers;
+//	}
+//
+//	@Override
+//	public List<String> getOutputIdentifiers() {
+//		ArrayList<String> outputIdentifiers = new ArrayList<String>(2);
+//		outputIdentifiers.add(OUTPUT_IDENTIFIER_SAMPLES);
+//		return outputIdentifiers;
+//	}
 
 }
