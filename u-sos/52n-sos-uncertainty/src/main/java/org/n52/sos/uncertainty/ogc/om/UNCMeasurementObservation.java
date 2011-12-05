@@ -65,8 +65,8 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 	 *            units of the measurement value
 	 * @param quality
 	 *            simple quantitative data quality
-	 * @param typeName
-	 *            xml type name of this observation
+	 * @param uncQuality
+	 * 			  data quality as uncertainties, replacing om1 observations quality
 	 */
 	public UNCMeasurementObservation(String identifier, ISosTime time, String obsID,
 			String procID, Collection<SosAbstractFeature> domainFeatureIDs,
@@ -79,12 +79,55 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 		this.identifier = identifier;
 		this.uncQuality = uncQuality;
 	}
+	
+	/**
+	 * constructor 
+	 * 
+	 * @param time
+	 *            time at which the observation event took place
+	 * @param obsID
+	 *            id of the observation
+	 * @param procID
+	 *            id of the procedure, by which the value was produced
+	 * @param domainFeatureIDs
+	 *            domain features, which this observation is produced for
+	 * @param phenID
+	 *            id of the phenomenon, of which the value is
+	 * @param foi
+	 *            feature of interest, to which the observation belongs
+	 * @param offeringID
+	 *            id of the offering to which this observation belongs
+	 * @param mimeType
+	 *            mimeType of the observation result
+	 * @param value
+	 *            result value
+	 * @param unitsOfMeasurement
+	 *            units of the measurement value
+	 * @param quality
+	 *            simple quantitative data quality
+	 */
+	public UNCMeasurementObservation(ISosTime time, String obsID,
+			String procID, Collection<SosAbstractFeature> domainFeatureIDs,
+			String phenID, SosAbstractFeature foi, String offeringID,
+			String mimeType, double value, String unitsOfMeasurement,
+			Collection<SosQuality> quality) {
+		super(time, obsID, procID, domainFeatureIDs, phenID, foi, offeringID,
+				mimeType, value, unitsOfMeasurement, quality);
+		
+	}
 
 	/**
 	 * returns gml identifier (not to be confused with observation id/obsID)
 	 */
 	public String getIdentifier() {
 		return identifier;
+	}
+	
+	/**
+	 * sets gml identifier (not to be confused with observation id/obsID)
+	 */
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 
 	/**
@@ -93,6 +136,13 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 	public DQ_UncertaintyResult[] getUncQuality() {
 		return uncQuality;
 	}
+	
+	/**
+	 * sets data quality as uncertainties, replacing om1 observations quality
+	 */
+	public void setUncQuality(DQ_UncertaintyResult[] resultQuality) {
+		this.uncQuality = resultQuality;
+	}	
 	
 	@Override
 	public String getName() {

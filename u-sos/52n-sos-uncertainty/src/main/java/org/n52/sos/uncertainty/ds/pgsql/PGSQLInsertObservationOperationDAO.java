@@ -52,6 +52,27 @@ public class PGSQLInsertObservationOperationDAO extends
 	public int insertObservation(AbstractSosObservation observation,
 			boolean mobileEnabled) throws OwsExceptionReport {
 
+		if (observation instanceof SosObservationCollection) {
+			
+			int lastObsID = Integer.MIN_VALUE;
+			
+			for (AbstractSosObservation obs : ((SosObservationCollection) observation).getObservationMembers()) {
+				lastObsID = this.insertSingleObservation(obs, mobileEnabled);
+			}
+			
+			return lastObsID;
+		
+		} else {
+			return this.insertSingleObservation(observation, mobileEnabled);
+		}
+	}
+
+	/**
+	 * helper method to insert a single observation + uncertainty into database
+	 */
+	private int insertSingleObservation(AbstractSosObservation obs,
+			boolean mobileEnabled) throws OwsExceptionReport {
+
 		List<Integer> uncIDs = new ArrayList<Integer>();
 		int obsID = Integer.MIN_VALUE;
 		String identifier = null;
@@ -60,68 +81,63 @@ public class PGSQLInsertObservationOperationDAO extends
 
 		// //////////////////////////////////////////////////
 		// insert uncertainty
-		if ((observation instanceof SosObservationCollection)
-				&& ((SosObservationCollection) observation)
-						.getObservationMembers().size() == 1) {
+		
+		if (obs instanceof IUncertainObservation) {
 
-			AbstractSosObservation obs = (AbstractSosObservation) ((SosObservationCollection) observation)
-					.getObservationMembers().toArray()[0];
+			// set identifier to insert with obs_unc relationship
+			identifier = ((IUncertainObservation) obs).getIdentifier();
 
-			if (obs instanceof IUncertainObservation) {
-				
-				// set identifier to insert with obs_unc relationship
-				identifier = ((IUncertainObservation) obs).getIdentifier();
+			// connect to data base
+			try {
+				trCon = cpool.getConnection();
+				trCon.setAutoCommit(false);
 
-				// connect to data base
-				try {
-					trCon = cpool.getConnection();
-					trCon.setAutoCommit(false);
+				// //////////////////////////////////////////////////
+				// add uncertainty result from UncertaintyObservation
+				if (obs instanceof UNCUncertaintyObservation) {
+
+					UNCUncertaintyObservation uncObs = (UNCUncertaintyObservation) obs;
+
+					// insert uncertainty
+					uncIDs.add(this.insertUncDAO.insertUncertainty(uncObs,
+							uncObs.getUncertainty(),
+							uncObs.getUnitsOfMeasurement(), trCon));
+
+				} else {
 
 					// //////////////////////////////////////////////////
-					// add uncertainty result from UncertaintyObservation
-					if (obs instanceof UNCUncertaintyObservation) {
+					// add uncertainties from resultQuality
+					uncIDs.addAll(this.insertUncDAO.insertUncertaintiesFromRQ(
+							(IUncertainObservation) obs, trCon));
+				}
 
-						UNCUncertaintyObservation uncObs = (UNCUncertaintyObservation) obs;
-						
-						// insert uncertainty
-						uncIDs.add(this.insertUncDAO.insertUncertainty(uncObs,
-								uncObs.getUncertainty(), uncObs.getUnitsOfMeasurement(), trCon));
+				trCon.commit();
+				trCon.setAutoCommit(true);
 
-					} else {
+				/*
+				 * if uncertainty is inserted AFTER the corresponding
+				 * observation, capabilities cache has to be refreshed
+				 */
 
-						// //////////////////////////////////////////////////
-						// add uncertainties from resultQuality
-						uncIDs.addAll(this.insertUncDAO.insertUncertaintiesFromRQ((IUncertainObservation) obs, trCon));
-					}
-
-					trCon.commit();
-					trCon.setAutoCommit(true);
-
-					/*
-					 * if uncertainty is inserted AFTER the corresponding
-					 * observation, capabilities cache has to be refreshed
-					 */
-
-				} catch (SQLException e) {
-					String message = "Error while executing insertUncertainty operation. Values could not be stored in database: "
-							+ e.getMessage();
-					OwsExceptionReport se = new OwsExceptionReport(
-							ExceptionLevel.DetailedExceptions);
-					se.addCodedException(ExceptionCode.NoApplicableCode, null,
-							message);
-					LOGGER.error(message);
-					throw se;
-				} finally {
-					if (trCon != null) {
-						cpool.returnConnection(trCon);
-					}
+			} catch (SQLException e) {
+				String message = "Error while executing insertUncertainty operation. Values could not be stored in database: "
+						+ e.getMessage();
+				OwsExceptionReport se = new OwsExceptionReport(
+						ExceptionLevel.DetailedExceptions);
+				se.addCodedException(ExceptionCode.NoApplicableCode, null,
+						message);
+				LOGGER.error(message);
+				throw se;
+			} finally {
+				if (trCon != null) {
+					cpool.returnConnection(trCon);
 				}
 			}
 		}
 
 		// //////////////////////////////////////////////////
 		// insert observation to get observation ID
-		obsID = super.insertObservation(observation, mobileEnabled);
+		obsID = super.insertObservation(obs, mobileEnabled);
 
 		// //////////////////////////////////////////////////
 		// insert obs_unc relationsship
@@ -158,114 +174,4 @@ public class PGSQLInsertObservationOperationDAO extends
 		}
 		return obsID;
 	}
-
-//	/**
-//	 * method for inserting observation into database; should insert also new
-//	 * feature of interests into db; wrapper adding uncertainty support to super
-//	 * class method
-//	 * 
-//	 * @param observation
-//	 *            should be inserted into db
-//	 * @return Returns id for observation, which is generated by the 52 North
-//	 *         SOS
-//	 * @throws OwsExceptionReport
-//	 *             if insert of Observation fails
-//	 */
-//	public int insertObservation(AbstractSosObservation observation,
-//			boolean mobileEnabled) throws OwsExceptionReport {
-//
-//		// //////////////////////////////////////////////////
-//		// insert observation to get observation ID
-//		int obsID = super.insertObservation(observation, mobileEnabled);
-//
-//		// //////////////////////////////////////////////////
-//		// insert uncertainty
-//		if ((observation instanceof SosObservationCollection)
-//				&& ((SosObservationCollection) observation)
-//						.getObservationMembers().size() == 1) {
-//
-//			AbstractSosObservation obs = (AbstractSosObservation) ((SosObservationCollection) observation)
-//					.getObservationMembers().toArray()[0];
-//
-//			if (obs instanceof IUncertainObservation) {
-//
-//				// connect to data base
-//				Connection trCon = null;
-//				try {
-//					trCon = cpool.getConnection();
-//					trCon.setAutoCommit(false);
-//
-//					// //////////////////////////////////////////////////
-//					// add uncertainty result from UncertaintyObservation
-//					if (obs instanceof UNCUncertaintyObservation) {
-//
-//						UNCUncertaintyObservation uncObs = (UNCUncertaintyObservation) obs;
-//
-//						IUncertainty unc = uncObs.getUncertainty();
-//
-//						// insert uncertainty
-//						int uncID = this.insertUncDAO.insertUncertainty(uncObs,
-//								unc, trCon);
-//
-//						// insert obs_unc relationsship
-//						this.insertUncDAO.insertObsUncRelationship(obsID,
-//								uncID, uncObs.getIdentifier(), trCon);
-//
-//					} else {
-//
-//						// //////////////////////////////////////////////////
-//						// add uncertainties from resultQuality
-//						IUncertainObservation uncObs = (IUncertainObservation) obs;
-//						DQ_UncertaintyResult[] quality = uncObs.getUncQuality();
-//						if (quality != null && quality.length > 0) {
-//
-//							for (DQ_UncertaintyResult uncRes : quality) {
-//
-//								// TODO handle UOM
-//								String uom = uncRes.getUom();
-//								IUncertainty[] uncs = uncRes.getValues();
-//
-//								for (IUncertainty unc : uncs) {
-//
-//									// insert uncertainty
-//									int uncID = this.insertUncDAO
-//											.insertUncertainty(uncObs, unc,
-//													trCon);
-//
-//									// insert obs_unc relationsship
-//									this.insertUncDAO.insertObsUncRelationship(
-//											obsID, uncID,
-//											uncObs.getIdentifier(), trCon);
-//								}
-//							}
-//						}
-//					}
-//
-//					trCon.commit();
-//					trCon.setAutoCommit(true);
-//
-//					/*
-//					 * if uncertainty is inserted AFTER the corresponding
-//					 * observation, capabilities cache has to be refreshed
-//					 */
-//
-//				} catch (SQLException e) {
-//					String message = "Error while executing insertUncertainty operation. Values could not be stored in database: "
-//							+ e.getMessage();
-//					OwsExceptionReport se = new OwsExceptionReport(
-//							ExceptionLevel.DetailedExceptions);
-//					se.addCodedException(ExceptionCode.NoApplicableCode, null,
-//							message);
-//					LOGGER.error(message);
-//					throw se;
-//				} finally {
-//					if (trCon != null) {
-//						cpool.returnConnection(trCon);
-//					}
-//				}
-//			}
-//		}
-//		return obsID;
-//	}
-
 }

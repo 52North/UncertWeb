@@ -10,6 +10,7 @@ import org.n52.sos.uncertainty.ogc.IUncertainObservation;
 import org.uncertml.IUncertainty;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
+import org.uncertweb.api.om.result.UncertaintyResult;
 
 /**
  * Adapter class to handle O&M 2 uncertainty observations in O&M 1 observation
@@ -87,6 +88,39 @@ public class UNCUncertaintyObservation extends SosMeasurement implements
 		this.uncQuality = uncQuality;
 		this.uncertainty = uncertainty;
 	}
+	
+	/**
+	 * constructor
+	 * 
+	 * @param time
+	 *            time at which the observation event took place
+	 * @param obsID
+	 *            id of the observation
+	 * @param procID
+	 *            id of the procedure, by which the value was produced
+	 * @param domainFeatureIDs
+	 *            domain features, which this observation is produced for
+	 * @param phenID
+	 *            id of the phenomenon, of which the value is
+	 * @param foi
+	 *            feature of interest, to which the observation belongs
+	 * @param offeringID
+	 *            id of the offering to which this observation belongs
+	 * @param mimeType
+	 *            mimeType of the observation result
+	 * @param unitsOfMeasurement
+	 *            units of the measurement value
+	 * @param quality
+	 *            simple quantitative data quality
+	 */
+	public UNCUncertaintyObservation(ISosTime time, String obsID,
+			String procID, Collection<SosAbstractFeature> domainFeatureIDs,
+			String phenID, SosAbstractFeature foi, String offeringID,
+			String mimeType, String unitsOfMeasurement,
+			Collection<SosQuality> quality) {
+		super(time, obsID, procID, domainFeatureIDs, phenID, foi, offeringID,
+				mimeType, Double.NaN, unitsOfMeasurement, quality);
+	}
 
 	/**
 	 * returns gml identifier (not to be confused with observation id/obsID)
@@ -96,10 +130,24 @@ public class UNCUncertaintyObservation extends SosMeasurement implements
 	}
 	
 	/**
+	 * sets gml identifier (not to be confused with observation id/obsID)
+	 */
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
+	
+	/**
 	 * returns the uncertainty result
 	 */
 	public IUncertainty getUncertainty() {
 		return uncertainty;
+	}
+	
+	/**
+	 * sets the uncertainty result
+	 */
+	public void setUncertainty(IUncertainty uncertainty) {
+		this.uncertainty = uncertainty;
 	}
 
 	/**
@@ -107,6 +155,13 @@ public class UNCUncertaintyObservation extends SosMeasurement implements
 	 */
 	public DQ_UncertaintyResult[] getUncQuality() {
 		return uncQuality;
+	}
+	
+	/**
+	 * sets data quality as uncertainties, replacing om1 observations quality
+	 */
+	public void setUncQuality(DQ_UncertaintyResult[] resultQuality) {
+		this.uncQuality = resultQuality;
 	}
 
 	@Override

@@ -3,35 +3,31 @@ package org.n52.sos.uncertainty.decode.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.xml.namespace.QName;
-
 import net.opengis.gml.MetaDataPropertyType;
 import net.opengis.gml.StringOrRefType;
-import net.opengis.gml.x32.QuantityTypeDocument;
-import net.opengis.sensorML.x101.IoComponentPropertyType;
-import net.opengis.sensorML.x101.SystemType;
 import net.opengis.sensorML.x101.CapabilitiesDocument.Capabilities;
 import net.opengis.sensorML.x101.IdentificationDocument.Identification;
 import net.opengis.sensorML.x101.IdentificationDocument.Identification.IdentifierList.Identifier;
+import net.opengis.sensorML.x101.IoComponentPropertyType;
 import net.opengis.sensorML.x101.OutputsDocument.Outputs;
 import net.opengis.sensorML.x101.OutputsDocument.Outputs.OutputList;
 import net.opengis.sensorML.x101.PositionDocument.Position;
 import net.opengis.sensorML.x101.PositionsDocument.Positions;
+import net.opengis.sensorML.x101.SystemType;
 import net.opengis.swe.x101.AbstractDataRecordType;
 import net.opengis.swe.x101.AnyScalarPropertyType;
-import net.opengis.swe.x101.PositionType;
-import net.opengis.swe.x101.SimpleDataRecordType;
 import net.opengis.swe.x101.BooleanDocument.Boolean;
 import net.opengis.swe.x101.CategoryDocument.Category;
 import net.opengis.swe.x101.CountDocument.Count;
+import net.opengis.swe.x101.PositionType;
 import net.opengis.swe.x101.QuantityDocument.Quantity;
+import net.opengis.swe.x101.SimpleDataRecordType;
 import net.opengis.swe.x101.TextDocument.Text;
 import net.opengis.swe.x101.TimeDocument.Time;
 
 import org.apache.xmlbeans.XmlCursor;
-import org.apache.xmlbeans.XmlObject;
+import org.n52.sos.Sos1Constants;
 import org.n52.sos.SosConstants;
-import org.n52.sos.decode.impl.OMDecoder;
 import org.n52.sos.ogc.om.SosOffering;
 import org.n52.sos.ogc.om.SosPhenomenon;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
@@ -71,11 +67,11 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
      * @throws OwsExceptionReport
      *             if parsing of system failed
      */
-    public static SensorSystem parseSystem(SystemType xb_system, String smlFile) throws OwsExceptionReport {
+    public static SensorSystem parseSystem(SystemType xb_system, String smlFile, boolean uncertObs) throws OwsExceptionReport {
         SensorSystem system = null;
         String id = null;
         String descriptionURL = SosConstants.PROCEDURE_STANDARD_DESC_URL;
-        String descriptionType = SosConstants.SENSORML_OUTPUT_FORMAT;
+        String descriptionType = Sos1Constants.SENSORML_OUTPUT_FORMAT;
 
         boolean active = true;
         boolean mobile = false;
@@ -170,7 +166,7 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
             throw se;
         }
 
-        Collection<SosPhenomenon> phenomena = parseOutputs(xb_outputs);
+        Collection<SosPhenomenon> phenomena = parseOutputs(xb_outputs, uncertObs);
 
         if (!id.equals("")) {
             system =
@@ -191,7 +187,7 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
 	 *         outputs
 	 * @throws OwsExceptionReport
 	 */
-	private static Collection<SosPhenomenon> parseOutputs(Outputs xb_outputs)
+	private static Collection<SosPhenomenon> parseOutputs(Outputs xb_outputs, boolean uncertObs)
 			throws OwsExceptionReport {
 		OutputList xb_outputList = xb_outputs.getOutputList();
 		IoComponentPropertyType[] xb_outputArray = xb_outputList
@@ -414,6 +410,11 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
 					uom = code;
 				}
 
+				// set valueType to 'uncertaintyType' for uncertaintyObservations
+				if (uncertObs) {
+					valueType = SosConstants.ValueTypes.uncertaintyType.name();
+				}
+								
 				SosPhenomenon phen = new SosPhenomenon(phenID, phenDesc, uom,
 						null, valueType, null, offerings);
 				phenomena.add(phen);

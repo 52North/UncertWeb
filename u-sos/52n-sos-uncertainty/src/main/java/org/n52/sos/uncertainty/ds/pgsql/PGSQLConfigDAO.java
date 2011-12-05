@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,15 +42,15 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
      * @throws OwsExceptionReport
      *             if query of the result models failed
      */
-    public Map<String, List<QName>> queryOfferingResultModels() throws OwsExceptionReport {
+    public Map<String, Collection<QName>> queryOfferingResultModels() throws OwsExceptionReport {
 
-        Map<String, List<QName>> result = new HashMap<String, List<QName>>();
+        Map<String, Collection<QName>> result = new HashMap<String, Collection<QName>>();
 
         Connection con = null;
         Statement stmt = null;
         String query =
-                "SELECT DISTINCT " + PGDAOConstants.offeringIDCn + ", " + PGDAOConstants.valueTypeCn + " FROM "
-                        + PGDAOConstants.phenTn + " NATURAL INNER JOIN " + PGDAOConstants.phenOffTn + ";";
+                "SELECT DISTINCT " + PGDAOConstants.getOfferingIDCn() + ", " + PGDAOConstants.getValueTypeCn() + " FROM "
+                        + PGDAOConstants.getPhenTn() + " NATURAL INNER JOIN " + PGDAOConstants.getPhenOffTn() + ";";
         String valueType;
         String offeringID;
         try {
@@ -59,8 +60,8 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
             ResultSet rs = stmt.executeQuery(query);
 
             while (rs.next()) {
-                offeringID = rs.getString(PGDAOConstants.offeringIDCn);
-                valueType = rs.getString(PGDAOConstants.valueTypeCn);
+                offeringID = rs.getString(PGDAOConstants.getOfferingIDCn());
+                valueType = rs.getString(PGDAOConstants.getValueTypeCn());
 
                 // if HashMap does not contain the offering, add new offering
                 // and corresponding result models
@@ -91,7 +92,7 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
                     }
                     
                     // if uncertainty value add scopledNameType to result models 
-                    else if (valueType.equalsIgnoreCase(SosUncConstants.ValueTypes.uncertaintyType.name())) {
+                    else if (valueType.equalsIgnoreCase(SosConstants.ValueTypes.uncertaintyType.name())) {
                         resultModels.add(SosUncConstants.RESULT_MODEL_UNCERTAINTY_OBSERVATION);
                         result.put(offeringID, resultModels);
                     }
@@ -134,16 +135,16 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
 
             // now repeat this for composite phenomena
             query =
-                    "SELECT DISTINCT " + PGDAOConstants.offeringIDCn + ", " + PGDAOConstants.valueTypeCn + " FROM "
-                            + PGDAOConstants.phenTn + " NATURAL INNER JOIN " + PGDAOConstants.compPhenTn
-                            + " NATURAL INNER JOIN " + PGDAOConstants.compPhenOffTn + ";";
+                    "SELECT DISTINCT " + PGDAOConstants.getOfferingIDCn() + ", " + PGDAOConstants.getValueTypeCn() + " FROM "
+                            + PGDAOConstants.getPhenTn() + " NATURAL INNER JOIN " + PGDAOConstants.getCompPhenTn()
+                            + " NATURAL INNER JOIN " + PGDAOConstants.getCompPhenOffTn() + ";";
             stmt.close();
             stmt = con.createStatement();
             rs = stmt.executeQuery(query);
 
             while (rs.next()) {
-                offeringID = rs.getString(PGDAOConstants.offeringIDCn);
-                valueType = rs.getString(PGDAOConstants.valueTypeCn);
+                offeringID = rs.getString(PGDAOConstants.getOfferingIDCn());
+                valueType = rs.getString(PGDAOConstants.getValueTypeCn());
 
                 // if HashMap does not contain the offering, add new offering
                 // and corresponding result models

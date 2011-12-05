@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>52n-sos</artifactId>
 		<groupId>org.n52.swe.sos</groupId>
-		<version>3.1</version>
+		<version>3.5.0-M0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.n52.swe.sos</groupId>

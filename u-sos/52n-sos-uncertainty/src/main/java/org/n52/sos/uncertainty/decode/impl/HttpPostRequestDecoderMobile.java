@@ -8,38 +8,26 @@ import javax.xml.namespace.QName;
 
 import net.opengis.gml.FeaturePropertyType;
 import net.opengis.gml.TimePositionType;
-import net.opengis.gml.x32.UncertaintyPropertyType;
-import net.opengis.om.x10.CategoryObservationDocument;
 import net.opengis.om.x10.CategoryObservationType;
-import net.opengis.om.x10.GeometryObservationDocument;
 import net.opengis.om.x10.GeometryObservationType;
-import net.opengis.om.x10.MeasurementDocument;
 import net.opengis.om.x10.MeasurementType;
 import net.opengis.om.x10.ObservationDocument;
 import net.opengis.om.x10.ObservationType;
-import net.opengis.om.x20.OMBooleanObservationDocument;
-import net.opengis.om.x20.OMCategoryObservationDocument;
-import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
+import net.opengis.om.x20.FoiPropertyType;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
+import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
 import net.opengis.om.x20.OMMeasurementDocument;
 import net.opengis.om.x20.OMObservationDocument;
-import net.opengis.om.x20.OMReferenceObservationDocument;
-import net.opengis.om.x20.OMTextObservationDocument;
+import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 import net.opengis.om.x20.OMUncertaintyObservationDocument;
-import net.opengis.om.x20.UWBooleanObservationType;
-import net.opengis.om.x20.UWDiscreteNumericObservationType;
 import net.opengis.om.x20.UWMeasurementType;
-import net.opengis.om.x20.UWReferenceObservationType;
-import net.opengis.om.x20.UWTextObservationType;
 import net.opengis.om.x20.UWUncertaintyObservationType;
 import net.opengis.sensorML.x101.AbstractProcessType;
 import net.opengis.sensorML.x101.SensorMLDocument;
 import net.opengis.sensorML.x101.SensorMLDocument.SensorML.Member;
 import net.opengis.sensorML.x101.SystemType;
-import net.opengis.sos.x10.GetObservationDocument;
 import net.opengis.sos.x10.InsertObservationDocument;
-import net.opengis.sos.x10.GetObservationDocument.GetObservation;
 import net.opengis.sos.x10.InsertObservationDocument.InsertObservation;
 import net.opengis.sos.x10.ObservationTemplateDocument.ObservationTemplate;
 import net.opengis.sos.x10.RegisterSensorDocument;
@@ -49,11 +37,11 @@ import net.opengis.sos.x10.UpdateSensorDocument;
 import net.opengis.sos.x10.UpdateSensorDocument.UpdateSensor;
 import net.opengis.swe.x101.PositionType;
 
+import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.n52.sos.SosConfigurator;
-import org.n52.sos.SosConstants;
 import org.n52.sos.decode.IHttpPostRequestDecoder;
+import org.n52.sos.decode.impl.FeatureDecoder;
 import org.n52.sos.decode.impl.OMDecoder;
 import org.n52.sos.ogc.om.AbstractSosObservation;
 import org.n52.sos.ogc.om.features.SosAbstractFeature;
@@ -61,12 +49,13 @@ import org.n52.sos.ogc.ows.OwsExceptionReport;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionCode;
 import org.n52.sos.ogc.sensorML.SensorSystem;
 import org.n52.sos.request.AbstractSosRequest;
-import org.n52.sos.request.SosGetObservationRequest;
 import org.n52.sos.request.SosInsertObservationRequest;
 import org.n52.sos.request.SosRegisterSensorRequest;
 import org.n52.sos.request.SosUpdateSensorRequest;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -89,120 +78,23 @@ import com.vividsolutions.jts.geom.Point;
 public class HttpPostRequestDecoderMobile extends
 		org.n52.sos.decode.impl.HttpPostRequestDecoderMobile implements
 		IHttpPostRequestDecoder {
+	
+    /**
+     * Feature Decoder
+     */
+    private FeatureDecoder featureDecoder = new FeatureDecoder();
 
-	// /**
-	// * Feature Decoder
-	// */
-	// protected FeatureDecoder featureDecoder = new FeatureDecoder();
+    /**
+     * O&M Decoder
+     */
+    private OMDecoder omDecoder = new OMDecoder();
 
-	/**
-	 * internal O&M 1 Decoder
-	 */
-	protected OMDecoder om1Decoder = new OMDecoder();
-
+	
 	/**
 	 * O&M 2 Decoder from UncertWeb O&M 2 API
 	 */
-	protected XBObservationParser om2Decoder = new XBObservationParser();
+	private XBObservationParser om2Decoder = new XBObservationParser();
 
-//    /**
-//     * parses the XmlBean representing the getObservation request and creates a
-//     * SoSGetObservation request
-//     * 
-//     * @param xb_obsDoc
-//     *            XmlBean created from the incoming request stream
-//     * @return Returns SosGetObservationRequest representing the request
-//     * @throws OwsExceptionReport
-//     *             If parsing the XmlBean failed
-//     */
-//    public AbstractSosRequest parseGetObservationRequest(GetObservationDocument xb_obsDoc) throws OwsExceptionReport {
-//
-//        SosGetObservationRequest request = new SosGetObservationRequest();
-//
-//        // validate document
-//        validateDocument(xb_obsDoc);
-//
-//        // parse getObservation
-//        GetObservation xb_getObs = xb_obsDoc.getGetObservation();
-//
-//        if (xb_getObs.getResponseMode() != null) {
-//            String responseMode = xb_getObs.getResponseMode().toString();
-//            checkResponseMode(responseMode);
-//            request.setResponseMode(responseMode);
-//            // resultTemplate
-//            if (responseMode.equals(SosConstants.RESPONSE_RESULT_TEMPLATE)) {
-//                // ENUM ????
-//                // xb_getObs.setResponseMode(SosConstants.RESPONSE_MODE_INLINE);
-//                String requestString = xb_obsDoc.toString();
-//                requestString = requestString.replace("<responseMode>resultTemplate</responseMode>", "");
-//                request.setRequestString(requestString);
-//            }
-//        }
-//
-//        request.setService(xb_getObs.getService());
-//        request.setVersion(xb_getObs.getVersion());
-//
-//        request.setMobileEnabled(xb_getObs.getMobileEnabled());
-//
-//        String srsName = xb_getObs.getSrsName();
-//        if (srsName == null || srsName.equals("")) {
-//            // do nothing
-//        } else {
-//            request.setSrsName(srsName);
-//        }
-//
-//        request.setOffering(xb_getObs.getOffering());
-//        request.setEventTime(parseEventTime4GetObs(xb_getObs.getEventTimeArray()));
-//
-//        if (xb_getObs.getProcedureArray() != null) {
-//            request.setProcedure(xb_getObs.getProcedureArray());
-//        }
-//
-//        request.setObservedProperty(xb_getObs.getObservedPropertyArray());
-//
-//        if (xb_getObs.getFeatureOfInterest() != null) {
-//            request.setFeatureOfInterest(parseFeatureOfInterest(xb_getObs.getFeatureOfInterest()));
-//            if (request.getFeatureOfInterest().getGeometry() != null) {
-//                request.setSrsName(SosConfigurator.getInstance().getSrsNamePrefix()
-//                        + request.getFeatureOfInterest().getGeometry().getSRID());
-//            }
-//        }
-//
-//        // if mobileEnabled check for spatialFilter
-//        if (request.isMobileEnabled()) {
-//            if (xb_getObs.getDomainFeature() != null) {
-//                request.setDomainFeature(parseDomainFeature(xb_getObs.getDomainFeature()));
-//            }
-//
-//            // if spatial filter for domain feature AND feature of interest is
-//            // set, throw exception
-//            if (request.getDomainFeature() != null && request.getFeatureOfInterest() != null) {
-//                OwsExceptionReport se = new OwsExceptionReport();
-//                se.addCodedException(OwsExceptionReport.ExceptionCode.InvalidRequest,
-//                        SosConstants.Operations.getObservation.name(),
-//                        "The request may not contain both a spatial filter for feature of interests and a spatial filter for domain features.");
-//                throw se;
-//            }
-//        }
-//
-//        if (xb_getObs.getResult() != null) {
-//            request.setResult(parseResult(xb_getObs.getResult()));
-//        }
-//
-//        request.setResponseFormat(xb_getObs.getResponseFormat());
-//
-//        if (xb_getObs.getResultModel() != null) {
-//            request.setResultModel(xb_getObs.getResultModel());
-//        }
-//
-//        /*
-//         * if (xb_getObs.getSortBy() != null) {
-//         * request.setSortBy(parseSortBy(xb_getObs.getSortBy())); }
-//         */
-//
-//        return request;
-//    }
-	
 	/**
 	 * parses the passes XmlBeans document and creates a SOS InsertObservation
 	 * request
@@ -224,44 +116,83 @@ public class HttpPostRequestDecoderMobile extends
 
 		ObservationType xb_obsType = xb_insertObs.getObservation();
 		OMObservationDocument om2ObsDoc = null;
-		
-		// TODO ObservationCollection accepted?
+		OMMeasurementCollectionDocument om2MeasColDoc = null;
+		OMUncertaintyObservationCollectionDocument om2UncObsColDoc = null;
+
 		try {
-		if (xb_obsType == null) {
-			
-			if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0",  OM2Constants.OBS_TYPE_UNCERTAINTY)).length > 0) {	
-				om2ObsDoc = OMUncertaintyObservationDocument.Factory.newInstance();
-				((OMUncertaintyObservationDocument) om2ObsDoc).addNewOMUncertaintyObservation().set(UWUncertaintyObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_UNCERTAINTY))[0].xmlText()));
-			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_MEASUREMENT)).length > 0) {
-				om2ObsDoc = OMMeasurementDocument.Factory.newInstance();
-				((OMMeasurementDocument) om2ObsDoc).addNewOMMeasurement().set(UWMeasurementType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_MEASUREMENT))[0].xmlText()));
-				
+			if (xb_obsType == null) {
+
+				// handle O&M 2 Observations
+
+				if (xb_insertObs.selectChildren(new QName(
+						"http://www.opengis.net/om/2.0",
+						OM2Constants.OBS_TYPE_UNCERTAINTY)).length > 0) {
+					om2ObsDoc = OMUncertaintyObservationDocument.Factory
+							.newInstance();
+					((OMUncertaintyObservationDocument) om2ObsDoc)
+							.addNewOMUncertaintyObservation()
+							.set(UWUncertaintyObservationType.Factory.parse(xb_insertObs
+									.selectChildren(new QName(
+											"http://www.opengis.net/om/2.0",
+											OM2Constants.OBS_TYPE_UNCERTAINTY))[0]
+									.xmlText()));
+				} else if (xb_insertObs.selectChildren(new QName(
+						"http://www.opengis.net/om/2.0",
+						OM2Constants.OBS_TYPE_MEASUREMENT)).length > 0) {
+					om2ObsDoc = OMMeasurementDocument.Factory.newInstance();
+					((OMMeasurementDocument) om2ObsDoc)
+							.addNewOMMeasurement()
+							.set(UWMeasurementType.Factory.parse(xb_insertObs
+									.selectChildren(new QName(
+											"http://www.opengis.net/om/2.0",
+											OM2Constants.OBS_TYPE_MEASUREMENT))[0]
+									.xmlText()));
+				}
+
 				// TODO add further uncertainty types here
-//			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_BOOLEAN)).length > 0) {
-//				om2ObsDoc = OMBooleanObservationDocument.Factory.newInstance();
-//				((OMBooleanObservationDocument) om2ObsDoc).addNewOMBooleanObservation().set(UWBooleanObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_BOOLEAN))[0].xmlText()));
-//			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_DISCNUM)).length > 0) {
-//				om2ObsDoc = OMDiscreteNumericObservationDocument.Factory.newInstance();
-//				((OMDiscreteNumericObservationDocument) om2ObsDoc).addNewOMDiscreteNumericObservation().set(UWDiscreteNumericObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_DISCNUM))[0].xmlText()));
-//			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_REFERENCE)).length > 0) {
-//				om2ObsDoc = OMReferenceObservationDocument.Factory.newInstance();
-//				((OMReferenceObservationDocument) om2ObsDoc).addNewOMReferenceObservation().set(UWReferenceObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_REFERENCE))[0].xmlText()));
-//			} else if (xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_TEXT)).length > 0) {
-//				om2ObsDoc = OMTextObservationDocument.Factory.newInstance();
-//				((OMTextObservationDocument) om2ObsDoc).addNewOMTextObservation().set(UWTextObservationType.Factory.parse(xb_insertObs.selectChildren(new QName("http://www.opengis.net/om/2.0", OM2Constants.OBS_TYPE_TEXT))[0].xmlText()));
-			}			
-		}
+				// add observation types
+
+				// handle O&M 2 Observation Collections
+
+				else if (xb_insertObs.selectChildren(new QName(
+						"http://www.opengis.net/om/2.0",
+						OM2Constants.OBS_COL_TYPE_UNCERTAINTY)).length > 0) {
+
+					om2UncObsColDoc = OMUncertaintyObservationCollectionDocument.Factory
+							.newInstance();
+					OMUncertaintyObservationCollection om2UncObsCol = om2UncObsColDoc
+							.addNewOMUncertaintyObservationCollection();
+
+					om2UncObsCol.set(xb_insertObs.selectChildren(new QName(
+							"http://www.opengis.net/om/2.0",
+							OM2Constants.OBS_COL_TYPE_UNCERTAINTY))[0]);
+
+				} else if (xb_insertObs.selectChildren(new QName(
+						"http://www.opengis.net/om/2.0",
+						OM2Constants.OBS_COL_TYPE_MEASUREMENT)).length > 0) {
+					
+					om2MeasColDoc = OMMeasurementCollectionDocument.Factory.newInstance();
+					OMMeasurementCollection om2MeasCol = om2MeasColDoc
+					.addNewOMMeasurementCollection();
+
+			om2MeasCol.set(xb_insertObs.selectChildren(new QName(
+					"http://www.opengis.net/om/2.0",
+					OM2Constants.OBS_COL_TYPE_MEASUREMENT))[0]);
+
+				}
+				// TODO add further uncertainty types here
+				// add observation collection types
+
+			}
 		} catch (XmlException xmle) {
 			OwsExceptionReport se = new OwsExceptionReport();
-			se.addCodedException(
-					ExceptionCode.InvalidParameterValue,
-					null,
+			se.addCodedException(ExceptionCode.InvalidParameterValue, null,
 					"Error while parsing: " + xmle.getLocalizedMessage());
 			throw se;
 		}
-		
+
 		Collection<AbstractSosObservation> obsCol = null;
-		
+
 		if (om2ObsDoc != null) {
 
 			AbstractObservation om2Obs = null;
@@ -269,29 +200,61 @@ public class HttpPostRequestDecoderMobile extends
 				om2Obs = om2Decoder.parseObservation(om2ObsDoc.xmlText());
 			} catch (Exception e) {
 				OwsExceptionReport se = new OwsExceptionReport();
-				se.addCodedException(
-						ExceptionCode.InvalidParameterValue,
-						null,
+				se.addCodedException(ExceptionCode.InvalidParameterValue, null,
 						"Error while parsing: " + e.getLocalizedMessage());
 				throw se;
 			}
-			
-			// convert om2->om1 Observation
+
+			// convert om2 -> om1 observation
 			obsCol = new ArrayList<AbstractSosObservation>();
 			obsCol.add(ObservationConverter.getOM1Obs(om2Obs));
-			
+
+		} else if (om2UncObsColDoc != null) {
+
+			IObservationCollection om2ObsCol = null;
+			try {
+				om2ObsCol = om2Decoder
+						.parseObservationCollection(om2UncObsColDoc);
+			} catch (Exception e) {
+				OwsExceptionReport se = new OwsExceptionReport();
+				se.addCodedException(ExceptionCode.InvalidParameterValue, null,
+						"Error while parsing: " + e.getLocalizedMessage());
+				throw se;
+			}
+
+			// convert om2 -> om1 observation collection
+			obsCol = ObservationConverter.getOM1ObsCol(om2ObsCol)
+					.getObservationMembers();
+
+		} else if (om2MeasColDoc != null) {
+
+			IObservationCollection om2ObsCol = null;
+			try {
+				om2ObsCol = om2Decoder
+						.parseObservationCollection(om2MeasColDoc);
+			} catch (Exception e) {
+				OwsExceptionReport se = new OwsExceptionReport();
+				se.addCodedException(ExceptionCode.InvalidParameterValue, null,
+						"Error while parsing: " + e.getLocalizedMessage());
+				throw se;
+			}
+
+			// convert om2 -> om1 observation collection
+			obsCol = ObservationConverter.getOM1ObsCol(om2ObsCol)
+					.getObservationMembers();
+
 		} else if (xb_obsType instanceof MeasurementType) {
-			obsCol = om1Decoder.parseMeasurement((MeasurementType) xb_obsType,
+			obsCol = omDecoder.parseMeasurement((MeasurementType) xb_obsType,
 					mobileEnabled);
 		} else if (xb_obsType instanceof CategoryObservationType) {
-			obsCol = om1Decoder.parseCategoryObservation(
+			obsCol = omDecoder.parseCategoryObservation(
 					(CategoryObservationType) xb_obsType, mobileEnabled);
 		} else if (xb_obsType instanceof GeometryObservationType) {
-			obsCol = om1Decoder.parseSpatialObservation(
+			obsCol = omDecoder.parseSpatialObservation(
 					(GeometryObservationType) xb_obsType, mobileEnabled);
 		} else {
 			// GenericObservation
-			obsCol = om1Decoder.parseGenericObservation(xb_obsType,
+			obsCol = omDecoder.parseGenericObservation(xb_obsType,
 					mobileEnabled);
 		}
 		return new SosInsertObservationRequest(assignedSensorID, obsCol,
@@ -307,13 +270,13 @@ public class HttpPostRequestDecoderMobile extends
 	 * @throws OwsExceptionReport
 	 *             if request is incorrect or not valid
 	 */
-	@SuppressWarnings("unchecked")
 	public SosRegisterSensorRequest parseRegisterSensorRequest(
 			RegisterSensorDocument xb_regSensDoc) throws OwsExceptionReport {
 
 		// validateDocument(xb_regSensDoc);
 
 		SosRegisterSensorRequest request = null;
+		boolean uncertObs = false;
 
 		RegisterSensor xb_regSens = xb_regSensDoc.getRegisterSensor();
 		SensorDescription xb_sensDesc = xb_regSens.getSensorDescription();
@@ -325,12 +288,7 @@ public class HttpPostRequestDecoderMobile extends
 		try {
 			XmlObject xb_object = XmlObject.Factory.parse(xb_obsTemplate
 					.toString());
-			if (xb_object instanceof MeasurementDocument
-					|| xb_object instanceof CategoryObservationDocument
-					|| xb_object instanceof GeometryObservationDocument || // O&M
-																			// 1
-																			// only
-					xb_object instanceof ObservationDocument) {
+			if (xb_object instanceof ObservationDocument) {
 
 				// parse fois from template
 				FeaturePropertyType xb_fpt = ((ObservationTemplate) xb_obsTemplate)
@@ -339,24 +297,41 @@ public class HttpPostRequestDecoderMobile extends
 						.parseFeatureCollection(xb_fpt);
 				foi_col = foi_map.values();
 
-			} else if (xb_object instanceof OMMeasurementDocument) {
-
-				// TODO handle new observation types
-
-				// TODO parse featureOfInterest
-
-			} else if (xb_object instanceof OMCategoryObservationDocument) {
-
-				// TODO parse featureOfInterest
-
-			} else if (xb_object instanceof OMUncertaintyObservationDocument) {
-
-				// TODO parse featureOfInterest
-
 			} else if (xb_object instanceof OMObservationDocument) {
 
-				// TODO parse featureOfInterest
+				// parse fois from template
+				FoiPropertyType xb_fpt = ((OMObservationDocument) xb_object)
+						.getOMObservation().getFeatureOfInterest();
 
+				if (xb_fpt.getSFSpatialSamplingFeature() != null
+						|| xb_fpt.getHref() != null) {
+					SpatialSamplingFeature om2FOI;
+					try {
+						om2FOI = om2Decoder.parseSamplingFeature(xb_fpt);
+					} catch (Exception e) {
+						OwsExceptionReport se = new OwsExceptionReport();
+						se.addCodedException(
+								ExceptionCode.InvalidParameterValue,
+								null,
+								"Feature of interest '"
+										+ xb_fpt.getSFSpatialSamplingFeature()
+												.getIdentifier()
+												.getStringValue()
+										+ "' could not be parsed: "
+										+ e.getLocalizedMessage());
+						throw se;
+					}
+					SosAbstractFeature om1FOI = ObservationConverter
+							.convertOM2FOI(om2FOI);
+					foi_col = new ArrayList<SosAbstractFeature>(1);
+					foi_col.add(om1FOI);
+				}
+
+				// workaround to store UncertaintyObservations with phenomenon
+				// value type 'uncertaintyType'
+				if (xb_object instanceof OMUncertaintyObservationDocument) {
+					uncertObs = true;
+				}
 			} else {
 				OwsExceptionReport se = new OwsExceptionReport();
 				se.addCodedException(
@@ -402,7 +377,8 @@ public class HttpPostRequestDecoderMobile extends
 		}
 		SensorSystem sensorSystem;
 		if (xb_system != null) {
-			sensorSystem = SensorMLDecoder.parseSystem(xb_system, smlFile);
+			sensorSystem = SensorMLDecoder.parseSystem(xb_system, smlFile,
+					uncertObs);
 		} else {
 			sensorSystem = SensorMLDecoder.parseSystem(
 					SystemType.Factory.newInstance(), smlFile);

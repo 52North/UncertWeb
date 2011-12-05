@@ -65,8 +65,7 @@ public class ResultSetUtilities extends org.n52.sos.ds.pgsql.ResultSetUtilities 
 		Geometry geometry = createJTSGeom(geomWKT, srid);
 
 		// add new AbstractFeature to Collection
-		if (featureType.equalsIgnoreCase(OM2Constants.NS_SAMS_PREFIX + ":"
-				+ OM2Constants.EN_SAMPLINGPOINT)) {
+		if (featureType.equalsIgnoreCase(OM2Constants.EN_SAMPLINGPOINT)) {
 			if (geometry instanceof Point) {
 				absFeat = new SosSamplingPoint(id, name, desc,
 						(Point) geometry, featureType, schemaLink,
@@ -81,8 +80,7 @@ public class ResultSetUtilities extends org.n52.sos.ds.pgsql.ResultSetUtilities 
 						+ "' is not supported!", se);
 				throw se;
 			}
-		} else if (featureType.equalsIgnoreCase(OM2Constants.NS_SAMS_PREFIX
-				+ ":" + OM2Constants.EN_SAMPLINGCURVE)) {
+		} else if (featureType.equalsIgnoreCase(OM2Constants.EN_SAMPLINGCURVE)) {
 			if (geometry instanceof LineString) {
 				absFeat = new SosGenericSamplingFeature(id, name, desc,
 						geometry, schemaLink, domainFeaturesp);
@@ -96,8 +94,7 @@ public class ResultSetUtilities extends org.n52.sos.ds.pgsql.ResultSetUtilities 
 						+ "' is not supported!", se);
 				throw se;
 			}
-		} else if (featureType.equalsIgnoreCase(OM2Constants.NS_SAMS_PREFIX
-				+ ":" + OM2Constants.EN_SAMPLINGSURFACE)) {
+		} else if (featureType.equalsIgnoreCase(OM2Constants.EN_SAMPLINGSURFACE)) {
 			if (geometry instanceof Polygon || geometry instanceof MultiPolygon) {
 				absFeat = new SosSamplingSurface(id, name, desc, geometry,
 						featureType, schemaLink, domainFeaturesp);
@@ -111,8 +108,7 @@ public class ResultSetUtilities extends org.n52.sos.ds.pgsql.ResultSetUtilities 
 						+ "' is not supported!", se);
 				throw se;
 			}
-		} else if (featureType.equalsIgnoreCase(OM2Constants.NS_SAMS_PREFIX
-				+ ":" + OM2Constants.EN_SAMPLINGGRID)) {
+		} else if (featureType.equalsIgnoreCase(OM2Constants.EN_SAMPLINGGRID)) {
 
 			// TODO is Sampling Grid supported by 52N SOS?
 			if (geometry instanceof RectifiedGrid) {
