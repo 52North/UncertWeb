@@ -3,22 +3,24 @@ package org.uncertweb.wps;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.UncertWebData;
-import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
+import org.n52.wps.io.data.binding.complex.UncertMLBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.rosuda.REngine.REXP;
-import org.rosuda.REngine.Rserve.RserveException;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.LogNormalDistribution;
 import org.uncertml.sample.Realisation;
-import org.uncertml.statistic.CovarianceMatrix;
-import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 
 public class LognormalDist2Realisations extends AbstractAlgorithm {
 	
 
+	public LognormalDist2Realisations(){
+		super();
+	}
+	
 	@Override
 	public List<String> getErrors() {
 		// TODO Auto-generated method stub
@@ -27,12 +29,12 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 
 	@Override
 	public Class<?> getInputDataType(String arg0) {		
-		return UncertWebDataBinding.class;
+		return UncertWebIODataBinding.class;
 	}
 
 	@Override
 	public Class<?> getOutputDataType(String arg0) {		
-		return UncertWebDataBinding.class;
+		return UncertWebIODataBinding.class;
 	}
 
 	@Override
@@ -46,22 +48,17 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 		String numberOfRealisations = intNumberOfRealisations.toString();
 		
 		// Get "uncertML" input, convert it to IUncertainty
-		List<IData> iDataList2 = directInput.get("distribution");
-		IData iData2 = iDataList2.get(0);
-		if(!(iData2 instanceof UncertWebDataBinding)){
-			return null;
+		IData distInput = directInput.get("distribution").get(0);
+		if(!(distInput instanceof UncertMLBinding)){
+			throw new RuntimeException("Input with ID distribution must be a univariate lognormal distribution!");
 		}
-		UncertWebDataBinding uwdbinding = (UncertWebDataBinding) iData2;
-		UncertWebData uwdata = uwdbinding.getPayload();
-		if(uwdata.getUncertaintyType() == null){
-			return null;
-		}
-		IUncertainty iuncertaintyType = uwdata.getUncertaintyType();
+		IUncertainty dist = ((UncertMLBinding) distInput).getPayload();
+		
 		
 		// Get parameters etc out of it
 		LogNormalDistribution mg = null;
-		if (iuncertaintyType instanceof LogNormalDistribution){
-			mg = (LogNormalDistribution)iuncertaintyType;
+		if (dist instanceof LogNormalDistribution){
+			mg = (LogNormalDistribution)dist;
 		}else{
 			throw new RuntimeException("Input with ID distribution must be a univariate lognormal distribution!");
 		}
@@ -100,9 +97,7 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 			Realisation r = new Realisation(sampleDoubleArray, -999999.999, "bla");
 			
 			// Make and return result
-			UncertWebData uwd = new UncertWebData(r);
-			UncertWebDataBinding uwdb = new UncertWebDataBinding(uwd);
-			
+			UncertMLBinding uwdb = new UncertMLBinding(r);
 			result.put("realisations", uwdb);
 			
 		

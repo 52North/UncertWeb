@@ -23,6 +23,10 @@ public class Realisations2Distribution extends AbstractAlgorithm {
 
 	private String inputIDNumberOfRealisations = "realisations";	
 	
+	public Realisations2Distribution(){
+		super();
+	}
+	
 	@Override
 	public List<String> getErrors() {
 		return null;

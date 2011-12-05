@@ -7,7 +7,9 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.UncertWebData;
+import org.n52.wps.io.data.binding.complex.UncertMLBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.rosuda.REngine.REXP;
@@ -22,6 +24,13 @@ public class UnivGaussianDist2Realisations extends AbstractAlgorithm {
 	
 	private static Logger logger = Logger.getLogger(UnivGaussianDist2Realisations.class);
 
+	
+	
+	public UnivGaussianDist2Realisations() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public List<String> getErrors() {
 		// TODO Auto-generated method stub
@@ -30,12 +39,12 @@ public class UnivGaussianDist2Realisations extends AbstractAlgorithm {
 
 	@Override
 	public Class<?> getInputDataType(String arg0) {		
-		return UncertWebDataBinding.class;
+		return UncertWebIODataBinding.class;
 	}
 
 	@Override
 	public Class<?> getOutputDataType(String arg0) {		
-		return UncertWebDataBinding.class;
+		return UncertWebIODataBinding.class;
 	}
 	
 	@Override
@@ -50,22 +59,18 @@ public class UnivGaussianDist2Realisations extends AbstractAlgorithm {
 		String numberOfRealisations = intNumberOfRealisations.toString();
 		
 		// Get "uncertML" input, convert it to IUncertainty
-		List<IData> iDataList2 = directInput.get("distribution");
-		IData iData2 = iDataList2.get(0);
-		if(!(iData2 instanceof UncertWebDataBinding)){
-			return null;
+		IData distributionInput = directInput.get("distribution").get(0);
+		if(!(distributionInput instanceof UncertMLBinding)){
+			
 		}
-		UncertWebDataBinding uwdbinding = (UncertWebDataBinding) iData2;
-		UncertWebData uwdata = uwdbinding.getPayload();
-		if(uwdata.getUncertaintyType() == null){
-			return null;
-		}
-		IUncertainty iuncertaintyType = uwdata.getUncertaintyType();
+		
+		UncertMLBinding distBinding = (UncertMLBinding) distributionInput;
+		IUncertainty uncertainty = distBinding.getPayload();
 		
 		// Get parameters etc out of it
 		NormalDistribution mg = null;
-		if (iuncertaintyType instanceof NormalDistribution){
-			mg = (NormalDistribution)iuncertaintyType;
+		if (uncertainty instanceof NormalDistribution){
+			mg = (NormalDistribution)uncertainty;
 		}else{
 			throw new RuntimeException("Input with ID distribution must be a univariate gaussian distribution!");
 		}
@@ -101,8 +106,7 @@ public class UnivGaussianDist2Realisations extends AbstractAlgorithm {
 			Realisation r = new Realisation(sampleDoubleArray, -999999.999, "bla");
 			
 			// Make and return result
-			UncertWebData uwd = new UncertWebData(r);
-			UncertWebDataBinding uwdb = new UncertWebDataBinding(uwd);
+			UncertMLBinding uwdb = new UncertMLBinding(r);
 			result.put("realisations", uwdb);
 			
 		

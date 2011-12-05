@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.UncertWebData;
-import org.n52.wps.io.data.binding.complex.UncertWebDataBinding;
+import org.n52.wps.io.data.binding.complex.UncertMLBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.rosuda.REngine.REXP;
@@ -23,6 +23,10 @@ import org.uncertml.statistic.CovarianceMatrix;
  * 
  */
 public class MultiGaussianDist2Realisations extends AbstractAlgorithm {
+	
+	public MultiGaussianDist2Realisations(){
+		super();
+	}
 
 	// TODO Introduce MULTIVARIATE Realisation once they are available
 
@@ -34,12 +38,12 @@ public class MultiGaussianDist2Realisations extends AbstractAlgorithm {
 
 	@Override
 	public Class<?> getInputDataType(String arg0) {
-		return UncertWebDataBinding.class;
+		return UncertWebIODataBinding.class;
 	}
 
 	@Override
 	public Class<?> getOutputDataType(String arg0) {
-		return UncertWebDataBinding.class;
+		return UncertWebIODataBinding.class;
 	}
 
 	@Override
@@ -52,17 +56,13 @@ public class MultiGaussianDist2Realisations extends AbstractAlgorithm {
 		String numberOfRealisations = intNumberOfRealisations.toString();
 
 		// Get "uncertML" input, convert it to IUncertainty
-		List<IData> iDataList2 = directInput.get("distribution");
-		IData iData2 = iDataList2.get(0);
-		if (!(iData2 instanceof UncertWebDataBinding)) {
-			return null;
+		IData distInput = directInput.get("distribution").get(0);
+		if (!(distInput instanceof UncertMLBinding)) {
+			throw new RuntimeException(
+			"Input with ID distribution must be a multivariate gaussian distribution!");
 		}
-		UncertWebDataBinding uwdbinding = (UncertWebDataBinding) iData2;
-		UncertWebData uwdata = uwdbinding.getPayload();
-		if (uwdata.getUncertaintyType() == null) {
-			return null;
-		}
-		IUncertainty iuncertaintyType = uwdata.getUncertaintyType();
+		
+		IUncertainty iuncertaintyType = ((UncertMLBinding)distInput).getPayload();
 
 		// Get parameters etc out of it
 		MultivariateNormalDistribution mnd = null;
@@ -183,8 +183,7 @@ public class MultiGaussianDist2Realisations extends AbstractAlgorithm {
 		// FIXME add id with sense
 		Realisation r = new Realisation(sampleDoubleArraySorted, -999999.999,
 				"");
-		UncertWebData uwd = new UncertWebData(r);
-		UncertWebDataBinding uwdb = new UncertWebDataBinding(uwd);
+		UncertMLBinding uwdb = new UncertMLBinding(r);
 		HashMap<String, IData> result = new HashMap<String, IData>();
 		result.put("realisations", uwdb);
 		
