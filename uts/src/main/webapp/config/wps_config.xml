@@ -28,10 +28,7 @@
 			##################################
 			##UncertWeb Parsers
 			################################## 
-			 
-			 <Parser name="NetCDFParser" className="org.n52.wps.io.datahandler.netcdf.NetCDFParser" active="true" />
-  			<Parser name="UncertMLParser" className="org.n52.wps.io.datahandler.uncertml.UncertMLParser" active="true" />
-  			-->
+			 -->
   			<Parser name="UncertWebParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true" />
 			 		
 		</ParserList>
@@ -74,124 +71,14 @@
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Realisations2Distribution</Property>  -->
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Gaussian2Samples</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Samples2Statistics</Property>
-			<!-- <Property name="Algorithm" active="true">org.uncertweb.wps.LognormalDist2Realisations</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.wps.LognormalDist2Realisations</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.MultiGaussianDist2Realisations</Property>
-			<Property name="Algorithm" active="true">org.uncertweb.wps.UnivGaussianDist2Realisations</Property> -->
+			<Property name="Algorithm" active="true">org.uncertweb.wps.UnivGaussianDist2Realisations</Property>
 			<Property name="tmpDir" active="true">/tmp/</Property>	
-		</Repository>
-		
-		<Repository name="UploadedAlgorithmRepository" className="org.n52.wps.server.UploadedAlgorithmRepository" active="false">
-		</Repository>
-		
-		<Repository name="GrassRepository"
-			className="org.n52.wps.server.grass.GrassProcessRepository" active="false">
-			<!--Property name="Grass_Home" active="false">/usr/local/grass-7.0.svn</Property>
-			<Property name="ModuleStarter_Home" active="false">/usr/share/wps-grass-bridge/gms/</Property>
-			<Property name="Python_Home" active="false">/usr/bin/</Property>
-			<Property name="TMP_Dir" active="false">/tmp/tomcat6-tmp</Property>
-			<Property name="GISRC_Dir" active="false">/usr/local/grass-7.0.svn/demolocation/.grassrc70</Property-->
-			<Property name="Grass_Home" active="true">c:\programme\grass-70-svn</Property>
-			<Property name="Python_Home" active="true">c:\programme\grass-70-svn\extrabin</Property>
-			<Property name="Python_Path" active="true">c:\python25</Property>
-			<Property name="ModuleStarter_Home" active="true">C:\wps-grass-bridge\gms\</Property>
-			<Property name="GISRC_Dir" active="true">c:\programme\grass-70-svn\\demolocation\.grassrc70</Property>
-			<Property name="TMP_Dir" active="true">C:\tmp\grass_tmp</Property>
-			<Property name="Addon_Dir" active="true">C:\grass\wps-grass-bridge2\gms\Testing\Python\GrassAddons</Property>
-			<Property name="DONT_USE_PROCESSES" active="true">v.out.ascii;v.out.dxf;v.out.ogr;v.out.pov;v.out.svg;v.out.vtk;v.in.ascii;v.in.db;v.in.dxf;v.in.ogr;v.in.region;v.in.sites;r3.out.ascii;r3.out.v5d;r3.out.vtk;r.out.arc;r.out.ascii;r.out.bin;r.out.gdal;r.out.gridatb;r.out.mat;r.out.mpeg;r.out.png;r.out.pov;r.out.ppm;r.out.ppm3;r.out.tiff;r.out.vrml;r.out.vtk;r.in.arc;r.in.ascii;
-			r.in.bin;r.in.gdal;r.in.gridatb;r.in.mat;r.in.png;r.in.poly;r.in.xyzdb.columns;db.connect;db.copy;db.createdb;db.databases;db.describe;db.drivers;db.dropdb;db.droptable;dbcute;db.login;db.select;db.tables;g.access;g.copy;g.dirseps;g.filename;g.findetc;g.findfile;g.gisenv;g.gui;g.list;g.mapset;g.mapsets;g.message;g.mkfontcap;g.mlist;g.mremove;
-			g.parser;g.pnmcomp;g.proj;nviz;nviz_cmd;d.rast.numd.barscale;d.colorlist;d.colortable;d.erase;d.font;d.fontlist;d.geodesic;d.graph;d.grid;d.his;d.histogram;d.info;d.labels;d.legend;d.linegraph;d.nviz;d.path;d.profile;d.rast.arrow;d.rast;d.rgb;d.rhumbline;d.text;d.thematic.area;d.title;d.vect.chart;d.vect;d.where;g.region;g.remove;
-			g.rename;g.tempfile;g.version;r3.cross.rast;r3.in.v5d;r3.mkdspf;r.external;r.external.out;v.info;r.gegion;r.colors;i.group;r3.in.ascii;v.external;i.albedo;g.transform;r.info;v.db.select;v.db.connect;r.what;r.what.color;r.composite;r.colors.out;ps.map;g.ppmtopng;v.what;v.what.rast</Property>
-		</Repository>
-		
-		<!-- 
-		
-		
-		<Repository name="GeotoolsProcessRepository" className="org.n52.wps.geotools.GeotoolsProcessRepository" active="false">
-		</Repository>
-		
-		
-		<Repository name="LocalUnicoreAlgorithmRepository"	className="org.n52.wps.unicore.UnicoreAlgorithmRepository" active="false">			
-			<Property name="Algorithm" active="true">org.n52.wps.unicore.algorithm.UnicoreSimpleBufferAlgorithm</Property>
-
-			<Property name="Registry" active="true">https://localhost:8080/DEMO-SITE/services/Registry?res=default_registry</Property>
-			<Property name="Keystore" active="true">/home/bastian/.gpe4unicore/keystore.jks</Property>
-			<Property name="Type" active="true">jks</Property>
-			<Property name="Alias" active="true">demo user</Property>
-			<Property name="Password" active="true">unicore</Property>
-			
-			<Property name="OverwriteRemoteFile" active="true">false</Property>
-			<Property name="CompressInputData" active="true">true</Property>			
-		</Repository>
-		
-
-		 -->
-		<!-- 
-		<Repository name="LocalGridGainAlgorithmRepository"	className="org.n52.wps.gridgain.GridGainAlgorithmRepository" active="true">		
-			<Property name="Algorithm" active="true">org.n52.wps.gridgain.algorithm.GridGainSimpleBufferAlgorithm</Property>
-		</Repository>
- 		-->
-		<!--
-			<Repository name="OracleBPELRepository"
-			className="org.n52.wps.transactional.service.DefaultTransactionalProcessRepository" active="true">
-			<Property
-			name="GenericAlgorithm" active="true">org.n52.wps.transactional.algorithm.DefaultTransactionalAlgorithm</Property>
-			<Property
-			name="DeployManager" active="true">org.n52.wps.transactional.deploy.bpel.oracle.OracleBPELManager</Property>
-			<Property name="WorkspaceLocationRoot"></Property> <Property
-			name="supportedFormat" active="true">whatever.xsd</Property> <Property
-			name="DeploymentProfileClass" active="true">org.n52.wps.transactional.deploymentprofiles.BPELDeploymentProfile</Property>
-			this should be created <SupportedDeploymentProfiles schema=""
-			repositoyName="OracleBPELRepository">
-		
-		<Repository name="SextanteRepository" className="org.n52.wps.server.sextante.SextanteProcessRepository">
-		</Repository>
-		
-		<Repository name="AGSRepository" className="org.n52.wps.ags.AGSProcessRepository" active="true">
-			<Property name="IP" active="true">**</Property>
-			<Property name="DOMAIN" active="true">**</Property>
-			<Property name="USER" active="true">**</Property>
-			<Property name="PASS" active="true">**</Property>
-			<Property name="WORKSPACEBASE" active="true">**</Property>
-			<Property name="ARCOBJECTSJAR" active="true">**</Property>
-			<Property name="DESCRIBE_PROCESS_DIR" active="true">D:\development\xmlDescriptions</Property>
-		</Repository>
-		
-		<Repository name="LegacyProcessRepository" className="org.n52.wps.server.legacy.LegacyProcessRepository" active="true">
-			
-			<Property name="DESCRIBE_PROCESS_DIR" active="true">D:\development\legacyDescriptions</Property>
-			<Property name="TEMPLATE_WORKSPACE_DIR" active="true">D:\development\templateWS</Property>
-			
-			
-			<Property name="DELEGATOR" active="true">org.n52.wps.ags.LegacyAGSProcessDelegator</Property>
-			<Property name="DELEGATOR" active="true">org.n52.wps.ags.scripting.LegacyPythonDelegator</Property>
-			
-			 
-			<Delegator name="LegacyAGSProcessDelegator" className="org.n52.wps.ags.LegacyAGSProcessDelegator">
-				<Property name="CONTAINER" active="true">urn:n52:esri:arctoolbox:9.3</Property>
-				<Property name="BACKEND" active="true">urn:n52:esri:arcgis:9.3.1</Property>
-				<Property name="BACKEND" active="true">urn:n52:esri:arcgis:9.3</Property>
-			</Delegator>
-		</Repository> 
-		
-			 
-			 <Repository name="AGSRepository" className="org.n52.wps.ags.AGSProcessRepository" active="true">
-            <Property name="IP" active="true">vsoknos.geoinformatik.geo.uni-muenster.de</Property>
-            <Property name="DOMAIN" active="true">vsoknos.geoinformatik.geo.uni-muenster.de</Property>
-            <Property name="USER" active="true">soknos-wps</Property>
-            <Property name="PASS" active="true">soknos-52N</Property>
-            <Property name="WORKSPACEBASE" active="true">C:\wpsworkspace</Property>
-            <Property name="ARCOBJECTSJAR" active="true">C:\Programme\ArcGIS\java\lib\arcobjects.jar</Property>
-            <Property name="DESCRIBE_PROCESS_DIR" active="true">C:\wps\xmlDescriptions</Property>
-          </Repository>
-            <Repository name="SextanteRepository" className="org.n52.wps.server.sextante.SextanteProcessRepository" active="true">
-          </Repository>
-           -->
-           
-           
-		
+		</Repository>           
 	</AlgorithmRepositoryList>
 	<RemoteRepositoryList/>
-	<Server hostname="giv-uw2.uni-muenster.de" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="uts" repoReloadInterval="0">
+	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="uts" repoReloadInterval="0">
 		     <Database/>
 	</Server>
 </WPSConfiguration>
