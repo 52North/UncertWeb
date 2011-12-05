@@ -5,10 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.uncertweb.utils.UwCollectionUtils;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 
 import org.n52.wps.io.IParser;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 
 public abstract class DelegatingParser extends DelegatingHandler implements IParser {
 	
@@ -17,9 +19,13 @@ public abstract class DelegatingParser extends DelegatingHandler implements IPar
 	private final Set<IParser> parsers;
 	
 	public DelegatingParser(IParser... parsers) {
-		super();
-		this.parsers = UwCollectionUtils.asSet(parsers);
+		super(parsers);
 		
+		//add generic UncertWebIODataBinding to supported Formats
+		List<Class<?>> bindings = UwCollectionUtils.asList(super.supportedBindings);
+		bindings.add(UncertWebIODataBinding.class);
+		super.supportedBindings = bindings.toArray(new Class<?>[bindings.size()]);
+		this.parsers = UwCollectionUtils.asSet(parsers);
 	}
 
 	@Override
@@ -42,6 +48,15 @@ public abstract class DelegatingParser extends DelegatingHandler implements IPar
 			}
 		}
 		throw new RuntimeException("No applicable parser found.");
+	}
+	
+	public boolean isSupportedSchema(String schema){
+		if (schema==null){
+			return true;
+		}
+		else {
+			return super.isSupportedSchema(schema);
+		}
 	}
 
 }

@@ -4,10 +4,12 @@ import org.uncertweb.utils.UwCollectionUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.n52.wps.io.IGenerator;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 
 public abstract class DelegatingGenerator extends DelegatingHandler implements IGenerator {
 
@@ -15,6 +17,9 @@ public abstract class DelegatingGenerator extends DelegatingHandler implements I
 
 	public DelegatingGenerator(IGenerator... generators) {
 		super(generators);
+		List<Class<?>> bindings = UwCollectionUtils.asList(super.supportedBindings);
+		bindings.add(UncertWebIODataBinding.class);
+		super.supportedBindings = bindings.toArray(new Class<?>[bindings.size()]);
 		this.generators = UwCollectionUtils.asSet(generators);
 	}
 
@@ -37,5 +42,14 @@ public abstract class DelegatingGenerator extends DelegatingHandler implements I
 			}
 		}
 		throw new RuntimeException("No applicable generator found.");
+	}
+	
+	public boolean isSupportedSchema(String schema){
+		if (schema==null){
+			return true;
+		}
+		else {
+			return super.isSupportedSchema(schema);
+		}
 	}
 }
