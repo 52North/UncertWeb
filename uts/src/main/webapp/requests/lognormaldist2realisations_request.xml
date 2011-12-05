@@ -8,7 +8,7 @@
     <wps:Input>
       <ows:Identifier>distribution</ows:Identifier>
       <wps:Data>
-        <wps:ComplexData mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd">
+        <wps:ComplexData mimeType="application/x-uncertml+xml" schema="http://uncertml.org/uncertml.xsd">
           <un:LogNormalDistribution xmlns:un="http://www.uncertml.org/2.0">
             <un:logScale>2</un:logScale>
             <un:shape>0.6</un:shape>
@@ -20,15 +20,15 @@
   
     <wps:Input>
       <ows:Identifier>numbReal</ows:Identifier>
-      <wps:Data>
-        <wps:LiteralData>7</wps:LiteralData>
+      <wps:Data dataType="xs:integer">
+        <wps:LiteralData>11</wps:LiteralData>
       </wps:Data>
     </wps:Input>
   </wps:DataInputs>
   
   <wps:ResponseForm>
     <wps:ResponseDocument>
-      <wps:Output mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd">
+      <wps:Output mimeType="application/x-uncertml+xml" schema="http://uncertml.org/uncertml.xsd">
         <ows:Identifier>realisations</ows:Identifier>
       </wps:Output>
     </wps:ResponseDocument>
