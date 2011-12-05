@@ -9,7 +9,7 @@
     </wps:Input>
     <wps:Input>
       <ows:Identifier>statistics</ows:Identifier>
-      <wps:Data>
+      <wps:Data dataType="xs:string">
         <wps:LiteralData>http://www.uncertml.org/statistics/mean</wps:LiteralData>
       </wps:Data>
     </wps:Input>
