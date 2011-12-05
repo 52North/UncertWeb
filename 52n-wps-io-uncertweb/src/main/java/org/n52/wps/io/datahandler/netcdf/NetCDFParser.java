@@ -1,13 +1,14 @@
 package org.n52.wps.io.datahandler.netcdf;
 
 import static org.n52.wps.io.data.UncertWebDataConstants.ENCODING_BINARY;
+import static org.n52.wps.io.data.UncertWebDataConstants.ENCODING_UTF_8;
 import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_NETCDF;
 import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_NETCDFX;
-import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_NETCDF_U;
 import static org.uncertweb.utils.UwCollectionUtils.set;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.n52.wps.io.data.IData;
@@ -30,8 +31,8 @@ public class NetCDFParser extends AbstractUwParser {
 	
 	public NetCDFParser() {
 		super(
-			set(SCHEMA_NETCDF_U), 
-			set(ENCODING_BINARY),
+			new HashSet<String>(), 
+			set(ENCODING_BINARY,ENCODING_UTF_8),
 			set(MIME_TYPE_NETCDFX, MIME_TYPE_NETCDF), 
 			UwCollectionUtils.<Class<?>>set(NetCDFBinding.class)
 		);
