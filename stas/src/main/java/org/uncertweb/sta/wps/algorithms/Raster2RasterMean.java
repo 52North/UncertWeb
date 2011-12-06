@@ -237,7 +237,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 				c.tryVoidEval("newPixels <- as(newSpatialGrid,\"SpatialPixels\")");
 			}
 			
-			if (!Double.isNaN(xoffset)&&!Double.isNaN(yoffset)){
+			else if (!Double.isNaN(xoffset)&&!Double.isNaN(yoffset)){
 				c.tryVoidEval("newCellsize <- spUNetCDF@grid@cellsize");
 				c.tryVoidEval("newCellsize[[1]] <- "+xoffset);
 				c.tryVoidEval("newCellsize[[2]] <- "+yoffset);
@@ -248,7 +248,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 				c.tryVoidEval("newPixels <- as(newGrid,\"SpatialPixels\")");
 			}
 			
-			else if (scale!=Double.NaN){
+			else if (!Double.isNaN(scale)){
 				c.tryVoidEval("scale <- "+scale);
 				c.tryVoidEval("newCellsize <- scale*spUNetCDF@grid@cellsize");
 				c.tryVoidEval("newCellcentre.offset <- spUNetCDF@bbox[,1]+newCellsize/2");

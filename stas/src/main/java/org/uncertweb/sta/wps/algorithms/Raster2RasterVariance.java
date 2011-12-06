@@ -124,6 +124,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 		result.add(TARGETGRID);
 		result.add(XOFFSET);
 		result.add(YOFFSET);
+		result.add(SCALEFACTOR);
 		return result;
 	}
 
@@ -236,7 +237,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 				c.tryVoidEval("newPixels <- as(newSpatialGrid,\"SpatialPixels\")");
 			}
 			
-			if (xoffset!=Double.NaN&&yoffset!=Double.NaN){
+			else if (!Double.isNaN(xoffset)&&!Double.isNaN(yoffset)){
 				c.tryVoidEval("newCellsize <- spUNetCDF@grid@cellsize");
 				c.tryVoidEval("newCellsize[[1]] <- "+xoffset);
 				c.tryVoidEval("newCellsize[[2]] <- "+yoffset);
