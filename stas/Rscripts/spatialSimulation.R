@@ -1,10 +1,9 @@
 ## reading UNetCDF
-install.packages("U:/UncertWeb/UncertWeb_1.0.tar.gz",repos=NULL,type="source")
 library(UncertWeb)
 library(gstat)
 
 # change to your needs, preferably to a local copy.
-file <- "C:/Data/UncertWeb/biotemperature_normalDistr.nc"
+file <- "D:/uncertwebWorkspace/stasTrunk/data/biotemperature_normalDistr.nc"
 
 spUNetCDF <- readUNetCDF(file, variables=c("biotemperature_mean"))
 colnames(spUNetCDF@data) <- "biotemp" # 
@@ -37,4 +36,5 @@ gridded(simData) <- TRUE
 spplot(simData, col.regions=rev(heat.colors(100)))
 
 # won't work for ioncomplete grids by now, has to be chnaged!
-writeUNetCDF(newfile="~/spatial simulation.nc", simData)
+writeUNetCDF(newfile="G:/data/spatial simulation.nc", simData)
+str(writeUNetCDF)

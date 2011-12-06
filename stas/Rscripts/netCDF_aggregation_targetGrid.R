@@ -15,3 +15,5 @@ newPixels <- as(newSpatialGrid,"SpatialPixels")
 summary(newPixels)
 
 spAgg <- aggregate.Spatial(spUNetCDF,newPixels,mean)
+writeUNetCDF(newfile="~/newUNetCDF.nc", spAgg)
+writeUNetCDF

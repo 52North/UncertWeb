@@ -32,3 +32,8 @@ str(spAgg)
 spplot(spAgg)
 
 writeUetCDF(newfile="~/newUNetCDF.nc", spAgg)
+?update.packages
+?install.packages
+install.packages("~/UncertWeb_1.0.tar.gz",repos=NULL,type="source")
+?var
+
