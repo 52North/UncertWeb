@@ -66,7 +66,7 @@
 				<sf:sampledFeature xsi:nil="true"/>
 				<sams:shape>
 					<gml:Point gml:id="UOMlocation">
-						<gml:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">55.55 5.55</gml:pos>
+						<gml:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">52.00 7.00</gml:pos>
 					</gml:Point>
 				</sams:shape>
 			</sams:SF_SpatialSamplingFeature>
