@@ -39,7 +39,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				<ComplexData>
 					<Default>
 						<Format>
-							<MimeType>text/xml</MimeType>
+							<MimeType>application/x-om-u+xml</MimeType>
 							<Schema>
 								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
 							</Schema>
@@ -47,7 +47,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					</Default>
 					<Supported>
 						<Format>
-							<MimeType>text/xml</MimeType>
+							<MimeType>application/x-om-u+xml</MimeType>
 							<Schema>
 								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
 							</Schema>
@@ -56,13 +56,13 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				</ComplexData>
 			</Input>
 			<Input minOccurs="0" maxOccurs="1">
-				<ows:Identifier>meteorology</ows:Identifier>
+				<ows:Identifier>wind-speed</ows:Identifier>
 				<ows:Title>particle value</ows:Title>
 				<ows:Abstract>particle value</ows:Abstract>
 				<ComplexData>
 					<Default>
 						<Format>
-							<MimeType>text/xml</MimeType>
+							<MimeType>application/x-om-u+xml</MimeType>
 							<Schema>
 								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
 							</Schema>
@@ -70,7 +70,30 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					</Default>
 					<Supported>
 						<Format>
-							<MimeType>text/xml</MimeType>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Schema>
+								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+							</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>wind-direction</ows:Identifier>
+				<ows:Title>particle value</ows:Title>
+				<ows:Abstract>particle value</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Schema>
+								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
 							<Schema>
 								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
 							</Schema>
@@ -126,7 +149,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 							<MimeType>application/x-zipped-shp</MimeType>
 						</Format>
 						<Format>
-							<MimeType>text/xml</MimeType>
+							<MimeType>application/x-om-u+xml</MimeType>
 							<Schema>
 								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
 							</Schema>
