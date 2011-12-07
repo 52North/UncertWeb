@@ -32,10 +32,10 @@ import org.joda.time.DateTime;
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.OMData;
-import org.n52.wps.io.data.UncertWebIOData;
+
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
+import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
@@ -77,7 +77,9 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private static Logger LOGGER = Logger.getLogger(Austal2000Algorithm.class);
 //	private final String inputIDXQ = "XQ";
 //	private final String inputIDYQ = "YQ";
-	private final String inputIDMeteorology = "meteorology";
+	//private final String inputIDMeteorology = "meteorology";
+	private final String inputIDWindSpeed = "wind-speed";
+	private final String inputIDWindDirection = "wind-direction";
 	private final String inputIDStreetEmissions = "street-emissions";
 	private final String inputIDReceptorPoints = "receptor-points";
 	private final String inputIDStartTime = "start-time";
@@ -118,8 +120,10 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	public Class<?> getInputDataType(String id) {
 		if(id.equals(inputIDStreetEmissions)){
 			return UncertWebIODataBinding.class;
-		}else if(id.equals(inputIDMeteorology)){
-			return UncertWebIODataBinding.class;		}
+		}else if(id.equals(inputIDWindDirection)){
+			return UncertWebIODataBinding.class;}
+		else if(id.equals(inputIDWindSpeed)){
+			return UncertWebIODataBinding.class;}
 		else if(id.equals(inputIDStartTime)){
 			return LiteralDateTimeBinding.class;
 		}else if(id.equals(inputIDEndTime)){
@@ -161,59 +165,63 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		List<IData> streetEmissionDataList = inputData.get(inputIDStreetEmissions);
 		
-
-
-		
 		if(!(streetEmissionDataList == null) && streetEmissionDataList.size() != 0){
 
 			IData streetEmissionData = streetEmissionDataList.get(0);
 			
-			if(streetEmissionData instanceof UncertWebIODataBinding){
-				
-				//Casting the payload to UncertWebIOData, the wrapper for the data supported in the API
-				UncertWebIOData uwIOInput = (UncertWebIOData) streetEmissionData.getPayload();
-				
-				if (uwIOInput.getData() instanceof OMData){
-					   //input is O&M UncertWeb profile and can be processed now
-					OMData theData = (OMData)uwIOInput.getData();
-					
-//					OMData theData = (OMData) ((OMDataBinding)streetEmissionData).getPayload();
+			if(streetEmissionData instanceof OMBinding){
 
-					try {
-						handleObservationCollection(newEmissionSources, newEmisTS, theData.getObservationCollection());
-					} catch (Exception e) {
-						LOGGER.debug(e);
-						e.printStackTrace();
-					}
-				}			
-			}			
-		}
-		
-		List<IData> meteorologyDataList = inputData.get(inputIDMeteorology);
-		
-		if(!(meteorologyDataList == null) && meteorologyDataList.size() != 0){
+				//input is O&M UncertWeb profile and can be processed now
+				IObservationCollection obsCol = ((OMBinding)streetEmissionData).getPayload();
 
-			IData meteorologyData = meteorologyDataList.get(0);
-			
-			if(meteorologyData instanceof UncertWebIODataBinding){
-				
-				//Casting the payload to UncertWebIOData, the wrapper for the data supported in the API
-				UncertWebIOData uwIOInput = (UncertWebIOData) meteorologyData.getPayload();
-				
-				if (uwIOInput.getData() instanceof OMData){
-					   //input is O&M UncertWeb profile and can be processed now
-					OMData theData = (OMData)uwIOInput.getData();
-				
-//				OMData theData = (OMData) ((OMDataBinding)meteorologyData).getPayload();
-				
 				try {
-					handleMeteorology(newMetList, theData.getObservationCollection());
+					handleObservationCollection(newEmissionSources, newEmisTS, obsCol);
+				} catch (Exception e) {
+					LOGGER.debug(e);
+					e.printStackTrace();
+				}
+			}			
+		}					
+		
+		
+		// Handle meteorology
+		
+		//List<IData> meteorologyDataList = inputData.get(inputIDMeteorology);
+		List<IData> windspeedDataList = inputData.get(inputIDWindSpeed);					
+		if(!(windspeedDataList == null) && windspeedDataList.size() != 0 ){
+
+			IData windspeedData = windspeedDataList.get(0);
+			
+			if(windspeedData instanceof OMBinding){
+				
+				IObservationCollection obsCol = ((OMBinding)windspeedData).getPayload();
+	
+				try {
+					handleMeteorology(newMetList, obsCol);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}		
-				}
-			}			
-		}
+			}
+		}			
+		
+		List<IData> winddirectionDataList = inputData.get(inputIDWindDirection);
+		if(!(winddirectionDataList == null) && winddirectionDataList.size() != 0 ){
+
+			IData winddirectionData = winddirectionDataList.get(0);
+			
+			if(winddirectionData instanceof OMBinding){
+				
+				IObservationCollection obsCol = ((OMBinding)winddirectionData).getPayload();
+				
+				try {
+					handleMeteorology(newMetList, obsCol);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}		
+			}
+		}			
+
+		
 		
 		List<IData> receptorPointsDataList = inputData.get(inputIDReceptorPoints);
 		
@@ -344,11 +352,12 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 			IObservationCollection mcoll = createResultCollection();
 			
-			OMData omd = new OMData(mcoll, "application/x-om-u");
+			OMBinding omd = new OMBinding(mcoll);
 			
-			UncertWebIOData outputUWData = new UncertWebIOData(omd);
+			//UncertWebIOData outputUWData = new UncertWebIOData(omd);
 			
-			result.put(outputIDResult, new UncertWebIODataBinding(outputUWData));
+			//result.put(outputIDResult, new UncertWebIODataBinding(outputUWData));
+			result.put(outputIDResult, omd);
 			
 			return result;
 		} catch (Exception e) {
@@ -361,7 +370,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		return result;
 	}	
-	
+
 	private void readFiles(String austalFileName, String zeitreiheFileName){
 //		// read austal2000.txt
 //		File austalFile = new File(FILE_PATH+"//"+ austalFileName);
