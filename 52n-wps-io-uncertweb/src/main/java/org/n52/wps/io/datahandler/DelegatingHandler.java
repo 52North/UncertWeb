@@ -1,10 +1,9 @@
 package org.n52.wps.io.datahandler;
 
-import org.uncertweb.utils.UwCollectionUtils;
 import java.util.Set;
 
 import org.n52.wps.io.IOHandler;
-import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
+import org.uncertweb.utils.UwCollectionUtils;
 
 public abstract class DelegatingHandler implements IOHandler {
 
