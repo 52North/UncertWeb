@@ -37,6 +37,144 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class UwCollectionUtils extends UwUtils {
 	
+	public static <T extends Number> double[] toDoubleArray(T[] l) {
+		if (l == null) { 
+			return null;
+		}
+		double[] a = new double[l.length];
+		for (int i = 0; i < l.length; i++) {
+			a[i] = l[i].doubleValue();
+		}
+		return a;
+	}
+	
+	public static double[] toDoubleArray(Collection<? extends Number> l) {
+		if (l == null) {
+			return null;
+		}
+		double[] a = new double[l.size()];
+		int i = 0;
+		for (Number n : l) {
+			a[i++] = n.doubleValue();
+		}
+		return a;
+	}
+	
+	public static <T extends Number> int[] toIntArray(T[] l) {
+		if (l == null) { 
+			return null;
+		}
+		int[] a = new int[l.length];
+		for (int i = 0; i < l.length; i++) {
+			a[i] = l[i].intValue();
+		}
+		return a;
+	}
+	
+	public static int[] toIntArray(Collection<? extends Number> l) {
+		if (l == null) {
+			return null;
+		}
+		int[] a = new int[l.size()];
+		int i = 0;
+		for (Number n : l) {
+			a[i++] = n.intValue();
+		}
+		return a;
+	}
+	
+	public static <T extends Number> long[] toLongArray(T[] l) {
+		if (l == null) { 
+			return null;
+		}
+		long[] a = new long[l.length];
+		for (int i = 0; i < l.length; i++) {
+			a[i] = l[i].longValue();
+		}
+		return a;
+	}
+	
+	public static long[] toLongArray(Collection<? extends Number> l) {
+		if (l == null) {
+			return null;
+		}
+		long[] a = new long[l.size()];
+		int i = 0;
+		for (Number n : l) {
+			a[i++] = n.longValue();
+		}
+		return a;
+	}
+	
+	public static <T extends Number> short[] toShortArray(T[] l) {
+		if (l == null) { 
+			return null;
+		}
+		short[] a = new short[l.length];
+		for (int i = 0; i < l.length; i++) {
+			a[i] = l[i].shortValue();
+		}
+		return a;
+	}
+	
+	public static short[] toShortArray(Collection<? extends Number> l) {
+		if (l == null) {
+			return null;
+		}
+		short[] a = new short[l.size()];
+		int i = 0;
+		for (Number n : l) {
+			a[i++] = n.shortValue();
+		}
+		return a;
+	}
+	
+	public static <T extends Number> byte[] toByteArray(T[] l) {
+		if (l == null) { 
+			return null;
+		}
+		byte[] a = new byte[l.length];
+		for (int i = 0; i < l.length; i++) {
+			a[i] = l[i].byteValue();
+		}
+		return a;
+	}
+	
+	public static byte[] toByteArray(Collection<? extends Number> l) {
+		if (l == null) {
+			return null;
+		}
+		byte[] a = new byte[l.size()];
+		int i = 0;
+		for (Number n : l) {
+			a[i++] = n.byteValue();
+		}
+		return a;
+	}
+	
+	public static <T extends Number> float[] toFloatArray(T[] l) {
+		if (l == null) { 
+			return null;
+		}
+		float[] a = new float[l.length];
+		for (int i = 0; i < l.length; i++) {
+			a[i] = l[i].floatValue();
+		}
+		return a;
+	}
+	
+	public static float[] toFloatArray(Collection<? extends Number> l) {
+		if (l == null) {
+			return null;
+		}
+		float[] a = new float[l.size()];
+		int i = 0;
+		for (Number n : l) {
+			a[i++] = n.byteValue();
+		}
+		return a;
+	}
+	
 	@SuppressWarnings("serial")
 	public static <T> Set<T> set(final T t) {
 		return new HashSet<T>(1) {{ add(t); }};
