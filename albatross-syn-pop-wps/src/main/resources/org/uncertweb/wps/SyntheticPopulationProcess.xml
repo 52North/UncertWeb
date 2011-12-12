@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:ProcessDescriptions xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="WPS" version="1.0.0" xml:lang="en-US">
+	<ProcessDescription wps:processVersion="2" storeSupported="true" statusSupported="false">
+		<ows:Identifier>org.uncertweb.wps.SyntheticPopulationProcess</ows:Identifier>
+		<ows:Title>GeneratePopulation</ows:Title>
+		<ows:Abstract>
+			Uses a part of the Albatross Model to compute a synthetic population
+		</ows:Abstract>
+		<ows:Metadata xlink:title="model"/>
+		<DataInputs>
+		<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>genpop-households</ows:Identifier>
+				<ows:Title>Number of households created by Genpop and stored in “test.obs”</ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"></ows:DataType>
+					<ows:AllowedValues>
+						<ows:Value></ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>rwdata-households</ows:Identifier>
+				<ows:Title>Number of household activity schedules sets created by Rwdata and stored in “test.prd”</ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"></ows:DataType>
+					<ows:AllowedValues>
+						<ows:Value></ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>postcode-areas</ows:Identifier>
+				<ows:Title>Number of postcode areas (PC4)</ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"></ows:DataType>
+					<ows:AllowedValues>
+						<ows:Value></ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>zones</ows:Identifier>
+				<ows:Title>Number of zones (larger areas)</ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"></ows:DataType>
+					<ows:AllowedValues>
+						<ows:Value></ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>municipalities</ows:Identifier>
+				<ows:Title>Number of municipalities</ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"></ows:DataType>
+					<ows:AllowedValues>
+						<ows:Value></ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+		</DataInputs>
+		<ProcessOutputs>
+			<Output>
+				<ows:Identifier>project-file</ows:Identifier>
+				<ows:Title>project file</ows:Title>
+				<ows:Abstract>the path to the generated project file</ows:Abstract>
+				<LiteralOutput>	
+					<ows:DataType ows:reference="xs:string"></ows:DataType>
+				</LiteralOutput>
+			</Output>
+			<Output>
+				<ows:Identifier>export-file</ows:Identifier>
+				<ows:Title>export file</ows:Title>
+				<ows:Abstract>the path to the generated export file</ows:Abstract>
+				<LiteralOutput>	
+					<ows:DataType ows:reference="xs:string"></ows:DataType>
+				</LiteralOutput>
+			</Output>
+		</ProcessOutputs>
+	</ProcessDescription>
+</wps:ProcessDescriptions>
