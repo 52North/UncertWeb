@@ -629,7 +629,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					/*
 					 * create EmissionSource
 					 */
-					EmissionSource tmpEMS = lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[1].x, coords[1].y);
+					EmissionSource tmpEMS = lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[coords.length-1].x, coords[coords.length-1].y);
 					tmpEMS.setDynamicSourceID(counter);
 					newEmissionSources.add(tmpEMS);
 					
