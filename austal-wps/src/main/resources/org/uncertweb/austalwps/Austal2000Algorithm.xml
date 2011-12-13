@@ -17,6 +17,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<Default>
 						<Format>
 							<MimeType>text/xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
 								http://schemas.opengis.net/gml/2.1.2/feature.xsd
 							</Schema>
@@ -25,6 +26,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<Supported>
 						<Format>
 							<MimeType>text/xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
 								http://schemas.opengis.net/gml/3.2.1/base/feature.xsd
 							</Schema>
@@ -40,16 +42,18 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<Default>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+								http://schemas.opengis.net/om/2.0/observation.xsd
 							</Schema>
 						</Format>
 					</Default>
 					<Supported>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+								http://schemas.opengis.net/om/2.0/observation.xsd
 							</Schema>
 						</Format>
 					</Supported>
@@ -63,16 +67,18 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<Default>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+								http://schemas.opengis.net/om/2.0/observation.xsd
 							</Schema>
 						</Format>
 					</Default>
 					<Supported>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+								http://schemas.opengis.net/om/2.0/observation.xsd
 							</Schema>
 						</Format>
 					</Supported>
@@ -86,16 +92,18 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<Default>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+								http://schemas.opengis.net/om/2.0/observation.xsd
 							</Schema>
 						</Format>
 					</Default>
 					<Supported>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+								http://schemas.opengis.net/om/2.0/observation.xsd
 							</Schema>
 						</Format>
 					</Supported>
@@ -133,6 +141,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<Default>
 						<Format>
 							<MimeType>text/XML</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
 								http://schemas.opengis.net/gml/2.1.2/feature.xsd
 							</Schema>
@@ -141,6 +150,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<Supported>
 						<Format>
 							<MimeType>text/XML</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
 								http://schemas.opengis.net/gml/3.2.1/base/feature.xsd
 							</Schema>
@@ -150,8 +160,9 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 						</Format>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+								http://schemas.opengis.net/om/2.0/observation.xsd
 							</Schema>
 						</Format>
 					</Supported>

@@ -13,7 +13,7 @@
 	
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-		<wps.version>2.0-RC7</wps.version>
+		<wps.version>2.0-RC8-SNAPSHOT</wps.version>
 	</properties>
 
 	<dependencies>
@@ -60,7 +60,7 @@
     	<dependency>
        		<groupId>org.uncertweb</groupId>
        		<artifactId>52n-wps-io-uncertweb</artifactId>
-   			<version>0.0.2-SNAPSHOT</version>
+   			<version>0.0.3-SNAPSHOT</version>
    		</dependency>
 
 		<!-- WPS dependencies -->

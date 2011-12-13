@@ -49,9 +49,11 @@ public class StreamGobbler extends Thread{
                 if (pw != null)
                     pw.println(line);
                 if(subject != null){
-                	subject.update(line);
+                	if(line.contains("Fertig berechnet")||line.contains("Progress")){
+                		subject.update(line);
+                	}
                 }
-                LOGGER.debug(type + ">" + line);    
+                System.out.println(type + ">" + line);    
             }
             if (pw != null){
                 pw.flush();

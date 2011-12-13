@@ -3,15 +3,15 @@
   <wps:DataInputs>
     <wps:Input>
       <ows:Identifier>street-emissions</ows:Identifier>
-      <wps:Reference xlink:href="http://localhost:8080/austalWPS/res/streets1.xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd" encoding="UTF-8" mimeType="application/x-om-u"/>
+      <wps:Reference xlink:href="http://localhost:8080/austalWPS/res/Streets1.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
     </wps:Input>
     <wps:Input>
       <ows:Identifier>wind-speed</ows:Identifier>
-      <wps:Reference xlink:href="http://localhost:8080/austalWPS/res/windspeed1.xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd" encoding="UTF-8" mimeType="application/x-om-u"/>
+      <wps:Reference xlink:href="http://localhost:8080/austalWPS/res/windspeed1.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
     </wps:Input>
     <wps:Input>
       <ows:Identifier>wind-direction</ows:Identifier>
-      <wps:Reference xlink:href="http://localhost:8080/austalWPS/res/winddirection1.xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd" encoding="UTF-8" mimeType="application/x-om-u"/>
+      <wps:Reference xlink:href="http://localhost:8080/austalWPS/res/winddirection1.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
     </wps:Input>
     <!--<wps:Input>
       <ows:Identifier xmlns:ns1="http://www.opengis.net/ows/1.1">receptor-points</ows:Identifier>
@@ -46,7 +46,7 @@
   </wps:DataInputs>
   <wps:ResponseForm>
     <wps:ResponseDocument>
-      <wps:Output mimeType="application/x-om-u" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd">
+      <wps:Output mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd">
         <ows:Identifier>result</ows:Identifier>
       </wps:Output>
     </wps:ResponseDocument>

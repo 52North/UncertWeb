@@ -91,7 +91,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private final String logFileMarkerBeginningGerman = "Datei";
 	private final String logFileMarkerEndGerman = "ausgeschrieben.";
 	//private final String tmpDir = System.getenv("TMP");
-	private final String tmpDir = "D:/PhD/WP1.1_AirQualityModel/WebServiceChain/AustalWPS/AustalRun";
+	private String tmpDir = "D:/PhD/WP1.1_AirQualityModel/WebServiceChain/AustalWPS/AustalRun";
 	private String workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
 	private String austalHome = "";
 	private List<String> errors = new ArrayList<String>();
@@ -99,8 +99,22 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	// general Austal objects
 	private Austal2000Txt austal;
 	private Zeitreihe ts;
+	public static final String OS_Name = System.getProperty("os.name");
+	private String zeitreiheFileNameEnglish = "series.dmna";
+	private String zeitreiheFileName = "zeitreihe.dmna";
+	private 	
+	Map<DateTime, AbstractObservation> timeObservationMap;
 	
 	public Austal2000Algorithm(){	
+		
+		timeObservationMap = new HashMap<DateTime, AbstractObservation>();
+		
+		if(OS_Name.contains("Windows")){
+			tmpDir = System.getenv("TMP");
+		}else{
+			tmpDir = System.getenv("CATALINA_TMPDIR");
+		}
+		workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
 		
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
 		for(Property property : propertyArray){
@@ -243,13 +257,27 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		
 		// 4. write files
-		writeFiles("austal2000.txt", "zeitreihe.dmna");
+		writeFiles("austal2000.txt");
 		
 		//2. execute austal2000
 		
 		try {
 			//TODO: modify for linux use
 			String command = austalHome + fileSeparator + "austal2000.exe " + workDir.getAbsolutePath();
+			
+//			String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+//			int webinfIndex = path.indexOf("WEB-INF");
+//			path = path.substring(0, webinfIndex);
+//			
+//			if (!OS_Name.startsWith("Windows")) {
+//				path = path + "/res/Austal_bin/Linux";
+//				command = path + fileSeparator + "austal2000 "
+//						+ workDir.getAbsolutePath();
+//			} else {
+//				path = path + "/res/Austal_bin/Windows";
+//				command = path + fileSeparator + "austal2000.exe "
+//						+ workDir.getAbsolutePath();
+//			}
 			
 			Runtime rt = Runtime.getRuntime();
 			
@@ -416,12 +444,14 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 	}
 	
-	private void writeFiles(String austalFileName, String zeitreiheFileName){
+	private void writeFiles(String austalFileName){
 		// test writer
 		File new_austalFile = new File(workDirPath+"/"+austalFileName);
 		austal.writeFile(new_austalFile);
 		File new_tsFile = new File(workDirPath+"/"+zeitreiheFileName);
+		File new_tsFile2 = new File(workDirPath+"/"+zeitreiheFileNameEnglish);
 		ts.writeFile(new_tsFile);
+		ts.writeFile(new_tsFile2);
 	}
 	
 	
@@ -507,22 +537,26 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	}
 	
 	private void handleMeteorology(MeteorologyTimeSeries newMetList, IObservationCollection coll) throws Exception{
-	
-		Map<TimeObject, AbstractObservation> timeObservationMap = new HashMap<TimeObject, AbstractObservation>();
+
 				
 		/*
 		 * the O&M is structured in that way that at first the wind direction values are listed
 		 * and second the wind speed values. each timestamp has a wind direction value and on wind speed value 
 		 */
 		for (AbstractObservation abstractObservation : coll.getObservations()) {
-			if(!timeObservationMap.containsKey(abstractObservation.getPhenomenonTime())){
-				timeObservationMap.put(abstractObservation.getPhenomenonTime(), abstractObservation);
+			
+//			LOGGER.debug(abstractObservation.getPhenomenonTime().getDateTime());
+//			LOGGER.debug(timeObservationMap.containsKey(abstractObservation.getPhenomenonTime().getDateTime()));
+			LOGGER.debug(timeObservationMap.keySet().size());
+			
+			if(!timeObservationMap.containsKey(abstractObservation.getPhenomenonTime().getDateTime())){
+				timeObservationMap.put(abstractObservation.getPhenomenonTime().getDateTime(), abstractObservation);
 			}else{
 				/*
 				 * if the map already contains a observation we should now have both windspeed and winddirection
 				 * either in the Observation already in the map or in the current abstractObservation
 				 */
-				AbstractObservation obs1 = timeObservationMap.get(abstractObservation.getPhenomenonTime());
+				AbstractObservation obs1 = timeObservationMap.get(abstractObservation.getPhenomenonTime().getDateTime());
 				
 				/*
 				 * check for wind direction value
