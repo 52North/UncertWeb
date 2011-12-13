@@ -681,13 +681,13 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		double cq=1;					// extension in z direction
 		double hq=0.2;					// height
 		
-		// find point to the right which will stay fixed
+		// find point to the LEFT which will stay fixed
 		if(x1==x2){ // easiest case
 			// convert to local coordinates
 			xq = x1 - gx;
 			yq = y1 - gy;		
 			wq = 0;					// angle						
-		} else if(x1>x2){	
+		} else if(x1<x2){	
 			// convert to local coordinates
 			xq = x1 - gx;
 			yq = y1 - gy;
@@ -812,7 +812,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		AustalOutputReader austal = new AustalOutputReader();
 		
-		ArrayList<Point[]> points = austal.createPoints(workDirPath, false);
+		ArrayList<Point[]> points = austal.readReceptorPoints(workDirPath, false);
 		
 		URI procedure = new URI("http://www.uncertweb.org/models/austal2000");
 		URI observedProperty = new URI("http://www.uncertweb.org/phenomenon/pm10");
