@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,18 +22,36 @@ import org.geotools.feature.FeatureIterator;
 import org.joda.time.DateTime;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.opengis.feature.simple.SimpleFeature;
+import org.uncertml.sample.RandomSample;
+import org.uncertml.sample.Realisation;
+import org.uncertml.sample.UnknownSample;
+import org.uncertweb.api.netcdf.NetcdfUWFile;
+import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
+import org.uncertweb.api.netcdf.exception.NetcdfUWException;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.result.IResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
+import org.uncertweb.austalwps.util.AustalOutputReader;
 import org.uncertweb.austalwps.util.austal.files.Austal2000Txt;
 import org.uncertweb.austalwps.util.austal.files.Zeitreihe;
 import org.uncertweb.austalwps.util.austal.geometry.EmissionSource;
 import org.uncertweb.austalwps.util.austal.geometry.ReceptorPoint;
+import org.uncertweb.austalwps.util.austal.geometry.StudyArea;
 import org.uncertweb.austalwps.util.austal.timeseries.EmissionTimeSeries;
 import org.uncertweb.austalwps.util.austal.timeseries.MeteorologyTimeSeries;
+
+import ucar.ma2.Array;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.Variable;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -45,7 +64,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 
 public class AustalSetupControl {
 
-	private static final String FILE_PATH="C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\";
+	private static final String FILE_PATH="C:\\UncertWeb\\Austal\\resources\\";
 	
 	// general Austal objects
 	private Austal2000Txt austal;
@@ -63,147 +82,353 @@ public class AustalSetupControl {
 	private final CharSequence gxMarker = "gx";
 	private final CharSequence gyMarker = "gy";
 	
+	// NetCDF variables	
+	private final static String TIME_VAR_NAME = "time";
+	private final static String MAIN_VAR_NAME = "PM10_Austal2000";
+	private final static String MAIN_VAR_LONG_NAME = "Particulate matter smaller 10 um diameter";
+	private final static String X_VAR_NAME = "x";
+	private final static String Y_VAR_NAME = "y";
+	private final static String REALISATION_VAR_NAME = "realisations";
+	private final static String UNITS_ATTR_NAME = "units";
+	private final static String MISSING_VALUE_ATTR_NAME = "missing_value";
+	private final static String LONG_NAME_ATTR_NAME = "long_name";
+	
+	private final static String MAIN_VAR_UNITS = "ug m-3";
+	private final static String X_VAR_UNITS = "m";
+	private final static String Y_VAR_UNITS = "m";
+	private final static String REALISATION_VAR_UNITS = "count";
+	
+	private final static String COORDINATE_SYSTEM = "ProjectionCoordinateSystem";
+	private final static String COORD_AXIS_ATTR_NAME = "_CoordinateAxisType";
+	private final static String X_COORD_AXIS = "GeoX";
+	private final static String Y_COORD_AXIS = "GeoY";
+	
+	private final int rn = 1;
+	
+	
 	public static void main(String[] args) {
 		try {
 			AustalSetupControl control = new AustalSetupControl();
+			// read files to create datamodel
+//			this.readFiles();
+				// 1. read files to create datamodel
+					control.readFiles("austal2000_old.txt", "zeitreihe_old.dmna");
+					
+				// 2. create new timeseries from O&M documents
+				// 2a. Emission Sources	
+					// make an ArrayList with emission sources
+//					ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
+			
+//					// Austal coordinates for line sources
+//					EmissionSource line = lineGK3ToLocalCoords(3405540, 5758268, 3401540, 5758268, 3400540, 5759268);
+//					line.setDynamicSourceID(1);	// IMPORTANT: id needs to start with 1!		
+//					
+//					// Austal coordinates for polygon sources		
+//					EmissionSource polygon = cellPolygonGK3ToLocalCoords(3405540, 5758268, 3401540, 5758268, 3400540, 5759268); // coordinates are from lower left and upper right corner
+//					polygon.setDynamicSourceID(2);
+//						
+//					// add sources to sources list
+//					newEmissionSources.add(line);
+//					newEmissionSources.add(polygon);
+					
+				// 2b. Emission TimeSeries
+					// make an ArrayList with the respective timeseries per source
+					
+//					BufferedReader bread = new BufferedReader(
+//							new FileReader(
+//									new File(
+//											"C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\xml\\Streets1.xml")));
+//
+//					String xmlString = "";
+//
+//					String line = bread.readLine();
+//
+//					xmlString = xmlString.concat(line);
+//
+//					while ((line = bread.readLine()) != null) {
+//						xmlString = xmlString.concat(line);
+//					}
+//
+//					XBObservationParser parser = new XBObservationParser();
+//
+//					IObservationCollection coll = parser
+//							.parseObservationCollection(xmlString);
+//					
+//					
+//					ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
+//
+//					
+//					try {
+//						control.handleObservationCollection(newEmissionSources, newEmisTS, coll);
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//					
+//					// Add Emission TimeSeries per source
+//					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
+//					Date timeStamp = null;
+//					try {
+//						timeStamp = dateFormat.parse("2010-03-01.01:00:00");
+//					} catch (ParseException e) {
+//						e.printStackTrace();
+//					}
+					
+					
+					
+//					EmissionTimeSeries lineTS = new EmissionTimeSeries(line.getDynamicSourceID());	// assign id of respective source	
+//					lineTS.addEmissionValue(timeStamp, 0.5);	// make a loop to add all observations
+//					
+//					EmissionTimeSeries polygonTS = new EmissionTimeSeries(polygon.getDynamicSourceID());	// assign id of respective source
+//					polygonTS.addEmissionValue(timeStamp, 0.1);	// make a loop to add all observations
+//					
+//					// add final timeseries to timeseries list
+//					newEmisTS.add(lineTS);
+//					newEmisTS.add(polygonTS);
+					
+				// 2b. Meteorology TimeSeries
+//					MeteorologyTimeSeries newMetList = new MeteorologyTimeSeries();
+//					
+//					/*
+//					 * read meteo data
+//					 */
+//					bread = new BufferedReader(
+//							new FileReader(
+//									new File(
+//											"C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\xml\\Meteo1.xml")));
+//
+//					xmlString = "";
+//
+//					line = bread.readLine();
+//
+//					xmlString = xmlString.concat(line);
+//
+//					while ((line = bread.readLine()) != null) {
+//						xmlString = xmlString.concat(line);
+//					}
+//					coll = parser
+//							.parseObservationCollection(xmlString);				
+//					
+//					try {
+//						
+//						
+//						
+//						control.handleMeteorology(newMetList, coll);
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+					
+//					newMetList.addWindDirection(timeStamp, (double)220);
+//					newMetList.addWindSpeed(timeStamp, 2.5);
+//					
+//					
+//				// 3. substitute emissions and meteorology with new data
+//					control.substituteStreetEmissions(newEmissionSources, newEmisTS);
+//					control.substituteMeteoorology(newMetList);
+	//
+//					// if necessary, cut all timeperiods to new one
+//					//ts.setTimePeriod(startDate, endDate);
+//					
+//					// set or unset os parameter (will cause that the grid results are written for each hour)
+//					
+//					
+//				// 4. write files
+//					control.writeFiles("austal2000.txt", "zeitreihe.dmna");
+					
+				// 5. run Austal
+					
+					
+				// 6. read Austal results
+				// read hourly results
+				//String hourlyFolder = "D:/PhD/WP1.1_AirQualityModel/WebServiceChain/AustalWPS/AustalRun/hourly";				
+//				String hourlyFolder = "C:/UncertWeb/Austal/hourly";	
+//				AustalOutputReader outputReader = new AustalOutputReader();
+//				HashMap<Integer, ArrayList<Double>> valueMap = outputReader.readHourlyFiles(hourlyFolder, false);
+//					
+//				// write results to NetCDF file
+//				control.writeNetCDFfile("C:/UncertWeb/Austal/test.nc", valueMap);
+					
+				// Austal coordinates for line sources
+				int[] coords1 = {3410874, 5761616, 3410902, 5761614};
+				int[] coords2 = {3409650, 5766571, 3409735, 5766464};
+				EmissionSource line1 = control.lineGK3ToLocalCoords(control.austal.getStudyArea().getGx(), control.austal.getStudyArea().getGy(), coords1[0], coords1[1], coords1[2], coords1[3]);
+				line1.setDynamicSourceID(1);	// IMPORTANT: id needs to start with 1!		
+					
+				EmissionSource line2 = control.lineGK3ToLocalCoords(control.austal.getStudyArea().getGx(), control.austal.getStudyArea().getGy(), coords2[0], coords2[1], coords2[2], coords2[3]);
+				line2.setDynamicSourceID(2);	// IMPORTANT: id needs to start with 1!		
+					
+					
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+
+	
 	public AustalSetupControl() throws Exception{
-		// read files to create datamodel
-//		this.readFiles();
-			// 1. read files to create datamodel
-				this.readFiles("austal2000_template.txt", "zeitreihe_0810.dmna");
-				
-			// 2. create new timeseries from O&M documents
-			// 2a. Emission Sources	
-				// make an ArrayList with emission sources
-				ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
+	
+	}
 		
-//				// Austal coordinates for line sources
-//				EmissionSource line = lineGK3ToLocalCoords(3405540, 5758268, 3401540, 5758268, 3400540, 5759268);
-//				line.setDynamicSourceID(1);	// IMPORTANT: id needs to start with 1!		
-//				
-//				// Austal coordinates for polygon sources		
-//				EmissionSource polygon = cellPolygonGK3ToLocalCoords(3405540, 5758268, 3401540, 5758268, 3400540, 5759268); // coordinates are from lower left and upper right corner
-//				polygon.setDynamicSourceID(2);
-//					
-//				// add sources to sources list
-//				newEmissionSources.add(line);
-//				newEmissionSources.add(polygon);
-				
-			// 2b. Emission TimeSeries
-				// make an ArrayList with the respective timeseries per source
-				
-				BufferedReader bread = new BufferedReader(
-						new FileReader(
-								new File(
-										"C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\xml\\Streets1.xml")));
+	private NetcdfUWFile writeNetCDFfile(String filepath, HashMap<Integer, ArrayList<Double>> valueMap){		
+		// get geometry for coordinates from study area
+		int[] x = austal.getStudyArea().getXcoords();
+		int[] y = austal.getStudyArea().getYcoords();
+		ArrayInt xArray = new ArrayInt.D1(x.length);
+		ArrayInt yArray = new ArrayInt.D1(y.length);
+		
+		//TODO: Also add lat and lon variables?
+		//TODO: Where to define coordinate system?		
+		
+		// get dates for the time series results
+		// format: "hours since 2011-01-02 00:00:00 00:00"
+		Date minDate = ts.getMeteorologyTimeSeries().getMinDate();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");	
+		String TIME_VAR_UNITS = "hours since "+dateFormat.format(minDate)+ " 00:00";
+		int tn = valueMap.size();
+		ArrayInt tArray = new ArrayInt.D1(tn);
+		
+		// realisations
+		ArrayInt rArray = new ArrayInt.D1(rn);
+		
+		// fill arrays with values
+		int xi=0;
+		int yi=0;
+		int r=0;
+		int t=0;
+		int c=0;
+		
+		for (xi = 0; xi < x.length; xi++) {			
+			xArray.setInt(xi, x[xi]);
+		}
+		for (yi = 0; yi < y.length; yi++) {
+			yArray.setInt(yi, y[yi]);
+		}
+		for(t = 0; t < tn; t++){		
+			tArray.setInt(t, t+1);
+		}
 
-				String xmlString = "";
-
-				String line = bread.readLine();
-
-				xmlString = xmlString.concat(line);
-
-				while ((line = bread.readLine()) != null) {
-					xmlString = xmlString.concat(line);
-				}
-
-				XBObservationParser parser = new XBObservationParser();
-
-				IObservationCollection coll = parser
-						.parseObservationCollection(xmlString);
-				
-				
-				ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
-
-				
-				try {
-					handleObservationCollection(newEmissionSources, newEmisTS, coll);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				// Add Emission TimeSeries per source
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
-				Date timeStamp = null;
-				try {
-					timeStamp = dateFormat.parse("2010-03-01.01:00:00");
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-				
-				
-				
-//				EmissionTimeSeries lineTS = new EmissionTimeSeries(line.getDynamicSourceID());	// assign id of respective source	
-//				lineTS.addEmissionValue(timeStamp, 0.5);	// make a loop to add all observations
-//				
-//				EmissionTimeSeries polygonTS = new EmissionTimeSeries(polygon.getDynamicSourceID());	// assign id of respective source
-//				polygonTS.addEmissionValue(timeStamp, 0.1);	// make a loop to add all observations
-//				
-//				// add final timeseries to timeseries list
-//				newEmisTS.add(lineTS);
-//				newEmisTS.add(polygonTS);
-				
-			// 2b. Meteorology TimeSeries
-				MeteorologyTimeSeries newMetList = new MeteorologyTimeSeries();
-				
-				/*
-				 * read meteo data
-				 */
-				bread = new BufferedReader(
-						new FileReader(
-								new File(
-										"C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\xml\\Meteo1.xml")));
-
-				xmlString = "";
-
-				line = bread.readLine();
-
-				xmlString = xmlString.concat(line);
-
-				while ((line = bread.readLine()) != null) {
-					xmlString = xmlString.concat(line);
-				}
-				coll = parser
-						.parseObservationCollection(xmlString);				
-				
-				try {
-					
-					
-					
-					handleMeteorology(newMetList, coll);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-//				newMetList.addWindDirection(timeStamp, (double)220);
-//				newMetList.addWindSpeed(timeStamp, 2.5);
-//				
-//				
-//			// 3. substitute emissions and meteorology with new data
-				substituteStreetEmissions(newEmissionSources, newEmisTS);
-				substituteMeteoorology(newMetList);
-//
-//				// if necessary, cut all timeperiods to new one
-//				//ts.setTimePeriod(startDate, endDate);
-//				
-//				// set or unset os parameter (will cause that the grid results are written for each hour)
-//				
-//				
-//			// 4. write files
-				writeFiles("austal2000.txt", "zeitreihe.dmna");
-				
-			// 5. run Austal
-				
-				
-			// 6. read Austal results
-				
+		// put all result arrays into a new NetCDF file
+		// prepare new netCDF file for realisations
+		NetcdfFileWriteable resultFile = null;
+		NetcdfUWFileWriteable resultUWFile = null;
+		try {
+			resultFile = NetcdfUWFileWriteable.createNew(filepath, true);
+			resultUWFile = new NetcdfUWFileWriteable(resultFile);
+			
+			// define dimensions
+			Dimension xDim = new Dimension(X_VAR_NAME, x.length);
+			Dimension yDim = new Dimension(Y_VAR_NAME, y.length);
+			Dimension tDim = new Dimension(TIME_VAR_NAME, tn);
+			Dimension rDim = new Dimension(REALISATION_VAR_NAME, rn);
+			
+			if (!resultFile.isDefineMode()) {
+				resultFile.setRedefineMode(true);
 			}
+			
+			// A1) add dimensions to simple NetCDF file
+			resultFile.addDimension(null, xDim);
+			resultFile.addDimension(null, yDim);
+			resultFile.addDimension(null, tDim);
+		//	resultFile.addDimension(null, rDim);
+
+			// A2) add dimensions as variables
+			resultFile.addVariable(X_VAR_NAME, DataType.FLOAT,
+					new Dimension[] {xDim });
+			resultFile.addVariable(Y_VAR_NAME, DataType.FLOAT,
+					new Dimension[] {yDim });
+			resultFile.addVariable(TIME_VAR_NAME, DataType.FLOAT,
+					new Dimension[] {tDim });
+		//	resultFile.addVariable(REALISATION_VAR_NAME, DataType.FLOAT,
+		//			new Dimension[] {rDim });
+			
+			// B1) add dimension variable attributes
+			// a) units
+			resultFile.addVariableAttribute(X_VAR_NAME,
+					UNITS_ATTR_NAME, X_VAR_UNITS);
+			resultFile.addVariableAttribute(Y_VAR_NAME,
+					UNITS_ATTR_NAME, Y_VAR_UNITS);
+			resultFile.addVariableAttribute(TIME_VAR_NAME,
+					UNITS_ATTR_NAME, TIME_VAR_UNITS);
+		//	resultFile.addVariableAttribute(REALISATION_VAR_NAME,
+		//			UNITS_ATTR_NAME, REALISATION_VAR_UNITS);
+			
+			// b) coordinate types
+			resultFile.addVariableAttribute(X_VAR_NAME,
+					COORD_AXIS_ATTR_NAME, X_COORD_AXIS);
+			resultFile.addVariableAttribute(Y_VAR_NAME,
+					COORD_AXIS_ATTR_NAME, Y_COORD_AXIS);	
+			resultFile.setRedefineMode(false);			
+
+			// B2) write dimension arrays to file
+			resultFile.write(X_VAR_NAME, xArray);
+			resultFile.write(Y_VAR_NAME, yArray);
+			resultFile.write(TIME_VAR_NAME, tArray);
+		//	resultFile.write(REALISATION_VAR_NAME, rArray);
+			
+			// C1) additional information for NetCDF-U file
+			// a) Set dimensions for value variable			
+			ArrayList<Dimension> dims = new ArrayList<Dimension>(2);
+			dims.add(xDim);
+			dims.add(yDim);
+			dims.add(tDim);
+			//dims.add(rDim);
+			
+			// b) add data variable with dimensions and attributes 
+			//resultUWFile.getNetcdfFileWritable().setRedefineMode(true);
+			Variable dataVariable = resultUWFile.addSampleVariable(
+					MAIN_VAR_NAME, DataType.DOUBLE, dims,
+					UnknownSample.class, rn);
+			Attribute data_units = new Attribute(UNITS_ATTR_NAME, MAIN_VAR_UNITS);
+			Attribute data_missingValue = new Attribute(MISSING_VALUE_ATTR_NAME, -9999F);
+			Attribute data_longName = new Attribute(LONG_NAME_ATTR_NAME, MAIN_VAR_LONG_NAME);
+						
+			dataVariable.addAttribute(data_units);
+			dataVariable.addAttribute(data_missingValue);
+			dataVariable.addAttribute(data_longName);
+	
+			// data array for PM10 values
+			ArrayDouble dataArray = new ArrayDouble.D4(rDim.getLength(),
+					xDim.getLength(), yDim.getLength(), tDim.getLength());
+			
+			// c) add Austal values to data Array		
+			Index dataIndex = dataArray.getIndex();
+			
+			// loop through time steps
+			for(t = 0; t < tDim.getLength(); t++){
+				ArrayList<Double> currentVals = valueMap.get(t+1);
+				c=0;
+				
+				// loop through cells
+				for (yi = (yDim.getLength()-1); yi >=0; yi--) {
+					for (xi = 0; xi < xDim.getLength(); xi++) {					
+						Double v = currentVals.get(c);
+
+						// set data for each realisation
+						for (r = 0; r < rn; r++) {
+							dataIndex.set(r, xi, yi, t);
+							dataArray.set(dataIndex, v);
+						}
+						c++;
+					}
+					//c++;
+				}
+			}
+			
+			// C2) write data array to NetCDF-U file
+			resultUWFile.getNetcdfFileWritable().setRedefineMode(false);
+			resultUWFile.getNetcdfFileWritable().write(
+					MAIN_VAR_NAME, dataArray);
+			resultUWFile.getNetcdfFile().close();
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("y: "+yi+", x: "+xi+", t: "+t);
+		}
 		
+		return resultUWFile;
+	}
+	
 	
 	private void handleReceptorPoints(List<ReceptorPoint> pointList,
 			FeatureCollection<?, ?> featColl) {
@@ -482,13 +707,13 @@ public class AustalSetupControl {
 		double cq=1;					// extension in z direction
 		double hq=0.2;					// height
 		
-		// find point to the right which will stay fixed
+		// find point to the left which will stay fixed
 		if(x1==x2){ // easiest case
 			// convert to local coordinates
 			xq = x1 - gx;
 			yq = y1 - gy;		
 			wq = 0;					// angle						
-		} else if(x1>x2){	
+		} else if(x1<x2){	
 			// convert to local coordinates
 			xq = x1 - gx;
 			yq = y1 - gy;
