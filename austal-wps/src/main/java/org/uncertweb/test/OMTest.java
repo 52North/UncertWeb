@@ -36,7 +36,7 @@ public class OMTest {
 			
 			AustalOutputReader austal = new AustalOutputReader();
 			
-			ArrayList<Point[]> points = austal.createPoints("C:/UncertWeb/workspace/AustalWPS/src/test/resources", true);
+			ArrayList<Point[]> points = austal.readReceptorPoints("C:/UncertWeb/workspace/AustalWPS/src/test/resources", false);
 			
 			URI procedure = new URI("http://www.uncertweb.org/models/austal2000");
 			URI observedProperty = new URI("http://www.uncertweb.org/phenomenon/pm10");
