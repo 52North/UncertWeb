@@ -162,7 +162,7 @@ public class Zeitreihe implements Serializable{
 	}
 	
 	private void parseTimeStamps(String line) {
-		if (line.length() ==0) return;
+		if (line.length() ==0||line.equals(" ")) return;
 		
 		String lineNoDoubleSpaces = line;
 		//delete all double spaces

@@ -87,4 +87,22 @@ public class StudyArea {
 	public void setY0(int y0) {
 		this.y0 = y0;
 	}
+	
+	// get coordinate arrays
+	public int[] getXcoords(){
+		int[] xCoords = new int[nx];
+		for(int i=0; i<nx; i++){
+			xCoords[i] = x0+gx+dd*i;
+		}
+		return xCoords;
+	}
+	
+	public int[] getYcoords(){
+		int[] yCoords = new int[ny];
+		for(int i=0; i<ny; i++){
+			yCoords[i] = y0+gy+dd*i;
+		}
+		return yCoords;
+	}
+	
 }
