@@ -561,22 +561,33 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 				/*
 				 * check for wind direction value
 				 */				
-				Double windDirection = 0.0d;
+				Double obsWD = 0.0d;
 				if(obs1.getObservedProperty().getPath().contains("winddirection")){
-					windDirection = (Double)obs1.getResult().getValue();
+					obsWD = (Double)obs1.getResult().getValue();
 				}else if(abstractObservation.getObservedProperty().getPath().contains("winddirection")){
-					windDirection = (Double)abstractObservation.getResult().getValue();
+					obsWD= (Double)abstractObservation.getResult().getValue();
 				}
+				// correct for outlier samples
+				// TODO: This should be done during sampling instead!
+				while(obsWD<0)
+					obsWD = 360+obsWD;
+				while(obsWD>360)
+					obsWD = obsWD-360;
+				
 				/*
 				 * check for wind speed value
 				 */				
-				Double windSpeed = 0.0d;
+				Double obsWS = 0.0d;
 				if(obs1.getObservedProperty().getPath().contains("windspeed")){
-					windSpeed = (Double)obs1.getResult().getValue();
+					obsWS = (Double)obs1.getResult().getValue();
 				}else if(abstractObservation.getObservedProperty().getPath().contains("windspeed")){
-					windSpeed = (Double)abstractObservation.getResult().getValue();
+					obsWS = (Double)abstractObservation.getResult().getValue();
 				}
-				
+				// correct for outlier samples
+				// TODO: This should be done during sampling instead!
+				if(obsWD<0.1)
+					obsWD = 0.1;
+
 				DateTime dt = abstractObservation.getPhenomenonTime().getDateTime();				
 				/*
 				 * if exact date format needed
@@ -587,8 +598,8 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 //				} catch (ParseException e) {
 //					e.printStackTrace();
 //				}
-				newMetList.addWindDirection(dt.toDate(), windDirection);
-				newMetList.addWindSpeed(dt.toDate(), windSpeed);
+				newMetList.addWindDirection(dt.toDate(), obsWD);
+				newMetList.addWindSpeed(dt.toDate(), obsWS);
 				
 			}
 		}
@@ -685,6 +696,11 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			IResult result = abstractObservation.getResult();
 			
 			Object o = result.getValue();
+			Double obs = (Double) o;
+			// correct for negative values
+			// TODO: This should be done during sampling instead!
+			if(obs<0)
+				obs = 0d;
 			
 			/*
 			 * if exact date format needed
@@ -695,7 +711,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 //			} catch (ParseException e) {
 //				e.printStackTrace();
 //			}
-			lineTS.addEmissionValue(dt.toDate(), (Double)o);
+			lineTS.addEmissionValue(dt.toDate(), obs);
 
 		}
 		/*
