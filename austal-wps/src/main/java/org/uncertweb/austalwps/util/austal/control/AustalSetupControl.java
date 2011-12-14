@@ -88,17 +88,17 @@ public class AustalSetupControl {
 	private final static String MAIN_VAR_LONG_NAME = "Particulate matter smaller 10 um diameter";
 	private final static String X_VAR_NAME = "x";
 	private final static String Y_VAR_NAME = "y";
-	private final static String REALISATION_VAR_NAME = "realisations";
 	private final static String UNITS_ATTR_NAME = "units";
 	private final static String MISSING_VALUE_ATTR_NAME = "missing_value";
 	private final static String LONG_NAME_ATTR_NAME = "long_name";
+	private final static String GRID_MAPPING_VAR_NAME = "gauss_kruger_3";
+	private final static String GRID_MAPPING_ATTR_NAME = "grid_mapping";
+	
 	
 	private final static String MAIN_VAR_UNITS = "ug m-3";
 	private final static String X_VAR_UNITS = "m";
 	private final static String Y_VAR_UNITS = "m";
-	private final static String REALISATION_VAR_UNITS = "count";
 	
-	private final static String COORDINATE_SYSTEM = "ProjectionCoordinateSystem";
 	private final static String COORD_AXIS_ATTR_NAME = "_CoordinateAxisType";
 	private final static String X_COORD_AXIS = "GeoX";
 	private final static String Y_COORD_AXIS = "GeoY";
@@ -240,21 +240,21 @@ public class AustalSetupControl {
 				// 6. read Austal results
 				// read hourly results
 				//String hourlyFolder = "D:/PhD/WP1.1_AirQualityModel/WebServiceChain/AustalWPS/AustalRun/hourly";				
-//				String hourlyFolder = "C:/UncertWeb/Austal/hourly";	
-//				AustalOutputReader outputReader = new AustalOutputReader();
-//				HashMap<Integer, ArrayList<Double>> valueMap = outputReader.readHourlyFiles(hourlyFolder, false);
+				String hourlyFolder = "C:/UncertWeb/Austal/hourly";	
+				AustalOutputReader outputReader = new AustalOutputReader();
+				HashMap<Integer, ArrayList<Double>> valueMap = outputReader.readHourlyFiles(hourlyFolder, false);
 //					
 //				// write results to NetCDF file
-//				control.writeNetCDFfile("C:/UncertWeb/Austal/test.nc", valueMap);
+				control.writeNetCDFfile("C:/UncertWeb/Austal/test.nc", valueMap);
 					
 				// Austal coordinates for line sources
-				int[] coords1 = {3410874, 5761616, 3410902, 5761614};
-				int[] coords2 = {3409650, 5766571, 3409735, 5766464};
-				EmissionSource line1 = control.lineGK3ToLocalCoords(control.austal.getStudyArea().getGx(), control.austal.getStudyArea().getGy(), coords1[0], coords1[1], coords1[2], coords1[3]);
-				line1.setDynamicSourceID(1);	// IMPORTANT: id needs to start with 1!		
-					
-				EmissionSource line2 = control.lineGK3ToLocalCoords(control.austal.getStudyArea().getGx(), control.austal.getStudyArea().getGy(), coords2[0], coords2[1], coords2[2], coords2[3]);
-				line2.setDynamicSourceID(2);	// IMPORTANT: id needs to start with 1!		
+//				int[] coords1 = {3410874, 5761616, 3410902, 5761614};
+//				int[] coords2 = {3409650, 5766571, 3409735, 5766464};
+//				EmissionSource line1 = control.lineGK3ToLocalCoords(control.austal.getStudyArea().getGx(), control.austal.getStudyArea().getGy(), coords1[0], coords1[1], coords1[2], coords1[3]);
+//				line1.setDynamicSourceID(1);	// IMPORTANT: id needs to start with 1!		
+//					
+//				EmissionSource line2 = control.lineGK3ToLocalCoords(control.austal.getStudyArea().getGx(), control.austal.getStudyArea().getGy(), coords2[0], coords2[1], coords2[2], coords2[3]);
+//				line2.setDynamicSourceID(2);	// IMPORTANT: id needs to start with 1!		
 					
 					
 		} catch (Exception e) {
@@ -275,9 +275,6 @@ public class AustalSetupControl {
 		ArrayInt xArray = new ArrayInt.D1(x.length);
 		ArrayInt yArray = new ArrayInt.D1(y.length);
 		
-		//TODO: Also add lat and lon variables?
-		//TODO: Where to define coordinate system?		
-		
 		// get dates for the time series results
 		// format: "hours since 2011-01-02 00:00:00 00:00"
 		Date minDate = ts.getMeteorologyTimeSeries().getMinDate();
@@ -285,9 +282,6 @@ public class AustalSetupControl {
 		String TIME_VAR_UNITS = "hours since "+dateFormat.format(minDate)+ " 00:00";
 		int tn = valueMap.size();
 		ArrayInt tArray = new ArrayInt.D1(tn);
-		
-		// realisations
-		ArrayInt rArray = new ArrayInt.D1(rn);
 		
 		// fill arrays with values
 		int xi=0;
@@ -318,7 +312,6 @@ public class AustalSetupControl {
 			Dimension xDim = new Dimension(X_VAR_NAME, x.length);
 			Dimension yDim = new Dimension(Y_VAR_NAME, y.length);
 			Dimension tDim = new Dimension(TIME_VAR_NAME, tn);
-			Dimension rDim = new Dimension(REALISATION_VAR_NAME, rn);
 			
 			if (!resultFile.isDefineMode()) {
 				resultFile.setRedefineMode(true);
@@ -328,7 +321,6 @@ public class AustalSetupControl {
 			resultFile.addDimension(null, xDim);
 			resultFile.addDimension(null, yDim);
 			resultFile.addDimension(null, tDim);
-		//	resultFile.addDimension(null, rDim);
 
 			// A2) add dimensions as variables
 			resultFile.addVariable(X_VAR_NAME, DataType.FLOAT,
@@ -337,59 +329,72 @@ public class AustalSetupControl {
 					new Dimension[] {yDim });
 			resultFile.addVariable(TIME_VAR_NAME, DataType.FLOAT,
 					new Dimension[] {tDim });
-		//	resultFile.addVariable(REALISATION_VAR_NAME, DataType.FLOAT,
-		//			new Dimension[] {rDim });
+			//resultFile.addVariable(GRID_MAPPING_VAR_NAME, DataType.CHAR, null);
 			
 			// B1) add dimension variable attributes
-			// a) units
+			// units
 			resultFile.addVariableAttribute(X_VAR_NAME,
 					UNITS_ATTR_NAME, X_VAR_UNITS);
 			resultFile.addVariableAttribute(Y_VAR_NAME,
 					UNITS_ATTR_NAME, Y_VAR_UNITS);
 			resultFile.addVariableAttribute(TIME_VAR_NAME,
 					UNITS_ATTR_NAME, TIME_VAR_UNITS);
-		//	resultFile.addVariableAttribute(REALISATION_VAR_NAME,
-		//			UNITS_ATTR_NAME, REALISATION_VAR_UNITS);
-			
-			// b) coordinate types
+				
+			// coordinate types
 			resultFile.addVariableAttribute(X_VAR_NAME,
 					COORD_AXIS_ATTR_NAME, X_COORD_AXIS);
 			resultFile.addVariableAttribute(Y_VAR_NAME,
-					COORD_AXIS_ATTR_NAME, Y_COORD_AXIS);	
-			resultFile.setRedefineMode(false);			
-
+					COORD_AXIS_ATTR_NAME, Y_COORD_AXIS);		
+			resultFile.setRedefineMode(false);	
+			
 			// B2) write dimension arrays to file
 			resultFile.write(X_VAR_NAME, xArray);
 			resultFile.write(Y_VAR_NAME, yArray);
 			resultFile.write(TIME_VAR_NAME, tArray);
-		//	resultFile.write(REALISATION_VAR_NAME, rArray);
 			
+			
+			//TODO: Additional lat, lon variables?
+//		    x:standard_name = "projection_x_coordinate" ;
+//		    y:standard_name = "projection_y_coordinate" ;
+
+//		    double lat(y, x) ;
+//		    double lon(y, x) ;
+
+			
+//		    int crs ;
+//		    crs:grid_mapping_name = "gauss_kruger_3";
+//		    crs:false_easting =  3500000;
+//		    crs:longitude_of_projection_origin = 9;
+//		    crs:false_northing = 0.0 ;
+//		    crs:latitude_of_projection_origin = 0.0 ;
+//		    crs:scale_factor_at_projection_origin = 1 ;			
+//		    crs:semi_major_axis = 6377397.155 ;
+//		    crs:semi_minor_axis = 6356078.9628181886 ;
+//		    crs:inverse_flattening = 299.15281279999999 ;
+
+
 			// C1) additional information for NetCDF-U file
 			// a) Set dimensions for value variable			
 			ArrayList<Dimension> dims = new ArrayList<Dimension>(2);
 			dims.add(xDim);
 			dims.add(yDim);
 			dims.add(tDim);
-			//dims.add(rDim);
 			
 			// b) add data variable with dimensions and attributes 
-			//resultUWFile.getNetcdfFileWritable().setRedefineMode(true);
 			Variable dataVariable = resultUWFile.addSampleVariable(
 					MAIN_VAR_NAME, DataType.DOUBLE, dims,
 					UnknownSample.class, rn);
-			Attribute data_units = new Attribute(UNITS_ATTR_NAME, MAIN_VAR_UNITS);
-			Attribute data_missingValue = new Attribute(MISSING_VALUE_ATTR_NAME, -9999F);
-			Attribute data_longName = new Attribute(LONG_NAME_ATTR_NAME, MAIN_VAR_LONG_NAME);
 						
-			dataVariable.addAttribute(data_units);
-			dataVariable.addAttribute(data_missingValue);
-			dataVariable.addAttribute(data_longName);
-	
-			// data array for PM10 values
-			ArrayDouble dataArray = new ArrayDouble.D4(rDim.getLength(),
-					xDim.getLength(), yDim.getLength(), tDim.getLength());
+			dataVariable.addAttribute(new Attribute(UNITS_ATTR_NAME, MAIN_VAR_UNITS));
+			dataVariable.addAttribute(new Attribute(MISSING_VALUE_ATTR_NAME, -9999F));
+			dataVariable.addAttribute(new Attribute(LONG_NAME_ATTR_NAME, MAIN_VAR_LONG_NAME));
+			// add attribute for grid mapping
+			dataVariable.addAttribute(new Attribute(GRID_MAPPING_ATTR_NAME, GRID_MAPPING_VAR_NAME));
 			
-			// c) add Austal values to data Array		
+			// c) add Austal values to data Array	
+			// data array for PM10 values
+			ArrayDouble dataArray = new ArrayDouble.D4(rn,
+					xDim.getLength(), yDim.getLength(), tDim.getLength());
 			Index dataIndex = dataArray.getIndex();
 			
 			// loop through time steps
@@ -409,9 +414,16 @@ public class AustalSetupControl {
 						}
 						c++;
 					}
-					//c++;
 				}
 			}
+			
+			//TODO: Makes sense?
+			// add CF conventions
+			resultUWFile.getNetcdfFileWritable().setRedefineMode(true);
+			Attribute conventions = resultUWFile.getNetcdfFileWritable().findGlobalAttribute("Conventions");
+			String newValue =  conventions.getStringValue() + " CF-1.5";
+			resultUWFile.getNetcdfFileWritable().deleteGlobalAttribute("Conventions");
+			resultUWFile.getNetcdfFileWritable().addGlobalAttribute("Conventions", newValue);
 			
 			// C2) write data array to NetCDF-U file
 			resultUWFile.getNetcdfFileWritable().setRedefineMode(false);
@@ -421,7 +433,6 @@ public class AustalSetupControl {
 			
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println("y: "+yi+", x: "+xi+", t: "+t);
 		}
@@ -745,7 +756,7 @@ public class AustalSetupControl {
 			double aq = Math.abs(x1-x2);	// extension in x direction
 			double cq=1;					// extension in z direction
 			double hq=0.2;					// height
-			double wq = 0;					//TODO: This is zero for our case
+			double wq = 0;					// this is zero for our case
 			
 			// get lower left point which will stay fixed
 			if(x1<x2)
