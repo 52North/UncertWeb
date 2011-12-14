@@ -129,7 +129,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">291.3187418637296</om:result>
+  <om:result uom="platzhalter unit of measurement">4.899323314289901</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_9" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo10</gml:identifier>
   <om:phenomenonTime>
@@ -141,7 +141,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">260.46018413934297</om:result>
+  <om:result uom="platzhalter unit of measurement">3.72861962354539</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_10" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo11</gml:identifier>
   <om:phenomenonTime>
@@ -153,7 +153,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">279.0076147985711</om:result>
+  <om:result uom="platzhalter unit of measurement">4.609759835686395</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_11" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo12</gml:identifier>
   <om:phenomenonTime>
@@ -165,7 +165,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">273.9644946498172</om:result>
+  <om:result uom="platzhalter unit of measurement">5.076511728728486</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_12" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo13</gml:identifier>
   <om:phenomenonTime>
@@ -177,7 +177,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">311.3622471075048</om:result>
+  <om:result uom="platzhalter unit of measurement">5.174932796444466</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_13" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo14</gml:identifier>
   <om:phenomenonTime>
@@ -189,7 +189,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">308.72665869254416</om:result>
+  <om:result uom="platzhalter unit of measurement">4.611761982443415</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_14" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo15</gml:identifier>
   <om:phenomenonTime>
@@ -201,7 +201,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">287.3336763374853</om:result>
+  <om:result uom="platzhalter unit of measurement">4.3408584784289586</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_15" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo16</gml:identifier>
   <om:phenomenonTime>
@@ -213,7 +213,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">267.748371935389</om:result>
+  <om:result uom="platzhalter unit of measurement">5.051412832187919</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_16" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo17</gml:identifier>
   <om:phenomenonTime>
@@ -225,7 +225,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">267.82042380612774</om:result>
+  <om:result uom="platzhalter unit of measurement">4.435024271339568</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_17" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo18</gml:identifier>
   <om:phenomenonTime>
@@ -237,7 +237,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">296.8269743851267</om:result>
+  <om:result uom="platzhalter unit of measurement">3.6320565325878236</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_18" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo19</gml:identifier>
   <om:phenomenonTime>
@@ -249,7 +249,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">259.3411187646321</om:result>
+  <om:result uom="platzhalter unit of measurement">4.2298648116412885</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_19" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo20</gml:identifier>
   <om:phenomenonTime>
@@ -261,7 +261,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">256.077681567491</om:result>
+  <om:result uom="platzhalter unit of measurement">2.9488344520525516</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_20" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo21</gml:identifier>
   <om:phenomenonTime>
@@ -273,7 +273,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">269.53199718490555</om:result>
+  <om:result uom="platzhalter unit of measurement">3.8826223800466133</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_21" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo22</gml:identifier>
   <om:phenomenonTime>
@@ -285,7 +285,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">288.5431968124237</om:result>
+  <om:result uom="platzhalter unit of measurement">1.5194137513557675</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_22" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo23</gml:identifier>
   <om:phenomenonTime>
@@ -297,7 +297,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">261.41952003164147</om:result>
+  <om:result uom="platzhalter unit of measurement">2.7463701633282347</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_23" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo24</gml:identifier>
   <om:phenomenonTime>
@@ -309,7 +309,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">256.6098987583271</om:result>
+  <om:result uom="platzhalter unit of measurement">2.150175397884443</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_24" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo25</gml:identifier>
   <om:phenomenonTime>
@@ -321,7 +321,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">263.03221065939806</om:result>
+  <om:result uom="platzhalter unit of measurement">2.7538592465880622</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_25" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo26</gml:identifier>
   <om:phenomenonTime>
@@ -333,7 +333,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">269.9785055818518</om:result>
+  <om:result uom="platzhalter unit of measurement">2.262574829524122</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_26" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo27</gml:identifier>
   <om:phenomenonTime>
@@ -345,7 +345,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">281.68426819882444</om:result>
+  <om:result uom="platzhalter unit of measurement">1.4599441079734665</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_27" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo28</gml:identifier>
   <om:phenomenonTime>
@@ -357,7 +357,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">243.823721334922</om:result>
+  <om:result uom="platzhalter unit of measurement">1.8014935068621223</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_28" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo29</gml:identifier>
   <om:phenomenonTime>
@@ -369,7 +369,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">251.66073743197714</om:result>
+  <om:result uom="platzhalter unit of measurement">1.140980771856373</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_29" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo30</gml:identifier>
   <om:phenomenonTime>
@@ -381,7 +381,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">243.36026613490446</om:result>
+  <om:result uom="platzhalter unit of measurement">1.4704845636347839</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_30" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo31</gml:identifier>
   <om:phenomenonTime>
@@ -393,7 +393,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">234.41516141402698</om:result>
+  <om:result uom="platzhalter unit of measurement">0.7435917582718837</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_31" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo32</gml:identifier>
   <om:phenomenonTime>
@@ -405,7 +405,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">267.2481399832986</om:result>
+  <om:result uom="platzhalter unit of measurement">1.498622375335409</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_32" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo33</gml:identifier>
   <om:phenomenonTime>
@@ -417,7 +417,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">254.89473084049928</om:result>
+  <om:result uom="platzhalter unit of measurement">2.687275403739066</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_33" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo34</gml:identifier>
   <om:phenomenonTime>
@@ -429,7 +429,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">241.14797875134758</om:result>
+  <om:result uom="platzhalter unit of measurement">2.9713526647616355</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_34" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo35</gml:identifier>
   <om:phenomenonTime>
@@ -441,7 +441,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">239.42184971176133</om:result>
+  <om:result uom="platzhalter unit of measurement">1.3292203463593255</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_35" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo36</gml:identifier>
   <om:phenomenonTime>
@@ -453,7 +453,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">230.34384592964722</om:result>
+  <om:result uom="platzhalter unit of measurement">2.171533528039336</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_36" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo37</gml:identifier>
   <om:phenomenonTime>
@@ -465,7 +465,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">263.3748653940222</om:result>
+  <om:result uom="platzhalter unit of measurement">4.16898500159423</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_37" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo38</gml:identifier>
   <om:phenomenonTime>
@@ -477,7 +477,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">300.6053478016343</om:result>
+  <om:result uom="platzhalter unit of measurement">4.178965602699953</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_38" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo39</gml:identifier>
   <om:phenomenonTime>
@@ -489,7 +489,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">276.65395965475005</om:result>
+  <om:result uom="platzhalter unit of measurement">4.406657620640556</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_39" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo40</gml:identifier>
   <om:phenomenonTime>
@@ -501,7 +501,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">289.0143890537205</om:result>
+  <om:result uom="platzhalter unit of measurement">4.300121771807659</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_40" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo41</gml:identifier>
   <om:phenomenonTime>
@@ -513,7 +513,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">267.17463414311345</om:result>
+  <om:result uom="platzhalter unit of measurement">4.3514534408065755</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_41" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo42</gml:identifier>
   <om:phenomenonTime>
@@ -525,7 +525,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">290.2651844187876</om:result>
+  <om:result uom="platzhalter unit of measurement">3.7621980732796434</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_42" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo43</gml:identifier>
   <om:phenomenonTime>
@@ -537,7 +537,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">287.7219768423181</om:result>
+  <om:result uom="platzhalter unit of measurement">2.392633440428834</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_43" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo44</gml:identifier>
   <om:phenomenonTime>
@@ -549,7 +549,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">305.26748027910816</om:result>
+  <om:result uom="platzhalter unit of measurement">2.6119736880164703</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_44" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo45</gml:identifier>
   <om:phenomenonTime>
@@ -561,7 +561,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">305.6880449155207</om:result>
+  <om:result uom="platzhalter unit of measurement">2.979550610118921</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_45" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo46</gml:identifier>
   <om:phenomenonTime>
@@ -573,7 +573,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">249.6291449335249</om:result>
+  <om:result uom="platzhalter unit of measurement">1.6856331229917705</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_46" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo47</gml:identifier>
   <om:phenomenonTime>
@@ -585,7 +585,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">274.1048974914984</om:result>
+  <om:result uom="platzhalter unit of measurement">3.1154588589060133</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_47" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo48</gml:identifier>
   <om:phenomenonTime>
@@ -597,7 +597,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">253.1094210876687</om:result>
+  <om:result uom="platzhalter unit of measurement">2.6105618860948616</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_48" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo49</gml:identifier>
   <om:phenomenonTime>
@@ -609,7 +609,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">289.91692180054287</om:result>
+  <om:result uom="platzhalter unit of measurement">4.6301241779553886</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_49" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo50</gml:identifier>
   <om:phenomenonTime>
@@ -621,7 +621,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">244.6620002875477</om:result>
+  <om:result uom="platzhalter unit of measurement">2.644574473841131</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_50" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo51</gml:identifier>
   <om:phenomenonTime>
@@ -633,7 +633,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">258.9978494819129</om:result>
+  <om:result uom="platzhalter unit of measurement">2.864559560557292</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_51" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo52</gml:identifier>
   <om:phenomenonTime>
@@ -645,7 +645,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">279.20368105177374</om:result>
+  <om:result uom="platzhalter unit of measurement">2.562175364430692</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_52" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo53</gml:identifier>
   <om:phenomenonTime>
@@ -657,7 +657,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">262.0200279770722</om:result>
+  <om:result uom="platzhalter unit of measurement">2.7763795466750962</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_53" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo54</gml:identifier>
   <om:phenomenonTime>
@@ -669,7 +669,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">247.64166256098892</om:result>
+  <om:result uom="platzhalter unit of measurement">1.4560470532172616</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_54" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo55</gml:identifier>
   <om:phenomenonTime>
@@ -681,7 +681,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">258.32853297283526</om:result>
+  <om:result uom="platzhalter unit of measurement">2.2057586025794707</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_55" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo56</gml:identifier>
   <om:phenomenonTime>
@@ -693,7 +693,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">232.29735160915513</om:result>
+  <om:result uom="platzhalter unit of measurement">1.0840218639214831</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_56" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo57</gml:identifier>
   <om:phenomenonTime>
@@ -705,7 +705,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">229.97278787698</om:result>
+  <om:result uom="platzhalter unit of measurement">1.3095242050083162</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_57" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo58</gml:identifier>
   <om:phenomenonTime>
@@ -717,7 +717,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">209.6567669581332</om:result>
+  <om:result uom="platzhalter unit of measurement">2.2448113884497487</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_58" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo59</gml:identifier>
   <om:phenomenonTime>
@@ -729,7 +729,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">250.6846412473943</om:result>
+  <om:result uom="platzhalter unit of measurement">1.9712044624030043</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_59" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo60</gml:identifier>
   <om:phenomenonTime>
@@ -741,7 +741,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">262.56278819607104</om:result>
+  <om:result uom="platzhalter unit of measurement">1.2154457038171578</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_60" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo61</gml:identifier>
   <om:phenomenonTime>
@@ -753,7 +753,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">264.40943491043396</om:result>
+  <om:result uom="platzhalter unit of measurement">1.1098588694349214</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_61" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo62</gml:identifier>
   <om:phenomenonTime>
@@ -765,7 +765,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">314.4522787805689</om:result>
+  <om:result uom="platzhalter unit of measurement">0.9619437325614145</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_62" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo63</gml:identifier>
   <om:phenomenonTime>
@@ -777,7 +777,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">343.3007357327041</om:result>
+  <om:result uom="platzhalter unit of measurement">0.9046800992067192</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_63" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo64</gml:identifier>
   <om:phenomenonTime>
@@ -789,7 +789,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">120.08140846312472</om:result>
+  <om:result uom="platzhalter unit of measurement">0.8275584064450425</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_64" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo65</gml:identifier>
   <om:phenomenonTime>
@@ -801,7 +801,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">327.3696254357319</om:result>
+  <om:result uom="platzhalter unit of measurement">0.5268164010616199</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_65" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo66</gml:identifier>
   <om:phenomenonTime>
@@ -813,7 +813,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">379.9154145976086</om:result>
+  <om:result uom="platzhalter unit of measurement">1.6348460841188015</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_66" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo67</gml:identifier>
   <om:phenomenonTime>
@@ -825,7 +825,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">321.0891589153191</om:result>
+  <om:result uom="platzhalter unit of measurement">1.109372254519308</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_67" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo68</gml:identifier>
   <om:phenomenonTime>
@@ -837,7 +837,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">287.7124055226554</om:result>
+  <om:result uom="platzhalter unit of measurement">0.5605462656026005</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_68" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo69</gml:identifier>
   <om:phenomenonTime>
@@ -849,7 +849,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">341.26556797625364</om:result>
+  <om:result uom="platzhalter unit of measurement">0.1</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_69" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo70</gml:identifier>
   <om:phenomenonTime>
@@ -861,7 +861,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">364.19379202364223</om:result>
+  <om:result uom="platzhalter unit of measurement">0.1581417179303859</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_70" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo71</gml:identifier>
   <om:phenomenonTime>
@@ -873,7 +873,7 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">19.772507805598842</om:result>
+  <om:result uom="platzhalter unit of measurement">0.7541265443698503</om:result>
 </om:OM_Measurement><om:OM_Measurement gml:id="o_71" xmlns:om="http://www.opengis.net/om/2.0"  >
   <gml:identifier codeSpace="platzhalter_codespace">Meteo72</gml:identifier>
   <om:phenomenonTime>
@@ -885,6 +885,6 @@
   <om:procedure xlink:href="http://www.uncertweb.org/sensors/ID"/>
   <om:observedProperty xlink:href="http://www.uncertweb.org/phenomenon/windspeed"/>
   <om:featureOfInterest xlink:href="#sf0"/>
-  <om:result uom="platzhalter unit of measurement">322.3447461839741</om:result>
+  <om:result uom="platzhalter unit of measurement">1.2086252851376065</om:result>
 </om:OM_Measurement>
 </OM_MeasurementCollection>
