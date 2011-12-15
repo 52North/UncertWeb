@@ -3,7 +3,7 @@
   <wps:DataInputs>
     <wps:Input>
       <ows:Identifier>street-emissions</ows:Identifier>
-      <wps:Reference xlink:href="http://localhost:8080/austalWPS/res/Streets1.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
+      <wps:Reference xlink:href="http://localhost:8080/austalWPS/res/streets2.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
     </wps:Input>
     <wps:Input>
       <ows:Identifier>wind-speed</ows:Identifier>
