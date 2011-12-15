@@ -23,35 +23,66 @@ public class ProjectFile {
 	
 	private String fileLocation;
 	private String dataLocation;
+	
 	private String projectFileName;
 	
-	public ProjectFile(String projectFileName,String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas) {
+	private File projectFile;
+	
+	/**
+	 * Creates a new ProjectFile. It can be accessed by {@link ProjectFile#getProjectFile()}
+	 * 
+	 * @param projectFileName name of the project file
+	 * @param fileLocation the location of the project file (should be next to the *.exe)
+	 * @param dataLocation location of the data (the data referenced inside the project file)
+	 * @param genpopHouseholds
+	 * @param rwdataHouseholds
+	 * @param municipalities
+	 * @param zones
+	 * @param postcodeAreas
+	 */
+	public ProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas) {
 		
 		this.fileLocation = fileLocation;
 		this.dataLocation = dataLocation+File.separator;
-		this.projectFileName = projectFileName;
-		
+				
 		this.genpopHouseholds = genpopHouseholds;
 		this.rwdataHouseholds = rwdataHouseholds;
 		this.municipalities = municipalities;
 		this.zones = zones;
 		this.postcodeAreas = postcodeAreas;
 		
-		//in our case datalocation and file location are the same 
+		this.projectFileName = projectFileName;
 		
+		//in our case datalocation and file location are the same 
 		this.dataLocation = fileLocation+File.separator;
+		
+		
+		projectFile = new File(this.fileLocation+File.separator+projectFileName);
+		
+		
+		try {
+			projectFile.createNewFile();
+			this.fillProjectFile(projectFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 
-	public File getProjectFile() throws IOException{
-		
-		File projectFile = new File(this.fileLocation+File.separator+projectFileName);
-	
-		projectFile.createNewFile();
-		
-		this.fillProjectFile(projectFile);
-		
-		return projectFile;
+	public String getProjectFileName() {
+		return projectFileName;
+	}
 
+	/**
+	 * Returns the ProjectFile.
+	 * @return
+	 * @throws IOException
+	 */
+	public File getProjectFile(){
+		
+		return this.projectFile;
 	}
 	
 	private void fillProjectFile(File f) throws IOException{

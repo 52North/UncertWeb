@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,9 @@ import edu.emory.mathcs.backport.java.util.Collections;
  */
 public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
-	private static String targetProp, sourceProp, exportFileNameProp;
+	private String targetProp, sourceProp, exportFileNameProp,
+			publicFolderProp;
+	private List<String> filesToCopyProp;
 
 	private final String inputIDGenpopHouseholds = "genpop-households";
 	private final String inputIDRwdataHouseholds = "rwdata-households";
@@ -42,12 +45,16 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private final String inputIDPostcodeAreas = "postcode-areas";
 
 	private final String outputIDProjectFile = "project-file";
+	private final String outputIDExportFile = "export-file";
 
 	private String genpopHouseholds;
 	private String rwdataHouseholds;
 	private String municipalities;
 	private String zones;
 	private String postcodeAreas;
+	
+	private Workspace ws;
+	private ProjectFile projectFile;
 
 	@Override
 	public List<String> getErrors() {
@@ -82,7 +89,10 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		if (id.equalsIgnoreCase(outputIDProjectFile)) {
 
 			return LiteralStringBinding.class;
+		}
+		if (id.equalsIgnoreCase(outputIDExportFile)) {
 
+			return LiteralStringBinding.class;
 		}
 		return null;
 	}
@@ -90,7 +100,58 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 
-		readProperties();
+		this.readProperties();
+
+		this.checkAndCopyInput(inputData);
+
+		this.setupFolder();
+
+		this.runModel();
+		
+		ws.copyResultIntoPublicFolder(filesToCopyProp);
+
+		Map<String, IData> result = new HashMap<String, IData>();
+
+		
+		//TODO zum testen erstmal beide hier eintragen
+		result.put("project-file", new LiteralStringBinding(ws.getPublicFolder()
+				+ File.separator + projectFile.getProjectFileName() + " exportfile: " + ws.getPublicFolder()
+				+ File.separator + exportFileNameProp + " obs file: "+ ws.getPublicFolder()+File.separator + "test.obs"));
+
+		result.put("export-file", new LiteralStringBinding(ws.getPublicFolder()
+				+ File.separator + exportFileNameProp));
+
+		return result;
+	}
+
+	private void readProperties() {
+
+		Properties properties = new Properties();
+
+		try {
+
+			File configFile = new File(WPSConfig.getInstance().getConfigPath());
+			File propertiesFile = new File(configFile.getParent()
+					+ File.separator
+					+ "albatross-synthetic-population-process.properties");
+
+			FileInputStream fileInputStream = new FileInputStream(
+					propertiesFile);
+
+			properties.load(fileInputStream);
+
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		sourceProp = properties.getProperty("originalData");
+		targetProp = properties.getProperty("targetWorkspace");
+		exportFileNameProp = properties.getProperty("exportFileName");
+		publicFolderProp = properties.getProperty("publicFolder");
+		filesToCopyProp = Arrays.asList(properties.getProperty("filesToCopy").split(";"));
+	}
+
+	private void checkAndCopyInput(Map<String, List<IData>> inputData) {
 
 		if (inputData == null)
 			throw new NullPointerException("inputData cannot be null");
@@ -138,17 +199,22 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		municipalities = ((LiteralIntBinding) municipalitiesList.get(0))
 				.getPayload().toString();
 
+	}
+
+	private void setupFolder() {
+
 		// workspace bauen
-		String projectFile = "ProjectFile.prj";
-		Workspace ws = new Workspace();
+		ws = new Workspace(sourceProp,targetProp,publicFolderProp);
 
-		File target = generateTargetWorkspace(targetProp);
-		File source = new File(sourceProp);
-
-		ProjectFile pF = new ProjectFile(projectFile, target.getAbsolutePath(),
-				source.getAbsolutePath(), genpopHouseholds, rwdataHouseholds,
+		// create projectFile...
+		projectFile = new ProjectFile("ProjectFile.prj", ws.getWorkspaceFolder().getPath(),
+				ws.getWorkspaceFolder().getPath(), genpopHouseholds, rwdataHouseholds,
 				municipalities, zones, postcodeAreas);
-		ws.getWorkspace(source, target, pF);
+
+		
+	}
+
+	private void runModel() {
 
 		Process proc = null;
 
@@ -156,14 +222,11 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 			List<String> commands = new ArrayList<String>();
 
-			commands.add(target + File.separator + "Genpop.exe");
+			commands.add(ws.getWorkspaceFolder().getPath() + File.separator + "Genpop.exe");
 
 			ProcessBuilder pb = new ProcessBuilder(commands);
 
-			pb.directory(target);
-
-			//System.out.println("working directory: " + pb.directory());
-			//System.out.println(pb.environment());
+			pb.directory(ws.getWorkspaceFolder());
 
 			proc = pb.start();
 
@@ -175,7 +238,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
 					stdout));
 
-			out.write(projectFile);
+			out.write(projectFile.getProjectFileName());
 			out.newLine();
 			out.flush();
 
@@ -184,7 +247,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			out.flush();
 
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+			
 			e1.printStackTrace();
 		}
 
@@ -192,70 +255,12 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 			int result = proc.waitFor();
 			System.out.println("Return value: " + result);
-			
+
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
-		Map<String, IData> result = new HashMap<String, IData>();
-
-		result.put("project-file", new LiteralStringBinding(
-				target+File.separator+projectFile+ " exportfile: "+target+File.separator+exportFileNameProp));
-		
-		result.put("export-file", new LiteralStringBinding(target+File.separator+exportFileNameProp));
-
-		return result;
-	}
-
-	private void readProperties() {
-
-		Properties properties = new Properties();
-									 
-		
-		try {
-			
-			File configFile = new File(WPSConfig.getInstance().getConfigPath());
-			File propertiesFile = new File(configFile.getParent()+File.separator+"albatross-synthetic-population-process.properties");
-			
-			FileInputStream fileInputStream =  new FileInputStream(propertiesFile);
-			
-			properties.load(fileInputStream);
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		sourceProp = properties.getProperty("originalData");
-		targetProp = properties.getProperty("targetWorkspace");
-		exportFileNameProp = properties.getProperty("exportFileName");
-	}
-	
-	private File generateTargetWorkspace(String target){
-		
- 
-		File f = new File(target+File.separator+generateRandomNumber());
-		
-		while(f.exists()){
-			
-			f = new File(target+File.separator+generateRandomNumber());
-		}
-		
-		f.mkdir();
-		
-		return f;
-		
-	}
-	
-	/**
-	 * [1000,Integer.Max[
-	 * 
-	 * @return
-	 */
-	private int generateRandomNumber(){
-	
-		int low = 1000;
-		return (int) (Math.random() * (Integer.MAX_VALUE - low) + low); 
 	}
 
 }
