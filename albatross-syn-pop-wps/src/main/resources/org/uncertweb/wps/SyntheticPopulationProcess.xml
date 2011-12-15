@@ -15,9 +15,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				<ows:Abstract></ows:Abstract>
 				<LiteralData>
 					<ows:DataType ows:reference="xs:integer"></ows:DataType>
-					<ows:AllowedValues>
-						<ows:Value></ows:Value>
-					</ows:AllowedValues>
+					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
 			<Input minOccurs="1" maxOccurs="1">
@@ -26,9 +24,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				<ows:Abstract></ows:Abstract>
 				<LiteralData>
 					<ows:DataType ows:reference="xs:integer"></ows:DataType>
-					<ows:AllowedValues>
-						<ows:Value></ows:Value>
-					</ows:AllowedValues>
+					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
 			<Input minOccurs="1" maxOccurs="1">
@@ -37,9 +33,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				<ows:Abstract></ows:Abstract>
 				<LiteralData>
 					<ows:DataType ows:reference="xs:integer"></ows:DataType>
-					<ows:AllowedValues>
-						<ows:Value></ows:Value>
-					</ows:AllowedValues>
+					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
 			<Input minOccurs="1" maxOccurs="1">
@@ -48,9 +42,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				<ows:Abstract></ows:Abstract>
 				<LiteralData>
 					<ows:DataType ows:reference="xs:integer"></ows:DataType>
-					<ows:AllowedValues>
-						<ows:Value></ows:Value>
-					</ows:AllowedValues>
+					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
 			<Input minOccurs="1" maxOccurs="1">
@@ -59,9 +51,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				<ows:Abstract></ows:Abstract>
 				<LiteralData>
 					<ows:DataType ows:reference="xs:integer"></ows:DataType>
-					<ows:AllowedValues>
-						<ows:Value></ows:Value>
-					</ows:AllowedValues>
+					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
 		</DataInputs>
