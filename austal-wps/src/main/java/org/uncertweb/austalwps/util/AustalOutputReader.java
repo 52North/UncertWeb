@@ -1,20 +1,29 @@
 package org.uncertweb.austalwps.util;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.OutputStreamWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.uncertml.sample.UnknownSample;
+import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
 import org.uncertweb.api.netcdf.exception.NetcdfUWException;
 
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.Variable;
 
 public class AustalOutputReader {
 	
@@ -24,6 +33,28 @@ public class AustalOutputReader {
 	private int noOfFiles;
 	private boolean val = true;
 
+	
+	// NetCDF variables	
+	private final static String TIME_VAR_NAME = "time";
+	private final static String MAIN_VAR_NAME = "PM10_Austal2000";
+	private final static String MAIN_VAR_LONG_NAME = "Particulate matter smaller 10 um diameter";
+	private final static String X_VAR_NAME = "x";
+	private final static String Y_VAR_NAME = "y";
+	private final static String UNITS_ATTR_NAME = "units";
+	private final static String MISSING_VALUE_ATTR_NAME = "missing_value";
+	private final static String LONG_NAME_ATTR_NAME = "long_name";
+	//private final static String GRID_MAPPING_VAR_NAME = "gauss_krueger_3";
+	private final static String GRID_MAPPING_VAR_NAME = "crs";
+	private final static String GRID_MAPPING_ATTR_NAME = "grid_mapping";
+		
+	private final static String MAIN_VAR_UNITS = "ug m-3";
+	private final static String X_VAR_UNITS = "m";
+	private final static String Y_VAR_UNITS = "m";
+		
+	private final static String COORD_AXIS_ATTR_NAME = "_CoordinateAxisType";
+	private final static String X_COORD_AXIS = "GeoX";
+	private final static String Y_COORD_AXIS = "GeoY";
+		
 	public AustalOutputReader() {
 		noOfFiles = 1;
 	}
@@ -103,8 +134,6 @@ public class AustalOutputReader {
 			while ((row = in.readLine()) != null) {
 				// Separated by "whitespace"
 					String[] s = row.trim().split("\\s+");
-					//msg(""+s.length);
-					//msg(row);
 					
 					// reference coordinates
 					if (s[0].trim().equals("refx"))
@@ -117,7 +146,6 @@ public class AustalOutputReader {
 						// if necessary initialize point array
 						if (pois == null){
 							pois = new Point[s.length - 1];
-							//msg("No of files: "+noOfFiles);
 							}
 						for (int i = 1; i < s.length; i++) {
 							double xdev = Double.parseDouble(s[i].trim());
@@ -128,7 +156,6 @@ public class AustalOutputReader {
 					else if (s[0].trim().equals("mnty")) {
 						for (int i = 1; i < s.length; i++) {
 							double ydev = Double.parseDouble(s[i].trim());
-							//msg("ydev: "+ydev);
 							pois[i - 1].set_yCoordinate(refy + ydev);
 						}
 					}
@@ -160,190 +187,12 @@ public class AustalOutputReader {
 			points.add(pois);
 
 			// write single output file
-
 			noOfFiles++;
 			in.close();
 		}
 
 		return points;
-	}
-
-//	public void writePointCsv(ArrayList<Point[]> points, String newFile) throws Exception {
-//		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
-//				new FileOutputStream(newFile)));
-//		// write header
-//		out.write("fid,x,y");
-//		out.newLine();
-//
-//		// loop through point arrays
-//		for (int j = 0; j < points.size(); j++) {
-//			Point[] p = points.get(j);
-//			for (int i = 0; i < p.length; i++) { // write point id and
-//				// coordinates
-//				double[] coords = p[i].coordinates();
-//				out.write(p[i].get_fid() + "," + coords[0] + "," + coords[1]);
-//				out.newLine();
-//			}
-//		}
-//		out.close();
-//	}
-//
-//	public void writeValueCsv(ArrayList<Point[]> points, String newFile) throws Exception {
-//		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
-//				new FileOutputStream(newFile)));
-//		// write header
-//		out.write("fid,time,PM10");
-//		out.newLine();
-//
-//		// loop through point arrays
-//		for (int j = 0; j < points.size(); j++) {
-//			Point[] p = points.get(j);
-//			for (int i = 0; i < p.length; i++) {
-//				ArrayList<Value> vals = p[i].values();
-//				for (int k = 0; k < vals.size(); k++) {
-//
-//					// add values from timeseries
-//					out.write(p[i].get_fid() + "," + vals.get(k).TimeStamp()
-//							+ "," + vals.get(k).PM10val());
-//					out.newLine();
-//				}
-//			}
-//		}
-//		out.close();
-//	}
-
-	//pm-zbps.dmna
-	/**
-	 * Method to read a number of Austal result files within a folder. 
-	 * Writes resulting points to csv files and returns results for receptor points.
-	 * @param foldername
-	 * @param uncertainty
-	 * @param start
-	 * @param end
-	 * @return
-	 */
-//	public ArrayList<Point[]> readFilesInFolders(String foldername, boolean uncertainty, int start, int end){
-//		// new point arraylist
-//		ArrayList<Point[]> points = new ArrayList<Point[]>();
-//		File directory = new File(foldername);
-//		String pointscsv;
-//		String valscsv;
-//		String filetype;
-//		String[] filename = new String[end-start+1];
-//		int count = start;
-//		// create filenames
-//		for(int i = 0; i<filename.length; i++){
-//			filename[i] = foldername + "/" + "PO" + count;
-//			count++;
-//		}
-//		
-//		if(uncertainty){
-//			filetype = "pm-zbps.dmna";
-//			valscsv = "results/uncertainties"+start+".csv";
-//			pointscsv =  "results/points_uncert"+start+".csv";
-//			//val = false;
-//		}
-//		else{
-//			filetype = "pm-zbpz.dmna";
-//			valscsv = "results/values"+start+".csv";
-//			pointscsv =  "results/points"+start+".csv";
-//			//val = true;
-//		}
-//
-//		if (!directory.exists()) {
-//			System.out.println("Directory does not exist!");
-//		} else {		
-//			for (int i=0; i<filename.length; i++){
-//				File file = new File(filename[i]);
-//				if(file.isDirectory()){
-//					msg("folder: "+ file);
-//					File[] files = file.listFiles();
-//					for (int k = 0; k < files.length; k++) {
-//						if (files[k].getPath().endsWith(filetype)) {
-//							msg("parse: " + files[k].toString());
-//							try {
-//								this.parseReceptorPointsFile(points, files[k].toString());
-//							} catch (Exception e) {
-//								msg("Input error during parsing dmna: "
-//										+ e.getClass() + e.getMessage());
-//							}
-//						} else {
-//							msg("File is not parsed: " + files[k].getPath());
-//						}
-//					}
-//				}
-//			}
-//		}
-//			
-//		msg("Number of parsed files: " + (noOfFiles-1));
-//
-//		try {
-//			this.writePointCsv(points, foldername + "/" + pointscsv);
-//			this.writeValueCsv(points, foldername + "/" + valscsv);
-//		} catch (Exception e) {
-//			msg("Input error during parsing csv: " + e.getClass()
-//					+ e.getMessage());
-//		}
-//		
-//		return points;
-//	}
-	
-//	public ArrayList<Point[]> readAustalFiles(String foldername, boolean uncertainty, String destination) {
-//		ArrayList<Point[]> points = new ArrayList<Point[]>();
-//		File directory = new File(foldername);
-//		String pointscsv;
-//		String valscsv;
-//		String filetype;
-//		int count = noOfFiles;
-//		// create filenames
-//
-//		//msg("Parsing "+count+". folder: "+foldername);
-//		if(uncertainty){
-//			filetype = "pm-zbps.dmna";
-//			valscsv = "uncertainties"+count+".csv";
-//			pointscsv =  "points_uncert"+count+".csv";
-//			//val = false;
-//		}
-//		else{
-//			filetype = "pm-zbpz.dmna";
-//			valscsv = "values"+count+".csv";
-//			pointscsv =  "points"+count+".csv";
-//			//val = true;
-//		}
-//
-//		if (!directory.exists()) {
-//			System.out.println("Directory does not exist!");
-//		} else {		
-//			File[] files = directory.listFiles();
-//			for (int i=0; i<files.length; i++){
-//					if (files[i].getPath().endsWith(filetype)) {
-//						msg("parse: " + files[i].toString());
-//						try {
-//							points = this.parseReceptorPointsFile(points, files[i].toString());
-//						} 
-//						catch (Exception e) {
-//							msg("Input error during parsing dmna: "+
-//										 e.getClass() + e.getMessage());
-//							}
-//					} else {
-//							//msg("File is not parsed: " + files[i].getPath());
-//					}
-//				
-//			}
-//		}
-//			
-//		msg("Number of parsed files: " + (noOfFiles-1));
-//
-//		try {
-//			this.writePointCsv(points, destination + "/" + pointscsv);
-//			this.writeValueCsv(points, destination + "/"+ valscsv);
-//		} catch (Exception e) {
-//			msg("Input error during parsing csv: " + e.getClass()
-//					+ e.getMessage());
-//		}
-//		return points;
-//	}
-	
+	}	
 	
 	public HashMap<Integer, ArrayList<Double>> readHourlyFiles(String foldername, boolean uncertainty){
 		File directory = new File(foldername);
@@ -366,12 +215,17 @@ public class AustalOutputReader {
 			for (int i=0; i<files.length; i++){
 				String filename = files[i].getName();
 				// select only hourly files
-				if(filename.startsWith("pm")&&!filename.startsWith("pm-d")&&!filename.startsWith("pm-j")&&!filename.startsWith("pm-z")){
+				if(filename.startsWith("pm")&&!filename.startsWith("pm-d")&&!filename.startsWith("pm-t")&&!filename.startsWith("pm-j")&&!filename.startsWith("pm-z")){
 					// select uncertainty files if required
 					if(filename.endsWith(tag+".dmna")){
-						ArrayList<Double> parsedVals = parseHourlyFile(files[i].toString());
-						String id = filename.substring(3, 6);
-						valueMap.put(Integer.parseInt(id), parsedVals);
+						String idString = filename.substring(3, 6);
+						try{
+							int id = Integer.parseInt(idString);
+							ArrayList<Double> parsedVals = parseHourlyFile(files[i].toString());
+							valueMap.put(id, parsedVals);
+						}catch(NumberFormatException e){
+							
+						}						
 					}
 				}
 			}
@@ -399,8 +253,6 @@ public class AustalOutputReader {
 				}else if(tags[0].trim().contains("unit")){
 					
 				}else if(tags[0].trim().contains("hghb")){
-					//int nCells = Integer.parseInt(tags[1].trim()) * Integer.parseInt(tags[2].trim());
-					//pVals = new Double[nCells];
 				}						
 			}
 			
@@ -414,9 +266,6 @@ public class AustalOutputReader {
 							pVals.add(Double.parseDouble(v0.trim()));
 						}
 					}
-//					for(int i=0; i<v.length; i++){
-//						pVals.add(Double.parseDouble(v[i].trim()));
-//					}
 				}
 			}	
 			
@@ -430,8 +279,198 @@ public class AustalOutputReader {
 		return pVals;
 	}
 	
-	
-	
+	/**
+	 * Method to create NetCDF file from Austal grid outputs
+	 * @param filepath
+	 * @param x
+	 * @param y
+	 * @param minDate
+	 * @param realisationsMap
+	 * @return
+	 * @throws IOException 
+	 * @throws NetcdfUWException 
+	 * @throws InvalidRangeException 
+	 */
+	public NetcdfUWFile createNetCDFfile(String filepath, int[] x, int[] y, Date minDate, HashMap<Integer, HashMap<Integer, ArrayList<Double>>> realisationsMap) throws IOException, NetcdfUWException, InvalidRangeException{		
+		// get geometry for coordinates from study area
+		ArrayInt xArray = new ArrayInt.D1(x.length);
+		ArrayInt yArray = new ArrayInt.D1(y.length);
+		
+		// get dates for the time series results
+		// format: "hours since 2011-01-02 00:00:00 00:00"
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");	
+		String TIME_VAR_UNITS = "hours since "+dateFormat.format(minDate)+ " 00:00";
+		int tn = realisationsMap.get(1).size();
+		ArrayInt tArray = new ArrayInt.D1(tn);
+		
+		// fill arrays with values
+		int xi=0;
+		int yi=0;
+		int r=0;
+		int t=0;
+		int c=0;
+		
+		for (xi = 0; xi < x.length; xi++) {			
+			xArray.setInt(xi, x[xi]);
+		}
+		for (yi = 0; yi < y.length; yi++) {
+			yArray.setInt(yi, y[yi]);
+		}
+		for(t = 0; t < tn; t++){		
+			tArray.setInt(t, t+1);
+		}
+
+		// put all result arrays into a new NetCDF file
+		// prepare new netCDF file for realisations
+		NetcdfFileWriteable resultFile = null;
+		NetcdfUWFileWriteable resultUWFile = null;
+	//	try {
+			resultFile = NetcdfUWFileWriteable.createNew(filepath, true);
+			resultUWFile = new NetcdfUWFileWriteable(resultFile);
+			
+			// define dimensions
+			Dimension xDim = new Dimension(X_VAR_NAME, x.length);
+			Dimension yDim = new Dimension(Y_VAR_NAME, y.length);
+			Dimension tDim = new Dimension(TIME_VAR_NAME, tn);
+			
+			if (!resultFile.isDefineMode()) {
+				resultFile.setRedefineMode(true);
+			}
+			
+			// A1) add dimensions to simple NetCDF file
+			resultFile.addDimension(null, xDim);
+			resultFile.addDimension(null, yDim);
+			resultFile.addDimension(null, tDim);
+
+			// A2) add dimensions as variables
+			resultFile.addVariable(X_VAR_NAME, DataType.FLOAT,
+					new Dimension[] {xDim });
+			resultFile.addVariable(Y_VAR_NAME, DataType.FLOAT,
+					new Dimension[] {yDim });
+			resultFile.addVariable(TIME_VAR_NAME, DataType.FLOAT,
+					new Dimension[] {tDim });
+			
+			// B1) add dimension variable attributes
+			// units
+			resultFile.addVariableAttribute(X_VAR_NAME,
+					UNITS_ATTR_NAME, X_VAR_UNITS);
+			resultFile.addVariableAttribute(Y_VAR_NAME,
+					UNITS_ATTR_NAME, Y_VAR_UNITS);
+			resultFile.addVariableAttribute(TIME_VAR_NAME,
+					UNITS_ATTR_NAME, TIME_VAR_UNITS);
+				
+			// coordinate types
+			resultFile.addVariableAttribute(X_VAR_NAME,
+					COORD_AXIS_ATTR_NAME, X_COORD_AXIS);
+			resultFile.addVariableAttribute(Y_VAR_NAME,
+					COORD_AXIS_ATTR_NAME, Y_COORD_AXIS);		
+			
+
+			//TODO: Additional lat, lon variables?
+//		    x:standard_name = "projection_x_coordinate" ;
+//		    y:standard_name = "projection_y_coordinate" ;
+
+//		    double lat(y, x) ;
+//		    double lon(y, x) ;
+
+			// add CRS variable and attributes
+			resultFile.addVariable(GRID_MAPPING_VAR_NAME, DataType.CHAR, new Dimension[] {});
+			resultFile.addVariableAttribute(GRID_MAPPING_VAR_NAME,
+					"grid_mapping_name", "gauss_krueger_3");	
+			resultFile.addVariableAttribute(GRID_MAPPING_VAR_NAME,
+					"false_easting", "3500000");	
+			resultFile.addVariableAttribute(GRID_MAPPING_VAR_NAME,
+					"longitude_of_projection_origin", "9");	
+			resultFile.addVariableAttribute(GRID_MAPPING_VAR_NAME,
+					"false_northing", "0.0");	
+			resultFile.addVariableAttribute(GRID_MAPPING_VAR_NAME,
+					"latitude_of_projection_origin", "0.0");	
+			resultFile.addVariableAttribute(GRID_MAPPING_VAR_NAME,
+					"scale_factor_at_projection_origin", "1.0");	
+			resultFile.addVariableAttribute(GRID_MAPPING_VAR_NAME,
+					"semi_major_axis", "6377397.155");	
+			resultFile.addVariableAttribute(GRID_MAPPING_VAR_NAME,
+					"semi_minor_axis", "6356078.9628");	
+			resultFile.addVariableAttribute(GRID_MAPPING_VAR_NAME,
+					"inverse_flattening", "299.1528");	
+			
+//			crs:spatial_ref = \"EPSG\",\"3035\"
+
+			// B2) write dimension arrays to file
+			resultFile.setRedefineMode(false);	
+			resultFile.write(X_VAR_NAME, xArray);
+			resultFile.write(Y_VAR_NAME, yArray);
+			resultFile.write(TIME_VAR_NAME, tArray);
+			
+			// C1) additional information for NetCDF-U file
+			// a) Set dimensions for value variable			
+			ArrayList<Dimension> dims = new ArrayList<Dimension>(2);
+			dims.add(xDim);
+			dims.add(yDim);
+			dims.add(tDim);
+			
+			// b) add data variable with dimensions and attributes 
+			Variable dataVariable = resultUWFile.addSampleVariable(
+					MAIN_VAR_NAME, DataType.DOUBLE, dims,
+					UnknownSample.class, realisationsMap.size());
+						
+			dataVariable.addAttribute(new Attribute(UNITS_ATTR_NAME, MAIN_VAR_UNITS));
+			dataVariable.addAttribute(new Attribute(MISSING_VALUE_ATTR_NAME, -9999F));
+			dataVariable.addAttribute(new Attribute(LONG_NAME_ATTR_NAME, MAIN_VAR_LONG_NAME));
+			// add attribute for grid mapping
+			dataVariable.addAttribute(new Attribute(GRID_MAPPING_ATTR_NAME, GRID_MAPPING_VAR_NAME));
+			
+			// c) add Austal values to data Array	
+			// data array for PM10 values
+			ArrayDouble dataArray = new ArrayDouble.D4(realisationsMap.size(),
+					xDim.getLength(), yDim.getLength(), tDim.getLength());
+			Index dataIndex = dataArray.getIndex();
+			
+			// loop through realisations
+			for(r = 0; r < realisationsMap.size(); r++){
+				HashMap<Integer, ArrayList<Double>> valueMap = realisationsMap.get(r+1);
+				
+				// loop through time steps
+				for(t = 0; t < tDim.getLength(); t++){
+					ArrayList<Double> currentVals = valueMap.get(t+1);
+					c=0;
+					
+					// loop through cells
+					for (yi = (yDim.getLength()-1); yi >=0; yi--) {
+						for (xi = 0; xi < xDim.getLength(); xi++) {	
+							// set data for each realisation
+							Double v = currentVals.get(c);						
+							dataIndex.set(r, xi, yi, t);
+							dataArray.set(dataIndex, v);
+							c++;
+						}
+					}
+				}
+			}
+			
+			
+			//TODO: Makes sense?
+			// add CF conventions
+			resultUWFile.getNetcdfFileWritable().setRedefineMode(true);
+			Attribute conventions = resultUWFile.getNetcdfFileWritable().findGlobalAttribute("Conventions");
+			String newValue =  conventions.getStringValue() + " CF-1.5";
+			resultUWFile.getNetcdfFileWritable().deleteGlobalAttribute("Conventions");
+			resultUWFile.getNetcdfFileWritable().addGlobalAttribute("Conventions", newValue);
+			
+			// C2) write data array to NetCDF-U file
+			resultUWFile.getNetcdfFileWritable().setRedefineMode(false);
+			resultUWFile.getNetcdfFileWritable().write(
+					MAIN_VAR_NAME, dataArray);
+			resultUWFile.getNetcdfFile().close();
+			
+			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			System.out.println("y: "+yi+", x: "+xi+", t: "+t);
+//		}
+		
+		return resultUWFile;
+	}
 	
 	public String get_logs() {
 		return log;

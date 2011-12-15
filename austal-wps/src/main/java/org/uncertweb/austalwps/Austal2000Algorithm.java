@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import org.n52.wps.io.data.IData;
 
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
+import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDateTimeBinding;
@@ -43,7 +45,11 @@ import org.n52.wps.server.AbstractObservableAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
 import org.n52.wps.server.WebProcessingService;
 import org.opengis.feature.simple.SimpleFeature;
+import org.uncertml.sample.UnknownSample;
 import org.uncertweb.api.gml.Identifier;
+import org.uncertweb.api.netcdf.NetcdfUWFile;
+import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
+import org.uncertweb.api.netcdf.exception.NetcdfUWException;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -61,8 +67,19 @@ import org.uncertweb.austalwps.util.austal.files.Austal2000Txt;
 import org.uncertweb.austalwps.util.austal.files.Zeitreihe;
 import org.uncertweb.austalwps.util.austal.geometry.EmissionSource;
 import org.uncertweb.austalwps.util.austal.geometry.ReceptorPoint;
+import org.uncertweb.austalwps.util.austal.geometry.Utils;
 import org.uncertweb.austalwps.util.austal.timeseries.EmissionTimeSeries;
 import org.uncertweb.austalwps.util.austal.timeseries.MeteorologyTimeSeries;
+
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.Variable;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -75,9 +92,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 	private static Logger LOGGER = Logger.getLogger(Austal2000Algorithm.class);
-//	private final String inputIDXQ = "XQ";
-//	private final String inputIDYQ = "YQ";
-	//private final String inputIDMeteorology = "meteorology";
+	// WPS inputs & outputs
 	private final String inputIDWindSpeed = "wind-speed";
 	private final String inputIDWindDirection = "wind-direction";
 	private final String inputIDStreetEmissions = "street-emissions";
@@ -85,13 +100,14 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private final String inputIDStartTime = "start-time";
 	private final String inputIDEndTime = "end-time";
 	private final String outputIDResult = "result";
-	private final String fileSeparator = System.getProperty("file.separator");
+	// Austal result variables
 	private final String logFileMarkerBeginningEnglish = "File";
 	private final String logFileMarkerEndEnglish = "written.";
 	private final String logFileMarkerBeginningGerman = "Datei";
 	private final String logFileMarkerEndGerman = "ausgeschrieben.";
-	//private final String tmpDir = System.getenv("TMP");
-	private String tmpDir = "D:/PhD/WP1.1_AirQualityModel/WebServiceChain/AustalWPS/AustalRun";
+	// system variables
+	private final String fileSeparator = System.getProperty("file.separator");
+	private String tmpDir = "";
 	private String workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
 	private String austalHome = "";
 	private List<String> errors = new ArrayList<String>();
@@ -102,8 +118,9 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	public static final String OS_Name = System.getProperty("os.name");
 	private String zeitreiheFileNameEnglish = "series.dmna";
 	private String zeitreiheFileName = "zeitreihe.dmna";
-	private 	
-	Map<DateTime, AbstractObservation> timeObservationMap;
+	private String austalFileName = "austal2000.txt";
+	private Map<DateTime, AbstractObservation> timeObservationMap;
+	
 	
 	public Austal2000Algorithm(){	
 		
@@ -158,38 +175,31 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {		
 	
-		File workDir = new File(workDirPath);
-		
+		File workDir = new File(workDirPath);		
 		if(!workDir.exists()){
 			workDir.mkdir();
 		}
 		
-		// 1. read files to create datamodel
+		// 1. read files from local resources to create datamodel
 		this.readFiles("austal2000_template.txt", "zeitreihe_template.dmna");		
 		
-		ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
-		ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
-
-		MeteorologyTimeSeries newMetList = new MeteorologyTimeSeries();
-		
-		List<ReceptorPoint> pointList = new ArrayList<ReceptorPoint>();
-		
-		//1.a get input
-		Map<String, IData> result = new HashMap<String, IData>();	
-		
+		// 1.1 Get emission inputs
 		List<IData> streetEmissionDataList = inputData.get(inputIDStreetEmissions);
 		
+		// new emission lists
+		ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
+		ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();				
+		
+		// if emission data has been provided, fill emission lists
 		if(!(streetEmissionDataList == null) && streetEmissionDataList.size() != 0){
 
 			IData streetEmissionData = streetEmissionDataList.get(0);
 			
 			if(streetEmissionData instanceof OMBinding){
-
 				//input is O&M UncertWeb profile and can be processed now
 				IObservationCollection obsCol = ((OMBinding)streetEmissionData).getPayload();
-
 				try {
-					handleObservationCollection(newEmissionSources, newEmisTS, obsCol);
+					handleEmissionObservationCollection(newEmissionSources, newEmisTS, obsCol);
 				} catch (Exception e) {
 					LOGGER.debug(e);
 					e.printStackTrace();
@@ -198,18 +208,20 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		}					
 		
 		
-		// Handle meteorology
+		// 1.2 Get meteorology inputs
+		List<IData> windspeedDataList = inputData.get(inputIDWindSpeed);	
+		List<IData> winddirectionDataList = inputData.get(inputIDWindDirection);
 		
-		//List<IData> meteorologyDataList = inputData.get(inputIDMeteorology);
-		List<IData> windspeedDataList = inputData.get(inputIDWindSpeed);					
+		// new meteorology list
+		MeteorologyTimeSeries newMetList = new MeteorologyTimeSeries();		
+		
+		// if windspeed data has been provided, fill meteorology list		
 		if(!(windspeedDataList == null) && windspeedDataList.size() != 0 ){
 
 			IData windspeedData = windspeedDataList.get(0);
 			
-			if(windspeedData instanceof OMBinding){
-				
+			if(windspeedData instanceof OMBinding){				
 				IObservationCollection obsCol = ((OMBinding)windspeedData).getPayload();
-	
 				try {
 					handleMeteorology(newMetList, obsCol);
 				} catch (Exception e) {
@@ -218,15 +230,13 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			}
 		}			
 		
-		List<IData> winddirectionDataList = inputData.get(inputIDWindDirection);
+		// if winddirection data has been provided, fill meteorology list
 		if(!(winddirectionDataList == null) && winddirectionDataList.size() != 0 ){
 
 			IData winddirectionData = winddirectionDataList.get(0);
 			
-			if(winddirectionData instanceof OMBinding){
-				
-				IObservationCollection obsCol = ((OMBinding)winddirectionData).getPayload();
-				
+			if(winddirectionData instanceof OMBinding){				
+				IObservationCollection obsCol = ((OMBinding)winddirectionData).getPayload();				
 				try {
 					handleMeteorology(newMetList, obsCol);
 				} catch (Exception e) {
@@ -234,33 +244,31 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 				}		
 			}
 		}			
-
-		
-		
+	
+		// 1.3 get receptor point input
 		List<IData> receptorPointsDataList = inputData.get(inputIDReceptorPoints);
+		List<ReceptorPoint> pointList = new ArrayList<ReceptorPoint>();
 		
 		if(!(receptorPointsDataList == null) && receptorPointsDataList.size() != 0){
 
 			IData receptorPointsData = receptorPointsDataList.get(0);
 			
-			if(receptorPointsData instanceof GTVectorDataBinding){
-				
+			if(receptorPointsData instanceof GTVectorDataBinding){			
 				handleReceptorPoints(pointList, (FeatureCollection<?, ?>)receptorPointsData.getPayload());
+				// set Austal into non-grid mode
+				austal.setOs("");
 			}	
 		}
 		
+		// 1.4 Add inputs to Austal Configuration and write files
 		if(pointList.size()>0)
 			austal.setReceptorPoints(pointList);
-		
 		substituteStreetEmissions(newEmissionSources, newEmisTS);
-		substituteMeteoorology(newMetList);
+		substituteMeteoorology(newMetList);		
+
+		writeFiles();
 		
-		
-		// 4. write files
-		writeFiles("austal2000.txt");
-		
-		//2. execute austal2000
-		
+		// 2. execute austal2000	
 		try {
 			//TODO: modify for linux use
 			String command = austalHome + fileSeparator + "austal2000.exe " + workDir.getAbsolutePath();
@@ -312,107 +320,127 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		}
 		
 		//parse logfile and extract filenames TODO: maybe better list files in directory...			
-		ArrayList<String> fileList = new ArrayList<String>();
+//		ArrayList<String> fileList = new ArrayList<String>();
+//		
+//		try{
+//			
+//			File logFile = new File(workDirPath + fileSeparator + "austal2000.log");
+//			
+//			BufferedReader bufferedFileReader = new BufferedReader(new FileReader(logFile));
+//			
+//			String line = bufferedFileReader.readLine();
+//			
+//			while(line != null){
+//				
+//				if(line.contains(logFileMarkerBeginningEnglish)&&line.contains(logFileMarkerEndEnglish)){
+//					
+//					int beginning = line.indexOf(logFileMarkerBeginningEnglish);
+//					int end = line.indexOf(logFileMarkerEndEnglish);
+//					
+//					String fileName = line.substring(beginning, end);
+//					
+//					fileName = fileName.replace("\"", "");
+//					
+//					fileName = fileName.replace(logFileMarkerBeginningEnglish, "");
+//					
+//					fileName = fileName.trim();
+//					
+//					fileName = fileName.concat(".dmna");
+//					
+//					// store in list
+//					if (!fileList.contains(fileName)) {
+//
+//						fileList.add(fileName);
+//					}
+//					
+//				}else if(line.contains(logFileMarkerBeginningGerman)&&line.contains(logFileMarkerEndGerman)){
+//					
+//					int beginning = line.indexOf(logFileMarkerBeginningGerman);
+//					int end = line.indexOf(logFileMarkerEndGerman);
+//					
+//					String fileName = line.substring(beginning, end);
+//					
+//					fileName = fileName.replace("\"", "");
+//					
+//					fileName = fileName.replace(logFileMarkerBeginningGerman, "");
+//					
+//					fileName = fileName.trim();
+//					
+//					fileName = fileName.concat(".dmna");
+//					
+//					// store in list
+//					if (!fileList.contains(fileName)) {
+//
+//						fileList.add(fileName);
+//					}
+//				}
+//				
+//				line = bufferedFileReader.readLine();
+//			}
+//			
+//			bufferedFileReader.close();
+//			
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		}			
 		
-		try{
-			
-			File logFile = new File(workDirPath + fileSeparator + "austal2000.log");
-			
-			BufferedReader bufferedFileReader = new BufferedReader(new FileReader(logFile));
-			
-			String line = bufferedFileReader.readLine();
-			
-			while(line != null){
+		// prepare output
+		Map<String, IData> result = new HashMap<String, IData>();	
+		
+		// if receptor points were provided give their results back
+		if(!(receptorPointsDataList == null) && receptorPointsDataList.size() != 0){
+			try {
+				// read results for receptor points and add them to an observation collection
+				IObservationCollection mcoll = createReceptorPointsResultCollection();		
 				
-				if(line.contains(logFileMarkerBeginningEnglish)&&line.contains(logFileMarkerEndEnglish)){
-					
-					int beginning = line.indexOf(logFileMarkerBeginningEnglish);
-					int end = line.indexOf(logFileMarkerEndEnglish);
-					
-					String fileName = line.substring(beginning, end);
-					
-					fileName = fileName.replace("\"", "");
-					
-					fileName = fileName.replace(logFileMarkerBeginningEnglish, "");
-					
-					fileName = fileName.trim();
-					
-					fileName = fileName.concat(".dmna");
-					
-					// store in list
-					if (!fileList.contains(fileName)) {
-
-						fileList.add(fileName);
-					}
-					
-				}else if(line.contains(logFileMarkerBeginningGerman)&&line.contains(logFileMarkerEndGerman)){
-					
-					int beginning = line.indexOf(logFileMarkerBeginningGerman);
-					int end = line.indexOf(logFileMarkerEndGerman);
-					
-					String fileName = line.substring(beginning, end);
-					
-					fileName = fileName.replace("\"", "");
-					
-					fileName = fileName.replace(logFileMarkerBeginningGerman, "");
-					
-					fileName = fileName.trim();
-					
-					fileName = fileName.concat(".dmna");
-					
-					// store in list
-					if (!fileList.contains(fileName)) {
-
-						fileList.add(fileName);
-					}
-				}
-				
-				line = bufferedFileReader.readLine();
+				OMBinding omd = new OMBinding(mcoll);
+				result.put(outputIDResult, omd);			
+				return result;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		// if no receptor points were given, read grid results from Austal execution
+		else{
+			// read grid files in the result folder
+			AustalOutputReader outputReader = new AustalOutputReader();
+			HashMap<Integer, HashMap<Integer, ArrayList<Double>>> realisationsMap = new HashMap<Integer, HashMap<Integer, ArrayList<Double>>>();
+			realisationsMap.put(1, outputReader.readHourlyFiles(workDirPath, false));			
+			
+			// write results to a NetCDF file
+			String filepath = System.getProperty("java.io.tmpdir") + fileSeparator + "netCDFresult_"
+					+ System.currentTimeMillis() + ".nc";		
+			NetcdfUWFile resultFile = null;
+			try {
+				resultFile = outputReader.createNetCDFfile(filepath, 
+						austal.getStudyArea().getXcoords(), austal.getStudyArea().getYcoords(), 
+						ts.getMeteorologyTimeSeries().getMinDate(), realisationsMap);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (NetcdfUWException e) {
+				e.printStackTrace();
+			} catch (InvalidRangeException e) {
+				e.printStackTrace();
 			}
 			
-			bufferedFileReader.close();
-			
-		}catch (Exception e) {
-			e.printStackTrace();
-		}			
-		
-		try {
-
-			IObservationCollection mcoll = createResultCollection();
-			
-			OMBinding omd = new OMBinding(mcoll);
-			
-			//UncertWebIOData outputUWData = new UncertWebIOData(omd);
-			
-			//result.put(outputIDResult, new UncertWebIODataBinding(outputUWData));
-			result.put(outputIDResult, omd);
-			
+			NetCDFBinding uwData = new NetCDFBinding(resultFile);
+			result.put(outputIDResult, uwData);
 			return result;
-		} catch (Exception e) {
+		}
 			
-		}		
-				
-		FeatureCollection<?, SimpleFeature> collection = FeatureCollections.newCollection();
-		
-		result.put("result", new GTVectorDataBinding(collection));
-		
+		//TODO: what is this for?
+		FeatureCollection<?, SimpleFeature> collection = FeatureCollections.newCollection();		
+		result.put("result", new GTVectorDataBinding(collection));		
 		return result;
 	}	
 
-	private void readFiles(String austalFileName, String zeitreiheFileName){
-//		// read austal2000.txt
-//		File austalFile = new File(FILE_PATH+"//"+ austalFileName);
-//		austal = new Austal2000Txt(austalFile);
-//			
-//		// read zeitreihe.dmna
-//		File tsFile = new File(FILE_PATH+"//"+zeitreiheFileName);
-//		ts = new Zeitreihe(tsFile);
-		
+	private void readFiles(String austalFileName, String zeitreiheFileName){		
 		String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
 		String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
 		if(host == null) {
 			try {
 				host = InetAddress.getLocalHost().getCanonicalHostName();
+				
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			}
@@ -444,17 +472,21 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 	}
 	
-	private void writeFiles(String austalFileName){
+	private void writeFiles(){
 		// test writer
 		File new_austalFile = new File(workDirPath+"/"+austalFileName);
 		austal.writeFile(new_austalFile);
 		File new_tsFile = new File(workDirPath+"/"+zeitreiheFileName);
-		File new_tsFile2 = new File(workDirPath+"/"+zeitreiheFileNameEnglish);
 		ts.writeFile(new_tsFile);
-		ts.writeFile(new_tsFile2);
+		//File new_tsFile2 = new File(workDirPath+"/"+zeitreiheFileNameEnglish);
+		//ts.writeFile(new_tsFile2);
 	}
 	
-	
+	/**
+	 * Method to create Receptor point list from FeatureCollection input
+	 * @param pointList
+	 * @param featColl
+	 */
 	private void handleReceptorPoints(List<ReceptorPoint> pointList,
 			FeatureCollection<?, ?> featColl) {
 
@@ -463,7 +495,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 		String xp = "";
 		String yp = "";
-		// String hp = "";
+	    String hp = "2";
 
 		int coordinateCount = 0;
 
@@ -526,7 +558,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					xp = "" + Math.round(coord.y - gy);
 					yp = "" + Math.round(coord.y - gy);
 
-					ReceptorPoint rp = new ReceptorPoint(xp, yp, "2");
+					ReceptorPoint rp = new ReceptorPoint(xp, yp, hp);
 
 					pointList.add(rp);
 				}
@@ -536,17 +568,20 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 
 	}
 	
+	/**
+	 * Method to create meteorology time series from ObservationCollection input
+	 * @param newMetList
+	 * @param coll
+	 * @throws Exception
+	 */
+	//TODO: this method can be simplified as now windspeed and winddirection are provided separately!
 	private void handleMeteorology(MeteorologyTimeSeries newMetList, IObservationCollection coll) throws Exception{
-
 				
 		/*
 		 * the O&M is structured in that way that at first the wind direction values are listed
 		 * and second the wind speed values. each timestamp has a wind direction value and on wind speed value 
 		 */
 		for (AbstractObservation abstractObservation : coll.getObservations()) {
-			
-//			LOGGER.debug(abstractObservation.getPhenomenonTime().getDateTime());
-//			LOGGER.debug(timeObservationMap.containsKey(abstractObservation.getPhenomenonTime().getDateTime()));
 			LOGGER.debug(timeObservationMap.keySet().size());
 			
 			if(!timeObservationMap.containsKey(abstractObservation.getPhenomenonTime().getDateTime())){
@@ -558,9 +593,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 				 */
 				AbstractObservation obs1 = timeObservationMap.get(abstractObservation.getPhenomenonTime().getDateTime());
 				
-				/*
-				 * check for wind direction value
-				 */				
+				// check for wind direction value			
 				Double obsWD = 0.0d;
 				if(obs1.getObservedProperty().getPath().contains("winddirection")){
 					obsWD = (Double)obs1.getResult().getValue();
@@ -574,9 +607,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 				while(obsWD>360)
 					obsWD = obsWD-360;
 				
-				/*
-				 * check for wind speed value
-				 */				
+				// check for wind speed value				
 				Double obsWS = 0.0d;
 				if(obs1.getObservedProperty().getPath().contains("windspeed")){
 					obsWS = (Double)obs1.getResult().getValue();
@@ -605,8 +636,14 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		}
 	}
 	
-	
-	private void handleObservationCollection(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS, IObservationCollection coll) throws Exception {
+	/**
+	 * Method to create new emission list from ObservationCollection input
+	 * @param newEmissionSources
+	 * @param newEmisTS
+	 * @param coll
+	 * @throws Exception
+	 */
+	private void handleEmissionObservationCollection(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS, IObservationCollection coll) throws Exception {
 		
 		int gx = austal.getStudyArea().getGx();
 		int gy = austal.getStudyArea().getGy();
@@ -626,8 +663,6 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			
 			if(spsam == null){
 				spsam = abstractObservation.getFeatureOfInterest();
-//				
-//				EmissionTimeSeries polygonTS = new EmissionTimeSeries(polygon.getDynamicSourceID());	// assign id of respective source
 
 				lineTS = new EmissionTimeSeries(counter);// assign id of respective source
 				
@@ -640,7 +675,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					/*
 					 * create EmissionSource
 					 */
-					EmissionSource tmpEMS = lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[coords.length-1].x, coords[coords.length-1].y);
+					EmissionSource tmpEMS = Utils.lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[coords.length-1].x, coords[coords.length-1].y);					
 					tmpEMS.setDynamicSourceID(counter);
 					newEmissionSources.add(tmpEMS);
 					
@@ -654,7 +689,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					/*
 					 * create EmissionSource
 					 */
-					EmissionSource tmpEMS = cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
+					EmissionSource tmpEMS = Utils.cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
 					tmpEMS.setDynamicSourceID(counter);
 					newEmissionSources.add(tmpEMS);	
 				}
@@ -671,7 +706,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 								.getFeatureOfInterest().getShape();
 
 						Coordinate[] coords = mline.getCoordinates();
-						EmissionSource tmpEMS = lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[1].x, coords[1].y);
+						EmissionSource tmpEMS = Utils.lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[1].x, coords[1].y);
 						tmpEMS.setDynamicSourceID(counter);
 						newEmissionSources.add(tmpEMS);
 					} else if (abstractObservation.getFeatureOfInterest()
@@ -682,7 +717,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 						
 						Coordinate[] coords = mpoly.getCoordinates();
 						
-						EmissionSource tmpEMS = cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
+						EmissionSource tmpEMS = Utils.cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
 						tmpEMS.setDynamicSourceID(counter);
 						newEmissionSources.add(tmpEMS);
 					}
@@ -720,74 +755,11 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		newEmisTS.add(lineTS);
 	}
 	
-	
-	// methods to calculate Gauss-Krueger-Coordinates to local austal coordinates
-	private EmissionSource lineGK3ToLocalCoords(double gx, double gy, double x1, double y1, double x2, double y2){
-		
-		EmissionSource source = new EmissionSource();		
-		double xq, yq, wq;	
-		double bq = Math.sqrt(Math.pow((x1-x2), 2)+Math.pow((y1-y2), 2)); // extension in y direction = length
-		double aq=0;					// extension in x direction
-		double cq=1;					// extension in z direction
-		double hq=0.2;					// height
-		
-		// find point to the RIGHT which will stay fixed
-		if(x1==x2){ // easiest case
-			// convert to local coordinates
-			xq = x1 - gx;
-			yq = y1 - gy;		
-			wq = 0;					// angle counterclockwise					
-		} else if(x1>x2){	
-			// convert to local coordinates
-			xq = x1 - gx;
-			yq = y1 - gy;
-			if(y1>y2)
-				wq = 180 - Math.atan(Math.abs(x1-x2)/Math.abs(y1-y2))*180/Math.PI;
-			else
-				wq = Math.atan(Math.abs(x1-x2)/Math.abs(y1-y2))*180/Math.PI;
-				
-		}else{
-			// convert to local coordinates
-			xq = x2 - gx;
-			yq = y2 - gy;
-			if(y2>y1)
-				wq = 180 - Math.atan(Math.abs(x1-x2)/Math.abs(y1-y2))*180/Math.PI;
-			else
-				wq = Math.atan(Math.abs(x1-x2)/Math.abs(y1-y2))*180/Math.PI;
-		}
-		
-		source.setCoordinates(xq, yq);
-		source.setExtent(aq, bq, cq, wq, hq);
-		return source;
-	}
-	
-	// method to calculate Gauss-Krueger-Coordinates to local austal coordinates
-	private EmissionSource cellPolygonGK3ToLocalCoords(double gx, double gy, double x1, double y1, double x2, double y2){
-			
-			EmissionSource source = new EmissionSource();		
-			double xq, yq;	
-			double bq = Math.abs(y1-y2); 	// extension in y direction
-			double aq = Math.abs(x1-x2);	// extension in x direction
-			double cq=1;					// extension in z direction
-			double hq=0.2;					// height
-			double wq = 0;					//TODO: This is zero for our case
-			
-			// get lower left point which will stay fixed
-			if(x1<x2)
-				xq = x1 - gx;
-			else
-				xq = x2 - gx;
-			
-			if(y1<y2)
-				yq = y1 - gy;
-			else
-				yq = y2 - gy;
-		
-			source.setCoordinates(xq, yq);
-			source.setExtent(aq, bq, cq, wq, hq);
-			return source;
-		}
-	
+	/**
+	 * Method to substitute street emissions in the Austal datbase by new observations
+	 * @param newEmissionSources
+	 * @param newEmisTS
+	 */
 	private void substituteStreetEmissions(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS){
 		// get old emission lists
 		ArrayList<EmissionSource> emissionSources = (ArrayList<EmissionSource>) austal.getEmissionSources();
@@ -841,6 +813,10 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		ts.setEmissionSourcesTimeSeries(newEmisTS);
 	}
 	
+	/**
+	 * Method to substitute existing Meteorology time series parts in the Austal database with new observations
+	 * @param newMetList
+	 */
 	private void substituteMeteoorology(MeteorologyTimeSeries newMetList){
 		// get old meteorology list
 		MeteorologyTimeSeries metList = ts.getMeteorologyTimeSeries();
@@ -856,7 +832,13 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		ts.setMeteorologyTimeSeries(newMetList);
 	}	
 	
-	private IObservationCollection createResultCollection() throws URISyntaxException{
+	
+	/**
+	 * Method to create OM Observation Collection with Austal results for receptor points
+	 * @return
+	 * @throws URISyntaxException
+	 */
+	private IObservationCollection createReceptorPointsResultCollection() throws URISyntaxException{
 		
 		MeasurementCollection mcoll = new MeasurementCollection();			
 		
@@ -902,6 +884,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		}
 		return mcoll;
 	}	
+	
 	
 	public File zipFiles(String[] files){
 		

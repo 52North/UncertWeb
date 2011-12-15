@@ -72,14 +72,16 @@
 	<AlgorithmRepositoryList>
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
 			<Property name="Algorithm" active="true">org.uncertweb.austalwps.Austal2000Algorithm</Property>
-			<Property name="Austal_Home" active="true">C:\\UncertWeb\\Austal\\HONEU</Property>
+			<!-- <Property name="Austal_Home" active="true">C:\\UncertWeb\\Austal\\HONEU</Property> -->
+			<Property name="Austal_Home" active="true">D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\AustalWPS\\AustalRun</Property>
 		</Repository>
 		
 		<Repository name="UploadedAlgorithmRepository" className="org.n52.wps.server.UploadedAlgorithmRepository" active="true">
 		</Repository>        
 		
 	</AlgorithmRepositoryList>
-	<Server hostname="giv-uw2.uni-muenster.de" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="austalWPS">
+	<!-- hostname="giv-uw2.uni-muenster.de" -->
+	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="austalWPS">
 		<Database/>
 	</Server>
 </WPSConfiguration>

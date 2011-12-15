@@ -9,7 +9,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 		</ows:Abstract>
 		<ows:Metadata xlink:title="model"/>
 		<DataInputs>
-			<Input minOccurs="1" maxOccurs="1">
+			<Input minOccurs="0" maxOccurs="1">
 				<ows:Identifier>receptor-points</ows:Identifier>
 				<ows:Title>input features</ows:Title>
 				<ows:Abstract>points</ows:Abstract>
@@ -164,6 +164,9 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 							<Schema>
 								http://schemas.opengis.net/om/2.0/observation.xsd
 							</Schema>
+						</Format>
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
 						</Format>
 					</Supported>
 				</ComplexOutput>
