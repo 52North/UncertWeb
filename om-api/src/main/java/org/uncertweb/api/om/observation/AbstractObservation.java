@@ -1,13 +1,25 @@
 package org.uncertweb.api.om.observation;
 
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.uncertml.IUncertainty;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.result.BooleanResult;
+import org.uncertweb.api.om.result.CategoryResult;
 import org.uncertweb.api.om.result.IResult;
+import org.uncertweb.api.om.result.IntegerResult;
+import org.uncertweb.api.om.result.MeasureResult;
+import org.uncertweb.api.om.result.ReferenceResult;
+import org.uncertweb.api.om.result.TextResult;
+import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -19,6 +31,222 @@ import com.vividsolutions.jts.geom.Envelope;
  *
  */
 public abstract class AbstractObservation {
+	public static class Builder {
+
+		private Identifier identifier;
+		private Envelope boundedBy;
+		private TimeObject phenomenonTime;
+		private TimeObject resultTime;
+		private TimeObject validTime;
+		private URI procedure;
+		private URI observedProperty;
+		private SpatialSamplingFeature featureOfInterest;
+		private IResult result;
+		private DQ_UncertaintyResult[] resultQuality;
+
+		public static Builder instance() {
+			return new Builder();
+		}
+
+		public Builder withIdentifier(URI codeSpace, String identifier) {
+			return withIdentifier(new Identifier(codeSpace, identifier));
+		}
+
+		public Builder withIdentifier(Identifier i) {
+			this.identifier = i;
+			return this;
+		}
+
+		public Builder withBoundedBy(Envelope e) {
+			this.boundedBy = e;
+			return this;
+		}
+
+		public Builder withPhenomenonTime(DateTime t) {
+			return withPhenomenonTime(new TimeObject(t));
+		}
+
+		public Builder withPhenomenonTime(Interval t) {
+			return withPhenomenonTime(new TimeObject(t));
+		}
+
+		public Builder withPhenomenonTime(DateTime b, DateTime e) {
+			return withPhenomenonTime(new TimeObject(b, e));
+		}
+
+		public Builder withPhenomenonTime(TimeObject t) {
+			this.phenomenonTime = t;
+			return this;
+		}
+
+		public Builder withPhenomenonAndResultTime(DateTime t) {
+			return withPhenomenonTime(t).withResultTime(t);
+		}
+
+		public Builder withPhenomenonAndResultTime(Interval t) {
+			return withPhenomenonTime(t).withResultTime(t);
+		}
+
+		public Builder withPhenomenonAndResultTime(DateTime b, DateTime e) {
+			return withPhenomenonTime(b, e).withResultTime(b, e);
+		}
+
+		public Builder withPhenomenonAndResultTime(TimeObject t) {
+			return withPhenomenonTime(t).withResultTime(t);
+		}
+
+		public Builder withResultTime(DateTime t) {
+			return withResultTime(new TimeObject(t));
+		}
+
+		public Builder withResultTime(Interval t) {
+			return withResultTime(new TimeObject(t));
+		}
+
+		public Builder withResultTime(DateTime b, DateTime e) {
+			return withResultTime(new TimeObject(b, e));
+		}
+
+		public Builder withResultTime(TimeObject t) {
+			this.resultTime = t;
+			return this;
+		}
+
+		public Builder withValidTime(DateTime t) {
+			return withValidTime(new TimeObject(t));
+		}
+
+		public Builder withValidTime(Interval t) {
+			return withValidTime(new TimeObject(t));
+		}
+
+		public Builder withValidTime(DateTime b, DateTime e) {
+			return withValidTime(new TimeObject(b, e));
+		}
+
+		public Builder withValidTime(TimeObject t) {
+			this.validTime = t;
+			return this;
+		}
+
+		public Builder withProcedure(String p) {
+			return withProcedure(URI.create(p));
+		}
+
+		public Builder withProcedure(URI p) {
+			this.procedure = p;
+			return this;
+		}
+
+		public Builder withObservedProperty(String p) {
+			return withObservedProperty(URI.create(p));
+		}
+
+		public Builder withObservedProperty(URI o) {
+			this.observedProperty = o;
+			return this;
+		}
+
+		public Builder withFeatureOfInterest(SpatialSamplingFeature sff) {
+			this.featureOfInterest = sff;
+			return this;
+		}
+
+		public Builder withResult(double value, String unit) {
+			return withResult(new MeasureResult(value, unit));
+		}
+
+		public Builder withResult(String value, String codeSpace) {
+			return withResult(new CategoryResult(value, codeSpace));
+		}
+
+		public Builder withResult(BigInteger value) {
+			return withResult(new IntegerResult(value));
+		}
+
+		public Builder withResult(boolean bool) {
+			return withResult(new BooleanResult(bool));
+		}
+
+		public Builder withResult(String text) {
+			return withResult(new TextResult(text));
+		}
+
+		public Builder withResult(IUncertainty u) {
+			return withResult(u, null);
+		}
+
+		public Builder withResult(IUncertainty u, String uom) {
+			return withResult(new UncertaintyResult(u, uom));
+		}
+
+		public Builder withResult(URI href, String role) {
+			return withResult(new ReferenceResult(href.toString(), role));
+		}
+
+		public Builder withResult(IResult r) {
+			this.result = r;
+			return this;
+		}
+
+		public Builder withResultQuality(DQ_UncertaintyResult[] ur) {
+			this.resultQuality = ur;
+			return this;
+		}
+
+		public Builder withResultQuality(DQ_UncertaintyResult ur) {
+			return withResultQuality(new DQ_UncertaintyResult[] { ur });
+		}
+
+		public AbstractObservation build() {
+			Validate.notNull(phenomenonTime, "PhenomenonTime must not be null.");
+			Validate.notNull(resultTime, "ResultTime must not be null.");
+			Validate.notNull(procedure, "Procedure must not be null.");
+			Validate.notNull(observedProperty, "ObservedProperty must not be null.");
+			Validate.notNull(featureOfInterest, "FeatureOfInterest must not be null.");
+			Validate.notNull(result, "Result must not be null.");
+
+			AbstractObservation ao = null;
+
+			if (result instanceof MeasureResult) {
+				ao = new Measurement(identifier, boundedBy, phenomenonTime,
+						resultTime, validTime, procedure, observedProperty,
+						featureOfInterest, resultQuality,
+						(MeasureResult) result);
+			} else if (result instanceof BooleanResult) {
+				ao = new BooleanObservation(identifier, boundedBy,
+						phenomenonTime, resultTime, validTime, procedure,
+						observedProperty, featureOfInterest, resultQuality,
+						(BooleanResult) result);
+			} else if (result instanceof CategoryResult) {
+				ao = new CategoryObservation(identifier, boundedBy,
+						phenomenonTime, resultTime, validTime, procedure,
+						observedProperty, featureOfInterest, resultQuality,
+						(CategoryResult) result);
+			} else if (result instanceof IntegerResult) {
+				ao = new DiscreteNumericObservation(identifier, boundedBy,
+						phenomenonTime, resultTime, validTime, procedure,
+						observedProperty, featureOfInterest, resultQuality,
+						(IntegerResult) result);
+			} else if (result instanceof ReferenceResult) {
+				ao = new ReferenceObservation(identifier, boundedBy,
+						phenomenonTime, resultTime, validTime, procedure,
+						observedProperty, featureOfInterest, resultQuality,
+						(ReferenceResult) result);
+			} else if (result instanceof TextResult) {
+				ao = new TextObservation(identifier, boundedBy, phenomenonTime,
+						resultTime, validTime, procedure, observedProperty,
+						featureOfInterest, resultQuality, (TextResult) result);
+			} else if (result instanceof UncertaintyResult) {
+				ao = new UncertaintyObservation(identifier, boundedBy,
+						phenomenonTime, resultTime, validTime, procedure,
+						observedProperty, featureOfInterest, resultQuality,
+						(UncertaintyResult) result);
+			}
+			return ao;
+		}
+	}
+	
 
 	protected Identifier identifier;
 	protected Envelope boundedBy;
