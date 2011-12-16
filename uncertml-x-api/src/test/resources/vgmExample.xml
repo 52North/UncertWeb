@@ -4,5 +4,5 @@
 	<un:sill>5</un:sill>
 	<un:range>800</un:range>
 	<un:nugget>0</un:nugget>
-	<un:model>Exponential</un:model>
+	<un:model>Exp</un:model>
 </un:VariogramFunction>

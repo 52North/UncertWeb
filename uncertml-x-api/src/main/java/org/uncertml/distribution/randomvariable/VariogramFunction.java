@@ -36,7 +36,7 @@ public class VariogramFunction implements IDistribution, IGaussianCovariancePara
 	 *
 	 */
 	public enum Model{
-		GAUSSIAN,SPHERICAL,EXPONENTIAL,LINEAR,MATERN
+		Gau,Sph,Exp,Lin,Mat
 	}
 	
 	/**

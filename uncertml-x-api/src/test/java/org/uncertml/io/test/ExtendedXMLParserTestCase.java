@@ -10,7 +10,7 @@ import org.uncertweb.utils.UwFileUtils;
 
 public class ExtendedXMLParserTestCase extends TestCase {
 
-	private String localPath = "D:/uncertwebWorkspace/uncertweb-utils-trunk/";
+	private String localPath = "D:/uncertwebWorkspace/uncertml-x-api/";
 	private String pathToExamples = "src/test/resources";
 	
 	public void testParser() throws Exception{

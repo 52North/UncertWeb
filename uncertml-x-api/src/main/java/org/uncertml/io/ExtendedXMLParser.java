@@ -35,7 +35,7 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 	 * common uncertml parser from UncertML API
 	 * 
 	 */
-	private XMLParser uncertMLparser;
+	
 
 	@Override
 	public IUncertainty parse(String uncertml)
@@ -113,7 +113,9 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 		}
 		//TODO implement further methods for the different field types
 		else{
-			return uncertMLparser.parse(xb_object.toString());
+			String xmlString = xb_object.xmlText();
+			XMLParser umlParser = new XMLParser();
+			return umlParser.parse(xmlString);
 		}
 	}
 	
@@ -124,7 +126,8 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 		//covarianceMatrix parsing
 		CovarianceMatrix covMatrix = xb_nsftype.getCovarianceMatrix();
 		if (covMatrix!=null){
-			IUncertainty cvm = this.uncertMLparser.parse(covMatrix.toString());
+			XMLParser umlParser = new XMLParser();
+			IUncertainty cvm = umlParser.parse(covMatrix.toString());
 			if (cvm instanceof org.uncertml.statistic.CovarianceMatrix){
 				gp = new STCovarianceMatrix((org.uncertml.statistic.CovarianceMatrix)cvm);
 			}
@@ -165,9 +168,9 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 		sill = xb_vg.getSill();
 		range = xb_vg.getRange();
 		nugget = xb_vg.getNugget();
-		String modelString = xb_vg.getModel().toString().toUpperCase();
+		String modelString = xb_vg.getModel().toString();
 		model = Model.valueOf(modelString);
-		if (model.equals(Model.MATERN)){
+		if (model.equals(Model.Mat)){
 			kappa = xb_vg.getKappa();
 		}
 		Anisotropy xbAnis = xb_vg.getAnisotropy();
