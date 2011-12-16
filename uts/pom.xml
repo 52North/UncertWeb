@@ -55,11 +55,6 @@
     	<version>0.6-1</version>
     </dependency>
     <dependency>
-    	<groupId>org.uncertml</groupId>
-    	<artifactId>uncertml</artifactId>
-    	<version>2.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
     	<groupId>org.uncertweb</groupId>
     	<artifactId>52n-wps-io-uncertweb</artifactId>
 		<version>0.0.3-SNAPSHOT</version>
@@ -69,11 +64,6 @@
   <artifactId>netcdf</artifactId>
   <version>4.2</version>
     </dependency>
-    <dependency> 
-    <groupId>org.uncertweb</groupId>
-	<artifactId>netcdf-u-api</artifactId>
-	<version>1.1-SNAPSHOT</version>
-	</dependency>
   </dependencies>
   <build>
   		<finalName>uts</finalName>
