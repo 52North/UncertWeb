@@ -29,6 +29,7 @@ public class UncertWebDataConstants {
 	public static final String ENCODING_BINARY = "binary";
 	
 	
+	public static final String SCHEMA_OMU= "http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd";
 	public static final String SCHEMA_OM_V2 = "http://schemas.opengis.net/om/2.0/observation.xsd";
 	public static final String SCHEMA_OM_V1 = "http://schemas.opengis.net/om/1.0.0/om.xsd";
 	public static final String SCHEMA_UNCERTML = "http://uncertml.org/uncertml.xsd";
