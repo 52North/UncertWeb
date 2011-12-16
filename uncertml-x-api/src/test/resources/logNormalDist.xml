@@ -1,0 +1,4 @@
+<un:LogNormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+            <un:logScale>2</un:logScale>
+            <un:shape>0.6</un:shape>
+ </un:LogNormalDistribution>
