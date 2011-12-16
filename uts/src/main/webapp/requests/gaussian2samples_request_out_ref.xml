@@ -9,8 +9,8 @@
     </wps:Input>
     <wps:Input>
       <ows:Identifier>numbReal</ows:Identifier>
-      <wps:Data dataType="xs:integer">
-        <wps:LiteralData>1000</wps:LiteralData>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:integer">1000</wps:LiteralData>
       </wps:Data>
     </wps:Input>
   </wps:DataInputs>
