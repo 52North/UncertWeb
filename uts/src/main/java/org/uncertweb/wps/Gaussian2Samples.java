@@ -13,10 +13,10 @@ import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.server.AbstractAlgorithm;
-import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.rosuda.REngine.REXP;
 import org.uncertml.sample.RandomSample;
+import org.uncertweb.api.netcdf.NetCDFConstants;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
 
@@ -43,11 +43,6 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 	private final static String INPUT_IDENTIFIER_DIST = "distribution";
 	private final static String INPUT_IDENTIFIER_NUMB_REAL = "numbReal";
 	private final static String OUTPUT_IDENTIFIER_SAMPLES = "samples";
-	private final static String LAT_VAR_NAME = "lat";
-	private final static String LON_VAR_NAME = "lon";
-	private final static String UNITS_ATTR_NAME = "units";
-	private final static String MV_ATTR_NAME = "missing_value";
-	private final static String REF_ATTR_NAME = "ref";
 	
 	public Gaussian2Samples(){
 		super();
@@ -142,7 +137,7 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 					.getAncillaryVariables();
 			for (int i = 0; i < ancillaryVariables.size(); i++) {
 				Variable var = ancillaryVariables.get(i);
-				String ref = var.findAttribute(REF_ATTR_NAME).getStringValue();
+				String ref = var.findAttribute(NetCDFConstants.REF_ATTR_NAME).getStringValue();
 
 				// TODO correct to UncertML URIs!!
 				if (ref
@@ -192,32 +187,32 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 			Dimension longDim = null;
 			while (dimensions.hasNext()) {
 				Dimension dim = dimensions.next();
-				if (dim.getName().equals(LAT_VAR_NAME)) {
+				if (dim.getName().equals(NetCDFConstants.LAT_VAR_NAME)) {
 					if (!resultFile.isDefineMode()) {
 						resultFile.setRedefineMode(true);
 					}
 					latDim = dim;
 					resultFile.addDimension(null, dim);
-					resultFile.addVariable(LAT_VAR_NAME, DataType.FLOAT,
+					resultFile.addVariable(NetCDFConstants.LAT_VAR_NAME, DataType.FLOAT,
 							new Dimension[] { dim });
-					resultFile.addVariableAttribute(LAT_VAR_NAME,
-							UNITS_ATTR_NAME, "degrees_north");
+					resultFile.addVariableAttribute(NetCDFConstants.LAT_VAR_NAME,
+							NetCDFConstants.UNITS_ATTR_NAME, "degrees_north");
 					resultFile.setRedefineMode(false);
-					resultFile.write(LAT_VAR_NAME, inputFile.getNetcdfFile()
-							.findVariable(LAT_VAR_NAME).read());
-				} else if (dim.getName().equals(LON_VAR_NAME)) {
+					resultFile.write(NetCDFConstants.LAT_VAR_NAME, inputFile.getNetcdfFile()
+							.findVariable(NetCDFConstants.LAT_VAR_NAME).read());
+				} else if (dim.getName().equals(NetCDFConstants.LON_VAR_NAME)) {
 					if (!resultFile.isDefineMode()) {
 						resultFile.setRedefineMode(true);
 					}
 					longDim = dim;
 					resultFile.addDimension(null, dim);
-					resultFile.addVariable(LON_VAR_NAME, DataType.FLOAT,
+					resultFile.addVariable(NetCDFConstants.LON_VAR_NAME, DataType.FLOAT,
 							new Dimension[] { dim });
-					resultFile.addVariableAttribute(LON_VAR_NAME,
-							UNITS_ATTR_NAME, "degrees_east");
+					resultFile.addVariableAttribute(NetCDFConstants.LON_VAR_NAME,
+							NetCDFConstants.UNITS_ATTR_NAME, "degrees_east");
 					resultFile.setRedefineMode(false);
-					resultFile.write(LON_VAR_NAME, inputFile.getNetcdfFile()
-							.findVariable(LON_VAR_NAME).read());
+					resultFile.write(NetCDFConstants.LON_VAR_NAME, inputFile.getNetcdfFile()
+							.findVariable(NetCDFConstants.LON_VAR_NAME).read());
 				}
 			}
 
@@ -230,8 +225,8 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 					primaryVariable.getName(), DataType.DOUBLE, dims,
 					RandomSample.class, intNRealisations);
 			samplesVariable.addAttribute(primaryVariable
-					.findAttribute(UNITS_ATTR_NAME));
-			samplesVariable.addAttribute(meanVar.findAttribute(MV_ATTR_NAME));
+					.findAttribute(NetCDFConstants.UNITS_ATTR_NAME));
+			samplesVariable.addAttribute(meanVar.findAttribute(NetCDFConstants.MV_ATTR_NAME));
 			ArrayDouble samplesArray = new ArrayDouble.D3(intNRealisations,
 					latDim.getLength(), longDim.getLength());
 
@@ -279,20 +274,4 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 		}
 		return resultNCFile;
 	}
-
-//	@Override
-//	public List<String> getInputIdentifiers() {
-//		ArrayList<String> inputIdentifiers = new ArrayList<String>(2);
-//		inputIdentifiers.add(INPUT_IDENTIFIER_DIST);
-//		inputIdentifiers.add(INPUT_IDENTIFIER_NUMB_REAL);
-//		return inputIdentifiers;
-//	}
-//
-//	@Override
-//	public List<String> getOutputIdentifiers() {
-//		ArrayList<String> outputIdentifiers = new ArrayList<String>(2);
-//		outputIdentifiers.add(OUTPUT_IDENTIFIER_SAMPLES);
-//		return outputIdentifiers;
-//	}
-
 }
