@@ -72,11 +72,11 @@
 			<element name="model">
 				<simpleType>
 					<restriction base="string">
-						<enumeration value="Matern"/>
-						<enumeration value="Linear"/>
-						<enumeration value="Exponential"/>
-						<enumeration value="Spherical"/>
-						<enumeration value="Gaussian"/>
+						<enumeration value="Mat"/>
+						<enumeration value="Lin"/>
+						<enumeration value="Exp"/>
+						<enumeration value="Sph"/>
+						<enumeration value="Gau"/>
 					</restriction>
 				</simpleType>
 			</element>
