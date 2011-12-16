@@ -187,7 +187,7 @@ public class SpatialDistribution2Samples extends AbstractAlgorithm{
 			c.tryVoidEval("subSet <- overlay(extent,spUNetCDF[!is.na(spUNetCDF$biotemp),])");
 			c.tryVoidEval("subSet <- spUNetCDF[!is.na(spUNetCDF$biotemp),][!is.na(subSet),]");
 			c.tryVoidEval("simData <- krige(formula=biotemp~1, locations=NULL,newdata=as(subSet,\"SpatialPoints\")[sample(3343,size=400)], model=fitVgm, dummy=T, nsim=10, beta=mean(spUNetCDF$biotemp,na.rm=T))");
-			
+			c.tryVoidEval("gridded(simData) <- TRUE");
 			//Create response
 			c.tryVoidEval("writeUNetCDF(newfile=\""+outputFilePath+"\", simData)");
 		
