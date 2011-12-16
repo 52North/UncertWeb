@@ -1,13 +1,27 @@
 package org.uncertweb.wps;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.complex.UncertMLBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
+import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
+import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
-import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
+import org.n52.wps.util.r.process.ExtendedRConnection;
+import org.n52.wps.util.r.process.RProcessException;
+import org.rosuda.REngine.Rserve.RserveException;
+import org.uncertml.distribution.randomvariable.VariogramFunction;
+import org.uncertweb.api.netcdf.NetcdfUWFile;
+import org.uncertweb.api.netcdf.exception.NetcdfUWException;
+
+import ucar.nc2.NetcdfFile;
 
 /**
  * class that implements a process for taking samples from a spatial distribution
@@ -15,11 +29,15 @@ import org.n52.wps.server.AbstractSelfDescribingAlgorithm;
  * @author staschc, Ben Graeler
  *
  */
-public class SpatialDistribution2Samples extends AbstractSelfDescribingAlgorithm{
+public class SpatialDistribution2Samples extends AbstractAlgorithm{
 	
-	private final String INPUT_ID_DATA = "inputData";
-	private final String INPUT_ID_VARIOGRAM = "variogram";
-	private final String OUTPUT_ID_SAMPLES = "samples";
+	private static Logger LOGGER = Logger.getLogger(SpatialDistribution2Samples.class);
+	
+	private final String INPUT_ID_DATA = "InputData";
+	private final String INPUT_ID_VARIOGRAM = "VariogramFunction";
+	private final String INPUT_ID_NOS = "NumberOfSimulations";
+	private final String INPUT_ID_VAR = "Variable";
+	private final String OUTPUT_ID_SAMPLES = "Samples";
 
 	@Override
 	public List<String> getErrors() {
@@ -30,10 +48,16 @@ public class SpatialDistribution2Samples extends AbstractSelfDescribingAlgorithm
 	@Override
 	public Class getInputDataType(String id) {
 		if (id.equalsIgnoreCase(INPUT_ID_DATA)){
-			return NetCDFBinding.class;
+			return UncertWebIODataBinding.class;
 		}
 		else if (id.equals(INPUT_ID_VARIOGRAM)){
 			return UncertMLBinding.class;
+		}
+		else if (id.equals(INPUT_ID_NOS)){
+			return LiteralIntBinding.class;
+		}
+		else if (id.equals(INPUT_ID_VAR)){
+			return LiteralStringBinding.class;
 		}
 		else return null;
 	}
@@ -41,29 +65,159 @@ public class SpatialDistribution2Samples extends AbstractSelfDescribingAlgorithm
 
 	@Override
 	public Class getOutputDataType(String id) {
-		// TODO Auto-generated method stub
+		if (id.equals(OUTPUT_ID_SAMPLES)){
+			return UncertWebIODataBinding.class;
+		}
+		else
 		return null;
 	}
 
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		// WPS specific stuff; initialize result set
+		Map<String, IData> result = new HashMap<String, IData>(1);
+		try {
 
-	@Override
-	public List<String> getInputIdentifiers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<String> getOutputIdentifiers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+			// get netCDF file containing the Gaussian Distributions
+			IData dataInput = inputData.get(INPUT_ID_DATA).get(0);
 
 	
-	
-	
+			//TODO support U-OM as input
+			if (dataInput instanceof NetCDFBinding){
+			
+			NetcdfUWFile uwNcdfFile = ((NetCDFBinding)dataInput).getPayload();
+			
+			//extract number of simulations inputs
+			IData numbRealsInput = inputData.get(INPUT_ID_NOS)
+					.get(0);
+			Integer intNSimulations = ((LiteralIntBinding) numbRealsInput)
+					.getPayload();
+			
+			IData varInput = inputData.get(INPUT_ID_VAR).get(0);
+			String varName = ((LiteralStringBinding) varInput).getPayload();
+			
+			
+			//extract variogram function input
+			IData vgInput = inputData.get(INPUT_ID_VARIOGRAM).get(0);
+			VariogramFunction vgFunction = (VariogramFunction)((UncertMLBinding)vgInput).getPayload();
+			
+			
+			//run spatial simulation
+			NetcdfUWFile resultFile = getSimulations4NCFile(uwNcdfFile,
+					intNSimulations,vgFunction,varName);
+
+
+			NetCDFBinding uwData = new NetCDFBinding(resultFile);
+			result.put(OUTPUT_ID_SAMPLES, uwData);
+			
+			}
+			//TODO add support for O&M and UncertML
+
+		} catch (Exception e) {
+			LOGGER
+					.debug("Error while getting random samples for Gaussian distribution: "
+							+ e.getMessage());
+			throw new RuntimeException(
+					"Error while getting random samples for Gaussian distribution: "
+							+ e.getMessage(), e);
+		} 
+		
+
+		return result;
+
+	}
+
+	/**
+	 * helper method that runs the spatial simulations
+	 * 
+	 * @param inputFile
+	 * @param intNSimulations
+	 * @param vgFunction
+	 * @return
+	 */
+	private NetcdfUWFile getSimulations4NCFile(NetcdfUWFile inputFile,
+			Integer intNSimulations, VariogramFunction vgFunction, String varName) {
+		
+		NetcdfUWFile result=null;
+		String tmpDirPath = System.getProperty("java.io.tmpdir");
+		String outputFilePath = tmpDirPath + "/aggResult"+System.currentTimeMillis()+".nc";
+		outputFilePath = outputFilePath.replace("\\", "/");	
+		
+		String inputFilePath = inputFile.getNetcdfFile().getLocation();
+		inputFilePath = inputFilePath.replace("\\","/");
+		
+		//initialize R Connection
+		// get number of realisations
+		// establish connection to Rserve running on localhost
+		ExtendedRConnection c=null;
+		try {
+			c = new ExtendedRConnection("127.0.0.1");
+			if (c.needLogin()) {
+				// TODO if server requires authentication,
+				c.login("rserve", "aI2)Jad$%");
+			}
+			
+			//create
+			File tmpDir = new File(tmpDirPath);
+			if (!tmpDir.exists()) {
+				tmpDir.mkdir();
+			}
+			
+			
+			//Run R Script
+			//load libraries
+			c.tryVoidEval("library(gstat)");
+			
+			//set FilePath in R
+			c.tryVoidEval("file <- \""+inputFilePath+"\"");
+			
+			
+			//read NetCDF file with passed variables
+			String rCmd = "spUNetCDF <- readUNetCDF(file, variables=c(\""+varName+"\"))";
+			c.tryVoidEval(rCmd);
+			c.tryVoidEval("colnames(spUNetCDF@data) <- \"biotemp\""); 
+			c.tryVoidEval("spUNetCDF <- as(spUNetCDF,\"SpatialPointsDataFrame\")");
+			
+			//TODO can range be used here?
+			rCmd = "empVgm <- variogram(biotemp~1,spUNetCDF[!is.na(spUNetCDF$biotemp),],cutoff="+vgFunction.getRange()+")";
+			c.tryVoidEval(rCmd);
+			rCmd = "fitVgm <- fit.variogram(empVgm,vgm("+vgFunction.getSill()+",\""+vgFunction.getModel().name()+"\","+vgFunction.getRange()+","+vgFunction.getNugget()+"))"; 
+			c.tryVoidEval(rCmd);
+			c.tryVoidEval("extent <- SpatialPolygons(list(Polygons(list(Polygon(matrix(c(5, 45,5,55,15,55,15,45,5,45),ncol=2,byrow=T))),ID=\"a\")),proj4string=CRS(proj4string(spUNetCDF)))");
+			c.tryVoidEval("subSet <- overlay(extent,spUNetCDF[!is.na(spUNetCDF$biotemp),])");
+			c.tryVoidEval("subSet <- spUNetCDF[!is.na(spUNetCDF$biotemp),][!is.na(subSet),]");
+			c.tryVoidEval("simData <- krige(formula=biotemp~1, locations=NULL,newdata=as(subSet,\"SpatialPoints\")[sample(3343,size=400)], model=fitVgm, dummy=T, nsim=10, beta=mean(spUNetCDF$biotemp,na.rm=T))");
+			
+			//Create response
+			c.tryVoidEval("writeUNetCDF(newfile=\""+outputFilePath+"\", simData)");
+		
+			NetcdfFile ncFile = NetcdfFile.open(outputFilePath);
+			result = new NetcdfUWFile(ncFile);
+			
+		} catch (RserveException e) {
+			String msg = "Error while establishing RServe connection: "+e.getLocalizedMessage();
+			LOGGER.debug(msg);
+			throw new RuntimeException(msg);
+		} catch (RProcessException e) {
+			String msg = "Error while running R script for aggregation: "+e.getLocalizedMessage();
+			LOGGER.debug(msg);
+			throw new RuntimeException(msg);
+		} catch (IOException e) {
+			String msg = "Error while running R script for aggregation: "+e.getLocalizedMessage();
+			LOGGER.debug(msg);
+			throw new RuntimeException(msg);
+		} catch (NetcdfUWException e) {
+			String msg = "Error while running R script for aggregation: "+e.getLocalizedMessage();
+			LOGGER.debug(msg);
+			throw new RuntimeException(msg);
+		}
+		
+		//check whether RServe connection is closed
+		finally {
+			if (c != null) {
+				c.close();
+			}
+		}
+		return result;
+	}
 }
