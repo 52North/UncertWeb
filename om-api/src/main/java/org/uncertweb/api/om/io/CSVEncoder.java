@@ -24,6 +24,7 @@ import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.result.MeasureResult;
+import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -42,15 +43,33 @@ import com.vividsolutions.jts.io.WKTWriter;
  */
 public class CSVEncoder implements IObservationEncoder{
 	
+	
+	
+	
 	/**
 	 * inner class holding the column names for uncertainty types
 	 * 
 	 * @author staschc
 	 *
 	 */
-	private abstract class ColumnNames{
+	class Columns{
+		
+		//number of fixed columns (obs properties); number of uncertainty columns are depending on uncertainty type
+		static final int NUMBER_OF_COLUMNS = 7;
+		
+		//column names for observation properties
+		static final String PHEN_TIME="PhenomenonTime";
+		static final String FOI_IDENTIFIER = "Feature_ID";
+		static final String WKT_GEOM="WKTGeometry";
+		static final String SRID="SRID";
+		static final String OBS_PROP="ObservedProperty";
+		static final String PROCEDURE="Procedure";
+		static final String RESULT="Result";
+		
+		//column names for uncertainty values
 		static final String CN_ND_MEAN="NormalDistribution.Mean";
 		static final String CN_ND_VAR="NormalDistribution.Variance";
+		
 		//TODO add more columnnames!
 	}
 	
@@ -176,11 +195,13 @@ public class CSVEncoder implements IObservationEncoder{
 	
 	public String[] getColumnNames(AbstractObservation obs){
 		ArrayList<String> columns = new ArrayList<String>();
-		columns.add("PhenomenonTime");
-		columns.add("WKTGeometry");
-		columns.add("ObservedProperty");
-		columns.add("Procedure");
-		columns.add("Result");
+		columns.add(Columns.PHEN_TIME);
+		columns.add(Columns.FOI_IDENTIFIER);
+		columns.add(Columns.WKT_GEOM);
+		columns.add(Columns.SRID);
+		columns.add(Columns.OBS_PROP);
+		columns.add(Columns.PROCEDURE);
+		columns.add(Columns.RESULT);
 		
 		IUncertainty uncertainty = null;
 		if (obs instanceof UncertaintyObservation){
@@ -194,17 +215,17 @@ public class CSVEncoder implements IObservationEncoder{
 		}
 		if (uncertainty!=null && uncertainty instanceof NormalDistribution){
 			this.columnNumber4UncertaintyColName = new HashMap<String,Integer>();
-			columns.add(ColumnNames.CN_ND_MEAN);
-			this.columnNumber4UncertaintyColName.put(ColumnNames.CN_ND_MEAN, columns.indexOf(ColumnNames.CN_ND_MEAN));
-			columns.add(ColumnNames.CN_ND_VAR);
-			this.columnNumber4UncertaintyColName.put(ColumnNames.CN_ND_VAR, columns.indexOf(ColumnNames.CN_ND_VAR));
+			columns.add(Columns.CN_ND_MEAN);
+			this.columnNumber4UncertaintyColName.put(Columns.CN_ND_MEAN, columns.indexOf(Columns.CN_ND_MEAN));
+			columns.add(Columns.CN_ND_VAR);
+			this.columnNumber4UncertaintyColName.put(Columns.CN_ND_VAR, columns.indexOf(Columns.CN_ND_VAR));
 		}
 		else if (uncertainty!=null && uncertainty instanceof MultivariateNormalDistribution){
 			this.columnNumber4UncertaintyColName = new HashMap<String,Integer>();
-			columns.add(ColumnNames.CN_ND_MEAN);
-			this.columnNumber4UncertaintyColName.put(ColumnNames.CN_ND_MEAN, columns.indexOf(ColumnNames.CN_ND_MEAN));
-			columns.add(ColumnNames.CN_ND_VAR);
-			this.columnNumber4UncertaintyColName.put(ColumnNames.CN_ND_VAR, columns.indexOf(ColumnNames.CN_ND_VAR));
+			columns.add(Columns.CN_ND_MEAN);
+			this.columnNumber4UncertaintyColName.put(Columns.CN_ND_MEAN, columns.indexOf(Columns.CN_ND_MEAN));
+			columns.add(Columns.CN_ND_VAR);
+			this.columnNumber4UncertaintyColName.put(Columns.CN_ND_VAR, columns.indexOf(Columns.CN_ND_VAR));
 		}
 		String[] result = new String[columns.size()];
 		columns.toArray(result);
@@ -213,7 +234,7 @@ public class CSVEncoder implements IObservationEncoder{
 	
 	
 	private String[] getLine4Obs(AbstractObservation obs){
-		int totalSize = 5+this.columnNumber4UncertaintyColName.size();
+		int totalSize = Columns.NUMBER_OF_COLUMNS + this.columnNumber4UncertaintyColName.size();
 		String[] result = new String[totalSize];
 		
 		//set phenomenonTime
@@ -224,23 +245,26 @@ public class CSVEncoder implements IObservationEncoder{
 		result[0] = time.toString();
 		
 		//set geometry
+		SpatialSamplingFeature foi = obs.getFeatureOfInterest();
 		Geometry geom = obs.getFeatureOfInterest().getShape();
-		result[1] = new WKTWriter().write(geom);
+		result[1] = foi.getIdentifier().toIdentifierString();
+		result[2] = new WKTWriter().write(geom);
+		result[3] = ""+geom.getSRID();
 		
 		//set observed property
-		result[2] = obs.getObservedProperty().toASCIIString();
+		result[4] = obs.getObservedProperty().toASCIIString();
 		
 		//set procedure
-		result[3] = obs.getProcedure().toASCIIString();
+		result[5] = obs.getProcedure().toASCIIString();
 		
 		//set resultValue
 		if (obs instanceof Measurement){
-			result[4] = ""+((MeasureResult)obs.getResult()).getMeasureValue();
+			result[6] = ""+((MeasureResult)obs.getResult()).getMeasureValue();
 			//TODO hack for supporting only one uncertainty per observation; might need to be updated
 			IUncertainty uncertainty = obs.getResultQuality()[0].getValues()[0];
 			if (uncertainty!=null && uncertainty instanceof NormalDistribution){
-				int meanPos = this.columnNumber4UncertaintyColName.get(ColumnNames.CN_ND_MEAN);
-				int varPos = this.columnNumber4UncertaintyColName.get(ColumnNames.CN_ND_VAR);
+				int meanPos = this.columnNumber4UncertaintyColName.get(Columns.CN_ND_MEAN);
+				int varPos = this.columnNumber4UncertaintyColName.get(Columns.CN_ND_VAR);
 				result[meanPos]=""+((NormalDistribution)uncertainty).getMean().get(0);
 				result[varPos]=""+((NormalDistribution)uncertainty).getVariance().get(0);
 			}
