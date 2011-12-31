@@ -10,6 +10,9 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.uncertml.sample.UnknownSample;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
@@ -65,27 +68,18 @@ public class AustalOutputReader {
 	 * @param uncertainty
 	 * @return list of receptor point results
 	 */
+	
 	public ArrayList<Point[]> readReceptorPoints(String foldername, boolean uncertainty) {
 		ArrayList<Point[]> points = new ArrayList<Point[]>();
+		
 		File directory = new File(foldername);
-		String pointscsv;
-		String valscsv;
 		String filetype;
-		int count = noOfFiles;
-		// create filenames
-
-		//msg("Parsing "+count+". folder: "+foldername);
+		
 		if(uncertainty){
 			filetype = "pm-zbps.dmna";
-			valscsv = "uncertainties"+count+".csv";
-			pointscsv =  "points_uncert"+count+".csv";
-			//val = false;
 		}
 		else{
 			filetype = "pm-zbpz.dmna";
-			valscsv = "values"+count+".csv";
-			pointscsv =  "points"+count+".csv";
-			//val = true;
 		}
 
 		if (!directory.exists()) {
@@ -94,7 +88,6 @@ public class AustalOutputReader {
 			File[] files = directory.listFiles();
 			for (int i=0; i<files.length; i++){
 					if (files[i].getPath().endsWith(filetype)) {
-						msg("parse: " + files[i].toString());
 						try {
 							points = this.parseReceptorPointsFile(points, files[i].toString());
 						} 
@@ -103,17 +96,117 @@ public class AustalOutputReader {
 										 e.getClass() + e.getMessage());
 							}
 					} else {
-							//msg("File is not parsed: " + files[i].getPath());
-					}
-				
+						
+					}				
 			}
 		}
-			
-		msg("Number of parsed files: " + (noOfFiles-1));
 		
 		return points;
 	}
 	
+	public ArrayList<Point> readReceptorPointList(String foldername, boolean uncertainty) {
+		ArrayList<Point> pointList = new ArrayList<Point>();
+		
+		File directory = new File(foldername);
+		String filetype;
+		
+		if(uncertainty){
+			filetype = "pm-zbps.dmna";
+		}
+		else{
+			filetype = "pm-zbpz.dmna";
+		}
+
+		if (!directory.exists()) {
+			System.out.println("Directory does not exist!");
+		} else {		
+			File[] files = directory.listFiles();
+			for (int i=0; i<files.length; i++){
+					if (files[i].getPath().endsWith(filetype)) {
+						try {
+							pointList = this.parseReceptorPointsFile(files[i].toString());
+							//points = this.parseReceptorPointsFile(points, files[i].toString());
+						} 
+						catch (Exception e) {
+							msg("Input error during parsing dmna: "+
+										 e.getClass() + e.getMessage());
+							}
+					} else {
+						
+					}				
+			}
+		}
+		
+		return pointList;
+	}
+	
+	private ArrayList<Point> parseReceptorPointsFile(String filename) throws Exception {
+		ArrayList<Point> pointList = new ArrayList<Point>();
+		
+		if (filename != null && filename.endsWith("dmna")) {
+			// read file
+			BufferedReader in = new BufferedReader(new FileReader(filename));
+
+			// read first row
+			in.readLine();
+			String row = new String("");
+			double refx = 0;
+			double refy = 0;			
+			
+			while ((row = in.readLine()) != null) {
+				// Separated by "whitespace"
+					String[] s = row.trim().split("\\s+");
+					
+					// reference coordinates
+					if (s[0].trim().equals("refx"))
+						refx = Double.parseDouble(s[1].trim());
+					else if (s[0].trim().equals("refy"))
+						refy = Double.parseDouble(s[1].trim());
+
+					// point coordinates
+					else if (s[0].trim().equals("mntx")) {
+						for (int i = 1; i < s.length; i++) {
+							double xdev = Double.parseDouble(s[i].trim());
+							pointList.add(new Point((refx + xdev), (noOfFiles
+									+ "_" + i)));
+						}
+					} 
+					else if (s[0].trim().equals("mnty")) {
+						for (int i = 1; i < s.length; i++) {
+							double ydev = Double.parseDouble(s[i].trim());
+							pointList.get(i-1).set_yCoordinate(refy + ydev);
+						}
+					}
+					else if (s[0].trim().equals("unit")){
+						//unit	"µg/m³"
+						if(s[1].trim().equals("\"µg/m³\""))
+							val = true;
+						else if(s[1].trim().equals("%"))
+							val = false;
+						
+					}
+
+					// parse values
+					else if (s.length>2&&s[s.length - 2].equals("'")) {
+						// get and format timestamp
+						// 2008-07-01.01:00:00
+						String time = s[s.length - 1].trim().replace(".", " ");
+						
+						// get values for each point
+						for (int i = 0; i < (s.length - 2); i++) {
+							double val = Double.parseDouble(s[i].trim());
+							pointList.get(i).addValue(time, val);
+						}
+					}
+			}
+			
+			// write single output file
+			noOfFiles++;
+			in.close();
+		}
+		
+		return pointList;
+	}	
 	/**
 	 * Method to parse Austal result file
 	 * @param filename
@@ -130,7 +223,8 @@ public class AustalOutputReader {
 			String row = new String("");
 			double refx = 0;
 			double refy = 0;
-			Point[] pois = null;
+		//	Point[] pois = null;
+			ArrayList<Point> pointList = new ArrayList<Point>();
 			while ((row = in.readLine()) != null) {
 				// Separated by "whitespace"
 					String[] s = row.trim().split("\\s+");
@@ -144,19 +238,22 @@ public class AustalOutputReader {
 					// point coordinates
 					else if (s[0].trim().equals("mntx")) {
 						// if necessary initialize point array
-						if (pois == null){
-							pois = new Point[s.length - 1];
-							}
+//						if (pois == null){
+//							pois = new Point[s.length - 1];
+//							}
 						for (int i = 1; i < s.length; i++) {
 							double xdev = Double.parseDouble(s[i].trim());
-							pois[i - 1] = new Point((refx + xdev), (noOfFiles
-									+ "_" + i));
+//							pois[i - 1] = new Point((refx + xdev), (noOfFiles
+//									+ "_" + i));
+							pointList.add(new Point((refx + xdev), (noOfFiles
+									+ "_" + i)));
 						}
 					} 
 					else if (s[0].trim().equals("mnty")) {
 						for (int i = 1; i < s.length; i++) {
 							double ydev = Double.parseDouble(s[i].trim());
-							pois[i - 1].set_yCoordinate(refy + ydev);
+//							pois[i - 1].set_yCoordinate(refy + ydev);
+							pointList.get(i-1).set_yCoordinate(refy + ydev);
 						}
 					}
 					else if (s[0].trim().equals("unit")){
@@ -178,13 +275,14 @@ public class AustalOutputReader {
 						// get values for each point
 						for (int i = 0; i < (s.length - 2); i++) {
 							double val = Double.parseDouble(s[i].trim());
-							pois[i].addValue(time, val);
+//							pois[i].addValue(time, val);
+							pointList.get(i).addValue(time, val);
 						}
 					}
 			}
 
 			// add Array to ArrayList
-			points.add(pois);
+//			points.add(pois);
 
 			// write single output file
 			noOfFiles++;
@@ -194,7 +292,7 @@ public class AustalOutputReader {
 		return points;
 	}	
 	
-	public HashMap<Integer, ArrayList<Double>> readHourlyFiles(String foldername, boolean uncertainty){
+	public HashMap<Integer, ArrayList<Double>> readHourlyFiles(String foldername, int startID, boolean uncertainty){
 		File directory = new File(foldername);
 		HashMap<Integer, ArrayList<Double>> valueMap = new HashMap<Integer, ArrayList<Double>>();
 		
@@ -221,8 +319,12 @@ public class AustalOutputReader {
 						String idString = filename.substring(3, 6);
 						try{
 							int id = Integer.parseInt(idString);
-							ArrayList<Double> parsedVals = parseHourlyFile(files[i].toString());
-							valueMap.put(id, parsedVals);
+							// parse file only if it is after the startDate
+							if(id>=startID){
+								ArrayList<Double> parsedVals = parseHourlyFile(files[i].toString());
+								valueMap.put(id, parsedVals);							
+							}
+
 						}catch(NumberFormatException e){
 							
 						}						
@@ -291,15 +393,16 @@ public class AustalOutputReader {
 	 * @throws NetcdfUWException 
 	 * @throws InvalidRangeException 
 	 */
-	public NetcdfUWFile createNetCDFfile(String filepath, int[] x, int[] y, Date minDate, HashMap<Integer, HashMap<Integer, ArrayList<Double>>> realisationsMap) throws IOException, NetcdfUWException, InvalidRangeException{		
+	public NetcdfUWFile createNetCDFfile(String filepath, int[] x, int[] y, DateTime minDate, int startID, HashMap<Integer, HashMap<Integer, ArrayList<Double>>> realisationsMap) throws IOException, NetcdfUWException, InvalidRangeException{		
 		// get geometry for coordinates from study area
 		ArrayInt xArray = new ArrayInt.D1(x.length);
 		ArrayInt yArray = new ArrayInt.D1(y.length);
 		
 		// get dates for the time series results
 		// format: "hours since 2011-01-02 00:00:00 00:00"
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");	
-		String TIME_VAR_UNITS = "hours since "+dateFormat.format(minDate)+ " 00:00";
+		DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");		
+		//SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String TIME_VAR_UNITS = "hours since "+dateFormat.print(minDate.minusHours(1))+ " 00:00";
 		int tn = realisationsMap.get(1).size();
 		ArrayInt tArray = new ArrayInt.D1(tn);
 		
@@ -404,15 +507,14 @@ public class AustalOutputReader {
 			
 			// C1) additional information for NetCDF-U file
 			// a) Set dimensions for value variable			
-			ArrayList<Dimension> dims = new ArrayList<Dimension>(2);
+			ArrayList<Dimension> dims = new ArrayList<Dimension>(3);
 			dims.add(xDim);
 			dims.add(yDim);
 			dims.add(tDim);
 			
 			// b) add data variable with dimensions and attributes 
 			Variable dataVariable = resultUWFile.addSampleVariable(
-					MAIN_VAR_NAME, DataType.DOUBLE, dims,
-					UnknownSample.class, realisationsMap.size());
+					MAIN_VAR_NAME, DataType.DOUBLE, dims, UnknownSample.class, realisationsMap.size());
 						
 			dataVariable.addAttribute(new Attribute(UNITS_ATTR_NAME, MAIN_VAR_UNITS));
 			dataVariable.addAttribute(new Attribute(MISSING_VALUE_ATTR_NAME, -9999F));
@@ -432,7 +534,7 @@ public class AustalOutputReader {
 				
 				// loop through time steps
 				for(t = 0; t < tDim.getLength(); t++){
-					ArrayList<Double> currentVals = valueMap.get(t+1);
+					ArrayList<Double> currentVals = valueMap.get(t+startID);
 					c=0;
 					
 					// loop through cells
@@ -446,28 +548,24 @@ public class AustalOutputReader {
 						}
 					}
 				}
-			}
+			}			
 			
-			
-			//TODO: Makes sense?
-			// add CF conventions
+			//TODO: add CF conventions
 			resultUWFile.getNetcdfFileWritable().setRedefineMode(true);
 			Attribute conventions = resultUWFile.getNetcdfFileWritable().findGlobalAttribute("Conventions");
 			String newValue =  conventions.getStringValue() + " CF-1.5";
 			resultUWFile.getNetcdfFileWritable().deleteGlobalAttribute("Conventions");
 			resultUWFile.getNetcdfFileWritable().addGlobalAttribute("Conventions", newValue);
 			
+			//TODO: add CRS EPSG code as global attribute
+			resultUWFile.getNetcdfFileWritable().addGlobalAttribute("crs_epsg_code", "31467");
+			
+			
 			// C2) write data array to NetCDF-U file
 			resultUWFile.getNetcdfFileWritable().setRedefineMode(false);
 			resultUWFile.getNetcdfFileWritable().write(
 					MAIN_VAR_NAME, dataArray);
 			resultUWFile.getNetcdfFile().close();
-			
-			
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			System.out.println("y: "+yi+", x: "+xi+", t: "+t);
-//		}
 		
 		return resultUWFile;
 	}

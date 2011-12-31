@@ -14,10 +14,14 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+//import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.uncertweb.austalwps.util.austal.timeseries.EmissionTimeSeries;
 import org.uncertweb.austalwps.util.austal.timeseries.MeteorologyTimeSeries;
 
@@ -51,7 +55,8 @@ public class Zeitreihe implements Serializable{
 	private String[] meteoIdentifiers = {"\"ra%5.0f\"","\"ua%5.1f\"","\"lm%7.1f\""};
 	// "te%20lt" timestamp 
 	private String timeStampIdentifier = "\"te%20lt\"";
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
+	//private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
+	private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd.HH:mm:ss").withZone(DateTimeZone.UTC.forOffsetHours(1));		
 	
 	//private List<TimeStamp> timestamps = new ArrayList<TimeStamp>();
 	private List<EmissionTimeSeries> emisList = new ArrayList<EmissionTimeSeries>();
@@ -102,7 +107,7 @@ public class Zeitreihe implements Serializable{
 		return hghb;
 	}
 	
-	public void setTimePeriod(Date start, Date end){
+	public void setTimePeriod(DateTime start, DateTime end){
 		metList.cutTimePeriod(start, end);
 		for(int i=0; i<emisList.size(); i++){
 			emisList.get(i).cutTimePeriod(start, end);
@@ -187,13 +192,8 @@ public class Zeitreihe implements Serializable{
 		// divide into meteorology and emissions
 		// timestamp 
 		String time = timeStampTokens[this.getFormIndex(timeStampIdentifier)].trim();
-		Date timeStamp = null;
-		try {
-			timeStamp = dateFormat.parse(time);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		DateTime timeStamp = dateFormat.parseDateTime(time);
+
 		//String timeStamp = timeStampTokens[this.getFormIndex(timeStampIdentifier)];
 		
 		// meteorology				
@@ -304,10 +304,11 @@ public class Zeitreihe implements Serializable{
 		DecimalFormat scientific = new DecimalFormat("0.###E000");
 		try {
 
-			List<Date> timestamps = metList.getTimeStamps();
+			List<DateTime> timestamps = metList.getTimeStamps();
 			// check that list starts with hour 01:00
 			int start = 0;
-			while(start<(timestamps.size()-1)&&timestamps.get(start).getHours()!=1){
+			//while(start<(timestamps.size()-1)&&timestamps.get(start).getHourOfDay()!=1){
+			while(start<(timestamps.size()-1)&&!dateFormat.print(timestamps.get(0)).contains(".01:00")){
 				start++;
 			}
 			
@@ -333,7 +334,7 @@ public class Zeitreihe implements Serializable{
 			
 			
 			for(int i=start; i<timestamps.size(); i++){
-				String time = dateFormat.format(timestamps.get(i));
+				String time = dateFormat.print(timestamps.get(i));
 				bw.write(time+" ");
 				bw.write(metList.getMeteorologyToString(i));
 				String e = "";

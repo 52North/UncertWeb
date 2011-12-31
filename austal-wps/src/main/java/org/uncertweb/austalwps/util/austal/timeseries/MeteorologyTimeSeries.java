@@ -3,9 +3,10 @@ package org.uncertweb.austalwps.util.austal.timeseries;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
+//import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 public class MeteorologyTimeSeries {
 	
@@ -14,34 +15,34 @@ public class MeteorologyTimeSeries {
 	private List<Double> winddirVals = new ArrayList<Double>();
 	private List<Double> windspeedVals = new ArrayList<Double>();
 	private List<Double> stabilityVals = new ArrayList<Double>();
-	private List<Date> timeStamps = new ArrayList<Date>();
+	private List<DateTime> timeStamps = new ArrayList<DateTime>();
 	
 	public MeteorologyTimeSeries(){
 		
 	}
 	
 	// time stamps
-	public List<Date> getTimeStamps(){
+	public List<DateTime> getTimeStamps(){
 		return timeStamps;
 	}
 
-	public void setTimeStamps(int index, Date date) {
+	public void setTimeStamps(int index, DateTime date) {
 		timeStamps.set(index, date);
 	}
 	
-	public Date getMinDate(){
-		Date minDate = timeStamps.get(0);
+	public DateTime getMinDate(){
+		DateTime minDate = timeStamps.get(0);
 		for(int i=1; i<timeStamps.size(); i++){
-			if(timeStamps.get(i).before(minDate))
+			if(timeStamps.get(i).isBefore(minDate))
 				minDate = timeStamps.get(i);
 		}
 		return minDate;
 	}
 	
-	public Date getMaxDate(){
-		Date maxDate = timeStamps.get(0);
+	public DateTime getMaxDate(){
+		DateTime maxDate = timeStamps.get(0);
 		for(int i=1; i<timeStamps.size(); i++){
-			if(timeStamps.get(i).after(maxDate))
+			if(timeStamps.get(i).isAfter(maxDate))
 				maxDate = timeStamps.get(i);
 		}
 		return maxDate;
@@ -51,10 +52,10 @@ public class MeteorologyTimeSeries {
 		return timeStamps.size();
 	}
 	
-	public void cutTimePeriod(Date start, Date end){
+	public void cutTimePeriod(DateTime start, DateTime end){
 		// loop through dates and delete those outside the time period
 		for(int i=0; i<timeStamps.size(); i++){
-			if(timeStamps.get(i).before(start)||timeStamps.get(i).after(end)){
+			if(timeStamps.get(i).isBefore(start)||timeStamps.get(i).isAfter(end)){
 				timeStamps.remove(i);
 				winddirVals.remove(i);
 				windspeedVals.remove(i);
@@ -65,7 +66,7 @@ public class MeteorologyTimeSeries {
 	
 	// meteorology values
 	// getters
-	public double[] getMeteorology(Date timeStamp, String[] identifiers){
+	public double[] getMeteorology(DateTime timeStamp, String[] identifiers){
 		double[] values = new double[identifiers.length];
 		for(int i=0; i<identifiers.length; i++){
 			if(identifiers[i].contains("ra"))
@@ -102,7 +103,7 @@ public class MeteorologyTimeSeries {
 		return winddirVals.get(i);
 	}
 	
-	public Double getWindDirection(Date timeStamp){
+	public Double getWindDirection(DateTime timeStamp){
 		return winddirVals.get(getTimeStampIndex(timeStamp));
 	}
 	
@@ -110,7 +111,7 @@ public class MeteorologyTimeSeries {
 		return windspeedVals.get(i);
 	}
 
-	public Double getWindSpeed(Date timeStamp){
+	public Double getWindSpeed(DateTime timeStamp){
 		return windspeedVals.get(getTimeStampIndex(timeStamp));
 	}
 	
@@ -118,14 +119,14 @@ public class MeteorologyTimeSeries {
 		return stabilityVals.get(i);
 	}
 	
-	public Double getStabilityClass(Date timeStamp){
+	public Double getStabilityClass(DateTime timeStamp){
 		int index = getTimeStampIndex(timeStamp);
 		double stab = stabilityVals.get(index);
 		return stab;
 	}
 	
 	// setters
-	public void addMeteorology(Date timeStamp, String[] identifiers, double[] values){
+	public void addMeteorology(DateTime timeStamp, String[] identifiers, double[] values){
 		timeStamps.add(timeStamp);
 		for(int i=0; i<identifiers.length; i++){
 			if(identifiers[i].contains("ra"))
@@ -137,7 +138,7 @@ public class MeteorologyTimeSeries {
 		}		
 	}
 	
-	public void addMeteorology(Date timeStamp, String[] identifiers, String[] values){
+	public void addMeteorology(DateTime timeStamp, String[] identifiers, String[] values){
 		timeStamps.add(timeStamp);
 		for(int i=0; i<identifiers.length; i++){
 			if(identifiers[i].contains("ra"))
@@ -150,7 +151,7 @@ public class MeteorologyTimeSeries {
 	}
 	
 	// wind direction
-	public void addWindDirection(Date timeStamp, Double value) {
+	public void addWindDirection(DateTime timeStamp, Double value) {
 		// check if timestamp is already in the list
 		int timeID = getTimeStampIndex(timeStamp);
 		if(timeID==-1){
@@ -172,12 +173,12 @@ public class MeteorologyTimeSeries {
 //		winddirVals.set(column, value);
 //	}
 	
-	public void setWindDirection(Date timeStamp, Double value) {
+	public void setWindDirection(DateTime timeStamp, Double value) {
 		winddirVals.set(getTimeStampIndex(timeStamp), value);
 	}
 	
 	// wind speed
-	public void addWindSpeed(Date timeStamp, Double value) {
+	public void addWindSpeed(DateTime timeStamp, Double value) {
 		// check if timestamp is already in the list
 		int timeID = getTimeStampIndex(timeStamp);
 		if(timeID==-1){
@@ -199,12 +200,12 @@ public class MeteorologyTimeSeries {
 //		windspeedVals.set(column, value);
 //	}
 	
-	public void setWindSpeed(Date timeStamp, Double value) {
+	public void setWindSpeed(DateTime timeStamp, Double value) {
 		windspeedVals.set(getTimeStampIndex(timeStamp), value);
 	}
 	
 	// stability class
-	public void addStabilityClass(Date timeStamp, Double value) {
+	public void addStabilityClass(DateTime timeStamp, Double value) {
 		// check if timestamp is already in the list
 		int timeID = getTimeStampIndex(timeStamp);
 		if(timeID==-1){
@@ -226,7 +227,7 @@ public class MeteorologyTimeSeries {
 //		stabilityVals.set(column, value);
 //	}
 	
-	public void setStabilityClass(Date timeStamp, Double value) {
+	public void setStabilityClass(DateTime timeStamp, Double value) {
 		stabilityVals.set(getTimeStampIndex(timeStamp), value);
 	}
 	
@@ -234,10 +235,10 @@ public class MeteorologyTimeSeries {
 	
 	
 	// utilities
-	private int getTimeStampIndex(Date timeStamp){
+	private int getTimeStampIndex(DateTime timeStamp){
 		// loop through time series to find respective string
 		for(int i=0; i<timeStamps.size(); i++){
-			if(timeStamp.equals(timeStamps.get(i)))
+			if(timeStamp.isEqual(timeStamps.get(i)))
 				return i;
 		}
 		return -1;

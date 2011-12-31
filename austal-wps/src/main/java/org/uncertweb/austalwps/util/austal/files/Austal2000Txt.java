@@ -340,17 +340,17 @@ public class Austal2000Txt implements Serializable {
 		String result = "";
 		if(header.equalsIgnoreCase("xp")){
 			for(ReceptorPoint ap : receptorPoints){
-				result = result + ap.getXp() + " ";
+				result = result + Math.round(ap.getXp()) + " ";
 			}
 		}
 		if(header.equalsIgnoreCase("yp")){
 			for(ReceptorPoint ap : receptorPoints){
-				result = result + ap.getYp() + " ";
+				result = result + Math.round(ap.getYp()) + " ";
 			}
 		}
 		if(header.equalsIgnoreCase("hp")){
 			for(ReceptorPoint ap : receptorPoints){
-				result = result + ap.getHp() + " ";
+				result = result + Math.round(ap.getHp()) + " ";
 			}
 		}
 		return result;
@@ -360,17 +360,17 @@ public class Austal2000Txt implements Serializable {
 		String result = "";
 		if(header.equalsIgnoreCase("xq")){
 			for(EmissionSource as : emissionSources){
-				result = result + as.getXq() + " ";
+				result = result + Math.round(as.getXq()) + " ";
 			}
 		}
 		if(header.equalsIgnoreCase("yq")){
 			for(EmissionSource as : emissionSources){
-				result = result + as.getYq() + " ";
+				result = result + Math.round(as.getYq()) + " ";
 			}
 		}
 		if(header.equalsIgnoreCase("hq")){
 			for(EmissionSource as : emissionSources){
-				result = result + as.getHq() + " ";
+				result = result + Math.round(as.getHq()) + " ";
 			}
 		}
 		if(header.equalsIgnoreCase("pm-2")){
@@ -380,22 +380,22 @@ public class Austal2000Txt implements Serializable {
 		}
 		if(header.equalsIgnoreCase("wq")){
 			for(EmissionSource as : emissionSources){
-				result = result + as.getWq() + " ";
+				result = result + Math.round(as.getWq()) + " ";
 			}
 		}
 		if(header.equalsIgnoreCase("bq")){
 			for(EmissionSource as : emissionSources){
-				result = result + as.getBq() + " ";
+				result = result + Math.round(as.getBq()) + " ";
 			}
 		}
 		if(header.equalsIgnoreCase("aq")){
 			for(EmissionSource as : emissionSources){
-				result = result + as.getAq() + " ";
+				result = result + Math.round(as.getAq()) + " ";
 			}
 		}
 		if(header.equalsIgnoreCase("cq")){
 			for(EmissionSource as : emissionSources){
-				result = result + as.getCq() + " ";
+				result = result + Math.round(as.getCq()) + " ";
 			}
 		}
 		return result;

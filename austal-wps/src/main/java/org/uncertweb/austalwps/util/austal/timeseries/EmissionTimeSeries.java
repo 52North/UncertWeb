@@ -2,7 +2,9 @@ package org.uncertweb.austalwps.util.austal.timeseries;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
+//import java.util.Date;
+
+import org.joda.time.DateTime;
 
 /**
  * Class to store time series of emissions for one dynamic emission source
@@ -12,7 +14,7 @@ import java.util.Date;
 
 public class EmissionTimeSeries {
 	private List<Double> emisVals = new ArrayList<Double>();
-	private List<Date> timeStamps = new ArrayList<Date>();
+	private List<DateTime> timeStamps = new ArrayList<DateTime>();
 	private String dynamicIDToken;	// id of the source in the zeitreihe file
 	private int dynamicID;
 	
@@ -58,12 +60,12 @@ public class EmissionTimeSeries {
 		this.dynamicID = id;
 	}
 	
-	public void cutTimePeriod(Date start, Date end){
+	public void cutTimePeriod(DateTime start, DateTime end){
 		// loop through dates and delete those outside the time period
-		List<Date> newTimeStamps = new ArrayList<Date>();
+		List<DateTime> newTimeStamps = new ArrayList<DateTime>();
 		List<Double> newEmisVals = new ArrayList<Double>();
 		for(int i=0; i<timeStamps.size(); i++){
-			if((timeStamps.get(i).after(start)&&timeStamps.get(i).before(end))||timeStamps.get(i).equals(start)||timeStamps.get(i).equals(end)){
+			if((timeStamps.get(i).isAfter(start)&&timeStamps.get(i).isBefore(end))||timeStamps.get(i).isEqual(start)||timeStamps.get(i).isEqual(end)){
 				newTimeStamps.add(timeStamps.get(i));
 				newEmisVals.add(emisVals.get(i));
 			}
@@ -73,27 +75,27 @@ public class EmissionTimeSeries {
 	}
 	
 	// time stamps
-	public List<Date> getTimeStamps(){
+	public List<DateTime> getTimeStamps(){
 		return timeStamps;
 	}
 
-	public void setTimeStamps(int index, Date date) {
+	public void setTimeStamps(int index, DateTime date) {
 		timeStamps.set(index, date);
 	}
 	
-	public Date getMinDate(){
-		Date minDate = timeStamps.get(0);
+	public DateTime getMinDate(){
+		DateTime minDate = timeStamps.get(0);
 		for(int i=1; i<timeStamps.size(); i++){
-			if(timeStamps.get(i).before(minDate))
+			if(timeStamps.get(i).isBefore(minDate))
 				minDate = timeStamps.get(i);
 		}
 		return minDate;
 	}
 	
-	public Date getMaxDate(){
-		Date maxDate = timeStamps.get(0);
+	public DateTime getMaxDate(){
+		DateTime maxDate = timeStamps.get(0);
 		for(int i=1; i<timeStamps.size(); i++){
-			if(timeStamps.get(i).after(maxDate))
+			if(timeStamps.get(i).isAfter(maxDate))
 				maxDate = timeStamps.get(i);
 		}
 		return maxDate;
@@ -101,19 +103,25 @@ public class EmissionTimeSeries {
 	
 	// emission values
 	public Double getEmissionValue(int i){
+		Double res = null;
+		try{
+			res = emisVals.get(i);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		return emisVals.get(i);
 	}
 	
-	public Double getEmissionValue(Date timeStamp){
+	public Double getEmissionValue(DateTime timeStamp){
 		return emisVals.get(getTimeStampIndex(timeStamp));
 	}
 
-	public void addEmissionValue(Date timeStamp, Double value) {
+	public void addEmissionValue(DateTime timeStamp, Double value) {
 		timeStamps.add(timeStamp);
 		emisVals.add(value);
 	}
 	
-	public void addEmissionValue(Date timeStamp, String value) {
+	public void addEmissionValue(DateTime timeStamp, String value) {
 		timeStamps.add(timeStamp);
 		emisVals.add(Double.parseDouble(value));
 	}
@@ -122,7 +130,7 @@ public class EmissionTimeSeries {
 		emisVals.set(column, value);
 	}
 	
-	public void setEmissionValue(Date timeStamp, Double value) {
+	public void setEmissionValue(DateTime timeStamp, Double value) {
 		emisVals.set(getTimeStampIndex(timeStamp), value);
 	}
 	
@@ -144,10 +152,10 @@ public class EmissionTimeSeries {
 	}
 
 	// utilities
-	private int getTimeStampIndex(Date timeStamp){
+	private int getTimeStampIndex(DateTime timeStamp){
 		// loop through time series to find respective string
 		for(int i=0; i<timeStamps.size(); i++){
-			if(timeStamp.equals(timeStamps.get(i)))
+			if(timeStamp.isEqual(timeStamps.get(i)))
 				return i;
 		}
 		return -1;

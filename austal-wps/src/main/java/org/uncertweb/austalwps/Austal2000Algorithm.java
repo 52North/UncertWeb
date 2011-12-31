@@ -264,7 +264,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		if(pointList.size()>0)
 			austal.setReceptorPoints(pointList);
 		substituteStreetEmissions(newEmissionSources, newEmisTS);
-		substituteMeteoorology(newMetList);		
+		substituteMeteorology(newMetList);		
 
 		writeFiles();
 		
@@ -384,7 +384,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 //			e.printStackTrace();
 //		}			
 		
-		// prepare output
+		// 3. prepare output
 		Map<String, IData> result = new HashMap<String, IData>();	
 		
 		// if receptor points were provided give their results back
@@ -405,7 +405,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			// read grid files in the result folder
 			AustalOutputReader outputReader = new AustalOutputReader();
 			HashMap<Integer, HashMap<Integer, ArrayList<Double>>> realisationsMap = new HashMap<Integer, HashMap<Integer, ArrayList<Double>>>();
-			realisationsMap.put(1, outputReader.readHourlyFiles(workDirPath, false));			
+			realisationsMap.put(1, outputReader.readHourlyFiles(workDirPath, 1, false));			
 			
 			// write results to a NetCDF file
 			String filepath = System.getProperty("java.io.tmpdir") + fileSeparator + "netCDFresult_"
@@ -414,7 +414,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			try {
 				resultFile = outputReader.createNetCDFfile(filepath, 
 						austal.getStudyArea().getXcoords(), austal.getStudyArea().getYcoords(), 
-						ts.getMeteorologyTimeSeries().getMinDate(), realisationsMap);
+						ts.getMeteorologyTimeSeries().getMinDate(), 1, realisationsMap);
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (NetcdfUWException e) {
@@ -629,8 +629,8 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 //				} catch (ParseException e) {
 //					e.printStackTrace();
 //				}
-				newMetList.addWindDirection(dt.toDate(), obsWD);
-				newMetList.addWindSpeed(dt.toDate(), obsWS);
+				newMetList.addWindDirection(dt, obsWD);
+				newMetList.addWindSpeed(dt, obsWS);
 				
 			}
 		}
@@ -746,7 +746,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 //			} catch (ParseException e) {
 //				e.printStackTrace();
 //			}
-			lineTS.addEmissionValue(dt.toDate(), obs);
+			lineTS.addEmissionValue(dt, obs);
 
 		}
 		/*
@@ -767,8 +767,8 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		int newID = newEmissionSources.size()+1;
 		
 		//get length o
-		Date minDate = newEmisTS.get(0).getMinDate();
-		Date maxDate = newEmisTS.get(0).getMaxDate();
+		DateTime minDate = newEmisTS.get(0).getMinDate();
+		DateTime maxDate = newEmisTS.get(0).getMaxDate();
 		
 		// add only non-traffic and non-dynamic sources from the old list
 		for(int i=0; i<austal.getEmissionSources().size(); i++){
@@ -817,14 +817,14 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 	 * Method to substitute existing Meteorology time series parts in the Austal database with new observations
 	 * @param newMetList
 	 */
-	private void substituteMeteoorology(MeteorologyTimeSeries newMetList){
+	private void substituteMeteorology(MeteorologyTimeSeries newMetList){
 		// get old meteorology list
 		MeteorologyTimeSeries metList = ts.getMeteorologyTimeSeries();
-		ArrayList<Date> timeStampList = (ArrayList<Date>) newMetList.getTimeStamps();
+		ArrayList<DateTime> timeStampList = (ArrayList<DateTime>) newMetList.getTimeStamps();
 		
 		// add stability class values to new list
 		for(int i=0; i<timeStampList.size(); i++){
-			Date d = timeStampList.get(i);
+			DateTime d = timeStampList.get(i);
 			newMetList.addStabilityClass(d, metList.getStabilityClass(d));
 		}
 		
