@@ -72,8 +72,10 @@
 	<AlgorithmRepositoryList>
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
 			<Property name="Algorithm" active="true">org.uncertweb.austalwps.Austal2000Algorithm</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.austalwps.U_Austal2000Algorithm</Property>
 			<!-- <Property name="Austal_Home" active="true">C:\\UncertWeb\\Austal\\HONEU</Property> -->
 			<Property name="Austal_Home" active="true">D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\AustalWPS\\AustalRun</Property>
+			<Property name="Resources" active="true">"D:\\JavaProjects\\austal-wps\\src\\main\\webapp\\res</Property>
 		</Repository>
 		
 		<Repository name="UploadedAlgorithmRepository" className="org.n52.wps.server.UploadedAlgorithmRepository" active="true">

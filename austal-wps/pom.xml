@@ -33,6 +33,18 @@
 			<version>2.0</version>
 		</dependency>
 
+		<!-- R dependencies -->
+   		 <dependency>
+	    	<groupId>org.nuiton.thirdparty</groupId>
+	    	<artifactId>REngine</artifactId>
+	    	<version>0.6-1</version>
+   		</dependency>
+	    <dependency>
+	    	<groupId>org.nuiton.thirdparty</groupId>
+	    	<artifactId>Rserve</artifactId>
+	    	<version>0.6-1</version>
+	    </dependency>
+	    
 		<!-- Logging -->
 
 		<dependency>
@@ -51,6 +63,13 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
 			<scope>runtime</scope>
+		</dependency>
+		
+		<!-- UncertWeb dependencies -->
+		<dependency> 
+		    <groupId>org.uncertweb</groupId>
+			<artifactId>netcdf-u-api</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
     	<dependency>
       		<groupId>org.uncertweb</groupId>
@@ -128,7 +147,7 @@
 		</repository>
 		<repository>
 			<id>n52-releases</id>
-			<name>52° North Release Repository</name>
+			<name>52Â° North Release Repository</name>
 			<url>http://52north.org/maven/repo/releases</url>
 			<releases>
 				<enabled>true</enabled>
@@ -139,7 +158,7 @@
 		</repository>
 		<repository>
 			<id>n52-snapshot</id>
-			<name>52° North Snapshot Repository</name>
+			<name>52Â° North Snapshot Repository</name>
 			<url>http://52north.org/maven/repo/snapshots/</url>
 			<releases>
 				<enabled>false</enabled>
