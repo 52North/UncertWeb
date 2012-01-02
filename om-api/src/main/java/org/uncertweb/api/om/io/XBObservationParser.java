@@ -1004,5 +1004,8 @@ public class XBObservationParser implements IObservationParser {
 			return parseObservationCollection(xmlString);
 		}
 	}
-
+	
+	public HashMap<String, SpatialSamplingFeature> getFeatureCache() {
+		return featureCache;
+	}
 }
