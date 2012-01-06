@@ -6,6 +6,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.uncertweb.api.om.exceptions.OMParsingException;
 
 /**
  * Wrapper to hold one representation of time exclusively, e.g. a time instant
@@ -22,6 +23,10 @@ public class TimeObject {
 	/**interval, if time object is TimePeriod; if href attribute is set, this attribute is null*/
 	private Interval interval;
 	
+	private IGeneralTime generalTime;
+	
+	
+	
 	/**reference; usually is null; if not, other properties are null*/
 	private URI href;
 
@@ -31,10 +36,25 @@ public class TimeObject {
 	 * @param iso8601time
 	 * 			ISO 8601 string of time instant
 	 */
-	public TimeObject(String iso8601time){
-		this.dateTime = parseTimePosition(iso8601time);
+	public TimeObject(String timeString){
+		parseTimeString(timeString);
+		this.dateTime = parseTimePosition(timeString);
 	}
 	
+	private void parseTimeString(String timeString) {
+		try {
+			if (timeString.contains("/")){
+				this.generalTime = new GeneralTimeInterval(timeString);
+			}
+			else {
+				this.generalTime = new GeneralTimeInstant(timeString);
+			}
+		} catch (OMParsingException e) {
+			this.dateTime = parseTimePosition(timeString);
+		}
+	}
+
+
 	/**
 	 * constructor for time period with ISO 8601 strings
 	 * 
@@ -161,6 +181,13 @@ public class TimeObject {
 	public boolean isInterval() {
 		return getInterval() != null;
 	}
+	
+	/**
+	 * @return <code> getInterval() != null </code>
+	 */
+	public boolean isGeneralTime() {
+		return getGeneralTime() != null;
+	}
 
 	@Override
 	public int hashCode() {
@@ -175,12 +202,30 @@ public class TimeObject {
 	@Override
 	public String toString() {
 		DateTimeFormatter dtp = ISODateTimeFormat.dateTime();
-		if (isInterval()) {
+		
+		if (isGeneralTime()){
+			return this.generalTime.toString();
+		}
+		else if (isInterval()) {
 			return dtp.print(getInterval().getStart()) + " - "
 					+ dtp.print(getInterval().getEnd());
 		} else {
 			return dtp.print(getDateTime());
 		}
+	}
+
+	/**
+	 * @return the generalTime
+	 */
+	public IGeneralTime getGeneralTime() {
+		return generalTime;
+	}
+
+	/**
+	 * @param generalTime the generalTime to set
+	 */
+	public void setGeneralTime(IGeneralTime generalTime) {
+		this.generalTime = generalTime;
 	}
 	
 }
