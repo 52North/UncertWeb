@@ -531,7 +531,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					}
 					Coordinate coord = lineString.getCoordinates()[i];
 
-					xp = "" + Math.round(coord.y - gy);
+					xp = "" + Math.round(coord.x - gx);
 					yp = "" + Math.round(coord.y - gy);
 
 					ReceptorPoint rp = new ReceptorPoint(xp, yp, "2");
@@ -555,7 +555,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					}
 					Coordinate coord = lineString.getCoordinates()[i];
 
-					xp = "" + Math.round(coord.y - gy);
+					xp = "" + Math.round(coord.x - gx);
 					yp = "" + Math.round(coord.y - gy);
 
 					ReceptorPoint rp = new ReceptorPoint(xp, yp, hp);
