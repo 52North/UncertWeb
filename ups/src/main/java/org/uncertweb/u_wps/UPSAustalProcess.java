@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.swing.plaf.multi.MultiButtonUI;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -27,11 +26,9 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import net.opengis.wps.x100.DataInputsType;
 import net.opengis.wps.x100.ExecuteDocument;
 import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.InputDescriptionType;
-import net.opengis.wps.x100.InputReferenceType;
 import net.opengis.wps.x100.InputType;
 import net.opengis.wps.x100.OutputDataType;
 import net.opengis.wps.x100.OutputDescriptionType;
@@ -39,16 +36,13 @@ import net.opengis.wps.x100.ProcessDescriptionType;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
-import org.geotools.feature.FeatureCollection;
 import org.joda.time.DateTime;
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.client.WPSClientException;
 import org.n52.wps.client.WPSClientSession;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
-import org.n52.wps.io.data.binding.complex.PlainStringBinding;
 import org.n52.wps.io.data.binding.complex.UncertMLBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
@@ -59,9 +53,7 @@ import org.n52.wps.server.WebProcessingService;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.LogNormalDistribution;
 import org.uncertml.distribution.continuous.NormalDistribution;
-import org.uncertml.distribution.multivariate.IMultivariateDistribution;
 import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
-import org.uncertml.distribution.multivariate.MultivariateStudentTDistribution;
 import org.uncertml.exception.UncertaintyEncoderException;
 import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.io.XMLEncoder;
@@ -84,10 +76,6 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
-import org.uncertweb.ups.austal.DayDistribution;
-import org.uncertweb.ups.austal.DayEmissions;
-import org.uncertweb.ups.austal.HourDistribution;
-import org.uncertweb.ups.austal.MeteoObject;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
