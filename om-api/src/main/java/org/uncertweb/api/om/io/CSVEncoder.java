@@ -61,7 +61,7 @@ public class CSVEncoder implements IObservationEncoder{
 		static final String PHEN_TIME="PhenomenonTime";
 		static final String FOI_IDENTIFIER = "Feature_ID";
 		static final String WKT_GEOM="WKTGeometry";
-		static final String SRID="SRID";
+		static final String SRID="EPSG";
 		static final String OBS_PROP="ObservedProperty";
 		static final String PROCEDURE="Procedure";
 		static final String RESULT="Result";
@@ -129,7 +129,7 @@ public class CSVEncoder implements IObservationEncoder{
 		//write columnnames
 		encoder.writeNext(getColumnNames(obsCol.getObservations().get(0)));
 		List<? extends AbstractObservation> obs = obsCol.getObservations();
-		for (int i=0;i<100;i++){
+		for (int i=0;i<obs.size();i++){
 			encoder.writeNext(getLine4Obs(obs.get(i)));
 		}
 		isCollection=false;
