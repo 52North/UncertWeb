@@ -140,24 +140,14 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				<ComplexOutput>
 					<Default>
 						<Format>
-							<MimeType>text/XML</MimeType>
+							<MimeType>application/x-om-u+xml</MimeType>
 							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://schemas.opengis.net/gml/2.1.2/feature.xsd
+								http://schemas.opengis.net/om/2.0/observation.xsd
 							</Schema>
 						</Format>
 					</Default>
 					<Supported>
-						<Format>
-							<MimeType>text/XML</MimeType>
-							<Encoding>UTF-8</Encoding>
-							<Schema>
-								http://schemas.opengis.net/gml/3.2.1/base/feature.xsd
-							</Schema>
-						</Format>
-						<Format>
-							<MimeType>application/x-zipped-shp</MimeType>
-						</Format>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
 							<Encoding>UTF-8</Encoding>
