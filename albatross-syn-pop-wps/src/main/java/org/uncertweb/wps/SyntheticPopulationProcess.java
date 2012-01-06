@@ -35,7 +35,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
 public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 	private String targetProp, sourceProp, exportFileNameProp,
-			publicFolderProp;
+			publicFolderProp, serverAddressProp, publicFolderVisiblePartProp;
 	private List<String> filesToCopyProp;
 
 	private final String inputIDGenpopHouseholds = "genpop-households";
@@ -113,13 +113,13 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		Map<String, IData> result = new HashMap<String, IData>();
 
 		
-		//TODO zum testen erstmal beide hier eintragen
-		result.put("project-file", new LiteralStringBinding(ws.getPublicFolder()
-				+ File.separator + projectFile.getProjectFileName() + " exportfile: " + ws.getPublicFolder()
-				+ File.separator + exportFileNameProp + " obs file: "+ ws.getPublicFolder()+File.separator + "test.obs"));
+		//obs file: "+ ws.getPublicFolder()+File.separator + "test.obs"
+		
+		result.put("project-file", new LiteralStringBinding(serverAddressProp + "/" +publicFolderVisiblePartProp+"/"+ ws.getFolderNumber()+"/"+ projectFile.getProjectFileName()));
 
-		result.put("export-file", new LiteralStringBinding(ws.getPublicFolder()
-				+ File.separator + exportFileNameProp));
+		result.put("export-file", new LiteralStringBinding(serverAddressProp + "/" +publicFolderVisiblePartProp+"/"+ ws.getFolderNumber()+"/"+ exportFileNameProp));
+		
+		result.put("workspace", new LiteralStringBinding(ws.getWorkspaceFolder().getAbsolutePath()));
 
 		return result;
 	}
@@ -149,6 +149,8 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		exportFileNameProp = properties.getProperty("exportFileName");
 		publicFolderProp = properties.getProperty("publicFolder");
 		filesToCopyProp = Arrays.asList(properties.getProperty("filesToCopy").split(";"));
+		serverAddressProp = properties.getProperty("serverAddress");
+		publicFolderVisiblePartProp = properties.getProperty("publicFolderVisiblePart");
 	}
 
 	private void checkAndCopyInput(Map<String, List<IData>> inputData) {

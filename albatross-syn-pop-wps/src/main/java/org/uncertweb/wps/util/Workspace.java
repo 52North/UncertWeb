@@ -18,13 +18,14 @@ import java.util.List;
 public class Workspace {
 
 	private File originalDataFolder, workspaceFolder, publicFolder;
+	private String folderNumber;
 
 	public Workspace(String originalDataFolder, String workspace,
 			String publicFolder) {
 
 		this.originalDataFolder = new File(originalDataFolder);
 
-		String folderNumber = this.generateUniqueWorkspaceNumber(workspace);
+		folderNumber = this.generateUniqueWorkspaceNumber(workspace);
 		// create workspace
 		this.workspaceFolder = this.createDirectory(workspace + File.separator
 				+ folderNumber);
@@ -38,6 +39,11 @@ public class Workspace {
 		// create projectfile in workspace -> done separate
 		// copy result into public folder -> done after calculation
 
+	}
+	
+	public String getFolderNumber(){
+		
+		return this.folderNumber;
 	}
 
 	public void copyResultIntoPublicFolder(List<String> files) {

@@ -72,6 +72,14 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<ows:DataType ows:reference="xs:string"></ows:DataType>
 				</LiteralOutput>
 			</Output>
+			<Output>
+				<ows:Identifier>workspace</ows:Identifier>
+				<ows:Title>workspace</ows:Title>
+				<ows:Abstract>the path to the current workspace</ows:Abstract>
+				<LiteralOutput>	
+					<ows:DataType ows:reference="xs:string"></ows:DataType>
+				</LiteralOutput>
+			</Output>
 		</ProcessOutputs>
 	</ProcessDescription>
 </wps:ProcessDescriptions>

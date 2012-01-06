@@ -1,40 +1,53 @@
-<wps:Execute service="WPS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0  http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ows:Identifier>org.uncertweb.wps.SyntheticPopulationProcess</ows:Identifier>
-  <wps:DataInputs>
-    <wps:Input>
-    	<ows:Identifier>genpop-households</ows:Identifier>
+<wps:Execute service="WPS" version="1.0.0"
+	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0  http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd"
+	xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ows:Identifier>org.uncertweb.wps.SyntheticPopulationProcess</ows:Identifier>
+	<wps:DataInputs>
+		<wps:Input>
+			<ows:Identifier>genpop-households</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData>357</wps:LiteralData>
 			</wps:Data>
-    </wps:Input>
-     <wps:Input>
-    	<ows:Identifier>rwdata-households</ows:Identifier>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>rwdata-households</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData>0</wps:LiteralData>
 			</wps:Data>
-    </wps:Input>
-     <wps:Input>
-    	<ows:Identifier>postcode-areas</ows:Identifier>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>postcode-areas</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData>3987</wps:LiteralData>
 			</wps:Data>
-    </wps:Input>
-     <wps:Input>
-    	<ows:Identifier>zones</ows:Identifier>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>zones</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData>1308</wps:LiteralData>
 			</wps:Data>
-    </wps:Input>
-     <wps:Input>
-    	<ows:Identifier>municipalities</ows:Identifier>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>municipalities</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData>625</wps:LiteralData>
 			</wps:Data>
-    </wps:Input>
-  </wps:DataInputs>
+		</wps:Input>
+	</wps:DataInputs>
 	<wps:ResponseForm>
-		<wps:RawDataOutput mimeType="application/text+xml">
-			<ows:Identifier>project-file</ows:Identifier>
-		</wps:RawDataOutput>
+		<wps:ResponseDocument>
+			<wps:Output mimeType="application/text+xml">
+				<ows:Identifier>project-file</ows:Identifier>
+			</wps:Output>
+
+			<wps:Output mimeType="application/text+xml">
+				<ows:Identifier>export-file</ows:Identifier>
+			</wps:Output>
+
+			<wps:Output mimeType="application/text+xml">
+				<ows:Identifier>workspace</ows:Identifier>
+			</wps:Output>
+		</wps:ResponseDocument>
 	</wps:ResponseForm>
 </wps:Execute>
