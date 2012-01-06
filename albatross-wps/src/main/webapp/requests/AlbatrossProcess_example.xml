@@ -1,0 +1,27 @@
+<wps:Execute service="WPS" version="1.0.0"
+	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0  http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd"
+	xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ows:Identifier>org.uncertweb.wps.AlbatrossProcess</ows:Identifier>
+	<wps:DataInputs>
+		<wps:Input>
+			<ows:Identifier>project-file</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>path...</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>export-file</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>path...</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+	</wps:DataInputs>
+	<wps:ResponseForm>
+		<wps:ResponseDocument>
+			<wps:Output mimeType="application/text+xml">
+				<ows:Identifier>export-file</ows:Identifier>
+			</wps:Output>
+		</wps:ResponseDocument>
+	</wps:ResponseForm>
+</wps:Execute>
