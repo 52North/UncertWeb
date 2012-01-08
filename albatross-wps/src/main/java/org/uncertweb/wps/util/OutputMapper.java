@@ -35,8 +35,8 @@ public class OutputMapper {
 	 */
 	public IObservationCollection encodeODMatrix(String absoluteFilePath) throws IOException, OMParsingException{
 		IObservationCollection result = null;
-		try {
-			
+//		try {
+//			
 //			TODO might implement an observation for each timestamp/origin
 //			CSVReader reader = new CSVReader(new FileReader(absoluteFilePath));
 //			List<String[]> allLines = reader.readAll();
