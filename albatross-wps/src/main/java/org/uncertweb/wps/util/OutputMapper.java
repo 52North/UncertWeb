@@ -164,7 +164,7 @@ public class OutputMapper {
 							result.addObservation(new Measurement(phenTime,resultTime,procedure,obsProp,ssf,obsResult));
 							
 							obsProp = new URI(ObservedProperties.NUM_OF_TRIPS_CAR_DRIVER);
-							resultValue  = Double.parseDouble(distResult);
+							resultValue  = Double.parseDouble(numTripsResult);
 							obsResult = new MeasureResult(resultValue,"");
 						}
 						
@@ -176,7 +176,7 @@ public class OutputMapper {
 							result.addObservation(new Measurement(phenTime,resultTime,procedure,obsProp,ssf,obsResult));
 							
 							obsProp = new URI(ObservedProperties.NUM_OF_TRIPS_SLOW_MODE);
-							resultValue  = Double.parseDouble(distResult);
+							resultValue  = Double.parseDouble(numTripsResult);
 							obsResult = new MeasureResult(resultValue,"");
 						}
 						
@@ -188,7 +188,7 @@ public class OutputMapper {
 							result.addObservation(new Measurement(phenTime,resultTime,procedure,obsProp,ssf,obsResult));
 							
 							obsProp = new URI(ObservedProperties.NUM_OF_TRIPS_PUB_TRANSPORT);
-							resultValue  = Double.parseDouble(distResult);
+							resultValue  = Double.parseDouble(numTripsResult);
 							obsResult = new MeasureResult(resultValue,"");
 						}
 						
@@ -200,7 +200,7 @@ public class OutputMapper {
 							result.addObservation(new Measurement(phenTime,resultTime,procedure,obsProp,ssf,obsResult));
 							
 							obsProp = new URI(ObservedProperties.NUM_OF_TRIPS_CAR_PASSENGERS);
-							resultValue  = Double.parseDouble(distResult);
+							resultValue  = Double.parseDouble(numTripsResult);
 							obsResult = new MeasureResult(resultValue,"");
 						}
 						
