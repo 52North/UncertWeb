@@ -687,7 +687,30 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			xb_phenTime.setHref(obs.getPhenomenonTime().getHref().toASCIIString());
 
-		} else {
+		}
+		
+		else if (obs.getPhenomenonTime().isGeneralTime()){
+			String timeString = obs.getPhenomenonTime().getGeneralTime()
+			.toString();
+			if (this.gmlID4TimeStrings.containsKey(timeString)) {
+				xb_phenTime.setHref("#"
+						+ this.gmlID4TimeStrings.get(timeString));
+			} else {
+				TimeInstantDocument xb_tiDoc = TimeInstantDocument.Factory
+						.newInstance();
+				TimeInstantType xb_timeInstant = xb_tiDoc.addNewTimeInstant();
+		
+				xb_timeInstant.addNewTimePosition().setStringValue(
+						obs.getPhenomenonTime().toString());
+				// TODO use DateTimeFormatter? .toString(String pattern)
+				String gmlId = (idPrefix != null ? idPrefix + "_" : "")  + "t" + timeIdCounter;
+				xb_timeInstant.setId(gmlId);
+					this.gmlID4TimeStrings.put(obs.getPhenomenonTime().toString(), gmlId);
+					timeIdCounter++;
+				xb_phenTime.set(xb_tiDoc);
+			}
+		}
+		else {
 			throw new IllegalArgumentException(
 					"PhenomenonTime has to be an instant, an interval, or a reference to another time property.");
 		}

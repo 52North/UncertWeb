@@ -38,7 +38,6 @@ public class TimeObject {
 	 */
 	public TimeObject(String timeString){
 		parseTimeString(timeString);
-		this.dateTime = parseTimePosition(timeString);
 	}
 	
 	private void parseTimeString(String timeString) {

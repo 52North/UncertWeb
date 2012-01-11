@@ -230,6 +230,13 @@ public class JSONObservationEncoder implements IObservationEncoder{
 
 	private void encodeTime(JSONStringer writer, TimeObject time) throws JSONException {
 		writer.object();
+		if (time.isGeneralTime()){
+			writer.key("TimeInstant");
+			writer.object();
+			writer.key("timePosition");
+			writer.value(time.toString());
+			writer.endObject();
+		}
 		if (time.isInstant()){
 			writer.key("TimeInstant");
 			writer.object();

@@ -29,7 +29,7 @@ public class GeneralTimeInstant implements IGeneralTime{
 	/**
 	 * 
 	 */
-	private int month,day,hour,minute,second=Integer.MIN_VALUE;
+	private int month=Integer.MIN_VALUE,day=Integer.MIN_VALUE,hour=Integer.MIN_VALUE,minute=Integer.MIN_VALUE,second=Integer.MIN_VALUE;
 	
 	/**
 	 * @throws OMParsingException 
@@ -84,7 +84,7 @@ public class GeneralTimeInstant implements IGeneralTime{
 			}
 			valid=true;
 		}
-		if (valid = false){
+		if (!valid){
 			throw new OMParsingException("The String of general time is not valid!");
 		}
 	}
