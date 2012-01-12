@@ -139,6 +139,7 @@
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
 			
+			<Parser name="UncertWebParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true" />
 			
 		</ParserList>
 		<GeneratorList>
@@ -284,6 +285,9 @@
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 				<Property name="supportedEncoding" active="true">Base64</Property>
 			</Generator>
+			
+			<Generator name="UncertWebGenerator" className="org.n52.wps.io.datahandler.UncertWebIODataGenerator" active="true" />
+			
 			
 		</GeneratorList>
 	</Datahandlers>
