@@ -19,11 +19,13 @@ import org.apache.commons.io.FileUtils;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
+import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.wps.util.OutputMapper;
 import org.uncertweb.wps.util.PostProcessingConfigFile;
@@ -56,6 +58,8 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private final String inputIDExportFileBin = "export-file-bin";
 
 	private final String outputIDExportFile = "export-file";
+	private final String outputIDODMatrix = "ODmatrix";
+	private final String outputIDindicators = "indicators";
 
 	private String exportFile;
 	private String exportFileBin;
@@ -121,6 +125,9 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 			return LiteralStringBinding.class;
 		}
+		else if (id.equals(outputIDODMatrix)||id.equals(outputIDindicators)){
+			return OMBinding.class;
+		}
 		return null;
 	}
 
@@ -143,18 +150,25 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		this.runPostProcessing();
 		
 		OutputMapper om = new OutputMapper();
-		IObservationCollection indicatorCol = om.encodeIndicators(indicators);
-		IObservationCollection odMatrixCol = om.encodeODMatrix(odMatrix);
+		IObservationCollection indicatorCol = null;
+		IObservationCollection odMatrixCol = null;
+		try {
+			indicatorCol = om.encodeIndicators(indicators);
+			odMatrixCol = om.encodeODMatrix(odMatrix);
+		} catch (OMEncodingException e) {
+			throw new RuntimeException("Error while encoding observation responses from Albatross Output: " + e.getMessage());
+		}
 		
-		//TODO
-		//indicators
-		//odMatrix
+		
 
 		Map<String, IData> result = new HashMap<String, IData>();
+		OMBinding indOutput = new OMBinding(indicatorCol);
+		OMBinding odMatrixOutput = new OMBinding(odMatrixCol);
+		//result.put("export-file", new LiteralStringBinding(serverAddressProp
+			//	+ "/" + publicFolderVisiblePartProp + "/" + exportFileNameProp));
 
-		result.put("export-file", new LiteralStringBinding(serverAddressProp
-				+ "/" + publicFolderVisiblePartProp + "/" + exportFileNameProp));
-
+		result.put(outputIDODMatrix, odMatrixOutput);
+		result.put(outputIDindicators, indOutput);
 		return result;
 	}
 

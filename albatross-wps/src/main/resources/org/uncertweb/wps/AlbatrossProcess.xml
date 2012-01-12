@@ -75,13 +75,44 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 		</DataInputs>
 		<ProcessOutputs>
 			<Output>
-				<ows:Identifier>export-file</ows:Identifier>
-				<ows:Title>export file</ows:Title>
-				<ows:Abstract>the path to the generated export file</ows:Abstract>
-				<LiteralOutput>	
-					<ows:DataType ows:reference="xs:string"></ows:DataType>
-				</LiteralOutput>
+				<ows:Identifier>ODmatrix</ows:Identifier>
+				<ows:Title>ODmatrix</ows:Title>
+				<ows:Abstract>ODmatrix</ows:Abstract>
+				<ComplexOutput>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-om-u+json</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexOutput>
 			</Output>
+			<Output>
+				<ows:Identifier>indicators</ows:Identifier>
+				<ows:Title>indicators</ows:Title>
+				<ows:Abstract>indicators</ows:Abstract>
+				<ComplexOutput>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-om-u+json</MimeType>
+							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
+			
 		</ProcessOutputs>
 	</ProcessDescription>
 </wps:ProcessDescriptions>
