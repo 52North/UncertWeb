@@ -49,8 +49,8 @@
 	</wps:DataInputs>
 	<wps:ResponseForm>
 		<wps:ResponseDocument>
-			<wps:Output mimeType="application/text+xml">
-				<ows:Identifier>export-file</ows:Identifier>
+			<wps:Output mimeType="application/x-om-u+xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd">
+				<ows:Identifier>indicators</ows:Identifier>
 			</wps:Output>
 		</wps:ResponseDocument>
 	</wps:ResponseForm>
