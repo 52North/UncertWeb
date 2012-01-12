@@ -2,14 +2,13 @@ package org.uncertweb.wps.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * @author s_voss13
@@ -74,6 +73,13 @@ public class Workspace {
 				+ File.separator + fileName);
 		File outputFile = new File(targetLocation.getAbsolutePath()+ File.separator + fileName);
 
+		try {
+			FileUtils.copyFile(inputFile, outputFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*
 		FileReader in = null;
 		try {
 			in = new FileReader(inputFile);
@@ -95,6 +101,7 @@ public class Workspace {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 
 	}
 

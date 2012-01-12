@@ -46,7 +46,7 @@
 			</wps:Output>
 
 			<wps:Output mimeType="application/text+xml">
-				<ows:Identifier>workspace</ows:Identifier>
+				<ows:Identifier>export-file-bin</ows:Identifier>
 			</wps:Output>
 		</wps:ResponseDocument>
 	</wps:ResponseForm>

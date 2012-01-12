@@ -73,9 +73,9 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				</LiteralOutput>
 			</Output>
 			<Output>
-				<ows:Identifier>workspace</ows:Identifier>
-				<ows:Title>workspace</ows:Title>
-				<ows:Abstract>the path to the current workspace</ows:Abstract>
+				<ows:Identifier>export-file-bin</ows:Identifier>
+				<ows:Title>export bin</ows:Title>
+				<ows:Abstract>the path to the bin export</ows:Abstract>
 				<LiteralOutput>	
 					<ows:DataType ows:reference="xs:string"></ows:DataType>
 				</LiteralOutput>

@@ -35,7 +35,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
 public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 	private String targetProp, sourceProp, exportFileNameProp,
-			publicFolderProp, serverAddressProp, publicFolderVisiblePartProp;
+			publicFolderProp, serverAddressProp, publicFolderVisiblePartProp, exportFileBinNameProp;
 	private List<String> filesToCopyProp;
 
 	private final String inputIDGenpopHouseholds = "genpop-households";
@@ -111,15 +111,12 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		ws.copyResultIntoPublicFolder(filesToCopyProp);
 
 		Map<String, IData> result = new HashMap<String, IData>();
-
-		
-		//obs file: "+ ws.getPublicFolder()+File.separator + "test.obs"
 		
 		result.put("project-file", new LiteralStringBinding(serverAddressProp + "/" +publicFolderVisiblePartProp+"/"+ ws.getFolderNumber()+"/"+ projectFile.getProjectFileName()));
 
 		result.put("export-file", new LiteralStringBinding(serverAddressProp + "/" +publicFolderVisiblePartProp+"/"+ ws.getFolderNumber()+"/"+ exportFileNameProp));
 		
-		result.put("workspace", new LiteralStringBinding(ws.getWorkspaceFolder().getAbsolutePath()));
+		result.put("export-file-bin", new LiteralStringBinding(serverAddressProp + "/" +publicFolderVisiblePartProp+"/"+ ws.getFolderNumber()+"/"+ exportFileBinNameProp));
 
 		return result;
 	}
@@ -147,6 +144,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		sourceProp = properties.getProperty("originalData");
 		targetProp = properties.getProperty("targetWorkspace");
 		exportFileNameProp = properties.getProperty("exportFileName");
+		exportFileBinNameProp = properties.getProperty("exportFileBinName");
 		publicFolderProp = properties.getProperty("publicFolder");
 		filesToCopyProp = Arrays.asList(properties.getProperty("filesToCopy").split(";"));
 		serverAddressProp = properties.getProperty("serverAddress");
@@ -257,6 +255,10 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 			int result = proc.waitFor();
 			System.out.println("Return value: " + result);
+			
+			if(result != 0){
+				throw new RuntimeException("could not run rwdata properly. Try again.");
+			}
 
 		} catch (InterruptedException e) {
 			

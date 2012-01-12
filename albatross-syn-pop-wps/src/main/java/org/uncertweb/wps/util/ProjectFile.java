@@ -103,7 +103,7 @@ public class ProjectFile {
 		out.println(dataLocation+"zonedist-ext-Base.bin");
 		out.println(dataLocation+"locs-nl.bin");
 		out.println(dataLocation+"times-nl.bin");
-		out.println(dataLocation+"test.obs");
+		out.println(dataLocation+"exportBin.bin");
 		out.println(dataLocation+"test.prd");
 		out.println(dataLocation+"test_syn.txt");
 		out.println(dataLocation+"relmat2004.dat");
