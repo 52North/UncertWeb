@@ -24,6 +24,8 @@ import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.wps.util.OutputMapper;
 import org.uncertweb.wps.util.PostProcessingConfigFile;
 import org.uncertweb.wps.util.ProjectFile;
 import org.uncertweb.wps.util.ReadingThread;
@@ -140,6 +142,9 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		//Taos post processing
 		this.runPostProcessing();
 		
+		OutputMapper om = new OutputMapper();
+		IObservationCollection indicatorCol = om.encodeIndicators(indicators);
+		IObservationCollection odMatrixCol = om.encodeODMatrix(odMatrix);
 		
 		//TODO
 		//indicators
