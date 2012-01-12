@@ -40,12 +40,12 @@ public class PostProcessingConfigFile {
 	
 	public String getIndicatorsPath(){
 		
-		return indicatorsFilePath;
+		return postProcessingPath+File.separator+indicatorsFilePath;
 	}
 	
 	public String getOdmPath(){
 		
-		return odmFilePath;
+		return postProcessingPath+File.separator+odmFilePath;
 	}
 	
 	public File getPostProcessingConfigFile(){
