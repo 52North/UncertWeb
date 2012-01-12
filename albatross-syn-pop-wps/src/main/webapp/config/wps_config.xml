@@ -289,7 +289,7 @@
 	</Datahandlers>
 	<AlgorithmRepositoryList>
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
-			<Property name="Algorithm" active="true">org.uncertweb.wps.SyntheticPopulationProcess</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.wps.AlbatrossProcess</Property>
 		</Repository>
 			
 		
