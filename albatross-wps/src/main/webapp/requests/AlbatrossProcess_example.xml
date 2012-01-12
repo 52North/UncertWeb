@@ -4,16 +4,46 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<ows:Identifier>org.uncertweb.wps.AlbatrossProcess</ows:Identifier>
 	<wps:DataInputs>
-		<wps:Input>
-			<ows:Identifier>project-file</ows:Identifier>
+	<wps:Input>
+			<ows:Identifier>genpop-households</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>path...</wps:LiteralData>
+				<wps:LiteralData>357</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>rwdata-households</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>0</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>postcode-areas</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>3987</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>zones</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>1308</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>municipalities</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>625</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>export-file</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>path...</wps:LiteralData>
+				<wps:LiteralData>http://giv-sos.uni-muenster.de:8080/publicFolder/723811715/export.txt</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>export-file-bin</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>http://giv-sos.uni-muenster.de:8080/publicFolder/723811715/exportBin.bin</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 	</wps:DataInputs>
