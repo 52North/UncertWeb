@@ -83,6 +83,9 @@ public class ShapeFileConverter {
 		props = new ShapeFileConverterProperties();
 	}
 	
+	public ShapeFileConverter(String propsFilePath) throws FileNotFoundException, IOException {
+		props = new ShapeFileConverterProperties(propsFilePath);
+	}
 	
 	public boolean run() throws MalformedURLException, URISyntaxException, IOException, OMEncodingException{
 		FILETYPE fileType = props.getFileType();

@@ -89,6 +89,34 @@ public class ShapeFileConverterProperties {
 		resultTimeColName = props.getProperty("RESULTTIMECOL");
 	}
 
+	public ShapeFileConverterProperties(String propsFilePath) throws FileNotFoundException, IOException  {
+		Properties props = new Properties();
+		props.load(new FileInputStream(propsFilePath));
+		shpFilePath = props.getProperty("SHPPATH");
+		omPropsFilePath = props.getProperty("OMFILEPATH");
+		outFilePath = props.getProperty("OUTFILEPATH");
+		fileType = FILETYPE.valueOf(props.getProperty("FILETYPE"));
+		featClassName=props.getProperty("FEATCLASSNAME");
+		procId = props.getProperty("PROCID");
+		procColName = props.getProperty("PROCCOL");
+		obsProps = parsePropsList(props.getProperty("OBSPROPS"));
+		obsPropsType = props.getProperty("OBSPROPSTYPE");
+		phenTime = ShapeFileConverterUtil.parsePhenTime(props.getProperty("PHENTIME"));
+		procPrefix = props.getProperty("PROCPREFIX");
+		obsPropsPrefix = props.getProperty("PHENPREFIX");
+		foiPrefix = props.getProperty("FOIPREFIX");
+		uncertaintyTypes = parsePropsList(props.getProperty("UNTYPES"));
+		normalMeanColName = props.getProperty("UNTYPE.NORMALDISTRIBUTION.MEAN");
+		normalVarianceColName = props.getProperty("UNTYPE.NORMALDISTRIBUTION.VARIANCE");
+		logNormalMeanColName = props.getProperty("UNTYPE.LOGNORMALDISTRIBUTION.MEAN");
+		logNormalVarianceColName = props.getProperty("UNTYPE.LOGNORMALDISTRIBUTION.VARIANCE");
+		multivarNormalMeanColName = props.getProperty("UNTYPE.MULTIVARIATENORMALDISTRIBUTION.MEANS");
+		multivarNormalCovarianceColName = props.getProperty("UNTYPE.MULTIVARIATENORMALDISTRIBUTION.COVARIANCE");
+		uom = props.getProperty("UOM");
+		phenTimeColName = props.getProperty("PHENTIMECOL");
+		resultTimeColName = props.getProperty("RESULTTIMECOL");
+	}
+	
 	/**
 	 * helper method for parsing a list of properties from file
 	 * 
