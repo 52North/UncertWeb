@@ -21,68 +21,21 @@
  */
 package org.uncertweb.viss.core.resource;
 
-import java.io.IOException;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
-import org.uncertweb.viss.core.UncertaintyType;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent;
-import org.uncertweb.viss.core.vis.IVisualization;
+import org.bson.types.ObjectId;
 
 public interface IResource {
 
-	/**
-	 * @return the UUID of the resource
-	 */
-	public UUID getUUID();
+	public ObjectId getId();
 
-	/**
-	 * @return the MediaType of the resource
-	 */
 	public MediaType getMediaType();
+	
+	public void setMediaType(MediaType mt);
 
-	/**
-	 * @return the underlying object
-	 */
 	public Object getResource();
 
-	/**
-	 * @return the already generated visualizations
-	 */
-	public Set<IVisualization> getVisualizations();
-
-	/**
-	 * Adds a visualization to the resource
-	 * 
-	 * @param the
-	 *          visualization
-	 */
-	public void addVisualization(IVisualization v);
-
-	/**
-	 * @return the temporal extent of this resource
-	 */
-	public ITemporalExtent getTemporalExtent();
-
-	/**
-	 * @return the phenomenon this resource describes
-	 */
-	public String getPhenomenon();
-
-	public UncertaintyType getType();
-
-	/**
-	 * Loads the resource.
-	 * 
-	 * @throws IOException
-	 *           if an IO error occurs
-	 */
-	public void load() throws IOException;
-
-	/**
-	 * @return true if the resource is loaded, false otherwise
-	 */
-	public boolean isLoaded();
+	public Set<IDataSet> getDataSets();
 }

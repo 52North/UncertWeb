@@ -86,6 +86,6 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 		Id id = findAnnotation(Id.class, getClass());
 		if (id != null)
 			return id.value();
-		return null;
+		return getClass().getSimpleName();
 	}
 }

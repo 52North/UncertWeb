@@ -21,6 +21,7 @@
  */
 package org.uncertweb.viss.vis.distribution;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.math.MathException;
@@ -31,14 +32,13 @@ import org.codehaus.jettison.json.JSONObject;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.utils.UwStringUtils;
 import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.resource.IResource;
+import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.JSONSchema;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
-import org.uncertweb.viss.vis.Value;
+import org.uncertweb.viss.vis.netcdf.UncertaintyValue;
 
 @Type(UncertaintyType.NORMAL_DISTRIBUTION)
 public abstract class NormalDistributionVisualizer extends
@@ -48,10 +48,10 @@ public abstract class NormalDistributionVisualizer extends
 	@Description("Returns P(min <= X <= max).")
 	public static class ProbabilityForInterval extends
 			NormalDistributionVisualizer {
-		private static final String MIN_DESCRIPTION = "the (inclusive) lower bound";
-		private static final String MAX_DESCRIPTION = "the (inclusive) upper bound";
-		private static final String MIN_PARAMETER = "min";
-		private static final String MAX_PARAMETER = "max";
+		public static final String MIN_DESCRIPTION = "the (inclusive) lower bound";
+		public static final String MAX_DESCRIPTION = "the (inclusive) upper bound";
+		public static final String MIN_PARAMETER = "min";
+		public static final String MAX_PARAMETER = "max";
 
 		private static JSONObject createMinOption() throws JSONException {
 			return new JSONObject()
@@ -74,7 +74,7 @@ public abstract class NormalDistributionVisualizer extends
 		}
 
 		@Override
-		public Map<String, JSONObject> getOptionsForResource(IResource r) {
+		public Map<String, JSONObject> getOptionsForDataSet(IDataSet r) {
 			try {
 				Map<String, JSONObject> options = UwCollectionUtils.map();
 				double[] minmax = getRange(r);
@@ -128,14 +128,6 @@ public abstract class NormalDistributionVisualizer extends
 		}
 
 		@Override
-		public String getId(JSONObject params) {
-			return UwStringUtils.join("-", getShortName(), MIN_PARAMETER,
-					String.valueOf(getMin(params)).replace('.', '-'),
-					MAX_PARAMETER,
-					String.valueOf(getMax(params)).replace('.', '-'));
-		}
-
-		@Override
 		public Map<String, JSONObject> getOptions() {
 			try {
 				Map<String, JSONObject> options = UwCollectionUtils.map();
@@ -172,7 +164,7 @@ public abstract class NormalDistributionVisualizer extends
 		}
 
 		@Override
-		public Map<String, JSONObject> getOptionsForResource(IResource r) {
+		public Map<String, JSONObject> getOptionsForDataSet(IDataSet r) {
 			try {
 				double[] minmax = getRange(r);
 				return UwCollectionUtils.map(
@@ -204,12 +196,6 @@ public abstract class NormalDistributionVisualizer extends
 			} catch (MathException e) {
 				throw VissError.internal(e);
 			}
-		}
-
-		@Override
-		public String getId(JSONObject params) {
-			return UwStringUtils.join("-", getShortName(), MAX_PARAMETER,
-					String.valueOf(getMax(params)).replace('.', '-'));
 		}
 
 		@Override
@@ -285,16 +271,17 @@ public abstract class NormalDistributionVisualizer extends
 				FastMath.sqrt(d.getVariance().get(0))));
 	}
 
-	protected double[] getRange(IResource r) {
+	protected double[] getRange(IDataSet r) {
 		return getRange(r, TIMES_STANDARD_DEVIATION);
 	}
 
-	protected double[] getRange(IResource r, int tsd) {
-
+	protected double[] getRange(IDataSet r, int tsd) {
 		double min = Double.POSITIVE_INFINITY;
 		double max = Double.NEGATIVE_INFINITY;
-
-		for (Value val : this) {
+		
+		Iterator<UncertaintyValue> i = getIteratorForDataSet(r);		
+		while (i.hasNext()){
+			UncertaintyValue val = i.next();
 			if (val.getValue() != null) {
 				NormalDistribution nd = (NormalDistribution) val.getValue();
 				double m = nd.getMean().get(0);

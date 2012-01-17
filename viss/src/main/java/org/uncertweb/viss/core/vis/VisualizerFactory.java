@@ -21,7 +21,6 @@
  */
 package org.uncertweb.viss.core.vis;
 
-import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Map;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.resource.IResource;
+import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.Constants;
 
 public class VisualizerFactory {
@@ -124,46 +123,35 @@ public class VisualizerFactory {
 		    .unmodifiableSet(UwCollectionUtils.asSet(creatorsByShortName.values()));
 	}
 
-	public static IVisualizer getVisualizerForResource(IResource resource,
+	public static IVisualizer getVisualizerForDataSet(IDataSet dataSet,
 	    String visualizer) {
 		IVisualizer v = getVisualizer(visualizer);
-		if (!resource.isLoaded()) {
-			try {
-				log.debug("Loading resource {}", resource.getUUID());
-				resource.load();
-			} catch (IOException e) {
-				VissError.internal(e);
-			}
-		}
-		if (v.getCompatibleUncertaintyTypes().contains(resource.getType())
-		    && v.getCompatibleMediaTypes().contains(resource.getMediaType())) {
-			v.setResource(resource);
+		if (v.getCompatibleUncertaintyTypes().contains(dataSet.getType())
+		    && v.getCompatibleMediaTypes().contains(dataSet.getResource().getMediaType())) {
+			v.setDataSet(dataSet);
 			return v;
 		} else {
-			throw VissError.invalidParameter("Visualizer " + v
+			throw VissError.invalidParameter("Visualizer " + v.getShortName()
 			    + " is not available for this resource");
 		}
 	}
 
-	public static Set<IVisualizer> getVisualizersForResource(IResource resource) {
-		Set<Class<? extends IVisualizer>> visualizerForMediaType = getVisualizerForMediaType(resource
-		    .getMediaType());
+	public static Set<IVisualizer> getVisualizersForDataSet(IDataSet dataSet) {//TODO
+		
+		Set<Class<? extends IVisualizer>> visualizerForMediaType = 
+				getVisualizerForMediaType(dataSet.getResource().getMediaType());
+		
 		log.debug("Found {} Visualizers for MediaType {}.",
-		    visualizerForMediaType.size(), resource.getMediaType());
-		if (!visualizerForMediaType.isEmpty() && resource.isLoaded() == false) {
-			try {
-				log.debug("Loading resource {}", resource.getUUID());
-				resource.load();
-			} catch (IOException e) {
-				VissError.internal(e);
-			}
-		}
+		    visualizerForMediaType.size(), dataSet.getResource().getMediaType());
+		
 		Set<IVisualizer> set = UwCollectionUtils.set();
 		for (Class<? extends IVisualizer> v : visualizerForMediaType) {
 			IVisualizer vis = getVisualizer(shortNamesByCreator.get(v));
-			if (vis.getCompatibleUncertaintyTypes().contains(resource.getType())) {
-				vis.setResource(resource);
+			if (vis.getCompatibleUncertaintyTypes().contains(dataSet.getType())) {
+				vis.setDataSet(dataSet);
 				set.add(vis);
+			} else {
+				log.debug("Visualizer {} is not compatible to {}", vis.getShortName(), dataSet.getType());
 			}
 		}
 		return set;

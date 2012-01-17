@@ -24,7 +24,7 @@ package org.uncertweb.viss.core.resource.time;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-public abstract class AbstractRegularTemporalExtent extends TemporalInterval {
+public abstract class AbstractRegularTemporalExtent extends AbstractTemporalInterval {
 
 	private Duration seperator;
 

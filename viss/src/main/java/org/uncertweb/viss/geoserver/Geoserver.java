@@ -181,8 +181,11 @@ public class Geoserver {
 
 		JSONObject json = new JSONObject().put(
 				"coverageStore",
-				new JSONObject().put("name", name).put("type", type)
-						.put("enabled", enabled).put("workspace", ws));
+				new JSONObject()
+					.put("name", name)
+					.put("type", type)
+					.put("enabled", enabled)
+					.put("workspace", ws));
 
 		con = RestBuilder.path(url("workspaces/%s/coveragestores.json"), ws)
 				.auth(this.user, this.pass).contentType(APPLICATION_JSON_TYPE)

@@ -21,6 +21,7 @@
 package org.uncertweb.viss.core;
 
 import java.net.URI;
+import java.util.Set;
 
 import org.uncertml.IUncertainty;
 import org.uncertml.UncertML;
@@ -43,9 +44,10 @@ import org.uncertml.distribution.continuous.PoissonDistribution;
 import org.uncertml.distribution.continuous.StudentTDistribution;
 import org.uncertml.distribution.continuous.UniformDistribution;
 import org.uncertml.distribution.continuous.WeibullDistribution;
+import org.uncertml.sample.CategoricalRealisation;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.sample.ISample;
 import org.uncertml.sample.RandomSample;
-import org.uncertml.sample.Realisation;
 import org.uncertml.sample.SystematicSample;
 import org.uncertml.sample.UnknownSample;
 import org.uncertml.statistic.CentredMoment;
@@ -71,68 +73,83 @@ import org.uncertml.statistic.Range;
 import org.uncertml.statistic.Skewness;
 import org.uncertml.statistic.StandardDeviation;
 import org.uncertml.statistic.StatisticCollection;
+import org.uncertweb.utils.UwCollectionUtils;
 
 public enum UncertaintyType {
+	
+	
 	// UNKNOWN(IUncertainty.class),
 	SAMPLE(ISample.class),
 	DISTRIBUTION(IDistribution.class),
 	STATISTIC(IStatistic.class),
 
-	BETA_DISTRIBUTION(BetaDistribution.class),
-	CAUCHY_DISTRIBUTION(CauchyDistribution.class),
-	CHI_SQUARE_DISTRIBUTION(ChiSquareDistribution.class),
-	EXPONENTIAL_DISTRIBUTION(ExponentialDistribution.class),
-	F_DISTRIBUTION(FDistribution.class),
-	GAMMA_DISTRIBUTION(GammaDistribution.class),
-	INVERSE_GAMMA_DISTRIBUTION(InverseGammaDistribution.class),
-	LAPLACE_DISTRIBUTION(LaplaceDistribution.class),
-	LOGISTIC_DISTRIBUTION(LogisticDistribution.class),
-	LOG_NORMAL_DISTRIBUTION(LogNormalDistribution.class),
-	NORMAL_DISTRIBUTION(NormalDistribution.class),
-	NORMAL_INVERSE_GAMMA_DISTRIBUTION(NormalInverseGammaDistribution.class),
-	PARETO_DISTRIBUTION(ParetoDistribution.class),
-	POISSON_DISTRIBUTION(PoissonDistribution.class),
-	STUDENT_T_DISTRIBUTION(StudentTDistribution.class),
-	UNIFORM_DISTRIBUTION(UniformDistribution.class),
-	WEIBULL_DISTRIBUTION(WeibullDistribution.class),
+	BETA_DISTRIBUTION(BetaDistribution.class, DISTRIBUTION),
+	CAUCHY_DISTRIBUTION(CauchyDistribution.class, DISTRIBUTION),
+	CHI_SQUARE_DISTRIBUTION(ChiSquareDistribution.class, DISTRIBUTION),
+	EXPONENTIAL_DISTRIBUTION(ExponentialDistribution.class, DISTRIBUTION),
+	F_DISTRIBUTION(FDistribution.class, DISTRIBUTION),
+	GAMMA_DISTRIBUTION(GammaDistribution.class, DISTRIBUTION),
+	INVERSE_GAMMA_DISTRIBUTION(InverseGammaDistribution.class, DISTRIBUTION),
+	LAPLACE_DISTRIBUTION(LaplaceDistribution.class, DISTRIBUTION),
+	LOGISTIC_DISTRIBUTION(LogisticDistribution.class, DISTRIBUTION),
+	LOG_NORMAL_DISTRIBUTION(LogNormalDistribution.class, DISTRIBUTION),
+	NORMAL_DISTRIBUTION(NormalDistribution.class, DISTRIBUTION),
+	NORMAL_INVERSE_GAMMA_DISTRIBUTION(NormalInverseGammaDistribution.class, DISTRIBUTION),
+	PARETO_DISTRIBUTION(ParetoDistribution.class, DISTRIBUTION),
+	POISSON_DISTRIBUTION(PoissonDistribution.class, DISTRIBUTION),
+	STUDENT_T_DISTRIBUTION(StudentTDistribution.class, DISTRIBUTION),
+	UNIFORM_DISTRIBUTION(UniformDistribution.class, DISTRIBUTION),
+	WEIBULL_DISTRIBUTION(WeibullDistribution.class, DISTRIBUTION),
 
-	MIXTURE_MODEL_DISTRIBUTION(MixtureModel.class),
+	MIXTURE_MODEL_DISTRIBUTION(MixtureModel.class, DISTRIBUTION),
 
-	RANDOM_SAMPLE(RandomSample.class),
-	REALISATION(Realisation.class),
-	SYSTEMATIC_SAMPLE(SystematicSample.class),
-	UNKNOWN_SAMPLE(UnknownSample.class),
+	RANDOM_SAMPLE(RandomSample.class, SAMPLE),
+	CONTINUOUS_REALISATION(ContinuousRealisation.class, SAMPLE, URI.create("http://www.uncertml.org/samples/realisation")),
+	CATEGORICAL_REALISATION(CategoricalRealisation.class, SAMPLE),
+	SYSTEMATIC_SAMPLE(SystematicSample.class, SAMPLE),
+	UNKNOWN_SAMPLE(UnknownSample.class, SAMPLE),
 
-	CONFIDENCE_INTERVAL(ConfidenceInterval.class),
-	CONFUSION_MATRIX(ConfusionMatrix.class),
-	COVARIANCE_MATRIX(CovarianceMatrix.class),
-	CREDIBLE_INTERVAL(CredibleInterval.class),
-	PROBABILITY(Probability.class),
+	CONFIDENCE_INTERVAL(ConfidenceInterval.class, STATISTIC),
+	CONFUSION_MATRIX(ConfusionMatrix.class, STATISTIC),
+	COVARIANCE_MATRIX(CovarianceMatrix.class, STATISTIC),
+	CREDIBLE_INTERVAL(CredibleInterval.class, STATISTIC),
+	PROBABILITY(Probability.class, STATISTIC),
 	STATISTIC_COLLECTION(StatisticCollection.class),
 
-	CENTRED_MOMENT(CentredMoment.class),
-	COEFFICIENT_OF_VARIATION(CoefficientOfVariation.class),
-	CORRELATION(Correlation.class),
-	DECILE(Decile.class),
-	INTERQUATILE_RANGE(InterquartileRange.class),
-	KURTOSIS(Kurtosis.class),
-	MEAN(Mean.class),
-	MEDIAN(Median.class),
-	MODE(Mode.class),
-	MOMENT(Moment.class),
-	PERCENTILE(Percentile.class),
-	QUANTILE(Quantile.class),
-	QUARTILE(Quartile.class),
-	RANGE(Range.class),
-	SKEWNESS(Skewness.class),
-	STANDARD_DEVIATION(StandardDeviation.class);
+	CENTRED_MOMENT(CentredMoment.class, STATISTIC),
+	COEFFICIENT_OF_VARIATION(CoefficientOfVariation.class, STATISTIC),
+	CORRELATION(Correlation.class, STATISTIC),
+	DECILE(Decile.class, STATISTIC),
+	INTERQUATILE_RANGE(InterquartileRange.class, STATISTIC),
+	KURTOSIS(Kurtosis.class, STATISTIC),
+	MEAN(Mean.class, STATISTIC),
+	MEDIAN(Median.class, STATISTIC),
+	MODE(Mode.class, STATISTIC),
+	MOMENT(Moment.class, STATISTIC),
+	PERCENTILE(Percentile.class, STATISTIC),
+	QUANTILE(Quantile.class, STATISTIC),
+	QUARTILE(Quartile.class, STATISTIC),
+	RANGE(Range.class, STATISTIC),
+	SKEWNESS(Skewness.class, STATISTIC),
+	STANDARD_DEVIATION(StandardDeviation.class, STATISTIC);
 
 	public final URI uri;
+	private Set<URI> alias;
 	public final Class<? extends IUncertainty> clazz;
-
-	private UncertaintyType(Class<? extends IUncertainty> clazz) {
+	public final UncertaintyType type;
+	
+	private UncertaintyType(Class<? extends IUncertainty> clazz, URI... uris) {
+		this(clazz, null, uris);
+	}
+	
+	private UncertaintyType(Class<? extends IUncertainty> clazz, UncertaintyType type, URI... uris) {
 		this.uri = URI.create(UncertML.getURI(clazz));
 		this.clazz = clazz;
+		this.type = type;
+		if (uris != null)
+			this.alias = UwCollectionUtils.asSet(uris);
+		else
+			this.alias = UwCollectionUtils.set();
 	}
 
 	public URI getParamURI(String name) {
@@ -140,13 +157,19 @@ public enum UncertaintyType {
 	}
 
 	public static UncertaintyType fromURI(URI uri) {
-		for (UncertaintyType s : values())
-			if (s.getURI().equals(uri))
+		for (UncertaintyType s : values()) {
+			if (s.getURI().equals(uri) || s.alias.contains(uri)) {
 				return s;
-		throw new IllegalArgumentException();
+			} 
+		}
+		return null;
 	}
 
 	public URI getURI() {
 		return this.uri;
+	}
+	
+	public UncertaintyType getSuperType() {
+		return this.type;
 	}
 }

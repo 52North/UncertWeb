@@ -30,10 +30,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +41,7 @@ import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.utils.UwIOUtils;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.resource.IResourceStore;
 import org.uncertweb.viss.core.util.Utils;
@@ -57,22 +58,34 @@ public class MongoResourceStore implements IResourceStore {
 			.getLogger(MongoResourceStore.class);
 
 	@SuppressWarnings("rawtypes")
-	private class ResourceDAO extends BasicDAO<AbstractMongoResource, UUID> {
+	private class ResourceDAO extends BasicDAO<AbstractMongoResource, ObjectId> {
 		protected ResourceDAO() {
 			super(MongoDB.getInstance().getDatastore());
 		}
 	}
 
-	private ResourceDAO dao = new ResourceDAO();
+	@SuppressWarnings("rawtypes")
+	private class DatasetDao extends BasicDAO<AbstractMongoDataSet, ObjectId> {
+		protected DatasetDao() {
+			super(MongoDB.getInstance().getDatastore());
+		}
+	}
+	
+	private ResourceDAO rDao = new ResourceDAO();
+	private DatasetDao dsDao = new DatasetDao();
 	private File resourceDir;
 
-	protected ResourceDAO getDao() {
-		return this.dao;
+	protected ResourceDAO getResourceDao() {
+		return this.rDao;
+	}
+	
+	protected DatasetDao getDatasetDao() {
+		return this.dsDao;
 	}
 
 	@Override
-	public IResource get(UUID uuid) {
-		AbstractMongoResource<?> r = getDao().get(uuid);
+	public IResource get(ObjectId oid) {
+		AbstractMongoResource<?> r = getResourceDao().get(oid);
 		if (r == null) {
 			throw VissError.noSuchResource();
 		}
@@ -85,94 +98,105 @@ public class MongoResourceStore implements IResourceStore {
 			throw new NullPointerException();
 		// does not work... don't know why....
 		// getDao().delete((AbstractMongoResource) resource);
-		Datastore ds = getDao().getDatastore();
+		Datastore ds = getResourceDao().getDatastore();
+		ObjectId id = resource.getId();
+		
+		ds.delete(ds.createQuery(AbstractMongoDataSet.class)
+				.field("resource").equal(resource));
 		ds.delete(ds.createQuery(AbstractMongoResource.class)
-				.field(Mapper.ID_KEY).equal(resource.getUUID()));
-		UwIOUtils.deleteRecursively(getResourceDir(resource.getUUID()));
+				.field(Mapper.ID_KEY).equal(id));
+		UwIOUtils.deleteRecursively(getResourceDir(resource.getId()));
 	}
 
 	@Override
 	public AbstractMongoResource<?> addResource(InputStream is, MediaType mt) {
-		UUID uuid = UUID.randomUUID();
+		ObjectId oid = new ObjectId();
 		try {
-			File f = createResourceFile(uuid, mt);
+			File f = createResourceFile(oid, mt);
 			log.debug("Size: {}", f.length());
 			long crc = Utils.saveToFileWithChecksum(f, is);
 			log.debug("Size: {}", f.length());
 			AbstractMongoResource<?> r = getResourceWithChecksum(crc);
 			if (r == null) {
-				r = getResourceForMediaType(mt);
-				r.setFile(f);
-				r.setUUID(UUID.randomUUID());
-				r.setChecksum(crc);
+				r = getResourceForMediaType(mt, f, oid, crc);
 				saveResource(r);
 			} else {
 				log.info("Resource allready existent.");
+			}
+			if (r.getDataSets().isEmpty()) {
+				throw VissError.internal("No Datasets.");
 			}
 			return r;
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
 	}
+	
+	public AbstractMongoResource<?> getResourceForMediaType(MediaType mt, File f, ObjectId oid, long checksum)
+			throws IOException {
+		if (mt.equals(GEOTIFF_TYPE)) {
+			return new MongoGeoTIFFResource(f, oid, checksum);
+		} else if (mt.equals(NETCDF_TYPE) || mt.equals(X_NETCDF_TYPE)) {
+			return new MongoNetCDFResource(f, oid, checksum);
+		} else if (mt.equals(OM_2_TYPE)) {
+			return new MongoOMResource(f, oid, checksum);
+		}
+		throw VissError.internal("Can not create resource for '" + mt + "'");
+	}
+
 
 	protected AbstractMongoResource<?> getResourceWithChecksum(long crc) {
-		return getDao().createQuery()
+		return getResourceDao().createQuery()
 				.field(AbstractMongoResource.CHECKSUM_PROPERTY).equal(crc)
 				.get();
 	}
 
 	@Override
 	public Set<IResource> getAllResources() {
-		return UwCollectionUtils.<IResource> asSet(getDao().find().asList());
+		return UwCollectionUtils.<IResource> asSet(getResourceDao().find().asList());
 	}
 
 	@Override
 	public Set<IResource> getResourcesUsedBefore(DateTime dt) {
-		return UwCollectionUtils.<IResource> asSet(getDao().createQuery()
+		return UwCollectionUtils.<IResource> asSet(getResourceDao().createQuery()
 				.field(AbstractMongoResource.TIME_PROPERTY).lessThanOrEq(dt)
 				.asList());
 	}
 
 	@Override
-	public void deleteVisualizationForResource(IResource r, IVisualization v) {
-		AbstractMongoResource<?> amr = (AbstractMongoResource<?>) r;
-		amr.removeVisualization(v);
-		saveResource(r);
+	public void deleteVisualizationForResource(IVisualization v) {
+		AbstractMongoDataSet<?> amds = (AbstractMongoDataSet<?>) v.getDataSet();
+		amds.removeVisualization(v);
+		saveResource(v.getDataSet().getResource());
 	}
 
-	public File createResourceFile(UUID uuid, MediaType mt) throws IOException {
-		File dir = getResourceDir(uuid);
+	public File createResourceFile(ObjectId oid, MediaType mt) throws IOException {
+		File dir = getResourceDir(oid);
 		if (!dir.exists())
 			dir.mkdirs();
 		File f = File.createTempFile("RES-", "", dir);
 		return f;
 	}
 
-	public File getResourceDir(UUID uuid) {
+	public File getResourceDir(ObjectId oid) {
 		if (resourceDir == null) {
 			resourceDir = VissConfig.getInstance().getResourcePath();
 			if (!resourceDir.exists())
 				resourceDir.mkdirs();
 		}
-		return Utils.to(resourceDir, uuid.toString());
-	}
-
-	public AbstractMongoResource<?> getResourceForMediaType(MediaType mt)
-			throws IOException {
-		if (mt.equals(GEOTIFF_TYPE)) {
-			return new GeoTIFFResource();
-		} else if (mt.equals(NETCDF_TYPE) || mt.equals(X_NETCDF_TYPE)) {
-			return new NetCDFResource();
-		} else if (mt.equals(OM_2_TYPE)) {
-			return new OMResource();
-		}
-		throw VissError.internal("Can not create resource for '" + mt + "'");
+		return Utils.to(resourceDir, oid.toString());
 	}
 
 	@Override
-	public void saveResource(IResource r) {
+	public IResource saveResource(IResource r) {
 		AbstractMongoResource<?> amr = (AbstractMongoResource<?>) r;
-		log.debug("Saving Resource {};", amr.getUUID());
-		getDao().save(amr);
+		log.debug("Saving Resource {};", amr.getId());
+		for (IDataSet ds : amr.getDataSets()) {
+			log.debug("Saving Dataset {};", ds.getId());
+			log.debug("{}",ds);
+			getDatasetDao().save((AbstractMongoDataSet<?>) ds);
+		}
+		return get((ObjectId)getResourceDao().save(amr).getId());
 	}
+
 }

@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.viss.core.UncertaintyType;
-import org.uncertweb.viss.core.resource.IResource;
+import org.uncertweb.viss.core.resource.IDataSet;
 
 public interface IVisualizer {
 
@@ -44,11 +44,11 @@ public interface IVisualizer {
 
 	public Map<String, JSONObject> getOptions();
 
-	public Map<String, JSONObject> getOptionsForResource(IResource r);
+	public Map<String, JSONObject> getOptionsForDataSet(IDataSet r);
 
-	public IVisualization visualize(IResource r, JSONObject params);
+	public IVisualization visualize(IDataSet r, JSONObject params);
 
-	public void setResource(IResource r);
+	public void setDataSet(IDataSet r);
 
-	public IResource getResource();
+	public IDataSet getDataSet();
 }

@@ -21,19 +21,20 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
+import static org.uncertweb.viss.core.util.JSONConstants.INSTANTS_KEY;
+
 import java.util.List;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeInstant;
 
-public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent {
-
-	static final String INSTANTS_JSON_KEY = "instants";
+public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent implements CanBeInstant{
 
 	protected static List<TemporalInstant> toTemporalInstantList(
-	    List<DateTime> instants) {
+			List<DateTime> instants) {
 		List<TemporalInstant> ti = UwCollectionUtils.list();
 		for (DateTime i : instants) {
 			ti.add(new TemporalInstant(i));
@@ -43,14 +44,14 @@ public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent {
 
 	private List<TemporalInstant> instants;
 
-	public IrregularTemporalInstants() {}
+	public IrregularTemporalInstants() {
+	}
 
 	public IrregularTemporalInstants(List<DateTime> instants) {
 		setInstants(toTemporalInstantList(instants));
 	}
 
 	public void setInstants(List<TemporalInstant> instants) {
-		setInterval(findOverallInterval(instants));
 		this.instants = instants;
 	}
 
@@ -60,6 +61,6 @@ public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
-		return super.toJson().put(INSTANTS_JSON_KEY, toJSONArray(getInstants()));
+		return super.toJson().put(INSTANTS_KEY, toJSONArray(getInstants()));
 	}
 }

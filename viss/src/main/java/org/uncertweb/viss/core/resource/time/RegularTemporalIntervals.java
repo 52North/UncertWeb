@@ -21,19 +21,21 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
+import static org.uncertweb.viss.core.util.JSONConstants.INTERVAL_SIZE_KEY;
+
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeInterval;
 
-public class RegularTemporalIntervals extends AbstractRegularTemporalExtent {
+public class RegularTemporalIntervals extends AbstractRegularTemporalExtent implements CanBeInterval{
 
-	static final String INTERVAL_SIZE_JSON_KEY = "intervalSize";
-
-	public RegularTemporalIntervals() {}
+	public RegularTemporalIntervals() {
+	}
 
 	public RegularTemporalIntervals(DateTime begin, DateTime end,
-	    Duration intervalSize) {
+			Duration intervalSize) {
 		super(begin, end, intervalSize);
 	}
 
@@ -47,7 +49,7 @@ public class RegularTemporalIntervals extends AbstractRegularTemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
-		return super.toJson().put(INTERVAL_SIZE_JSON_KEY,
-		    getIntervalSize().getMillis());
+		return super.toJson().put(INTERVAL_SIZE_KEY,
+				getIntervalSize().getMillis());
 	}
 }

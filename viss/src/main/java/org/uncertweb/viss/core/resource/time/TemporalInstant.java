@@ -21,18 +21,20 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
+import static org.uncertweb.viss.core.util.JSONConstants.INSTANT_KEY;
+
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeInstant;
 
-public class TemporalInstant implements ITemporalExtent {
-
-	static final String INSTANT_JSON_KEY = "instant";
+public class TemporalInstant implements ITemporalExtent, CanBeInstant {
 
 	private DateTime instant;
 
-	public TemporalInstant() {}
+	public TemporalInstant() {
+	}
 
 	public TemporalInstant(DateTime instant) {
 		setInstant(instant);
@@ -48,7 +50,7 @@ public class TemporalInstant implements ITemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
-		return new JSONObject().put(INSTANT_JSON_KEY, getInstant());
+		return new JSONObject().put(INSTANT_KEY, getInstant());
 	}
 
 	@Override

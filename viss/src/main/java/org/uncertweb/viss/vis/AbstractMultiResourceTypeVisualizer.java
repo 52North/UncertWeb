@@ -30,39 +30,78 @@ import java.awt.geom.Point2D;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.codehaus.jettison.json.JSONException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.opengis.coverage.grid.GridCoverage;
 import org.uncertml.IUncertainty;
+import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.VisualizationFactory;
 import org.uncertweb.viss.core.vis.WriteableGridCoverage;
+import org.uncertweb.viss.vis.netcdf.UncertaintyValue;
+import org.uncertweb.viss.vis.netcdf.UncertaintyVariable;
 
 public abstract class AbstractMultiResourceTypeVisualizer extends
-    AbstractVisualizer implements Iterable<Value> {
+    AbstractVisualizer implements Iterable<UncertaintyValue> {
 
+	private static class OMIterator implements Iterator<UncertaintyValue> {
+
+		private final Iterator<? extends AbstractObservation> resultIterator;
+		private Iterator<UncertaintyValue> valueIterator;
+
+		public OMIterator(IObservationCollection o) {
+			this.resultIterator = o.getObservations().iterator();
+			if (this.resultIterator.hasNext()) {
+				this.valueIterator = getNextObservation();
+			}
+		}
+
+		@Override
+		public boolean hasNext() {
+			return valueIterator != null
+			    && (valueIterator.hasNext() || resultIterator.hasNext());
+		}
+
+		@Override
+		public UncertaintyValue next() {
+			if (!valueIterator.hasNext()) {
+				valueIterator = getNextObservation();
+			}
+			return valueIterator.next();
+		}
+
+		private Iterator<UncertaintyValue> getNextObservation() {
+			return getIteratorForDataSet(((IResource) this.resultIterator
+					.next().getResult().getValue()).getDataSets().iterator()
+					.next());
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
+	
 	public AbstractMultiResourceTypeVisualizer() {
 		super(GEOTIFF_TYPE, NETCDF_TYPE, X_NETCDF_TYPE, OM_2_TYPE);
 	}
 
 	@Override
 	protected IVisualization visualize() {
-		return visualize(getResource().getResource());
-	}
-
-	protected IVisualization visualize(IResource r) {
-		return visualize(r.getResource());
+		return visualize(getDataSet().getContent());
 	}
 
 	protected IVisualization visualize(Object o) {
 		if (o instanceof GridCoverage2D) {
 			return visualize((GridCoverage2D) o);
-		} else if (o instanceof UncertaintyNetCDF) {
-			return visualize((UncertaintyNetCDF) o);
+		} else if (o instanceof UncertaintyVariable) {
+			return visualize((UncertaintyVariable) o);
 		} else if (o instanceof IObservationCollection) {
 			return visualize((IObservationCollection) o);
 		} else {
@@ -73,11 +112,24 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 	protected IVisualization visualize(GridCoverage2D gc) {
 		throw VissError.internal("Not yet implemented");
 	}
-
-	protected IVisualization visualize(UncertaintyNetCDF gc) {
+	
+	protected IVisualization visualize(UncertaintyVariable gc) {
+		Iterable<UncertaintyValue> iterable = gc;
+		if (isTimeAware()) {
+			log.debug("Temporal Extent: {}", getDataSet().getTemporalExtent());
+			try {
+				log.debug("Temporal Extent: {}", getDataSet().getTemporalExtent().toJson());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			TimeObject to = getSelectedTime();
+			log.debug("Selected Time: {}", to);
+			iterable = gc.getTemporalLayer(to);
+		}
+		
 		WriteableGridCoverage wgc = gc.getCoverage(getCoverageName(), getUom());
 		Double min = null, max = null;
-		for (Value nv : gc) {
+		for (UncertaintyValue nv : iterable) {
 			Double value = null;
 			if (nv.getValue() != null) {
 				double v = evaluate(nv.getValue());
@@ -89,13 +141,20 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 						max = Double.valueOf(v);
 				}
 			}
-			Point2D.Double location = new Point2D.Double(nv.getLocation().getX(), nv
-			    .getLocation().getY());
+			Point2D.Double location = 
+					new Point2D.Double(
+							nv.getLocation().getY(), 
+							nv.getLocation().getX());
+			try{
 			wgc.setValueAtPos(location, value);
+			} catch (ArrayIndexOutOfBoundsException t) {
+				log.debug("Tryed setting value @{} to {}", location, value);
+				throw t;
+			}
 		}
 		log.debug("min: {}; max: {}", min, max);
 		return VisualizationFactory.getBuilder()
-			.setUuid(getResource().getUUID())
+			.setDataSet(getDataSet())
 			.setId(getId(getParams()))
 			.setCreator(this)
 			.setParameters(getParams())
@@ -114,8 +173,9 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 			if (!(ao.getResult().getValue() instanceof IResource)) {
 				throw VissError.internal("Resource is not compatible");
 			}
-			IResource rs = (IResource) ao.getResult().getValue();
-			IVisualization v = visualize(rs);
+			//TODO support for more than one dataset
+			IDataSet rs = ((IResource) ao.getResult().getValue()).getDataSets().iterator().next();
+			IVisualization v = visualize(rs.getContent());
 
 			if (uom == null) {
 				uom = v.getUom();
@@ -135,7 +195,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 			coverages.addAll(v.getCoverages());
 		}
 		return VisualizationFactory.getBuilder()
-				.setUuid(getResource().getUUID())
+				.setDataSet(getDataSet())
 				.setId(getId(getParams()))
 				.setCreator(this)
 				.setParameters(getParams())
@@ -146,59 +206,24 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 				.build();
 	}
 
-	private static class OMIterator implements Iterator<Value> {
-
-		private final Iterator<? extends AbstractObservation> resultIterator;
-		private Iterator<Value> valueIterator;
-
-		public OMIterator(IObservationCollection o) {
-			this.resultIterator = o.getObservations().iterator();
-			if (this.resultIterator.hasNext()) {
-				this.valueIterator = getNextObservation();
-			}
-		}
-
-		@Override
-		public boolean hasNext() {
-			return valueIterator != null
-			    && (valueIterator.hasNext() || resultIterator.hasNext());
-		}
-
-		@Override
-		public Value next() {
-			if (!valueIterator.hasNext()) {
-				valueIterator = getNextObservation();
-			}
-			return valueIterator.next();
-		}
-
-		private Iterator<Value> getNextObservation() {
-			return getIteratorForResource((IResource) this.resultIterator.next()
-			    .getResult().getValue());
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-	}
+	
 
 	protected String getUom() {
-		return getUom(getResource());
+		return getUom(getDataSet());
 	}
 
-	protected String getUom(IResource r) {
-		Object o = r.getResource();
+	protected String getUom(IDataSet r) {
+		Object o = r.getContent();
 		if (o instanceof GridCoverage2D) {
 			throw VissError.internal("Not yet implemented");
-		} else if (o instanceof UncertaintyNetCDF) {
-			return ((UncertaintyNetCDF) o).getUnitAsString();
+		} else if (o instanceof UncertaintyVariable) {
+			return ((UncertaintyVariable) o).getUnitAsString();
 		} else if (o instanceof IObservationCollection) {
 			String uom = null;
 			for (AbstractObservation ao : ((IObservationCollection) o)
 			    .getObservations()) {
 				IResource referencedResource = (IResource) ao.getResult().getValue();
-				String uom2 = getUom(referencedResource);
+				String uom2 = getUom(referencedResource.getDataSets().iterator().next());
 				if (uom == null) {
 					uom = uom2;
 				} else if (!uom.equals(uom2)) {
@@ -211,22 +236,22 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		}
 	}
 
-	protected static Iterator<Value> getIteratorForResource(IResource r) {
-		Object o = r.getResource();
+	protected static Iterator<UncertaintyValue> getIteratorForDataSet(IDataSet r) {
+		Object o = r.getContent();
 		if (o instanceof GridCoverage2D) {
 			throw VissError.internal("Not yet implemented");
-		} else if (o instanceof UncertaintyNetCDF) {
-			return ((UncertaintyNetCDF) o).iterator();
+		} else if (o instanceof UncertaintyVariable) {
+			return ((UncertaintyVariable) o).iterator();
 		} else if (o instanceof IObservationCollection) {
 			return new OMIterator((IObservationCollection) o);
 		} else {
 			throw VissError.internal("Unknown type: " + o.getClass());
 		}
 	}
-
+	
 	@Override
-	public Iterator<Value> iterator() {
-		return getIteratorForResource(getResource());
+	public Iterator<UncertaintyValue> iterator() {
+		return getIteratorForDataSet(getDataSet());
 	}
 
 	protected abstract double evaluate(IUncertainty u);

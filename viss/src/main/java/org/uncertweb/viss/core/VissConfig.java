@@ -65,7 +65,6 @@ public class VissConfig {
 	private static VissConfig instance;
 	
 	public synchronized static VissConfig getInstance() {
-		log.info("Instantiating VissConfig");
 		return (instance == null) ? instance = new VissConfig() : instance;
 	}
 

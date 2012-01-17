@@ -58,15 +58,21 @@ import org.uncertweb.viss.core.wms.WMSAdapter;
 
 public class GeoserverAdapter implements WMSAdapter {
 
+	private static final String PROPERTIES_FILE = "/geoserver.properties";
+	private static final String USER_PROPERTY = "user";
+	private static final String PASS_PROPERTY = "pass";
+	private static final String URL_PROPERTY = "baseUrl";
+	private static final String CACHE_PROPERTY = "cacheWorkspaceList";
+	private static final String PATH_PROPERTY = "path";
+	
+	private static final Logger log = LoggerFactory.getLogger(GeoserverAdapter.class);
 	private static Properties p;
 	private Geoserver wms;
-	private static final Logger log = LoggerFactory
-			.getLogger(GeoserverAdapter.class);
 
 	protected static String getProp(String key) {
 		if (p == null) {
 			InputStream is = GeoserverAdapter.class
-					.getResourceAsStream("/geoserver.properties");
+					.getResourceAsStream(PROPERTIES_FILE);
 			if (is == null)
 				throw new RuntimeException("Can not find configuration file");
 			p = new Properties();
@@ -87,11 +93,11 @@ public class GeoserverAdapter implements WMSAdapter {
 	}
 
 	public GeoserverAdapter() {
-		String user = getProp("user");
-		String pass = getProp("pass");
-		String url = getProp("baseUrl");
-		boolean cache = Boolean.valueOf(getProp("cacheWorkspaceList"));
-		String path = getProp("path");
+		String user = getProp(USER_PROPERTY);
+		String pass = getProp(PASS_PROPERTY);
+		String url = getProp(URL_PROPERTY);
+		String path = getProp(PATH_PROPERTY);
+		boolean cache = Boolean.valueOf(getProp(CACHE_PROPERTY));
 		try {
 			if (path != null && !path.trim().isEmpty()) {
 				wms = new Geoserver(user, pass, url, cache, new File(path));
@@ -106,7 +112,7 @@ public class GeoserverAdapter implements WMSAdapter {
 	@Override
 	public IVisualizationReference addVisualization(IVisualization vis) {
 		try {
-			String ws = vis.getUuid().toString();
+			String ws = getWorkspaceName(vis);
 
 			if (!getGeoserver().containsWorkspace(ws)) {
 				if (!getGeoserver().createWorkspace(ws)) {
@@ -115,23 +121,20 @@ public class GeoserverAdapter implements WMSAdapter {
 			}
 
 			String[] layer = null;
-			String csBase = vis.getVisId();
-			String layerBase = vis.getUuid() + ":" + csBase;
+			String csBase = getCoverageStoreName(vis);
+			String layerBase = getLayerName(vis);
 			Set<GridCoverage> coverages = vis.getCoverages();
 
 			if (coverages.isEmpty()) {
 				throw VissError.internal("no coverages to insert");
 			} else if (coverages.size() == 1) {
-				insertCoverage(ws, csBase, toInputStream(vis.getCoverages()
-						.iterator().next()));
+				insertCoverage(ws, csBase, toInputStream(vis.getCoverages().iterator().next()));
 				layer = new String[] { layerBase };
 			} else {
-				ArrayList<String> layers = new ArrayList<String>(vis
-						.getCoverages().size());
+				ArrayList<String> layers = new ArrayList<String>(vis.getCoverages().size());
 				int i = 0;
 				for (GridCoverage c : vis.getCoverages()) {
-					insertCoverage(ws, UwStringUtils.join("-", csBase, i),
-							toInputStream(c));
+					insertCoverage(ws, UwStringUtils.join("-", csBase, i), toInputStream(c));
 					layers.add(UwStringUtils.join("-", layerBase, i));
 					++i;
 				}
@@ -184,7 +187,7 @@ public class GeoserverAdapter implements WMSAdapter {
 	public boolean deleteResource(IResource resource) {
 		try {
 			return getGeoserver()
-					.deleteWorkspace(resource.getUUID().toString());
+					.deleteWorkspace(resource.getId().toString());
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -193,10 +196,9 @@ public class GeoserverAdapter implements WMSAdapter {
 	@Override
 	public boolean setSldForVisualization(IVisualization vis) {
 		try {
-			String stylename = vis.getUuid() + "-" + vis.getVisId();
+			String stylename = getStyleName(vis);
 			if (getGeoserver().createStyle(vis.getSld(), stylename)) {
-				return getGeoserver().setStyle(vis.getUuid().toString(),
-						vis.getVisId(), stylename);
+				return getGeoserver().setStyle(getWorkspaceName(vis), getLayerName(vis), stylename);
 			}
 			return false;
 		} catch (IOException e) {
@@ -207,8 +209,8 @@ public class GeoserverAdapter implements WMSAdapter {
 	@Override
 	public boolean deleteVisualization(IVisualization vis) {
 		try {
-			return getGeoserver().deleteCoverageStore(vis.getUuid().toString(),
-					vis.getVisId());
+			return getGeoserver().deleteCoverageStore(
+					getWorkspaceName(vis), getCoverageStoreName(vis));
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
@@ -217,10 +219,9 @@ public class GeoserverAdapter implements WMSAdapter {
 	@Override
 	public StyledLayerDescriptorDocument getSldForVisualization(
 			IVisualization vis) {
-		String stylename = vis.getUuid() + "-" + vis.getVisId();
 		StyledLayerDescriptorDocument sld;
 		try {
-			sld = getGeoserver().getStyle(stylename);
+			sld = getGeoserver().getStyle(getStyleName(vis));
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -229,4 +230,23 @@ public class GeoserverAdapter implements WMSAdapter {
 		}
 		return sld;
 	}
+	
+	private String getWorkspaceName(IVisualization vis) {
+		return vis.getDataSet().getResource().getId().toString();
+	}
+	
+	private String getStyleName(IVisualization vis) {
+		return getLayerName(vis);
+	}
+	
+	private String getCoverageStoreName(IVisualization vis) {
+		return getLayerName(vis);
+	}
+	
+	private String getLayerName(IVisualization vis) {
+		return vis.getDataSet().getResource().getId() 
+				+ ":" + vis.getDataSet().getId() 
+				+ ":" + vis.getVisId();
+	}
+	
 }

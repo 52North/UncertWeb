@@ -28,7 +28,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-public abstract class AbstractIrregularTemporalExtent extends TemporalInterval {
+public abstract class AbstractIrregularTemporalExtent extends AbstractTemporalInterval {
 
 	/**
 	 * 

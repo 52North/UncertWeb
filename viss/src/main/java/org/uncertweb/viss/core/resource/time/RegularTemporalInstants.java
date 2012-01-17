@@ -21,19 +21,21 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
+import static org.uncertweb.viss.core.util.JSONConstants.SEPERATOR_KEY;
+
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeInstant;
 
-public class RegularTemporalInstants extends AbstractRegularTemporalExtent {
+public class RegularTemporalInstants extends AbstractRegularTemporalExtent implements CanBeInstant{
 
-	static final String SEPERATOR_JSON_KEY = "seperator";
-
-	public RegularTemporalInstants() {}
+	public RegularTemporalInstants() {
+	}
 
 	public RegularTemporalInstants(DateTime begin, DateTime end,
-	    Duration seperator) {
+			Duration seperator) {
 		super(begin, end, seperator);
 	}
 
@@ -47,6 +49,6 @@ public class RegularTemporalInstants extends AbstractRegularTemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
-		return super.toJson().put(SEPERATOR_JSON_KEY, getSeperator().getMillis());
+		return super.toJson().put(SEPERATOR_KEY, getSeperator().getMillis());
 	}
 }

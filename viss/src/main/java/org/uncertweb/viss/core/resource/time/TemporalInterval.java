@@ -21,57 +21,22 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeInterval;
 
-public class TemporalInterval implements ITemporalExtent {
-
-	static final String BEGIN_JSON_KEY = "begin";
-	static final String END_JSON_KEY = "end";
-
-	private Interval interval;
-
-	public TemporalInterval() {}
+public class TemporalInterval extends AbstractTemporalInterval implements
+		CanBeInterval {
+	
+	public TemporalInterval() {
+		super();
+	}
 
 	public TemporalInterval(DateTime begin, DateTime end) {
-		setInterval(begin, end);
+		super(begin, end);
 	}
 
 	public TemporalInterval(Interval i) {
-		setInterval(i);
+		super(i);
 	}
-
-	public void setInterval(Interval interval) {
-		this.interval = interval;
-	}
-
-	public Interval getInterval() {
-		return this.interval;
-	}
-
-	public void setInterval(DateTime begin, DateTime end) {
-		setInterval(new Interval(begin, end));
-	}
-
-	public DateTime getBegin() {
-		return getInterval().getStart();
-	}
-
-	public DateTime getEnd() {
-		return getInterval().getEnd();
-	}
-
-	@Override
-	public JSONObject toJson() throws JSONException {
-		return new JSONObject().put(BEGIN_JSON_KEY, getBegin()).put(END_JSON_KEY,
-		    getEnd());
-	}
-
-	@Override
-	public Interval toInterval() {
-		return getInterval();
-	}
-
 }

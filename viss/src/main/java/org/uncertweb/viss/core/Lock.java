@@ -22,9 +22,9 @@
 package org.uncertweb.viss.core;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.bson.types.ObjectId;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.resource.IResource;
 
@@ -37,7 +37,7 @@ public class Lock {
 
 	private Lock() {}
 
-	private Map<UUID, Integer> useCounts = UwCollectionUtils.map();
+	private Map<ObjectId, Integer> useCounts = UwCollectionUtils.map();
 	private ReentrantLock useCountsLock = new ReentrantLock();
 
 	public void usingResources(boolean allowed) {
@@ -48,20 +48,20 @@ public class Lock {
 		useCountsLock.lock();
 		try {
 			if (use) {
-				Integer count = useCounts.get(resource.getUUID());
+				Integer count = useCounts.get(resource.getId());
 				if (count != null && count.intValue() < 0) {
 					return false;
 				}
 				count = Integer.valueOf((count == null) ? 1 : count.intValue() + 1);
-				useCounts.put(resource.getUUID(), count);
+				useCounts.put(resource.getId(), count);
 				return true;
 			} else {
-				Integer count = useCounts.get(resource.getUUID());
+				Integer count = useCounts.get(resource.getId());
 				if (count == null || count.intValue() < 1) {
 					return false;
 				}
 				count = Integer.valueOf(count.intValue() - 1);
-				useCounts.put(resource.getUUID(), count);
+				useCounts.put(resource.getId(), count);
 				return true;
 			}
 		} finally {
@@ -72,7 +72,7 @@ public class Lock {
 	public void deleteResources(IResource resource) {
 		useCountsLock.lock();
 		try {
-			useCounts.remove(resource.getUUID());
+			useCounts.remove(resource.getId());
 		} finally {
 			useCountsLock.unlock();
 		}
@@ -82,10 +82,10 @@ public class Lock {
 	public boolean deletingResource(IResource resource) {
 		useCountsLock.lock();
 		try {
-			Integer count = useCounts.get(resource.getUUID());
+			Integer count = useCounts.get(resource.getId());
 			if (count == null || count.intValue() == 0) {
 				count = Integer.valueOf(-1);
-				useCounts.put(resource.getUUID(), count);
+				useCounts.put(resource.getId(), count);
 				return true;
 			} else {
 				return false;

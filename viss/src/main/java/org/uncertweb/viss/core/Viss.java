@@ -24,16 +24,17 @@ package org.uncertweb.viss.core;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.resource.IResourceStore;
 import org.uncertweb.viss.core.vis.IVisualization;
@@ -97,38 +98,38 @@ public class Viss {
 		}
 	}
 
-	public void delete(UUID uuid) {
-		delete(getResource(uuid));
+	public void delete(ObjectId oid) {
+		delete(getResource(oid));
 	}
 
-	public IVisualization getVisualization(String visualizer, UUID uuid,
-	    final JSONObject param) {
-		IResource resource = this.getResource(uuid);
+	public IVisualization getVisualization(String visualizer, ObjectId oid,
+	    String dataset, final JSONObject param) {
+		IResource resource = getResource(oid);
+		IDataSet ds = getDataset(resource, dataset);
 		if (lock.usingResource(resource, true)) {
 			try {
-				IVisualization existentVis = getVisualization(resource, visualizer,
-				    param);
+				IVisualization existentVis = getVisualization(resource, dataset, visualizer, param);
 				if (existentVis != null) {
 					return existentVis;
 				}
 
 				IVisualizer v = VisualizerFactory.getVisualizer(visualizer);
-				if (!resource.isLoaded()) {
-					resource.load();
+				
+				if (!v.getCompatibleMediaTypes().contains(resource.getMediaType())) { 
+					throw VissError.incompatibleVisualizer("Incompatible mediatype");
 				}
-				if (!v.getCompatibleMediaTypes().contains(resource.getMediaType())
-				    || !v.getCompatibleUncertaintyTypes().contains(resource.getType())) {
-					throw VissError.incompatibleVisualizer();
+				if(!v.getCompatibleUncertaintyTypes().contains(ds.getType())) {
+					throw VissError.incompatibleVisualizer("Incompatible UncertaintyType: "+ds.getType());
 				}
 
-				IVisualization vis = v.visualize(resource, param);
+				IVisualization vis = v.visualize(ds, param);
 
 				if (param != null && vis.getParameters() == null)
 					throw new NullPointerException();
 
 				vis.setReference(getWMS().addVisualization(vis));
 
-				resource.addVisualization(vis);
+				ds.addVisualization(vis);
 
 				getStore().saveResource(resource);
 
@@ -146,15 +147,15 @@ public class Viss {
 		}
 	}
 
-	protected IVisualization getVisualization(IResource r, String visualizer,
+	protected IVisualization getVisualization(IResource r, String dataset, String visualizer,
 	    JSONObject param) {
 		log.debug("Searching for Visualizer {} in Resource {} with parameters {}",
-		    new Object[] { visualizer, r.getUUID(), param });
+		    new Object[] { visualizer, r.getId(), param });
 		String paramS = null;
 		if (param != null) {
 			paramS = param.toString();
 		}
-		for (IVisualization v : r.getVisualizations()) {
+		for (IVisualization v : getDataset(r, dataset).getVisualizations()) {
 			if (v.getCreator().getShortName().equals(visualizer)) {
 				log.debug("Found Visualizer {}", visualizer);
 				log.debug("ID: {}; Parameters: {}", v.getVisId(), v.getParameters());
@@ -172,22 +173,39 @@ public class Viss {
 		return null;
 	}
 
-	public void deleteVisualization(UUID uuid, String vis) {
-		IResource r = getResource(uuid);
-		IVisualization v = getVisualization(r, vis);
-		getStore().deleteVisualizationForResource(r, v);
+	public void deleteVisualization(ObjectId oid, String dataset, String vis) {
+		IResource r = getResource(oid);
+		IVisualization v = getVisualization(r, dataset, vis);
+		getStore().deleteVisualizationForResource(v);
 	}
 
-	public Set<IVisualization> getVisualizations(UUID uuid) {
-		return getResource(uuid).getVisualizations();
+	public Set<IVisualization> getVisualizations(ObjectId oid, String dataset) {
+		return getDataSet(oid, dataset).getVisualizations();
+	}
+	
+	public IDataSet getDataSet(ObjectId oid, String dataSet) {
+		return getDataset(getResource(oid), dataSet);
+	}
+	
+	public Set<IDataSet> getDataSetsForResource(ObjectId oid) {
+		return getResource(oid).getDataSets();
+	}
+	
+	public IDataSet getDataset(IResource r, String dataset) {
+		for (IDataSet ds : r.getDataSets()) {
+			if (ds.getId().equals(dataset)) {
+				return ds;
+			}
+		}
+		throw VissError.noSuchDataSet();
 	}
 
-	public IVisualization getVisualization(UUID uuid, String vis) {
-		return getVisualization(getResource(uuid), vis);
+	public IVisualization getVisualization(ObjectId oid, String dataset, String vis) {
+		return getVisualization(getResource(oid), dataset, vis);
 	}
 
-	public IVisualization getVisualization(IResource r, String vis) {
-		for (IVisualization v : r.getVisualizations()) {
+	public IVisualization getVisualization(IResource r, String dataset, String vis) {
+		for (IVisualization v : getDataset(r, dataset).getVisualizations()) {
 			if (v.getVisId().equals(vis))
 				return v;
 		}
@@ -217,27 +235,25 @@ public class Viss {
 		}
 	}
 
-	public Set<IVisualizer> getVisualizers(UUID uuid) {
-		return VisualizerFactory.getVisualizersForResource(getResource(uuid));
+	public Set<IVisualizer> getVisualizers(ObjectId oid, String dataSet) {
+		return VisualizerFactory.getVisualizersForDataSet(getDataSet(oid, dataSet));
 	}
 
-	public IResource getResource(UUID uuid) {
-		return getStore().get(uuid);
+	public IResource getResource(ObjectId oid) {
+		return getStore().get(oid);
 	}
 
 	public Set<IResource> getResources() {
 		return getStore().getAllResources();
 	}
 
-	public StyledLayerDescriptorDocument getSldForVisualization(UUID uuid,
-	    String vis) {
-		return getWMS().getSldForVisualization(getVisualization(uuid, vis));
+	public StyledLayerDescriptorDocument getSldForVisualization(ObjectId oid, String dataset, String vis) {
+		return getWMS().getSldForVisualization(getVisualization(oid, dataset, vis));
 	}
 
-	public void setSldForVisualization(UUID uuid, String vis,
-	    StyledLayerDescriptorDocument sld) {
-		IResource r = getResource(uuid);
-		IVisualization v = getVisualization(r, vis);
+	public void setSldForVisualization(ObjectId oid, String dataset, String vis, StyledLayerDescriptorDocument sld) {
+		IResource r = getResource(oid);
+		IVisualization v = getVisualization(r, dataset, vis);
 		v.setSld(sld);
 		getWMS().setSldForVisualization(v);
 		getStore().saveResource(r);
@@ -252,8 +268,8 @@ public class Viss {
 		return this.wms;
 	}
 
-	public IVisualizer getVisualizer(UUID uuid, String visualizer) {
-		return VisualizerFactory.getVisualizerForResource(getResource(uuid),
-		    visualizer);
+	public IVisualizer getVisualizer(ObjectId oid, String dataset, String visualizer) {
+		return VisualizerFactory.getVisualizerForDataSet(getDataSet(oid, dataset), visualizer);
 	}
+
 }

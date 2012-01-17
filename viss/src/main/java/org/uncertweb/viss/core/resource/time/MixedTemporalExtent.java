@@ -21,18 +21,23 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
+import static org.uncertweb.viss.core.util.JSONConstants.INSTANTS_KEY;
+import static org.uncertweb.viss.core.util.JSONConstants.INTERVALS_KEY;
+
 import java.util.List;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeBoth;
 
-public class MixedTemporalExtent extends AbstractIrregularTemporalExtent {
+public class MixedTemporalExtent extends AbstractIrregularTemporalExtent implements CanBeBoth {
 
 	private List<ITemporalExtent> extents;
 
-	public MixedTemporalExtent() {}
+	public MixedTemporalExtent() {
+	}
 
 	public MixedTemporalExtent(List<ITemporalExtent> l) {
 		setExtents(l);
@@ -54,16 +59,12 @@ public class MixedTemporalExtent extends AbstractIrregularTemporalExtent {
 		for (ITemporalExtent te : getExtents()) {
 			if (te instanceof TemporalInstant) {
 				instants.add(te.toJson());
-			} else if (te instanceof TemporalInterval) {
+			} else if (te instanceof AbstractTemporalInterval) {
 				intervals.add(te.toJson());
 			}
 		}
-		return super
-		    .toJson()
-		    .put(IrregularTemporalInstants.INSTANTS_JSON_KEY,
-		        new JSONArray(instants))
-		    .put(IrregularTemporalIntervals.INTERVALS_JSON_KEY,
-		        new JSONArray(intervals));
+		return super.toJson().put(INSTANTS_KEY, new JSONArray(instants))
+				.put(INTERVALS_KEY, new JSONArray(intervals));
 	}
 
 }

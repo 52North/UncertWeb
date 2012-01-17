@@ -22,22 +22,22 @@
 package org.uncertweb.viss.mongo.vis;
 
 import java.util.Set;
-import java.util.UUID;
 
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.codehaus.jettison.json.JSONObject;
 import org.opengis.coverage.grid.GridCoverage;
 import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizationReference;
 import org.uncertweb.viss.core.vis.IVisualizer;
 
+import com.google.code.morphia.annotations.Reference;
 import com.google.code.morphia.annotations.Transient;
 
 public class MongoVisualization implements IVisualization {
 
-	private UUID uuid;
 	private IVisualizer creator;
 	private JSONObject parameters;
 	private IVisualizationReference reference;
@@ -46,6 +46,9 @@ public class MongoVisualization implements IVisualization {
 	private double maxValue;
 	private String uom;
 
+	@Reference
+	private IDataSet dataSet;
+	
 	@Transient
 	private StyledLayerDescriptorDocument sld;
 
@@ -53,103 +56,103 @@ public class MongoVisualization implements IVisualization {
 	private Set<GridCoverage> coverages = UwCollectionUtils.set();
 
 	@Override
-  public UUID getUuid() {
-		return uuid;
-	}
-
-	@Override
-  public void setUuid(UUID uuid) {
-		this.uuid = uuid;
-	}
-
-	@Override
-  public IVisualizer getCreator() {
+	public IVisualizer getCreator() {
 		return creator;
 	}
 
 	@Override
-  public void setCreator(IVisualizer creator) {
+	public void setCreator(IVisualizer creator) {
 		this.creator = creator;
 	}
 
 	@Override
-  public JSONObject getParameters() {
+	public JSONObject getParameters() {
 		return parameters;
 	}
 
 	@Override
-  public void setParameters(JSONObject parameters) {
+	public void setParameters(JSONObject parameters) {
 		this.parameters = parameters;
 	}
 
 	@Override
-  public IVisualizationReference getReference() {
+	public IVisualizationReference getReference() {
 		return reference;
 	}
 
 	@Override
-  public void setReference(IVisualizationReference reference) {
+	public void setReference(IVisualizationReference reference) {
 		this.reference = reference;
 	}
 
 	@Override
-  public String getVisId() {
+	public String getVisId() {
 		return visId;
 	}
 
 	@Override
-  public void setVisId(String visId) {
+	public void setVisId(String visId) {
 		this.visId = visId;
 	}
 
 	@Override
-  public Double getMinValue() {
+	public Double getMinValue() {
 		return minValue;
 	}
 
 	@Override
-  public void setMinValue(Double minValue) {
+	public void setMinValue(Double minValue) {
 		this.minValue = minValue;
 	}
 
 	@Override
-  public Double getMaxValue() {
+	public Double getMaxValue() {
 		return maxValue;
 	}
 
 	@Override
-  public void setMaxValue(Double maxValue) {
+	public void setMaxValue(Double maxValue) {
 		this.maxValue = maxValue;
 	}
 
 	@Override
-  public String getUom() {
+	public String getUom() {
 		return uom;
 	}
 
 	@Override
-  public void setUom(String uom) {
+	public void setUom(String uom) {
 		this.uom = uom;
 	}
 
 	@Override
-  public StyledLayerDescriptorDocument getSld() {
+	public StyledLayerDescriptorDocument getSld() {
 		return sld;
 	}
 
 	@Override
-  public void setSld(StyledLayerDescriptorDocument sld) {
+	public void setSld(StyledLayerDescriptorDocument sld) {
 		this.sld = sld;
 	}
 
 	@Override
-  public Set<GridCoverage> getCoverages() {
+	public Set<GridCoverage> getCoverages() {
 		return coverages;
 	}
 
 	@Override
-  public void setCoverages(Set<GridCoverage> coverages) {
+	public void setCoverages(Set<GridCoverage> coverages) {
 		this.coverages = coverages;
+	}
+
+	@Override
+	public IDataSet getDataSet() {
+		return this.dataSet;
+	}
+
+	@Override
+	public void setDataSet(IDataSet dataSet) {
+		this.dataSet = dataSet;
 	}
 
 }

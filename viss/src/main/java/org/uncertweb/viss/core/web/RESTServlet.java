@@ -23,6 +23,8 @@ package org.uncertweb.viss.core.web;
 
 import static org.uncertweb.viss.core.util.MediaTypes.GEOTIFF;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_CREATE;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST_TYPE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE;
@@ -42,7 +44,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -62,11 +63,13 @@ import javax.ws.rs.core.UriInfo;
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.viss.core.Viss;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizer;
@@ -74,23 +77,31 @@ import org.uncertweb.viss.core.vis.IVisualizer;
 @Path("/")
 public class RESTServlet {
 
-	public static final String RES_PARAM = "resource";
-	public static final String VIS_PARAM = "visualization";
-	public static final String VIR_PARAM = "visualizer";
-	public static final String RES_PARAM_P = "{" + RES_PARAM + "}";
-	public static final String VIS_PARAM_P = "{" + VIS_PARAM + "}";
-	public static final String VIR_PARAM_P = "{" + VIR_PARAM + "}";
+	public static final String RESOURCE_PARAM = "resource";
+	public static final String RESOURCE_PARAM_P = "{" + RESOURCE_PARAM + "}";
 	public static final String RESOURCES = "/resources";
-	public static final String VISUALIZATIONS = "/visualizations";
+	public static final String RESOURCE = RESOURCES + "/" + RESOURCE_PARAM_P;
+	
+	public static final String VISUALIZER_PARAM = "visualizer";
+	public static final String VISUALIZER_PARAM_P = "{" + VISUALIZER_PARAM + "}";
 	public static final String VISUALIZERS = "/visualizers";
-	public static final String RESOURCE_WITH_ID = RESOURCES + "/" + RES_PARAM_P;
-	public static final String VISUALIZER_WITH_ID = VISUALIZERS + "/" + VIR_PARAM_P;
-	public static final String VISUALIZATION_WITH_ID = VISUALIZATIONS + "/" + VIS_PARAM_P;
-	public static final String VISUALIZERS_FOR_RESOURCE = RESOURCE_WITH_ID + VISUALIZERS;
-	public static final String VISUALIZER_FOR_RESOURCE = RESOURCE_WITH_ID + VISUALIZER_WITH_ID;
-	public static final String VISUALIZATIONS_FOR_RESOURCE = RESOURCE_WITH_ID + VISUALIZATIONS;
-	public static final String VISUALIZATION_FOR_RESOURCE_WITH_ID = VISUALIZATIONS_FOR_RESOURCE + "/" + VIS_PARAM_P;
-	public static final String VISUALIZATION_SLD = VISUALIZATION_FOR_RESOURCE_WITH_ID + "/sld";
+	public static final String VISUALIZER = VISUALIZERS + "/" + VISUALIZER_PARAM_P;
+	
+	public static final String DATASET_PARAM = "dataset";
+	public static final String DATASET_PARAM_P = "{" + DATASET_PARAM + "}";
+	public static final String DATASETS = RESOURCE + "/datasets";
+	public static final String DATASET = DATASETS + "/" + DATASET_PARAM_P;
+
+	public static final String VISUALIZATION_PARAM = "visualization";
+	public static final String VISUALIZATION_PARAM_P = "{" + VISUALIZATION_PARAM + "}";
+	public static final String VISUALIZATIONS = DATASET + "/visualizations";
+	public static final String VISUALIZATION = VISUALIZATIONS + "/" + VISUALIZATION_PARAM_P;
+
+	public static final String VISUALIZERS_FOR_DATASET = DATASET + VISUALIZERS;
+	public static final String VISUALIZER_FOR_DATASET = DATASET + VISUALIZER;
+	
+	public static final String VISUALIZATION_SLD = VISUALIZATION + "/sld";
+	
 	private static Logger log = LoggerFactory.getLogger(RESTServlet.class);
 
 	@GET
@@ -147,23 +158,39 @@ public class RESTServlet {
 		} else {
 			r = Viss.getInstance().createResource(is, h);
 		}
-		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getResource").build(r.getUUID());
+		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getResource").build(r.getId());
 		return Response.created(uri).entity(r).build();
 	}
 
 	@GET
-	@Path(RESOURCE_WITH_ID)
+	@Path(RESOURCE)
 	@Produces(JSON_RESOURCE)
-	public IResource getResource(@PathParam("resource") UUID uuid) {
-		log.debug("Getting Resource with UUID \"{}\".", uuid);
-		return Viss.getInstance().getResource(uuid);
+	public IResource getResource(@PathParam(RESOURCE_PARAM) ObjectId oid) {
+		log.debug("Getting Resource with ObjectId \"{}\".", oid);
+		return Viss.getInstance().getResource(oid);
 	}
 
 	@DELETE
-	@Path(RESOURCE_WITH_ID)
-	public void deleteResource(@PathParam(RES_PARAM) UUID uuid) {
-		log.debug("Deleting Resource with UUID \"{}\".", uuid);
-		Viss.getInstance().delete(uuid);
+	@Path(RESOURCE)
+	public void deleteResource(@PathParam(RESOURCE_PARAM) ObjectId oid) {
+		log.debug("Deleting Resource with ObjectId \"{}\".", oid);
+		Viss.getInstance().delete(oid);
+	}
+	
+	@GET
+	@Path(DATASETS)
+	@Produces(JSON_DATASET_LIST)
+	public Set<IDataSet> getDataSets(@PathParam(RESOURCE_PARAM) ObjectId oid) {
+		log.debug("Getting DataSets for Resource with ObjectId \"{}\".", oid);
+		return Viss.getInstance().getDataSetsForResource(oid);
+	}
+	
+	@GET
+	@Path(DATASET)
+	@Produces(JSON_DATASET)
+	public IDataSet getDataSet(@PathParam(RESOURCE_PARAM) ObjectId oid, @PathParam(DATASET_PARAM) String dataSet) {
+		log.debug("Getting DataSet with Id \"{}\" for Resource with ObjectId \"{}\".", dataSet, oid);
+		return Viss.getInstance().getDataSet(oid,dataSet);
 	}
 
 	@GET
@@ -175,81 +202,99 @@ public class RESTServlet {
 	}
 
 	@GET
-	@Path(VISUALIZERS_FOR_RESOURCE)
+	@Path(VISUALIZERS_FOR_DATASET)
 	@Produces(JSON_VISUALIZER_LIST)
-	public Set<IVisualizer> getVisualizersForResource(
-			@PathParam(RES_PARAM) UUID uuid) {
-		log.debug("Getting Visualizers for Resource with UUID \"{}\".", uuid);
-		return Viss.getInstance().getVisualizers(uuid);
+	public Set<IVisualizer> getVisualizersForDataSet(
+			@PathParam(RESOURCE_PARAM) ObjectId oid,
+			@PathParam(DATASET_PARAM) String dataset) {
+		log.debug("Getting Visualizers for Resource with ObjectId \"{}\".", oid);
+		return Viss.getInstance().getVisualizers(oid, dataset);
 	}
 
 	@GET
-	@Path(VISUALIZER_FOR_RESOURCE)
+	@Path(VISUALIZER_FOR_DATASET)
 	@Produces(JSON_VISUALIZER)
-	public IVisualizer getVisualizerForResource(@PathParam(RES_PARAM) UUID uuid,
-			@PathParam(VIR_PARAM) String visualizer) {
-		log.debug("Getting Visualizer with ID {} for Resource with UUID \"{}\".",
-				visualizer, uuid);
-		return Viss.getInstance().getVisualizer(uuid, visualizer);
+	public IVisualizer getVisualizerForResource(
+			@PathParam(RESOURCE_PARAM) ObjectId oid,
+			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(VISUALIZER_PARAM) String visualizer) {
+		log.debug("Getting Visualizer with ID {} for Resource with ObjectId \"{}\".",
+				visualizer, oid);
+		return Viss.getInstance().getVisualizer(oid, dataset, visualizer);
 	}
 
 	@GET
-	@Path(VISUALIZER_WITH_ID)
+	@Path(VISUALIZER)
 	@Produces(JSON_VISUALIZER)
-	public IVisualizer getVisualizer(@PathParam(VIR_PARAM) String visualizer) {
+	public IVisualizer getVisualizer(@PathParam(VISUALIZER_PARAM) String visualizer) {
 		log.debug("Request for Description of \"{}\".", visualizer);
 		return Viss.getInstance().getVisualizer(visualizer);
 	}
 
 	@GET
-	@Path(VISUALIZATIONS_FOR_RESOURCE)
+	@Path(VISUALIZATIONS)
 	@Produces(JSON_VISUALIZATION_LIST)
-	public Set<IVisualization> getVisualizations(@PathParam(RES_PARAM) UUID uuid) {
-		log.debug("Getting Visualizations of resource with UUID \"{}\"", uuid);
-		return Viss.getInstance().getVisualizations(uuid);
+	public Set<IVisualization> getVisualizations(
+			@PathParam(RESOURCE_PARAM) ObjectId oid, 
+			@PathParam(DATASET_PARAM) String dataset) {
+		log.debug("Getting Visualizations of resource with ObjectId \"{}\"", oid);
+		return Viss.getInstance().getVisualizations(oid, dataset);
 	}
 
 	@POST
-	@Path(VISUALIZER_FOR_RESOURCE)
+	@Path(VISUALIZER_FOR_DATASET)
 	@Produces(JSON_VISUALIZATION)
 	@Consumes(JSON_CREATE)
-	public Response createVisualization(@PathParam(RES_PARAM) UUID uuid,
-			@PathParam(VIR_PARAM) String visualizer, JSONObject options,
+	public Response createVisualization(
+			@PathParam(RESOURCE_PARAM) ObjectId oid,
+			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(VISUALIZER_PARAM) String visualizer,
+			JSONObject options,
 			@Context UriInfo uriI) {
-		log.debug("Creating Visualizaton for resource with UUID \"{}\".", uuid);
-		IVisualization v = Viss.getInstance().getVisualization(visualizer, uuid,
-				options);
-		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getVisualization").build(v.getUuid(), v.getVisId());
+		log.debug("Creating Visualizaton for resource with ObjectId \"{}\".", oid);
+		IVisualization v = Viss.getInstance().getVisualization(visualizer, oid, dataset, options);
+		URI uri = uriI.getBaseUriBuilder().path(VISUALIZATION).build(
+				v.getDataSet().getResource().getId(),
+				v.getDataSet().getId(), 
+				v.getVisId());
+		log.debug("Created URI: {}",uri);
 		return Response.created(uri).entity(v).build();
 	}
 
 	@GET
-	@Path(VISUALIZATION_FOR_RESOURCE_WITH_ID)
+	@Path(VISUALIZATION)
 	@Produces(JSON_VISUALIZATION)
-	public IVisualization getVisualization(@PathParam(RES_PARAM) UUID resource,
-			@PathParam(VIS_PARAM) String vis) {
-		log.debug("Getting visualization for resource with UUID \"{}\".", resource);
-		return Viss.getInstance().getVisualization(resource, vis);
+	public IVisualization getVisualization(
+			@PathParam(RESOURCE_PARAM) ObjectId resource,
+			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(VISUALIZATION_PARAM) String vis) {
+		log.debug("Getting visualization for resource with ObjectId \"{}\".", resource);
+		return Viss.getInstance().getVisualization(resource, dataset, vis);
 	}
 
 	@DELETE
-	@Path(VISUALIZATION_FOR_RESOURCE_WITH_ID)
-	public void deleteVisualization(@PathParam(RES_PARAM) UUID uuid,
-			@PathParam(VIS_PARAM) String vis) {
-		log.debug("Deleting visualization for resource with UUID \"{}\".");
-		Viss.getInstance().deleteVisualization(uuid, vis);
+	@Path(VISUALIZATION)
+	public void deleteVisualization(
+			@PathParam(RESOURCE_PARAM) ObjectId oid,
+			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(VISUALIZATION_PARAM) String vis) {
+		log.debug("Deleting visualization for resource with ObjectId \"{}\".");
+		Viss.getInstance().deleteVisualization(oid, dataset, vis);
 	}
 
 	@POST
 	@Path(VISUALIZATION_SLD)
 	@Consumes(STYLED_LAYER_DESCRIPTOR)
-	public Response setSldForVisualization(@PathParam(RES_PARAM) UUID uuid,
-			@PathParam(VIS_PARAM) String vis, StyledLayerDescriptorDocument sld,
+	public Response setSldForVisualization(
+			@PathParam(RESOURCE_PARAM) ObjectId oid,
+			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(VISUALIZATION_PARAM) String vis, 
+			StyledLayerDescriptorDocument sld,
 			@Context UriInfo uriI) {
-		log.debug("Posting SLD for visualization of resource with UUID \"{}\"",
-				uuid);
-		Viss.getInstance().setSldForVisualization(uuid, vis, sld);
-		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getSldForVisualization").build(uuid, vis);
+		log.debug("Posting SLD for visualization of resource with ObjectId \"{}\"",
+				oid);
+		Viss.getInstance().setSldForVisualization(oid, dataset, vis, sld);
+		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getSldForVisualization").build(oid, dataset, vis);
 		return Response.created(uri).build();
 	}
 
@@ -257,8 +302,10 @@ public class RESTServlet {
 	@Path(VISUALIZATION_SLD)
 	@Produces(STYLED_LAYER_DESCRIPTOR)
 	public StyledLayerDescriptorDocument getSldForVisualization(
-			@PathParam(RES_PARAM) UUID uuid, @PathParam(VIS_PARAM) String vis) {
-		log.debug("Getting SLD for Visualization with UUID \"{}\"", uuid);
-		return Viss.getInstance().getSldForVisualization(uuid, vis);
+			@PathParam(RESOURCE_PARAM) ObjectId oid, 
+			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(VISUALIZATION_PARAM) String vis) {
+		log.debug("Getting SLD for Visualization with ObjectId \"{}\"", oid);
+		return Viss.getInstance().getSldForVisualization(oid, dataset, vis);
 	}
 }

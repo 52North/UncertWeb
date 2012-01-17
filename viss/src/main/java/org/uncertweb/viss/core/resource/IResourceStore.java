@@ -23,16 +23,16 @@ package org.uncertweb.viss.core.resource;
 
 import java.io.InputStream;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.uncertweb.viss.core.vis.IVisualization;
 
 public interface IResourceStore {
 
-	public IResource get(UUID uuid);
+	public IResource get(ObjectId oid);
 
 	public void deleteResource(IResource resource);
 
@@ -42,8 +42,8 @@ public interface IResourceStore {
 
 	public Set<IResource> getResourcesUsedBefore(DateTime dt);
 
-	public void saveResource(IResource r);
+	public IResource saveResource(IResource r);
 
-	public void deleteVisualizationForResource(IResource r, IVisualization v);
+	public void deleteVisualizationForResource(IVisualization v);
 
 }

@@ -26,6 +26,9 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.Interval;
 
 public interface ITemporalExtent {
+	public static interface CanBeInterval {}
+	public static interface CanBeInstant {}
+	public static interface CanBeBoth {}
 
 	public static final ITemporalExtent NO_TEMPORAL_EXTENT = new NoTemporalExtent();
 
