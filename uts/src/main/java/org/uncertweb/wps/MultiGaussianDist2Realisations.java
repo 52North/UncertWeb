@@ -12,7 +12,7 @@ import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.rosuda.REngine.REXP;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
-import org.uncertml.sample.Realisation;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.statistic.CovarianceMatrix;
 
 /**
@@ -181,7 +181,7 @@ public class MultiGaussianDist2Realisations extends AbstractAlgorithm {
 		// Make and return result
 		// TODO Make MULTIVARIATE realisations out of this!
 		// FIXME add id with sense
-		Realisation r = new Realisation(sampleDoubleArraySorted, -999999.999,
+		ContinuousRealisation r = new ContinuousRealisation(sampleDoubleArraySorted, -999999.999,
 				"");
 		UncertMLBinding uwdb = new UncertMLBinding(r);
 		HashMap<String, IData> result = new HashMap<String, IData>();

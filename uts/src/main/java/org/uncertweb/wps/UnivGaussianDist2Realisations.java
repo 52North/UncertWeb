@@ -14,7 +14,7 @@ import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.Rserve.RserveException;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
-import org.uncertml.sample.Realisation;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.statistic.CovarianceMatrix;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 
@@ -101,7 +101,7 @@ public class UnivGaussianDist2Realisations extends AbstractAlgorithm {
 			double[] sampleDoubleArray = samples.asDoubles();
 			
 			// Realisation-Constructor laeuft nicht
-			Realisation r = new Realisation(sampleDoubleArray, -999999.999, "bla");
+			ContinuousRealisation r = new ContinuousRealisation(sampleDoubleArray, -999999.999, "bla");
 			
 			// Make and return result
 			UncertMLBinding uwdb = new UncertMLBinding(r);

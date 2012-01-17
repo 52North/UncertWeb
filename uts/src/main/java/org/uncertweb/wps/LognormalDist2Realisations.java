@@ -12,7 +12,7 @@ import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.rosuda.REngine.REXP;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.LogNormalDistribution;
-import org.uncertml.sample.Realisation;
+import org.uncertml.sample.ContinuousRealisation;
 
 public class LognormalDist2Realisations extends AbstractAlgorithm {
 	
@@ -94,7 +94,7 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 			
 			double[] sampleDoubleArray = samples.asDoubles();
 			
-			Realisation r = new Realisation(sampleDoubleArray, -999999.999, "bla");
+			ContinuousRealisation r = new ContinuousRealisation(sampleDoubleArray, -999999.999, "bla");
 			
 			// Make and return result
 			UncertMLBinding uwdb = new UncertMLBinding(r);
