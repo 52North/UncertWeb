@@ -274,16 +274,6 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 				}					
 			}		
 			
-			 // save result locally
-			File file = new File("D:\\PhD\\om.xml");
-				
-			// encode
-			try {
-				new StaxObservationEncoder().encodeObservationCollection(resultColl,file);
-			} catch (OMEncodingException e) {
-				e.printStackTrace();
-			}
-			
 			return resultColl;
 			
 		}catch (Exception e) {
