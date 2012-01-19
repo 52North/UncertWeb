@@ -19,6 +19,13 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 					</Default>
 					<Supported>
 						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+						<Format>
 							<MimeType>application/x-uncertml+xml</MimeType>
 							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Schema>
 						</Format>
@@ -57,6 +64,13 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 						</Format>
 					</Default>
 					<Supported>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
 						<Format>
 							<MimeType>application/x-uncertml+xml</MimeType>
 							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Schema>
