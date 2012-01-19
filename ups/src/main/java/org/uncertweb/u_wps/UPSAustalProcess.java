@@ -791,7 +791,9 @@ public class UPSAustalProcess extends AbstractObservableAlgorithm {
 			String mean = distrib.getMean().get(0).toString();
 			String variance = distrib.getVariance().get(0).toString();
 
-			File f = new File("C:\\UncertWeb\\workspace_neu2\\NEWUPS\\src\\main\\resources\\austalResources\\request_templates\\NormalRequest.xml");
+			String templatePath = WPSConfig.getConfigPath().substring(0,WPSConfig.getConfigPath().indexOf("config/")).concat("resources/request_templates/");
+			
+			File f = new File(templatePath + "NormalRequest.xml");
 			
 			BufferedReader bread = new BufferedReader(new FileReader(f));
 			
@@ -896,7 +898,10 @@ public class UPSAustalProcess extends AbstractObservableAlgorithm {
 			try {
 				// execDocUTSday = ExecuteDocument.Factory.parse(new
 				// File("D:\\Eclipse_Workspace\\ups_wrapper\\src\\main\\resources\\request_templates\\LogNormalRequest.xml"));
-				execDocUTS = ExecuteDocument.Factory.parse(new File("C:\\UncertWeb\\workspace_neu2\\NEWUPS\\src\\main\\resources\\austalResources\\request_templates\\LogNormalRequest.xml"));
+				
+				String templatePath = WPSConfig.getConfigPath().substring(0,WPSConfig.getConfigPath().indexOf("config/")).concat("resources/request_templates/");
+				
+				execDocUTS = ExecuteDocument.Factory.parse(new File(templatePath + "LogNormalRequest.xml"));
 			} catch (XmlException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -1031,8 +1036,11 @@ public class UPSAustalProcess extends AbstractObservableAlgorithm {
 		try {
 			// execDocUTShours = ExecuteDocument.Factory.parse(new
 			// File("D:\\Eclipse_Workspace\\ups_wrapper\\src\\main\\resources\\request_templates\\MultivariateRequest.xml"));
+			
+			String templatePath = WPSConfig.getConfigPath().substring(0,WPSConfig.getConfigPath().indexOf("config/")).concat("resources/request_templates/");
+			
 			execDocUTS = ExecuteDocument.Factory
-					.parse(new File("C:\\UncertWeb\\workspace_neu2\\NEWUPS\\src\\main\\resources\\austalResources\\request_templates\\MultivariateRequest.xml"));
+					.parse(new File(templatePath + "MultivariateRequest.xml"));
 		} catch (XmlException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
