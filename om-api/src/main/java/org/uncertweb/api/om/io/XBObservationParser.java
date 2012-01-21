@@ -496,7 +496,9 @@ public class XBObservationParser implements IObservationParser {
 					uncertaintyText = uncertaintyText.substring(start,end);
 					
 					//add namespace uncertml
-					uncertaintyText = uncertaintyText.replaceFirst(">", " xmlns:un=\"http://www.uncertml.org/2.0\">");
+					if (!uncertaintyText.contains("xmlns:un=\"http://www.uncertml.org/2.0")){
+						uncertaintyText = uncertaintyText.replaceFirst(">", " xmlns:un=\"http://www.uncertml.org/2.0\">");
+					}
 				}
 				XMLParser uncertaintyParser = new XMLParser();
 				IUncertainty uncertainty = uncertaintyParser
