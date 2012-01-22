@@ -70,6 +70,7 @@
 			<Property name="Algorithm" active="true">org.uncertweb.wps.SimpleRegressionModelProcess</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Realisations2Distribution</Property>  -->
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Gaussian2Samples</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.wps.MultivariateGaussian2Samples</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.SpatialDistribution2Samples</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Samples2Statistics</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.LognormalDist2Realisations</Property>

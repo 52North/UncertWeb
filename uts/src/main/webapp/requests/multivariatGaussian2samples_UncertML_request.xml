@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+  http://geoserver.itc.nl:8080/wps/schemas/wps/1.0.0/wpsExecute_request.xsd">
+  
+	<ows:Identifier>org.uncertweb.wps.MultivariateGaussian2Samples</ows:Identifier>
+		
+	<wps:DataInputs>
+		<wps:Input>
+			<ows:Identifier>distribution</ows:Identifier>
+			<wps:Data>
+				<wps:ComplexData mimeType="application/x-uncertml+xml" schema="http://uncertml.org/uncertml.xsd">
+					<un:MultivariateNormalDistribution xmlns:un="http://www.uncertml.org/2.0">
+						<un:mean>10 100</un:mean>
+						<un:covarianceMatrix dimension="2">
+							<un:values>3.141 0.25 0.25 3.141</un:values>
+						</un:covarianceMatrix>
+					</un:MultivariateNormalDistribution>
+				</wps:ComplexData>
+			</wps:Data>
+		</wps:Input>
+		
+		 <wps:Input>
+      		<ows:Identifier>numbReal</ows:Identifier>
+      		<wps:Data dataType="xs:integer">
+        		<wps:LiteralData>11</wps:LiteralData>
+      		</wps:Data>
+    	</wps:Input>
+	</wps:DataInputs>
+	
+	<wps:ResponseForm>
+		<wps:ResponseDocument>
+			<wps:Output mimeType="application/x-uncertml+xml" schema="http://uncertml.org/uncertml.xsd">
+				<ows:Identifier>samples</ows:Identifier>
+			</wps:Output>
+		</wps:ResponseDocument>
+	</wps:ResponseForm>
+  
+</wps:Execute>

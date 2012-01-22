@@ -1,6 +1,7 @@
 package org.uncertweb.wps;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,60 +66,51 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 		// WPS specific stuff; initialize result set
 		Map<String, IData> result = new HashMap<String, IData>(1);
 		try {
-
-			// get netCDF file containing the Gaussian Distributions
-			IData dataInput = inputData.get(INPUT_IDENTIFIER_DIST).get(0);
-
-		
-//			UncertWebIODataBinding data = (UncertWebIODataBinding) dataInput.getPayload();
-//			
-			if (dataInput instanceof NetCDFBinding){
 			
-			NetcdfUWFile uwNcdfFile = ((NetCDFBinding)dataInput).getPayload();
+			// get number of realisations
 			IData numbRealsInput = inputData.get(INPUT_IDENTIFIER_NUMB_REAL)
 					.get(0);
 			Integer intNRealisations = ((LiteralIntBinding) numbRealsInput)
 					.getPayload();
-			NetcdfUWFile resultFile = getSamples4GaussianNCFile(uwNcdfFile,
-					intNRealisations);
-
-			// create resultfile
-//			String fileLocation = resultFile.getNetcdfFile().getLocation();
-//			File file = new File(fileLocation);
 			
-//			String fileLocation = resultFile.getNetcdfFile().getLocation();
-//			File file = new File(fileLocation);
-//		
-			NetCDFBinding uwData = new NetCDFBinding(resultFile);
-			result.put(OUTPUT_IDENTIFIER_SAMPLES, uwData);
+			// get input file containing the Gaussian Distributions
+			IData dataInput = inputData.get(INPUT_IDENTIFIER_DIST).get(0);
+		
+			// support for NetCDF
+			if (dataInput instanceof NetCDFBinding){
+			
+				NetcdfUWFile uwNcdfFile = ((NetCDFBinding)dataInput).getPayload();
+				
+				NetcdfUWFile resultFile = getSamples4GaussianNCFile(uwNcdfFile,
+						intNRealisations);
+			
+				NetCDFBinding uwData = new NetCDFBinding(resultFile);
+				result.put(OUTPUT_IDENTIFIER_SAMPLES, uwData);
 			
 			}
-			//TODO add support for O&M and UncertML
+			// support for O&M and UncertML
 			else if(dataInput instanceof OMBinding){
 				UncertaintyObservationCollection uwColl = (UncertaintyObservationCollection)dataInput.getPayload();
-				IData numbRealsInput = inputData.get(INPUT_IDENTIFIER_NUMB_REAL)
-						.get(0);
-				Integer intNRealisations = ((LiteralIntBinding) numbRealsInput)
-						.getPayload();
+				
 				UncertaintyObservationCollection resultFile = getSamples4GaussianOMFile(uwColl,
 						intNRealisations);
 				
 				OMBinding uwData = new OMBinding(resultFile);
 				result.put(OUTPUT_IDENTIFIER_SAMPLES, uwData);
 			}
-			//TODO add support for plain UncertML
-			// Will this be the case?
+			// support for plain UncertML
 			else if(dataInput instanceof UncertMLBinding){
 				IUncertainty distribution = (IUncertainty)dataInput.getPayload();
-				IData numbRealsInput = inputData.get(INPUT_IDENTIFIER_NUMB_REAL)
-						.get(0);
-				Integer intNRealisations = ((LiteralIntBinding) numbRealsInput)
-						.getPayload();
+				
 				IUncertainty results = getSamples4UncertML(distribution,
 						intNRealisations);
 				
 				UncertMLBinding uwData = new UncertMLBinding(results);
 				result.put(OUTPUT_IDENTIFIER_SAMPLES, uwData);
+			}
+			else{
+				LOGGER.error("Input data format is not supported!");
+				throw new IOException("Input data format is not supported!");
 			}
 
 		} catch (Exception e) {
@@ -159,6 +151,12 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 	}
 	
 
+	/**
+	 * Method for UncertML sampling
+	 * @param distribution
+	 * @param intNRealisations
+	 * @return
+	 */
 	private IUncertainty getSamples4UncertML(IUncertainty distribution, Integer intNRealisations){
 		IUncertainty resultUncertainty = null;
 		
@@ -182,13 +180,19 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 				c.tryVoidEval("sd.gauss <- sqrt(var.gauss)");		
 			    		
 				// perform sampling
-				REXP rSamples =  c.tryEval("round(rnorm(i, m.gauss, sd.gauss),digits=2)");			
+				REXP rSamples =  c.tryEval("round(rnorm(i, m.gauss, sd.gauss),digits=5)");			
 				double[] samples = rSamples.asDoubles();
 						
+				//resultUncertainty = new ContinuousRealisation(samples);
+				//TODO: Should we use RandomSample?
 				// create UncertML random sample
-				resultUncertainty = new ContinuousRealisation(samples);
-				//TODO: Should we use RandomSample instead?
-			
+				ContinuousRealisation cr = new ContinuousRealisation(samples);
+				ContinuousRealisation[] crList = new ContinuousRealisation[1];
+				crList[0] = cr;
+				resultUncertainty = new RandomSample(crList);
+				}else{
+					throw new RuntimeException(
+						"Input with ID distribution must be a gaussian distribution!");
 				}	
 				
 				return resultUncertainty;
@@ -247,16 +251,16 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 						c.tryVoidEval("sd.gauss <- sqrt(var.gauss)");		
 			    		
 						// perform sampling
-						REXP rSamples =  c.tryEval("round(rnorm(i, m.gauss, sd.gauss),digits=2)");			
+						REXP rSamples =  c.tryEval("round(rnorm(i, m.gauss, sd.gauss),digits=5)");			
 						double[] samples = rSamples.asDoubles();
 						
 						// create UncertML random sample
-						NormalDistribution nd = new NormalDistribution(mean.get(0), var.get(0));
 						ContinuousRealisation cr = new ContinuousRealisation(samples);
+						//TODO: Should we use RandomSample?
 						ContinuousRealisation[] crList = new ContinuousRealisation[1];
 						crList[0] = cr;
 						RandomSample rs = new RandomSample(crList);
-						//TODO: Should we use RandomSample instead?
+						
 						
 						// make new observation with samples
 						UncertaintyResult newResult = new UncertaintyResult(rs);
@@ -270,8 +274,15 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 
 						// add observation to new collection
 						resultColl.addObservation(newObs);
+					}	
+					else{
+						throw new RuntimeException(
+							"Input with ID distribution must be a gaussian distribution!");
+					}
+				}else{
+					throw new RuntimeException(
+							"Input with ID distribution must contain uncertainty observations!");
 					}					
-				}					
 			}		
 			
 			return resultColl;

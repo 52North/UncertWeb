@@ -27,11 +27,11 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 						</Format>
 						<Format>
 							<MimeType>application/x-uncertml+xml</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Schema>
+							<Schema>http://uncertml.org/uncertml.xsd</Schema>
 						</Format>
 						<Format>
 							<MimeType>application/x-uncertml+json</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Schema>
+							<Schema>http://uncertml.org/uncertml.xsd</Schema>
 						</Format>
 					</Supported>
 				</ComplexData>
@@ -73,11 +73,11 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 						</Format>
 						<Format>
 							<MimeType>application/x-uncertml+xml</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Schema>
+							<Schema>http://uncertml.org/uncertml.xsd</Schema>
 						</Format>
 						<Format>
 							<MimeType>application/x-uncertml+json</MimeType>
-							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd</Schema>
+							<Schema>http://uncertml.org/uncertml.xsd</Schema>
 						</Format>
 					</Supported>
 				</ComplexOutput>

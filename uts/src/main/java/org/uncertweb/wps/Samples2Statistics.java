@@ -11,6 +11,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.NetCDFBinding;
+import org.n52.wps.io.data.binding.complex.OMBinding;
+import org.n52.wps.io.data.binding.complex.UncertMLBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
@@ -18,11 +20,22 @@ import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPDouble;
+import org.uncertml.IUncertainty;
 import org.uncertml.UncertML;
+import org.uncertml.sample.AbstractSample;
+import org.uncertml.sample.ContinuousRealisation;
+import org.uncertml.sample.ISample;
 import org.uncertml.sample.RandomSample;
 import org.uncertml.sample.UnknownSample;
+import org.uncertml.statistic.Mean;
+import org.uncertml.statistic.StandardDeviation;
+import org.uncertml.statistic.StatisticCollection;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.UncertaintyObservation;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
+import org.uncertweb.api.om.result.UncertaintyResult;
 
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
@@ -65,43 +78,52 @@ public class Samples2Statistics extends AbstractAlgorithm {
 		// WPS specific stuff; initialize result set
 		Map<String, IData> result = new HashMap<String, IData>(1);
 		try {
-
-			// get netCDF file containing the Gaussian Distributions
-			IData ncdfInput = inputData.get(INPUT_IDENTIFIER_SAMPLES).get(0);
-
-			String errorMsg = "No NetCDF-U data can be loaded from input reference!";
-			if (!(ncdfInput instanceof NetCDFBinding)) {
-				LOGGER.error(errorMsg);
-				throw new IOException(errorMsg);
-			}
-			
-//			NetCDFBinding uwNcdfInput = 
-//			if (!uwNcdfInput.getMimeType().equalsIgnoreCase(
-//					GenericFileDataConstants.MIME_TYPE_NETCDFX)) {
-//				LOGGER.error(errorMsg);
-//				throw new IOException(errorMsg);
-//			}
-
-			NetcdfUWFile uwNcdfFile = ((NetCDFBinding) ncdfInput).getPayload();
 			
 			//extract statistics parameters
 			List<IData> statistics = inputData.get(INPUT_IDENTIFIER_STAT);
 			if (statistics == null || statistics.size()==0){
-				errorMsg="No statistics parameter are contained in request for samples2statistics transformation!!";
+				String errorMsg="No statistics parameter are contained in request for samples2statistics transformation!!";
 				LOGGER.error(errorMsg);
 				throw new IOException(errorMsg);
 			}
+			
 			List<String> statParams = extractStatisticsFromRequest(statistics);
-			NetcdfUWFile resultFile = getStatistics4Samples(uwNcdfFile,
-				statParams);
+			
+			// get input file containing the Gaussian Distributions
+			IData dataInput = inputData.get(INPUT_IDENTIFIER_SAMPLES).get(0);
+					
+			// support for NetCDF
+			if (dataInput instanceof NetCDFBinding){
+				// get netCDF file containing the Gaussian Distributions
+				NetcdfUWFile uwNcdfFile = ((NetCDFBinding) dataInput).getPayload();			
+				NetcdfUWFile resultFile = getStatistics4SamplesNCFile(uwNcdfFile,
+					statParams);
 
-			// create resultfile
-//			String fileLocation = resultFile.getNetcdfFile().getLocation();
-//			File file = new File(fileLocation);
-			NetCDFBinding uwNcdfOutput = new NetCDFBinding(resultFile);
-//			UncertWebDataBinding uwData = new UncertWebDataBinding(uwNcdfOutput);
-			result.put(OUTPUT_IDENTIFIER_STAT, uwNcdfOutput);
-
+				// create resultfile
+				NetCDFBinding uwNcdfOutput = new NetCDFBinding(resultFile);
+				result.put(OUTPUT_IDENTIFIER_STAT, uwNcdfOutput);
+			}
+			// support for O&M and UncertML
+			else if(dataInput instanceof OMBinding){
+				UncertaintyObservationCollection uwColl = (UncertaintyObservationCollection)dataInput.getPayload();
+				UncertaintyObservationCollection resultFile = getStatistics4SamplesOMFile(uwColl,
+						statParams);
+				
+				OMBinding uwData = new OMBinding(resultFile);
+				result.put(OUTPUT_IDENTIFIER_STAT, uwData);			
+			}
+			// support for plain UncertML
+			else if(dataInput instanceof UncertMLBinding){
+				IUncertainty uncertainty = (IUncertainty)dataInput.getPayload();
+				IUncertainty results = getStatistics4UncertML(uncertainty, statParams);
+				
+				UncertMLBinding uwData = new UncertMLBinding(results);
+				result.put(OUTPUT_IDENTIFIER_STAT, uwData);			
+			}
+			else{
+				LOGGER.error("Input data format is not supported!");
+				throw new IOException("Input data format is not supported!");
+			}
 		} catch (Exception e) {
 			LOGGER
 					.debug("Error while getting random samples for Gaussian distribution: "
@@ -114,7 +136,177 @@ public class Samples2Statistics extends AbstractAlgorithm {
 		return result;
 	}
 
-	private NetcdfUWFile getStatistics4Samples(NetcdfUWFile inputFile,
+	private IUncertainty getStatistics4UncertML(IUncertainty uncertainty, List<String> statParams){
+		IUncertainty resultUncertainty = null;
+		
+		ExtendedRConnection c = null;
+		try {
+			// Perform R computations
+			c = new ExtendedRConnection("127.0.0.1");
+			if (c.needLogin()) {
+				// if server requires authentication, send one
+				c.login("rserve", "aI2)Jad$%");
+			}
+			ContinuousRealisation realisations = null;
+			
+			// get samples for this distribution
+			if(uncertainty instanceof ISample){
+				AbstractSample sample = (AbstractSample) uncertainty;
+				realisations = (ContinuousRealisation) sample.getRealisations().get(0);		
+			}
+			else if(uncertainty instanceof ContinuousRealisation){
+					realisations = (ContinuousRealisation) uncertainty;
+			}
+			if(realisations!=null){
+				double[] values = new double[realisations.getValues().size()];
+				for(int i=0; i<values.length; i++){
+					values[i] = realisations.getValues().get(i).doubleValue();
+				}
+				
+				// define parameters in R				
+				REXPDouble d = new REXPDouble(values);
+				c.assign("samples", d);
+				
+				// calculate statistics and add them to collection
+				StatisticCollection statColl = new StatisticCollection();
+				//IteratorystatParams.iterator()
+				for(String para : statParams){
+					if(para.contains("mean")){
+						double mean = c.tryEval("mean(samples)").asDouble();
+						statColl.add(new Mean(mean));
+					}
+					if(para.contains("standard-deviation")){
+						double sd = c.tryEval("sd(samples)").asDouble();
+						statColl.add(new StandardDeviation(sd));
+					}
+				}			
+				resultUncertainty = statColl;					
+			}else{
+				throw new RuntimeException(
+					"Input with ID distribution must be a sample or realisation!");
+			}	
+				return resultUncertainty;
+						
+			} catch (Exception e) {
+				LOGGER
+				.debug("Error while getting random samples for Gaussian distribution: "
+						+ e.getMessage());
+				throw new RuntimeException(
+				"Error while getting random samples for Gaussian distribution: "
+						+ e.getMessage(), e);	}
+				
+			finally {
+				if (c != null) {
+					c.close();
+				}
+			}		
+		
+	}
+	
+	/**
+	 * Method to calculate statistics for OM input
+	 * @param inputColl
+	 * @param statParams
+	 * @return
+	 */
+	private UncertaintyObservationCollection getStatistics4SamplesOMFile(UncertaintyObservationCollection inputColl,
+			List<String> statParams){
+		UncertaintyObservationCollection resultColl = new UncertaintyObservationCollection();		
+		ExtendedRConnection c = null;	
+		try {		
+			// establish connection to Rserve running on localhost
+			c = new ExtendedRConnection("127.0.0.1");
+			if (c.needLogin()) {
+				// if server requires authentication, send one
+				c.login("rserve", "aI2)Jad$%");
+			}
+			
+			// loop through observation collection
+			for (AbstractObservation obs : inputColl.getObservations()) {  		
+				if(obs instanceof UncertaintyObservation){
+					// get UncertML distribution
+					UncertaintyResult uResult = (UncertaintyResult) obs.getResult();
+					IUncertainty uncertainty = uResult.getUncertaintyValue();
+					ContinuousRealisation realisations = null;
+					
+					// get samples for this distribution
+					if(uncertainty instanceof ISample){
+						AbstractSample sample = (AbstractSample) uncertainty;
+						realisations = (ContinuousRealisation) sample.getRealisations().get(0);		
+					}
+					else if(uncertainty instanceof ContinuousRealisation){
+							realisations = (ContinuousRealisation) uncertainty;
+					}
+					if(uncertainty!=null){
+						double[] values = new double[realisations.getValues().size()];
+						for(int i=0; i<values.length; i++){
+							values[i] = realisations.getValues().get(i).doubleValue();
+						}
+						
+						// define parameters in R				
+						REXPDouble d = new REXPDouble(values);
+						c.assign("samples", d);
+						
+						// calculate statistics and add them to collection
+						StatisticCollection statColl = new StatisticCollection();
+						//IteratorystatParams.iterator()
+						for(String para : statParams){
+							if(para.contains("mean")){
+								double mean = c.tryEval("mean(samples)").asDouble();
+								statColl.add(new Mean(mean));
+							}
+							if(para.contains("standard-deviation")){
+								double sd = c.tryEval("sd(samples)").asDouble();
+								statColl.add(new StandardDeviation(sd));
+							}
+						}
+							
+						// make new observation
+						UncertaintyResult newResult = new UncertaintyResult(statColl, "ug/m3");
+						newResult.setUnitOfMeasurement(uResult.getUnitOfMeasurement());
+						
+						UncertaintyObservation newObs = new UncertaintyObservation(
+								obs.getIdentifier(), obs.getBoundedBy(), obs.getPhenomenonTime(), 
+								obs.getResultTime(), obs.getValidTime(), obs.getProcedure(), 
+								obs.getObservedProperty(), obs.getFeatureOfInterest(), 
+								obs.getResultQuality(), newResult);
+						
+						// add observation to new collection
+						resultColl.addObservation(newObs);
+					}else{
+						throw new RuntimeException(
+							"Input with ID distribution must be a sample or realisation!");
+					}			
+				}else{
+					throw new RuntimeException(
+							"Input with ID distribution must contain uncertainty observations!");
+					}						
+			}		
+			
+			return resultColl;
+			
+		}catch (Exception e) {
+			LOGGER
+			.debug("Error while getting random samples for Gaussian distribution: "
+					+ e.getMessage());
+			throw new RuntimeException(
+			"Error while getting random samples for Gaussian distribution: "
+					+ e.getMessage(), e);
+		} 
+		finally {
+			if (c != null) {
+				c.close();
+			}
+		}
+	}
+	
+	/**
+	 * Method for NetCDF samples
+	 * @param inputFile
+	 * @param statParams
+	 * @return
+	 */
+	private NetcdfUWFile getStatistics4SamplesNCFile(NetcdfUWFile inputFile,
 			List<String> statParams) {
 		String tmpDirPath = System.getProperty("java.io.tmpdir");
 		NetcdfUWFileWriteable resultNCFile = null;
@@ -288,7 +480,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 	}
 
 	@Override
-	public Class getInputDataType(String id) {
+	public Class<?> getInputDataType(String id) {
 		if (id.equals(INPUT_IDENTIFIER_SAMPLES)) {
 			return UncertWebIODataBinding.class;
 		} else if (id.equals(INPUT_IDENTIFIER_STAT)) {
@@ -298,7 +490,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 	}
 
 	@Override
-	public Class getOutputDataType(String id) {
+	public Class<?> getOutputDataType(String id) {
 		if (id.equals(OUTPUT_IDENTIFIER_STAT)) {
 			return UncertWebIODataBinding.class;
 		}
