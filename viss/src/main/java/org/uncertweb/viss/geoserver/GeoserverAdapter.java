@@ -203,8 +203,7 @@ public class GeoserverAdapter implements WMSAdapter {
 		try {
 			String stylename = getStyleName(vis);
 			if (getGeoserver().createStyle(vis.getSld(), stylename)) {
-				return getGeoserver().setStyle(getWorkspaceName(vis), 
-						getLayerName(vis), stylename);
+				return getGeoserver().setStyle(getLayerName(vis), stylename);
 			}
 			return false;
 		} catch (IOException e) {

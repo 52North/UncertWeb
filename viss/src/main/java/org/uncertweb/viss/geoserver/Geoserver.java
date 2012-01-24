@@ -252,18 +252,19 @@ public class Geoserver {
 		return isOk(con);
 	}
 
-	public boolean setStyle(String ws, String layer, String style)
+	public boolean setStyle(String layer, String style)
 			throws IOException {
 		try {
 			log.debug("Setting style '{}' for layer '{}'", style, layer);
 			HttpURLConnection con;
 
 			JSONObject j = new JSONObject().put(
-					"layer",
-					new JSONObject().put("enabled", true).put("defaultStyle",
-							new JSONObject().put("name", style)));
+					"layer", new JSONObject()
+						.put("enabled", true)
+						.put("defaultStyle", new JSONObject()
+							.put("name", style)));
 
-			con = RestBuilder.path(url("layers/%s:%s.json"), ws, layer)
+			con = RestBuilder.path(url("layers/%s.json"), layer)
 					.auth(this.user, this.pass)
 					.responseType(APPLICATION_JSON_TYPE)
 					.contentType(APPLICATION_JSON_TYPE).entity(j).put();
