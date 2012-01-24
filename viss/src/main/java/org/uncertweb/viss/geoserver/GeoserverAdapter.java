@@ -112,36 +112,41 @@ public class GeoserverAdapter implements WMSAdapter {
 	@Override
 	public IVisualizationReference addVisualization(IVisualization vis) {
 		try {
-			String ws = getWorkspaceName(vis);
+			String workSpace = getWorkspaceName(vis);
+			String coverageStore = getCoverageStoreName(vis);
+			String layerName = getLayerName(vis);
+			String[] layerNames = null;
+			Set<GridCoverage> coverages = vis.getCoverages();
 
-			if (!getGeoserver().containsWorkspace(ws)) {
-				if (!getGeoserver().createWorkspace(ws)) {
+			if (!getGeoserver().containsWorkspace(workSpace)) {
+				if (!getGeoserver().createWorkspace(workSpace)) {
 					throw VissError.internal("Could not create Workspace");
 				}
 			}
 
-			String[] layer = null;
-			String csBase = getCoverageStoreName(vis);
-			String layerBase = getLayerName(vis);
-			Set<GridCoverage> coverages = vis.getCoverages();
-
 			if (coverages.isEmpty()) {
 				throw VissError.internal("no coverages to insert");
 			} else if (coverages.size() == 1) {
-				insertCoverage(ws, csBase, toInputStream(vis.getCoverages().iterator().next()));
-				layer = new String[] { layerBase };
+				InputStream is =  toInputStream(vis.getCoverages().iterator().next());
+				insertCoverage(workSpace, coverageStore, is);
+				layerNames = new String[] { layerName };
 			} else {
 				ArrayList<String> layers = new ArrayList<String>(vis.getCoverages().size());
+				
 				int i = 0;
+				
 				for (GridCoverage c : vis.getCoverages()) {
-					insertCoverage(ws, UwStringUtils.join("-", csBase, i), toInputStream(c));
-					layers.add(UwStringUtils.join("-", layerBase, i));
+					insertCoverage(workSpace, UwStringUtils.join("-", coverageStore, i), toInputStream(c));
+					layers.add(UwStringUtils.join("-", layerName, i));
 					++i;
 				}
-				layer = layers.toArray(new String[layers.size()]);
+				
+				layerNames = layers.toArray(new String[layers.size()]);
 			}
-			return new DefaultVisualizationReference(getGeoserver().getUrl(),
-					UwCollectionUtils.set(layer));
+			
+			return new DefaultVisualizationReference(
+					getGeoserver().getUrl(), UwCollectionUtils.set(layerNames));
+			
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -198,7 +203,8 @@ public class GeoserverAdapter implements WMSAdapter {
 		try {
 			String stylename = getStyleName(vis);
 			if (getGeoserver().createStyle(vis.getSld(), stylename)) {
-				return getGeoserver().setStyle(getWorkspaceName(vis), getLayerName(vis), stylename);
+				return getGeoserver().setStyle(getWorkspaceName(vis), 
+						getLayerName(vis), stylename);
 			}
 			return false;
 		} catch (IOException e) {
@@ -240,12 +246,11 @@ public class GeoserverAdapter implements WMSAdapter {
 	}
 	
 	private String getCoverageStoreName(IVisualization vis) {
-		return getLayerName(vis);
+		return vis.getDataSet().getId() + ":" + vis.getVisId();
 	}
 	
 	private String getLayerName(IVisualization vis) {
-		return vis.getDataSet().getId() 
-				+ ":" + vis.getVisId();
+		return getWorkspaceName(vis) + ":" + getCoverageStoreName(vis);
 	}
 	
 }

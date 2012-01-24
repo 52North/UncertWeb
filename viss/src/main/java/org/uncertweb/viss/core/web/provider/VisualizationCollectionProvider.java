@@ -24,8 +24,8 @@ package org.uncertweb.viss.core.web.provider;
 import static org.uncertweb.viss.core.util.JSONConstants.HREF_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.ID_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.VISUALIZATIONS_KEY;
-import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER_LIST;
-import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER_LIST_TYPE;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_LIST;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_LIST_TYPE;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,7 +54,7 @@ import org.uncertweb.viss.core.web.RESTServlet;
 import com.sun.jersey.core.util.ReaderWriter;
 
 @Provider
-@Produces(JSON_VISUALIZER_LIST)
+@Produces(JSON_VISUALIZATION_LIST)
 public class VisualizationCollectionProvider implements
 		MessageBodyWriter<Iterable<IVisualization>> {
 
@@ -67,7 +67,7 @@ public class VisualizationCollectionProvider implements
 
 	@Override
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return mt.equals(JSON_VISUALIZER_LIST_TYPE)
+		return mt.equals(JSON_VISUALIZATION_LIST_TYPE)
 				&& UwReflectionUtils.isParameterizedWith(gt, Iterable.class,
 						IVisualization.class);
 	}
