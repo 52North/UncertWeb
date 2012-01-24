@@ -244,8 +244,7 @@ public class GeoserverAdapter implements WMSAdapter {
 	}
 	
 	private String getLayerName(IVisualization vis) {
-		return vis.getDataSet().getResource().getId() 
-				+ ":" + vis.getDataSet().getId() 
+		return vis.getDataSet().getId() 
 				+ ":" + vis.getVisId();
 	}
 	
