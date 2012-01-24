@@ -189,7 +189,7 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 				ContinuousRealisation cr = new ContinuousRealisation(samples);
 				ContinuousRealisation[] crList = new ContinuousRealisation[1];
 				crList[0] = cr;
-				resultUncertainty = new RandomSample(crList);
+				resultUncertainty = new RandomSample(crList, "random");
 				}else{
 					throw new RuntimeException(
 						"Input with ID distribution must be a gaussian distribution!");
@@ -259,7 +259,8 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 						//TODO: Should we use RandomSample?
 						ContinuousRealisation[] crList = new ContinuousRealisation[1];
 						crList[0] = cr;
-						RandomSample rs = new RandomSample(crList);
+						RandomSample rs = new RandomSample(crList, "random");
+						
 						
 						
 						// make new observation with samples
