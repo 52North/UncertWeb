@@ -27,10 +27,12 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 						</Format>
 						<Format>
 							<MimeType>application/x-uncertml+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>http://uncertml.org/uncertml.xsd</Schema>
 						</Format>
 						<Format>
 							<MimeType>application/x-uncertml+json</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>http://uncertml.org/uncertml.xsd</Schema>
 						</Format>
 					</Supported>
@@ -73,10 +75,12 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 						</Format>
 						<Format>
 							<MimeType>application/x-uncertml+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>http://uncertml.org/uncertml.xsd</Schema>
 						</Format>
 						<Format>
 							<MimeType>application/x-uncertml+json</MimeType>
+							<Encoding>UTF-8</Encoding>
 							<Schema>http://uncertml.org/uncertml.xsd</Schema>
 						</Format>
 					</Supported>
