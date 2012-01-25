@@ -35,6 +35,7 @@ import org.joda.time.DateTime;
 import org.n52.wps.io.IParser;
 import org.n52.wps.io.ParserFactory;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.sta.utils.Utils;
@@ -188,7 +189,15 @@ public class RequestCache<T extends XmlObject, U> {
 		} else {
 			p = this.parser;
 		}
-		return (U) p.parse(is, mimeType, schema);
+		IData result = p.parse(is, mimeType, schema);
+		
+		//workaround for Observation inputs
+		if (result instanceof OMBinding){
+			return (U) ((OMBinding)result).getObservationCollection();
+		}
+		else {
+			return (U)result;
+		}
 	}
 
 }
