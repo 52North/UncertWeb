@@ -42,7 +42,10 @@ public class UncertaintyNetCDF {
 	private NetcdfFile f;
 
 	public UncertaintyNetCDF(NetcdfFile f) {
-//TODO	if (!checkForUWConvention(f)) throw new IllegalArgumentException("File is not compliant with UW-1.0 convention.");
+		/* TODO	
+		if (!checkForUWConvention(f))
+			throw new IllegalArgumentException("File is not compliant with UW-1.0 convention.");
+		*/
 		this.f = f;
 	}
 

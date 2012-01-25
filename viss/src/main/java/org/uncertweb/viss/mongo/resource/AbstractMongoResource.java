@@ -79,7 +79,6 @@ public abstract class AbstractMongoResource<T> implements IResource {
 		setFile(f);
 		setId(oid);
 		setChecksum(checksum);
-		//TODO
 	}
 	
 	public AbstractMongoResource(MediaType mt) {

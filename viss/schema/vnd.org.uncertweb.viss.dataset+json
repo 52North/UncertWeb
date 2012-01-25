@@ -5,12 +5,13 @@
 		"id": {
 			"type": "string",
 			"required": true,
-			"description": "resource identifier"
+			"description": "dataset identifier"
 		},
-		"mimeType": {
+		"type": {
 			"type": "string",
+			"format": "uri",
 			"required": true,
-			"description": "resource type"
+			"description": "the uncertainty type of the dataset"
 		},
 		"phenomenon": {
 			"type": "string",
@@ -47,7 +48,7 @@
 					"type": "integer",
 					"minimum": 0,
 					"minimumExclusive": true,
-					"description": "the time span between regular time instants"
+					"description": "the time span between regular time instants in milliseconds"
 				},
 				"intervals": {
 					"type": "array",

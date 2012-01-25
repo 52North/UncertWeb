@@ -321,6 +321,11 @@
 				<configuration>
 					<filterDeploymentDescriptors>true</filterDeploymentDescriptors>
 					<webResources>
+						 <resource>
+							<directory>schema</directory>
+							<targetPath>WEB-INF/classes/schema</targetPath>
+							<filtering>false</filtering>
+						</resource>
 						<resource>
 							<directory>src/main/webapp</directory>
 							<filtering>true</filtering>

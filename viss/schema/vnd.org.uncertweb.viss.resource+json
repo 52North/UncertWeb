@@ -1,0 +1,42 @@
+{
+	"type": "object",
+	"description": "a resource object",
+	"properties": {
+		"id": {
+			"type": "string",
+			"required": true,
+			"description": "resource identifier"
+		},
+		"mimeType": {
+			"type": "string",
+			"required": true,
+			"description": "resource type"
+		},
+		"phenomenon": {
+			"type": "string",
+			"required": true,
+			"description": "the phenomenon of the visualization"
+		},
+		"dataSets": {
+			"type": "array",
+			"required": true,
+			"description": "array of datasets",
+			"items": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"required": true,
+						"description": "the id of the dataset"
+					},
+					"href": {
+						"type": "string",
+						"format": "uri",
+						"required":true,
+						"description": "the URI of the dataset"
+					}
+				}
+			}
+		}
+	}
+}

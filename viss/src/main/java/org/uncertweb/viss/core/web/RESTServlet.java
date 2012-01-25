@@ -21,6 +21,7 @@
  */
 package org.uncertweb.viss.core.web;
 
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static org.uncertweb.viss.core.util.MediaTypes.GEOTIFF;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_CREATE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET;
@@ -29,6 +30,7 @@ import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST_TYPE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE_LIST;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_SCHEMA;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER;
@@ -38,12 +40,16 @@ import static org.uncertweb.viss.core.util.MediaTypes.OM_2;
 import static org.uncertweb.viss.core.util.MediaTypes.STYLED_LAYER_DESCRIPTOR;
 import static org.uncertweb.viss.core.util.MediaTypes.X_NETCDF;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -64,9 +70,11 @@ import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.Viss;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
@@ -102,8 +110,10 @@ public class RESTServlet {
 	
 	public static final String VISUALIZATION_SLD = VISUALIZATION + "/sld";
 	
+	public static final String SCHEMA = "/schema";
+	
 	private static Logger log = LoggerFactory.getLogger(RESTServlet.class);
-
+	
 	@GET
 	public Response wadl(@Context UriInfo uriI) {
 		URI uri = uriI.getBaseUriBuilder().path("application.wadl").build();
@@ -308,4 +318,49 @@ public class RESTServlet {
 		log.debug("Getting SLD for Visualization with ObjectId \"{}\"", oid);
 		return Viss.getInstance().getSldForVisualization(oid, dataset, vis);
 	}
+	
+	
+	private static final Lock schemaLock = new ReentrantLock();
+	private static final Map<MediaType, JSONObject> schemas = UwCollectionUtils.map();
+	
+	@POST
+	@Path(SCHEMA)
+	@Produces(JSON_SCHEMA)
+	@Consumes(TEXT_PLAIN)
+	public JSONObject getSchema(String mimeType) {
+		MediaType mime = MediaType.valueOf(mimeType);
+		log.debug("Getting schema for MimeType {}", mime);
+		if (!mime.getType().equalsIgnoreCase("application")
+		 || !mime.getSubtype().startsWith("vnd.org.uncertweb.viss.")
+		 || !mime.getSubtype().endsWith("+json")) {
+			throw VissError.notFound("No schema for this mimeType: " + mime);
+		}
+		schemaLock.lock();
+		try {
+			JSONObject j = schemas.get(mime);
+			if (j == null) {
+				InputStream in = getClass().getResourceAsStream(
+						"/schema/" + mime.getSubtype());
+
+				if (in == null) {
+					throw VissError.notFound("No schema for this mimeType: " + mime);
+				}
+
+				try {
+					j = new JSONObject(IOUtils.toString(in));
+				} catch (IOException e) {
+					throw VissError.internal(e);
+				} catch (JSONException e) {
+					throw VissError.internal(e);
+				}
+				schemas.put(mime, j);
+			}
+			return j;
+		} finally {
+			schemaLock.unlock();
+		}
+
+
+	}
+
 }

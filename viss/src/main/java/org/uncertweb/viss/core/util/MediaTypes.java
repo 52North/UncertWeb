@@ -147,4 +147,9 @@ public class MediaTypes {
 	public static final String STYLED_LAYER_DESCRIPTOR = "application/vnd.ogc.sld+xml";
 	
 	public static final MediaType STYLED_LAYER_DESCRIPTOR_TYPE = valueOf(STYLED_LAYER_DESCRIPTOR);
+	
+	public static final String JSON_SCHEMA = "application/schema+json";
+	
+	public static final MediaType JSON_SCHEMA_TYPE = valueOf(JSON_SCHEMA);
+			
 }

@@ -74,6 +74,7 @@ public class MongoOMDataSet extends
 		Set<DateTime> instants = UwCollectionUtils.set();
 		Set<Interval> intervals = UwCollectionUtils.set();
 		for (AbstractObservation ao : getContent().getObservations()) {
+			//TODO respect temporal extent of referenced resource
 			TimeObject to = ao.getPhenomenonTime();
 			if (to.getInterval() != null) {
 				intervals.add(to.getInterval());
