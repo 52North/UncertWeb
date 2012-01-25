@@ -412,7 +412,7 @@ public class GenericObservationAggregationProcess extends
 			for (Future<Mapper> future : futures) {
 				Mapper m = future.get();
 				if (m.is(OBSERVATION_COLLECTION_INPUT)) {
-					observations = (IObservationCollection) m.o;
+					observations = (IObservationCollection)m.o;
 				} else if (m.is(GROUP_BY_OBSERVED_PROPERTY)) {
 					groupByObservedProperty = (Boolean) m.o;
 				} else if (m.is(SPATIAL_BEFORE_TEMPORAL)) {
