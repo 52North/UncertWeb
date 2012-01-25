@@ -29,6 +29,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
 import net.opengis.om.x10.ObservationCollectionDocument;
@@ -55,7 +56,12 @@ public class ObservationCollectionGenerator extends AbstractUwGenerator {
 	}
 
 	public void writeToStream(IData coll, OutputStream os) {
-		OutputStreamWriter w = new OutputStreamWriter(os);
+		OutputStreamWriter w;
+		try {
+			w = new OutputStreamWriter(os, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 		Collection<? extends AbstractObservation> oc = ((OMBinding) coll)
 				.getObservationCollection().getObservations();
 		ObservationCollectionDocument doc = ObservationCollectionDocument.Factory

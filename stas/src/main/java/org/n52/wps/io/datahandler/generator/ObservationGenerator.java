@@ -318,7 +318,7 @@ public class ObservationGenerator {
 		
 		if (!new Double(r.getMeasureValue()).equals(Double.NaN)) {
 			MeasureType xbresult = MeasureType.Factory.newInstance();
-			xbresult.setStringValue(Utils.NUMBER_FORMAT.format(o.getResult()));
+			xbresult.setStringValue(""+r.getValue());
 			if (r.getUnitOfMeasurement() != null) {
 				xbresult.setUom(r.getUnitOfMeasurement());
 			}
