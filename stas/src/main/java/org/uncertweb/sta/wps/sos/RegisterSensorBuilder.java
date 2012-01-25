@@ -273,7 +273,8 @@ public class RegisterSensorBuilder {
 
 		Map<URI, String> obsProps = UwCollectionUtils.map();
 		for (AbstractObservation o : obs) {
-			obsProps.put(o.getObservedProperty(), ((MeasureResult)o.getResult()).getUnitOfMeasurement());
+			String uom = ((MeasureResult)o.getResult()).getUnitOfMeasurement();
+			obsProps.put(o.getObservedProperty(), uom);
 		}
 		int i = 0;
         /* outputs */

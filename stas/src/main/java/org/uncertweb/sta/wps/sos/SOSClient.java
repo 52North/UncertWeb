@@ -59,7 +59,7 @@ public class SOSClient {
 			Map<String, Object> meta) throws IOException {
 		RegisterSensorDocument regSenDoc = RegisterSensorBuilder.getInstance()
 				.build(process, obs, meta);
-		log.info("Sending RegisterSensor request:\n{}", regSenDoc
+		log.debug("Sending RegisterSensor request:\n{}", regSenDoc
 				.xmlText(UwXmlUtils.defaultOptions()));
 		try {
 			sendPostRequests(url, regSenDoc);
@@ -68,7 +68,7 @@ public class SOSClient {
 			throw new RuntimeException(e);
 		}
 		boolean printed = false;
-		log.info("Sending RegisterSensor requests.");
+		log.debug("Sending RegisterSensor requests.");
 		for (AbstractObservation o : obs) {
 			InsertObservationDocument insObsDoc = InsertObservationBuilder
 					.getInstance().build(o);
@@ -94,7 +94,7 @@ public class SOSClient {
 			throws IOException {
 		try {
 			XmlObject xml = XmlObject.Factory.parse(Utils
-					.sendPostRequest(url, doc.xmlText()));
+					.sendPostRequest(url, doc.xmlText(UwXmlUtils.defaultOptions())));
 
 			if (xml instanceof RegisterSensorResponseDocument) {
 				log.info("RegisterSensor successfull: {}", ((RegisterSensorResponseDocument) xml)
