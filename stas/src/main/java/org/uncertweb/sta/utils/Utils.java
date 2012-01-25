@@ -111,6 +111,7 @@ public class Utils {
 			conn.setDoOutput(true);
 			conn.setRequestMethod(Constants.Http.Method.POST.name());
 			conn.setRequestProperty(Constants.Http.Header.CONTENT_TYPE, "text/xml");
+			
 			wr = new OutputStreamWriter(conn.getOutputStream());
 			wr.write(request);
 			wr.flush();
