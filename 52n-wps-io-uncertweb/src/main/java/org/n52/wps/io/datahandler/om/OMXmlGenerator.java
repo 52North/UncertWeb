@@ -18,6 +18,7 @@ import org.n52.wps.io.datahandler.AbstractUwGenerator;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.utils.UwXmlUtils;
 
 /**
  * Observation generator, producing observations encoded in XML according the
@@ -55,7 +56,7 @@ public class OMXmlGenerator extends AbstractUwGenerator {
 			} else {
 				throw new RuntimeException("The data contained neither an observation nor an observation collection.");
 			}
-			doc.save(os);
+			doc.save(os,UwXmlUtils.defaultOptions());
 		} catch (Exception e) {
 			log.error("Unable to encode observation: " + e.getMessage());
 			throw new RuntimeException(e);

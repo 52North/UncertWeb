@@ -79,12 +79,12 @@ public class OMXmlParser extends AbstractUwParser {
 				// TODO missing: OMCategoryObservationCollectionDocument
 
 				IObservationCollection obsCol = parser
-						.parseObservationCollection(xbDoc.toString());
+						.parseObservationCollection(xbDoc);
 				return new OMBinding(obsCol);
 			} else if (xbDoc instanceof ObservationDocument
 					|| xbDoc instanceof ObservationCollectionDocument) {
 				IObservationCollection obsCol = new XBv1ObservationParser()
-						.parse(xbDoc.xmlText());
+						.parse(xbDoc);
 				return new OMBinding(obsCol);
 			} else {
 				throw new RuntimeException(
