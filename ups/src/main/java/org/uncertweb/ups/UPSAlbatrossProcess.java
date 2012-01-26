@@ -1,6 +1,5 @@
 package org.uncertweb.ups;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
@@ -35,7 +34,7 @@ import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.uncertml.IUncertainty;
-import org.uncertml.sample.Realisation;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
@@ -245,10 +244,9 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 			/*
 			 * TODO: if the bug in the api gets fixed remove weight and id
 			 */
-			Realisation r = new Realisation(values, -1.0d, "id");
-//			Realisation r = new Realisation(values);
+			ContinuousRealisation cr = new ContinuousRealisation(values);
 
-			UncertaintyResult uResult = new UncertaintyResult(r, observedPropertyResultUOMMap.get(uriString));
+			UncertaintyResult uResult = new UncertaintyResult(cr, observedPropertyResultUOMMap.get(uriString));
 			
 //			Identifier identifier = new Identifier(uri, "Albatross" + counter);	
 			

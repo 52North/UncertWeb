@@ -57,7 +57,7 @@ import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
 import org.uncertml.exception.UncertaintyEncoderException;
 import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.io.XMLEncoder;
-import org.uncertml.sample.Realisation;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
@@ -338,7 +338,7 @@ public class UPSAustalProcess extends AbstractObservableAlgorithm {
 
 					ArrayList<Double> values = tmpList.get(dateTime);
 
-					Realisation r = new Realisation(values, -1.0d, "id");
+					ContinuousRealisation r = new ContinuousRealisation(values);
 
 					UncertaintyResult uResult = new UncertaintyResult(r, "ug/m3");
 					UncertaintyObservation uObs = new UncertaintyObservation(

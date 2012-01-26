@@ -9,10 +9,7 @@
       <ows:Identifier>distribution</ows:Identifier>
       <wps:Data>
         <wps:ComplexData mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd">
-          <un:NormalDistribution xmlns:un="http://www.uncertml.org/2.0">
-            <un:mean>100</un:mean>
-            <un:variance>15</un:variance>
-          </un:NormalDistribution>
+			%$dist$%
         </wps:ComplexData>
       </wps:Data>
     </wps:Input>
@@ -21,7 +18,7 @@
     <wps:Input>
       <ows:Identifier>numbReal</ows:Identifier>
       <wps:Data>
-        <wps:LiteralData>7</wps:LiteralData>
+        <wps:LiteralData>%$numbReal$%</wps:LiteralData>
       </wps:Data>
     </wps:Input>
   </wps:DataInputs>
