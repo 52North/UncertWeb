@@ -1,5 +1,6 @@
 package org.uncertweb.om.io.v1;
 
+import org.apache.xmlbeans.XmlObject;
 import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.io.IObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -23,6 +24,10 @@ public class XBv1ObservationParser implements IObservationParser{
 	public AbstractObservation parseObservation(String xmlObs)
 			throws OMParsingException {
 		throw new UnsupportedOperationException("Not supported");
+	}
+	
+	public IObservationCollection parse(XmlObject xb_object) throws OMParsingException{
+		return new OMDecoder().parse(xb_object);
 	}
 
 }

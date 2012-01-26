@@ -147,7 +147,7 @@ public class OMDecoder {
 		}
 	}
 
-	public static IObservationCollection parse(XmlObject xml)
+	public IObservationCollection parse(XmlObject xml)
 			throws OMParsingException {
 		Collection<AbstractObservation> col = null;
 		if (xml instanceof ObservationCollectionDocument) {
