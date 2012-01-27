@@ -7,7 +7,7 @@
 	</parent>
   <groupId>org.uncertweb</groupId>
   <artifactId>shape-om-converter</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <properties>
     <geotools.version>2.6.2</geotools.version>
   </properties>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.uncertweb</groupId>
       <artifactId>om-api</artifactId>
-      <version>0.0.5-SNAPSHOT</version>
+      <version>0.0.7-SNAPSHOT</version>
     </dependency>
     <dependency>
     	<groupId>org.geotools</groupId>
@@ -56,7 +56,7 @@
    <dependency>
 			<groupId>org.uncertml</groupId>
 			<artifactId>uncertml</artifactId>
-			<version>2.0-SNAPSHOT</version>
+			<version>2.0.5-SNAPSHOT</version>
 		</dependency>
     <dependency>
 			<groupId>net.sf.opencsv</groupId>
