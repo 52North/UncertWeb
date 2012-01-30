@@ -724,10 +724,11 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			final Attribute av = getVariable().findAttribute(
 					ATTRIBUTE_ANCILLARY_VARIABLES);
 			if (av == null) {
-				map = map(
-						getType().getURI(),
-						new Number[] { getArray().getDouble(
-								setIndex(getIndex(), time, height, lon, lat)) });
+				double v = getArray().getDouble(setIndex(getIndex(), time, height, lon, lat));
+				if (isInvalid(getVariable(), v)) {
+					return null;
+				}
+				map = map(getType().getURI(), new Number[] { v });
 			} else {
 				map = map();
 				for (final String avn : av.getStringValue().split(" ")) {
