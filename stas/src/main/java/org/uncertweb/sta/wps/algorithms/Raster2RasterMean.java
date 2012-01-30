@@ -264,6 +264,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 			
 			//executing aggregation
 			c.tryVoidEval("spAgg <- aggregate.Spatial(spUNetCDF,newPixels,mean)");
+			c.tryVoidEval("attr(spAgg@data,\"UncertML\")<-attr(spUNetCDF@data,\"UncertML\")");
 			
 			//Create response
 			c.tryVoidEval("writeUNetCDF(newfile=\""+outputFilePath+"\", spAgg)");

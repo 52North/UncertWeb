@@ -244,7 +244,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 				c.tryVoidEval("newCellcentre.offset <- spUNetCDF@bbox[,1]+newCellsize");
 				c.tryVoidEval("newDim <- ceiling(c(diff(spUNetCDF@bbox[1,])/newCellsize[1], diff(spUNetCDF@bbox[2,])/newCellsize[2]))");
 				c.tryVoidEval("gridTopo <- GridTopology(cellcentre.offset=newCellcentre.offset, cellsize=newCellsize, cells.dim=newDim)");
-				c.tryVoidEval("newGrid <- SpatialGrid(gridTopo, proj4string=\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\")");
+				c.tryVoidEval("newGrid <- SpatialGrid(gridTopo, proj4string=CRS(\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"))");
 				c.tryVoidEval("newPixels <- as(newGrid,\"SpatialPixels\")");
 			}
 			
@@ -254,7 +254,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 				c.tryVoidEval("newCellcentre.offset <- spUNetCDF@bbox[,1]+newCellsize/2");
 				c.tryVoidEval("newDim <- ceiling(c(diff(spUNetCDF@bbox[1,])/newCellsize[1], diff(spUNetCDF@bbox[2,])/newCellsize[2]))");
 				c.tryVoidEval("gridTopo <- GridTopology(cellcentre.offset=newCellcentre.offset, cellsize=newCellsize, cells.dim=newDim)");
-				c.tryVoidEval("newGrid <- SpatialGrid(gridTopo, proj4string=CRS(\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\")");
+				c.tryVoidEval("newGrid <- SpatialGrid(gridTopo, proj4string=CRS(\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"))");
 				c.tryVoidEval("newPixels <- as(newGrid,\"SpatialPixels\")");
 			}
 			else {
@@ -263,6 +263,7 @@ public class Raster2RasterVariance extends AbstractAggregationProcess{
 			
 			//executing aggregation
 			c.tryVoidEval("spAgg <- aggregate.Spatial(spUNetCDF,newPixels,var)");
+			c.tryVoidEval("attr(spAgg@data,\"UncertML\")<-attr(spUNetCDF@data,\"UncertML\")");
 			
 			//Create response
 			c.tryVoidEval("writeUNetCDF(newfile=\""+outputFilePath+"\", spAgg)");
