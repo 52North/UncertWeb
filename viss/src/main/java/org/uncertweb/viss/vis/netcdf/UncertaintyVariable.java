@@ -427,9 +427,8 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			return getNumber(t, v, name).intValue();
 		}
 	}
-
-	private static final Logger log = LoggerFactory
-			.getLogger(UncertaintyVariable.class);
+	private static final String UNKNOWN_UNIT = javax.measure.unit.BaseUnit.ONE.toString();
+	private static final Logger log = LoggerFactory.getLogger(UncertaintyVariable.class);
 	private final GeometryFactory fac = new GeometryFactory();
 	private final UncertaintyNetCDF file;
 	private final Variable variable;
@@ -618,7 +617,11 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 	}
 
 	public String getUnitAsString() {
-		return getVariable().getUnitsString();
+		String s = getVariable().getUnitsString();
+		if (s == null) {
+			s = UNKNOWN_UNIT;
+		}
+		return s;
 	}
 
 	public UncertaintyType getType() {
@@ -853,16 +856,15 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			// X=LON,Y=LAT!!!
 			int lonS = getLongitudeSize();
 			int latS = getLatitudeSize();
-			double lonMin = lon.read(list(new ucar.ma2.Range(0, 0))).getDouble(
-					0);
-			double lonMax = lon.read(
-					list(new ucar.ma2.Range(lonS - 1, lonS - 1))).getDouble(0);
-			double latMin = lat.read(list(new ucar.ma2.Range(0, 0))).getDouble(
-					0);
-			double latMax = lat.read(
-					list(new ucar.ma2.Range(latS - 1, latS - 1))).getDouble(0);
-			return new Envelope2D(EPSG4326, lonMin, latMin, lonMax - lonMin,
-					latMax - latMin);
+			double lon1 = lon.read(list(new ucar.ma2.Range(0, 0))).getDouble(0);
+			double lon2 = lon.read(list(new ucar.ma2.Range(lonS - 1, lonS - 1))).getDouble(0);
+			double lat1 = lat.read(list(new ucar.ma2.Range(0, 0))).getDouble(0);
+			double lat2 = lat.read(list(new ucar.ma2.Range(latS - 1, latS - 1))).getDouble(0);
+			double lonMin = Math.min(lon1, lon2);
+			double lonMax = Math.max(lon1, lon2);
+			double latMin = Math.min(lat1, lat2);
+			double latMax = Math.max(lat1, lat2);
+			return new Envelope2D(EPSG4326, lonMin, latMin, lonMax - lonMin, latMax - latMin);
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -886,14 +888,14 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 		log.debug("ImageSize: {}x{}", lonSize, latSize);
 		// FIXME this removes the cross, but thats somewhat ugly
 		b.setImageSize(lonSize - 1, latSize - 1);
+		
 		Envelope e = getEnvelope();
-		log.debug("Low: {}, High: {}", e.getLowerCorner(), e.getUpperCorner());
-		b.setEnvelope(getEnvelope());
+		log.debug("Envelope: {}", e);
+		b.setEnvelope(e);
 		
 		GridCoverageBuilder.Variable var;
 		if (unit != null) {
-			var = b.newVariable(layerName,
-					javax.measure.unit.Unit.valueOf(getUnit().toString()));
+			var = b.newVariable(layerName, javax.measure.unit.Unit.valueOf(getUnitAsString()));
 		} else {
 			var = b.newVariable(layerName, javax.measure.unit.Unit.ONE);
 		}

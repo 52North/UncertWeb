@@ -143,6 +143,23 @@ public class VissTest extends JerseyTest {
 		System.err.println(res.toString(4));
 	}
 	
+	@Test 
+	public void testAggrgationResults() throws JSONException {
+		String file = "/aggresults.nc";
+		InputStream is = getClass().getResourceAsStream(file);
+		
+		ObjectId r = addResource(NETCDF_TYPE, is);
+		String ds = getDataSetsForResource(r)[0];
+		
+		String vis = createVisualization(r, ds, MeanStatistic.class.getSimpleName(), new JSONObject());
+		
+		JSONObject res = getWebResource().path(RESTServlet.VISUALIZATION
+				.replace(RESTServlet.RESOURCE_PARAM_P, r.toString())
+				.replace(RESTServlet.DATASET_PARAM_P, ds)
+				.replace(RESTServlet.VISUALIZATION_PARAM_P, vis)).get(JSONObject.class);
+		System.err.println(res.toString(4));
+	}
+	
 	@Test
 	public void testTime() throws JSONException {
 		ObjectId oid = addResource(NETCDF_TYPE, getOsloMetStream());
