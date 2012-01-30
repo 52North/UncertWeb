@@ -61,11 +61,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.uncertweb.viss.core.util.JSONConstants;
 import org.uncertweb.viss.core.vis.IVisualizer;
+import org.uncertweb.viss.core.web.RESTServlet;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Mean;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Probability;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.ProbabilityForInterval;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.StandardDeviation;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Variance;
+import org.uncertweb.viss.vis.statistic.SimpleStatisticVisualizer.MeanStatistic;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -123,6 +125,23 @@ public class VissTest extends JerseyTest {
 		IOUtils.closeQuietly(is);
 	}
 
+	
+	@Test 
+	public void testMahalanobian() throws JSONException {
+		String file = "/mahalanobian_stats.nc";
+		InputStream is = getClass().getResourceAsStream(file);
+		
+		ObjectId r = addResource(NETCDF_TYPE, is);
+		String ds = getDataSetsForResource(r)[0];
+		
+		String vis = createVisualization(r, ds, MeanStatistic.class.getSimpleName(), new JSONObject());
+		
+		JSONObject res = getWebResource().path(RESTServlet.VISUALIZATION
+				.replace(RESTServlet.RESOURCE_PARAM_P, r.toString())
+				.replace(RESTServlet.DATASET_PARAM_P, ds)
+				.replace(RESTServlet.VISUALIZATION_PARAM_P, vis)).get(JSONObject.class);
+		System.err.println(res.toString(4));
+	}
 	
 	@Test
 	public void testTime() throws JSONException {

@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.geotools.coverage.grid.GridCoverageBuilder;
 import org.geotools.geometry.Envelope2D;
@@ -110,6 +111,7 @@ import org.uncertml.statistic.Range;
 import org.uncertml.statistic.Skewness;
 import org.uncertml.statistic.StandardDeviation;
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.utils.UwStringUtils;
 import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.vis.WriteableGridCoverage;
@@ -237,8 +239,16 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 
 	private static final class UncertaintyParser {
 
-		public static IUncertainty map(final URI main,
-				final Map<URI, Number[]> v) {
+		public static IUncertainty map(final URI main, final Map<URI, Number[]> v) {
+			
+			if (log.isDebugEnabled()) {
+				log.debug("Parsing {}", main);
+				for (Entry<URI, Number[]> e : v.entrySet()) {
+					log.debug("{} => {}", e.getKey(), e.getValue() == null ? "null" : 
+						"["	+ UwStringUtils.join(", ", (Object[]) e.getValue()) + "]");
+				}
+			}
+			
 			final IUncertainty u = map(UncertaintyType.fromURI(main), v);
 			if (u == null) {
 				throw new IllegalArgumentException("not (yet) supported: "
@@ -386,6 +396,14 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 
 		protected static final Number getNumber(final UncertaintyType t,
 				final Map<URI, Number[]> v) {
+			if (v == null) {
+				throw new NullPointerException("v");
+			} 
+			if (t == null)
+				throw new NullPointerException("t");
+			if (v.get(t.getURI()) == null) {
+				throw new NullPointerException("v.get(t.getURI()");
+			}
 			return v.get(t.getURI())[0];
 		}
 
