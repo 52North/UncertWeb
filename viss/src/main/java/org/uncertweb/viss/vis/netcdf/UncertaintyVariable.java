@@ -873,7 +873,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 		b.setEnvelope(getEnvelope());
 		
 		GridCoverageBuilder.Variable var;
-		if (unit == null) {
+		if (unit != null) {
 			var = b.newVariable(layerName,
 					javax.measure.unit.Unit.valueOf(getUnit().toString()));
 		} else {
