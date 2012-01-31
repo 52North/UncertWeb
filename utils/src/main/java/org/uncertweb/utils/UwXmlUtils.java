@@ -37,7 +37,7 @@ import org.apache.xmlbeans.XmlOptions;
 public class UwXmlUtils {
 
 	public enum Namespace {
-		OM, SOS, OGC, SWE, SA, OWS, SML, GML, XSI, XLINK, WPS, UNCERTML, WFS, PARAM;
+		OM, SLD, SOS, OGC, SWE, SA, OWS, SML, GML, XSI, XLINK, WPS, UNCERTML, WFS, PARAM;
 		private static final String XML_PROPERTIES_FILE = "/xml.properties";
 		private static Properties xmlProps = null;
 		public final String URI, PREFIX, SCHEMA;
