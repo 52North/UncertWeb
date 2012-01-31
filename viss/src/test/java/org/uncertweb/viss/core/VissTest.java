@@ -57,9 +57,11 @@ import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.uncertweb.utils.UwStringUtils;
 import org.uncertweb.viss.core.util.JSONConstants;
 import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.core.web.RESTServlet;
@@ -92,36 +94,57 @@ public class VissTest extends JerseyTest {
 		org.slf4j.bridge.SLF4JBridgeHandler.install();
 	}
 
+	@Before
+	public void deleteAll() throws JSONException {
+		JSONObject j = getWebResource().path(RESOURCES)
+				.accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);
+		JSONArray a = j.optJSONArray(JSONConstants.RESOURCES_KEY);
+		if (a != null) {
+			for (int i = 0; i < a.length(); i++) {
+				deleteResource(new ObjectId(a.getJSONObject(i).getString(JSONConstants.ID_KEY)));
+			}
+		}
+	}
+	
 	public VissTest() throws Exception {
 		super("org.uncertweb.viss");
 	}
 
 	private InputStream getNetCDFStream() {
-		return getClass().getResourceAsStream("/biotemp.nc");
+		return getClass().getResourceAsStream("/data/netcdf/biotemp.nc");
 	}
 	
 	private InputStream getOsloMetStream() {
-		return getClass().getResourceAsStream("/oslo_met_20110102.nc");
+		return getClass().getResourceAsStream("/data/netcdf/oslo_met_20110102.nc");
 	}
 
 	private InputStream getSLDStream() {
-		return getClass().getResourceAsStream("/raster.xml");
+		return getClass().getResourceAsStream("/data/sld/raster.xml");
 	}
 
 	private InputStream getOMStream() {
-		return getClass().getResourceAsStream("/reference-observation.xml");
+		return getClass().getResourceAsStream("/data/om/reference-observation.xml");
+	}
+	
+	private InputStream getMahalanobianStream() {
+		return getClass().getResourceAsStream("/data/netcdf/mahalanobian_stats.nc");
+	}
+	
+	private InputStream getAggregationResultStream() {
+		return getClass().getResourceAsStream("/data/netcdf/aggresults.nc");
 	}
 
 	@Test
 	public void testIS() {
-		InputStream is = null;
-		is = getNetCDFStream();
-		assertNotNull(is);
-		IOUtils.closeQuietly(is);
-		is = getSLDStream();
-		assertNotNull(is);
-		IOUtils.closeQuietly(is);
-		is = getOMStream();
+		testStream(getNetCDFStream());
+		testStream(getSLDStream());
+		testStream(getOMStream());
+		testStream(getMahalanobianStream());
+		testStream(getOsloMetStream());
+		testStream(getAggregationResultStream());
+	}
+	
+	private void testStream(InputStream is) {
 		assertNotNull(is);
 		IOUtils.closeQuietly(is);
 	}
@@ -130,44 +153,36 @@ public class VissTest extends JerseyTest {
 	@Test 
 	@Ignore
 	public void testMahalanobian() throws JSONException {
-		String file = "/mahalanobian_stats.nc";
-		InputStream is = getClass().getResourceAsStream(file);
-		
-		ObjectId r = addResource(NETCDF_TYPE, is);
-		String ds = getDataSetsForResource(r)[0];
+		ObjectId r = addResource(NETCDF_TYPE, getMahalanobianStream());
+		ObjectId ds = getDataSetsForResource(r)[0];
 		
 		String vis = createVisualization(r, ds, MeanStatistic.class.getSimpleName(), new JSONObject());
 		
-		JSONObject res = getWebResource().path(RESTServlet.VISUALIZATION
-				.replace(RESTServlet.RESOURCE_PARAM_P, r.toString())
-				.replace(RESTServlet.DATASET_PARAM_P, ds)
-				.replace(RESTServlet.VISUALIZATION_PARAM_P, vis)).get(JSONObject.class);
+		JSONObject res = getVisualization(r, ds, vis);
 		System.err.println(res.toString(4));
+	}
+	
+	private JSONObject getVisualization(ObjectId resource, ObjectId dataset, String vis) {
+		return getWebResource().path(RESTServlet.VISUALIZATION
+				.replace(RESTServlet.RESOURCE_PARAM_P, resource.toString())
+				.replace(RESTServlet.DATASET_PARAM_P, dataset.toString())
+				.replace(RESTServlet.VISUALIZATION_PARAM_P, vis)).get(JSONObject.class);
 	}
 	
 	@Test 
 	public void testAggrgationResults() throws JSONException {
-		String file = "/aggresults.nc";
-		InputStream is = getClass().getResourceAsStream(file);
-		
-		ObjectId r = addResource(NETCDF_TYPE, is);
-		String ds = getDataSetsForResource(r)[0];
-		
+		ObjectId r = addResource(NETCDF_TYPE, getAggregationResultStream());
+		ObjectId ds = getDataSetsForResource(r)[0];
 		String vis = createVisualization(r, ds, MeanStatistic.class.getSimpleName(), new JSONObject());
-		
-		JSONObject res = getWebResource().path(RESTServlet.VISUALIZATION
-				.replace(RESTServlet.RESOURCE_PARAM_P, r.toString())
-				.replace(RESTServlet.DATASET_PARAM_P, ds)
-				.replace(RESTServlet.VISUALIZATION_PARAM_P, vis)).get(JSONObject.class);
+		JSONObject res = getVisualization(r, ds, vis);
 		System.err.println(res.toString(4));
 	}
 	
 	@Test
 	public void testTime() throws JSONException {
 		ObjectId oid = addResource(NETCDF_TYPE, getOsloMetStream());
-		String[] datasets = getDataSetsForResource(oid);
-		for (String s : datasets)
-			System.out.print(s+", ");
+		ObjectId[] datasets = getDataSetsForResource(oid);
+		System.out.println(UwStringUtils.join(", ", (Object[])datasets));
 	}
 	
 	@Override
@@ -209,31 +224,26 @@ public class VissTest extends JerseyTest {
 		return new ObjectId(j.getString(JSONConstants.ID_KEY));
 	}
 
-	private String createVisualization(ObjectId resource, String dataset,
+	private String createVisualization(ObjectId resource, ObjectId dataset,
 			String visualizer, JSONObject params) throws JSONException {
 		
 		String path = VISUALIZER_FOR_DATASET
 				.replace(RESOURCE_PARAM_P, resource.toString())
-				.replace(DATASET_PARAM_P, dataset)
+				.replace(DATASET_PARAM_P, dataset.toString())
 				.replace(VISUALIZER_PARAM_P, visualizer);
-		System.err.println(path);
 		ClientResponse cr = getWebResource()
 				.path(path)
 				.entity(params, JSON_CREATE_TYPE)
 				.post(ClientResponse.class);
-		System.err.println(cr);
-		System.err.println(cr.getLocation());
 		String s = cr.getLocation().getPath();
 		
-		JSONObject j = getWebResource().path(s).get(JSONObject.class);
-		
-		return j.getString(JSONConstants.ID_KEY);
+		return getWebResource().path(s).get(JSONObject.class).getString(JSONConstants.ID_KEY);
 	}
 
 	@Test
 	public void sameVisualizationWithParameters() throws JSONException {
 		ObjectId oid = addResource(OM_2_TYPE, getOMStream());
-		String[] datasets = getDataSetsForResource(oid);
+		ObjectId[] datasets = getDataSetsForResource(oid);
 		String cdfVisId1 = createVisualization(oid, datasets[0],
 				getNameForVisualizer(Probability.class),
 				new JSONObject().put("max", 0.5D).put("time", OM_DATE_TIME));
@@ -243,15 +253,15 @@ public class VissTest extends JerseyTest {
 		assertEquals(cdfVisId1, cdfVisId2);
 	}
 
-	public String[] getDataSetsForResource(ObjectId resource) {
+	public ObjectId[] getDataSetsForResource(ObjectId resource) {
 		try {
 			JSONObject j = getWebResource().path(
 					DATASETS.replace(RESOURCE_PARAM_P, resource.toString())).get(
 					JSONObject.class);
 			JSONArray a = j.getJSONArray(JSONConstants.DATASETS_KEY);
-			String[] result = new String[a.length()];
+			ObjectId[] result = new ObjectId[a.length()];
 			for (int i = 0; i < result.length; ++i) {
-				result[i] = a.getJSONObject(i).getString(JSONConstants.ID_KEY);
+				result[i] = new ObjectId(a.getJSONObject(i).getString(JSONConstants.ID_KEY));
 			}
 			return result;
 		} catch (JSONException e) {
@@ -263,10 +273,9 @@ public class VissTest extends JerseyTest {
 	@Test
 	public void addResourceAndCreateVisualizations() throws JSONException,
 			UniformInterfaceException, XmlException, IOException {
-		deleteAll();
 		ObjectId oid = addResource(NETCDF_TYPE, getNetCDFStream());
 
-		String[] datasets = getDataSetsForResource(oid);
+		ObjectId[] datasets = getDataSetsForResource(oid);
 
 		String meanVisId = createVisualization(oid, datasets[0],
 				getNameForVisualizer(Mean.class), new JSONObject());
@@ -284,7 +293,7 @@ public class VissTest extends JerseyTest {
 
 		String url = VISUALIZATION_SLD
 				.replace(RESOURCE_PARAM_P, oid.toString())
-				.replace(DATASET_PARAM_P, datasets[0])
+				.replace(DATASET_PARAM_P, datasets[0].toString())
 				.replace(VISUALIZATION_PARAM_P, meanVisId);
 
 		ClientResponse cr = getWebResource()
@@ -301,11 +310,11 @@ public class VissTest extends JerseyTest {
 	@Test
 	public void visualizersForResource() throws JSONException {
 		ObjectId oid = addResource(NETCDF_TYPE, getNetCDFStream());
-		String[] datasets = getDataSetsForResource(oid);
+		ObjectId[] datasets = getDataSetsForResource(oid);
 		JSONObject j = getWebResource()
 				.path(VISUALIZERS_FOR_DATASET
 						.replace(RESOURCE_PARAM_P, oid.toString())
-						.replace(DATASET_PARAM_P, datasets[0]))
+						.replace(DATASET_PARAM_P, datasets[0].toString()))
 				.accept(JSON_VISUALIZER_LIST_TYPE).get(JSONObject.class);
 
 		System.out.println(j.toString(4));
@@ -327,9 +336,8 @@ public class VissTest extends JerseyTest {
 
 	@Test
 	public void testOMResource() throws JSONException {
-		deleteAll();
 		ObjectId oid = addResource(OM_2_TYPE, getOMStream());
-		String[] datasets = getDataSetsForResource(oid);
+		ObjectId[] datasets = getDataSetsForResource(oid);
 		createVisualization(oid, datasets[0], getNameForVisualizer(Mean.class),
 				new JSONObject());
 	}
@@ -337,7 +345,7 @@ public class VissTest extends JerseyTest {
 	@Test
 	public void testSameVisualization() throws JSONException {
 		ObjectId oid = addResource(NETCDF_TYPE, getNetCDFStream());
-		String[] datasets = getDataSetsForResource(oid);
+		ObjectId[] datasets = getDataSetsForResource(oid);
 		String visId1 = createVisualization(oid, datasets[0],
 				getNameForVisualizer(Mean.class), new JSONObject());
 		String visId2 = createVisualization(oid, datasets[0],
@@ -348,19 +356,6 @@ public class VissTest extends JerseyTest {
 		assertTrue(!visId2.equals(visId3));
 	}
 
-	public void deleteAll() throws JSONException {
-		JSONObject j = getWebResource().path(RESOURCES)
-				.accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);
-		JSONArray a = j.optJSONArray(JSONConstants.RESOURCES_KEY);
-		if (a != null) {
-			for (int i = 0; i < a.length(); i++) {
-				String id = a.getJSONObject(i).getString(JSONConstants.ID_KEY);
-				System.out.println("Deleting resource " + id);
-				deleteResource(id);
-			}
-		}
-	}
-
 	private String getNameForVisualizer(Class<? extends IVisualizer> vc) {
 		try {
 			return vc.newInstance().getShortName();
@@ -369,8 +364,7 @@ public class VissTest extends JerseyTest {
 		}
 	}
 
-	void deleteResource(String id) {
-		getWebResource().path(RESOURCE.replace(RESOURCE_PARAM_P, id))
-				.delete();
+	void deleteResource(ObjectId id) {
+		getWebResource().path(RESOURCE.replace(RESOURCE_PARAM_P, id.toString())).delete();
 	}
 }
