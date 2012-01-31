@@ -58,6 +58,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.uncertweb.viss.core.util.JSONConstants;
 import org.uncertweb.viss.core.vis.IVisualizer;
@@ -127,6 +128,7 @@ public class VissTest extends JerseyTest {
 
 	
 	@Test 
+	@Ignore
 	public void testMahalanobian() throws JSONException {
 		String file = "/mahalanobian_stats.nc";
 		InputStream is = getClass().getResourceAsStream(file);
