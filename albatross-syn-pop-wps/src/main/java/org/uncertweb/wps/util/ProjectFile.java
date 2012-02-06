@@ -68,7 +68,6 @@ public class ProjectFile {
 			e.printStackTrace();
 		}
 		
-		
 	}
 
 	public String getProjectFileName() {
@@ -114,5 +113,6 @@ public class ProjectFile {
 		out.println(dataLocation+"PADTdata.bin");
 		
 		out.flush();
+		out.close();
 	}
 }
