@@ -93,6 +93,11 @@
     	<artifactId>netcdf-u-api</artifactId>
     	<version>1.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+    	<groupId>org.uncertweb</groupId>
+    	<artifactId>albatross-util</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
   		<finalName>albatross-wps</finalName>
