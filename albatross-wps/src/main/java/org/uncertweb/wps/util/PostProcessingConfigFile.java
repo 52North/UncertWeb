@@ -79,6 +79,7 @@ public class PostProcessingConfigFile {
 				"</beans>");
 		
 		out.flush();
+		out.close();
 	}
 
 }

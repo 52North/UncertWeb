@@ -10,10 +10,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Timer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.n52.wps.commons.WPSConfig;
@@ -27,17 +35,19 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.wps.albatross.util.Pair;
+import org.uncertweb.wps.albatross.util.ProcessMonitorThread;
+import org.uncertweb.wps.albatross.util.ReadingThread;
+import org.uncertweb.wps.albatross.util.WorkspaceCleanerThread;
 import org.uncertweb.wps.util.OutputMapper;
 import org.uncertweb.wps.util.PostProcessingConfigFile;
 import org.uncertweb.wps.util.ProjectFile;
-import org.uncertweb.wps.util.ReadingThread;
 import org.uncertweb.wps.util.Workspace;
 
 import uw.odmatrix.Indicators;
 import uw.odmatrix.ODMain;
 import uw.odmatrix.ODMatrix;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * implements a process that invokes the Albatross Model and returns the outputs
@@ -73,14 +83,38 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private String indicators;
 	private String odMatrix;
 
-	private String targetProp, sourceProp, exportFileNameProp,
-			publicFolderProp, serverAddressProp, publicFolderVisiblePartProp,
-			exportFileBinNameProp;
+	private static String targetProp;
+	private static String sourceProp;
+	private static String exportFileNameProp;
+	private static String publicFolderProp;
+	private static String serverAddressProp;
+	private static String publicFolderVisiblePartProp;
+	private static String exportFileBinNameProp;
 
-	private List<String> filesToCopyProp;
+	private static List<String> filesToCopyProp;
 
 	private Workspace ws;
 	private ProjectFile projectFile;
+	
+	private static Set<File> filesSet;
+	private static Set<Pair<Process, Long>> processSet;
+	
+	private static int folderRemoveCycle;
+	private static int processInterruptTime;
+	
+	static{
+		
+		readProperties();
+		
+		filesSet = Collections.synchronizedSet(new HashSet<File>());
+		processSet = Collections.synchronizedSet(new HashSet<Pair<Process, Long>>());
+		
+		ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
+		
+		scheduledExecutorService.schedule(new WorkspaceCleanerThread(filesSet), folderRemoveCycle, TimeUnit.MINUTES);
+		scheduledExecutorService.schedule(new ProcessMonitorThread(processSet,(long) processInterruptTime), 1, TimeUnit.MINUTES);
+		
+	}
 
 	@Override
 	public List<String> getErrors() {
@@ -164,15 +198,13 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		Map<String, IData> result = new HashMap<String, IData>();
 		OMBinding indOutput = new OMBinding(indicatorCol);
 		OMBinding odMatrixOutput = new OMBinding(odMatrixCol);
-		//result.put("export-file", new LiteralStringBinding(serverAddressProp
-			//	+ "/" + publicFolderVisiblePartProp + "/" + exportFileNameProp));
-
+		
 		result.put(outputIDODMatrix, odMatrixOutput);
 		result.put(outputIDindicators, indOutput);
 		return result;
 	}
 
-	private void readProperties() {
+	private static void readProperties() {
 
 		Properties properties = new Properties();
 
@@ -202,6 +234,9 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		serverAddressProp = properties.getProperty("serverAddress");
 		publicFolderVisiblePartProp = properties
 				.getProperty("publicFolderVisiblePart");
+		
+		folderRemoveCycle = Integer.valueOf(properties.getProperty("folderRemoveCycle"));
+		processInterruptTime = Integer.valueOf(properties.getProperty("processInterruptTime"));
 	}
 
 	private void checkAndCopyInput(Map<String, List<IData>> inputData) {
@@ -280,6 +315,8 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 				.getWorkspaceFolder().getPath(), ws.getWorkspaceFolder()
 				.getPath(), genpopHouseholds, rwdataHouseholds, municipalities,
 				zones, postcodeAreas);
+		
+		filesSet.add(ws.getWorkspaceFolder());
 
 	}
 
@@ -291,7 +328,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 			downloadFile(this.exportFileBin, ws.getWorkspaceFolder()
 					+ File.separator + this.exportFileBinNameProp);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
@@ -301,60 +338,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
     {
 		
 		FileUtils.copyURLToFile(new URL(urlString), new File(filename));
-		/*
-		URL u = new URL(urlString);
-	    URLConnection uc = u.openConnection();
-	    
-	    String contentType = uc.getContentType();
-	    int contentLength = uc.getContentLength();
-	    /*
-	    if (contentType.startsWith("text/") || contentLength == -1) {
-	      throw new IOException("This is not a binary file.");
-	    }*
-	    InputStream raw = uc.getInputStream();
-	    
-	    InputStream in = new BufferedInputStream(raw);
-	    byte[] data = new byte[contentLength];
-	    int bytesRead = 0;
-	    int offset = 0;
-	    while (offset < contentLength) {
-	      bytesRead = in.read(data, offset, data.length - offset);
-	      if (bytesRead == -1)
-	        break;
-	      offset += bytesRead;
-	    }
-	    in.close();
-
-	    if (offset != contentLength) {
-	      throw new IOException("Only read " + offset + " bytes; Expected " + contentLength + " bytes");
-	    }
-
-	    FileOutputStream out = new FileOutputStream(filename);
-	    out.write(data);
-	    out.flush();
-	    out.close();
-		/*		
-        BufferedInputStream in = null;
-        FileOutputStream fout = null;
-        try
-        {
-                in = new BufferedInputStream(new URL(urlString).openStream());
-                fout = new FileOutputStream(filename);
-
-                byte data[] = new byte[1024];
-                int count;
-                while ((count = in.read(data, 0, 1024)) != -1)
-                {
-                        fout.write(data, 0, count);
-                }
-        }
-        finally
-        {
-                if (in != null)
-                        in.close();
-                if (fout != null)
-                        fout.close();
-        }*/
+		
     }
 	
 	private void setupPostProcessing(){
@@ -378,7 +362,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		    try {
 				ODMain odmain = new ODMain(objOD.getFileSchedule(), objOD.getFileArea(), objOD.getFileODMtx());
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			}
 
@@ -386,7 +370,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		    try {
 				Indicators indicators = new Indicators(objOD.getFileSchedule(), indics.getFileIndicators());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 
@@ -411,9 +395,13 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 			pb.directory(ws.getWorkspaceFolder());
 
 			proc = pb.start();
+			
+			processSet.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
 
-			new ReadingThread(proc.getInputStream(), "out").start();
-			new ReadingThread(proc.getErrorStream(), "err").start();
+			ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+			executorService.submit(new ReadingThread(proc.getInputStream(), "out"));
+			executorService.submit(new ReadingThread(proc.getErrorStream(), "err"));
 
 			OutputStream stdout = proc.getOutputStream();
 
