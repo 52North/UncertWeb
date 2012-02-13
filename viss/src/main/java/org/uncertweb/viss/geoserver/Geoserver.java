@@ -282,13 +282,6 @@ public class Geoserver {
 		log.debug("Deleting Workspace '{}'", ws);
 		HttpURLConnection con;
 
-		// delete styles...
-		for (String s : getStyles()) {
-			if (s.startsWith(ws)) {
-				deleteStyle(s);
-			}
-		}
-
 		con = RestBuilder.path(url("workspaces/%s"), ws).param("recurse", true)
 				.auth(this.user, this.pass).delete();
 
@@ -302,6 +295,13 @@ public class Geoserver {
 
 		if (sameServer && path != null) {
 			UwIOUtils.deleteRecursively(new File(getWorkspacePath(ws)));
+		}
+		
+		// delete styles...
+		for (String s : getStyles()) {
+			if (s.startsWith(ws)) {
+				deleteStyle(s);
+			}
 		}
 
 		return r;

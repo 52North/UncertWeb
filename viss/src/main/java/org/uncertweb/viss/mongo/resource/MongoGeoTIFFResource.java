@@ -62,4 +62,10 @@ public class MongoGeoTIFFResource extends AbstractMongoResource<GridCoverage2D> 
 		}
 	}
 
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

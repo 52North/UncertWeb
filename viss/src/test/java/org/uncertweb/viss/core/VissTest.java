@@ -57,6 +57,7 @@ import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -94,7 +95,7 @@ public class VissTest extends JerseyTest {
 		org.slf4j.bridge.SLF4JBridgeHandler.install();
 	}
 
-	@Before
+	@Before@After
 	public void deleteAll() throws JSONException {
 		JSONObject j = getWebResource().path(RESOURCES)
 				.accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);

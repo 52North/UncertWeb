@@ -101,11 +101,11 @@ public class MongoResourceStore implements IResourceStore {
 		Datastore ds = getResourceDao().getDatastore();
 		ObjectId id = resource.getId();
 		
+		UwIOUtils.deleteRecursively(getResourceDir(id));
 		ds.delete(ds.createQuery(AbstractMongoDataSet.class)
 				.field("resource").equal(resource));
 		ds.delete(ds.createQuery(AbstractMongoResource.class)
 				.field(Mapper.ID_KEY).equal(id));
-		UwIOUtils.deleteRecursively(getResourceDir(resource.getId()));
 	}
 
 	@Override
@@ -121,6 +121,7 @@ public class MongoResourceStore implements IResourceStore {
 				r = getResourceForMediaType(mt, f, oid, crc);
 				saveResource(r);
 			} else {
+				UwIOUtils.deleteRecursively(getResourceDir(oid));
 				log.info("Resource allready existent.");
 			}
 			if (r.getDataSets().isEmpty()) {

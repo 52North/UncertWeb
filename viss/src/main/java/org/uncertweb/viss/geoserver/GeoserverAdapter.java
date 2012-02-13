@@ -214,8 +214,9 @@ public class GeoserverAdapter implements WMSAdapter {
 	@Override
 	public boolean deleteVisualization(IVisualization vis) {
 		try {
-			return getGeoserver().deleteCoverageStore(
-					getWorkspaceName(vis), getCoverageStoreName(vis));
+			boolean deleted = getGeoserver().deleteCoverageStore(getWorkspaceName(vis), getCoverageStoreName(vis));
+			getGeoserver().deleteStyle(getStyleName(vis));
+			return deleted;
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}

@@ -50,8 +50,6 @@ public class Utils {
 		return new File(dir.getAbsolutePath() + File.separator + sub);
 	}
 
-
-
 	public static long saveToFileWithChecksum(File f, InputStream is)
 	    throws IOException {
 		CheckedOutputStream cos = null;

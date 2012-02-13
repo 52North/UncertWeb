@@ -38,4 +38,6 @@ public interface IResource {
 	public Object getResource();
 
 	public Set<IDataSet> getDataSets();
+	
+	public void close();
 }

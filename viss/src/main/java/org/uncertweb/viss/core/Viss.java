@@ -84,8 +84,8 @@ public class Viss {
 	public void delete(IResource resource) {
 		if (lock.deletingResource(resource)) {
 			try {
-				getStore().deleteResource(resource);
 				getWMS().deleteResource(resource);
+				getStore().deleteResource(resource);
 			} catch (RuntimeException e) {
 				log.warn("Error while deleting resource.", e);
 				throw e;
@@ -123,6 +123,7 @@ public class Viss {
 				}
 
 				IVisualization vis = v.visualize(ds, param);
+				
 
 				if (param != null && vis.getParameters() == null)
 					throw new NullPointerException();
@@ -140,6 +141,7 @@ public class Viss {
 			} catch (Exception e) {
 				throw VissError.internal(e);
 			} finally {
+				resource.close();
 				lock.usingResource(resource, false);
 			}
 		} else {

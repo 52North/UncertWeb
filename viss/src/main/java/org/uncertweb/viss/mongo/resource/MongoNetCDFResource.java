@@ -76,4 +76,13 @@ public class MongoNetCDFResource extends
 		return new UncertaintyNetCDF(f);
 	}
 
+	@Override
+	public void close() {
+		try {
+			if (getNullContent() != null)
+				getNullContent().close();
+		} catch (IOException e) {
+		}
+	}
+	
 }

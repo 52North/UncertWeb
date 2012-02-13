@@ -25,6 +25,7 @@ import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.ATTRIBUTE_CONVENTION
 import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.ATTRIBUTE_PRIMARY_VARIABLES;
 import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.UW_CONVENTION;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
@@ -69,6 +70,17 @@ public class UncertaintyNetCDF {
 			}
 		}
 		return this.variables;
+	}
+	
+	public void close() throws IOException {
+		this.f.close();
+	}
+	
+	protected void finalize() {
+		try {
+			close();
+		} catch (IOException e) {
+		}
 	}
 	
 	public UncertaintyVariable getVariable(String name) {

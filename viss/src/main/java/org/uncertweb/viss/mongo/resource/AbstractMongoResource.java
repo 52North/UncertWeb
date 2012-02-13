@@ -133,6 +133,10 @@ public abstract class AbstractMongoResource<T> implements IResource {
 			content = loadContent();
 		return content;
 	}
+	
+	protected T getNullContent() {
+		return content;
+	}
 
 	public void setContent(T content) {
 		this.content = content;
@@ -170,6 +174,10 @@ public abstract class AbstractMongoResource<T> implements IResource {
 	
 	public void setDataSets(Set<IDataSet> dataSets) {
 		this.dataSets = dataSets;
+	}
+	
+	protected void finalize() {
+		this.close();
 	}
 
 }

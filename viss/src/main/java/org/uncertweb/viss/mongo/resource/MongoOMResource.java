@@ -127,8 +127,7 @@ public class MongoOMResource extends
 		} else {
 			log.debug("Referenced resource is already saved");
 		}
-		AbstractMongoResource<?> r = mrs.getResourceForMediaType(mt, f,
-				getId(), -1);
+		AbstractMongoResource<?> r = mrs.getResourceForMediaType(mt, f, getId(), -1);
 		r.setLastUsage(getLastUsage());
 		rr.setValue(r);
 		if (r != null && rr.getValue() == null) {
@@ -151,8 +150,8 @@ public class MongoOMResource extends
 
 	@Override
 	protected Set<IDataSet> createDataSets() {
-		Set<URI>  uris = UwCollectionUtils.set();
-		
+		Set<URI> uris = UwCollectionUtils.set();
+
 		for (AbstractObservation ao : getContent().getObservations()) {
 			uris.add(ao.getObservedProperty());
 		}
@@ -173,27 +172,37 @@ public class MongoOMResource extends
 		}
 		return getCollection(list);
 	}
-	
-	private static IObservationCollection getCollection(Collection<AbstractObservation> observations) {
+
+	private static IObservationCollection getCollection(
+			Collection<AbstractObservation> observations) {
 		AbstractObservation ao = observations.iterator().next();
 		if (ao instanceof Measurement) {
-			return new MeasurementCollection(MongoOMResource.<Measurement> asList(observations));
+			return new MeasurementCollection(
+					MongoOMResource.<Measurement> asList(observations));
 		} else if (ao instanceof BooleanObservation) {
-			return new BooleanObservationCollection(MongoOMResource.<BooleanObservation> asList(observations));
+			return new BooleanObservationCollection(
+					MongoOMResource.<BooleanObservation> asList(observations));
 		} else if (ao instanceof CategoryObservation) {
-			return new CategoryObservationCollection(MongoOMResource.<CategoryObservation> asList(observations));
+			return new CategoryObservationCollection(
+					MongoOMResource.<CategoryObservation> asList(observations));
 		} else if (ao instanceof DiscreteNumericObservation) {
-			return new DiscreteNumericObservationCollection(MongoOMResource.<DiscreteNumericObservation> asList(observations));
+			return new DiscreteNumericObservationCollection(
+					MongoOMResource
+							.<DiscreteNumericObservation> asList(observations));
 		} else if (ao instanceof ReferenceObservation) {
-			return new ReferenceObservationCollection(MongoOMResource.<ReferenceObservation> asList(observations));
+			return new ReferenceObservationCollection(
+					MongoOMResource.<ReferenceObservation> asList(observations));
 		} else if (ao instanceof TextObservation) {
-			return new TextObservationCollection(MongoOMResource.<TextObservation> asList(observations));
+			return new TextObservationCollection(
+					MongoOMResource.<TextObservation> asList(observations));
 		} else {
-			return new UncertaintyObservationCollection(MongoOMResource.<UncertaintyObservation> asList(observations));
+			return new UncertaintyObservationCollection(
+					MongoOMResource
+							.<UncertaintyObservation> asList(observations));
 		}
 	}
+
 	@SuppressWarnings("unchecked")
-	
 	private static <T extends AbstractObservation> List<T> asList(
 			Collection<AbstractObservation> col) {
 		List<T> list = new LinkedList<T>();
@@ -239,5 +248,14 @@ public class MongoOMResource extends
 					ao.getResult().getValue() });
 		}
 		return col;
+	}
+
+	@Override
+	public void close() {
+		if (resources != null) {
+			for (AbstractMongoResource<?> r : resources) {
+				r.close();
+			}
+		}
 	}
 }
