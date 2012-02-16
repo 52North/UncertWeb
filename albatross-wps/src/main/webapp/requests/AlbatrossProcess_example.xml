@@ -35,6 +35,12 @@
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
+			<ows:Identifier>randomNumberSeed</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>123</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
 			<ows:Identifier>export-file</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData>http://giv-sos.uni-muenster.de:8080/publicFolder/example/export.txt</wps:LiteralData>
