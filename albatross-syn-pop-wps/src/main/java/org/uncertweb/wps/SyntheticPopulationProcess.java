@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
+import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
@@ -58,6 +59,8 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private final String inputIDMunicipalities = "municipalities";
 	private final String inputIDZones = "zones";
 	private final String inputIDPostcodeAreas = "postcode-areas";
+	private final String inputIDIsBootstrapping ="isBootstrapping";
+	private final String inputIDRandomNumberSeed = "randomNumberSeed";
 
 	private final String outputIDProjectFile = "project-file";
 	private final String outputIDExportFile = "export-file";
@@ -67,6 +70,8 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private String municipalities;
 	private String zones;
 	private String postcodeAreas;
+	private String randomNumberSeed;
+	private Boolean isBootstrapping;
 	
 	private Workspace ws;
 	private ProjectFile projectFile;
@@ -110,7 +115,14 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		}
 		if (id.equals(inputIDMunicipalities)) {
 			return LiteralIntBinding.class;
-		} else {
+		}
+		if(id.equals(inputIDRandomNumberSeed)){
+			return LiteralIntBinding.class;
+		}
+		if(id.equals(inputIDIsBootstrapping)){
+			return LiteralBooleanBinding.class;
+		}
+		else {
 			return GenericFileDataBinding.class;
 		}
 	}
@@ -132,10 +144,10 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 
-		//muss jetzt im static block passieren, weil ich vorher die threads zum löschen und terminieren starten muss
-		//this.readProperties();
-
 		this.checkAndCopyInput(inputData);
+		
+		System.out.println(isBootstrapping);
+		System.out.println(randomNumberSeed);
 
 		this.setupFolder();
 
@@ -234,6 +246,27 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 		municipalities = ((LiteralIntBinding) municipalitiesList.get(0))
 				.getPayload().toString();
+		
+		
+		List<IData> isBootstrappingList = inputData.get(inputIDIsBootstrapping);
+		
+		if(isBootstrappingList == null || isBootstrappingList.isEmpty()){
+			throw new IllegalArgumentException("isBootstrapping is missing");
+		}
+		
+		isBootstrapping = ((LiteralBooleanBinding) isBootstrappingList.get(0)).getPayload();
+		
+		//check this only if bootstrapping is active
+		if (isBootstrapping) {
+			List<IData> randomNumberSeedList = inputData
+					.get(inputIDRandomNumberSeed);
+
+			if (randomNumberSeedList == null || randomNumberSeedList.isEmpty()) {
+				throw new IllegalArgumentException(
+						"randomNumberSeed is missing");
+			}
+			randomNumberSeed = ((LiteralIntBinding) randomNumberSeedList.get(0)).getPayload().toString();
+		}
 
 	}
 

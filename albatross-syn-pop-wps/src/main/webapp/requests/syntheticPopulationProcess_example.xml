@@ -34,6 +34,18 @@
 				<wps:LiteralData>625</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>isBootstrapping</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>true</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>randomNumberSeed</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>123</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
 	</wps:DataInputs>
 	<wps:ResponseForm>
 		<wps:ResponseDocument>

@@ -54,6 +54,24 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>isBootstrapping</ows:Identifier>
+				<ows:Title>indicates if bootstrapping is active - note: if true a random number seed is required</ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:boolean"></ows:DataType>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>randomNumberSeed</ows:Identifier>
+				<ows:Title>seed for calculating pseudo random numbers</ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"></ows:DataType>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
 		</DataInputs>
 		<ProcessOutputs>
 			<Output>
