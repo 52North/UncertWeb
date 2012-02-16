@@ -63,6 +63,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private final String inputIDMunicipalities = "municipalities";
 	private final String inputIDZones = "zones";
 	private final String inputIDPostcodeAreas = "postcode-areas";
+	private final String inputIDRandomNumberSeed = "randomNumberSeed";
 
 	private final String inputIDExportFile = "export-file";
 	private final String inputIDExportFileBin = "export-file-bin";
@@ -79,6 +80,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private String municipalities;
 	private String zones;
 	private String postcodeAreas;
+	private String randomNumberSeed;
 	
 	private String indicators;
 	private String odMatrix;
@@ -302,6 +304,13 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 		municipalities = ((LiteralIntBinding) municipalitiesList.get(0))
 				.getPayload().toString();
+		
+		List<IData> randomNumberSeedList = inputData.get(inputIDRandomNumberSeed);
+		if (randomNumberSeedList == null || randomNumberSeedList.isEmpty()) {
+			throw new IllegalArgumentException(
+					"randomNumberSeed is missing");
+		}
+		randomNumberSeed = ((LiteralIntBinding) randomNumberSeedList.get(0)).getPayload().toString();
 
 	}
 
