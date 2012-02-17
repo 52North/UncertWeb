@@ -69,12 +69,12 @@ public abstract class SOSRequestBuilder {
 			String phen = getPhenomenonId(componentCode);
 			char[] phenChars = phen.toCharArray();
 			StringBuffer buf = new StringBuffer();
-			if (phenChars[phenChars.length - 1] != ']') {
+			if (phenChars[phenChars.length - 1] != ')') {
 				throw new RuntimeException(
-						"Expected Phenomenon Id that ends with '[...]'; was '" + phen + "'.");
+						"Expected Phenomenon Id that ends with '(...)'; was '" + phen + "'.");
 			}
 			for (int i = phenChars.length - 2; i >= 0; i--) {
-				if (phenChars[i] != '[') {
+				if (phenChars[i] != '(') {
 					buf.append(phenChars[i]);
 				} else {
 					break;
