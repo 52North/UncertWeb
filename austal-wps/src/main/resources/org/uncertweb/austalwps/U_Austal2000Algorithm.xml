@@ -28,7 +28,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<ows:AnyValue/>
 				</LiteralData>
 			</Input>
-			<Input minOccurs="0" maxOccurs="5">
+			<Input minOccurs="0" maxOccurs="1">
 				<ows:Identifier>OutputUncertaintyType</ows:Identifier>
 				<ows:Title></ows:Title>
 				<ows:Abstract></ows:Abstract>

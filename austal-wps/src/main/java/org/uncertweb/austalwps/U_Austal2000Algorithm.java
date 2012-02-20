@@ -41,7 +41,7 @@ import org.n52.wps.server.WebProcessingService;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.opengis.feature.simple.SimpleFeature;
 import org.rosuda.REngine.REXP;
-import org.uncertml.sample.Realisation;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.exception.NetcdfUWException;
@@ -227,10 +227,15 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 			if(receptorPointsData instanceof GTVectorDataBinding){			
 				handleReceptorPoints(pointList, (FeatureCollection<?, ?>)receptorPointsData.getPayload());
 				// set Austal into non-grid mode
-				//austal.setOs("");
+				austal.setOs("");
 			}	
 		}			
+		
+		// TODO: Split realisations if there are too many (max 20) 
+		if(numberOfRealisations>25){
 			
+		}
+		
 		// 2) Get samples for time series
 		ArrayList<MeteorologyTimeSeries> metListRealisations = sampleMeteorologyTS();
 		ArrayList<ArrayList<EmissionTimeSeries>> emisListRealisations = sampleStreetTrafficEmissionTS();
@@ -239,9 +244,7 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 		ArrayList<EmissionSource> newEmissionSources = getStreetGeometry(emisListRealisations.get(0).size());		
 		
 		// 3) execute Austal for each sample and collect results
-		// TODO: Split realisations if there are too many (max 20) 
-		
-			ArrayList<String> resultFolders = new ArrayList<String>();
+		ArrayList<String> resultFolders = new ArrayList<String>();
 		for (int i = 0; i < numberOfRealisations; i++) {
 			// 3.1) substitute samples for meteo data and emissions
 			substituteMeteorology(metListRealisations.get(i));
@@ -319,7 +322,7 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 		// if no receptor points were given, read grid results from Austal execution
 		else{
 			int h = Hours.hoursBetween(preStartDate, startDate).getHours();
-			// TODO: get results only from start date to end date only
+			// get results only from start date to end date only
 			HashMap<Integer, HashMap<Integer, ArrayList<Double>>> realisationsMap = new HashMap<Integer, HashMap<Integer, ArrayList<Double>>>();
 			AustalOutputReader outputReader = new AustalOutputReader();
 			for(int i=0; i<numberOfRealisations; i++){
@@ -485,8 +488,8 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 		return metListRealisations;
 	}
 
-	
-	//TODO: implement emission sampling
+
+	// emission sampling
 	private ArrayList<ArrayList<EmissionTimeSeries>> sampleStreetTrafficEmissionTS(){
 		ArrayList<ArrayList<EmissionTimeSeries>> emisTSrealisations = new ArrayList<ArrayList<EmissionTimeSeries>>();
 		
@@ -640,7 +643,7 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 		return emisTSrealisations;
 	}
 		
-	//TODO: implement street geometry extraction
+	// street geometry extraction
 		private ArrayList<EmissionSource> getStreetGeometry(int sourceCounter){
 			ArrayList<EmissionSource> newEmisGeometry = new ArrayList<EmissionSource>();
 			List<EmissionSource> allSources = null;
@@ -818,7 +821,7 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 					}
 					Coordinate coord = lineString.getCoordinates()[i];
 
-					xp = "" + Math.round(coord.y - gy);
+					xp = "" + Math.round(coord.x - gx);
 					yp = "" + Math.round(coord.y - gy);
 
 					ReceptorPoint rp = new ReceptorPoint(xp, yp, "2");
@@ -842,7 +845,7 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 					}
 					Coordinate coord = lineString.getCoordinates()[i];
 
-					xp = "" + Math.round(coord.y - gy);
+					xp = "" + Math.round(coord.x - gx);
 					yp = "" + Math.round(coord.y - gy);
 
 					ReceptorPoint rp = new ReceptorPoint(xp, yp, hp);
@@ -856,11 +859,6 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 	}
 	
 	private UncertaintyObservationCollection createReceptorPointsRealisationsCollection(){
-		//TODO: Make this handling more elegant!
-		ArrayList<IObservationCollection> observationRealisations  = new ArrayList<IObservationCollection>(3);
-		HashMap<String, HashMap<DateTime, ArrayList<Double>>> mightyMap = new HashMap<String, HashMap<DateTime, ArrayList<Double>>>();				
-		HashMap<String, SpatialSamplingFeature> idSpSFMap = new HashMap<String, SpatialSamplingFeature>();
-		
 		// make uncertainty observation
 		UncertaintyObservationCollection ucoll = new UncertaintyObservationCollection();
 		AustalOutputReader austal = new AustalOutputReader();
@@ -899,22 +897,26 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 					String timeStamp = vals.get(v).TimeStamp().trim();						
 					timeStamp = timeStamp.replace(" ", "T");
 					
-					TimeObject newT = new TimeObject(timeStamp);						
-					ArrayList<Double> values = new ArrayList<Double>();		
+					// check if date lies before start or after end data
+					TimeObject newT = new TimeObject(timeStamp);		
+					if(!newT.getDateTime().isBefore(startDate)&&!newT.getDateTime().isAfter(endDate)){
+						ArrayList<Double> values = new ArrayList<Double>();		
 
-					// loop through realisations
-					for(int r=0; r<realisationsList.size(); r++){
-						Value val = realisationsList.get(r).get(i).values().get(v);
-						values.add(val.PM10val());						
+						// loop through realisations
+						for(int r=0; r<realisationsList.size(); r++){
+							Value val = realisationsList.get(r).get(i).values().get(v);
+							values.add(val.PM10val());						
+						}
+						
+						// add realisation to observation collection
+						ContinuousRealisation r = new ContinuousRealisation(values, -1.0d, "id");
+						UncertaintyResult uResult = new UncertaintyResult(r, "ug/m3");
+						UncertaintyObservation uObs = new UncertaintyObservation(
+								newT, newT, procedure, observedProperty, featureOfInterest,
+								uResult);
+						ucoll.addObservation(uObs);
 					}
 					
-					// add realisation to observation collection
-					Realisation r = new Realisation(values, -1.0d, "id");
-					UncertaintyResult uResult = new UncertaintyResult(r, "ug/m3");
-					UncertaintyObservation uObs = new UncertaintyObservation(
-							newT, newT, procedure, observedProperty, featureOfInterest,
-							uResult);
-					ucoll.addObservation(uObs);
 				}				
 				
 			}
