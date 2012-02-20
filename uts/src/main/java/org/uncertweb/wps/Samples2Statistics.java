@@ -237,7 +237,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 					else if(uncertainty instanceof ContinuousRealisation){
 							realisations = (ContinuousRealisation) uncertainty;
 					}
-					if(uncertainty!=null){
+					if(realisations!=null){
 						double[] values = new double[realisations.getValues().size()];
 						for(int i=0; i<values.length; i++){
 							values[i] = realisations.getValues().get(i).doubleValue();
@@ -259,6 +259,11 @@ public class Samples2Statistics extends AbstractAlgorithm {
 								double sd = c.tryEval("sd(samples)").asDouble();
 								statColl.add(new StandardDeviation(sd));
 							}
+//							<ows:Value>uncertweb:Range</ows:Value>
+//							<ows:Value>uncertweb:InterquartileRange</ows:Value>
+//							<ows:Value>uncertweb:ConfidenceInterval-95</ows:Value>
+//							<ows:Value>uncertweb:ConfidenceInterval-99</ows:Value>
+//							<ows:Value>uncertweb:Decile</ows:Value>
 						}
 							
 						// make new observation
