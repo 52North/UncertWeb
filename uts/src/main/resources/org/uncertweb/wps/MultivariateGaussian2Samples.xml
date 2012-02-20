@@ -43,7 +43,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 					<ows:DataType ows:reference="xs:integer"/>
 					<ows:AllowedValues>
 						<ows:Range>
-							<ows:MinimumValue>9</ows:MinimumValue>
+							<ows:MinimumValue>1</ows:MinimumValue>
 							<ows:MaximumValue>10000</ows:MaximumValue>
 						</ows:Range>
 					</ows:AllowedValues>
