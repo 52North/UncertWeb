@@ -1,0 +1,166 @@
+<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0  http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+	<ows:Identifier>org.uncertweb.ups.UPSGenericAustalProcess</ows:Identifier> 
+	<wps:DataInputs>  
+	
+		<wps:Input>
+			<ows:Identifier>IdentifierSimulatedProcess</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>org.uncertweb.austalwps.AUSTAL2000Process</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>	
+		
+		<wps:Input>
+			<ows:Identifier>ServiceURL</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>http://localhost:8080/austalWPS/WebProcessingService</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>	
+		
+		<wps:Input>
+			<ows:Identifier>NumberOfRealisations</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>3</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>		
+		
+		<wps:Input>
+			<ows:Identifier>OutputUncertaintyType</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>uncertweb:Realisations</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>	
+		
+		<!-- uncertain inputs -->
+		<wps:Input>
+			<ows:Identifier>u_street-emissions</ows:Identifier>
+			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/streets.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+		</wps:Input>
+		
+		<wps:Input>
+			<ows:Identifier>u_wind-speed</ows:Identifier>
+			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/windspeed.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+		</wps:Input>
+		
+		<wps:Input>
+			<ows:Identifier>u_wind-direction</ows:Identifier>
+			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/winddirection.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+		</wps:Input>
+		
+		<!-- certain inputs -->
+		<wps:Input>
+			<ows:Identifier>c_stability-class</ows:Identifier>
+			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/stabilityclass.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+		</wps:Input>
+		
+		<wps:Input>
+			<ows:Identifier>c_variable-emissions</ows:Identifier>
+			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/variableemissions.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+		</wps:Input>
+		
+		<wps:Input>
+			<ows:Identifier>c_static-emissions</ows:Identifier>
+			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/staticemissions.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+		</wps:Input>
+		
+		<wps:Input>
+		<ows:Identifier>c_central-point</ows:Identifier>
+		<wps:Data>
+			<wps:ComplexData mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd">
+			<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:aqms="http://giv-uw.uni-muenster.de/aqms">
+			  <gml:boundedBy>
+				 <gml:Box>
+				  <gml:coord><gml:X>3394965</gml:X><gml:Y>5745254</gml:Y></gml:coord>
+				  <gml:coord><gml:X>3416215</gml:X><gml:Y>5770504</gml:Y></gml:coord>
+				</gml:Box>
+			  </gml:boundedBy>
+			  <gml:featureMember>
+				<aqms:CentralPoint>	
+				<gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#31467">
+					<gml:coordinates>3405540,5758268</gml:coordinates>
+				</gml:Point>
+            </aqms:CentralPoint>
+          </gml:featureMember>
+        </wfs:FeatureCollection>
+			</wps:ComplexData>
+		</wps:Data>
+	</wps:Input>
+	
+	<wps:Input>
+    <ows:Identifier>c_receptor-points</ows:Identifier>
+    <wps:Data>
+      <wps:ComplexData mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd">
+        <wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:aqms="http://giv-uw.uni-muenster.de/aqms">
+          <gml:boundedBy>
+             <gml:Box>
+              <gml:coord><gml:X>3394965</gml:X><gml:Y>5745254</gml:Y></gml:coord>
+              <gml:coord><gml:X>3416215</gml:X><gml:Y>5770504</gml:Y></gml:coord>
+            </gml:Box>
+          </gml:boundedBy>
+          <gml:featureMember>
+            <aqms:ReceptorPoints>
+                <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#31467">
+						<gml:lineStringMember>
+							<gml:LineString>
+								<gml:coordinates xmlns:gml="http://www.opengis.net/gml" decimal="." cs="," ts=" ">3404586,5756753 3405158,5758603</gml:coordinates>
+							</gml:LineString>
+						</gml:lineStringMember>
+				</gml:MultiLineString>
+            </aqms:ReceptorPoints>
+          </gml:featureMember>
+        </wfs:FeatureCollection>
+      </wps:ComplexData>
+    </wps:Data>
+  </wps:Input>
+  
+	<wps:Input>
+		<ows:Identifier>c_dd</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>250</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>	
+		
+	<wps:Input>
+		<ows:Identifier>c_nx</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>84</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>	
+	
+	<wps:Input>
+		<ows:Identifier>c_ny</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>100</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>	
+	
+	<wps:Input>
+		<ows:Identifier>c_z0</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>0.1</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>	
+	
+	<wps:Input>
+		<ows:Identifier>c_qs</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData>0</wps:LiteralData>
+		</wps:Data>
+	</wps:Input>	
+	
+	<wps:Input>
+		<ows:Identifier>c_model-parameters</ows:Identifier>
+		<wps:Data>
+			<wps:LiteralData></wps:LiteralData>
+		</wps:Data>
+	</wps:Input>	
+	
+	</wps:DataInputs>	
+	
+	<wps:ResponseForm>
+		<wps:ResponseDocument>			
+			<wps:Output mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd">	
+				<ows:Identifier>UncertainProcessOutputs</ows:Identifier>			
+			</wps:Output>
+		</wps:ResponseDocument>
+	</wps:ResponseForm>
+</wps:Execute>
