@@ -244,7 +244,9 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 			/*
 			 * TODO: if the bug in the api gets fixed remove weight and id
 			 */
+
 			ContinuousRealisation cr = new ContinuousRealisation(values);
+
 
 			UncertaintyResult uResult = new UncertaintyResult(cr, observedPropertyResultUOMMap.get(uriString));
 			
