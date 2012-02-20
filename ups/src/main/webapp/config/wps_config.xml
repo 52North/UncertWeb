@@ -72,13 +72,16 @@
 	<AlgorithmRepositoryList>
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
 			<Property name="Algorithm" active="true">org.uncertweb.u_wps.UPSAustalProcess</Property>	
-			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSAlbatrossProcess</Property>	
+		    <Property name="Algorithm" active="true">org.uncertweb.ups.UPSGenericAustalProcess</Property>	
+		    <Property name="Algorithm" active="true">org.uncertweb.ups.UPSAlbatrossProcess</Property>
+		    <Property name="Algorithm" active="true">org.uncertweb.ups.UPSGenericAustalProcess</Property>	
       		<Property name="FullUTSAddress" active="true">http://localhost:8080/uts/WebProcessingService</Property>
+
 		</Repository>
+
 		
 		<Repository name="UploadedAlgorithmRepository" className="org.n52.wps.server.UploadedAlgorithmRepository" active="false">
 		</Repository>
-		
 	</AlgorithmRepositoryList>
 	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="ups" repoReloadInterval="0">
 		     <Database/>
