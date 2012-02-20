@@ -22,6 +22,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.uncertweb.austalwps.util.austal.geometry.EmissionSource;
 import org.uncertweb.austalwps.util.austal.timeseries.EmissionTimeSeries;
 import org.uncertweb.austalwps.util.austal.timeseries.MeteorologyTimeSeries;
 
@@ -37,17 +38,18 @@ public class Zeitreihe implements Serializable{
 	
 	// Parameters in the zeitreihe.dmna file	
 	private List<String> forms = new ArrayList<String>();
-	private String locl;
-	private String mode;
-	private String ha;
-	private String z0;
-	private String d0;
-	private String artp;
-	private String sequ;
-	private String dims;
+	private String locl = "\"C\"";
+	private String mode = "\"text\"";	
+	private String artp = "\"ZA\"";
+	private String sequ = "\"i\"";
+	private String dims = "1";
+	private String lowb = "1";
+	private String ha = "4.2\t5.2\t7.1\t9.0\t11.5\t16.3\t21.9\t26.3\t30.1";
 	private String size;
-	private String lowb;
 	private String hghb;
+	private String z0;
+	private String d0; //6*z0
+	
 	// Strings to identify values in the timeseries
 	// "ra%5.0f" wind direction
 	// "ua%5.1f" wind speed
@@ -55,32 +57,31 @@ public class Zeitreihe implements Serializable{
 	private String[] meteoIdentifiers = {"\"ra%5.0f\"","\"ua%5.1f\"","\"lm%7.1f\""};
 	// "te%20lt" timestamp 
 	private String timeStampIdentifier = "\"te%20lt\"";
-	//private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
 	private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd.HH:mm:ss").withZone(DateTimeZone.UTC.forOffsetHours(1));		
 	
 	//private List<TimeStamp> timestamps = new ArrayList<TimeStamp>();
 	private List<EmissionTimeSeries> emisList = new ArrayList<EmissionTimeSeries>();
 	private MeteorologyTimeSeries metList = new MeteorologyTimeSeries();
 	
-	public Zeitreihe(Zeitreihe zeitreihe) {
-		this.forms = zeitreihe.forms;
-		this.locl = zeitreihe.locl;
-		this.mode = zeitreihe.mode;
-		this.ha = zeitreihe.ha;
-		this.z0 = zeitreihe.z0;
-		this.d0 = zeitreihe.d0;
-		this.artp = zeitreihe.artp;
-		this.sequ = zeitreihe.sequ;
-		this.dims = zeitreihe.dims;
-		this.size = zeitreihe.size;
-		this.lowb = zeitreihe.lowb;
-		//this.dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
-		//in the first modelRun we have to guarantee, that there are at least 24 values or austal won't work
-	//	if(modelRun == 0) optimizationInterval = 24;
-		
-//		this.timestamps = zeitreihe.timestamps;//copyTimeStamps(zeitreihe, modelRun, optimizationInterval);
-		// set number of timestamps in the time series
-		this.hghb = "hghb\t"+(this.metList.getSize());
+	/**
+	 * constructor for manual set-up
+	 */
+	public Zeitreihe(MeteorologyTimeSeries meteoTS, List<EmissionSource> emissions, String z0){
+		this.z0 = z0;
+		this.metList = meteoTS;
+		createEmissionTS(emissions);
+	}
+	
+	/**
+	 * Extracts emission time series from emission source list 
+	 * @param emissions
+	 */
+	private void createEmissionTS(List<EmissionSource> emissions){
+		for(EmissionSource source : emissions){
+			if(source.isDynamic()){
+				emisList.add(source.getEmissionList());
+			}
+		}
 	}
 
 	// constructor to create zeitreihe object from zeitreihe.dmna file
@@ -91,28 +92,6 @@ public class Zeitreihe implements Serializable{
 	// constructor to create zeitreihe object from zeitreihe.dmna file
 	public Zeitreihe(InputStream in){
 		this.parseFile(in, false);
-	}
-	
-	// constructor with meteorology and emissions as inputs, header is parsed from file
-	public Zeitreihe(File zeitreiheFile, MeteorologyTimeSeries meteoTS, List<EmissionTimeSeries> emisListTS){
-		this.metList = meteoTS;
-		this.emisList = emisListTS;
-		
-		//parse only header from zeitreihe.dmna file
-		this.parseFile(zeitreiheFile, true);
-		this.hghb = "hghb\t"+(this.metList.getSize());
-	}
-	
-	public String getTSlength(){
-		return hghb;
-	}
-	
-	public void setTimePeriod(DateTime start, DateTime end){
-		metList.cutTimePeriod(start, end);
-		for(int i=0; i<emisList.size(); i++){
-			emisList.get(i).cutTimePeriod(start, end);
-		}
-		this.hghb = "hghb\t"+(this.metList.getSize());
 	}
 	
 	// ***** PARSER *****
@@ -308,30 +287,30 @@ public class Zeitreihe implements Serializable{
 			// check that list starts with hour 01:00
 			int start = 0;
 			//while(start<(timestamps.size()-1)&&timestamps.get(start).getHourOfDay()!=1){
-			while(start<(timestamps.size()-1)&&!dateFormat.print(timestamps.get(0)).contains(".01:00")){
+			while(start<(timestamps.size()-1)&&!dateFormat.print(timestamps.get(start)).contains(".01:00:00")){
 				start++;
 			}
 			
 			// get length of time series and emission sources
-			this.hghb = "hghb\t"+(this.metList.getSize() - start);
-			this.size = "size\t"+(emisList.size()*4 + 20);
-		
+			hghb = ""+(this.metList.getSize() - start);
+			size = ""+(emisList.size()*4 + 20);
+			d0 = ""+Double.parseDouble(this.z0)*6;
+			
 			FileWriter fw = new FileWriter(targetFile);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(buildFormsString()+SEPERATOR);
-			bw.write(locl+SEPERATOR);
-			bw.write(mode+SEPERATOR);
-			bw.write(ha+SEPERATOR);
-			bw.write(z0+SEPERATOR);
-			bw.write(d0+SEPERATOR);
-			bw.write(artp+SEPERATOR);
-			bw.write(sequ+SEPERATOR);
-			bw.write(dims+SEPERATOR);
-			bw.write(size+SEPERATOR);
-			bw.write(lowb+SEPERATOR);
-			bw.write(hghb+SEPERATOR);
-			bw.write("*"+SEPERATOR);
-			
+			bw.write("locl\t"+locl+SEPERATOR);
+			bw.write("mode\t"+mode+SEPERATOR);
+			bw.write("ha\t"+ha+SEPERATOR);
+			bw.write("z0\t"+z0+SEPERATOR);
+			bw.write("d0\t"+d0+SEPERATOR);
+			bw.write("artp\t"+artp+SEPERATOR);
+			bw.write("sequ\t"+sequ+SEPERATOR);
+			bw.write("dims\t"+dims+SEPERATOR);
+			bw.write("size\t"+size+SEPERATOR);
+			bw.write("lowb\t"+lowb+SEPERATOR);
+			bw.write("hghb\t"+hghb+SEPERATOR);
+			bw.write("*"+SEPERATOR);		
 			
 			for(int i=start; i<timestamps.size(); i++){
 				String time = dateFormat.print(timestamps.get(i));
@@ -351,13 +330,21 @@ public class Zeitreihe implements Serializable{
 			bw.write("***");
 			bw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
 	
 	// ***** MODIFICATION *****
+	//
+	public String getZ0(){
+		return z0;
+	}
+	
+	public void setZ0(String z0){
+		this.z0 = z0;
+	}
+	
 	// modify meteorology time series
 	public MeteorologyTimeSeries getMeteorologyTimeSeries(){
 		return metList;
@@ -405,6 +392,18 @@ public class Zeitreihe implements Serializable{
 		return s;
 	}
 
+	public String getTSlength(){
+		return hghb;
+	}
+	
+	public void setTimePeriod(DateTime start, DateTime end){
+		metList.cutTimePeriod(start, end);
+		for(int i=0; i<emisList.size(); i++){
+			emisList.get(i).cutTimePeriod(start, end);
+		}
+		this.hghb = "hghb\t"+(this.metList.getSize());
+	}
+	
 //	public int getColumn(String s) {
 //		for(String form: forms){
 //			if(form.contains(s)){

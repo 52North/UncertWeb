@@ -32,7 +32,7 @@ public class Austal2000Txt implements Serializable {
 	private List<ReceptorPoint> receptorPoints;	
 	private List<EmissionSource> emissionSources;
 	private int qs;	// parameter to define number of particles used in the model run
-	private String os; // special options; here to force Austal to write hourly grid outputs
+	private String os = "\"NOSTANDARD;Kmax=1;Average=1;Interval=3600\""; // special options; here to force Austal to write hourly grid outputs
 	
 
 	// constructor to create austal object from file
@@ -40,6 +40,14 @@ public class Austal2000Txt implements Serializable {
 		parseFile(austalFile);
 	}
 
+	/**
+	 * constructor for manual set-up
+	 */
+	public Austal2000Txt(StudyArea sa, List<EmissionSource> es){
+		studyArea = sa;
+		emissionSources = es;
+	}	
+	
 	// constructor to create austal object from file
 	public Austal2000Txt(InputStream in){
 		parseFile(in);
@@ -79,10 +87,8 @@ public class Austal2000Txt implements Serializable {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		
-	}
-	
+		}		
+	}	
 	
 	// ***** PARSER *****
 	private void parseFile(File austalFile){

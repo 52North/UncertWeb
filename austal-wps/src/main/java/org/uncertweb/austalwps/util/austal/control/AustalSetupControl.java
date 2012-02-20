@@ -1,12 +1,16 @@
 package org.uncertweb.austalwps.util.austal.control;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,22 +24,36 @@ import java.util.Map;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.joda.time.DateTime;
+import org.joda.time.Hours;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.opengis.feature.simple.SimpleFeature;
 import org.uncertml.sample.RandomSample;
-import org.uncertml.sample.Realisation;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.sample.UnknownSample;
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
 import org.uncertweb.api.netcdf.exception.NetcdfUWException;
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.exceptions.OMEncodingException;
+import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.IResult;
+import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
+import org.uncertweb.austalwps.U_Austal2000Algorithm;
 import org.uncertweb.austalwps.util.AustalOutputReader;
+import org.uncertweb.austalwps.util.Point;
+import org.uncertweb.austalwps.util.Value;
 import org.uncertweb.austalwps.util.austal.files.Austal2000Txt;
 import org.uncertweb.austalwps.util.austal.files.Zeitreihe;
 import org.uncertweb.austalwps.util.austal.geometry.EmissionSource;
@@ -58,9 +76,11 @@ import ucar.nc2.Variable;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 // class to manage Austal Setup
 
@@ -106,188 +126,234 @@ public class AustalSetupControl {
 	private final static String Y_COORD_AXIS = "GeoY";
 	
 	// number of realisations
-	private final int rn = 3;
+	private final int rn = 50;
 	
 	
 	public static void main(String[] args) {
+	//	DateTimeFormatter dateFormat = ISODateTimeFormat.dateTime();
+	//	DateTimeFormatter dateFormat2 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.000+01"); 						
+	//	String startTime = "2010-03-01T01:00:00.000+01";
+	//	DateTime startDate = dateFormat.parseDateTime(startTime);
+	//	DateTime startDate2 = dateFormat2.parseDateTime(startTime);
+		
 		try {
 			AustalSetupControl control = new AustalSetupControl();
-			// read files to create datamodel
-//			this.readFiles();
-				// 1. read files to create datamodel
-					control.readFiles("austal2000_template.txt", "zeitreihe_template.dmna");
-					
-				// 2. create new timeseries from O&M documents
-				// 2a. Emission Sources	
-					// make an ArrayList with emission sources
-//					ArrayList<EmissionSource> newEmissionSources = new ArrayList<EmissionSource>();
-			
-//					// Austal coordinates for line sources
-//					EmissionSource line = lineGK3ToLocalCoords(3405540, 5758268, 3401540, 5758268, 3400540, 5759268);
-//					line.setDynamicSourceID(1);	// IMPORTANT: id needs to start with 1!		
-//					
-//					// Austal coordinates for polygon sources		
-//					EmissionSource polygon = cellPolygonGK3ToLocalCoords(3405540, 5758268, 3401540, 5758268, 3400540, 5759268); // coordinates are from lower left and upper right corner
-//					polygon.setDynamicSourceID(2);
-//						
-//					// add sources to sources list
-//					newEmissionSources.add(line);
-//					newEmissionSources.add(polygon);
-					
-				// 2b. Emission TimeSeries
-					// make an ArrayList with the respective timeseries per source
-					
-//					BufferedReader bread = new BufferedReader(
-//							new FileReader(
-//									new File(
-//											"C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\xml\\Streets1.xml")));
-//
-//					String xmlString = "";
-//
-//					String line = bread.readLine();
-//
-//					xmlString = xmlString.concat(line);
-//
-//					while ((line = bread.readLine()) != null) {
-//						xmlString = xmlString.concat(line);
-//					}
-//
-//					XBObservationParser parser = new XBObservationParser();
-//
-//					IObservationCollection coll = parser
-//							.parseObservationCollection(xmlString);
-//					
-//					
-//					ArrayList<EmissionTimeSeries> newEmisTS = new ArrayList<EmissionTimeSeries>();
-//
-//					
-//					try {
-//						control.handleObservationCollection(newEmissionSources, newEmisTS, coll);
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-//					
-//					// Add Emission TimeSeries per source
-//					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
-//					Date timeStamp = null;
-//					try {
-//						timeStamp = dateFormat.parse("2010-03-01.01:00:00");
-//					} catch (ParseException e) {
-//						e.printStackTrace();
-//					}
-					
-					
-					
-//					EmissionTimeSeries lineTS = new EmissionTimeSeries(line.getDynamicSourceID());	// assign id of respective source	
-//					lineTS.addEmissionValue(timeStamp, 0.5);	// make a loop to add all observations
-//					
-//					EmissionTimeSeries polygonTS = new EmissionTimeSeries(polygon.getDynamicSourceID());	// assign id of respective source
-//					polygonTS.addEmissionValue(timeStamp, 0.1);	// make a loop to add all observations
-//					
-//					// add final timeseries to timeseries list
-//					newEmisTS.add(lineTS);
-//					newEmisTS.add(polygonTS);
-					
-				// 2b. Meteorology TimeSeries
-//					MeteorologyTimeSeries newMetList = new MeteorologyTimeSeries();
-//					
-//					/*
-//					 * read meteo data
-//					 */
-//					bread = new BufferedReader(
-//							new FileReader(
-//									new File(
-//											"C:\\UncertWeb\\workspace\\AustalWPS\\src\\test\\resources\\xml\\Meteo1.xml")));
-//
-//					xmlString = "";
-//
-//					line = bread.readLine();
-//
-//					xmlString = xmlString.concat(line);
-//
-//					while ((line = bread.readLine()) != null) {
-//						xmlString = xmlString.concat(line);
-//					}
-//					coll = parser
-//							.parseObservationCollection(xmlString);				
-//					
-//					try {
-//						
-//						
-//						
-//						control.handleMeteorology(newMetList, coll);
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-					
-//					newMetList.addWindDirection(timeStamp, (double)220);
-//					newMetList.addWindSpeed(timeStamp, 2.5);
-//					
-//					
-//				// 3. substitute emissions and meteorology with new data
-//					control.substituteStreetEmissions(newEmissionSources, newEmisTS);
-//					control.substituteMeteoorology(newMetList);
-	//
-//					// if necessary, cut all timeperiods to new one
-//					//ts.setTimePeriod(startDate, endDate);
-//					
-//					// set or unset os parameter (will cause that the grid results are written for each hour)
-//					
-//					
-//				// 4. write files
-//					control.writeFiles("austal2000.txt", "zeitreihe.dmna");
-					
-				// 5. run Austal
-					
-					
-				// 6. read Austal results
+				// read files to create datamodel
+				control.readFiles("austal2000_template.txt", "zeitreihe_template.dmna");
+		
+				// read Austal results
 				// read hourly results
 				//String hourlyFolder = "D:/PhD/WP1.1_AirQualityModel/WebServiceChain/AustalWPS/AustalRun/hourly";				
-				String hourlyFolder = "C:/Windows/Temp/PO";	
+					
+				String startTime = "2010-01-01T01:00:00.000+01";
+				DateTime startDate = ISODateTimeFormat.dateTime().parseDateTime(startTime);
+				DateTime preStartDate = startDate.minusDays(1);
+				
+				String hourlyFolder = "K:\\repo\\AustalRun\\results\\"+startDate.toString("yyyy-MM")+"\\PO";
 				AustalOutputReader outputReader = new AustalOutputReader();
 				
-				// read several files to have realisations
-				HashMap<Integer, HashMap<Integer, ArrayList<Double>>> realisationsMap = new HashMap<Integer, HashMap<Integer, ArrayList<Double>>>();
+				// ids of UBA stations
+				int id0 = 4603;
+				int id1 = 3942;				
+				
+				// list of realisations of points with time series
+				ArrayList<ArrayList<Point>> realisationsList = new ArrayList<ArrayList<Point>>();
+				
+				// Time series objects
+//				ArrayList<ArrayList<Double>> stat0 = new ArrayList<ArrayList<Double>>();
+//				ArrayList<ArrayList<Double>> stat1 = new ArrayList<ArrayList<Double>>();
+//				ArrayList<DateTime> dates = new ArrayList<DateTime>();
+				int start = Hours.hoursBetween(preStartDate, startDate).getHours();
+				
+				// loop through realisations
 				for(int i=0; i<control.rn; i++){
-					realisationsMap.put(i+1, outputReader.readHourlyFiles(hourlyFolder, false));
+					String folder = hourlyFolder + i;
+					HashMap<Integer, ArrayList<Double>> valueMap = outputReader.readHourlyFiles(folder, 1, false);
+					Point p0 = new Point(3404586,5756753,"p0");
+					Point p1 = new Point(3405158,5758603,"p1");
+					
+					// loop through time series
+					for(int j=start; j<=valueMap.size(); j++){
+						ArrayList<Double> vals = valueMap.get(j);
+						p0.addValue(startDate.plusHours(j).toString(ISODateTimeFormat.dateTime()), vals.get(id0));
+						p1.addValue(startDate.plusHours(j).toString(ISODateTimeFormat.dateTime()), vals.get(id1));
+						
+						
+//						// for the first realisations create ArrayList
+//						if(i==0){
+//							
+//							ArrayList<Double> realisations0 = new ArrayList<Double>();
+//							realisations0.add(vals.get(id0));
+//							stat0.add(realisations0);
+//							
+//							ArrayList<Double> realisations1 = new ArrayList<Double>();
+//							realisations1.add(vals.get(id1));
+//							stat1.add(realisations1);
+//							
+//							dates.add(startDate.plusHours(j));
+//						}else{
+//							stat0.get(i).add(vals.get(id0));
+//							stat1.get(i).add(vals.get(id1));
+//						}							
+					}		
+					ArrayList<Point> pointsTS = new ArrayList<Point>();
+					pointsTS.add(p0);
+					pointsTS.add(p1);
+					
+					realisationsList.add(pointsTS);
 				}
 				
+				// make observations collections
+				UncertaintyObservationCollection uobs = control.createRealisationsCollection(realisationsList, startDate, startDate.plusDays(31));
 				
-				// write results to NetCDF file
-				NetcdfUWFile resultFile = null;
+				// save result locally
+				String resultsPath = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\results";	
+				String filepath = resultsPath + "\\Austal_"+startDate.toString("yyyy-MM")+".xml";
+				File file = new File(filepath);
+				
+				// encode, store (for using in austal request later)
 				try {
-					resultFile = outputReader.createNetCDFfile("C:/UncertWeb/Austal/test.nc", 
-							control.austal.getStudyArea().getXcoords(), control.austal.getStudyArea().getYcoords(), 
-							control.ts.getMeteorologyTimeSeries().getMinDate(), realisationsMap);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NetcdfUWException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvalidRangeException e) {
-					// TODO Auto-generated catch block
+					new StaxObservationEncoder().encodeObservationCollection(uobs,file);
+				} catch (OMEncodingException e) {
 					e.printStackTrace();
 				}
+					
+//				// read several files to have realisations
+//				HashMap<Integer, HashMap<Integer, ArrayList<Double>>> realisationsMap = new HashMap<Integer, HashMap<Integer, ArrayList<Double>>>();
+//				for(int i=0; i<control.rn; i++){		
+//					// for NetCDF creation
+//					realisationsMap.put(i+1, outputReader.readHourlyFiles(hourlyFolder, 1, false));
+//				}
+//				DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");		
+//				DateTime minDate = df.parseDateTime("2009-03-01 01:00:00");
 				
-//				NetCDFBinding uwData = new NetCDFBinding(resultFile);
-//				result.put(OUTPUT_IDENTIFIER_SAMPLES, uwData);
-					
-				// Austal coordinates for line sources
-//				int[] coords1 = {3410874, 5761616, 3410902, 5761614};
-//				int[] coords2 = {3409650, 5766571, 3409735, 5766464};
-//				EmissionSource line1 = control.lineGK3ToLocalCoords(control.austal.getStudyArea().getGx(), control.austal.getStudyArea().getGy(), coords1[0], coords1[1], coords1[2], coords1[3]);
-//				line1.setDynamicSourceID(1);	// IMPORTANT: id needs to start with 1!		
-//					
-//				EmissionSource line2 = control.lineGK3ToLocalCoords(control.austal.getStudyArea().getGx(), control.austal.getStudyArea().getGy(), coords2[0], coords2[1], coords2[2], coords2[3]);
-//				line2.setDynamicSourceID(2);	// IMPORTANT: id needs to start with 1!		
-					
+//				// write results to NetCDF file
+//				NetcdfUWFile resultFile = null;
+//				try {
+//					resultFile = outputReader.createNetCDFfile("C:/UncertWeb/Austal/austal.nc", 
+//							control.austal.getStudyArea().getXcoords(), control.austal.getStudyArea().getYcoords(), 
+//							minDate, 1, realisationsMap);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (NetcdfUWException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (InvalidRangeException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				
+//				NetCDFBinding uwData = new NetCDFBinding(resultFile);	
 					
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	
+	
+	private UncertaintyObservationCollection createRealisationsCollection(
+			ArrayList<ArrayList<Point>> realisationsList, DateTime startDate, DateTime endDate){
+		// make uncertainty observation
+		UncertaintyObservationCollection ucoll = new UncertaintyObservationCollection();
+	//	AustalOutputReader austal = new AustalOutputReader();
+	//	ArrayList<ArrayList<Point>> realisationsList = new ArrayList<ArrayList<Point>>();
+		
+		try{
+			// get results for each realisation
+//			for(int i=0; i<numberOfRealisations; i++){				
+//				// read results for receptor points and add them to an observation collection
+//				String folder = resultsPath + "\\"+ startDate.toString("yyyy-MM") +"\\PO"+i;	
+//				ArrayList<Point> points = austal.readReceptorPointList(folder, false);
+//				realisationsList.add(points);			
+//			}	
+			
+			URI procedure = new URI("http://www.uncertweb.org/models/austal2000");
+			URI observedProperty = new URI("http://www.uncertweb.org/phenomenon/pm10");			
+			URI codeSpace = new URI("");
+			
+			// loop through receptor points
+			for(int i=0; i<realisationsList.get(0).size(); i++){			
+				// get geometry only once for each point
+				Point p = realisationsList.get(0).get(i);
+				double[] coords = p.coordinates();
+				Coordinate coord = new Coordinate(coords[0], coords[1]);													
+				PrecisionModel pMod = new PrecisionModel(PrecisionModel.FLOATING);				
+				GeometryFactory geomFac = new GeometryFactory(pMod, 31467);
+				SpatialSamplingFeature featureOfInterest = new SpatialSamplingFeature("sampledFeature", geomFac.createPoint(coord));
+				featureOfInterest.setIdentifier(new Identifier(codeSpace, "point" + i));
+				
+				// loop through time series values
+				for(int v=0; v<realisationsList.get(0).get(0).values().size(); v++){
+					
+					// get observation details only once
+					ArrayList<Value> vals = realisationsList.get(0).get(i).values();
+					Identifier identifier = new Identifier(codeSpace, "o_" + v);
+					String timeStamp = vals.get(v).TimeStamp().trim();						
+					timeStamp = timeStamp.replace(" ", "T");
+					
+					// check if date lies before start or after end data
+					TimeObject newT = new TimeObject(timeStamp);		
+						ArrayList<Double> values = new ArrayList<Double>();		
+
+						// loop through realisations
+						for(int r=0; r<realisationsList.size(); r++){
+							Value val = realisationsList.get(r).get(i).values().get(v);
+							values.add(val.PM10val());						
+						}
+						
+						// add realisation to observation collection
+						ContinuousRealisation r = new ContinuousRealisation(values, -1.0d, "id");
+						UncertaintyResult uResult = new UncertaintyResult(r, "ug/m3");
+						UncertaintyObservation uObs = new UncertaintyObservation(
+								newT, newT, procedure, observedProperty, featureOfInterest,
+								uResult);
+						ucoll.addObservation(uObs);
+					
+					
+				}				
+				
+			}
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return(ucoll);
+	}
+	
+	
+	
+	public static void writeCSV(ArrayList<Double> dates, ArrayList<ArrayList<Double>> data, String filepath){
+		try {
+			 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(filepath)));
+			 
+			// write header
+			out.write("Date");
+			for(int i=0; i<data.get(0).size(); i++){
+				out.write(", "+i);
+			}		
+			out.newLine();
+			
+			// write each observation as one line
+			for(int j=0; j<dates.size(); j++){
+				out.write(dates.get(j)+"");			
+				ArrayList<Double> r = data.get(j);
+				for(int i=0; i<r.size(); i++){
+					out.write(", "+r.get(i));
+				}	
+				out.newLine();
+			}
+			out.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	
 	public AustalSetupControl() throws Exception{
@@ -303,7 +369,7 @@ public class AustalSetupControl {
 		
 		// get dates for the time series results
 		// format: "hours since 2011-01-02 00:00:00 00:00"
-		Date minDate = ts.getMeteorologyTimeSeries().getMinDate();
+		DateTime minDate = ts.getMeteorologyTimeSeries().getMinDate();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");	
 		String TIME_VAR_UNITS = "hours since "+dateFormat.format(minDate)+ " 00:00";
 		int tn = realisationsMap.get(1).size();
@@ -603,8 +669,8 @@ public class AustalSetupControl {
 //				} catch (ParseException e) {
 //					e.printStackTrace();
 //				}
-				newMetList.addWindDirection(dt.toDate(), windDirection);
-				newMetList.addWindSpeed(dt.toDate(), windSpeed);
+				newMetList.addWindDirection(dt, windDirection);
+				newMetList.addWindSpeed(dt, windSpeed);
 				
 			}
 		}
@@ -718,7 +784,7 @@ public class AustalSetupControl {
 //			} catch (ParseException e) {
 //				e.printStackTrace();
 //			}
-			lineTS.addEmissionValue(dt.toDate(), (Double)o);
+			lineTS.addEmissionValue(dt, (Double)o);
 
 		}
 		/*
@@ -812,79 +878,7 @@ public class AustalSetupControl {
 			return source;
 	}
 	
-	
-	private void substituteStreetEmissions(ArrayList<EmissionSource> newEmissionSources, ArrayList<EmissionTimeSeries> newEmisTS){
-		// get old emission lists
-		ArrayList<EmissionSource> emissionSources = (ArrayList) austal.getEmissionSources();
-		ArrayList<EmissionTimeSeries> emisList = (ArrayList) ts.getEmissionSourcesTimeSeries();
-		int newID = newEmissionSources.size()+1;
-		
-		//get length o
-		Date minDate = newEmisTS.get(0).getMinDate();
-		Date maxDate = newEmisTS.get(0).getMaxDate();
-		
-		// add only non-traffic and non-dynamic sources from the old list
-		for(int i=0; i<austal.getEmissionSources().size(); i++){
-			// get dynamic sources which are not street sources
-			if(emissionSources.get(i).isDynamic()&&!emissionSources.get(i).getSourceType().contains("streets")){
-				EmissionSource e = emissionSources.get(i);
-				int oldID = e.getDynamicSourceID();
-				e.setDynamicSourceID(newID);
-				newEmissionSources.add(e);
-				
-				// get respective time series and change id
-				EmissionTimeSeries ets = emisList.get(i);
-				
-				// check if dynamic id is correct
-				if(ets.getDynamicSourceID()==oldID){
-					ets.setSourceID(newID);
-					// cut timeseries to length of new one
-					ets.cutTimePeriod(minDate, maxDate);
-					//check
-					Date min = ets.getMinDate();
-					Date max = ets.getMaxDate();
-					newEmisTS.add(ets);
-				}else{ // in case the time series is not correct search for it
-					for(int j=0; j<emisList.size(); j++){
-						ets = emisList.get(j);
-						if(ets.getDynamicSourceID()==oldID){
-							ets.setSourceID(newID);
-							newEmisTS.add(ets);
-							return;
-						}
-					}
-				}
-				
-				// set new id for nex source
-				newID++;
-			}
-			else if(!emissionSources.get(i).isDynamic()){ 	// static sources are added without changes
-				newEmissionSources.add(emissionSources.get(i));
-			}
-		}	
-		
-		// finally add new list to austal and ts object
-		austal.setEmissionSources(newEmissionSources);
-		ts.setEmissionSourcesTimeSeries(newEmisTS);
-	}
-	
-	private void substituteMeteoorology(MeteorologyTimeSeries newMetList){
-		// get old meteorology list
-		MeteorologyTimeSeries metList = ts.getMeteorologyTimeSeries();
-		ArrayList<Date> timeStampList = (ArrayList) newMetList.getTimeStamps();
-		
-		// add stability class values to new list
-		for(int i=0; i<timeStampList.size(); i++){
-			Date d = timeStampList.get(i);
-			newMetList.addStabilityClass(d, metList.getStabilityClass(d));
-		}
-		
-		// finally add new list to ts object
-		ts.setMeteorologyTimeSeries(newMetList);
-	}
-	
-	private void readAustalResults(){
-		
-	}
+
+
 
 }

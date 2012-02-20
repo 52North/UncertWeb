@@ -12,8 +12,20 @@ public class StudyArea {
 	private int ny;	// number of cells in y direction
 	private int x0;	// x coordinate of the lower left corner in local coordinates
 	private int y0;	// y coordinate of the lower left corner in local coordinates
+//	x0=-dd*nx/2-nx/2
+//	y0=-dd*ny/2-ny/2
 	
 	public StudyArea(){}
+	
+	public StudyArea(String GX, String GY, String DD, String NX, String NY){
+		gx = Integer.parseInt(GX);
+		gy = Integer.parseInt(GY);
+		dd = Integer.parseInt(DD);
+		nx = Integer.parseInt(NX);
+		ny = Integer.parseInt(NY);
+		x0 = -dd*nx/2;
+		y0 = -dd*ny/2;
+	}
 	
 	// function to calculate GK3 into local coordinates
 	public int[] gk3toLocalCoordinates(int[] gk3Coords){

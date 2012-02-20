@@ -1,6 +1,10 @@
 package org.uncertweb.austalwps.util.austal.geometry;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.uncertweb.austalwps.util.austal.timeseries.EmissionTimeSeries;
 
 public class EmissionSource implements Serializable{
 
@@ -8,6 +12,7 @@ public class EmissionSource implements Serializable{
 	 * class to store the Austal data model for emission sources
 	 * stores geometry in Austal coordinates
 	 * stores emission strength
+	 * stores emission time series if source is variable
 	 */
 	
 	private static final long serialVersionUID = 7758710331178466677L;
@@ -20,6 +25,7 @@ public class EmissionSource implements Serializable{
 	private double xq; // x coordinate of the source
 	private double yq; // y coordinate of the source
 	private String pm2; // PM10 emission strength of the source; '?' if source is dynamic
+	private EmissionTimeSeries emisTS;	// time series of emission values
 	private String sourceType; // describes type of sources, e.g. industry, traffic
 	private int dynamicSourceID; // internal id of this source
 	private boolean dynamic; // boolean if source is dynamic or static
@@ -55,14 +61,24 @@ public class EmissionSource implements Serializable{
 		pm2 = pm;		
 	}
 	
-	public boolean isDynamic(){
-		return dynamic;
+	public void setStaticStrength(double pm){
+		dynamic = false;
+		pm2 = pm+"";		
+	}
+	
+	public void setDynamic(int id, EmissionTimeSeries ts){
+		dynamic = true;
+		this.dynamicSourceID = id;		
+		this.pm2 = "?";
+		emisTS = ts;
+		ts.setSourceID(id);
 	}
 	
 	public void setDynamicSourceID(int dynamicSourceID){
 		dynamic = true;
 		this.dynamicSourceID = dynamicSourceID;		
 		this.pm2 = "?";
+		emisTS = new EmissionTimeSeries(dynamicSourceID);
 	}
 	
 	public int getDynamicSourceID(){
@@ -70,6 +86,10 @@ public class EmissionSource implements Serializable{
 			return this.dynamicSourceID;
 		else
 			return 0;
+	}
+	
+	public boolean isDynamic(){
+		return dynamic;
 	}
 	
 	// Getters & Setters
@@ -121,9 +141,16 @@ public class EmissionSource implements Serializable{
 		return pm2;
 	}
 
-
 	public void setPm2(String pm) {
 		this.pm2 = pm;
+	}
+	
+	public void setEmissionList(EmissionTimeSeries ts) {
+		this.emisTS = ts;
+	}
+	
+	public EmissionTimeSeries getEmissionList() {
+		return emisTS;
 	}
 	
 	public double getWq() {

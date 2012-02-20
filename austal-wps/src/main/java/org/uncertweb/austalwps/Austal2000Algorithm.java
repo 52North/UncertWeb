@@ -317,7 +317,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} 
 		
 		//parse logfile and extract filenames TODO: maybe better list files in directory...			
 //		ArrayList<String> fileList = new ArrayList<String>();
@@ -675,7 +675,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					/*
 					 * create EmissionSource
 					 */
-					EmissionSource tmpEMS = Utils.lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[coords.length-1].x, coords[coords.length-1].y);					
+					EmissionSource tmpEMS = Utils.lineGK3ToLocalCoords(gx, gy, coords);					
 					tmpEMS.setDynamicSourceID(counter);
 					newEmissionSources.add(tmpEMS);
 					
@@ -689,7 +689,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 					/*
 					 * create EmissionSource
 					 */
-					EmissionSource tmpEMS = Utils.cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
+					EmissionSource tmpEMS = Utils.polygonGK3ToLocalCoords(gx, gy, coords);
 					tmpEMS.setDynamicSourceID(counter);
 					newEmissionSources.add(tmpEMS);	
 				}
@@ -706,7 +706,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 								.getFeatureOfInterest().getShape();
 
 						Coordinate[] coords = mline.getCoordinates();
-						EmissionSource tmpEMS = Utils.lineGK3ToLocalCoords(gx, gy, coords[0].x, coords[0].y, coords[1].x, coords[1].y);
+						EmissionSource tmpEMS = Utils.lineGK3ToLocalCoords(gx, gy, coords);
 						tmpEMS.setDynamicSourceID(counter);
 						newEmissionSources.add(tmpEMS);
 					} else if (abstractObservation.getFeatureOfInterest()
@@ -717,7 +717,7 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 						
 						Coordinate[] coords = mpoly.getCoordinates();
 						
-						EmissionSource tmpEMS = Utils.cellPolygonGK3ToLocalCoords(gx, gy, coords[1].x, coords[1].y, coords[3].x, coords[3].y);
+						EmissionSource tmpEMS = Utils.polygonGK3ToLocalCoords(gx, gy, coords);
 						tmpEMS.setDynamicSourceID(counter);
 						newEmissionSources.add(tmpEMS);
 					}
@@ -844,43 +844,38 @@ public class Austal2000Algorithm extends AbstractObservableAlgorithm{
 		
 		AustalOutputReader austal = new AustalOutputReader();
 		
-		ArrayList<Point[]> points = austal.readReceptorPoints(workDirPath, false);
+		ArrayList<Point> points = austal.readReceptorPointList(workDirPath, false);
 		
 		URI procedure = new URI("http://www.uncertweb.org/models/austal2000");
 		URI observedProperty = new URI("http://www.uncertweb.org/phenomenon/pm10");
 		
 		URI codeSpace = new URI("");
 		
+		// loop through points
 		for (int j = 0; j < points.size(); j++) {
 			
-			Point[] p = points.get(j);
+			Point p = points.get(j);		
+			ArrayList<Value> vals = p.values();				
+			double[] coords = p.coordinates();
+				
+			// get coordinates and create point
+			Coordinate coord = new Coordinate(coords[0], coords[1]);												
+			PrecisionModel pMod = new PrecisionModel(PrecisionModel.FLOATING);
+				
+			GeometryFactory geomFac = new GeometryFactory(pMod, 31467);
+			SpatialSamplingFeature featureOfInterest = new SpatialSamplingFeature("sampledFeature", geomFac.createPoint(coord));
+			featureOfInterest.setIdentifier(new Identifier(codeSpace, "point" + j));
 			
-			for (int i = 0; i < p.length; i++) {
-				
-				ArrayList<Value> vals = p[i].values();				
-				double[] coords = p[i].coordinates();
-				
-				// get coordinates and create point
-				Coordinate coord = new Coordinate(coords[0], coords[1]);								
-				
-				PrecisionModel pMod = new PrecisionModel(PrecisionModel.FLOATING);
-				
-				GeometryFactory geomFac = new GeometryFactory(pMod, 31467);
-				SpatialSamplingFeature featureOfInterest = new SpatialSamplingFeature("sampledFeature", geomFac.createPoint(coord));
-				featureOfInterest.setIdentifier(new Identifier(codeSpace, "point" + i));
-				for (int k = 0; k < vals.size(); k++) {	
-					Identifier identifier = new Identifier(codeSpace, "m" + k);
-					
-					String timeStamp = vals.get(k).TimeStamp().trim();
-					
-					timeStamp = timeStamp.replace(" ", "T");
-					
-					TimeObject phenomenonTime = new TimeObject(timeStamp);						
-					MeasureResult resultm = new MeasureResult(vals.get(k).PM10val(), "ug/m3");						
-					Measurement m1 = new Measurement(identifier, null, phenomenonTime, phenomenonTime, null, procedure, observedProperty, featureOfInterest, null, resultm);
-					mcoll.addObservation(m1);
-				}					
-			}
+			for (int k = 0; k < vals.size(); k++) {	
+				Identifier identifier = new Identifier(codeSpace, "m" + k);				
+				String timeStamp = vals.get(k).TimeStamp().trim();
+				timeStamp = timeStamp.replace(" ", "T");					
+				TimeObject phenomenonTime = new TimeObject(timeStamp);						
+				MeasureResult resultm = new MeasureResult(vals.get(k).PM10val(), "ug/m3");						
+				Measurement m1 = new Measurement(identifier, null, phenomenonTime, phenomenonTime, null, procedure, observedProperty, featureOfInterest, null, resultm);
+				mcoll.addObservation(m1);
+			}					
+			
 		}
 		return mcoll;
 	}	
