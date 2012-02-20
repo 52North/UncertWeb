@@ -66,7 +66,7 @@
 		</dependency>
 		
 		<!-- UncertWeb dependencies -->
-		<dependency> 
+	<!-- 	<dependency> 
 		    <groupId>org.uncertweb</groupId>
 			<artifactId>netcdf-u-api</artifactId>
 			<version>1.0-SNAPSHOT</version>
@@ -75,11 +75,11 @@
       		<groupId>org.uncertweb</groupId>
       		<artifactId>om-api</artifactId>
       		<version>0.0.5-SNAPSHOT</version>
-    	</dependency>    
+    	</dependency>     -->
     	<dependency>
        		<groupId>org.uncertweb</groupId>
        		<artifactId>52n-wps-io-uncertweb</artifactId>
-   			<version>0.0.3-SNAPSHOT</version>
+   			<version>0.0.4-SNAPSHOT</version>
    		</dependency>
 
 		<!-- WPS dependencies -->
