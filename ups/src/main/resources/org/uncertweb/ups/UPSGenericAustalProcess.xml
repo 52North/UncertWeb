@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:ProcessDescriptions xml:lang="en-US" xmlns:xs="http://www.w3.org/2001/XMLSchema" service="WPS" version="1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd">
+	<ProcessDescription wps:processVersion="">
+		<ows:Identifier>org.uncertweb.ups.UPSGenericAustalProcess</ows:Identifier>
+		<ows:Title/>
+		<DataInputs>
+		
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>IdentifierSimulatedProcess</ows:Identifier>
+				<ows:Title></ows:Title>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
+			
+			<!-- Uncertain inputs -->
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>u_street-emissions</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>u_wind-speed</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>u_wind-direction</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty. </ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://giv-uw.uni-muenster.de:8080/uts/schemas/UncertainInput.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			
+			<!-- Certain inputs -->
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>c_stability-class</ows:Identifier>
+				<ows:Title>Stability Class</ows:Title>
+				<ows:Abstract>Time series with Klug-Manier stability class values</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+						
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>c_variable-emissions</ows:Identifier>
+				<ows:Title>Variable Emissions</ows:Title>
+				<ows:Abstract>Time series with geometry and emissions for non-street traffic sources</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>c_static-emissions</ows:Identifier>
+				<ows:Title>Static Emissions</ows:Title>
+				<ows:Abstract>Geometry and annual emission values for static emissions sources</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			
+			<Input minOccurs="0" maxOccurs="9999">
+				<ows:Identifier>c_receptor-points</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>Input data with probabilistic uncertainty.</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/gml/2.1.2/feature.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/gml/3.2.1/base/feature.xsd
+							</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>c_central-point</ows:Identifier>
+				<ows:Title>Central point of prediction area</ows:Title>
+				<ows:Abstract>Central point of prediction area with CRS</ows:Abstract>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/gml/2.1.2/feature.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/gml/3.2.1/base/feature.xsd
+							</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+				
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>c_dd</ows:Identifier>
+				<ows:Title>Cell size</ows:Title>
+				<ows:Abstract>Cell size of the prediction grid in m</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"/>
+					<ows:AnyValue/>
+					<DefaultValue>250</DefaultValue>
+				</LiteralData>
+			</Input>
+			
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>c_nx</ows:Identifier>
+				<ows:Title>Number of cells in x direction</ows:Title>
+				<ows:Abstract>Number of cells of the prediction grid in x direction</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"/>
+					<ows:AnyValue/>
+					<DefaultValue>83</DefaultValue>
+				</LiteralData>
+			</Input>
+			
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>c_ny</ows:Identifier>
+				<ows:Title>Number of cells in y direction</ows:Title>
+				<ows:Abstract>Number of cells of the prediction grid in y direction</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"/>
+					<ows:AnyValue/>
+					<DefaultValue>99</DefaultValue>
+				</LiteralData>
+			</Input>
+			
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>c_z0</ows:Identifier>
+				<ows:Title>Roughness length</ows:Title>
+				<ows:Abstract>Parameter for roughness length</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:double"/>
+					<ows:AnyValue/>
+				</LiteralData>
+			</Input>
+			
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>c_qs</ows:Identifier>
+				<ows:Title>Particle number</ows:Title>
+				<ows:Abstract>Parameter to control number of particles used for the simulation</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"/>
+					<ows:AllowedValues>
+						<ows:Range>
+							<ows:MinimumValue>-4</ows:MinimumValue>
+							<ows:MaximumValue>4</ows:MaximumValue>
+						</ows:Range>
+					</ows:AllowedValues>
+					<DefaultValue>0</DefaultValue>
+				</LiteralData>
+			</Input>
+			
+			<Input minOccurs="0" maxOccurs="10">
+				<ows:Identifier>c_model-parameters</ows:Identifier>
+				<ows:Title>Other model parameters</ows:Title>
+				<ows:Abstract>Model parameters and their values as String (see manual for details). Will be written to the austal2000.txt without changes or checks!</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue/>
+				</LiteralData>
+			</Input>
+			
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>ServiceURL</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract>URL to the WPS offering the process.</ows:Abstract>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
+			
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>OutputUncertaintyType</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AllowedValues>
+						<ows:Value>uncertweb:Realisations</ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>NumberOfRealisations</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:int"/>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
+			
+		</DataInputs>
+		
+		<ProcessOutputs>
+			<Output>
+				<ows:Identifier>UncertainProcessOutputs</ows:Identifier>
+				<ows:Title></ows:Title>
+				<ComplexOutput>
+					<Default>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-om-u+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>
+								http://schemas.opengis.net/om/2.0/observation.xsd
+							</Schema>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
+		</ProcessOutputs>
+		
+	</ProcessDescription>
+</wps:ProcessDescriptions>
