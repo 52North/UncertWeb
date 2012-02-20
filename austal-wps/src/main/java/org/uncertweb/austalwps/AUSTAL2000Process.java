@@ -287,45 +287,9 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		// create study area
 		StudyArea sa = new StudyArea(gx+"", gy+"", dd, nx, ny);
 		
-		// 1.2) get emission inputs
-		List<EmissionSource> emissionSources = new ArrayList<EmissionSource>();		
 		
-		// street emissions
-		inDataList = inputData.get(inputIDStreetEmissions);		
-		if(!(inDataList == null) && inDataList.size() != 0){
-			IData inData = inDataList.get(0);			
-			if(inData instanceof OMBinding){
-				//input is O&M UncertWeb profile and can be processed now
-				IObservationCollection obsCol = ((OMBinding)inData).getPayload();
-				emissionSources = addVariableEmissionSources(emissionSources, obsCol);
-			}			
-		}		
 		
-		// variable emissions
-		inDataList = inputData.get(inputIDVariableEmissions);		
-		if(!(inDataList == null) && inDataList.size() != 0){
-			for(IData inData : inDataList){		
-				if(inData instanceof OMBinding){
-					//input is O&M UncertWeb profile and can be processed now
-					IObservationCollection obsCol = ((OMBinding)inData).getPayload();
-					emissionSources = addVariableEmissionSources(emissionSources, obsCol);
-				} 
-			}
-		}			
-			
-		// static emissions
-		inDataList = inputData.get(inputIDStaticEmissions);		
-		if(!(inDataList == null) && inDataList.size() != 0){
-			for(IData inData : inDataList){
-				if(inData instanceof OMBinding){
-					//input is O&M UncertWeb profile and can be processed now
-					IObservationCollection obsCol = ((OMBinding)inData).getPayload();
-					emissionSources = addStaticEmissionSources(emissionSources, obsCol);
-				} 
-			}
-		}		
-		
-		//1.3) get meteorology inputs
+		//1.2) get meteorology inputs
 		MeteorologyTimeSeries metList = new MeteorologyTimeSeries();		
 		
 		// windspeed
@@ -357,7 +321,50 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 				metList = addMeteorology(metList, obsCol);	
 			}
 		}	
+		
+		// 1.3) get emission inputs
+		List<EmissionSource> emissionSources = new ArrayList<EmissionSource>();		
+		
+		// check if all emission sources have the same length as the meteorology time series
+		int length = metList.getSize();
+		
+		// street emissions
+		inDataList = inputData.get(inputIDStreetEmissions);		
+		if(!(inDataList == null) && inDataList.size() != 0){
+			IData inData = inDataList.get(0);			
+			if(inData instanceof OMBinding){
+				//input is O&M UncertWeb profile and can be processed now
+				IObservationCollection obsCol = ((OMBinding)inData).getPayload();
+				emissionSources = addVariableEmissionSources(emissionSources, obsCol, length);
+			}			
+		}		
 				
+		// variable emissions
+		inDataList = inputData.get(inputIDVariableEmissions);		
+		if(!(inDataList == null) && inDataList.size() != 0){
+			for(IData inData : inDataList){		
+				if(inData instanceof OMBinding){
+					//input is O&M UncertWeb profile and can be processed now
+					IObservationCollection obsCol = ((OMBinding)inData).getPayload();
+					emissionSources = addVariableEmissionSources(emissionSources, obsCol, length);
+				} 
+			}
+		}			
+				
+		// static emissions
+		inDataList = inputData.get(inputIDStaticEmissions);		
+		if(!(inDataList == null) && inDataList.size() != 0){
+			for(IData inData : inDataList){
+				if(inData instanceof OMBinding){
+					//input is O&M UncertWeb profile and can be processed now
+					IObservationCollection obsCol = ((OMBinding)inData).getPayload();
+					emissionSources = addStaticEmissionSources(emissionSources, obsCol);
+				} 
+			}
+		}		
+				
+		
+		
 		// then get emission and meteorology time series and create zeitreihe and austal2000txt
 		Austal2000Txt austal = new Austal2000Txt(sa, emissionSources);
 		austal.setQs(Integer.parseInt(qs));
@@ -494,7 +501,7 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 	}
 		
 		
-	private List<EmissionSource> addVariableEmissionSources(List<EmissionSource> emissions, IObservationCollection coll) {
+	private List<EmissionSource> addVariableEmissionSources(List<EmissionSource> emissions, IObservationCollection coll, int tsSize) {
 			SpatialSamplingFeature spsam = null;
 			int counter = emissions.size()+1;
 			/*
@@ -521,8 +528,15 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 				} 
 				// only if it's a new spatial sampling feature
 				else if (!spsam.equals(abstractObservation.getFeatureOfInterest())) {
-					// add emission time series to previous emission source
-					emissions.get(emissions.size()-1).setEmissionList(emisTS);
+					// check if current time series has correct length
+					if(emisTS.getTimeStamps().size()==tsSize){
+						// add emission time series to previous emission source
+						emissions.get(emissions.size()-1).setEmissionList(emisTS);
+					}else{
+						// else remove last source and reset counter
+						emissions.remove(emissions.size()-1);
+						counter--;
+					}					
 					
 					// new emissions time series
 					emisTS = new EmissionTimeSeries(counter);// assign id of respective source
@@ -547,7 +561,12 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 			}
 
 			// add last EmissionTimeSeries
-			emissions.get(emissions.size()-1).setEmissionList(emisTS);			
+			if(emisTS.getTimeStamps().size()==tsSize){
+				emissions.get(emissions.size()-1).setEmissionList(emisTS);
+			}else{
+				// else remove last source and reset counter
+				emissions.remove(emissions.size()-1);
+			}		
 			return emissions;
 	}
 		

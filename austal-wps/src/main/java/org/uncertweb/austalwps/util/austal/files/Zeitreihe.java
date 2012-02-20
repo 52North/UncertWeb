@@ -317,15 +317,12 @@ public class Zeitreihe implements Serializable{
 				bw.write(time+" ");
 				bw.write(metList.getMeteorologyToString(i));
 				String e = "";
-				for(EmissionTimeSeries ts : emisList){
-					// only add emission source if it has the same size as the meteorology input
-					if(ts.getTimeStamps().size()==timestamps.size()){
-						double emis = ts.getEmissionValue(i);
-						if(emis==0)
-							e = e + " " + "0.000e+000";
-						else
-							e = e + " " + scientific.format(emis);
-					}					
+				for(EmissionTimeSeries ts : emisList){	
+					double emis = ts.getEmissionValue(i);
+					if(emis==0)
+						e = e + " " + "0.000e+000";
+					else
+						e = e + " " + scientific.format(emis);									
 				}
 				String eNew = e.replace(",", ".");
 				bw.write(eNew + SEPERATOR);
@@ -389,11 +386,9 @@ public class Zeitreihe implements Serializable{
 		}
 		// add emission id tokens
 		for(EmissionTimeSeries emisTS : emisList){
-			// only add emission source if it has the same size as the meteorology input
-			if(emisTS.getTimeStamps().size()==metList.getTimeStamps().size()){
-				String s2 = emisTS.getDynamicSourceIDToken();
-				s = s+s2+" ";
-			}			
+			String s2 = emisTS.getDynamicSourceIDToken();
+			s = s+s2+" ";
+			
 		}
 		return s;
 	}
