@@ -91,9 +91,9 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 	private final String fileSeparator = System.getProperty("file.separator");
 	private String tmpDir = "";
 	private String workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
-	private String austalHome = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\AustalWPS\\AustalRun";
-	private String resultsPath = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\AustalWPS\\results";	
-	private String resourcePath = "D:/JavaProjects/austal-wps/src/main/webapp/res/";
+	private String austalHome = "";
+//	private String resultsPath = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\AustalWPS\\results";	
+	//private String resourcePath = "D:/JavaProjects/austal-wps/src/main/webapp/res/";
 	
 	// WPS inputs & outputs
 	private final String inputIDCentralPoint = "central-point";
@@ -384,39 +384,39 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		writeFiles(austal, ts);
 								
 		// 2) execute Austal for each sample and collect results
-//		try {
-//			// get command for execute Austal
-//			String command = austalHome + fileSeparator + "austal2000.exe " + workDirPath;						
-//			Runtime rt = Runtime.getRuntime();				
-//			Process proc = rt.exec(command);
-//				
-//			// any error message?
-//			StreamGobbler errorGobbler = new StreamGobbler(proc
-//					.getErrorStream(), "ERROR");
-//				
-//			// any output?
-//			StreamGobbler outputGobbler = new StreamGobbler(proc
-//					.getInputStream(), "OUTPUT");
-//			outputGobbler.setSubject(this);
-//				
-//			// kick them off
-//			errorGobbler.start();
-//			outputGobbler.start();
-//
-//			// any error???
-//			int exitVal = -1;
-//			try {
-//				exitVal = proc.waitFor();
-//			} catch (InterruptedException e1) {
-//				e1.printStackTrace();
-//			}
-//			if(exitVal == 0){
-//				LOGGER.debug("Process finished normally.");
-//			}
-//				
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}		
+		try {
+			// get command for execute Austal
+			String command = austalHome + fileSeparator + "austal2000.exe " + workDirPath;						
+			Runtime rt = Runtime.getRuntime();				
+			Process proc = rt.exec(command);
+				
+			// any error message?
+			StreamGobbler errorGobbler = new StreamGobbler(proc
+					.getErrorStream(), "ERROR");
+				
+			// any output?
+			StreamGobbler outputGobbler = new StreamGobbler(proc
+					.getInputStream(), "OUTPUT");
+			outputGobbler.setSubject(this);
+				
+			// kick them off
+			errorGobbler.start();
+			outputGobbler.start();
+
+			// any error???
+			int exitVal = -1;
+			try {
+				exitVal = proc.waitFor();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			if(exitVal == 0){
+				LOGGER.debug("Process finished normally.");
+			}
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 	
 		// 3) handle results
 		Map<String, IData> result = new HashMap<String, IData>();	
@@ -459,7 +459,7 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 //			}
 			
 			// write results to a NetCDF file
-			String filepath = resultsPath + "\\Austal_"+startDate.toString("yyyy-MM")+".nc";
+			String filepath = workDirPath + "Austal_"+startDate.toString("yyyy-MM")+".nc";
 	//				+ System.currentTimeMillis() + ".nc";		
 			NetcdfUWFile resultFile = null;
 			try {
@@ -706,76 +706,6 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 
 		}
 
-	}
-	
-	private UncertaintyObservationCollection createReceptorPointsRealisationsCollection(){
-		// make uncertainty observation
-		UncertaintyObservationCollection ucoll = new UncertaintyObservationCollection();
-		AustalOutputReader austal = new AustalOutputReader();
-		ArrayList<ArrayList<Point>> realisationsList = new ArrayList<ArrayList<Point>>();
-		
-		try{
-			// get results for each realisation
-			for(int i=0; i<numberOfRealisations; i++){				
-				// read results for receptor points and add them to an observation collection
-				String folder = resultsPath + "\\"+ startDate.toString("yyyy-MM") +"\\PO"+i;	
-				ArrayList<Point> points = austal.readReceptorPointList(folder, false);
-				realisationsList.add(points);			
-			}	
-			
-			URI procedure = new URI("http://www.uncertweb.org/models/austal2000");
-			URI observedProperty = new URI("http://www.uncertweb.org/phenomenon/pm10");			
-			URI codeSpace = new URI("");
-			
-			// loop through receptor points
-			for(int i=0; i<realisationsList.get(0).size(); i++){			
-				// get geometry only once for each point
-				Point p = realisationsList.get(0).get(i);
-				double[] coords = p.coordinates();
-				Coordinate coord = new Coordinate(coords[0], coords[1]);													
-				PrecisionModel pMod = new PrecisionModel(PrecisionModel.FLOATING);				
-				GeometryFactory geomFac = new GeometryFactory(pMod, 31467);
-				SpatialSamplingFeature featureOfInterest = new SpatialSamplingFeature("sampledFeature", geomFac.createPoint(coord));
-				featureOfInterest.setIdentifier(new Identifier(codeSpace, "point" + i));
-				
-				// loop through time series values
-				for(int v=0; v<realisationsList.get(0).get(0).values().size(); v++){
-					
-					// get observation details only once
-					ArrayList<Value> vals = realisationsList.get(0).get(i).values();
-					Identifier identifier = new Identifier(codeSpace, "o_" + v);
-					String timeStamp = vals.get(v).TimeStamp().trim();						
-					timeStamp = timeStamp.replace(" ", "T");
-					
-					// check if date lies before start or after end data
-					TimeObject newT = new TimeObject(timeStamp);		
-					if(!newT.getDateTime().isBefore(startDate)&&!newT.getDateTime().isAfter(endDate)){
-						ArrayList<Double> values = new ArrayList<Double>();		
-
-						// loop through realisations
-						for(int r=0; r<realisationsList.size(); r++){
-							Value val = realisationsList.get(r).get(i).values().get(v);
-							values.add(val.PM10val());						
-						}
-						
-						// add realisation to observation collection
-						ContinuousRealisation r = new ContinuousRealisation(values, -1.0d, "id");
-						UncertaintyResult uResult = new UncertaintyResult(r, "ug/m3");
-						UncertaintyObservation uObs = new UncertaintyObservation(
-								newT, newT, procedure, observedProperty, featureOfInterest,
-								uResult);
-						ucoll.addObservation(uObs);
-					}
-					
-				}				
-				
-			}
-
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		return(ucoll);
 	}
 	
 	/**
