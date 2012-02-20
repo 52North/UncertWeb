@@ -1,0 +1,15 @@
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:aqms="http://giv-uw.uni-muenster.de/aqms">
+			  <gml:boundedBy>
+				 <gml:Box>
+				  <gml:coord><gml:X>3394965</gml:X><gml:Y>5745254</gml:Y></gml:coord>
+				  <gml:coord><gml:X>3416215</gml:X><gml:Y>5770504</gml:Y></gml:coord>
+				</gml:Box>
+			  </gml:boundedBy>
+			  <gml:featureMember>
+				<aqms:CentralPoint>	
+				<gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#31467">
+					<gml:coordinates>%$coords$%</gml:coordinates>
+				</gml:Point>
+            </aqms:CentralPoint>
+          </gml:featureMember>
+        </wfs:FeatureCollection>

@@ -1,0 +1,19 @@
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:aqms="http://giv-uw.uni-muenster.de/aqms">
+          <gml:boundedBy>
+             <gml:Box>
+              <gml:coord><gml:X>3394965</gml:X><gml:Y>5745254</gml:Y></gml:coord>
+              <gml:coord><gml:X>3416215</gml:X><gml:Y>5770504</gml:Y></gml:coord>
+            </gml:Box>
+          </gml:boundedBy>
+          <gml:featureMember>
+            <aqms:ReceptorPoints>
+                <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#31467">
+						<gml:lineStringMember>
+							<gml:LineString>
+								<gml:coordinates xmlns:gml="http://www.opengis.net/gml" decimal="." cs="," ts=" ">%$coords$%</gml:coordinates>
+							</gml:LineString>
+						</gml:lineStringMember>
+				</gml:MultiLineString>
+            </aqms:ReceptorPoints>
+          </gml:featureMember>
+ </wfs:FeatureCollection>

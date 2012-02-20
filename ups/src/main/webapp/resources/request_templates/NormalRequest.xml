@@ -2,14 +2,14 @@
 <wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
   http://geoserver.itc.nl:8080/wps/schemas/wps/1.0.0/wpsExecute_request.xsd">
   
-  <ows:Identifier>org.uncertweb.wps.UnivGaussianDist2Realisations</ows:Identifier>
+  <ows:Identifier>org.uncertweb.wps.Gaussian2Samples</ows:Identifier>
     
   <wps:DataInputs>
     <wps:Input>
       <ows:Identifier>distribution</ows:Identifier>
       <wps:Data>
-        <wps:ComplexData mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/GaussianDistribution.xsd">
-			%$dist$%
+        <wps:ComplexData mimeType="application/x-uncertml+xml" schema="http://uncertml.org/uncertml.xsd">
+          %$dist$%
         </wps:ComplexData>
       </wps:Data>
     </wps:Input>
@@ -17,7 +17,7 @@
   
     <wps:Input>
       <ows:Identifier>numbReal</ows:Identifier>
-      <wps:Data>
+      <wps:Data dataType="xs:integer">
         <wps:LiteralData>%$numbReal$%</wps:LiteralData>
       </wps:Data>
     </wps:Input>
@@ -25,8 +25,8 @@
   
   <wps:ResponseForm>
     <wps:ResponseDocument>
-      <wps:Output mimeType="text/xml" schema="http://giv-uw.uni-muenster.de:8080/uts/schemas/uncertml2.0.0/Realisation.xsd">
-        <ows:Identifier>realisations</ows:Identifier>
+      <wps:Output mimeType="application/x-uncertml+xml" schema="http://uncertml.org/uncertml.xsd">
+        <ows:Identifier>samples</ows:Identifier>
       </wps:Output>
     </wps:ResponseDocument>
   </wps:ResponseForm>
