@@ -150,8 +150,6 @@ public class VisualizerFactory {
 			if (vis.getCompatibleUncertaintyTypes().contains(dataSet.getType())) {
 				vis.setDataSet(dataSet);
 				set.add(vis);
-			} else {
-				log.debug("Visualizer {} is not compatible to {}", vis.getShortName(), dataSet.getType());
 			}
 		}
 		return set;

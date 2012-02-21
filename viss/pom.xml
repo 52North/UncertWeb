@@ -15,7 +15,6 @@
 	<inceptionYear>2011</inceptionYear>
 	<description>${project.name}</description>
 
-
 	<scm>
 		<tag>HEAD</tag>
 		<url>http://svn.52north.org/svn/geostatistics/main/uncertweb/viss/trunk</url>
@@ -29,7 +28,6 @@
 			<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
 		</license>
 	</licenses>
-
 
 	<organization>
 		<name>Institute for Geoinformatics</name>
@@ -58,7 +56,6 @@
 		<filter.response>${filter.gzip}</filter.response>
 		<filter.request>${filter.gzip}</filter.request>
 	</properties>
-
 
 	<dependencies>
 		<!-- UncertWeb #################################################### -->
@@ -293,6 +290,7 @@
 			</properties>
 		</profile>
 	</profiles>
+	
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<resources>

@@ -38,7 +38,7 @@ import org.uncertweb.viss.core.resource.time.MixedTemporalExtent;
 import org.uncertweb.viss.core.resource.time.RegularTemporalInstants;
 import org.uncertweb.viss.core.resource.time.RegularTemporalIntervals;
 import org.uncertweb.viss.core.resource.time.TemporalInstant;
-import org.uncertweb.viss.core.resource.time.AbstractTemporalInterval;
+import org.uncertweb.viss.core.resource.time.TemporalInterval;
 
 public class TemporalExtentTest {
 
@@ -83,7 +83,7 @@ public class TemporalExtentTest {
 				getExtent(UwCollectionUtils.set(new DateTime()), null)
 						.getClass());
 		assertEquals(
-				AbstractTemporalInterval.class,
+				TemporalInterval.class,
 				getExtent(
 						null,
 						UwCollectionUtils.set(new Interval(begin, begin.plus(d))))

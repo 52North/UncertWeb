@@ -105,5 +105,11 @@ public class VissError extends WebApplicationException {
 		return new VissError(Status.BAD_REQUEST, "Visualizer is not compatible: "+ message);
 	}
 
+	public static VissError badRequest(String message) {
+		return new VissError(Status.BAD_REQUEST, message);
+	}
+	public static VissError badRequest(Throwable cause) {
+		return new VissError(Status.BAD_REQUEST, cause);
+	}
 	
 }

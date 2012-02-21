@@ -19,42 +19,41 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.vis.netcdf;
+package org.uncertweb.viss.mongo;
 
-import org.uncertml.IUncertainty;
-import org.uncertml.io.JSONEncoder;
-import org.uncertweb.api.om.TimeObject;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-import com.vividsolutions.jts.geom.Point;
+import org.uncertweb.viss.core.VissError;
 
-public class UncertaintyValue {
-	private static final JSONEncoder enc = new JSONEncoder();
-	
-	private IUncertainty v;
-	private Point l;
-	private TimeObject t;
+import com.google.code.morphia.converters.SimpleValueConverter;
+import com.google.code.morphia.converters.TypeConverter;
+import com.google.code.morphia.mapping.MappedField;
+import com.google.code.morphia.mapping.MappingException;
 
-	protected UncertaintyValue(IUncertainty v, Point l, TimeObject t) {
-		this.v = v;
-		this.l = l;
-		this.t = t;
+@SuppressWarnings("rawtypes")
+public class URIConverter extends TypeConverter implements SimpleValueConverter {
+	public URIConverter() {
+		super(URI.class);
 	}
 
-	public IUncertainty getValue() {
-		return v;
+	@Override
+	public Object encode(Object value, MappedField optionalExtraInfo) {
+		if (value == null)
+			return null;
+		return ((URI) value).toString();
 	}
 
-	public Point getLocation() {
-		return l;
+	@Override
+	public URI decode(Class c, Object o, MappedField i)
+	    throws MappingException {
+		if (o == null)
+			return null;
+		try {
+			return new URI((String) o);
+		} catch (URISyntaxException e) {
+			throw VissError.internal(e);
+		}
 	}
 
-	public TimeObject getTime() {
-		return t;
-	}
-	
-	public String toString() {
-		return new StringBuilder().append(getLocation()).append(" ").append(enc.encode(getValue()))
-				.append(" @").append(getTime() == null ? "NO_TIME" : getTime()).toString();
-		
-	}
 }

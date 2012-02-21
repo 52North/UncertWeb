@@ -24,8 +24,8 @@ package org.uncertweb.viss.core.netcdf;
 import java.io.IOException;
 
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.viss.core.UncertaintyValue;
 import org.uncertweb.viss.vis.netcdf.UncertaintyNetCDF;
-import org.uncertweb.viss.vis.netcdf.UncertaintyValue;
 import org.uncertweb.viss.vis.netcdf.UncertaintyVariable;
 
 import ucar.nc2.NetcdfFile;

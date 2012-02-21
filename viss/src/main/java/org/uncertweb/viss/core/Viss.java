@@ -103,7 +103,7 @@ public class Viss {
 	}
 
 	public IVisualization getVisualization(String visualizer, ObjectId oid,
-	    String dataset, final JSONObject param) {
+			ObjectId dataset, final JSONObject param) {
 		IResource resource = getResource(oid);
 		IDataSet ds = getDataset(resource, dataset);
 		if (lock.usingResource(resource, true)) {
@@ -149,7 +149,7 @@ public class Viss {
 		}
 	}
 
-	protected IVisualization getVisualization(IResource r, String dataset, String visualizer,
+	protected IVisualization getVisualization(IResource r, ObjectId dataset, String visualizer,
 	    JSONObject param) {
 		log.debug("Searching for Visualizer {} in Resource {} with parameters {}",
 		    new Object[] { visualizer, r.getId(), param });
@@ -175,17 +175,17 @@ public class Viss {
 		return null;
 	}
 
-	public void deleteVisualization(ObjectId oid, String dataset, String vis) {
+	public void deleteVisualization(ObjectId oid, ObjectId dataset, String vis) {
 		IResource r = getResource(oid);
 		IVisualization v = getVisualization(r, dataset, vis);
 		getStore().deleteVisualizationForResource(v);
 	}
 
-	public Set<IVisualization> getVisualizations(ObjectId oid, String dataset) {
+	public Set<IVisualization> getVisualizations(ObjectId oid, ObjectId dataset) {
 		return getDataSet(oid, dataset).getVisualizations();
 	}
 	
-	public IDataSet getDataSet(ObjectId oid, String dataSet) {
+	public IDataSet getDataSet(ObjectId oid, ObjectId dataSet) {
 		return getDataset(getResource(oid), dataSet);
 	}
 	
@@ -193,7 +193,7 @@ public class Viss {
 		return getResource(oid).getDataSets();
 	}
 	
-	public IDataSet getDataset(IResource r, String dataset) {
+	public IDataSet getDataset(IResource r, ObjectId dataset) {
 		for (IDataSet ds : r.getDataSets()) {
 			if (ds.getId().equals(dataset)) {
 				return ds;
@@ -202,11 +202,11 @@ public class Viss {
 		throw VissError.noSuchDataSet();
 	}
 
-	public IVisualization getVisualization(ObjectId oid, String dataset, String vis) {
+	public IVisualization getVisualization(ObjectId oid, ObjectId dataset, String vis) {
 		return getVisualization(getResource(oid), dataset, vis);
 	}
 
-	public IVisualization getVisualization(IResource r, String dataset, String vis) {
+	public IVisualization getVisualization(IResource r, ObjectId dataset, String vis) {
 		for (IVisualization v : getDataset(r, dataset).getVisualizations()) {
 			if (v.getVisId().equals(vis))
 				return v;
@@ -237,7 +237,7 @@ public class Viss {
 		}
 	}
 
-	public Set<IVisualizer> getVisualizers(ObjectId oid, String dataSet) {
+	public Set<IVisualizer> getVisualizers(ObjectId oid, ObjectId dataSet) {
 		return VisualizerFactory.getVisualizersForDataSet(getDataSet(oid, dataSet));
 	}
 
@@ -249,11 +249,11 @@ public class Viss {
 		return getStore().getAllResources();
 	}
 
-	public StyledLayerDescriptorDocument getSldForVisualization(ObjectId oid, String dataset, String vis) {
+	public StyledLayerDescriptorDocument getSldForVisualization(ObjectId oid, ObjectId dataset, String vis) {
 		return getWMS().getSldForVisualization(getVisualization(oid, dataset, vis));
 	}
 
-	public void setSldForVisualization(ObjectId oid, String dataset, String vis, StyledLayerDescriptorDocument sld) {
+	public void setSldForVisualization(ObjectId oid, ObjectId dataset, String vis, StyledLayerDescriptorDocument sld) {
 		IResource r = getResource(oid);
 		IVisualization v = getVisualization(r, dataset, vis);
 		v.setSld(sld);
@@ -270,7 +270,7 @@ public class Viss {
 		return this.wms;
 	}
 
-	public IVisualizer getVisualizer(ObjectId oid, String dataset, String visualizer) {
+	public IVisualizer getVisualizer(ObjectId oid, ObjectId dataset, String visualizer) {
 		return VisualizerFactory.getVisualizerForDataSet(getDataSet(oid, dataset), visualizer);
 	}
 

@@ -33,12 +33,12 @@ import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.core.UncertaintyValue;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.JSONSchema;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
-import org.uncertweb.viss.vis.netcdf.UncertaintyValue;
 
 @Type(UncertaintyType.NORMAL_DISTRIBUTION)
 public abstract class NormalDistributionVisualizer extends

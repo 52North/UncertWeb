@@ -22,6 +22,7 @@
 package org.uncertweb.viss.mongo.resource;
 
 import static org.uncertweb.viss.core.util.MediaTypes.GEOTIFF_TYPE;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE;
 import static org.uncertweb.viss.core.util.MediaTypes.NETCDF_TYPE;
 import static org.uncertweb.viss.core.util.MediaTypes.OM_2_TYPE;
 import static org.uncertweb.viss.core.util.MediaTypes.X_NETCDF_TYPE;
@@ -141,6 +142,8 @@ public class MongoResourceStore implements IResourceStore {
 			return new MongoNetCDFResource(f, oid, checksum);
 		} else if (mt.equals(OM_2_TYPE)) {
 			return new MongoOMResource(f, oid, checksum);
+		} else if (mt.equals(JSON_UNCERTAINTY_COLLECTION_TYPE)) {
+			return new MongoUncertaintyCollectionResource(f, oid, checksum);
 		}
 		throw VissError.internal("Can not create resource for '" + mt + "'");
 	}

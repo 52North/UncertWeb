@@ -57,13 +57,13 @@ import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.uncertweb.utils.UwStringUtils;
 import org.uncertweb.viss.core.util.JSONConstants;
+import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.core.web.RESTServlet;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Mean;
@@ -95,7 +95,7 @@ public class VissTest extends JerseyTest {
 		org.slf4j.bridge.SLF4JBridgeHandler.install();
 	}
 
-	@Before@After
+	@Before
 	public void deleteAll() throws JSONException {
 		JSONObject j = getWebResource().path(RESOURCES)
 				.accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);
@@ -134,6 +134,10 @@ public class VissTest extends JerseyTest {
 	private InputStream getAggregationResultStream() {
 		return getClass().getResourceAsStream("/data/netcdf/aggresults.nc");
 	}
+	
+	private InputStream getUncertaintyCollectionStream() {
+		return getClass().getResourceAsStream("/data/json/input.json");
+	}
 
 	@Test
 	public void testIS() {
@@ -143,6 +147,7 @@ public class VissTest extends JerseyTest {
 		testStream(getMahalanobianStream());
 		testStream(getOsloMetStream());
 		testStream(getAggregationResultStream());
+		testStream(getUncertaintyCollectionStream());
 	}
 	
 	private void testStream(InputStream is) {
@@ -150,14 +155,43 @@ public class VissTest extends JerseyTest {
 		IOUtils.closeQuietly(is);
 	}
 
+	@Test
+	public void testUncertaintyCollection() throws JSONException {
+		ObjectId r = addResource(MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE, getUncertaintyCollectionStream());
+		for (ObjectId ds : getDataSetsForResource(r)) {
+			for (String s : getVisualizersForDataset(r, ds))  {
+				if (s.equals("MeanStatistic") || s.equals("StandardDeviationStatistic")) {
+					createVisualization(r, ds, s);
+				}
+			}
+		}
+	}
 	
+	private String[] getVisualizersForDataset(ObjectId r, ObjectId ds) {
+		try {
+			JSONObject j = getWebResource().path(
+					VISUALIZERS_FOR_DATASET
+						.replace(RESOURCE_PARAM_P, r.toString())
+						.replace(DATASET_PARAM_P, ds.toString())
+					).get(JSONObject.class);
+			JSONArray a = j.getJSONArray(JSONConstants.VISUALIZERS_KEY);
+			String[] result = new String[a.length()];
+			for (int i = 0; i < result.length; ++i) {
+				result[i] = a.getJSONObject(i).getString(JSONConstants.ID_KEY);
+			}
+			return result;
+		} catch (JSONException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Test 
 	@Ignore
 	public void testMahalanobian() throws JSONException {
 		ObjectId r = addResource(NETCDF_TYPE, getMahalanobianStream());
 		ObjectId ds = getDataSetsForResource(r)[0];
 		
-		String vis = createVisualization(r, ds, MeanStatistic.class.getSimpleName(), new JSONObject());
+		String vis = createVisualization(r, ds, MeanStatistic.class.getSimpleName());
 		
 		JSONObject res = getVisualization(r, ds, vis);
 		System.err.println(res.toString(4));
@@ -174,7 +208,7 @@ public class VissTest extends JerseyTest {
 	public void testAggrgationResults() throws JSONException {
 		ObjectId r = addResource(NETCDF_TYPE, getAggregationResultStream());
 		ObjectId ds = getDataSetsForResource(r)[0];
-		String vis = createVisualization(r, ds, MeanStatistic.class.getSimpleName(), new JSONObject());
+		String vis = createVisualization(r, ds, MeanStatistic.class.getSimpleName());
 		JSONObject res = getVisualization(r, ds, vis);
 		System.err.println(res.toString(4));
 	}
@@ -241,6 +275,10 @@ public class VissTest extends JerseyTest {
 		return getWebResource().path(s).get(JSONObject.class).getString(JSONConstants.ID_KEY);
 	}
 
+	private String createVisualization(ObjectId resource, ObjectId dataset, String visualizer) throws JSONException {
+		return createVisualization(resource, dataset, visualizer, new JSONObject());
+	}
+
 	@Test
 	public void sameVisualizationWithParameters() throws JSONException {
 		ObjectId oid = addResource(OM_2_TYPE, getOMStream());
@@ -268,7 +306,6 @@ public class VissTest extends JerseyTest {
 		} catch (JSONException e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	@Test
@@ -278,17 +315,12 @@ public class VissTest extends JerseyTest {
 
 		ObjectId[] datasets = getDataSetsForResource(oid);
 
-		String meanVisId = createVisualization(oid, datasets[0],
-				getNameForVisualizer(Mean.class), new JSONObject());
-		createVisualization(oid, datasets[0],
-				getNameForVisualizer(Variance.class), new JSONObject());
-		createVisualization(oid, datasets[0],
-				getNameForVisualizer(StandardDeviation.class), new JSONObject());
-		createVisualization(oid, datasets[0],
-				getNameForVisualizer(Probability.class),
+		String meanVisId = createVisualization(oid, datasets[0], getNameForVisualizer(Mean.class));
+		createVisualization(oid, datasets[0], getNameForVisualizer(Variance.class));
+		createVisualization(oid, datasets[0], getNameForVisualizer(StandardDeviation.class));
+		createVisualization(oid, datasets[0], getNameForVisualizer(Probability.class),
 				new JSONObject().put(Probability.MAX_PARAMETER, 0.5D));
-		createVisualization(oid, datasets[0],
-				getNameForVisualizer(ProbabilityForInterval.class),
+		createVisualization(oid, datasets[0], getNameForVisualizer(ProbabilityForInterval.class),
 				new JSONObject().put(ProbabilityForInterval.MIN_PARAMETER, 0.3D)
 								.put(ProbabilityForInterval.MAX_PARAMETER, 0.6D));
 
@@ -339,21 +371,17 @@ public class VissTest extends JerseyTest {
 	public void testOMResource() throws JSONException {
 		ObjectId oid = addResource(OM_2_TYPE, getOMStream());
 		ObjectId[] datasets = getDataSetsForResource(oid);
-		createVisualization(oid, datasets[0], getNameForVisualizer(Mean.class),
-				new JSONObject());
+		createVisualization(oid, datasets[0], getNameForVisualizer(Mean.class));
 	}
 
 	@Test
 	public void testSameVisualization() throws JSONException {
 		ObjectId oid = addResource(NETCDF_TYPE, getNetCDFStream());
 		ObjectId[] datasets = getDataSetsForResource(oid);
-		String visId1 = createVisualization(oid, datasets[0],
-				getNameForVisualizer(Mean.class), new JSONObject());
-		String visId2 = createVisualization(oid, datasets[0],
-				getNameForVisualizer(Mean.class), new JSONObject());
+		String visId1 = createVisualization(oid, datasets[0], getNameForVisualizer(Mean.class));
+		String visId2 = createVisualization(oid, datasets[0], getNameForVisualizer(Mean.class));
+		String visId3 = createVisualization(oid, datasets[0], getNameForVisualizer(Variance.class));
 		assertEquals(visId1, visId2);
-		String visId3 = createVisualization(oid, datasets[0],
-				getNameForVisualizer(Variance.class), new JSONObject());
 		assertTrue(!visId2.equals(visId3));
 	}
 

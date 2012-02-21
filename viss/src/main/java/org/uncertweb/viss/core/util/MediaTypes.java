@@ -151,5 +151,15 @@ public class MediaTypes {
 	public static final String JSON_SCHEMA = "application/schema+json";
 	
 	public static final MediaType JSON_SCHEMA_TYPE = valueOf(JSON_SCHEMA);
-			
+	
+	private static final String UNCERTAINTY_COLLECTION = PRE + "uncertainty-collection";
+	
+	public static final String JSON_UNCERTAINTY_COLLECTION = UNCERTAINTY_COLLECTION + "+json";
+	
+	public static final MediaType JSON_UNCERTAINTY_COLLECTION_TYPE = valueOf(JSON_UNCERTAINTY_COLLECTION);
+	
+	public static final String XML_UNCERTAINTY_COLLECTION = UNCERTAINTY_COLLECTION + "+xml";
+	
+	public static final MediaType XML_UNCERTAINTY_COLLECTION_TYPE = valueOf(XML_UNCERTAINTY_COLLECTION);
+	
 }

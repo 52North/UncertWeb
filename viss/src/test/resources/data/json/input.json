@@ -1,0 +1,50 @@
+{
+    "UncertaintyCollection": {
+        "uncertainties": [
+            {
+                "constraints": [
+                    {
+                        "type": "GREATER_THAN", 
+                        "value": 0.5
+                    }
+                ], 
+                "ref": {
+                    "mimeType": "image/geotiff", 
+                    "url": "http://ehabitat-wps.jrc.ec.europa.eu/wps/wpsoutputs/tmpTFuyEV-10059MRVQim.tif"
+                }, 
+                "type": "http://www.uncertml.org/statistics/probability"
+            }, 
+            {
+                "ref": {
+                    "mimeType": "image/geotiff", 
+                    "url": "http://ehabitat-wps.jrc.ec.europa.eu/wps/wpsoutputs/tmpT45gv6-10059lzeCyC.tif"
+                }, 
+                "type": "http://www.uncertml.org/statistics/mean"
+            }, 
+            {
+                "ref": {
+                    "mimeType": "image/geotiff", 
+                    "url": "http://ehabitat-wps.jrc.ec.europa.eu/wps/wpsoutputs/tmpIesHSD-10059qkrOmK.tif"
+                }, 
+                "type": "http://www.uncertml.org/statistics/standard-deviation"
+            }, 
+            {
+                "id": "1", 
+                "ref": {
+                    "mimeType": "image/geotiff", 
+                    "url": "http://ehabitat-wps.jrc.ec.europa.eu/wps/wpsoutputs/tmpa1ol5a-10059plA1Ax.tif"
+                }, 
+                "type": "http://www.uncertml.org/samples/realisation"
+            }, 
+            {
+                "id": "2", 
+                "ref": {
+                    "mimeType": "image/geotiff", 
+                    "url": "http://ehabitat-wps.jrc.ec.europa.eu/wps/wpsoutputs/tmptVAUXk-10059G3nBlx.tif"
+                }, 
+                "type": "http://www.uncertml.org/samples/realisation"
+            }
+        ]
+    }
+}
+

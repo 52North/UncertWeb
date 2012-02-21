@@ -31,6 +31,7 @@ import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST_TYPE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_SCHEMA;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_UNCERTAINTY_COLLECTION;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER;
@@ -131,12 +132,12 @@ public class RESTServlet {
 	@POST
 	@Path(RESOURCES)
 	@Produces(JSON_RESOURCE)
-	@Consumes({JSON_REQUEST, NETCDF, X_NETCDF, GEOTIFF, OM_2})
+	@Consumes({JSON_REQUEST, NETCDF, X_NETCDF, GEOTIFF, OM_2, JSON_UNCERTAINTY_COLLECTION })
 	public Response createResource(InputStream is,
 			@HeaderParam(HttpHeaders.CONTENT_TYPE) MediaType h, @Context UriInfo uriI) {
 		log.debug("Putting Resource.");
 		IResource r = null;
-		if (JSON_REQUEST_TYPE.equals(h)) {
+		if (h.equals(JSON_REQUEST_TYPE)) {
 			try {
 				JSONObject j = new JSONObject(IOUtils.toString(is));
 				log.debug("Fetching resource described as json: {}\n", j.toString(4));
@@ -198,7 +199,7 @@ public class RESTServlet {
 	@GET
 	@Path(DATASET)
 	@Produces(JSON_DATASET)
-	public IDataSet getDataSet(@PathParam(RESOURCE_PARAM) ObjectId oid, @PathParam(DATASET_PARAM) String dataSet) {
+	public IDataSet getDataSet(@PathParam(RESOURCE_PARAM) ObjectId oid, @PathParam(DATASET_PARAM) ObjectId dataSet) {
 		log.debug("Getting DataSet with Id \"{}\" for Resource with ObjectId \"{}\".", dataSet, oid);
 		return Viss.getInstance().getDataSet(oid,dataSet);
 	}
@@ -216,8 +217,8 @@ public class RESTServlet {
 	@Produces(JSON_VISUALIZER_LIST)
 	public Set<IVisualizer> getVisualizersForDataSet(
 			@PathParam(RESOURCE_PARAM) ObjectId oid,
-			@PathParam(DATASET_PARAM) String dataset) {
-		log.debug("Getting Visualizers for Resource with ObjectId \"{}\".", oid);
+			@PathParam(DATASET_PARAM) ObjectId dataset) {
+		log.debug("Getting Visualizers for Resource \"{}\" and Dataset \"{}\".", dataset);
 		return Viss.getInstance().getVisualizers(oid, dataset);
 	}
 
@@ -226,7 +227,7 @@ public class RESTServlet {
 	@Produces(JSON_VISUALIZER)
 	public IVisualizer getVisualizerForResource(
 			@PathParam(RESOURCE_PARAM) ObjectId oid,
-			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
 			@PathParam(VISUALIZER_PARAM) String visualizer) {
 		log.debug("Getting Visualizer with ID {} for Resource with ObjectId \"{}\".",
 				visualizer, oid);
@@ -246,7 +247,7 @@ public class RESTServlet {
 	@Produces(JSON_VISUALIZATION_LIST)
 	public Set<IVisualization> getVisualizations(
 			@PathParam(RESOURCE_PARAM) ObjectId oid, 
-			@PathParam(DATASET_PARAM) String dataset) {
+			@PathParam(DATASET_PARAM) ObjectId dataset) {
 		log.debug("Getting Visualizations of resource with ObjectId \"{}\"", oid);
 		return Viss.getInstance().getVisualizations(oid, dataset);
 	}
@@ -257,7 +258,7 @@ public class RESTServlet {
 	@Consumes(JSON_CREATE)
 	public Response createVisualization(
 			@PathParam(RESOURCE_PARAM) ObjectId oid,
-			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
 			@PathParam(VISUALIZER_PARAM) String visualizer,
 			JSONObject options,
 			@Context UriInfo uriI) {
@@ -276,7 +277,7 @@ public class RESTServlet {
 	@Produces(JSON_VISUALIZATION)
 	public IVisualization getVisualization(
 			@PathParam(RESOURCE_PARAM) ObjectId resource,
-			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
 			@PathParam(VISUALIZATION_PARAM) String vis) {
 		log.debug("Getting visualization for resource with ObjectId \"{}\".", resource);
 		return Viss.getInstance().getVisualization(resource, dataset, vis);
@@ -286,7 +287,7 @@ public class RESTServlet {
 	@Path(VISUALIZATION)
 	public void deleteVisualization(
 			@PathParam(RESOURCE_PARAM) ObjectId oid,
-			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
 			@PathParam(VISUALIZATION_PARAM) String vis) {
 		log.debug("Deleting visualization for resource with ObjectId \"{}\".");
 		Viss.getInstance().deleteVisualization(oid, dataset, vis);
@@ -297,7 +298,7 @@ public class RESTServlet {
 	@Consumes(STYLED_LAYER_DESCRIPTOR)
 	public Response setSldForVisualization(
 			@PathParam(RESOURCE_PARAM) ObjectId oid,
-			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
 			@PathParam(VISUALIZATION_PARAM) String vis, 
 			StyledLayerDescriptorDocument sld,
 			@Context UriInfo uriI) {
@@ -313,7 +314,7 @@ public class RESTServlet {
 	@Produces(STYLED_LAYER_DESCRIPTOR)
 	public StyledLayerDescriptorDocument getSldForVisualization(
 			@PathParam(RESOURCE_PARAM) ObjectId oid, 
-			@PathParam(DATASET_PARAM) String dataset,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
 			@PathParam(VISUALIZATION_PARAM) String vis) {
 		log.debug("Getting SLD for Visualization with ObjectId \"{}\"", oid);
 		return Viss.getInstance().getSldForVisualization(oid, dataset, vis);
