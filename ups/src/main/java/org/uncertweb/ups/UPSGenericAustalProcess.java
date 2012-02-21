@@ -225,8 +225,8 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 			/*
 			 * TODO: what about netCDF!?
 			 */			 
-			sampleDistributions(uobsColl, id);	
-			//sampleDistributions2(uobsColl, id);
+			//sampleDistributions(uobsColl, id);	
+			sampleDistributions2(uobsColl, id);
 		}
 		
 		// 4) run Austal for the number of iterations
@@ -450,51 +450,62 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		
 		// get samples for OM collection
 		IObservationCollection iobs = null;
-		if(uobsColl.getObservations().get(0).getResult() instanceof NormalDistribution)
+		if(uobsColl.getObservations().get(0).getResult().getValue() instanceof NormalDistribution)
 				iobs = Gaussian2Samples(uobsColl);
-		else if(uobsColl.getObservations().get(0).getResult() instanceof MultivariateNormalDistribution)
+		else if(uobsColl.getObservations().get(0).getResult().getValue() instanceof MultivariateNormalDistribution)
 			iobs = MultivariateGaussian2Samples(uobsColl);
 		
 		// loop through observations with samples
 		Iterator<? extends AbstractObservation> observationIterator = iobs.getObservations().iterator();		
 		int counter = 0;		
-		while (observationIterator.hasNext()) {			
-			UncertaintyObservation abstractObservation = (UncertaintyObservation) observationIterator
-					.next();			
+		for (AbstractObservation obs : iobs.getObservations()) {	
+			UncertaintyObservation abstractObservation = (UncertaintyObservation) obs;
 			UncertaintyResult result = abstractObservation.getResult();			
 			IUncertainty resultUncertainty = result.getUncertaintyValue();							
 			try {		
 				if(resultUncertainty instanceof AbstractSample){	
 					AbstractSample abstractSample = (AbstractSample) resultUncertainty;
 					ContinuousRealisation realisations = (ContinuousRealisation) abstractSample.getRealisations().get(0);				
-					if(uobsColl.getObservations().get(0).getResult() instanceof NormalDistribution){
+					if(uobsColl.getObservations().get(0).getResult().getValue() instanceof NormalDistribution){
 						Double[] samples = realisations.getValues().toArray(new Double[0]);
 						samples2Measurement(samples, abstractObservation, uncertainInputId);
 					}
-					else if(uobsColl.getObservations().get(0).getResult() instanceof MultivariateNormalDistribution){
+					else if(uobsColl.getObservations().get(0).getResult().getValue() instanceof MultivariateNormalDistribution){
 						Double[] r = realisations.getValues().toArray(new Double[0]);
-						Double[][] samples = new Double[numberOfRealisations][r.length/numberOfRealisations];
+						int sampleLength = r.length/numberOfRealisations;
+						Double[][] samples = new Double[numberOfRealisations][sampleLength];
 						
+						int count = 0;
+						for(int i = 0; i<numberOfRealisations; i++){
+							for(int j=0; j<sampleLength;j++){
+								samples[i][j] = r[count];
+								count++;
+							}							
+						}
+												
+						multivariateSamples2Measurement(uncertainInputId, abstractObservation, samples, 
+								sampleLength);
 						// Put raw values into double[]:
 						// (All values of all variables into one array)
-						List<Double> utsResult = new LinkedList<Double>();
-						for (int a = 0; a < r.length; a++) {
-							utsResult.add(r[a]);
-						}
+//						List<Double> utsResult = new LinkedList<Double>();
+//						for (int a = 0; a < r.length; a++) {
+//							utsResult.add(r[a]);
+//						}
 
 						// Put values into a double[][]
 						// (the first 24 values are all hours of day for the first austal run,
-						int hour = 0;
-						int austalrun = 0;
-						for (int i = 0; i < utsResult.size(); i++) { // immer 24 hintereinander
-							samples[austalrun][hour] = utsResult.get(i);
-							hour++;
-							if (hour == 24) {
-								hour = 0;
-								austalrun++;
-							}
-						}
-						multivariateSamples2Measurement(uncertainInputId, abstractObservation, samples, ((MultivariateNormalDistribution)resultUncertainty).getCovarianceMatrix().getDimension());
+//						int hour = 0;
+//						int austalrun = 0;
+//						
+//						for (int i = 0; i < r.length; i++) { // immer 24 hintereinander
+//							samples[austalrun][hour] = r[i];
+//							hour++;
+//							if (hour == 24) {
+//								hour = 0;
+//								austalrun++;
+//							}
+//						}
+
 					}
 						
 				}else if(resultUncertainty instanceof AbstractRealisation){
@@ -572,7 +583,21 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		
 		// add inputs for request
 		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("distribution", uColl);
+		File f = new File("c:/temp/ucoll.xml");			
+		try {
+			String s = new XBObservationEncoder().encodeObservationCollection(uColl);				
+			BufferedWriter b = new BufferedWriter(new FileWriter(f));				
+			b.write(s);
+			b.flush();
+			b.close();
+			
+		} catch (OMEncodingException e1) {
+			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		inputs.put("distribution", "file:///" + f.getAbsoluteFile());
+	//	inputs.put("distribution", uColl);
 		inputs.put("numbReal", ""+numberOfRealisations);
 		
 		// Make execute request
