@@ -362,13 +362,14 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 				} 
 			}
 		}		
-				
-		
-		
+					
 		// then get emission and meteorology time series and create zeitreihe and austal2000txt
 		Austal2000Txt austal = new Austal2000Txt(sa, emissionSources);
 		austal.setQs(Integer.parseInt(qs));
 		Zeitreihe ts = new Zeitreihe(metList, emissionSources, z0);	
+		
+		// adapt lengths of time series
+	//	ts.setTimePeriod(ts.getMeteorologyTimeSeries().getMinDate(), ts.getMeteorologyTimeSeries().getMaxDate());
 		
 		// 1.4) get receptor point input
 		List<IData> receptorPointsDataList = inputData.get(inputIDReceptorPoints);
@@ -529,7 +530,7 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 				// only if it's a new spatial sampling feature
 				else if (!spsam.equals(abstractObservation.getFeatureOfInterest())) {
 					// check if current time series has correct length
-					if(emisTS.getTimeStamps().size()==tsSize){
+					if(emisTS.getTimeStamps().size()>=tsSize){
 						// add emission time series to previous emission source
 						emissions.get(emissions.size()-1).setEmissionList(emisTS);
 					}else{
