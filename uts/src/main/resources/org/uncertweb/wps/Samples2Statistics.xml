@@ -47,6 +47,10 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="
 					<ows:AllowedValues>
 						<ows:Value>http://www.uncertml.org/statistics/mean</ows:Value>
 						<ows:Value>http://www.uncertml.org/statistics/standard-deviation</ows:Value>
+						<ows:Value>http://www.uncertml.org/statistics/variance</ows:Value>
+						<ows:Value>http://www.uncertml.org/statistics/range</ows:Value>		
+						<ows:Value>http://www.uncertml.org/statistics/interquartile-range</ows:Value>			
+						<ows:Value>http://www.uncertml.org/statistics/confidence-interval</ows:Value>			
 					</ows:AllowedValues>
 				</LiteralData>
 			</Input>

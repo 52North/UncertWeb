@@ -27,9 +27,14 @@ import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.sample.ISample;
 import org.uncertml.sample.RandomSample;
 import org.uncertml.sample.UnknownSample;
+import org.uncertml.statistic.ConfidenceInterval;
+import org.uncertml.statistic.InterquartileRange;
 import org.uncertml.statistic.Mean;
+import org.uncertml.statistic.Quantile;
+import org.uncertml.statistic.Range;
 import org.uncertml.statistic.StandardDeviation;
 import org.uncertml.statistic.StatisticCollection;
+import org.uncertml.statistic.Variance;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -179,6 +184,25 @@ public class Samples2Statistics extends AbstractAlgorithm {
 						double sd = c.tryEval("sd(samples)").asDouble();
 						statColl.add(new StandardDeviation(sd));
 					}
+					if(para.contains("variance")){
+						double var = c.tryEval("var(samples)").asDouble();
+						statColl.add(new Variance(var));
+					}
+					if(para.contains("interquartile-range")){
+						double lower = c.tryEval("quantile(samples,0.25)").asDouble();
+						double upper = c.tryEval("quantile(samples,0.75)").asDouble();
+						statColl.add(new InterquartileRange(lower, upper));
+					}
+					if(para.contains("range")){
+						double min = c.tryEval("min(samples)").asDouble();
+						double max = c.tryEval("max(samples)").asDouble();
+						statColl.add(new Range(min, max));
+					}
+					if(para.contains("confidence-interval")){
+						double lower = c.tryEval("quantile(samples,0.025)").asDouble();
+						double upper = c.tryEval("quantile(samples,0.975)").asDouble();
+						statColl.add(new ConfidenceInterval(new Quantile(0.025, lower), new Quantile(0.975, upper)));
+					}
 				}			
 				resultUncertainty = statColl;					
 			}else{
@@ -259,11 +283,25 @@ public class Samples2Statistics extends AbstractAlgorithm {
 								double sd = c.tryEval("sd(samples)").asDouble();
 								statColl.add(new StandardDeviation(sd));
 							}
-//							<ows:Value>uncertweb:Range</ows:Value>
-//							<ows:Value>uncertweb:InterquartileRange</ows:Value>
-//							<ows:Value>uncertweb:ConfidenceInterval-95</ows:Value>
-//							<ows:Value>uncertweb:ConfidenceInterval-99</ows:Value>
-//							<ows:Value>uncertweb:Decile</ows:Value>
+							if(para.contains("variance")){
+								double var = c.tryEval("var(samples)").asDouble();
+								statColl.add(new Variance(var));
+							}
+							if(para.contains("interquartile-range")){
+								double lower = c.tryEval("quantile(samples,0.25)").asDouble();
+								double upper = c.tryEval("quantile(samples,0.75)").asDouble();
+								statColl.add(new InterquartileRange(lower, upper));
+							}
+							if(para.contains("range")){
+								double min = c.tryEval("min(samples)").asDouble();
+								double max = c.tryEval("max(samples)").asDouble();
+								statColl.add(new Range(min, max));
+							}
+							if(para.contains("confidence-interval")){
+								double lower = c.tryEval("quantile(samples,0.025)").asDouble();
+								double upper = c.tryEval("quantile(samples,0.975)").asDouble();
+								statColl.add(new ConfidenceInterval(new Quantile(0.025, lower), new Quantile(0.975, upper)));
+							}
 						}
 							
 						// make new observation
