@@ -36,7 +36,7 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			test(geometry,"Geometry");
 			test(procedure,"Procedure");
 			test(observedProperty, "ObservedProperty");
-			test(uom,"UOM");
+			//test(uom,"UOM");
 			test(values, "values");
 
 			this.srid = srid;
