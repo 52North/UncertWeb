@@ -143,9 +143,13 @@ public class RESTServlet {
 				log.debug("Fetching resource described as json: {}\n", j.toString(4));
 				URL url = new URL(j.getString("url"));
 				HttpURLConnection con = (HttpURLConnection) url.openConnection();
-				con.setRequestMethod(j.getString("method"));
+				String method = j.optString("method");
+				if (method == null || method.trim().isEmpty()) {
+					method = "GET";
+				}
+				con.setRequestMethod(method);
 				String req = j.optString("request");
-				if (req != null) {
+				if (req != null && !req.trim().isEmpty()) {
 					String reqMt = j.optString("requestMediaType");
 					if (reqMt != null) {
 						con.setRequestProperty("Content-Type", reqMt);
