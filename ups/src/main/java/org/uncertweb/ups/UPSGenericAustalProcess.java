@@ -211,23 +211,15 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		
 		// 3) treat uncertain inputs
 		
-//		// connect to UTS
-//		utsSession = WPSClientSession.getInstance();
-//		try {
-//			utsSession.connect(utsAddress);
-//		} catch (WPSClientException e1) {
-//			e1.printStackTrace();
-//		}	
-		
 		Map<String, IData> uncertainInputs = filterUncertainInputs(inputMap);					
 		for (String id : uncertainInputs.keySet()) {
 			UncertaintyObservationCollection uobsColl = (UncertaintyObservationCollection)uncertainInputs.get(id).getPayload();
-			/*
-			 * TODO: what about netCDF!?
-			 */			 
-			//sampleDistributions(uobsColl, id);	
 			sampleDistributions2(uobsColl, id);
 		}
+		
+		// free memory
+		uncertainInputs = null;
+		System.gc();
 		
 		// 4) run Austal for the number of iterations
 		ArrayList<IObservationCollection> resultObservationList  = new ArrayList<IObservationCollection>(3);
@@ -416,29 +408,6 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		return result;		
 	}
 	
-	private void sampleDistributions(UncertaintyObservationCollection uobsColl, String uncertainInputId){		
-		/*
-		 * iterate over uncertain observations of UncertaintyObservationCollection
-		 * send distributions of uncertain observation to UTS
-		 * create new measurement out of uncertain observation 
-		 * with the sample as result and store in measurement collection
-		 */
-
-		Iterator<? extends AbstractObservation> observationIterator = uobsColl.getObservations().iterator();		
-		int counter = 0;		
-		while (observationIterator.hasNext()) {			
-			UncertaintyObservation abstractObservation = (UncertaintyObservation) observationIterator
-					.next();			
-			UncertaintyResult result = abstractObservation.getResult();			
-			IUncertainty resultUncertainty = result.getUncertaintyValue();							
-			try {				
-				handleUncertainty(resultUncertainty, abstractObservation, uncertainInputId);													
-			} catch (Exception e) {
-				e.printStackTrace();				
-				counter++;
-			}
-		}	
-	}
 	
 	private void sampleDistributions2(UncertaintyObservationCollection uobsColl, String uncertainInputId){		
 		/*
@@ -456,8 +425,6 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 			iobs = MultivariateGaussian2Samples(uobsColl);
 		
 		// loop through observations with samples
-		Iterator<? extends AbstractObservation> observationIterator = iobs.getObservations().iterator();		
-		int counter = 0;		
 		for (AbstractObservation obs : iobs.getObservations()) {	
 			UncertaintyObservation abstractObservation = (UncertaintyObservation) obs;
 			UncertaintyResult result = abstractObservation.getResult();			
@@ -485,27 +452,6 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 												
 						multivariateSamples2Measurement(uncertainInputId, abstractObservation, samples, 
 								sampleLength);
-						// Put raw values into double[]:
-						// (All values of all variables into one array)
-//						List<Double> utsResult = new LinkedList<Double>();
-//						for (int a = 0; a < r.length; a++) {
-//							utsResult.add(r[a]);
-//						}
-
-						// Put values into a double[][]
-						// (the first 24 values are all hours of day for the first austal run,
-//						int hour = 0;
-//						int austalrun = 0;
-//						
-//						for (int i = 0; i < r.length; i++) { // immer 24 hintereinander
-//							samples[austalrun][hour] = r[i];
-//							hour++;
-//							if (hour == 24) {
-//								hour = 0;
-//								austalrun++;
-//							}
-//						}
-
 					}
 						
 				}else if(resultUncertainty instanceof AbstractRealisation){
@@ -513,7 +459,6 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();				
-				counter++;
 			}
 		}	
 	}
@@ -633,33 +578,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		}
 		return iobs;
 	}
-	
-	private void handleUncertainty(IUncertainty resultUncertainty, UncertaintyObservation abstractObservation, String uncertainInputId) throws IllegalArgumentException{
 		
-		if(resultUncertainty instanceof NormalDistribution){
-			
-			try {
-				// first get samples then add to measurement collection
-				Double[] samples = sampleNormalDistribution((NormalDistribution) resultUncertainty);
-				samples2Measurement(samples, abstractObservation, uncertainInputId);
-			} catch (UnsupportedUncertaintyTypeException e) {
-				e.printStackTrace();
-			} catch (UncertaintyEncoderException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-		}else if(resultUncertainty instanceof MultivariateNormalDistribution){
-			// first get samples then add to measurement collection	
-			Double[][] samples = sampleMultivariateDistribution((MultivariateNormalDistribution)resultUncertainty);								
-			multivariateSamples2Measurement(uncertainInputId, abstractObservation, samples, ((MultivariateNormalDistribution)resultUncertainty).getCovarianceMatrix().getDimension());
-		}
-		/*
-		 * TODO: handle other types of distributions
-		 */
-	}
-	
 	private void samples2Measurement(Double[] samples, UncertaintyObservation uo, String uncertainInputId){
 		
 		for (int i = 0; i < samples.length; i++) {
@@ -743,7 +662,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 			}
 			Identifier identifier = new Identifier(uri, ident);
 			
-			DateTime hourDate = uo.getPhenomenonTime().getDateTime().plusHours(hour);
+			DateTime hourDate = uo.getPhenomenonTime().getDateTime().plusHours(hour+1);
 			TimeObject hourOfDay = new TimeObject(hourDate);
 
 			// make other measurement input
@@ -774,300 +693,10 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 //			} catch (OMEncodingException e) {
 //				e.printStackTrace();
 //			}
-		}
-		
-	}
-		
-		
-	}
-	
-	private Double[] sampleNormalDistribution(NormalDistribution distribution) throws UnsupportedUncertaintyTypeException, UncertaintyEncoderException, IOException{
-		
-		// to be returned
-		Double[] samples = new Double[numberOfRealisations];
-
-		// connect to UTS
-		WPSClientSession session = WPSClientSession.getInstance();
-		ExecuteDocument execDocUTS = null;
-
-		try {
-			session.connect(utsAddress);
-		} catch (WPSClientException e) {
-			e.printStackTrace();
-		}
-				
-			NormalDistribution distrib = (NormalDistribution) distribution;
-
-			String dist = new XMLEncoder().encode(distrib);
-			
-			// parameters
-			String mean = distrib.getMean().get(0).toString();
-			String variance = distrib.getVariance().get(0).toString();
-
-			String templatePath = WPSConfig.getConfigPath().substring(0,WPSConfig.getConfigPath().indexOf("config/")).concat("resources/request_templates/");
-			
-			File f = new File(templatePath + "NormalRequest.xml");
-			
-			BufferedReader bread = new BufferedReader(new FileReader(f));
-			
-			String content = "";
-			
-			String line = "";
-			
-			while ((line = bread.readLine()) != null) {
-				if(line.contains("%$dist$%")){
-					line = line.replace("%$dist$%", dist);
-				}else
-					if(line.contains("%$numbReal$%")){
-						line = line.replace("%$numbReal$%", "" + numberOfRealisations);
-					}
-				content = content.concat(line);				
-			}
-			
-			// Make execute request
-			try {
-				// execDocUTSday = ExecuteDocument.Factory.parse(new
-				// File("D:\\Eclipse_Workspace\\ups_wrapper\\src\\main\\resources\\request_templates\\LogNormalRequest.xml"));
-				execDocUTS = ExecuteDocument.Factory.parse(content);
-			} catch (XmlException e) {
-				e.printStackTrace();
-			} 
-			
-			// Run UTS and get output (=Realisation object)
-			ExecuteResponseDocument responseUTSday = null;
-			try {
-				responseUTSday = (ExecuteResponseDocument) session.execute(
-						utsAddress,
-						execDocUTS);
-			} catch (WPSClientException e) {
-				logger.debug(e);
-			}
-			
-
-		// Get realisations out of response xml.
-		// TODO This could be done more elegantly, maybe?
-		OutputDataType oType = responseUTSday.getExecuteResponse()
-				.getProcessOutputs().getOutputArray(0); // all output elements
-		Node wpsComplexData = oType.getData().getComplexData().getDomNode(); // the
-																				// complex
-																				// data
-																				// node
-		Node unSample= wpsComplexData.getChildNodes().item(0); // the
-																		// sample
-																		// node
-		try {
-			AbstractSample sample = (AbstractSample) new XMLParser().parse(nodeToString(unSample));
-			ContinuousRealisation realisation = (ContinuousRealisation)sample.getRealisations().get(0);
-			samples = realisation.getValues().toArray(new Double[0]);
-		} catch (UncertaintyParserException e) {
-			e.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			e.printStackTrace();
-		}
-		
-//		Node unRealisation = unSample.getChildNodes().item(2);
-//		Node unValues = unRealisation.getChildNodes().item(0); // the values
-//																// node
-//		Node realisationsValueNode = unValues.getChildNodes().item(0); // the
-//																		// node
-//																		// with
-//																		// the
-//																		// contents
-//																		// of
-//																		// the
-//																		// value
-//																		// node
-//		String realisationsValue = realisationsValueNode.getNodeValue(); // the
-//																			// value
-//																			// of
-//																			// the
-//																			// contents
-//
-//		// put realisations into double array and return:
-//		String[] blub = realisationsValue.split(" ");
-//		for (int a = 0; a < blub.length; a++) {
-//			samples[a] = Double.parseDouble(blub[a]);
-//			System.out.println(samples[a]);
-//		}
-			return samples;
+		}		
+	}		
 	}
 
-	private Double[][] sampleMultivariateDistribution(MultivariateNormalDistribution distrib){
-
-		// connect to UTS
-		WPSClientSession session = WPSClientSession.getInstance();
-		ExecuteDocument execDocUTS = null;
-
-		try {
-			session.connect(utsAddress);
-		} catch (WPSClientException e) {
-			e.printStackTrace();
-		}
-		
-		String meanVector = distrib.getMean().toString(); // "[0.0046, 0.0029, 0.0023, 0.0028, ... 0.0105]"
-		meanVector = meanVector.substring(1, meanVector.length() - 1); // to
-																		// remove
-																		// "[",
-																		// "]"
-		meanVector = meanVector.replace(",", ""); // to remove ","
-//		System.out.println("Meanvector elements: " + meanVector.split(" ").length);
-		// cov matrix as String
-		String covMatrix = distrib.getCovarianceMatrix().getValues()
-				.toString(); // This should look like [x, y, z]
-		covMatrix = covMatrix.substring(1, covMatrix.length() - 1); // Now
-																	// like
-																	// this:
-																	// x, y,
-																	// z
-		covMatrix = covMatrix.replace(",", ""); // to remove ","
-		
-//		System.out.println("Matrix elements: " + covMatrix.split(" ").length);
-		
-		// Make execute request
-		try {
-			// execDocUTShours = ExecuteDocument.Factory.parse(new
-			// File("D:\\Eclipse_Workspace\\ups_wrapper\\src\\main\\resources\\request_templates\\MultivariateRequest.xml"));
-			
-			String templatePath = WPSConfig.getConfigPath().substring(0,WPSConfig.getConfigPath().indexOf("config/")).concat("resources/request_templates/");
-			
-			execDocUTS = ExecuteDocument.Factory
-					.parse(new File(templatePath + "MultivariateRequest.xml"));
-		} catch (XmlException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		InputType[] types = execDocUTS.getExecute().getDataInputs()
-				.getInputArray();
-
-		// Change parameters in request
-		for (InputType inputType : types) {
-			String id = inputType.getIdentifier().getStringValue();
-
-			// Set new number of realisations
-			if (id.equals("numbReal")) {
-				Node wpsLiteralData = inputType.getData().getLiteralData()
-						.getDomNode();
-				Node wpsLiteralDataValueNode = wpsLiteralData
-						.getChildNodes().item(0);
-				String newNumbReal = ((Integer) numberOfRealisations)
-						.toString();
-				wpsLiteralDataValueNode.setNodeValue(newNumbReal);
-			} else if (id.equals("distribution")) {
-
-				// Set new mean vector
-				Node wpsComplexData = inputType.getData().getComplexData()
-						.getDomNode(); // Element wps:ComplexData
-				Node unMultivariateNormalDistribution = wpsComplexData
-						.getChildNodes().item(1); // Element
-													// un:MultivariateNormalDistributio
-				Node unMean = unMultivariateNormalDistribution
-						.getChildNodes().item(1); // Element un:Mean
-				Node meanValueNode = unMean.getChildNodes().item(0); // its
-																		// contents
-				meanValueNode.setNodeValue(meanVector);
-
-				// Set new covariance matrix
-				Node unCovMat = unMultivariateNormalDistribution
-						.getChildNodes().item(3); // Element
-													// un:CovarianceMatrix
-				Node unValues = unCovMat.getChildNodes().item(1); // Element
-																	// values
-				Node covmatValueNode = unValues.getChildNodes().item(0);
-				covmatValueNode.setNodeValue(covMatrix);
-
-				// Set attribute "dimension"
-				NamedNodeMap attrib1 = unCovMat.getAttributes();
-				Node attrib = attrib1.item(0);
-				Integer dim = 24; // should always be 24
-				attrib.setNodeValue(dim.toString());
-			}
-		}
-		
-		// The following is the same for all distribution types:
-
-		// Run UTS and get output (=Realisation object)
-		ExecuteResponseDocument responseUTSday = null;
-		try {
-			responseUTSday = (ExecuteResponseDocument) session.execute(
-					utsAddress,
-					execDocUTS);
-		} catch (WPSClientException e) {
-			e.printStackTrace();
-//			System.out.println(execDocUTS);
-		}
-
-		// Get realisations out of response xml.
-		// TODO This could be done more elegantly, maybe?
-		OutputDataType oType = responseUTSday.getExecuteResponse()
-				.getProcessOutputs().getOutputArray(0); // all output elements
-		Node wpsComplexData = oType.getData().getComplexData().getDomNode(); // the
-																				// complex
-																				// data
-																				// node
-		Node unSample= wpsComplexData.getChildNodes().item(0); 
-		Double[] sampleVals = null;
-		try {
-			AbstractSample sample = (AbstractSample) new XMLParser().parse(nodeToString(unSample));
-			ContinuousRealisation realisation = (ContinuousRealisation)sample.getRealisations().get(0);
-			sampleVals = realisation.getValues().toArray(new Double[0]);
-		} catch (UncertaintyParserException e) {
-			e.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			e.printStackTrace();
-		}
-//		Node unRealisation = wpsComplexData.getChildNodes().item(0); // the
-//																		// realisation
-//																		// node
-//		Node unValues = unRealisation.getChildNodes().item(3); // the values
-//																// node
-//		Node realisationsValueNode = unValues.getChildNodes().item(0); // the
-//																		// node
-//																		// with
-//																		// the
-//																		// contents
-//																		// of
-//																		// the
-//																		// value
-//																		// node
-//		String realisationsValue = realisationsValueNode.getNodeValue(); // the
-//																			// value
-//																			// of
-//																			// the
-//																			// contents
-
-		Double[][] samples = new Double[numberOfRealisations][distrib.getCovarianceMatrix().getDimension()];
-		
-			// Put raw values into double[]:
-			// (All values of all variables into one array)
-//			String[] blub = realisationsValue.split(" ");
-//			List<Double> utsResult = new LinkedList<Double>();
-//			for (int a = 0; a < doubleVals.length; a++) {
-//				utsResult.add(Double.parseDouble(blub[a]));
-//			}
-
-			// Put values into a double[][]
-			// (the first 24 values are all hours of day for the first austal run,
-			// ...)
-			int hour = 0;
-			int austalrun = 0;
-			for (int i = 0; i < sampleVals.length; i++) { // immer 24 hintereinander
-				samples[austalrun][hour] = sampleVals[i];
-				hour++;
-				if (hour == 24) {
-					hour = 0;
-					austalrun++;
-				}
-			}
-		
-		return samples;
-		
-	}
-	
 	
 	private Map<String, Object> addStaticInputs(){
 		Map<String, Object> inputMap = new HashMap<String, Object>();
@@ -1166,6 +795,9 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 				inputMap.put(identifier, staticInputsList.get(identifier).getPayload());
 			}			
 		}
+		// free memory
+		staticInputsList = null;
+		System.gc();
 		
 		return inputMap;
 	}
@@ -1205,8 +837,12 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 				e.printStackTrace();
 			}
 			inputs.put(id.replace(uncertaintyPrefix, ""), "file:///" + f.getAbsoluteFile());
-		}
 			
+			// free memory
+			uncertainInputSamplesMap.get(id).remove((runNumber));
+		}
+		System.gc();
+		
 		// Make execute request
 		ExecuteDocument execDoc = null;
 		try {
@@ -1466,126 +1102,6 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		}
 
 	return execDoc;
-	}
-	
-	/**
-	 * This method creates an <c>ExecuteDocument</c>.
-	 * 
-	 * @param url The url of the WPS the ExecuteDocument 
-	 * @param processID The id of the process the ExecuteDocument
-	 * @param inputs A map holding the identifiers of the inputs and the values
-	 * @return
-	 * @throws Exception
-	 */
-	public ExecuteDocument createExecuteDocument(String url, String processID,
-			Map<String, Object> inputs) throws Exception {
-		
-
-		ProcessDescriptionType processDescription = WPSClientSession.getInstance().getProcessDescription(url, processID);
-		
-		org.n52.wps.client.ExecuteRequestBuilder executeBuilder = new org.n52.wps.client.ExecuteRequestBuilder(
-				processDescription);
-
-		for (InputDescriptionType input : processDescription.getDataInputs()
-				.getInputArray()) {
-			String inputName = input.getIdentifier().getStringValue();
-			Object inputValue = inputs.get(inputName);
-			
-			// Literal data
-			if (input.getLiteralData() != null) {
-				if (inputValue instanceof String) {
-					executeBuilder.addLiteralData(inputName,
-							(String) inputValue);
-				}else if(inputValue instanceof Double){
-					executeBuilder.addLiteralData(inputName,
-							((Double) inputValue)+"");
-				}else if(inputValue instanceof Integer){
-					executeBuilder.addLiteralData(inputName,
-							((Integer) inputValue)+"");
-				}
-			} 
-			// Complex data
-			else if (input.getComplexData() != null) {				
-				String schema = input.getComplexData().getDefault().getFormat().getSchema();				
-				logger.debug(schema);								
-				String mimetype = input.getComplexData().getDefault().getFormat().getMimeType();				
-				logger.debug(mimetype);
-				
-				// Complexdata UncertML
-				if (inputValue instanceof IUncertainty) {					
-					UncertMLBinding d = new UncertMLBinding((IUncertainty) inputValue);				
-					executeBuilder
-							.addComplexData(
-									inputName,
-									d, schema, "UTF-8", mimetype);
-				}
-				// Complexdata Reference
-				else if (inputValue instanceof String) {
-					executeBuilder
-							.addComplexDataReference(
-									inputName,
-									(String) inputValue,
-									schema,
-									"UTF-8", mimetype);
-				}
-				// Complexdata OM
-				else if (inputValue instanceof IObservationCollection) {					
-					OMBinding d = new OMBinding((IObservationCollection) inputValue);				
-					executeBuilder
-							.addComplexData(
-									inputName,
-									d, "http://schemas.opengis.net/om/2.0/observation.xsd", "UTF-8", "application/x-om-u+xml");//TODO: don't hardcode schema and mimetype
-				}
-				// GML
-				else if(inputValue instanceof FeatureCollection){	
-					// make String from GML object
-					GTVectorDataBinding g = new GTVectorDataBinding((FeatureCollection<?,?>) inputValue);						
-					StringWriter buffer = new StringWriter();
-					SimpleGMLGenerator generator = new SimpleGMLGenerator();
-					generator.write(g, buffer);
-					String fc = buffer.toString();
-					
-					// add data to request document
-					InputType inType = executeBuilder.getExecute().getExecute().getDataInputs().addNewInput();
-					input.addNewIdentifier().setStringValue(inputName);
-					ComplexDataType data = inType.addNewData().addNewComplexData();
-					data.set(XmlObject.Factory.parse(fc));
-					data.setMimeType(UncertWebDataConstants.MIME_TYPE_TEXT_XML);
-					data.setSchema("http://schemas.opengis.net/gml/2.1.2/feature.xsd");
-					data.setEncoding(UncertWebDataConstants.ENCODING_UTF_8);	
-					
-					//TODO: does not work!!!
-//					executeBuilder
-//					.addComplexData(
-//							inputName,
-//							g, "http://schemas.opengis.net/gml/2.1.2/feature.xsd", "UTF-8", "text/xml");//TODO: don't hardcode schema and mimetype
-				}
-
-				if (inputValue == null && input.getMinOccurs().intValue() > 0) {
-					throw new IOException("Property not set, but mandatory: "
-							+ inputName);
-				}
-			}
-		}
-		
-		OutputDescriptionType outType = processDescription.getProcessOutputs().getOutputArray(0);
-		
-		String outputIdentifier = outType.getIdentifier().getStringValue();		
-		String outputSchema = outType.getComplexOutput().getDefault().getFormat().getSchema();		
-		String outputMimeType = outType.getComplexOutput().getDefault().getFormat().getMimeType();
-		
-		logger.debug(outputSchema);
-		logger.debug(outputMimeType);		
-		logger.debug(outputIdentifier);
-		
-		executeBuilder.setSchemaForOutput(
-				outputSchema,
-				outputIdentifier);
-		executeBuilder.setMimeTypeForOutput(outputMimeType, outputIdentifier);
-		
-		logger.debug(executeBuilder.getExecute());
-		
-		return executeBuilder.getExecute();
 	}
 	
 
