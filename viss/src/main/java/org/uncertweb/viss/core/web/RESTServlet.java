@@ -222,7 +222,7 @@ public class RESTServlet {
 	public Set<IVisualizer> getVisualizersForDataSet(
 			@PathParam(RESOURCE_PARAM) ObjectId oid,
 			@PathParam(DATASET_PARAM) ObjectId dataset) {
-		log.debug("Getting Visualizers for Resource \"{}\" and Dataset \"{}\".", dataset);
+		log.debug("Getting Visualizers for Resource \"{}\" and Dataset \"{}\".", oid, dataset);
 		return Viss.getInstance().getVisualizers(oid, dataset);
 	}
 

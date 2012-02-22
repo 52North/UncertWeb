@@ -146,8 +146,10 @@ public class VisualizerFactory {
 		
 		Set<IVisualizer> set = UwCollectionUtils.set();
 		for (Class<? extends IVisualizer> v : visualizerForMediaType) {
+			log.debug("Testing {} for compatibility", shortNamesByCreator.get(v));
 			IVisualizer vis = getVisualizer(shortNamesByCreator.get(v));
 			if (vis.getCompatibleUncertaintyTypes().contains(dataSet.getType())) {
+				log.debug("{} seems to be compatible", shortNamesByCreator.get(v));
 				vis.setDataSet(dataSet);
 				set.add(vis);
 			}

@@ -24,9 +24,12 @@ import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_VARIANCE;
 import java.net.URI;
 import java.util.Map;
 
+import javax.rmi.PortableRemoteObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertml.IUncertainty;
+import org.uncertml.UncertML;
 import org.uncertml.distribution.continuous.BetaDistribution;
 import org.uncertml.distribution.continuous.CauchyDistribution;
 import org.uncertml.distribution.continuous.ChiSquareDistribution;
@@ -50,6 +53,7 @@ import org.uncertml.sample.SystematicSample;
 import org.uncertml.sample.UnknownSample;
 import org.uncertml.statistic.CentredMoment;
 import org.uncertml.statistic.CoefficientOfVariation;
+import org.uncertml.statistic.ConstraintType;
 import org.uncertml.statistic.Correlation;
 import org.uncertml.statistic.Decile;
 import org.uncertml.statistic.InterquartileRange;
@@ -59,6 +63,8 @@ import org.uncertml.statistic.Median;
 import org.uncertml.statistic.Mode;
 import org.uncertml.statistic.Moment;
 import org.uncertml.statistic.Percentile;
+import org.uncertml.statistic.Probability;
+import org.uncertml.statistic.ProbabilityConstraint;
 import org.uncertml.statistic.Quantile;
 import org.uncertml.statistic.Quartile;
 import org.uncertml.statistic.Range;
@@ -193,19 +199,24 @@ public class UriBasedUncertaintyParser {
 				return new SystematicSample(getRealisationList(t, v));
 			case UNKNOWN_SAMPLE:
 				return new UnknownSample(getRealisationList(t, v));
+			case PROBABILITY: 
+//				new Probability(new ProbabilityConstraint(ConstraintType.GREATER_OR_EQUAL, value), value)
 				// TODO case CATEGORICAL_REALISATION
 				// TODO case CONFIDENCE_INTERVAL:
 				// TODO case CONFUSION_MATRIX:
 				// TODO case COVARIANCE_MATRIX:
 				// TODO case CREDIBLE_INTERVAL:
-				// TODO case PROBABILITY:
 				// TODO case MIXTURE_MODEL_DISTRIBUTION:
 				// TODO case STATISTIC_COLLECTION:
 			default:
 				return null;
 			}
 		}
-
+		
+		public static void main(String[] agrs) {
+			System.out.println(UncertML.getURI(ConstraintType.class));
+			
+		}
 		protected static final ContinuousRealisation[] getRealisationList(
 				final UncertaintyType t, final Map<URI, Number[]> v) {
 			final Number[] n = getNumberArray(t, v);
