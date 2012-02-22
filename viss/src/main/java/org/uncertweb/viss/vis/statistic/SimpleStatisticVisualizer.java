@@ -78,4 +78,9 @@ public abstract class SimpleStatisticVisualizer extends
 	@Description("Returns the skewness.")
 	public static class SkewnessStatistic extends
 	    SimpleStatisticVisualizer {}
+	
+	@Type(UncertaintyType.PROBABILITY)
+	@Description("Returns the probability.")
+	public static class ProbabilityStatistic extends
+	    SimpleStatisticVisualizer {}
 }
