@@ -45,10 +45,8 @@ import java.util.Map;
 
 import org.geotools.coverage.grid.GridCoverageBuilder;
 import org.geotools.geometry.Envelope2D;
-import org.geotools.referencing.CRS;
 import org.joda.time.DateTime;
 import org.opengis.geometry.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertml.IUncertainty;
@@ -57,6 +55,7 @@ import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.UncertaintyValue;
 import org.uncertweb.viss.core.UriBasedUncertaintyParser;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.vis.WriteableGridCoverage;
 
 import ucar.ma2.Array;
@@ -202,17 +201,6 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 	private int timeDimension;
 	private int sampleDimension;
 	private List<TimeObject> times;
-
-	private static final CoordinateReferenceSystem EPSG4326;
-
-	static {
-		try {
-			EPSG4326 = CRS.getAuthorityFactory(true)
-					.createCoordinateReferenceSystem("EPSG:4326");
-		} catch (Exception e) {
-			throw VissError.internal(e);
-		}
-	}
 
 	public UncertaintyVariable(final UncertaintyNetCDF f, final Variable v) {
 		this.variable = v;
@@ -618,7 +606,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			double lonMax = Math.max(lon1, lon2);
 			double latMin = Math.min(lat1, lat2);
 			double latMax = Math.max(lat1, lat2);
-			return new Envelope2D(EPSG4326, lonMin, latMin, lonMax - lonMin, latMax - latMin);
+			return new Envelope2D(Constants.EPSG4326, lonMin, latMin, lonMax - lonMin, latMax - latMin);
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -638,7 +626,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 		int latSize = getLatitudeSize();
 		int lonSize = getLongitudeSize();
 		final GridCoverageBuilder b = new GridCoverageBuilder();
-		b.setCoordinateReferenceSystem(EPSG4326);
+		b.setCoordinateReferenceSystem(Constants.EPSG4326);
 		log.debug("ImageSize: {}x{}", lonSize, latSize);
 		// FIXME this removes the cross, but thats somewhat ugly
 		b.setImageSize(lonSize - 1, latSize - 1);

@@ -24,8 +24,6 @@ import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_VARIANCE;
 import java.net.URI;
 import java.util.Map;
 
-import javax.rmi.PortableRemoteObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertml.IUncertainty;
@@ -63,8 +61,6 @@ import org.uncertml.statistic.Median;
 import org.uncertml.statistic.Mode;
 import org.uncertml.statistic.Moment;
 import org.uncertml.statistic.Percentile;
-import org.uncertml.statistic.Probability;
-import org.uncertml.statistic.ProbabilityConstraint;
 import org.uncertml.statistic.Quantile;
 import org.uncertml.statistic.Quartile;
 import org.uncertml.statistic.Range;

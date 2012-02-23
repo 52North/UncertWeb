@@ -57,7 +57,6 @@ import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -95,7 +94,7 @@ public class VissTest extends JerseyTest {
 		org.slf4j.bridge.SLF4JBridgeHandler.install();
 	}
 
-	@Before
+//	@Before
 	public void deleteAll() throws JSONException {
 		JSONObject j = getWebResource().path(RESOURCES)
 				.accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);
@@ -157,16 +156,31 @@ public class VissTest extends JerseyTest {
 
 	@Test
 	public void testUncertaintyCollection() throws JSONException {
+		test();test();
+	}
+	private void test() throws JSONException {
 		ObjectId r = addResource(MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE, getUncertaintyCollectionStream());
 		for (ObjectId ds : getDataSetsForResource(r)) {
 			for (String s : getVisualizersForDataset(r, ds))  {
 				if (s.equals("MeanStatistic") || s.equals("StandardDeviationStatistic")) {
+					getVisualizerForDataset(r,ds, s);
 					createVisualization(r, ds, s);
 				}
 			}
 		}
 	}
 	
+	private void getVisualizerForDataset(ObjectId r, ObjectId ds, String s) throws JSONException {
+		String path = VISUALIZER_FOR_DATASET
+			.replace(RESOURCE_PARAM_P, r.toString())
+			.replace(DATASET_PARAM_P, ds.toString())
+			.replace(VISUALIZER_PARAM_P, s);
+		JSONObject cr = getWebResource()
+				.path(path)
+				.get(JSONObject.class);
+		System.out.println(cr.toString(4));
+	}
+
 	private String[] getVisualizersForDataset(ObjectId r, ObjectId ds) {
 		try {
 			JSONObject j = getWebResource().path(

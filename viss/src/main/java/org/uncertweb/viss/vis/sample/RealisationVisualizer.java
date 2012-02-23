@@ -70,11 +70,16 @@ public class RealisationVisualizer extends
 	public Map<String, JSONObject> getOptionsForDataSet(IDataSet r) {
 		try {
 			Map<String, JSONObject> options = super.getOptionsForDataSet(r);
-			ContinuousRealisation real = (ContinuousRealisation) ((UncertaintyVariable) r
-					.getContent()).iterator().next().getValue();
-			options.get(REALISATION_PARAMETER)
-					.put(JSONSchema.Key.MAXIMUM,
-							real.getValues().size()-1);
+			Object o = r.getContent();
+			if (o instanceof UncertaintyVariable) {
+				ContinuousRealisation real = (ContinuousRealisation) ((UncertaintyVariable) r
+						.getContent()).iterator().next().getValue();
+				options.get(REALISATION_PARAMETER)
+				.put(JSONSchema.Key.MAXIMUM,
+						real.getValues().size()-1);
+			} else {
+				// geotiff... (just one realisation)
+			}
 			return options;
 		} catch (JSONException e) {
 			throw VissError.internal(e);

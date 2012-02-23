@@ -26,9 +26,10 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.HashSet;
 import java.util.Set;
 
-import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.utils.UwStringUtils;
 import org.uncertweb.viss.core.UncertaintyType;
 
 public abstract class AbstractAnnotatedUncertaintyViusalizer extends
@@ -55,12 +56,16 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 	@Override
 	public Set<UncertaintyType> getCompatibleUncertaintyTypes() {
 		Type t = findAnnotation(Type.class, getClass());
-		if (t == null)
-			return UwCollectionUtils.set();
-		else
-			return UwCollectionUtils.set(t.value());
+		Set<UncertaintyType> result = new HashSet<UncertaintyType>();
+		if (t != null) {
+			for (UncertaintyType ut : t.value()) {
+				result.add(ut);
+			}
+		}
+		log.debug("Compatible Types ({}): {}", result.size(), UwStringUtils.join(", ", result));
+		return result;
 	}
-
+	
 	@Override
 	public String getDescription() {
 		Description t = findAnnotation(Description.class, getClass());
@@ -73,10 +78,19 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 
 	private static <T extends Annotation> T findAnnotation(Class<T> annotation,
 	    Class<?> c) {
+		log.debug("Searching for annotation {} in {}", annotation, c);
 		T t = null;
 		while ((t = c.getAnnotation(annotation)) == null && c != null) {
-			if (t == null)
+			if (t == null) {
+				log.debug("Annotation not in {}. Searching in Superclass...", c);
 				c = c.getSuperclass();
+				log.debug("Superclass is {}", c);
+			}
+		}
+		if (t != null) {
+			log.debug("Found annotation in {}", c);
+		} else {
+			log.debug("Found no annotation. Gone up till {}.", c);
 		}
 		return t;
 	}

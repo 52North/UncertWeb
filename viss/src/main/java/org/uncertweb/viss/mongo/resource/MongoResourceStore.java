@@ -114,9 +114,7 @@ public class MongoResourceStore implements IResourceStore {
 		ObjectId oid = new ObjectId();
 		try {
 			File f = createResourceFile(oid, mt);
-			log.debug("Size: {}", f.length());
 			long crc = Utils.saveToFileWithChecksum(f, is);
-			log.debug("Size: {}", f.length());
 			AbstractMongoResource<?> r = getResourceWithChecksum(crc);
 			if (r == null) {
 				r = getResourceForMediaType(mt, f, oid, crc);
@@ -194,12 +192,11 @@ public class MongoResourceStore implements IResourceStore {
 	@Override
 	public IResource saveResource(IResource r) {
 		AbstractMongoResource<?> amr = (AbstractMongoResource<?>) r;
-		log.debug("Saving Resource {};", amr.getId());
 		for (IDataSet ds : amr.getDataSets()) {
-			log.debug("Saving Dataset {};", ds.getId());
-			log.debug("{}",ds);
 			getDatasetDao().save((AbstractMongoDataSet<?>) ds);
+			log.debug("Saved Dataset {};", ds.getId());
 		}
+		log.debug("Saved Resource {};", amr.getId());
 		return get((ObjectId)getResourceDao().save(amr).getId());
 	}
 

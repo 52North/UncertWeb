@@ -35,7 +35,6 @@ public class MongoUncertaintyCollectionResource extends AbstractMongoResource<Un
 
 	@Override
 	protected UncertaintyCollection loadContent() {
-		log.debug("Size: {}", getFile().length());
 		String path = getFile().getAbsolutePath();
 		JSONObject json = null;
 		InputStream in = null;

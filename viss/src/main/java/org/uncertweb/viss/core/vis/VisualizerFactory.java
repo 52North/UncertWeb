@@ -33,6 +33,8 @@ import org.reflections.scanners.SubTypesScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.utils.UwStringUtils;
+import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
@@ -148,10 +150,16 @@ public class VisualizerFactory {
 		for (Class<? extends IVisualizer> v : visualizerForMediaType) {
 			log.debug("Testing {} for compatibility", shortNamesByCreator.get(v));
 			IVisualizer vis = getVisualizer(shortNamesByCreator.get(v));
-			if (vis.getCompatibleUncertaintyTypes().contains(dataSet.getType())) {
+			log.debug("Testing {} for compatibility", vis);
+			Set<UncertaintyType> comp = vis.getCompatibleUncertaintyTypes();
+			log.debug("Compatible Types ({}): {}", comp.size(), UwStringUtils.join(", ", comp));
+			log.debug("Dataset type: {}", dataSet.getType());
+			if (comp.contains(dataSet.getType())) {
 				log.debug("{} seems to be compatible", shortNamesByCreator.get(v));
 				vis.setDataSet(dataSet);
 				set.add(vis);
+			} else {
+				log.debug("{} is not compatible", shortNamesByCreator.get(v));
 			}
 		}
 		return set;

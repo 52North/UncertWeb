@@ -42,10 +42,8 @@ import org.geotools.coverage.grid.GridCoverageBuilder;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.InvalidGridGeometryException;
-import org.geotools.referencing.CRS;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.geometry.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.TransformException;
 import org.uncertml.IUncertainty;
@@ -59,6 +57,7 @@ import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.resource.UncertaintyReference;
+import org.uncertweb.viss.core.util.Constants;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.VisualizationFactory;
 import org.uncertweb.viss.core.vis.WriteableGridCoverage;
@@ -71,17 +70,6 @@ import com.vividsolutions.jts.geom.Point;
 public abstract class AbstractMultiResourceTypeVisualizer extends
     AbstractVisualizer implements Iterable<UncertaintyValue> {
 	
-	private static final CoordinateReferenceSystem EPSG4326;
-
-	static {
-		try {
-			EPSG4326 = CRS.getAuthorityFactory(true)
-					.createCoordinateReferenceSystem("EPSG:4326");
-		} catch (Exception e) {
-			throw VissError.internal(e);
-		}
-	}
-
 	protected static class OMIterator implements Iterator<UncertaintyValue> {
 
 		private final Iterator<? extends AbstractObservation> resultIterator;
@@ -267,7 +255,8 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 	protected WriteableGridCoverage getCoverage(String layerName, Envelope e, int lonSize, int latSize, Unit<?> unit) {
 		int missingValue = -999;
 		final GridCoverageBuilder b = new GridCoverageBuilder();
-		b.setCoordinateReferenceSystem(EPSG4326);
+		//TODO CRS for GeoTiff
+		b.setCoordinateReferenceSystem(Constants.EPSG4326);
 		log.debug("Image size: {}x{}",lonSize,latSize);
 		b.setImageSize(lonSize, latSize);
 		log.debug("Envelope: " + e);

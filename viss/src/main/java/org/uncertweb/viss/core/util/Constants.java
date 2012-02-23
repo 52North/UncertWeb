@@ -21,7 +21,21 @@
  */
 package org.uncertweb.viss.core.util;
 
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.uncertweb.viss.core.VissError;
+
 public class Constants {
+	public static final CoordinateReferenceSystem EPSG4326;
+
+	static {
+		try {
+			EPSG4326 = CRS.getAuthorityFactory(true)
+					.createCoordinateReferenceSystem("EPSG:4326");
+		} catch (Exception e) {
+			throw VissError.internal(e);
+		}
+	}
 	
 	public static final String CLEAN_UP_INTERVAL_DEFAULT = "PT2H";
 
