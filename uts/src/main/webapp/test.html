@@ -113,14 +113,17 @@ h3 {
 		var placeholderIndex = "PLACEHOLDER";
 		//load files
 		var requests=new Array();
-		requests[0]=datafolder+"gaussian2samples_request.xml";	
-		requests[1]=datafolder+"gaussian2samples_request_ref.xml";	
-		requests[2]=datafolder+"samples2statistics_request.xml";
-		requests[3]=datafolder+"samples2statistics_request_ref.xml";
-		requests[4]=datafolder+"univgaussiandist2realisations_request.xml";
-		requests[5]=datafolder+"lognormaldist2realisations_request.xml";
-		requests[6]=datafolder+"multigaussiandist2realisations_request.xml";
-
+		requests[0]=datafolder+"gaussian2samples_request_ref.xml";
+		requests[1]=datafolder+"gaussian2samples_OM_request.xml";
+		requests[2]=datafolder+"gaussian2samples_UncertML_request.xml";		
+		requests[3]=datafolder+"samples2statistics_request.xml";
+		requests[4]=datafolder+"samples2statistics_request_ref.xml";
+		requests[5]=datafolder+"samples2statistics_OM_request.xml";
+		requests[6]=datafolder+"samples2statistics_UncertML_request.xml";
+		requests[7]=datafolder+"multivariateGaussian2samples_OM_request.xml";
+		requests[8]=datafolder+"multivariateGaussian2samples_UncertML_request.xml";
+		requests[9]=datafolder+"lognormaldist2realisations_request.xml";
+		
 		//fill the select element
 		var selRequest = document.getElementById("selRequest");
 		
