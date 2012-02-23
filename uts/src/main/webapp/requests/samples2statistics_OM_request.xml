@@ -110,12 +110,42 @@
       </wps:Data>
     </wps:Input>
 	
-    <wps:Input>
+      <wps:Input>
       <ows:Identifier>statistics</ows:Identifier>
       <wps:Data dataType="xs:string">
         <wps:LiteralData>http://www.uncertml.org/statistics/standard-deviation</wps:LiteralData>
       </wps:Data>
-    </wps:Input>	
+    </wps:Input>  
+      <wps:Input>
+      <ows:Identifier>statistics</ows:Identifier>
+      <wps:Data dataType="xs:string">
+        <wps:LiteralData>http://www.uncertml.org/statistics/mean</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>  
+   <wps:Input>
+      <ows:Identifier>statistics</ows:Identifier>
+      <wps:Data dataType="xs:string">
+        <wps:LiteralData>http://www.uncertml.org/statistics/variance</wps:LiteralData>
+      </wps:Data>
+    </wps:Input> 
+   <wps:Input>
+      <ows:Identifier>statistics</ows:Identifier>
+      <wps:Data dataType="xs:string">
+        <wps:LiteralData>http://www.uncertml.org/statistics/range</wps:LiteralData>
+      </wps:Data>
+    </wps:Input> 
+   <wps:Input>
+      <ows:Identifier>statistics</ows:Identifier>
+      <wps:Data dataType="xs:string">
+        <wps:LiteralData>http://www.uncertml.org/statistics/interquartile-range</wps:LiteralData>
+      </wps:Data>
+    </wps:Input> 
+   <wps:Input>
+      <ows:Identifier>statistics</ows:Identifier>
+      <wps:Data dataType="xs:string">
+        <wps:LiteralData>http://www.uncertml.org/statistics/confidence-interval</wps:LiteralData>
+      </wps:Data>
+    </wps:Input> 
   </wps:DataInputs>
   
   <wps:ResponseForm>
