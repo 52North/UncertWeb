@@ -193,7 +193,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 						double upper = c.tryEval("quantile(samples,0.75)").asDouble();
 						statColl.add(new InterquartileRange(lower, upper));
 					}
-					if(para.contains("range")){
+					if(para.contains("/range")){
 						double min = c.tryEval("min(samples)").asDouble();
 						double max = c.tryEval("max(samples)").asDouble();
 						statColl.add(new Range(min, max));
