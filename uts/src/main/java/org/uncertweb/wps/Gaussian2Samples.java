@@ -25,8 +25,6 @@ import org.uncertml.sample.RandomSample;
 import org.uncertweb.api.netcdf.NetCDFConstants;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
-import org.uncertweb.api.om.exceptions.OMEncodingException;
-import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;

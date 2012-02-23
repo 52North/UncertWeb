@@ -178,8 +178,9 @@ public class SpatialDistribution2Samples extends AbstractAlgorithm{
 			c.tryVoidEval("colnames(spUNetCDF@data) <- \"biotemp\""); 
 			c.tryVoidEval("spUNetCDF <- as(spUNetCDF,\"SpatialPointsDataFrame\")");
 			
-			//TODO can range be used here?
-			rCmd = "empVgm <- variogram(biotemp~1,spUNetCDF[!is.na(spUNetCDF$biotemp),],cutoff="+vgFunction.getRange()+")";
+			//TODO cutoff 
+			//TODO add additional parameter indicating whether variogram function  should be fitted or not!
+			rCmd = "empVgm <- variogram(biotemp~1,spUNetCDF[!is.na(spUNetCDF$biotemp),])";
 			c.tryVoidEval(rCmd);
 			rCmd = "fitVgm <- fit.variogram(empVgm,vgm("+vgFunction.getSill()+",\""+vgFunction.getModel().name()+"\","+vgFunction.getRange()+","+vgFunction.getNugget()+"))"; 
 			c.tryVoidEval(rCmd);
