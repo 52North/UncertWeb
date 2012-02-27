@@ -10,14 +10,24 @@ import java.net.URL;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.uncertml.IUncertainty;
-import org.uncertml.distribution.randomvariable.IGaussianCovarianceParameter;
+import org.uncertml.distribution.randomvariable.CovarianceMatrixParameter;
+import org.uncertml.distribution.randomvariable.INormalCovarianceParameter;
 import org.uncertml.distribution.randomvariable.NormalSpatialField;
+import org.uncertml.distribution.randomvariable.NormalSpatioTemporalField;
+import org.uncertml.distribution.randomvariable.NormalTimeSeries;
+import org.uncertml.distribution.randomvariable.SampleReference;
 import org.uncertml.distribution.randomvariable.VariogramFunction;
 import org.uncertml.distribution.randomvariable.VariogramFunction.Model;
+import org.uncertml.distribution.randomvariable.util.RandomVariablesUtil;
 import org.uncertml.exception.UncertaintyParserException;
-import org.uncertml.statistics.STCovarianceMatrix;
+import org.uncertml.x20.CovarianceParameterType;
 import org.uncertml.x20.NormalSpatialFieldDocument;
 import org.uncertml.x20.NormalSpatialFieldType;
+import org.uncertml.x20.NormalSpatioTemporalFieldDocument;
+import org.uncertml.x20.NormalSpatioTemporalFieldType;
+import org.uncertml.x20.NormalTimeSeriesDocument;
+import org.uncertml.x20.NormalTimeSeriesType;
+import org.uncertml.x20.ReferenceType;
 import org.uncertml.x20.VariogramFunctionDocument;
 import org.uncertml.x20.VariogramFunctionType;
 import org.uncertml.x20.CovarianceMatrixDocument.CovarianceMatrix;
@@ -35,8 +45,6 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 	 * common uncertml parser from UncertML API
 	 * 
 	 */
-	
-
 	@Override
 	public IUncertainty parse(String uncertml)
 			throws UncertaintyParserException {
@@ -107,11 +115,18 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 	 */
 	private IUncertainty parseXmlObject(XmlObject xb_object) throws UncertaintyParserException {
 		
-		//parse extended elements
 		if (xb_object instanceof VariogramFunctionDocument){
 			return parseVariogramFunction((VariogramFunctionDocument)xb_object);
 		}
-		//TODO implement further methods for the different field types
+		else if (xb_object instanceof NormalSpatialFieldDocument){
+			return parseNormalSpatialField((NormalSpatialFieldDocument)xb_object);
+		}
+		else if (xb_object instanceof NormalTimeSeriesDocument){
+			return parseNormalTimeSeries((NormalTimeSeriesDocument)xb_object);
+		}
+		else if (xb_object instanceof NormalSpatioTemporalFieldDocument){
+			return parseNormalSpatioTemporalField((NormalSpatioTemporalFieldDocument)xb_object);
+		}
 		else{
 			String xmlString = xb_object.xmlText();
 			XMLParser umlParser = new XMLParser();
@@ -119,38 +134,123 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 		}
 	}
 	
-	private IUncertainty parseNormalSpatialField(NormalSpatialFieldDocument xbObject) throws UncertaintyParserException {
-		NormalSpatialFieldType xb_nsftype = ((NormalSpatialFieldDocument)xbObject).getNormalSpatialField();
-		IGaussianCovarianceParameter gp = null;
+	/**
+	 * helper method for parsing a spatio-temporal field
+	 * 
+	 * @param xbObject
+	 * @return
+	 * @throws UncertaintyParserException 
+	 */
+	private IUncertainty parseNormalSpatioTemporalField(
+			NormalSpatioTemporalFieldDocument xbObject) throws UncertaintyParserException {
+		INormalCovarianceParameter gp = null;
+		NormalSpatioTemporalFieldType xb_nsftype = xbObject.getNormalSpatioTemporalField();
 		
 		//covarianceMatrix parsing
-		CovarianceMatrix covMatrix = xb_nsftype.getCovarianceMatrix();
+		CovarianceMatrix covMatrix = xb_nsftype.getCovarianceParameter().getCovarianceMatrix();
 		if (covMatrix!=null){
 			XMLParser umlParser = new XMLParser();
 			IUncertainty cvm = umlParser.parse(covMatrix.toString());
 			if (cvm instanceof org.uncertml.statistic.CovarianceMatrix){
-				gp = new STCovarianceMatrix((org.uncertml.statistic.CovarianceMatrix)cvm);
+				gp = new CovarianceMatrixParameter((org.uncertml.statistic.CovarianceMatrix)cvm);
 			}
 		}
 		
 		//covariance matrix is not set, so parse variogramFunction parameter
 		else {
-			VariogramFunctionType xb_vf = xb_nsftype.getVariogramFunction();
+			VariogramFunctionType xb_vf = xb_nsftype.getCovarianceParameter().getVariogramFunction();
 			VariogramFunctionDocument xb_vfd = VariogramFunctionDocument.Factory.newInstance();
 			xb_vfd.setVariogramFunction(xb_vf);
 			gp = (VariogramFunction)parseVariogramFunction(xb_vfd);
 		}
 		
 		//parse samples reference
-		URL sampleReference = null;
+		SampleReference ref = null;
 		try {
-			sampleReference =  new URL(xb_nsftype.getSamples().getHref());
+			URL sampleReference = new URL(xb_nsftype.getSamples().getHref());
+			String mimeType = xb_nsftype.getSamples().getType();
+			ref = new SampleReference(mimeType,sampleReference);	
 		} catch (MalformedURLException e) {
 			throw new UncertaintyParserException("Error while parsing sample Reference of NormalSpatialField!");
 		}
 		
-		return new NormalSpatialField(sampleReference,gp);
+		double[] spatialTrend = RandomVariablesUtil.parseTrendCoefficients(xb_nsftype.getSpatialTrend());
+		double[] temporalTrend = RandomVariablesUtil.parseTrendCoefficients(xb_nsftype.getTemporalTrend());
+		return new NormalSpatioTemporalField(ref,gp,spatialTrend,temporalTrend);
 	}
+
+
+	private IUncertainty parseNormalTimeSeries(NormalTimeSeriesDocument xbObject) throws UncertaintyParserException {
+		NormalTimeSeriesType xb_nsftype = ((NormalTimeSeriesDocument)xbObject).getNormalTimeSeries();
+		INormalCovarianceParameter gp = parseCovarianceParameter(xb_nsftype.getCovarianceParameter());
+		SampleReference ref = parseSampleReference(xb_nsftype.getSamples());
+		double[] temporalTrend = RandomVariablesUtil.parseTrendCoefficients(xb_nsftype.getTemporalTrend());
+		return new NormalTimeSeries(ref,gp,temporalTrend);
+	}
+
+
+
+	private IUncertainty parseNormalSpatialField(NormalSpatialFieldDocument xbObject) throws UncertaintyParserException {
+		NormalSpatialFieldType xb_nsftype = ((NormalSpatialFieldDocument)xbObject).getNormalSpatialField();
+		INormalCovarianceParameter gp = parseCovarianceParameter(xb_nsftype.getCovarianceParameter());
+		SampleReference ref = parseSampleReference(xb_nsftype.getSamples());
+		double[] spatialTrend = RandomVariablesUtil.parseTrendCoefficients(xb_nsftype.getSpatialTrend());
+		return new NormalSpatialField(ref,gp,spatialTrend);
+	}
+
+	/**
+	 * helper method for parsing the sample reference
+	 * 
+	 * @param samples
+	 * 			XMLBeans representation of sample reference
+	 * @return returns parsed sample reference
+	 * @throws UncertaintyParserException
+	 * 			if parsing fails
+	 */
+	private SampleReference parseSampleReference(ReferenceType samples) throws UncertaintyParserException {
+		try {
+			URL sampleReference = new URL(samples.getHref());
+			String mimeType = samples.getType();
+			return new SampleReference(mimeType,sampleReference);	
+		} catch (MalformedURLException e) {
+			throw new UncertaintyParserException("Error while parsing sample Reference of NormalSpatialField!");
+		}
+	}
+
+
+	/**
+	 * helper method for parsing a covariance parameters
+	 * 
+	 * @param covarianceParameter
+	 * 			XMLBeans representation of covariance parameter
+	 * @return Returns parsed parameter
+	 * @throws UncertaintyParserException
+	 * 			if parsing fails
+	 */
+	private INormalCovarianceParameter parseCovarianceParameter(
+			CovarianceParameterType covarianceParameter) throws UncertaintyParserException {
+		INormalCovarianceParameter result = null;
+		//covarianceMatrix parsing
+		CovarianceMatrix covMatrix = covarianceParameter.getCovarianceMatrix();
+		if (covMatrix!=null){
+			XMLParser umlParser = new XMLParser();
+			IUncertainty cvm = umlParser.parse(covMatrix.toString());
+			if (cvm instanceof org.uncertml.statistic.CovarianceMatrix){
+				result =  new CovarianceMatrixParameter((org.uncertml.statistic.CovarianceMatrix)cvm);
+			}
+		}
+		
+		//covariance matrix is not set, so parse variogramFunction parameter
+		else {
+			VariogramFunctionType xb_vf = covarianceParameter.getVariogramFunction();
+			VariogramFunctionDocument xb_vfd = VariogramFunctionDocument.Factory.newInstance();
+			xb_vfd.setVariogramFunction(xb_vf);
+			result =  (VariogramFunction)parseVariogramFunction(xb_vfd);
+			
+		}
+		return result;
+	}
+
 
 	/**
 	 * helper method for parsing a variogram

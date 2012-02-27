@@ -11,6 +11,6 @@ import java.net.URL;
 public abstract class AbstractSpatioTemporalField {
 
 	/** reference to a set of samples; should be encoded as NetCDF-U or U-O&M*/
-	protected URL samples;
+	protected SampleReference samples;
 	
 }

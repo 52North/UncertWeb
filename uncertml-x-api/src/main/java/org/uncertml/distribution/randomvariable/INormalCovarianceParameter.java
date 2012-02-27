@@ -6,6 +6,6 @@ package org.uncertml.distribution.randomvariable;
  * 
  * @author staschc
  */
-public interface IGaussianCovarianceParameter {
+public interface INormalCovarianceParameter {
 
 }

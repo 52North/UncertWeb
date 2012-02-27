@@ -9,7 +9,7 @@ import org.uncertml.statistics.Anisotropy;
  * @author staschc
  *
  */
-public class VariogramFunction implements IDistribution, IGaussianCovarianceParameter{
+public class VariogramFunction implements IDistribution, INormalCovarianceParameter{
 	
 	/**sill value of variogram*/
 	private double sill;

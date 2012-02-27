@@ -1,7 +1,5 @@
 package org.uncertml.distribution.randomvariable;
 
-import java.net.URL;
-
 import org.uncertml.distribution.IDistribution;
 
 /**
@@ -14,7 +12,10 @@ import org.uncertml.distribution.IDistribution;
 public class NormalSpatialField extends AbstractSpatialField implements IDistribution{
 	
 	/** covariance parameter*/
-	private IGaussianCovarianceParameter covarianceParameter;
+	private INormalCovarianceParameter covarianceParameter;
+	
+	/**coefficients of a spatial trend polynom*/
+	private double[] spatialTrend;
 	
 	/**
 	 * 
@@ -22,10 +23,41 @@ public class NormalSpatialField extends AbstractSpatialField implements IDistrib
 	 * @param sampleReference
 	 * 
 	 * @param covarianceParameter
+	 * 
+	 * @param spatialTrend
 	 */
-	public NormalSpatialField(URL sampleReference,IGaussianCovarianceParameter covarianceParameter){
+	public NormalSpatialField(SampleReference sampleReference,INormalCovarianceParameter covarianceParameter, double[] spatialTrend){
 		super.samples=sampleReference;
 		this.covarianceParameter=covarianceParameter;
+	}
+
+	/**
+	 * @return the covarianceParameter
+	 */
+	public INormalCovarianceParameter getCovarianceParameter() {
+		return covarianceParameter;
+	}
+
+	/**
+	 * @param covarianceParameter the covarianceParameter to set
+	 */
+	public void setCovarianceParameter(
+			INormalCovarianceParameter covarianceParameter) {
+		this.covarianceParameter = covarianceParameter;
+	}
+
+	/**
+	 * @return the spatialTrend
+	 */
+	public double[] getSpatialTrend() {
+		return spatialTrend;
+	}
+
+	/**
+	 * @param spatialTrend the spatialTrend to set
+	 */
+	public void setSpatialTrend(double[] spatialTrend) {
+		this.spatialTrend = spatialTrend;
 	}
 	
 }
