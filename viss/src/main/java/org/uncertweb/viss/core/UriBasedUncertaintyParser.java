@@ -22,12 +22,12 @@ import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_VALUE;
 import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_VARIANCE;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertml.IUncertainty;
-import org.uncertml.UncertML;
 import org.uncertml.distribution.continuous.BetaDistribution;
 import org.uncertml.distribution.continuous.CauchyDistribution;
 import org.uncertml.distribution.continuous.ChiSquareDistribution;
@@ -61,11 +61,14 @@ import org.uncertml.statistic.Median;
 import org.uncertml.statistic.Mode;
 import org.uncertml.statistic.Moment;
 import org.uncertml.statistic.Percentile;
+import org.uncertml.statistic.Probability;
+import org.uncertml.statistic.ProbabilityConstraint;
 import org.uncertml.statistic.Quantile;
 import org.uncertml.statistic.Quartile;
 import org.uncertml.statistic.Range;
 import org.uncertml.statistic.Skewness;
 import org.uncertml.statistic.StandardDeviation;
+import org.uncertweb.utils.UwCollectionUtils;
 
 public class UriBasedUncertaintyParser {
 	private static final Logger log = LoggerFactory.getLogger(UriBasedUncertaintyParser.class);
@@ -88,8 +91,7 @@ public class UriBasedUncertaintyParser {
 			return u;
 		}
 
-		protected static IUncertainty map(final UncertaintyType t,
-				final Map<URI, Number[]> v) {
+		protected static IUncertainty map(final UncertaintyType t, final Map<URI, Number[]> v) {
 			switch (t) {
 			case BETA_DISTRIBUTION:
 				return new BetaDistribution(getDouble(t, v, PARAMETER_ALPHA),
@@ -196,7 +198,31 @@ public class UriBasedUncertaintyParser {
 			case UNKNOWN_SAMPLE:
 				return new UnknownSample(getRealisationList(t, v));
 			case PROBABILITY: 
-//				new Probability(new ProbabilityConstraint(ConstraintType.GREATER_OR_EQUAL, value), value)
+
+				List<ProbabilityConstraint> constraints = UwCollectionUtils.list();
+				
+				Number[] gt = v.get(UncertaintyType.GREATER_THAN_URI);
+				if (gt != null && gt.length != 0) {
+					constraints.add(new ProbabilityConstraint(ConstraintType.GREATER_THAN, gt[0].doubleValue()));
+				}
+				Number[] lt = v.get(UncertaintyType.LESS_THAN_URI);
+				if (lt != null && lt.length != 0) {
+					constraints.add(new ProbabilityConstraint(ConstraintType.LESS_THAN, lt[0].doubleValue()));
+				}
+				Number[] ge = v.get(UncertaintyType.GREATER_OR_EQUAL_URI);
+				if (ge != null && ge.length != 0) {
+					constraints.add(new ProbabilityConstraint(ConstraintType.GREATER_OR_EQUAL, ge[0].doubleValue()));
+				}
+				Number[] le = v.get(UncertaintyType.LESS_OR_EQUAL_URI);
+				if (le != null && le.length != 0) {
+					constraints.add(new ProbabilityConstraint(ConstraintType.LESS_OR_EQUAL, le[0].doubleValue()));
+				}
+				
+				if (constraints.isEmpty()) {
+					throw VissError.internal("No constraint found");
+				}
+				
+				return new Probability(constraints, getDouble(t, v));
 				// TODO case CATEGORICAL_REALISATION
 				// TODO case CONFIDENCE_INTERVAL:
 				// TODO case CONFUSION_MATRIX:
@@ -209,10 +235,6 @@ public class UriBasedUncertaintyParser {
 			}
 		}
 		
-		public static void main(String[] agrs) {
-			System.out.println(UncertML.getURI(ConstraintType.class));
-			
-		}
 		protected static final ContinuousRealisation[] getRealisationList(
 				final UncertaintyType t, final Map<URI, Number[]> v) {
 			final Number[] n = getNumberArray(t, v);
@@ -262,4 +284,5 @@ public class UriBasedUncertaintyParser {
 				final Map<URI, Number[]> v, final String name) {
 			return getNumber(t, v, name).intValue();
 		}
+		
 	}

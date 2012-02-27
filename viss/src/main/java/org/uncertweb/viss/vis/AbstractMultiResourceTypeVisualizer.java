@@ -118,12 +118,14 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		private int x = 0;
 		private int y = 0;
 		private final URI mainUri;
-		private final Map<URI, Number[]> uriMap = UwCollectionUtils.map();
+		private final Map<URI, Number[]> uriMap;
 		private final GridCoverage2D c;
 		
-		public CoverageIterator(GridCoverage2D c, URI main) {
+		public CoverageIterator(GridCoverage2D c, URI main, Map<URI, Number[]> additionalUris) {
 			this.c = c;
 			mainUri = main;
+			uriMap = (additionalUris != null) ? additionalUris
+					: UwCollectionUtils.<URI, Number[]> map();
 			geom = c.getGridGeometry();
 			t = geom.getGridToCRS2D();
 			ySize = geom.getGridRange2D().height;
@@ -206,7 +208,8 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		int width = range.width;
 		int height = range.height;
 		WriteableGridCoverage wgc = getCoverage(name, gc.getEnvelope(), width, height, gc.getSampleDimension(0).getUnits());
-		return visualize(new CoverageIterator(gc,ur.getType().uri), wgc);
+		return visualize(new CoverageIterator(gc, ur.getType().uri,
+						ur.getAdditionalUris()), wgc);
 	}
 	
 	protected IVisualization visualize(GridCoverage2D gc) {
@@ -367,7 +370,8 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 	protected static Iterator<UncertaintyValue> getIteratorForDataSet(IDataSet r) {
 		Object o = r.getContent();
 		if (o instanceof GridCoverage2D) {
-			return new CoverageIterator((GridCoverage2D) o, r.getType().uri);
+			return new CoverageIterator((GridCoverage2D) o, r.getType().uri,
+					((UncertaintyReference) r).getAdditionalUris());
 		} else if (o instanceof UncertaintyVariable) {
 			return ((UncertaintyVariable) o).iterator();
 		} else if (o instanceof IObservationCollection) {

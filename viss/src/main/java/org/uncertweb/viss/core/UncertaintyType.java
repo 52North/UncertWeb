@@ -54,6 +54,7 @@ import org.uncertml.statistic.CentredMoment;
 import org.uncertml.statistic.CoefficientOfVariation;
 import org.uncertml.statistic.ConfidenceInterval;
 import org.uncertml.statistic.ConfusionMatrix;
+import org.uncertml.statistic.ConstraintType;
 import org.uncertml.statistic.Correlation;
 import org.uncertml.statistic.CovarianceMatrix;
 import org.uncertml.statistic.CredibleInterval;
@@ -133,10 +134,31 @@ public enum UncertaintyType {
 	SKEWNESS(Skewness.class, STATISTIC),
 	STANDARD_DEVIATION(StandardDeviation.class, STATISTIC);
 
+	private static final String CONSTRAINT_URI = UncertML.getURI(ConstraintType.class);
+	public static final URI GREATER_THAN_URI = URI.create(CONSTRAINT_URI + "/greater-than");
+	public static final URI LESS_THAN_URI = URI.create(CONSTRAINT_URI + "/less-than");
+	public static final URI GREATER_OR_EQUAL_URI = URI.create(CONSTRAINT_URI+ "/greater-or-equal");
+	public static final URI LESS_OR_EQUAL_URI = URI.create(CONSTRAINT_URI + "/less-or-equal");
+	
 	public final URI uri;
 	private Set<URI> alias;
 	public final Class<? extends IUncertainty> clazz;
 	public final UncertaintyType type;
+	
+	
+	public static URI getURIforConstraint(ConstraintType ct) {
+		switch (ct) {
+		case GREATER_OR_EQUAL:
+			return GREATER_OR_EQUAL_URI;
+		case GREATER_THAN:
+			return GREATER_THAN_URI;
+		case LESS_OR_EQUAL:
+			return LESS_OR_EQUAL_URI;
+		case LESS_THAN:
+			return LESS_THAN_URI;
+		default: return null;
+		}
+	}
 	
 	private UncertaintyType(Class<? extends IUncertainty> clazz, URI... uris) {
 		this(clazz, null, uris);

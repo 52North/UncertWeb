@@ -70,6 +70,7 @@ import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Probabil
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.ProbabilityForInterval;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.StandardDeviation;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Variance;
+import org.uncertweb.viss.vis.sample.RealisationVisualizer;
 import org.uncertweb.viss.vis.statistic.SimpleStatisticVisualizer.MeanStatistic;
 
 import com.sun.jersey.api.client.ClientResponse;
@@ -162,9 +163,16 @@ public class VissTest extends JerseyTest {
 		ObjectId r = addResource(MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE, getUncertaintyCollectionStream());
 		for (ObjectId ds : getDataSetsForResource(r)) {
 			for (String s : getVisualizersForDataset(r, ds))  {
-				if (s.equals("MeanStatistic") || s.equals("StandardDeviationStatistic")) {
+				if (s.equals("MeanStatistic")
+						|| s.equals("StandardDeviationStatistic")
+						|| s.equals("ProbabilityStatistic")) {
 					getVisualizerForDataset(r,ds, s);
 					createVisualization(r, ds, s);
+				}
+				if (s.equals("Realisation")) {
+					getVisualizerForDataset(r, ds, s);
+					createVisualization(r, ds, s, new JSONObject().put(
+							RealisationVisualizer.REALISATION_PARAMETER, 0));
 				}
 			}
 		}
