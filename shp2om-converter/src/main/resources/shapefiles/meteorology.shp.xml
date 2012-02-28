@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<metadata xml:lang="de"><Esri><CreaDate>20110822</CreaDate><CreaTime>16241400</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Conversion Tools.tbx\RasterToPolygon" Date="20110822" Time="162414">RasterToPolygon CreateConsta2 D:\PhD\WP1.1_AirQualityModel\Meteorology\results\meteorology.shp SIMPLIFY Value</Process></lineage></DataProperties></Esri></metadata>
