@@ -86,9 +86,9 @@ public class UPSAustalProcess extends AbstractObservableAlgorithm {
 	private static Logger logger = Logger.getLogger(UPSAustalProcess.class);
 
 	// Path to resources
-	private String localPath = "D:\\JavaProjects\\ups";
-	private String resPath = localPath
-			+ "\\src\\main\\resources\\austalResources";	
+//	private String localPath = "D:\\JavaProjects\\ups";
+//	private String resPath = localPath
+//			+ "\\src\\main\\resources\\austalResources";	
 	private String utsAddress = "http://localhost:8080/uts/WebProcessingService";
 
 	/*
@@ -147,11 +147,12 @@ public class UPSAustalProcess extends AbstractObservableAlgorithm {
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
 		for(Property property : propertyArray){
 			// check the name and active state
-			if(property.getName().equalsIgnoreCase("localPath") && property.getActive()){
-				localPath = property.getStringValue();
-				resPath = localPath
-				+ "\\src\\main\\resources\\austalResources";
-			}else if(property.getName().equalsIgnoreCase("FullUTSAddress") && property.getActive()){
+//			if(property.getName().equalsIgnoreCase("localPath") && property.getActive()){
+//				localPath = property.getStringValue();
+//				resPath = localPath
+//				+ "\\src\\main\\resources\\austalResources";
+//			}else 
+				if(property.getName().equalsIgnoreCase("FullUTSAddress") && property.getActive()){
 				utsAddress = property.getStringValue();
 			}
 		}
@@ -350,18 +351,18 @@ public class UPSAustalProcess extends AbstractObservableAlgorithm {
 			}
 			
 			// write uncertainty observation as XML and JSON
-			String filepath = resPath + "\\output_om";
-			String xmlFilepath = filepath.concat("\\realisations.xml");
-			File xmlFile = new File(xmlFilepath);
-			String jsonFilepath = filepath.concat("\\realisations.json");
-			File jsonFile = new File(jsonFilepath);
-			// encode, store (for using in austal request later)
-			try {
-				new StaxObservationEncoder().encodeObservationCollection(mcoll,xmlFile);
-				new JSONObservationEncoder().encodeObservationCollection(mcoll, jsonFile);
-			} catch (OMEncodingException e) {
-				e.printStackTrace();
-			}
+//			String filepath = resPath + "\\output_om";
+//			String xmlFilepath = filepath.concat("\\realisations.xml");
+//			File xmlFile = new File(xmlFilepath);
+//			String jsonFilepath = filepath.concat("\\realisations.json");
+//			File jsonFile = new File(jsonFilepath);
+//			// encode, store (for using in austal request later)
+//			try {
+//				new StaxObservationEncoder().encodeObservationCollection(mcoll,xmlFile);
+//				new JSONObservationEncoder().encodeObservationCollection(mcoll, jsonFile);
+//			} catch (OMEncodingException e) {
+//				e.printStackTrace();
+//			}
 
 //			try{
 //			

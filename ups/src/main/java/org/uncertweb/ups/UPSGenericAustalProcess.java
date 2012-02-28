@@ -114,9 +114,10 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 	private static Logger logger = Logger.getLogger(UPSGenericAustalProcess.class);
 
 	// Path to resources
-	private String localPath = "D:\\JavaProjects\\ups";
-	private String resPath = localPath
-			+ "\\src\\main\\resources\\austalResources";	
+//	private String localPath = "D:\\JavaProjects\\ups";
+//	private String resPath = localPath
+//			+ "\\src\\main\\resources\\austalResources";	
+	private String tempPath = "C:\\WebResources\\UPS\\";
 	private String utsAddress = "http://localhost:8080/uts/WebProcessingService";
 
 	private Map<String, IData> staticInputsList = null;	
@@ -154,10 +155,11 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
 		for(Property property : propertyArray){
 			// check the name and active state
-			if(property.getName().equalsIgnoreCase("localPath") && property.getActive()){
-				localPath = property.getStringValue();
-				resPath = localPath
-				+ "\\src\\main\\resources";
+			if(property.getName().equalsIgnoreCase("Temp_Home") && property.getActive()){
+				tempPath = property.getStringValue()+ "\\";
+//				localPath = property.getStringValue();
+//				resPath = localPath
+//				+ "\\src\\main\\resources";
 			}else if(property.getName().equalsIgnoreCase("FullUTSAddress") && property.getActive()){
 				utsAddress = property.getStringValue();
 			}
@@ -704,7 +706,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		for(String identifier : staticInputsList.keySet()){
 			// write observation collections to files and provide only reference
 			if(staticInputsList.get(identifier).getPayload() instanceof IObservationCollection){
-				File f = new File("c:/temp/" + identifier + ".xml");			
+				File f = new File(tempPath + identifier + ".xml");			
 				try {
 					String s = new XBObservationEncoder().encodeObservationCollection((IObservationCollection)staticInputsList.get(identifier).getPayload());				
 					BufferedWriter b = new BufferedWriter(new FileWriter(f));				
@@ -724,7 +726,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 				FeatureIterator<?> iterator = fc.features();
 				int srs = 31467;
 				String coordinates = "";
-				File f = new File("c:/temp/" + identifier + ".xml");	
+				File f = new File(tempPath + identifier + ".xml");	
 				
 				if(identifier.equals("receptor-points")){					
 					//TODO: implement for different features
@@ -823,7 +825,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		
 		// add all uncertain inputs
 		for (String id : uncertainInputSamplesMap.keySet()) {			
-			File f = new File("c:/temp/" + id.replace(uncertaintyPrefix, "")+ runNumber + ".xml");			
+			File f = new File(tempPath + id.replace(uncertaintyPrefix, "")+ runNumber + ".xml");			
 			try {
 				String s = new XBObservationEncoder().encodeObservationCollection(uncertainInputSamplesMap.get(id).get(runNumber));				
 				BufferedWriter b = new BufferedWriter(new FileWriter(f));				
