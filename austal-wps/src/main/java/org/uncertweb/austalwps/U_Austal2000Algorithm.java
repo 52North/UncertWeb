@@ -84,10 +84,13 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private static Logger LOGGER = Logger.getLogger(Austal2000Algorithm.class);
 	private final String fileSeparator = System.getProperty("file.separator");
 	//private String tmpDir = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\AustalWPS\\AustalRun";
-	private String austalHome = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\AustalWPS\\AustalRun";
-	private String workDirPath = austalHome + "\\PO";
-	private String resultsPath = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\AustalWPS\\results";	
-	private String resourcePath = "D:/JavaProjects/austal-wps/src/main/webapp/res/";
+	private String austalHome = "";
+//private String workDirPath = austalHome + "\\PO";
+	private String tmpDir = "";
+	private String workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
+	private String resultsPath = "C:\\WebResources\\AustalWPS\\outputs";	
+	private String resourcePath = "C:\\WebResources\\AustalWPS\\inputs\\";
+	
 	
 	// WPS inputs & outputs
 	private final String inputIDOutputUncertainty = "OutputUncertaintyType";
@@ -111,25 +114,37 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 	private String austalFileName = "austal2000.txt";
 	
 	public U_Austal2000Algorithm(){
-//		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
-//		for(Property property : propertyArray){
-//			if(property.getName().equalsIgnoreCase("Austal_Home")){
-//				austalHome = property.getStringValue();
-//				break;
-//			}
-//		}	
-//		
-//		// path to Austal and R resources
-//		String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
-//		String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
-//		if(host == null) {
-//			try {
-//				host = InetAddress.getLocalHost().getCanonicalHostName();
-//				
-//			} catch (UnknownHostException e) {
-//				e.printStackTrace();
-//			}
-//		}		
+//		if(OS_Name.contains("Windows")){
+//			tmpDir = System.getenv("TMP");
+//		}else{
+//			tmpDir = System.getenv("CATALINA_TMPDIR");
+//		}
+		
+		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
+		for(Property property : propertyArray){
+			if(property.getName().equalsIgnoreCase("Austal_Home")){
+				austalHome = property.getStringValue();
+				break;
+			}else if (property.getName().equalsIgnoreCase("Resources")){
+				resourcePath = property.getStringValue();
+				break;
+			}
+		}	
+	//	workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
+		workDirPath = austalHome + fileSeparator + "PO" + fileSeparator;
+		resultsPath = austalHome + "\\outputs";
+		
+		// path to Austal and R resources
+		String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
+		String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
+		if(host == null) {
+			try {
+				host = InetAddress.getLocalHost().getCanonicalHostName();
+				
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+		}		
 	//	resourcePath = "http://" + host + ":" + hostPort + "/" + 
 	//	WebProcessingService.WEBAPP_PATH + "/" + "res" + "/" + "";		
 	}
@@ -355,40 +370,48 @@ public class U_Austal2000Algorithm extends AbstractObservableAlgorithm{
 	}
 
 	private void readFiles(String austalFileName, String zeitreiheFileName){		
-		String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
-		String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
-		if(host == null) {
-			try {
-				host = InetAddress.getLocalHost().getCanonicalHostName();
-				
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-		}		
-		String url = "http://" + host + ":" + hostPort + "/" + 
-		WebProcessingService.WEBAPP_PATH + "/" + "res" + "/" + "";
+		// read austal2000.txt
+		File austalFile = new File(resourcePath+ austalFileName);
+		austal = new Austal2000Txt(austalFile);
+			
+		// read zeitreihe.dmna
+		File tsFile = new File(resourcePath+zeitreiheFileName);
+		ts = new Zeitreihe(tsFile);
 		
-		try {
-			URL austalURL = new URL(url + austalFileName);
-			austal = new Austal2000Txt(austalURL.openStream());
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			LOGGER.debug(e);
-		} catch (IOException e) {
-			LOGGER.debug(e);
-			e.printStackTrace();
-		}
-		
-		try {
-			URL zeitReiheURL = new URL(url + zeitreiheFileName);
-			ts = new Zeitreihe(zeitReiheURL.openStream());
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			LOGGER.debug(e);
-		} catch (IOException e) {
-			LOGGER.debug(e);
-			e.printStackTrace();
-		}
+//		String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
+//		String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
+//		if(host == null) {
+//			try {
+//				host = InetAddress.getLocalHost().getCanonicalHostName();
+//				
+//			} catch (UnknownHostException e) {
+//				e.printStackTrace();
+//			}
+//		}		
+//		String url = "http://" + host + ":" + hostPort + "/" + 
+//		WebProcessingService.WEBAPP_PATH + "/" + "res" + "/" + "";
+//		
+//		try {
+//			URL austalURL = new URL(url + austalFileName);
+//			austal = new Austal2000Txt(austalURL.openStream());
+//		} catch (MalformedURLException e) {
+//			e.printStackTrace();
+//			LOGGER.debug(e);
+//		} catch (IOException e) {
+//			LOGGER.debug(e);
+//			e.printStackTrace();
+//		}
+//		
+//		try {
+//			URL zeitReiheURL = new URL(url + zeitreiheFileName);
+//			ts = new Zeitreihe(zeitReiheURL.openStream());
+//		} catch (MalformedURLException e) {
+//			e.printStackTrace();
+//			LOGGER.debug(e);
+//		} catch (IOException e) {
+//			LOGGER.debug(e);
+//			e.printStackTrace();
+//		}
 		
 	}
 	

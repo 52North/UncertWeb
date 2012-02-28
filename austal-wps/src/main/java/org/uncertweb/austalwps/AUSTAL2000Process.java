@@ -134,7 +134,7 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		}else{
 			tmpDir = System.getenv("CATALINA_TMPDIR");
 		}
-		tmpDir = "c:/temp";
+	//	tmpDir = "c:/temp";
 		workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
 		
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
