@@ -56,6 +56,7 @@ public class UncertaintyReference {
 				constraints.add(new ProbabilityConstraint(ConstraintType
 						.valueOf(c.getString("type")), c.getDouble("value")));
 			}
+			o.remove("constraints");
 		}
 
 		Validate.notNull(mime);
