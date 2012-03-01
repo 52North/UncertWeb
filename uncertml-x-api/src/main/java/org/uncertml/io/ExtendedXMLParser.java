@@ -210,7 +210,7 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 	private SampleReference parseSampleReference(ReferenceType samples) throws UncertaintyParserException {
 		try {
 			URL sampleReference = new URL(samples.getHref());
-			String mimeType = samples.getType();
+			String mimeType = samples.getMimeType();
 			return new SampleReference(mimeType,sampleReference);	
 		} catch (MalformedURLException e) {
 			throw new UncertaintyParserException("Error while parsing sample Reference of NormalSpatialField!");
@@ -244,7 +244,7 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 		else {
 			VariogramFunctionType xb_vf = covarianceParameter.getVariogramFunction();
 			VariogramFunctionDocument xb_vfd = VariogramFunctionDocument.Factory.newInstance();
-			xb_vfd.setVariogramFunction(xb_vf);
+			xb_vfd.addNewVariogramFunction().set(xb_vf);
 			result =  (VariogramFunction)parseVariogramFunction(xb_vfd);
 			
 		}
