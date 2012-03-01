@@ -221,6 +221,7 @@
 							<includes>
 								<include>WEB-INF/lib/52n-security*.jar</include>
 								<include>WEB-INF/lib/pjl-comp-filter*.jar</include>
+								<include>WEB-INF/lib/commons-beanutils-1.7.0.jar</include>
 							</includes>
 						</overlay>
 						<overlay>
