@@ -39,10 +39,10 @@ public class SampleReference {
 	 * @return true, if mimeType is supported, false if not.
 	 */
 	private boolean checkMimeType(String mimeType2) {
-		return (mimeType.equals("application/x-netcdf")
-				|| mimeType.equals("application/netcdf")
-				|| mimeType.equals("application/x-om-u")
-				|| mimeType.equals("application/x-om-u+json") || mimeType
+		return (mimeType2.equals("application/x-netcdf")
+				|| mimeType2.equals("application/netcdf")
+				|| mimeType2.equals("application/x-om-u")
+				|| mimeType2.equals("application/x-om-u+json") || mimeType2
 				.equals("application/x-om-u+xml"));
 
 	}
