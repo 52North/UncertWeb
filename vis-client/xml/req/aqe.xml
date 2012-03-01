@@ -11,7 +11,7 @@
 			</gml:TimePeriod>
 		</ogc:TM_Equals>
 	</sos:eventTime>
-	<sos:observedProperty>http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration[O3]</sos:observedProperty>
+	<sos:observedProperty>http://giv-genesis.uni-muenster.de:8080/SOR/REST/phenomenon/OGC/Concentration(O3)</sos:observedProperty>
 	<sos:responseFormat>text/xml;subtype="om/1.0.0"</sos:responseFormat>
 	<sos:resultModel>om:Observation</sos:resultModel>
 	<sos:responseMode>inline</sos:responseMode>
