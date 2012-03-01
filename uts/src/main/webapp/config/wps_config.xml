@@ -72,10 +72,11 @@
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Gaussian2Samples</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.MultivariateGaussian2Samples</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.SpatialDistribution2Samples</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.wps.RandomField2Samples</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.wps.Samples2Statistics</Property>
-			<Property name="Algorithm" active="true">org.uncertweb.wps.LognormalDist2Realisations</Property>
+			<!-- <Property name="Algorithm" active="true">org.uncertweb.wps.LognormalDist2Realisations</Property> 
 			<Property name="Algorithm" active="true">org.uncertweb.wps.MultiGaussianDist2Realisations</Property>
-			<Property name="Algorithm" active="true">org.uncertweb.wps.UnivGaussianDist2Realisations</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.wps.UnivGaussianDist2Realisations</Property>-->
 			<Property name="tmpDir" active="true">/tmp/</Property>	
 		</Repository>           
 	</AlgorithmRepositoryList>
