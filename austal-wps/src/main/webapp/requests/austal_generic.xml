@@ -39,32 +39,32 @@
 	
     <wps:Input>
       <ows:Identifier>street-emissions</ows:Identifier>
-      <wps:Reference xlink:href="file:///D:/JavaProjects/austal-wps/src/main/webapp/res/street-emissions0.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
+      <wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/street-emissions0.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
     </wps:Input>
 	
 	 <wps:Input>
       <ns:Identifier>variable-emissions</ns:Identifier>
-      <wps:Reference xlink:href="file:///D:/JavaProjects/austal-wps/src/main/webapp/res/variable-emissions.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
+      <wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/variable-emissions.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
     </wps:Input>
 	
     <wps:Input>
       <ns:Identifier>static-emissions</ns:Identifier>
-      <wps:Reference xlink:href="file:///D:/JavaProjects/austal-wps/src/main/webapp/res/static-emissions.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
+      <wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/static-emissions.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
     </wps:Input>
 	
     <wps:Input>
       <ows:Identifier>wind-speed</ows:Identifier>
-      <wps:Reference xlink:href="file:///D:/JavaProjects/austal-wps/src/main/webapp/res/wind-speed0.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
+      <wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/wind-speed0.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
     </wps:Input>
 	
     <wps:Input>
       <ows:Identifier>wind-direction</ows:Identifier>
-      <wps:Reference xlink:href="file:///D:/JavaProjects/austal-wps/src/main/webapp/res/wind-direction0.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
+      <wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/wind-direction0.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
     </wps:Input>
   
    <wps:Input>
       <ns:Identifier>stability-class</ns:Identifier>
-      <wps:Reference xlink:href="file:///D:/JavaProjects/austal-wps/src/main/webapp/res/stability-class.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
+      <wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/stability-class.xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd" encoding="UTF-8" mimeType="application/x-om-u+xml"/>
     </wps:Input>
 	
   <wps:Input>
