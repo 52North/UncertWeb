@@ -7,7 +7,7 @@
 		<version>1.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>uncertml-x-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>Extended UncertML API</name>
 	<description>Provides parsers and encoders for extended UncertML</description>
 	<organization>
