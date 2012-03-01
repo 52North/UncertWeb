@@ -34,4 +34,13 @@ public class UncertWebDataConstants {
 	public static final String SCHEMA_OM_V1 = "http://schemas.opengis.net/om/1.0.0/om.xsd";
 	public static final String SCHEMA_UNCERTML = "http://uncertml.org/uncertml.xsd";
 	public static final String SCHEMA_NETCDF_U = ""; //TODO
+	
+	public static boolean isMimeTypeNetCDF(String mimeType){
+		if (mimeType.equals(MIME_TYPE_NETCDF)||mimeType.equals(MIME_TYPE_NETCDFX)){
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
