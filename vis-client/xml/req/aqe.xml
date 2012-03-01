@@ -6,8 +6,8 @@
 		<ogc:TM_Equals>
 			<ogc:PropertyName>om:SamplingTime</ogc:PropertyName>
 			<gml:TimePeriod>
-				<gml:beginPosition>2001-01-01T00:00:00.000Z</gml:beginPosition>
-				<gml:endPosition>2001-01-03T00:00:00.000Z</gml:endPosition>
+				<gml:beginPosition>2006-01-01T00:00:00.000Z</gml:beginPosition>
+				<gml:endPosition>2006-01-03T00:00:00.000Z</gml:endPosition>
 			</gml:TimePeriod>
 		</ogc:TM_Equals>
 	</sos:eventTime>
