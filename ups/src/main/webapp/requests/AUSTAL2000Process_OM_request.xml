@@ -33,33 +33,33 @@
 		<!-- uncertain inputs -->
 		<wps:Input>
 			<ows:Identifier>u_street-emissions</ows:Identifier>
-			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/streets.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+			<wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/streets.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
 		</wps:Input>
 		
 		<wps:Input>
 			<ows:Identifier>u_wind-speed</ows:Identifier>
-			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/windspeed.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+			<wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/windspeed.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
 		</wps:Input>
 		
 		<wps:Input>
 			<ows:Identifier>u_wind-direction</ows:Identifier>
-			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/winddirection.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+			<wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/winddirection.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
 		</wps:Input>
 		
 		<!-- certain inputs -->
 		<wps:Input>
 			<ows:Identifier>c_stability-class</ows:Identifier>
-			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/stabilityclass.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+			<wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/stabilityclass.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
 		</wps:Input>
 		
 		<wps:Input>
 			<ows:Identifier>c_variable-emissions</ows:Identifier>
-			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/variableemissions.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+			<wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/variableemissions.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
 		</wps:Input>
 		
 		<wps:Input>
 			<ows:Identifier>c_static-emissions</ows:Identifier>
-			<wps:Reference xlink:href="file:///D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/staticemissions.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
+			<wps:Reference xlink:href="file:///C:/WebResources/AustalWPS/inputs/staticemissions.xml" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd"></wps:Reference>
 		</wps:Input>
 		
 		<wps:Input>
