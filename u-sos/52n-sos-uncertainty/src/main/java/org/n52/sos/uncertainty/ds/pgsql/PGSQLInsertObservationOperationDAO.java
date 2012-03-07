@@ -89,7 +89,7 @@ public class PGSQLInsertObservationOperationDAO extends
 
 			// connect to data base
 			try {
-				trCon = cpool.getConnection();
+				trCon = getCPool().getConnection();
 				trCon.setAutoCommit(false);
 
 				// //////////////////////////////////////////////////
@@ -130,7 +130,7 @@ public class PGSQLInsertObservationOperationDAO extends
 				throw se;
 			} finally {
 				if (trCon != null) {
-					cpool.returnConnection(trCon);
+					getCPool().returnConnection(trCon);
 				}
 			}
 		}
@@ -146,7 +146,7 @@ public class PGSQLInsertObservationOperationDAO extends
 			// connect to data base
 
 			try {
-				trCon = cpool.getConnection();
+				trCon = getCPool().getConnection();
 				trCon.setAutoCommit(false);
 
 				// insert relationship
@@ -168,7 +168,7 @@ public class PGSQLInsertObservationOperationDAO extends
 				throw se;
 			} finally {
 				if (trCon != null) {
-					cpool.returnConnection(trCon);
+					getCPool().returnConnection(trCon);
 				}
 			}
 		}

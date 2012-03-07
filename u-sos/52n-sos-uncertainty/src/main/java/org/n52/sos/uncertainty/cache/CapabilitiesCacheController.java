@@ -2,7 +2,7 @@ package org.n52.sos.uncertainty.cache;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+import org.apache.log4j.Logger;
 import org.n52.sos.SosConstants;
 import org.n52.sos.ogc.om.AbstractSosObservation;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
@@ -18,6 +18,9 @@ import org.n52.sos.uncertainty.ds.IConfigDAO;
  */
 public class CapabilitiesCacheController extends
 		org.n52.sos.cache.CapabilitiesCacheController {
+	
+	/** logger */
+    private static Logger LOGGER = Logger.getLogger(CapabilitiesCacheController.class);
 
 	/** contains the value units of uncertainties in the database */
 	private List<String> valueUnits;
@@ -55,7 +58,7 @@ public class CapabilitiesCacheController extends
      *             if query of value units of uncertainties failed
      */
     public void queryValueUnits() throws OwsExceptionReport {
-        this.setValueUnits(((IConfigDAO) configDao).queryValueUnits());
+        this.setValueUnits(((IConfigDAO) getConfigDao()).queryValueUnits());
     }
 
 	/**

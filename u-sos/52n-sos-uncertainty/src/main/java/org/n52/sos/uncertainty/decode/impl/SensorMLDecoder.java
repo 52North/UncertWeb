@@ -104,7 +104,7 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
                 AnyScalarPropertyType[] xb_fieldArray = xb_sdr.getFieldArray();
                 for (AnyScalarPropertyType xb_propType : xb_fieldArray) {
                     String name = xb_propType.getName();
-                    if (name.equals(MOBILE_NAME)) {
+                    if (name.equals(getMobileName())) {
                         Boolean xb_bool = xb_propType.getBoolean();
                         if (xb_bool != null) {
                             mobile = xb_bool.getValue();
@@ -116,7 +116,7 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
                                     "SensorDescription", message);
                             throw se;
                         }
-                    } else if (name.equals(STATUS_NAME)) {
+                    } else if (name.equals(getStatusName())) {
                         Boolean xb_bool = xb_propType.getBoolean();
                         if (xb_bool != null) {
                             active = xb_bool.getValue();
@@ -323,9 +323,9 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
 					metaDataArray = xb_text.getMetaDataPropertyArray();
 					phenID = xb_text.getDefinition();
 					phenGmlDesc = xb_text.getDescription();
-					if (phenID.toLowerCase().matches(POSITION_FIELD_REGEX)
+					if (phenID.toLowerCase().matches(getPositionFieldRegex())
 							|| xb_comPropType.getName().toLowerCase()
-									.matches(POSITION_FIELD_REGEX)) {
+									.matches(getPositionFieldRegex())) {
 						valueType = SosConstants.ValueTypes.spatialType.name();
 					} else {
 						valueType = SosConstants.ValueTypes.textType.name();
@@ -429,4 +429,39 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
 		}
 		return phenomena;
 	}
+	
+    /**
+     * Checks the URN of uniqueID definition.
+     * 
+     * @param definition
+     *            URN of uniqueID.
+     * @return Boolean.
+     */
+    private static boolean checkUniqueIDDefinition(String definition) {
+        if (definition != null
+                && (definition.equals("urn:ogc:def:identifier:OGC:uniqueID")
+                        || definition.equals("urn:ogc:def:identifier:OGC::uniqueID") || (definition
+                        .startsWith("urn:ogc:def:identifier:OGC:") && definition.contains("uniqueID")))) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * throws service exception, if passed phenID is null or empty string
+     * 
+     * @param phenID
+     *            phenID, which should be checked
+     * @throws OwsExceptionReport
+     *             throws service exception, if passed phenID is null or empty
+     *             string
+     */
+    private static void checkPhenID(String phenID) throws OwsExceptionReport {
+        if (phenID == null || phenID.equals("")) {
+            OwsExceptionReport se = new OwsExceptionReport();
+            se.addCodedException(OwsExceptionReport.ExceptionCode.InvalidParameterValue, null,
+                    "def attribute has to be set in quantities of outputList in sensor system, which should be registered !!");
+            throw se;
+        }
+    }
 }

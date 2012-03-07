@@ -6,6 +6,7 @@ import org.n52.sos.ds.IConfigDAO;
 import org.n52.sos.ds.IDAOFactory;
 import org.n52.sos.ds.IInsertObservationOperationDAO;
 import org.n52.sos.ds.IRegisterSensorDAO;
+import org.n52.sos.ds.pgsql.PGConnectionPool;
 import org.n52.sos.ds.pgsql.PGDAOConstants;
 import org.n52.sos.ds.pgsql.PGSQLRegisterSensorDAO;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
@@ -50,10 +51,10 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
      *         operation
      */
     public PGSQLGetObservationDAO getObservationDAO() {
-        return new PGSQLGetObservationDAO(cpool);
+        return new PGSQLGetObservationDAO(getCPool());
     }
 
-    /**
+	/**
      * method intitializes and returns a PostgreSQLGetTargetFeatureDAO
      * 
      * @param logLevel
@@ -66,7 +67,7 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
      *         operation
      */
     public IConfigDAO getConfigDAO() {
-        return new PGSQLConfigDAO(cpool);
+        return new PGSQLConfigDAO(getCPool());
     }
 
     /**
@@ -89,7 +90,7 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
      */
     public IRegisterSensorDAO getRegisterSensorDAO() {
 
-        return new PGSQLRegisterSensorDAO(cpool);
+        return new PGSQLRegisterSensorDAO(getCPool());
     }
 
     /**
@@ -97,6 +98,6 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
      * @return Returns the insertObservation DAO
      */
     public IInsertObservationOperationDAO getInsertObservationOperationDAO() {
-        return new PGSQLInsertObservationOperationDAO(cpool);
+        return new PGSQLInsertObservationOperationDAO(getCPool());
     }
 }

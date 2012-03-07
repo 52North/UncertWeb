@@ -47,17 +47,4 @@ public final class OM2Constants {
     
     public static final String SCHEMA_LOCATION_SAMS = "http://schemas.opengis.net/samplingSpatial/2.0/spatialSamplingFeature.xsd";
     
-    
-    
-    public static final String EN_SAMPLINGPOINT = "SF_SamplingPoint";
-    
-    public static final String EN_SAMPLINGCURVE = "SF_SamplingCurve";
-    
-    public static final String EN_SAMPLINGSURFACE = "SF_SamplingSurface";
-    
-    public static final String EN_SAMPLINGGRID = "SF_SamplingGrid";
-    
-    
-    
-
 }

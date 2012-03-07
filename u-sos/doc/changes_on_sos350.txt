@@ -1,0 +1,97 @@
+######################################################################
+## Changes done on SOS 3.5.0
+######################################################################
+
+
+SensorMLDecoder.SensorMLDecoder
+	private -> protected (to make other classes able to inherit from SensorMLDecoder)
+
+SosConstants.ValueTypes
+	uncertaintyType added (to Enum, contains() )
+
+GetObservationListener.checkObservedProperties
+	private -> protected
+GetObservationListener.checkOfferingId
+	private -> protected
+GetObservationListener.checkSrsName
+	private -> protected
+
+CapabilitiesCacheController.getConfigDAO
+	new
+
+PGSQLConfigDAO.getCPool
+	new
+
+PGSQLDAOFactory.getCPool
+	new
+
+PGSQLGetObservationDAO.queryObservation
+	private -> protected
+PGSQLGetObservationDAO.getResultTemplate
+	private -> protected
+PGSQLGetObservationDAO.getWhereClause4Results
+	private -> protected
+PGSQLGetObservationDAO.getWhereClause4SpatialFilter
+	private -> protected
+PGSQLGetObservationDAO.getWhereClause4Foi
+	private -> protected
+PGSQLGetObservationDAO.getWhereClause4DomainFeature
+	private -> protected
+PGSQLGetObservationDAO.getWhereClause4ObsProps
+	private -> protected
+PGSQLGetObservationDAO.getWhereClause4Offering
+	private -> protected
+PGSQLGetObservationDAO.getWhereClause4Time
+	private -> protected
+PGSQLGetObservationDAO.getWhereClause4Procedure
+	private -> protected
+PGSQLGetObservationDAO.queryGetFirstObservations
+	private -> protected
+PGSQLGetObservationDAO.queryLatestObservations
+	private -> protected
+PGSQLGetObservationDAO.getSelectClause
+	private -> protected
+PGSQLGetObservationDAO.getGeometriesAsTextClause
+	private -> protected
+PGSQLGetObservationDAO.getFromClause
+	private -> protected
+PGSQLGetObservationDAO.checkRequestSridQuerySrid
+	private -> protected
+PGSQLGetObservationDAO.checkResponseModeInline
+	private -> protected
+PGSQLGetObservationDAO.checkFreeMemory
+	private -> protected
+PGSQLGetObservationDAO.checkEnvelope
+	private -> protected
+PGSQLGetObservationDAO.checkResultModel
+	private -> protected
+PGSQLGetObservationDAO.filterSpatialPhenomena
+	private -> protected
+PGSQLGetObservationDAO.getCPool
+	new
+PGSQLGetObservationDAO.getRequestSrid
+	new
+PGSQLGetObservationDAO.setRequestSrid
+	new
+PGSQLGetObservationDAO.isSupportsQuality
+	new
+PGSQLGetObservationDAO.getBoundedBy
+	new
+PGSQLGetObservationDAO.setBoundedBy
+	new
+PGSQLGetObservationDAO.getTokenSeperator
+	new
+PGSQLGetObservationDAO.getTupleSeperator
+	new
+PGSQLGetObservationDAO.getNoDataValue
+	new
+
+PGSQLInsertObservationOperationDAO.getCPool
+	new
+
+PGQSLRegisterSensorDAO.insertPhenomena
+	uncertaintyType added (to if, exception text)
+
+ResultSetUtilities.ResultSetUtilities
+	private -> protected (to make other classes able to inherit from ResultSetUtilities)
+	

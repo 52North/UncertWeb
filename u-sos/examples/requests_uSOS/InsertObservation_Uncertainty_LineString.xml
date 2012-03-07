@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--=============================================================
+	This request depicts an example for inserting a new observation
+		- point as sampling location
+		- time instant as phenomenon time
+		- result contains uncertainty information
+	==============================================================-->
+	
+<InsertObservation xmlns="http://www.opengis.net/sos/1.0"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xmlns:gmd="http://www.isotc211.org/2005/gmd"
+	xmlns:om="http://www.opengis.net/om/2.0"
+	xmlns:sams="http://www.opengis.net/samplingSpatial/2.0"
+	xmlns:sf="http://www.opengis.net/sampling/2.0"
+	xmlns:un="http://www.uncertml.org/2.0"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/sos/1.0
+	http://schemas.opengis.net/sos/1.0.0/sosInsert.xsd
+	http://www.opengis.net/sampling/2.0
+	http://schemas.opengis.net/sampling/2.0/samplingFeature.xsd
+	http://schemas.opengis.net/om/2.0.0/extensions/observationSpecialization_override.xsd
+	http://www.opengis.net/om/2.0
+	http://v-mars.uni-muenster.de/uncertweb/schema/profiles/om/UncertWeb_OM.xsd
+	http://www.opengis.net/gml/3.2
+	http://v-mars.uni-muenster.de/uncertweb/schema/profiles/gml/UncertWeb_GML.xsd"
+	service="SOS" version="1.0.0">
+  
+	<AssignedSensorId>urn:ogc:object:feature:Sensor:IFGI:uw-sensor-3</AssignedSensorId>
+  
+	<om:OM_UncertaintyObservation>
+		<gml:identifier codeSpace="http://www.uncertweb.org">geomTestX002</gml:identifier>
+       
+		<!--=============================================================
+			phenomenon time represents the time when the observation was taken (so when the sensor 
+			has interacted with reality	
+			==============================================================-->
+		<om:phenomenonTime>
+			<gml:TimeInstant gml:id="ot1t">
+				<gml:timePosition>2011-06-02T16:03:25.000+01</gml:timePosition>
+			</gml:TimeInstant>
+		</om:phenomenonTime>
+        
+		<!--=============================================================
+		    result time represents the time when the result value was produced; might differ for example in case of a soil sample;
+	        sample has been taken during phenomenonTime and then evaluate later in a laboratory during resultTime
+	        ==============================================================-->
+	    <om:resultTime xlink:href="#ot1t"/>
+		       
+		<!--=============================================================
+			procedure has produced the observation's result (usually a sensor)
+			==============================================================-->
+		<om:procedure xlink:href="urn:ogc:object:feature:Sensor:IFGI:uw-sensor-3"/>
+       
+		<!--=============================================================
+			observedProperty usually contains a link to a vocabulary containing the definition of the property
+			which has been observed; in case of environmental modeling this is usually a physical phenomenon (e.g. temperature, air pollutant concentration, etc.)
+			==============================================================-->
+		<om:observedProperty xlink:href="urn:ogc:def:phenomenon:OGC:1.0.30:waterspeed"/>
+       
+		<!--=============================================================
+			feature of interest carries the sampling geometry of the observation
+			==============================================================-->
+		<om:featureOfInterest>
+			<sams:SF_SpatialSamplingFeature gml:id="SamplingCurve1">
+				<gml:identifier codeSpace="http://www.uncertweb.org">SamplingCurve1</gml:identifier>
+				<sf:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingCurve"/>
+				<sf:sampledFeature xsi:nil="true"/>
+				<sams:shape>
+					<gml:LineString gml:id="lineString1" srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
+						<gml:pos>52.79 7.87</gml:pos>
+						<gml:pos>52.79 8.87</gml:pos>
+						<gml:pos>53.79 8.87</gml:pos>
+						<gml:pos>53.79 7.87</gml:pos>
+					</gml:LineString>
+				</sams:shape>
+			</sams:SF_SpatialSamplingFeature>
+		</om:featureOfInterest>
+       
+		<!--=============================================================
+			observation result is a single measured value
+			==============================================================-->
+		<om:result uom="m/s">
+			<un:Mean>
+				<un:values>0.81 0.93 0.98 1.23 1.45 0.96 0.78 0.81</un:values>
+			</un:Mean> 
+		</om:result>
+	</om:OM_UncertaintyObservation>
+  
+</InsertObservation>

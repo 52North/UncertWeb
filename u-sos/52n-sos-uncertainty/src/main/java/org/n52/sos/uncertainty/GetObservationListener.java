@@ -3,7 +3,6 @@ package org.n52.sos.uncertainty;
 import net.opengis.om.x10.ObservationCollectionDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
-import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
@@ -82,17 +81,17 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 				SosObservationCollection obsCollection;
 
 				if (mobileEnabled) {
-					obsCollection = this.dao.getObservationMobile(sosRequest);
+					obsCollection = getDao().getObservationMobile(sosRequest);
 
 				} else {
-					obsCollection = this.dao.getObservation(sosRequest);
+					obsCollection = getDao().getObservation(sosRequest);
 				}
 
 				if (sosRequest.getResponseFormat().equals(
 						SosUncConstants.CONTENT_TYPE_OM2)) {
 
 					// response with uncertainties
-					IObservationCollection om2obsCol = ((PGSQLGetObservationDAO) this.dao)
+					IObservationCollection om2obsCol = ((PGSQLGetObservationDAO) getDao())
 							.getUncertainObservationCollection(obsCollection);
 
 					XBObservationEncoder encoder = new XBObservationEncoder();

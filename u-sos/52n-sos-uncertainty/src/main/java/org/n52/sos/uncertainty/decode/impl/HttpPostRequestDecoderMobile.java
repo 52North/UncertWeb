@@ -7,17 +7,21 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import net.opengis.gml.FeaturePropertyType;
-import net.opengis.gml.TimePositionType;
 import net.opengis.om.x10.CategoryObservationType;
 import net.opengis.om.x10.GeometryObservationType;
 import net.opengis.om.x10.MeasurementType;
 import net.opengis.om.x10.ObservationDocument;
 import net.opengis.om.x10.ObservationType;
 import net.opengis.om.x20.FoiPropertyType;
+import net.opengis.om.x20.OMBooleanObservationDocument;
+import net.opengis.om.x20.OMCategoryObservationDocument;
+import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
 import net.opengis.om.x20.OMMeasurementDocument;
 import net.opengis.om.x20.OMObservationDocument;
+import net.opengis.om.x20.OMReferenceObservationDocument;
+import net.opengis.om.x20.OMTextObservationDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 import net.opengis.om.x20.OMUncertaintyObservationDocument;
@@ -37,7 +41,6 @@ import net.opengis.sos.x10.UpdateSensorDocument;
 import net.opengis.sos.x10.UpdateSensorDocument.UpdateSensor;
 import net.opengis.swe.x101.PositionType;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.n52.sos.decode.IHttpPostRequestDecoder;
@@ -78,18 +81,17 @@ import com.vividsolutions.jts.geom.Point;
 public class HttpPostRequestDecoderMobile extends
 		org.n52.sos.decode.impl.HttpPostRequestDecoderMobile implements
 		IHttpPostRequestDecoder {
-	
-    /**
-     * Feature Decoder
-     */
-    private FeatureDecoder featureDecoder = new FeatureDecoder();
 
-    /**
-     * O&M Decoder
-     */
-    private OMDecoder omDecoder = new OMDecoder();
+	/**
+	 * Feature Decoder
+	 */
+	private FeatureDecoder featureDecoder = new FeatureDecoder();
 
-	
+	/**
+	 * O&M Decoder
+	 */
+	private OMDecoder omDecoder = new OMDecoder();
+
 	/**
 	 * O&M 2 Decoder from UncertWeb O&M 2 API
 	 */
@@ -170,14 +172,15 @@ public class HttpPostRequestDecoderMobile extends
 				} else if (xb_insertObs.selectChildren(new QName(
 						"http://www.opengis.net/om/2.0",
 						OM2Constants.OBS_COL_TYPE_MEASUREMENT)).length > 0) {
-					
-					om2MeasColDoc = OMMeasurementCollectionDocument.Factory.newInstance();
-					OMMeasurementCollection om2MeasCol = om2MeasColDoc
-					.addNewOMMeasurementCollection();
 
-			om2MeasCol.set(xb_insertObs.selectChildren(new QName(
-					"http://www.opengis.net/om/2.0",
-					OM2Constants.OBS_COL_TYPE_MEASUREMENT))[0]);
+					om2MeasColDoc = OMMeasurementCollectionDocument.Factory
+							.newInstance();
+					OMMeasurementCollection om2MeasCol = om2MeasColDoc
+							.addNewOMMeasurementCollection();
+
+					om2MeasCol.set(xb_insertObs.selectChildren(new QName(
+							"http://www.opengis.net/om/2.0",
+							OM2Constants.OBS_COL_TYPE_MEASUREMENT))[0]);
 
 				}
 				// TODO add further uncertainty types here
@@ -299,12 +302,35 @@ public class HttpPostRequestDecoderMobile extends
 
 			} else if (xb_object instanceof OMObservationDocument) {
 
-				// parse fois from template
-				FoiPropertyType xb_fpt = ((OMObservationDocument) xb_object)
-						.getOMObservation().getFeatureOfInterest();
+				FoiPropertyType xb_fpt = null; 
+				
+				// get OM2 FOI property type
+				if (xb_object instanceof OMBooleanObservationDocument) {
+					xb_fpt = ((OMBooleanObservationDocument) xb_object).getOMBooleanObservation().getFeatureOfInterest();
 
+				} else if (xb_object instanceof OMCategoryObservationDocument) {
+					xb_fpt = ((OMCategoryObservationDocument) xb_object).getOMCategoryObservation().getFeatureOfInterest();
+
+				} else if (xb_object instanceof OMDiscreteNumericObservationDocument) {
+					xb_fpt = ((OMDiscreteNumericObservationDocument) xb_object).getOMDiscreteNumericObservation().getFeatureOfInterest();
+
+				} else if (xb_object instanceof OMMeasurementDocument) {
+					xb_fpt = ((OMMeasurementDocument) xb_object).getOMMeasurement().getFeatureOfInterest();
+
+				} else if (xb_object instanceof OMReferenceObservationDocument) {
+					xb_fpt = ((OMReferenceObservationDocument) xb_object).getOMReferenceObservation().getFeatureOfInterest();
+
+				} else if (xb_object instanceof OMTextObservationDocument) {
+					xb_fpt = ((OMTextObservationDocument) xb_object).getOMTextObservation().getFeatureOfInterest();
+
+				} else if (xb_object instanceof OMUncertaintyObservationDocument) {
+					xb_fpt = ((OMUncertaintyObservationDocument) xb_object).getOMUncertaintyObservation().getFeatureOfInterest();
+				}
+				
+				// parse OM2 sampling feature
 				if (xb_fpt.getSFSpatialSamplingFeature() != null
 						|| xb_fpt.getHref() != null) {
+					
 					SpatialSamplingFeature om2FOI;
 					try {
 						om2FOI = om2Decoder.parseSamplingFeature(xb_fpt);
@@ -314,18 +340,41 @@ public class HttpPostRequestDecoderMobile extends
 								ExceptionCode.InvalidParameterValue,
 								null,
 								"Feature of interest '"
-										+ xb_fpt.getSFSpatialSamplingFeature()
-												.getIdentifier()
-												.getStringValue()
+										+ xb_fpt.getSFSpatialSamplingFeature().getIdentifier().getStringValue()
 										+ "' could not be parsed: "
 										+ e.getLocalizedMessage());
 						throw se;
 					}
+					
 					SosAbstractFeature om1FOI = ObservationConverter
-							.convertOM2FOI(om2FOI);
+						.convertOM2FOI(om2FOI);
 					foi_col = new ArrayList<SosAbstractFeature>(1);
 					foi_col.add(om1FOI);
 				}
+
+//				if (xb_fpt.getAbstractFeature() != null
+//						|| xb_fpt.getHref() != null) {
+//					SpatialSamplingFeature om2FOI;
+//					try {
+//						om2FOI = parseSamplingFeature(xb_fpt);
+//					} catch (Exception e) {
+//						OwsExceptionReport se = new OwsExceptionReport();
+//						se.addCodedException(
+//								ExceptionCode.InvalidParameterValue,
+//								null,
+//								"Feature of interest '"
+//										+ xb_fpt.getAbstractFeature()
+//												.getIdentifier()
+//												.getStringValue()
+//										+ "' could not be parsed: "
+//										+ e.getLocalizedMessage());
+//						throw se;
+//					}
+//					SosAbstractFeature om1FOI = ObservationConverter
+//							.convertOM2FOI(om2FOI);
+//					foi_col = new ArrayList<SosAbstractFeature>(1);
+//					foi_col.add(om1FOI);
+//				}
 
 				// workaround to store UncertaintyObservations with phenomenon
 				// value type 'uncertaintyType'
@@ -407,6 +456,71 @@ public class HttpPostRequestDecoderMobile extends
 		return request;
 	}
 
+//	/**
+//	 * parses foi and handles different gml versions
+//	 * 
+//	 * @param xb_featureOfInterest
+//	 *            gml 3.2 feature
+//	 * @return parsed gml 3.1 feature
+//	 * @throws XmlException 
+//	 * @throws URISyntaxException 
+//	 * @throws MalformedURLException 
+//	 * @throws IllegalArgumentException 
+//	 */
+//	private SpatialSamplingFeature parseSamplingFeature(
+//			FoiPropertyType xb_featureOfInterest) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException {
+//		SpatialSamplingFeature ssf = null;
+//
+//		// if reference is set, create SamplingFeature and set reference
+//		if (xb_featureOfInterest.isSetHref()) {
+//			
+//			FoiPropertyType xb_gml31FOI = FoiPropertyType.Factory.newInstance();
+//			xb_gml31FOI.setHref(xb_featureOfInterest.getHref());
+//			
+//			return om2Decoder.parseSamplingFeature(xb_gml31FOI);
+//		}
+//
+//		// FOI is encoded inline, so parse the feature
+//		else {
+//			
+//			String gmlId = xb_featureOfInterest.getAbstractFeature().getId();
+//			// get identifier
+//			//TODO add parsing of code space
+//			Identifier identifier = null;
+//			if (xb_featureOfInterest.getAbstractFeature()
+//					.getIdentifier()!=null){
+//				CodeWithAuthorityType xb_identifier = xb_featureOfInterest.getAbstractFeature().getIdentifier();
+//				String idString = xb_identifier.getStringValue();
+//				URI codeSpace = new URI(xb_identifier.getCodeSpace());
+//				identifier = new Identifier(codeSpace,idString);
+//			}
+//
+//			// TODO add boundedBy, location
+//
+//			// get reference to the sampled feature
+//			String sampledFeature = null;
+//
+//			
+//			if (!(((SFSamplingFeatureType) xb_featureOfInterest.getAbstractFeature()).getSampledFeature().getHref() == null)) {
+//
+//				sampledFeature = ((SFSamplingFeatureType) xb_featureOfInterest.getAbstractFeature()).getSampledFeature().getHref();
+//			}
+//
+//			// get shape geometry
+//			XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
+//			
+//			ShapeType shapeType = ((SFSpatialSamplingFeatureType) xb_featureOfInterest.getAbstractFeature()).getShape();
+//			Geometry shape = parser.parseUwGeometry(shapeType.xmlText());
+//			
+////			ShapeType geomString = xb_featureOfInterest.getSFSpatialSamplingFeature().getShape();
+////			Geometry shape = parser.parseUwGeometry(geomString.toString());
+//
+//			ssf = new SpatialSamplingFeature(identifier, sampledFeature, shape);
+//			om2Decoder.getFeatureCache().put(gmlId, ssf);
+//			return ssf;
+//		}
+//	}
+
 	/**
 	 * parses the XMLBeans representation of the UpdateSensorDocument and
 	 * creates an SosUpdateSensorRequest
@@ -429,7 +543,7 @@ public class HttpPostRequestDecoderMobile extends
 		SosAbstractFeature domFeat = null;
 
 		String procID = xb_us.getSensorID();
-		TimePositionType time = xb_us.getTimeStamp().getTimePosition();
+		String time = xb_us.getTimeStamp().getTimePosition().getStringValue();
 		boolean mobile = xb_us.getIsMobile();
 		boolean active = xb_us.getIsActive();
 

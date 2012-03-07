@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.n52.sos.SosConfigurator;
 import org.n52.sos.SosConstants;
@@ -271,19 +270,23 @@ public class ObservationConverter {
 	 */
 	public static SosAbstractFeature convertOM2FOI(SpatialSamplingFeature foi) {
 
+		String notSet = OMConstants.PARAMETER_NOT_SET;
 		String id = foi.getIdentifier().toIdentifierString();
-		String description = foi.getSampledFeature();
+		String description = "";
+		
 		String featureType = foi.getFeatureType();
-		String name = foi.getTypeName();
+		String name = foi.getIdentifier().getIdentifier();
 		Geometry jts_geom = foi.getShape();
-		String ns = OMConstants.PARAMETER_NOT_SET;
+		
+		
+		
 
 		if (jts_geom instanceof Point) {
 			return new SosSamplingPoint(id, name, description, (Point) jts_geom,
-					featureType, ns);
+					featureType, notSet);
 		} else {
 			return new SosSamplingSurface(id, name, description, jts_geom,
-					featureType, ns);
+					featureType, notSet);
 			// TODO test if SOS handles all geometry types correctly
 		}
 	}
@@ -496,7 +499,8 @@ public class ObservationConverter {
 	private static SpatialSamplingFeature convertOM1FOI(SosAbstractFeature foi)
 			throws OwsExceptionReport {
 
-		String sampledFeature = foi.getDescription();
+		
+		String sampledFeature = OMConstants.PARAMETER_NOT_SET;
 		Geometry shape = foi.getGeom();
 		Envelope boundedBy = shape.getEnvelopeInternal();
 

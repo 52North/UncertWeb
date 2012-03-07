@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.log4j.Logger;
 import org.n52.sos.SosConstants;
 import org.n52.sos.ds.pgsql.PGConnectionPool;
 import org.n52.sos.ds.pgsql.PGDAOConstants;
@@ -26,6 +27,12 @@ import org.n52.sos.uncertainty.ds.IConfigDAO;
  */
 public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implements IConfigDAO {
 
+    /**
+     * logger, used for logging while initializing the constants from config
+     * file
+     */
+    private static Logger LOGGER = Logger.getLogger(PGSQLConfigDAO.class);
+	
 	/**
 	 * Constructor 
 	 * @param conPool
@@ -55,7 +62,7 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
         String offeringID;
         try {
             // execute query
-            con = cpool.getConnection();
+            con = getCPool().getConnection();
             stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -218,12 +225,12 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
                 }
             }
             if (con != null) {
-                cpool.returnConnection(con);
+                getCPool().returnConnection(con);
             }
         }
         return result;
     }
-	
+
 	/**
 	 * queries the value units of uncertainties from the DB
 	 * @return 
@@ -241,7 +248,7 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
 		Statement stmt = null;
 		try {
 			// execute query
-			con = cpool.getConnection();
+			con = getCPool().getConnection();
 			stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 
@@ -265,7 +272,7 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
 				}
 			}
 			if (con != null) {
-				cpool.returnConnection(con);
+				getCPool().returnConnection(con);
 			}
 		}
 		return valueUnits;

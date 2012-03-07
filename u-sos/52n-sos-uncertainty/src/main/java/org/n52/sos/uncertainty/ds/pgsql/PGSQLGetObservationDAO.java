@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,13 +18,14 @@ import javax.xml.namespace.QName;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.n52.sos.Sos1Constants;
 import org.n52.sos.Sos2Constants;
 import org.n52.sos.SosConfigurator;
 import org.n52.sos.SosConstants;
 import org.n52.sos.Sos1Constants.GetObservationParams;
+import org.n52.sos.SosConstants.FirstLatest;
 import org.n52.sos.SosConstants.ValueTypes;
 import org.n52.sos.SosDateTimeUtilities;
-import org.n52.sos.decode.impl.utilities.GMLDecoder;
 import org.n52.sos.ds.IGetObservationDAO;
 import org.n52.sos.ds.pgsql.PGConnectionPool;
 import org.n52.sos.ds.pgsql.PGDAOConstants;
@@ -105,7 +107,7 @@ public class PGSQLGetObservationDAO extends
 
 		Connection con = null;
 		try {
-			con = cpool.getConnection();
+			con = getCPool().getConnection();
 			ResultSet rs = queryUncertainty(obsIDs, con);
 			Object[] row = null;
 
@@ -143,7 +145,7 @@ public class PGSQLGetObservationDAO extends
 			throw se;
 		} finally {
 			if (con != null) {
-				cpool.returnConnection(con);
+				getCPool().returnConnection(con);
 			}
 		}
 		return rsList.toArray(new Object[0][0]);
@@ -729,20 +731,20 @@ public class PGSQLGetObservationDAO extends
         StringBuilder query = new StringBuilder();
 
         // select clause
-        query.append(getSelectClause(isSupportsQuality()));
+        query.append(getSelectClause(isSupportsQuality(), request.isMobileEnabled()));
 
         // add geometry column to list, if srsName parameter is set, transform
         // coordinates into request system
-        query.append(getGeometriesAsTextClause(srsName));
+        query.append(getGeometriesAsTextClause(srsName, request.isMobileEnabled()));
 
         // natural join of tables       
 		if (request.getResponseFormat() != null
 				&& request.getResponseFormat().equals(
 						SosUncConstants.CONTENT_TYPE_OM2)) {
 
-			query.append(this.getFromClause(isSupportsQuality(), true));
+			query.append(this.getFromClause(isSupportsQuality(), request.isMobileEnabled(), true));
 		} else {
-			query.append(getFromClause(isSupportsQuality()));
+			query.append(super.getFromClause(isSupportsQuality(), request.isMobileEnabled()));
 		}
 
         List<String> whereClauses = new ArrayList<String>();
@@ -781,7 +783,7 @@ public class PGSQLGetObservationDAO extends
 
         // append feature of interest parameter
         if (request.getFeatureOfInterest() != null && request.getFeatureOfInterest().length > 0) {
-            whereClauses.add(getWhereClause4Foi(request.getFeatureOfInterest()));
+            whereClauses.add(getWhereClause4Foi(request.getFeatureOfInterest(), request.isMobileEnabled()));
         }
 
         // append domain feature parameter
@@ -850,7 +852,7 @@ public class PGSQLGetObservationDAO extends
 	 *            get only observations with uncertainties
 	 * @return String containing the from clause
 	 */
-	private String getFromClause(boolean quality, boolean uncertainties) {
+	private String getFromClause(boolean quality, boolean isMobile, boolean uncertainties) {
 		StringBuilder from = new StringBuilder();
 		from.append(" FROM (" + PGDAOConstants.getObsTn() + " NATURAL INNER JOIN "
 				+ PGDAOConstants.getPhenTn() + " NATURAL INNER JOIN "
@@ -859,13 +861,15 @@ public class PGSQLGetObservationDAO extends
 			from.append(" NATURAL INNER JOIN "
 					+ PGDAOUncertaintyConstants.uObsUncTn);
 		}
-		from.append(" LEFT OUTER JOIN " + PGDAOConstants.getObsDfTn() + " ON "
-				+ PGDAOConstants.getObsDfTn() + "." + PGDAOConstants.getObsIDCn() + " = "
-				+ PGDAOConstants.getObsTn() + "." + PGDAOConstants.getObsIDCn()
-				+ " LEFT OUTER JOIN " + PGDAOConstants.getDfTn() + " ON "
-				+ PGDAOConstants.getObsDfTn() + "."
-				+ PGDAOConstants.getDomainFeatureIDCn() + " = "
-				+ PGDAOConstants.getDfTn() + "." + PGDAOConstants.getDomainFeatureIDCn());
+		if (isMobile) {
+			from.append(" LEFT OUTER JOIN " + PGDAOConstants.getObsDfTn() + " ON "
+					+ PGDAOConstants.getObsDfTn() + "." + PGDAOConstants.getObsIDCn() + " = "
+					+ PGDAOConstants.getObsTn() + "." + PGDAOConstants.getObsIDCn()
+					+ " LEFT OUTER JOIN " + PGDAOConstants.getDfTn() + " ON "
+					+ PGDAOConstants.getObsDfTn() + "."
+					+ PGDAOConstants.getDomainFeatureIDCn() + " = "
+					+ PGDAOConstants.getDfTn() + "." + PGDAOConstants.getDomainFeatureIDCn());
+		}
 		if (quality) {
 			from.append(" LEFT JOIN " + PGDAOConstants.getQualityTn() + " ON "
 					+ PGDAOConstants.getQualityTn() + "." + PGDAOConstants.getObsIDCn()
@@ -910,14 +914,19 @@ public class PGSQLGetObservationDAO extends
 				String obsID = resultSet.getString(PGDAOConstants.getObsIDCn());
 
 				if (obs4obsIDs.containsKey(obsID)) {
-					if (resultSet.getString(PGDAOConstants.getDomainFeatureIDCn()) != null
-							&& !resultSet.getString(
-									PGDAOConstants.getDomainFeatureIDCn())
-									.equals("")) {
-						AbstractSosObservation obs = obs4obsIDs.get(obsID);
-						String dfID = resultSet
-								.getString(PGDAOConstants.getDomainFeatureIDCn());
-						obs.addDomainFeatureID(new SosGenericDomainFeature(dfID));
+					
+					// mobile enabled
+					if (request.isMobileEnabled()) {
+					
+						if (resultSet.getString(PGDAOConstants.getDomainFeatureIDCn()) != null
+								&& !resultSet.getString(
+										PGDAOConstants.getDomainFeatureIDCn())
+										.equals("")) {
+							AbstractSosObservation obs = obs4obsIDs.get(obsID);
+							
+							String dfID = resultSet.getString(PGDAOConstants.getDomainFeatureIDCn());
+							obs.addDomainFeatureID(new SosGenericDomainFeature(dfID));
+						}
 					}
 					// supports quality
 					if (isSupportsQuality()) {
@@ -960,15 +969,17 @@ public class PGSQLGetObservationDAO extends
 					// domain feature
 					String domainFeatID = null;
 					ArrayList<SosAbstractFeature> domainFeatIDs = null;
-					if (resultSet.getString(PGDAOConstants.getDomainFeatureIDCn()) != null
-							&& !resultSet.getString(
-									PGDAOConstants.getDomainFeatureIDCn())
-									.equals("")) {
-						domainFeatID = resultSet
-								.getString(PGDAOConstants.getDomainFeatureIDCn());
-						domainFeatIDs = new ArrayList<SosAbstractFeature>();
-						domainFeatIDs.add(new SosGenericDomainFeature(
-								domainFeatID));
+					if (request.isMobileEnabled()) {
+						if (resultSet.getString(PGDAOConstants.getDomainFeatureIDCn()) != null
+								&& !resultSet.getString(
+										PGDAOConstants.getDomainFeatureIDCn())
+										.equals("")) {
+							domainFeatID = resultSet
+									.getString(PGDAOConstants.getDomainFeatureIDCn());
+							domainFeatIDs = new ArrayList<SosAbstractFeature>();
+							domainFeatIDs.add(new SosGenericDomainFeature(
+									domainFeatID));
+						}
 					}
 
 					// feature of interest
@@ -1234,112 +1245,118 @@ public class PGSQLGetObservationDAO extends
 	public SosObservationCollection getObservation(
 			SosGetObservationRequest request) throws OwsExceptionReport {
 		// setting a global "now" for this request
-		DateTime now = new DateTime();
+		setNow(new DateTime());
 
 		// ObservationCollection object which will be returned
 		SosObservationCollection response = new SosObservationCollection();
 		Connection con = null;
 		setRequestSrid(-1);
+		setBoundedBy(null);
 
 		try {
-			if (request.getObservedProperty().length > 0) {
-				if (!(request.getSrsName() == null
-						|| request.getSrsName().equals("") || !request
-						.getSrsName().startsWith(
-								SosConfigurator.getInstance()
-										.getSrsNamePrefix()))) {
-					setRequestSrid(ResultSetUtilities.parseSrsName(request
-							.getSrsName()));
-				}
-				checkResultModel(request.getResultModel(),
-						request.getObservedProperty());
-
-				List<ResultSet> resultSetList = new ArrayList<ResultSet>();
-
-				con = cpool.getConnection();
-
-				// if timeInstant contains "latest", return the last observation
-				// for each phen/proc/foi/df
-				if (request.getEventTime() != null
-						&& request.getEventTime().length > 0) {
-					for (TemporalFilter tf : request.getEventTime()) {
-						if (tf.getTime() instanceof TimeInstant) {
-							TimeInstant ti = (TimeInstant) tf.getTime();
-							if (ti.getIndeterminateValue() != null
-									&& ti.getIndeterminateValue().equals(
-											"latest")) {
-								resultSetList.add(queryLatestObservations(
-										request, con));
-							} else if (ti.getIndeterminateValue() != null
-									&& ti.getIndeterminateValue()
-											.equalsIgnoreCase("getFirst")) {
-								resultSetList.add(queryGetFirstObservations(
-										request, con));
-							} else {
-								resultSetList
-										.add(queryObservation(request, con));
+			if (request.getObservedProperty().length == 0 && request.getVersion().equals(Sos1Constants.SERVICEVERSION)) {
+                OwsExceptionReport se = new OwsExceptionReport();
+                se.addCodedException(OwsExceptionReport.ExceptionCode.InvalidParameterValue,
+                        GetObservationParams.observedProperty.toString(),
+                        "The request contains no observed Properties!");
+                throw se;
+            } else {
+                boolean hasSpatialPhen = false;
+                if (Arrays.asList(request.getObservedProperty()).contains(
+                                SosConfigurator.getInstance().getSpatialObsProp4DynymicLocation())) {
+                    hasSpatialPhen = true;
+                }
+				if (request.getObservedProperty().length > 0) {
+					if (!(request.getSrsName() == null
+							|| request.getSrsName().equals("") || !request
+							.getSrsName().startsWith(
+									SosConfigurator.getInstance()
+											.getSrsNamePrefix()))) {
+						setRequestSrid(ResultSetUtilities.parseSrsName(request
+								.getSrsName()));
+					}
+					checkResultModel(request.getResultModel(),
+							request.getObservedProperty());
+	
+					List<ResultSet> resultSetList = new ArrayList<ResultSet>();
+	
+					con = getCPool().getConnection();
+	
+					// if timeInstant contains "latest", return the last observation
+					// for each phen/proc/foi/df
+					if (request.getEventTime() != null && request.getEventTime().length > 0) {
+	                    for (TemporalFilter tf : request.getEventTime()) {
+	                        if (tf.getTime().getIndeterminateValue() != null) {
+	                            if (tf.getTime().getIndeterminateValue().equals(FirstLatest.latest.name())) {
+	                                resultSetList.add(queryLatestObservations(request, tf, con, hasSpatialPhen));
+	                            } else if (tf.getTime().getIndeterminateValue()
+	                                    .equalsIgnoreCase(FirstLatest.getFirst.name())) {
+	                                resultSetList.add(queryGetFirstObservations(request, tf, con, hasSpatialPhen));
+	                            } else {
+	                                resultSetList.add(queryObservation(request, con, hasSpatialPhen));
+	                            }
+	                        } else {
+	                            resultSetList.add(queryObservation(request, con, hasSpatialPhen));
+	                        }
+	                    }
+	                } else {
+	                    resultSetList.add(queryObservation(request, con, hasSpatialPhen));
+	                }
+					// end get ResultSets
+					for (ResultSet resultSet : resultSetList) {
+	
+						// if resultModel parameter is set in the request, check,
+						// whether it is correct and then return request
+						// observations
+						QName resultModel = request.getResultModel();
+						// check ResponseMode
+						if (request.getResponseMode() != null
+								&& !request.getResponseMode().equalsIgnoreCase(
+										SosConstants.PARAMETER_NOT_SET)) {
+							if (request.getResponseMode() == SosConstants.RESPONSE_RESULT_TEMPLATE) {
+								return getResultTemplate(resultSet, request);
 							}
+	
+						}
+						// check ResultModel
+						if (resultModel == null
+								|| resultModel
+										.equals(SosConstants.RESULT_MODEL_MEASUREMENT)
+								|| resultModel
+										.equals(SosConstants.RESULT_MODEL_CATEGORY_OBSERVATION)
+								|| resultModel
+										.equals(SosConstants.RESULT_MODEL_OBSERVATION)
+								|| resultModel
+										.equals(SosConstants.RESULT_MODEL_SPATIAL_OBSERVATION)
+								|| resultModel
+										.equals(SosUncConstants.RESULT_MODEL_MEASUREMENT)
+								|| resultModel
+										.equals(SosUncConstants.RESULT_MODEL_UNCERTAINTY_OBSERVATION)) {
+							response.addColllection(getSingleObservationsFromResultSet(
+									resultSet, request, resultModel));
+	
 						} else {
-							resultSetList.add(queryObservation(request, con));
+							OwsExceptionReport se = new OwsExceptionReport();
+							se.addCodedException(
+									OwsExceptionReport.ExceptionCode.InvalidParameterValue,
+									GetObservationParams.resultModel.toString(),
+									"The value ("
+											+ resultModel
+											+ ") of the parameter '"
+											+ GetObservationParams.resultModel
+													.toString()
+											+ "' is not supported by this SOS!");
+							throw se;
 						}
 					}
 				} else {
-					resultSetList.add(queryObservation(request, con));
+					OwsExceptionReport se = new OwsExceptionReport();
+					se.addCodedException(
+							OwsExceptionReport.ExceptionCode.InvalidParameterValue,
+							GetObservationParams.observedProperty.toString(),
+							"The request contains no observed Properties!");
+					throw se;
 				}
-				// end get ResultSets
-				for (ResultSet resultSet : resultSetList) {
-
-					// if resultModel parameter is set in the request, check,
-					// whether it is correct and then return request
-					// observations
-					QName resultModel = request.getResultModel();
-					// check ResponseMode
-					if (request.getResponseMode() != null
-							&& !request.getResponseMode().equalsIgnoreCase(
-									SosConstants.PARAMETER_NOT_SET)) {
-						if (request.getResponseMode() == SosConstants.RESPONSE_RESULT_TEMPLATE) {
-							return getResultTemplate(resultSet, request);
-						}
-
-					}
-					// check ResultModel
-					if (resultModel == null
-							|| resultModel
-									.equals(SosConstants.RESULT_MODEL_MEASUREMENT)
-							|| resultModel
-									.equals(SosConstants.RESULT_MODEL_CATEGORY_OBSERVATION)
-							|| resultModel
-									.equals(SosConstants.RESULT_MODEL_OBSERVATION)
-							|| resultModel
-									.equals(SosConstants.RESULT_MODEL_SPATIAL_OBSERVATION)
-							|| resultModel
-									.equals(SosUncConstants.RESULT_MODEL_MEASUREMENT)
-							|| resultModel
-									.equals(SosUncConstants.RESULT_MODEL_UNCERTAINTY_OBSERVATION)) {
-						response.addColllection(getSingleObservationsFromResultSet(
-								resultSet, request, resultModel));
-
-					} else {
-						OwsExceptionReport se = new OwsExceptionReport();
-						se.addCodedException(
-								OwsExceptionReport.ExceptionCode.InvalidParameterValue,
-								GetObservationParams.resultModel.toString(),
-								"The value ("
-										+ resultModel
-										+ ") of the parameter '"
-										+ GetObservationParams.resultModel
-												.toString()
-										+ "' is not supported by this SOS!");
-						throw se;
-					}
-				}
-			} else {
-				OwsExceptionReport se = new OwsExceptionReport();
-				se.addCodedException(
-						OwsExceptionReport.ExceptionCode.InvalidParameterValue,
-						GetObservationParams.observedProperty.toString(),
-						"The request contains no observed Properties!");
-				throw se;
 			}
 			response.setBoundedBy(getBoundedBy());
 			response.setSrid(getRequestSrid());
@@ -1354,7 +1371,7 @@ public class PGSQLGetObservationDAO extends
 			throw se;
 		} finally {
 			if (con != null) {
-				cpool.returnConnection(con);
+				getCPool().returnConnection(con);
 			}
 		}
 		return response;

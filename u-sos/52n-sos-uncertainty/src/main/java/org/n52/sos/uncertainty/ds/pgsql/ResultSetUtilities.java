@@ -65,7 +65,9 @@ public class ResultSetUtilities extends org.n52.sos.ds.pgsql.ResultSetUtilities 
 		Geometry geometry = createJTSGeom(geomWKT, srid);
 
 		// add new AbstractFeature to Collection
-		if (featureType.equalsIgnoreCase(OM2Constants.EN_SAMPLINGPOINT)) {
+		if (featureType
+				.equalsIgnoreCase(org.uncertweb.api.om.OMConstants.NS_SFT
+						+ org.uncertweb.api.om.OMConstants.EN_SAMPLINGPOINT)) {
 			if (geometry instanceof Point) {
 				absFeat = new SosSamplingPoint(id, name, desc,
 						(Point) geometry, featureType, schemaLink,
@@ -80,7 +82,9 @@ public class ResultSetUtilities extends org.n52.sos.ds.pgsql.ResultSetUtilities 
 						+ "' is not supported!", se);
 				throw se;
 			}
-		} else if (featureType.equalsIgnoreCase(OM2Constants.EN_SAMPLINGCURVE)) {
+		} else if (featureType
+				.equalsIgnoreCase(org.uncertweb.api.om.OMConstants.NS_SFT
+						+ org.uncertweb.api.om.OMConstants.EN_SAMPLINGCURVE)) {
 			if (geometry instanceof LineString) {
 				absFeat = new SosGenericSamplingFeature(id, name, desc,
 						geometry, schemaLink, domainFeaturesp);
@@ -94,7 +98,9 @@ public class ResultSetUtilities extends org.n52.sos.ds.pgsql.ResultSetUtilities 
 						+ "' is not supported!", se);
 				throw se;
 			}
-		} else if (featureType.equalsIgnoreCase(OM2Constants.EN_SAMPLINGSURFACE)) {
+		} else if (featureType
+				.equalsIgnoreCase(org.uncertweb.api.om.OMConstants.NS_SFT
+						+ org.uncertweb.api.om.OMConstants.EN_SAMPLINGSURFACE)) {
 			if (geometry instanceof Polygon || geometry instanceof MultiPolygon) {
 				absFeat = new SosSamplingSurface(id, name, desc, geometry,
 						featureType, schemaLink, domainFeaturesp);
@@ -108,23 +114,6 @@ public class ResultSetUtilities extends org.n52.sos.ds.pgsql.ResultSetUtilities 
 						+ "' is not supported!", se);
 				throw se;
 			}
-		} else if (featureType.equalsIgnoreCase(OM2Constants.EN_SAMPLINGGRID)) {
-
-			// TODO is Sampling Grid supported by 52N SOS?
-			if (geometry instanceof RectifiedGrid) {
-				absFeat = new SosGenericSamplingFeature(id, name, desc,
-						geometry, schemaLink, domainFeaturesp);
-			} else {
-				OwsExceptionReport se = new OwsExceptionReport(
-						ExceptionLevel.DetailedExceptions);
-				se.addCodedException(ExceptionCode.NoApplicableCode, null,
-						"The geometry of feature type '" + featureType
-								+ "' has to be Sampling Grid!!");
-				LOGGER.error("The feature type '" + featureType
-						+ "' is not supported!", se);
-				throw se;
-			}
-
 		} else if (featureType.equalsIgnoreCase(OMConstants.NS_SA_PREFIX + ":"
 				+ OMConstants.EN_SAMPLINGPOINT)) {
 			if (geometry instanceof Point) {
