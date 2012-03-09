@@ -23,7 +23,7 @@ public class UwGMLUtil {
 	public final static String RECTIFIEDGRID_TYPE="RectifiedGrid";
 	public final static String MULTIPOINT_TYPE="MultiPoint";
 	public final static String MULTILINESTRING_TYPE="MultiLineString";
-	public final static String MULTIPOLYGON_TYPE="MultiPolygon";
+	public final static String MULTIPOLYGON_TYPE="MultiSurface";
 	public final static String MULTIRECTIFIEDGRID_TYPE="MultiRectifiedGrid";
 	
 	

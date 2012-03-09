@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import net.opengis.gml.x32.AbstractRingPropertyType;
+import net.opengis.gml.x32.DirectPositionListType;
 import net.opengis.gml.x32.DirectPositionType;
 import net.opengis.gml.x32.GridEnvelopeType;
 import net.opengis.gml.x32.LineStringDocument;
@@ -14,7 +15,7 @@ import net.opengis.gml.x32.LineStringType;
 import net.opengis.gml.x32.LinearRingType;
 import net.opengis.gml.x32.MultiLineStringDocument;
 import net.opengis.gml.x32.MultiPointDocument;
-import net.opengis.gml.x32.MultiPolygonDocument;
+import net.opengis.gml.x32.MultiSurfaceDocument;
 import net.opengis.gml.x32.PointDocument;
 import net.opengis.gml.x32.PointPropertyType;
 import net.opengis.gml.x32.PointType;
@@ -113,8 +114,8 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		}
 		
 		// geometry is MultiPolygon
-		else if (xb_geomObj instanceof MultiPolygonDocument) {
-			geom = parseMultiPolygon((MultiPolygonDocument) xb_geomObj);
+		else if (xb_geomObj instanceof MultiSurfaceDocument) {
+			geom = parseMultiPolygon((MultiSurfaceDocument) xb_geomObj);
 			return geom;
 		}
 
@@ -329,10 +330,10 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @throws IllegalArgumentException
 	 * 			if parsing fails
 	 */
-	private Geometry parseMultiPolygon(MultiPolygonDocument xb_mlsDoc) throws IllegalArgumentException{
+	private Geometry parseMultiPolygon(MultiSurfaceDocument xb_mlsDoc) throws IllegalArgumentException{
 		MultiPolygon mp = null;
-		int srid = parseSrs(xb_mlsDoc.getMultiPolygon().getSrsName());
-		PolygonPropertyType[] xb_lsArray = xb_mlsDoc.getMultiPolygon().getPolygonMemberArray();
+		int srid = parseSrs(xb_mlsDoc.getMultiSurface().getSrsName());
+		PolygonPropertyType[] xb_lsArray = xb_mlsDoc.getMultiSurface().getSurfaceMemberArray();
 		Polygon[] ls = new Polygon[xb_lsArray.length];
 		for (int i=0; i<xb_lsArray.length;i++){
 			ls[i]=parsePolygon(xb_lsArray[i].getPolygon());
@@ -400,13 +401,35 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	private LinearRing parseLinearRing(LinearRingType xb_lrType)
 			throws IllegalArgumentException {
 		DirectPositionType[] xb_posArray = xb_lrType.getPosArray();
-		Coordinate[] coords = new Coordinate[xb_posArray.length];
-		for (int i = 0; i < xb_posArray.length; i++) {
-			Coordinate coord = parsePositionString(xb_posArray[i]
-					.getStringValue());
-			coords[i] = coord;
+		
+		//linear ring contains array of pos elements
+		if (xb_posArray!=null&&xb_posArray.length!=0){
+			Coordinate[] coords = new Coordinate[xb_posArray.length];
+			for (int i = 0; i < xb_posArray.length; i++) {
+				Coordinate coord = parsePositionString(xb_posArray[i]
+						.getStringValue());
+				coords[i] = coord;
+			}
+			return geomFac.createLinearRing(coords);
 		}
-		return geomFac.createLinearRing(coords);
+		
+		//linear ring contains posList element
+		else {
+			DirectPositionListType xb_posList = xb_lrType.getPosList();
+			String coordList = xb_posList.getStringValue();
+			String[] coords = coordList.split(" ");
+			ArrayList<Coordinate> jtsCoords = new ArrayList<Coordinate>();
+			for (int i=0; i<coords.length;i++){
+				Coordinate coord = new Coordinate();
+				coord.x = Double.parseDouble(coords[i]);
+				i++;
+				coord.y=Double.parseDouble(coords[i]);
+				jtsCoords.add(coord);
+			}
+			Coordinate[] coordArray = new Coordinate[jtsCoords.size()];
+			jtsCoords.toArray(coordArray);
+			return geomFac.createLinearRing(coordArray);
+		}
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.opengis.gml.x32.AbstractRingPropertyType;
+import net.opengis.gml.x32.DirectPositionListType;
 import net.opengis.gml.x32.DirectPositionType;
 import net.opengis.gml.x32.GridEnvelopeType;
 import net.opengis.gml.x32.LineStringDocument;
@@ -19,8 +20,8 @@ import net.opengis.gml.x32.MultiLineStringDocument;
 import net.opengis.gml.x32.MultiLineStringType;
 import net.opengis.gml.x32.MultiPointDocument;
 import net.opengis.gml.x32.MultiPointType;
-import net.opengis.gml.x32.MultiPolygonDocument;
-import net.opengis.gml.x32.MultiPolygonType;
+import net.opengis.gml.x32.MultiSurfaceDocument;
+import net.opengis.gml.x32.MultiSurfaceType;
 import net.opengis.gml.x32.PointDocument;
 import net.opengis.gml.x32.PointPropertyType;
 import net.opengis.gml.x32.PointType;
@@ -293,15 +294,27 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		Coordinate[] coords = lr.getCoordinates();
 		LinearRingDocument xb_lrDoc = LinearRingDocument.Factory.newInstance();
 		LinearRingType xb_lrType = xb_lrDoc.addNewLinearRing();// LinearRingType.Factory.newInstance();
-		DirectPositionType[] xb_posList = new DirectPositionType[coords.length];
+		
+		//TODO maybe change to posList!!
+//		DirectPositionType[] xb_posList = new DirectPositionType[coords.length];
+//		for (int i = 0; i < coords.length; i++) {
+//			DirectPositionType xb_pos = DirectPositionType.Factory
+//					.newInstance();
+//			xb_pos.setStringValue(coords[i].x + " " + coords[i].y);
+//			xb_posList[i] = xb_pos;
+//		}
+//		xb_lrType.setPosArray(xb_posList);
+		
+		DirectPositionListType xb_posList = xb_lrType.addNewPosList();
+		String posString = "";
 		for (int i = 0; i < coords.length; i++) {
-			DirectPositionType xb_pos = DirectPositionType.Factory
-					.newInstance();
-			xb_pos.setStringValue(coords[i].x + " " + coords[i].y);
-			xb_posList[i] = xb_pos;
+			posString = posString + coords[i].x + " "+ coords[i].y;
+			//append space, if it is not the last coordinate
+			if (i!=coords.length-1){
+				posString = posString + " ";
+			}
 		}
-
-		xb_lrType.setPosArray(xb_posList);
+		xb_posList.setStringValue(posString);
 		return xb_lrDoc;
 	}
 	
@@ -396,15 +409,15 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * @return
 	 *			XMLBeans representation of MultiPolygon
 	 */
-	public MultiPolygonDocument encodeMultiPolygon2Doc(MultiPolygon gmlMls){
-		MultiPolygonDocument xb_mlsDoc = MultiPolygonDocument.Factory.newInstance();
-		MultiPolygonType xb_mls = xb_mlsDoc.addNewMultiPolygon();
+	public MultiSurfaceDocument encodeMultiPolygon2Doc(MultiPolygon gmlMls){
+		MultiSurfaceDocument xb_mlsDoc = MultiSurfaceDocument.Factory.newInstance();
+		MultiSurfaceType xb_mls = xb_mlsDoc.addNewMultiSurface();
 		//set gml ID
 		xb_mls.setId(generateGmlId());
 		
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
-			PolygonPropertyType xb_ls = xb_mls.addNewPolygonMember();
+			PolygonPropertyType xb_ls = xb_mls.addNewSurfaceMember();
 			PolygonDocument xb_lsDoc = encodePolygon2Doc((Polygon)gmlMls.getGeometryN(i));
 			xb_ls.set(xb_lsDoc);
 		}
