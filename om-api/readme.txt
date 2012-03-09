@@ -41,3 +41,7 @@ Oxygen: http://www.oxygenxml.com/validation.html#xml_catalog
 ## Questions? Issues?
 
 You can contact staschc@uni-muenster.de if you have further questions or comments.
+
+###################################
+## Revision History
+0.0.8 - updated dependency to GML API to 0.0.5
