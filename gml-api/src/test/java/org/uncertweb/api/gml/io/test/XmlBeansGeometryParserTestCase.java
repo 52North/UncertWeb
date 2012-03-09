@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import junit.framework.TestCase;
 
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
+import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 import org.uncertweb.api.gml.io.XmlBeansGeometryParser;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -69,6 +70,8 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		assertEquals("Polygon", geom.getGeometryType());
 		assertEquals(52.79, ((Polygon)geom).getExteriorRing().getCoordinates()[0].x);
 		assertEquals(4326, ((Polygon)geom).getSRID());
+		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
+		System.out.println(encoder.encodeGeometry(geom));
 	}
 
 	
@@ -103,6 +106,22 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
 		Geometry geom = parser.parseUwGeometry(xmlString);
 		assertEquals("MultiLineString", geom.getGeometryType());
+	}
+	
+	public void testMultiPolygonParser() throws Exception {
+		String xmlString;
+		try {
+		 xmlString = readXmlFile(pathToExamples
+				+ "/MultiPolygon.xml");
+		}
+		catch (IOException ioe){
+			xmlString = readXmlFile(localPath + pathToExamples
+					+ "/MultiPolygon.xml");
+		}
+		XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
+		Geometry geom = parser.parseUwGeometry(xmlString);
+		assertEquals("MultiPolygon", geom.getGeometryType());
+		System.out.println(new XmlBeansGeometryEncoder().encodeGeometry(geom));
 	}
 	
 	
