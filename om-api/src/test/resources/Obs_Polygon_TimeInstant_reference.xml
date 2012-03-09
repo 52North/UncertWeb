@@ -47,11 +47,7 @@
 				<gml:Polygon gml:id="polygon1">
 					<gml:exterior>
 						<gml:LinearRing>
-							<gml:pos>52.79 7.87</gml:pos>
-							<gml:pos>52.79 8.87</gml:pos>
-							<gml:pos>53.79 8.87</gml:pos>
-							<gml:pos>53.79 7.87</gml:pos>
-							<gml:pos>52.79 7.87</gml:pos>
+							<gml:posList>52.79 7.87 52.79 8.87 53.79 8.87 53.79 7.87 52.79 7.87</gml:posList>
 						</gml:LinearRing>
 					</gml:exterior>
 				</gml:Polygon>

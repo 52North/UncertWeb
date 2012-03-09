@@ -37,6 +37,7 @@ public class XBObservationParserTestCase extends TestCase {
 	public void testObservationParser() throws Exception {
 //		point_TimeInstant_Double();
 //		obsCol_Measurement();
+		obsCol_Austal();
 //		point_TimeInstant_Uncertainty();
 //		point_TimeInstant_FOIref();
 		testJSON();
@@ -91,7 +92,24 @@ public class XBObservationParserTestCase extends TestCase {
 		System.out.println(encoder.encodeObservationCollection(oc));
 	}
 		
+	private void obsCol_Austal() throws Exception {
 
+		// read XML example file
+		String xmlString;
+		try {
+		 xmlString = TestUtils.readXmlFile(pathToExamples
+				+ "/obsCol_austal.xml");
+		}
+		catch (IOException ioe){
+			xmlString = TestUtils.readXmlFile(localPath + pathToExamples
+					+ "/obsCol_austal.xml");
+		}
+		XBObservationParser parser = new XBObservationParser();
+		IObservationCollection oc = parser.parse(xmlString);
+		XBObservationEncoder encoder = new XBObservationEncoder();
+		System.out.println(encoder.encodeObservationCollection(oc));
+	}
+		
 
 	private void point_TimeInstant_Double() throws Exception {
 
