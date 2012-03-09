@@ -226,6 +226,12 @@ public class RectifiedGrid extends Geometry {
 		this.gmlId = gmlId;
 	}
 
+	@Override
+	public Geometry reverse() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 
 }
