@@ -30,25 +30,32 @@ import net.opengis.gml.x32.UncertaintyPropertyType;
 import net.opengis.om.x20.FoiPropertyType;
 import net.opengis.om.x20.OMAbstractObservationType;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
+import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObservationCollection;
+import net.opengis.om.x20.OMBooleanObservationDocument;
+import net.opengis.om.x20.OMCategoryObservationDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
+import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscreteNumericObservationCollection;
+import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
+import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
+import net.opengis.om.x20.OMMeasurementDocument;
 import net.opengis.om.x20.OMObservationDocument;
 import net.opengis.om.x20.OMProcessPropertyType;
 import net.opengis.om.x20.OMReferenceObservationCollectionDocument;
+import net.opengis.om.x20.OMReferenceObservationCollectionDocument.OMReferenceObservationCollection;
+import net.opengis.om.x20.OMReferenceObservationDocument;
 import net.opengis.om.x20.OMTextObservationCollectionDocument;
+import net.opengis.om.x20.OMTextObservationCollectionDocument.OMTextObservationCollection;
+import net.opengis.om.x20.OMTextObservationDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
+import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
+import net.opengis.om.x20.OMUncertaintyObservationDocument;
 import net.opengis.om.x20.UWBooleanObservationType;
 import net.opengis.om.x20.UWDiscreteNumericObservationType;
 import net.opengis.om.x20.UWMeasurementType;
 import net.opengis.om.x20.UWReferenceObservationType;
 import net.opengis.om.x20.UWTextObservationType;
 import net.opengis.om.x20.UWUncertaintyObservationType;
-import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObservationCollection;
-import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscreteNumericObservationCollection;
-import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
-import net.opengis.om.x20.OMReferenceObservationCollectionDocument.OMReferenceObservationCollection;
-import net.opengis.om.x20.OMTextObservationCollectionDocument.OMTextObservationCollection;
-import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureDocument;
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
 import net.opengis.samplingSpatial.x20.ShapeType;
@@ -397,9 +404,29 @@ public class XBObservationParser implements IObservationParser {
 
 		try{
 		if (xb_obsDoc instanceof OMObservationDocument) {
-			OMAbstractObservationType xb_obsType = ((OMObservationDocument) xb_obsDoc)
-					.getOMObservation();
 
+			OMAbstractObservationType xb_obsType = null;
+			
+			// observation is instance of a specific uncertweb observation type 
+			if (xb_obsDoc instanceof OMBooleanObservationDocument) {
+				xb_obsType = ((OMBooleanObservationDocument) xb_obsDoc).getOMBooleanObservation();
+			} else if (xb_obsDoc instanceof OMCategoryObservationDocument) {
+				xb_obsType = ((OMCategoryObservationDocument) xb_obsDoc).getOMCategoryObservation();
+			} else if (xb_obsDoc instanceof OMDiscreteNumericObservationDocument) {
+				xb_obsType = ((OMDiscreteNumericObservationDocument) xb_obsDoc).getOMDiscreteNumericObservation();
+			} else if (xb_obsDoc instanceof OMMeasurementDocument) {
+				xb_obsType = ((OMMeasurementDocument) xb_obsDoc).getOMMeasurement();
+			} else if (xb_obsDoc instanceof OMReferenceObservationDocument) {
+				xb_obsType = ((OMReferenceObservationDocument) xb_obsDoc).getOMReferenceObservation();
+			} else if (xb_obsDoc instanceof OMTextObservationDocument) {
+				xb_obsType = ((OMTextObservationDocument) xb_obsDoc).getOMTextObservation();
+			} else if (xb_obsDoc instanceof OMUncertaintyObservationDocument) {
+				xb_obsType = ((OMUncertaintyObservationDocument) xb_obsDoc).getOMUncertaintyObservation();
+
+			} else if (xb_obsDoc.getOMObservation() instanceof OMAbstractObservationType) {
+				// observation is instance of general O&M 2 observation type
+				xb_obsType = ((OMObservationDocument) xb_obsDoc).getOMObservation();
+			}
 			
 			CodeWithAuthorityType xb_identifier = xb_obsType.getIdentifier();
 			Identifier identifier = null;
@@ -579,8 +606,8 @@ public class XBObservationParser implements IObservationParser {
 					.getAbstractDQElement().getResultArray();
 
 			for (DQResultPropertyType xb_r : xb_resultArray) {
-
-				if (!xb_r.isNil()
+				
+				if (!xb_r.isNil() && xb_r.getAbstractDQResult() != null
 						&& !xb_r.getAbstractDQResult().isNil()
 						&& xb_r.getAbstractDQResult() instanceof DQUncertaintyResultType) {
 

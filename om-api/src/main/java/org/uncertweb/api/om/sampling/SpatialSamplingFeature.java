@@ -5,13 +5,11 @@ import java.net.URI;
 
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
+import org.uncertweb.api.om.OMConstants;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -55,20 +53,7 @@ public class SpatialSamplingFeature {
 	public SpatialSamplingFeature(String sampledFeature,
 			Geometry shape) throws IllegalArgumentException {
 
-		if (shape instanceof Point){
-			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint";
-		}
-		else if (shape instanceof LineString){
-			this.featureType="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingCurve";
-		}
-		else if (shape instanceof Polygon){
-			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface";
-		}
-		else if (shape instanceof RectifiedGrid){
-			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingGrid";
-		}
-		this.setSampledFeature(sampledFeature);
-		this.setShape(shape);
+		this(null, sampledFeature, shape);
 	}
 
 	/**
@@ -85,17 +70,17 @@ public class SpatialSamplingFeature {
 	public SpatialSamplingFeature(Identifier identifier, String sampledFeature,
 			Geometry shape) throws IllegalArgumentException {
 
-		if (shape instanceof Point||shape instanceof MultiPoint){
-			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint";
+		if (shape instanceof Point){
+			this.featureType = OMConstants.NS_SFT + OMConstants.EN_SAMPLINGPOINT;
 		}
-		else if (shape instanceof LineString||shape instanceof MultiLineString){
-			this.featureType="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingCurve";
+		else if (shape instanceof LineString){
+			this.featureType = OMConstants.NS_SFT + OMConstants.EN_SAMPLINGCURVE;
 		}
-		else if (shape instanceof Polygon||shape instanceof MultiPolygon){
-			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface";
+		else if (shape instanceof Polygon){
+			this.featureType = OMConstants.NS_SFT + OMConstants.EN_SAMPLINGSURFACE;
 		}
 		else if (shape instanceof RectifiedGrid){
-			this.featureType = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingGrid";
+			this.featureType = OMConstants.NS_SFT + OMConstants.EN_SAMPLINGGRID;
 		}
 		this.setIdentifier(identifier);
 		this.setSampledFeature(sampledFeature);
