@@ -5,9 +5,12 @@
 
 SensorMLDecoder.SensorMLDecoder
 	private -> protected (to make other classes able to inherit from SensorMLDecoder)
-
-SosConstants.ValueTypes
-	uncertaintyType added (to Enum, contains() )
+SensorMLDecoder.getMobileName
+	new
+SensorMLDecoder.getPositionFieldRegex
+	new
+SensorMLDecoder.getStatusName
+	new
 
 GetObservationListener.checkObservedProperties
 	private -> protected
@@ -15,6 +18,9 @@ GetObservationListener.checkOfferingId
 	private -> protected
 GetObservationListener.checkSrsName
 	private -> protected
+
+SosConstants.ValueTypes
+	uncertaintyType added (to Enum, contains() )
 
 CapabilitiesCacheController.getConfigDAO
 	new
@@ -84,6 +90,10 @@ PGSQLGetObservationDAO.getTokenSeperator
 PGSQLGetObservationDAO.getTupleSeperator
 	new
 PGSQLGetObservationDAO.getNoDataValue
+	new
+PGSQLGetObservationDAO.getNow
+	new
+PGSQLGetObservationDAO.setNow
 	new
 
 PGSQLInsertObservationOperationDAO.getCPool
