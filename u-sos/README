@@ -2,10 +2,8 @@
 ## 52North SOS Uncertainty Enabled Sensor Observation Service
 ######################################################################
 
-This project contains the uncertainty extension for the 52°North Sensor 
+This project contains the uncertainty extension for the 52North Sensor 
 Observation Service.
-
-This project is still under construction.
 
 
 ######################################################################
@@ -16,61 +14,109 @@ The project contains the following folders:
 conf:					customized build properties
 db:						SQL scripts to extend the data model and insert
 						sample data
+doc:					further documentation						
 examples:				SOS requests to register sensors, insert
 						observations and get observations
+
 
 ######################################################################
 ## Project configuration:
 
-Adjust the following properties in your conf\build.properties file and
-copy it into your SOS configuration directory (52n-sos\conf).
+Adjust the following properties in your conf/build.properties file and
+copy it into your SOS configuration directory (52n-sos/conf).
 
 conf.sos.ds.connectionstring=jdbc:postgresql://localhost:5432/SosDatabase
-							connection string to the DB
+							connection string to the DB (including your
+							database name)
 conf.sos.ds.user=postgres	your DB-username
 conf.sos.ds.password=*****	your DB-password
+
+
 
 
 ######################################################################
 ## Installation instructions:
 
-#1 Checkout this project and 52North SOS (https://svn.52north.org/svn/swe/
-main/SOS/Service/trunk/SOS/52n-sos , documentation: /doc/how2install_SOS).
+#1 Checkout and name this project and 52North SOS ( https://
+svn.52north.org/svn/swe/main/SOS/Service/trunk/SOS/52n-sos ).
 
-#2 Extend your DB's datamodel by executing the following SQL script on
+Install your 52North SOS according to it's documentation (\doc\howto\
+how2install_SOS.pdf). You don't have to build it yet.
+
+#2 Extend your DB's data model by executing the following SQL script on
 your database:
-db/extend_datamodel_postgres83.sql
+db\extend_datamodel_postgres83.sql
 
-#3 Configure this project (see above).
+#3 Copy the properties file at conf\build.properties to your SOS
+configuration directory (52n-sos\conf). Re-adjust it as described in
+SOS documentation (52n-sos\doc\howto\how2install_SOS.pdf chap. 3.5.2).
 
-#4 Add this project's module to your SOS pom (52n-sos/pom.xml) modules,
-e.g. add:
+Alternatively you might just change the following properties in your
+already configured properties file:
 
-<module>../u-sos/52n-sos-uncertainty</module>
+conf.sos.ds.daofactory=org.n52.sos.uncertainty.ds.pgsql.PGSQLDAOFactory
+conf.sos.capabilitiesCacheController=org.n52.sos.uncertainty.cache.CapabilitiesCacheController
+conf.sos.listeners=org.n52.sos.GetCapabilitiesListener,org.n52.sos.uncertainty.GetObservationListener,org.n52.sos.DescribeSensorListener,org.n52.sos.GetResultListener,org.n52.sos.GetFeatureOfInterestListener,org.n52.sos.GetFeatureOfInterestTimeListener,org.n52.sos.GetDomainFeatureListener,org.n52.sos.UpdateSensorListener,org.n52.sos.InsertObservationListener,org.n52.sos.RegisterSensorListener,org.n52.sos.DescribeFeatureTypeListener,org.n52.sos.GetObservationByIdListener
+conf.sos.10.postRequestDecoder=org.n52.sos.uncertainty.decode.impl.HttpPostRequestDecoderMobile
 
-to:
+#5 Add this project's profile to your SOS POM (52n-sos\pom.xml). Don't
+forget to use the correct relative path from SOS project to u-SOS
+project (under modules). You chose your project's name during checkout.
+Add...
 
-<modules>
-	<module>52n-sos-ogc</module>
-	<module>52n-sos-core</module>
-	<module>52n-sos-coding</module>
-	<module>52n-sos-dao-postgis</module>
-	<module>52n-sos-service</module>
-</modules>
+		<!-- ######################################################################## 
+			## Uncertainty enabled SOS Profile (based on full profile)
+			######################################################################## -->
+		<profile>
+			<id>unc</id>
+			<modules>
+				<module>52n-sos-coding</module>
+				<!-- Relative path to your u-SOS project's module
+					** Change if you chose another name ** -->
+				<module>../u-sos/52n-sos-uncertainty</module>
+			</modules>
+			<properties>
+				<!-- Name of SOS ** Change if you want another name ** -->
+				<conf.sos.name>52n-uSOSv350_full</conf.sos.name>
+				<!-- Supported SOS version -->
+				<conf.sos.supported.versions>BOTH</conf.sos.supported.versions>
+			</properties>
+		</profile>
+		
+...to <profiles></profiles>
 
-Don't forget to use the correct relative path from SOS project to u-SOS
-project. 
+#6 Add this project's profile as a dependency to your SOS service
+module's POM (52n-sos\52n-sos-service\pom.xml).
+Add...
 
-#5 Add this project as a dependency to your SOS service module's pom
-(52n-sos\52n-sos-service\pom.xml).
-Add:
+		<!-- ######################################################################## 
+			 ## Uncertainty enabled SOS Profile
+			 ######################################################################## -->
+		<profile>
+			<id>unc</id>
+			<dependencies>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>52n-sos-coding</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>52n-sos-uncertainty</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
 
-<dependency>
-	<groupId>${project.groupId}</groupId>
-	<artifactId>52n-sos-uncertainty</artifactId>
-	<version>${project.version}</version>
-</dependency>
+...to <dependencies></dependencies>
 
-to:
+#7 Build and deploy u-SOS: Make sure that your Tomcat and your Postgres
+are started. Open a command line and go to your SOS project folder.
+Type in the following command line expression:
 
-<dependencies></dependencies>
+mvn install -Punc,with-deploy -Denv=dev -Dlocal.configfile=\conf\build.properties
+
+#8 Use the Test Client (for specification 1.0.0) and select
+GetCapabilities request to check whether u-SOS is working correctly.
+
+There are more sample requests in examples\requests_uSOS .

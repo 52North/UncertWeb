@@ -1,0 +1,11 @@
+######################################################################
+## Changes done on build.properties
+######################################################################
+
+This project's sample property file version is based on 52N SOS Version
+3.5.0-M1 (Revision 11539). The following properties were changed:
+
+conf.sos.ds.daofactory=org.n52.sos.uncertainty.ds.pgsql.PGSQLDAOFactory
+conf.sos.capabilitiesCacheController=org.n52.sos.uncertainty.cache.CapabilitiesCacheController
+conf.sos.listeners=org.n52.sos.GetCapabilitiesListener,org.n52.sos.uncertainty.GetObservationListener,org.n52.sos.DescribeSensorListener,org.n52.sos.GetResultListener,org.n52.sos.GetFeatureOfInterestListener,org.n52.sos.GetFeatureOfInterestTimeListener,org.n52.sos.GetDomainFeatureListener,org.n52.sos.UpdateSensorListener,org.n52.sos.InsertObservationListener,org.n52.sos.RegisterSensorListener,org.n52.sos.DescribeFeatureTypeListener,org.n52.sos.GetObservationByIdListener
+conf.sos.10.postRequestDecoder=org.n52.sos.uncertainty.decode.impl.HttpPostRequestDecoderMobile
