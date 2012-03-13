@@ -494,9 +494,36 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 	
 	private void writeFiles(Austal2000Txt austal, Zeitreihe ts){
 		// test writer
+		
+		//create folder if necessary
+		File po_folder = new File(workDirPath);
+		if (!po_folder.exists()) {
+			po_folder.mkdir();
+		}
 		File new_austalFile = new File(workDirPath+"/"+austalFileName);
+		
+		//create austal file if necessary
+		if (!new_austalFile.exists()) {
+			try {
+				//file not existent, create new one
+				new_austalFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		//write austal file
 		austal.writeFile(new_austalFile);
+		
+		//create Zeitreihe file if necessray
 		File new_tsFile = new File(workDirPath+"/"+zeitreiheFileName);
+		if (!new_tsFile.exists()) {
+			try {
+				new_tsFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		//write Zeitreihe
 		ts.writeFile(new_tsFile);
 		//File new_tsFile2 = new File(workDirPath+"/"+zeitreiheFileNameEnglish);
 		//ts.writeFile(new_tsFile2);
