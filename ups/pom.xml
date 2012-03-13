@@ -158,7 +158,7 @@
 	</repositories>
 	
 	<build>
-		<finalName>UPS</finalName>
+		<finalName>ups</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
