@@ -1,0 +1,44 @@
+
+<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0  http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+
+	<ows:Identifier>org.uncertweb.wps.NILUProcess</ows:Identifier>  
+	<wps:DataInputs>	
+		<wps:Input>
+			<ows:Identifier>start-date</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>2012-02-06</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>		
+		<wps:Input>
+			<ows:Identifier>end-date</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>2012-02-06</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>number-of-realisations</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>25</wps:LiteralData>
+			</wps:Data>
+		</wps:Input> 
+		<wps:Input>
+			<ows:Identifier>component</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>nox</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>     
+		<wps:Input>
+			<ows:Identifier>receptor-points</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>51.1 7.3 51.1 7.3 51.1 7.3 51.1 7.3</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>		
+	</wps:DataInputs>	
+	<wps:ResponseForm>
+		<wps:ResponseDocument>
+			<wps:Output asReference="true" mimeType="application/x-netcdf">
+				<ows:Identifier>predicted-concentrations</ows:Identifier>
+			</wps:Output>
+		</wps:ResponseDocument>
+	</wps:ResponseForm>  
+</wps:Execute>

@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.uncertweb</groupId>
+		<artifactId>UncertWeb</artifactId>
+		<version>0.1</version>
+	</parent>
+  <groupId>org.uncertweb</groupId>
+  <artifactId>nilu-wps</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+
+  <name>nilu-wps</name>
+
+<properties>
+<wps.version>2.0-RC8-SNAPSHOT</wps.version>
+  </properties>
+  
+  <distributionManagement>
+		<repository>
+			<id>UncertWebMavenDeployRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>scp://giv-uw.uni-muenster.de:/var/www/m2/repo</url>
+		</repository>
+	</distributionManagement>
+	
+  <dependencies>    
+  <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.n52.wps</groupId>
+    	<artifactId>52n-wps-io</artifactId>
+    	<version>${wps.version}</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.n52.wps</groupId>
+    	<artifactId>52n-wps-server</artifactId>
+    	<version>${wps.version}</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.n52.wps</groupId>
+    	<artifactId>52n-wps-webapp</artifactId>
+    	<version>${wps.version}</version>
+    	<type>war</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.uncertweb</groupId>
+    	<artifactId>52n-wps-io-uncertweb</artifactId>
+		<version>0.0.4-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  <build>
+  		<finalName>nilu-wps</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>tomcat-maven-plugin</artifactId>
+				<configuration>
+					<server>localhost</server>
+					<!--<url>http://localhost:8080/manager</url> -->
+					<path>/nilu-wps</path>
+				</configuration>
+			</plugin>
+			</plugins>
+	</build>
+</project>

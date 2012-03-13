@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:ProcessDescriptions xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="WPS" version="1.0.0" xml:lang="en-US">
+	<ProcessDescription wps:processVersion="2" storeSupported="true" statusSupported="false">
+		<ows:Identifier>org.uncertweb.wps.NILUProcess</ows:Identifier>
+		<ows:Title>NILUProcess</ows:Title>
+		<ows:Abstract>NILUProcess</ows:Abstract>
+		<ows:Metadata xlink:title="model"/>
+		<ows:Metadata xlink:title="air quality"/>
+		<DataInputs>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>receptor-points</ows:Identifier>
+				<ows:Title>input features</ows:Title>
+				<ows:Abstract>points</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>start-date</ows:Identifier>
+				<ows:Title>start time and date</ows:Title>
+				<ows:Abstract>start time and date. server uses CEST.</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>end-date</ows:Identifier>
+				<ows:Title>end time and date</ows:Title>
+				<ows:Abstract>end time and date. server uses CEST.</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>component</ows:Identifier>
+				<ows:Title>component</ows:Title>
+				<ows:Abstract>component</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string"/>
+					<ows:AllowedValues>
+						<ows:Value>co2</ows:Value>
+						<ows:Value>nox</ows:Value>
+						<ows:Value>all</ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>			
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>number-of-realisations</ows:Identifier>
+				<ows:Title>number of realisations</ows:Title>
+				<ows:Abstract>number of realisations</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"/>
+					<ows:AllowedValues>
+						<ows:Value>25</ows:Value>
+						<ows:Value>50</ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+		</DataInputs>
+		<ProcessOutputs>
+			<Output>
+				<ows:Identifier>predicted-concentrations</ows:Identifier>
+				<ows:Title>computed results</ows:Title>
+				<ows:Abstract>results of the computation</ows:Abstract>
+				<ComplexOutput>
+					<Default>	
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
+		</ProcessOutputs>
+	</ProcessDescription>
+</wps:ProcessDescriptions>
