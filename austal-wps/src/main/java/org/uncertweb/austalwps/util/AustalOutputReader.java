@@ -73,21 +73,24 @@ public class AustalOutputReader {
 		ArrayList<Point[]> points = new ArrayList<Point[]>();
 		
 		File directory = new File(foldername);
-		String filetype;
+		/*
+		 * support english file names
+		 */
+		String[] filetype;
 		
 		if(uncertainty){
-			filetype = "pm-zbps.dmna";
+			filetype = new String[]{"pm-zbps.dmna", "pm-zbps.dmna"};//TODO: english name!?
 		}
 		else{
-			filetype = "pm-zbpz.dmna";
+			filetype = new String[]{"pm-zbpz.dmna", "pm-tmps.dmna"};
 		}
-
+		
 		if (!directory.exists()) {
 			System.out.println("Directory does not exist!");
 		} else {		
 			File[] files = directory.listFiles();
 			for (int i=0; i<files.length; i++){
-					if (files[i].getPath().endsWith(filetype)) {
+					if (files[i].getPath().endsWith(filetype[0]) || files[i].getPath().endsWith(filetype[1])) {
 						try {
 							points = this.parseReceptorPointsFile(points, files[i].toString());
 						} 
@@ -108,13 +111,16 @@ public class AustalOutputReader {
 		ArrayList<Point> pointList = new ArrayList<Point>();
 		
 		File directory = new File(foldername);
-		String filetype;
+		/*
+		 * support english file names
+		 */
+		String[] filetype;
 		
 		if(uncertainty){
-			filetype = "pm-zbps.dmna";
+			filetype = new String[]{"pm-zbps.dmna", "pm-zbps.dmna"};//TODO: english name!?
 		}
 		else{
-			filetype = "pm-zbpz.dmna";
+			filetype = new String[]{"pm-zbpz.dmna", "pm-tmps.dmna"};
 		}
 
 		if (!directory.exists()) {
@@ -122,7 +128,7 @@ public class AustalOutputReader {
 		} else {		
 			File[] files = directory.listFiles();
 			for (int i=0; i<files.length; i++){
-					if (files[i].getPath().endsWith(filetype)) {
+					if (files[i].getPath().endsWith(filetype[0]) || files[i].getPath().endsWith(filetype[1])) {
 						try {
 							pointList = this.parseReceptorPointsFile(files[i].toString());
 							//points = this.parseReceptorPointsFile(points, files[i].toString());
@@ -290,8 +296,8 @@ public class AustalOutputReader {
 		}
 
 		return points;
-	}	
-	
+	}		
+
 	public HashMap<Integer, ArrayList<Double>> readHourlyFiles(String foldername, int startID, boolean uncertainty){
 		File directory = new File(foldername);
 		HashMap<Integer, ArrayList<Double>> valueMap = new HashMap<Integer, ArrayList<Double>>();
@@ -313,6 +319,7 @@ public class AustalOutputReader {
 			for (int i=0; i<files.length; i++){
 				String filename = files[i].getName();
 				// select only hourly files
+				//TODO: check if this fits for english filenames
 				if(filename.startsWith("pm")&&!filename.startsWith("pm-d")&&!filename.startsWith("pm-t")&&!filename.startsWith("pm-j")&&!filename.startsWith("pm-z")){
 					// select uncertainty files if required
 					if(filename.endsWith(tag+".dmna")){

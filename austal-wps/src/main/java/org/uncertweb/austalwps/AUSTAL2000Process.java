@@ -126,6 +126,7 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 	private int gx, gy;
 	public static final String OS_Name = System.getProperty("os.name");
 	private String zeitreiheFileName = "zeitreihe.dmna";
+	private String zeitreiheFileNameEnglish = "series.dmna";
 	private String austalFileName = "austal2000.txt";
 	
 	public AUSTAL2000Process(){		
@@ -395,7 +396,25 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		// 2) execute Austal for each sample and collect results
 		try {
 			// get command for execute Austal
-			String command = austalHome + fileSeparator + "austal2000.exe " + workDirPath;						
+//			String command = austalHome + fileSeparator + "austal2000.exe " + workDirPath;
+			
+			String command = "";
+			
+			String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+			int webinfIndex = path.indexOf("WEB-INF");
+			path = path.substring(0, webinfIndex);
+			
+			if (!OS_Name.startsWith("Windows")) {
+				path = path + "/res/Austal_bin/Linux";
+				command = path + fileSeparator + "austal2000 "
+						+ workDirPath;
+			} else {
+				path = path + "/res/Austal_bin/Windows";
+				command = path + fileSeparator + "austal2000.exe "
+						+ workDirPath;
+			}
+			
+			
 			Runtime rt = Runtime.getRuntime();				
 			Process proc = rt.exec(command);
 				
@@ -525,8 +544,9 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		}
 		//write Zeitreihe
 		ts.writeFile(new_tsFile);
-		//File new_tsFile2 = new File(workDirPath+"/"+zeitreiheFileNameEnglish);
-		//ts.writeFile(new_tsFile2);
+		
+		File new_tsFile2 = new File(workDirPath+"/"+zeitreiheFileNameEnglish);
+		ts.writeFile(new_tsFile2);
 	}
 		
 		

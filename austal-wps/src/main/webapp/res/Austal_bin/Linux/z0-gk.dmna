@@ -1,0 +1,32 @@
+- parameters:
+- idnt    info
+- ggcs    geographic coordinate system (UTM or GK)
+- xmin    lower left corner of the lower left grid cell, x (metres)
+- ymin    lower left corner of the lower left grid cell, y (metres)
+- delta   cell width (metres)
+- form    format string (<name>%<printable length>.<storage length>s)
+- size    line length including null character (ncols+1)
+- mode    format of the data part
+- cmpr    compression level (0..9. 0: uncompressed)
+- vldf    value type
+- buff    buffer for reading (>size required)
+- dims    dimension of the data part (must be 2)
+- sequ    index sequence of the data part (must be j-,i+: northwise orientation)
+- lowb    index start values (i=0, j=1 required)
+- hghb    index end values (i=0, j=nrows required)
+idnt  "CORINE-2000-GK3(e6fc79ad)"
+ggcs  "GK"
+xmin  3278000.0
+ymin  5228000.0
+delta 100.0
+form  "Classes%6690.6691s"
+size  6691
+mode  "text"
+cmpr  9
+vldf  "V"
+buff  1000000
+dims  2
+sequ  "j-,i+"
+lowb  0     1
+hghb  0  8920
+*

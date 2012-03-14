@@ -1,0 +1,26 @@
+# Makefile to create austal2000 and taldia
+#
+# system dependent definitions for Linux Intel C (V10.1)
+# 2008-09-04
+#
+#########################################################################
+
+BIN   =
+OBJ   = .o
+EXE   =
+SRC   = ../source/
+SRCRM = $(SRC)
+CC    = icc
+COPT  = -DAUSTAL2000 -DMSGALLOC -Zp1 -Wmissing-prototypes -funsigned-char \
+        -DMAKE_LABEL=\"LI-x\" -O3 -ipo -fp-model fast=2 -msse2
+
+LIBS  = libz.a
+LOPT  = -static -L/usr/lib -lm
+OUTO  = -o #
+OUTE  = -o #
+REMOVE = rm -f
+#
+vpath %.c $(SRC)
+vpath %.h $(SRC)
+include $(SRC)rules.make
+#########################################################################

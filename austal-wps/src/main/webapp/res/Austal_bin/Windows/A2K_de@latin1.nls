@@ -1,0 +1,500 @@
+# language definitions "nls/de/A2K_de"
+# 2.4.7
+**** austal2000
+0000 Ausbreitungsmodell AUSTAL2000, Version %s
+0001 Version
+0002 Geben Sie bitte das Arbeitsverzeichnis für die Ausbreitungsrechnung an:
+0003    Ausbreitungsmodell AUSTAL2000, Version %s
+0007 AUSTAL2000 wegen eines Fehlers abgebrochen.
+0008 AUSTAL2000 wegen eines Eingabefehlers beendet.
+0009 AUSTAL2000 beendet.
+0010 [Return] drücken!\n
+0011 AUSTAL2000 abgebrochen.
+0012    Copyright (c) Umweltbundesamt, Berlin, 2002-2009
+0013    Copyright (c) Ing.-Büro Janicke, Dunum, 1989-2009
+0014    Arbeitsverzeichnis: %s \n
+0015 Das angegebene Arbeitsverzeichnis ist nicht verwendbar!
+0016 Erstellungsdatum des Programms: %s\n
+0017 Das Programm läuft auf dem Rechner \"%s\".\n
+0018 Eine Windfeldbibliothek wird nur bei komplexem Gelände erzeugt!
+0019 >>> Es trat ein Programmabbruch von VDISP auf mit der Meldung:
+0020 >>> Die Überhöhung wurde für diesen Fall ersatzweise auf 0 gesetzt.
+0021 >>> Dazu noch %d weitere Fälle!\n
+0022 Auswertung der Ergebnisse:\n
+0023 ==========================\n\n
+0024      DEP: Jahresmittel der Deposition\n
+0025      J00: Jahresmittel der Konzentration/Geruchsstundenhäufigkeit\n
+0026      Tnn: Höchstes Tagesmittel der Konzentration mit nn Überschreitungen\n
+0027      Snn: Höchstes Stundenmittel der Konzentration mit nn Überschreitungen\n\n
+0028 =============================================================================\n\n
+0029 WARNUNG: Eine oder mehrere Quellen sind niedriger als 10 m.\n
+0030          Die im folgenden ausgewiesenen Maximalwerte sind daher\n
+0031          möglicherweise nicht relevant für eine Beurteilung!\n\n
+0034 \n>>> Nicht-standardgemäße Verwendung von AUSTAL2000 (Option -x)!\n
+0035 \n>>> Abweichung vom Standard!\n>>> Es werden die vorhandenen DEF-Dateien im Unterordner work verwendet!\n
+**** TalInp
+0000 Interner Fehler!
+0001 *** Ungültiger Komponenten-Name \"%s\" *** (TalInp.getCmpIndex)\n
+0002 Dem Parameter ist kein Wert zugeordnet.
+0003 Dem Parameter sind zu viele Werte zugeordnet.
+0004 Die als Wert angegebene Zeichenkette ist zu lang.
+0005 Der Name des Parameters ist unbekannt.
+0006 Die Werte sind keine gültigen Zahlendarstellungen.
+0007 Der Parameter kann nicht zeitabhängig definiert sein.
+0008 Anzahl der erwarteten Werte: %d, gefunden: %d.
+0009 Die Datei \"%s\" kann nicht gelesen werden!
+0010 ============================= Beginn der Eingabe ============================\n
+0011 Fehler in Eingabezeile %d: %s\n%s
+0012 ============================== Ende der Eingabe =============================\n
+0014 Z0: %s(%08x) wird verwendet.\n
+0017 Z0: Ausschnitt für Quelle %02d (x=%1.1lf,y=%1.1lf,h=%1.1lf):
+0019 Z0: Darstellung in Zone %d: Quelle %02d (%1.0lf, %1.0lf) -> (%1.0lf, %1.0lf)\n
+0020 Die maximale Steilheit des Geländes
+0021  in Netz %d
+0022  ist %1.2lf (%1.2lf).\n
+0023 Die Geländedatei \"%s\" existiert nicht!
+0027 \n>>> Die Höhe der Quelle %d liegt unter dem 1.2-fachen der Höhe von Gebäude %d!\n
+0028 \n>>> Die Höhe der Quelle %d liegt unter dem 1.2-fachen der Gebäudehöhe für i=%2d, j=%2d!\n
+0029 >>> Dazu noch %d weitere Fälle!
+0030 Geländedatei \"%s\" kann nicht eingelesen werden!
+0031 Geländeprofil \"%s\" kann nicht ausgeschrieben werden!
+0032 Rechengebiet und Geländedatei sind nicht im gleichen\nKoordinatensystem/Meridianstreifen definiert!
+0033 Rechengebiet: %7.0lf < x < %7.0lf,  %7.0lf < y < %7.0lf\n
+0034 Geländedatei: %7.0lf < x < %7.0lf,  %7.0lf < y < %7.0lf\n
+0035 Das Rechengebiet liegt nicht im digitalisierten Bereich!
+0036 Es ist kein Netz definiert!
+0037 Netze müssen zunehmende Maschenweite besitzen!
+0038 Maschenweite nimmt nicht um den Faktor 2 zu!
+0039 Linker Rand (x0) muß angegeben sein!
+0040 Unterer Rand (y0) muß angegeben sein!
+0041 Linker Rand (x0) von Netz %d nicht angepaßt!
+0042 Unterer Rand (y0) von Netz %d nicht angepaßt!
+0043 Ungültige Zahl von x-Intervallen (nx) in Netz %d!
+0044 Gerade Anzahl von x-Intervallen (nx) erforderlich in Netz %d!
+0045 Rechter Rand (x3) von Netz %d nicht angepaßt!
+0046 Ungültiger Wert für den rechten Rand (x3) von Netz %d!
+0047 Anzahl der x-Intervalle (nx) nicht angegeben!
+0048 Linker innerer Rand (x1) von Netz %d nicht angepaßt!
+0049 Rechter innerer Rand (x2) von Netz %d nicht angepaßt!
+0050 Ungültige Zahl von y-Intervallen (ny) in Netz %d!
+0051 Gerade Anzahl von y-Intervallen (ny) erforderlich in Netz %d!
+0052 Oberer Rand (y3) von Netz %d nicht angepaßt!
+0053 Ungültiger Wert für den oberen Rand (y3) von Netz %d!
+0054 Anzahl der y-Intervalle (ny) nicht angegeben!
+0055 Unterer innerer Rand (y1) von Netz %d nicht angepaßt!
+0056 Oberer innerer Rand (y2) von Netz %d nicht angepaßt!
+0057 Es darf nur ein Netz mit der gröbsten Maschenweite geben!
+0058 Netz %d ist nicht in einem gröberen Netz enthalten!
+0059 Innengebiete gleichmaschiger Netze (%d und %d) sollten nicht überlappen!
+0060 Die Anzahl der x-Intervalle von Netz %d ist größer als %d!
+0061 Die Anzahl der y-Intervalle von Netz %d ist größer als %d!
+0062 \n>>> Abweichungen vom Standard gefordert!\n
+0063 Angabe des Parameters \"%s\" ignoriert!
+0064 Es dürfen nicht gleichzeitig Gauß/Krüger-Koordinaten (gx,gy)\nund UTM-Koordinaten (ux,uy) angegeben werden!
+0065 Unvollständige Vorgabe von Gauß/Krüger- oder UTM-Koordinaten!
+0066 Wenn keine Gauß/Krüger- oder UTM-Koordinaten angegeben\nsind, muß eine Rauhigkeitslänge z0 angegeben werden!
+0067 Für z0 ist ein unzulässiger Wert angegeben!
+0068 Die Qualitätsstufe qs hat einen unzulässigen Wert!
+0069 Es sind keine Quellen definiert!
+0070 Es sind keine Schornsteinhöhen hq angegeben!
+0071 Die Höhe hq der Quelle %d hat einen unzulässigen Wert (>300m)!
+0072 Die Höhe hq der Quelle %d beträgt weniger als 10 m.
+0073 Die Ausdehnung aq der Quelle %d hat einen unzulässigen Wert!
+0074 Die Ausdehnung bq der Quelle %d hat einen unzulässigen Wert!
+0075 Die Ausdehnung cq der Quelle %d hat einen unzulässigen Wert (>300m)!
+0076 Der Durchmesser dq der Quelle %d hat einen unzulässigen Wert!
+0077 Die Austrittsgeschwindigkeit vq der Quelle %d hat einen unzulässigen Wert!
+0078 Der Drehwinkel wq der Quelle %d hat einen unzulässigen Wert!
+0079 Die Länge des Gebäudes %d hat einen unzulässigen Wert (<0)!
+0080 Gebäude %d: Für bb<0 (Kühlturm) muß ab=0 gesetzt sein!
+0081 Die Höhe des Gebäudes %d hat einen unzulässigen Wert (<0)!
+0082 Die maximale Gebäudehöhe beträgt %1.1f m.
+0083 Die Qualitätsstufe qb hat einen unzulässigen Wert!
+0084 Es sind keine vertikalen Intervalle definiert!
+0085 Das vertikale Raster muß bei h=0 beginnen!
+0086 Die h-Werte des vertikalen Rasters müssen monoton ansteigen!
+0087 Angabe des vertikalen Rasters hh ignoriert!
+0088 Festlegung des Vertikalrasters:\n%s
+0089 Festlegung des Rechennetzes:\n
+0090 Die Quelle %d liegt außerhalb des Rechengebietes!
+0091 Der Wert von z0 konnte nicht bestimmt werden. Ursache:
+0092 Datei \"%s\" nicht gefunden oder fehlerhaft.
+0093 Datei \"%s\": Linker Rand (xmin) nicht definiert.
+0094 Datei \"%s\": Unterer Rand (ymin) nicht definiert.
+0095 Datei \"%s\": Zellgröße (delta) nicht definiert.
+0096 Datei \"%s\": Koordinatensystem (ggcs) nicht definiert\noder ungültig (erlaubte Werte: UTM oder GK).
+0097 Datei \"%s\": Datenteil ist nicht 2-dimensional (dims 2).
+0098 Datei \"%s\": Der unterste Wert (lowb) von Index j ist nicht gleich 1.
+0099 Datei \"%s\": Die Indexgrenzen (lowb, hghb) von Index i sind nicht identisch.
+0100 Datei \"%s\": Die Indexsequenz (sequ) nicht definiert.
+0101 Datei \"%s\": Die Indexsequenz (sequ) ist nicht \"j-,i+\".\nDie Daten müssen genordet abgespeichert sein. Jede Zeile (x-Richtung)\nbesteht aus einer Zeichenkette mit Zahlen zwischen 0 und 9. Index j kennzeichnet\ndie y-Richtung, Index i läuft formal von 0 bis 0.
+0102 Datei \"%s\": Das Koordinatensystem (%s) weicht vom geforderten (%s) ab.
+0103 Der Quellmittelpunkt (%1.1lf,%1.1lf) konnte nicht auf den\n%d. Gauß/Krüger-Meridianstreifen umgerechnet werden.
+0104 Der Quellmittelpunkt (%1.1lf,%1.1lf) liegt außerhalb\ndes von Datei %s abgedeckten Gebietes.
+0105 Zulässige Werte sind: %10.1lf <= x <= %10.1lf\n                      %10.1lf <= y <= %10.1lf
+0106 Beim Analysieren der Daten in Datei \"%s\" trat ein Fehler auf.\nÜberprüfen Sie, ob die Daten in der richtigen Form abgespeichert\nwurden (zeilenweise Zahlen von 0 bis 9 ohne Leerzeichen).
+0107 Nicht näher spezifizierter Fehler.
+0108 CORINE: Mittlerer Wert von z0 ist %1.3lf m.
+0109 Der Wert von z0 wird auf %2.2lf m gerundet.
+0110 Für d0 ist ein unzulässiger Wert angegeben!
+0111 Quellstärken für Stoff \"odor\" werden ignoriert.
+0112 Es sind keine emittierten Stoffe angegeben!
+0113 Beurteilungspunkt %02d liegt außerhalb des Rechengebietes.
+0114 Für die Beurteilungspunkte müssen x- und y-Koordinate angegeben sein!
+0115 Beurteilungspunkt %02d liegt oberhalb des Rechengebietes!
+0116 Zur Erzeugung einer Zeitreihen-Datei muß eine meteorologische\nZeitreihe (AKTerm) angegeben sein (Parameter az)!
+0117 Keine Zeitreihe gefunden, weder AKTerm noch AKS angegeben!
+0118 Es gibt zeitabhängige Parameter, aber keine Datei \n%s\nin der ihre Werte angegeben sein könnten!
+0119 Der Parameter \"%s\" ist situationsabhängig, es gibt aber keine Datei\n%s\nmit seinen Werten!
+0120 Beachten Sie nähere Hinweise hierzu in der Protokolldatei!
+0121 Die Datei \"%s\" hat nicht die richtige Struktur.
+0122 Die Zeitreihen-Datei \"%s\" konnte nicht eingelesen werden.
+0123 Die Zeitreihen-Datei \"%s\" wird verwendet.
+0124 Die Zeitreihe umfaßt mehr als ein Jahr.\nSie darf höchstens %d Intervalle enthalten!
+0125 Es wird die Anemometerhöhe ha=%1.1lf m verwendet.
+0126 Die Angabe \"az %s\" wird ignoriert.
+0127 Die Angabe \"as %s\" wird ignoriert.
+0128 Die AKTerm umfaßt mehr als ein Jahr.\nSie darf höchstens %d Intervalle enthalten!
+0129 Verfügbarkeit der AKTerm-Daten: %4.1f %%
+0130 Zeitreihen-Datei %s ausgeschrieben.
+0131 AKTerm nicht als Zeitreihe \"%s\" ausgeschrieben!
+0132 Die Zeitreihe \"%s\" hat nicht die richtige Struktur!
+0133 Die Zeitreihe enthält nicht das Element \"%s\"!
+0134 Das Element \"%s\" der Zeitreihe ist falsch positioniert!
+0135 Das Element \"%s\" der Zeitreihe hat den falschen Datentyp!
+0136 In der Zeitreihen-Datei fehlt der Parameter \"%s\"!
+0137 In der Zeitreihen-Datei ist \"%s\" nicht als FLOAT-Zahl angegeben!
+0138 Das %d-te Intervall der Zeitreihe dauert nicht %d Sekunden!
+0139 Das für Netz %d vorgegebene Geländeprofil kann nicht verwendet werden!
+0140 Ein Geländeprofil für Netz %d konnte nicht erstellt werden!
+0141 Unvollständiger Satz von Geländeprofilen!
+0142 Das angegebene Rechennetz ist fehlerhaft!
+0143 In komplexem Gelände muß die Anemometerposition angegeben sein!
+0144 Die Anemometerposition liegt außerhalb des Rechennetzes!
+0145 Der Parameter \"%s\" darf nicht in Absolutkoordinaten angegeben sein!
+0146 Es sind höchstens 20 Monitorpunkte zulässig!
+0147 Der Parameter \"lc\" darf nur den Wert \"C\" oder \"german\" haben!
+0148 Wertesatz für DMKp muß in der Form DMKp={a1;a2;a3;a4;a5;da;fk;fs;hs} angegeben sein!
+0149 Die Gebäude müssen ENTWEDER direkt ODER durch Angabe einer Rasterdatei vorgegeben werden!
+0150 Die Rasterdatei \"%s\" kann nicht eingelesen werden!
+0151 Format der Rasterdatei: Dimension (dims) ungleich 2 oder Elementgröße (size) ungleich 4!
+0152 Format der Rasterdatei: Das Datenformat muß vom Typ Integer sein (z.B. form  %%2d)!
+0153 Format der Rasterdatei: Parameter dz nicht definiert oder kleiner 1!
+0154 Format der Rasterdatei: Einer der Parameter \"x0\", \"y0\" oder \"dd\" ist nicht angegeben oder ungültig!
+0155 Das Vertikalnetz kann nicht festgelegt werden (mehr als 100 Stützpunkte)!
+0156 Das Vertikalraster muß mindestens bis zur doppelten Höhe des höchsten Gebäudes reichen!
+0157 Ein vorgegebener Wert von nz ist größer als die Anzahl der Vertikalintervalle!
+0158 Der Wert von nz eines Netzes muß mindestens so groß sein wie der des nächst feineren Netzes!
+0159 Das feinste Netz muß mindestens bis zur doppelten Höhe des höchsten Gebäudes reichen!
+0160 Die vertikale Ausdehnung (nz) des zweitfeinsten Netzes ist kleiner als der Maximalwert von hh!
+0161 Existierende Windfeldbibliothek wird verwendet.
+0162 Windfeldbibliothek wurde erstellt.
+0163 Es sind keine zeitlich variablen Parameter angegeben!
+0164 Das Arbeits-Verzeichnis \"%s\" konnte nicht angelegt werden!
+0165 Der Inhalt von Verzeichnis \"%s\" konnte nicht gelöscht werden!
+0166 Es konnten keine Geländeprofile gefunden werden!
+0167 Die existierende Windfeldbibliothek konnte nicht gelöscht werden!
+0168 Das Verzeichnis für die Windfeldbibliothek konnte nicht angelegt werden!
+0169 Die Windfeldbibliothek konnte nicht erstellt werden (error %d)!
+0170 Das Programm \"taldia\" konnte nicht ausgeführt werden!
+0171 Der Pfadname ist zu lang!
+0172 Ein Zeitintervall ungleich 3600 erfordert die Datei zeitreihe.dmna!
+0173 Die Arbeitsdateien konnten nicht erstellt werden!
+0174 g/m³
+0175 µg/m³
+0176 mg/m³
+0177 g/(m²*d)
+0178 mg/(m²*d)
+0179 µg/(m²*d)
+0180 kg/(ha*a)
+0181 %
+**** IBJstd
+0000 Protokolldatei \"%s\" kann nicht geschrieben werden!
+0001 Die Argumentdatei \"%s\" wurde nicht gefunden!
+0002 Fehler während der Ausführung von Option \"%s\"!
+0021 Programm-Unterbrechung
+0023 Beendigung gefordert
+0024 Abbruch
+**** TalHlp
+0000 Aufruf : austal2000 [-D] <Verzeichnis> <Option> ...
+0001 -D         : Protokolldatei neu anlegen
+0002 Verzeichnis: Verzeichnis mit Eingabedatei \"austal2000.txt\"
+0003 Option: -a : Durchgeführte Rechnung erneut auswerten
+0004         -l : Nur Windfeldbibliothek erzeugen
+0005         -z : Nur Datei \"zeitreihe.dmna\" erzeugen
+0006         -h : Aufrufparameter auflisten
+0007         -help : Eingabe-Parameter in der Datei \"austal2000.txt\" auflisten
+0008         --language=<ln> : Sprachdatei aus Unterordner nls/<ln> verwenden
+0009 
+0010 Parameter in der Eingabe-Datei \"austal2000.txt\":
+0011   
+0012 ------ Allgemeine Angaben ------------------------------------------------
+0013 ti Titel des Projektes
+0014 gx Geographischer x-Wert des Bezugspunktes (Gauß/Krüger, m)
+0015 gy Geographischer y-Wert des Bezugspunktes (Gauß/Krüger, m)
+0016 lc Landessprachliche Besonderheiten (\"german\" oder \"C\")
+0017 os Optionen durch \";\" getrennt ([NESTING] [SCINOTAT] [NOSTANDARD])
+0018    Bei NOSTANDARD zusätzlich: [BS] [SORRELAX] [SPECTRUM] [SPREAD]
+0019 qb Qualitätsstufe für die Gebäudedarstellung (-3..1)
+0020 qs Qualitätsstufe für die Ausbreitungsrechnung (-4..4)
+0021 sd Anfangszahl des Zufallszahlengenerators
+0022 ux Geographischer x-Wert des Bezugspunktes (UTM, m)
+0023 uy Geographischer y-Wert des Bezugspunktes (UTM, m)
+0024 ------ Rechengitter (optional) -------------------------------------------
+0025 gh Name der Datei mit den Geländehöhen 
+0026 hh Vertikales Raster (m)
+0027 -- Bei Netzschachtelung für jedes Gitter:
+0028 dd Zellengröße (m)
+0029 nx Anzahl von Gitterzellen in x-Richtung
+0030 ny Anzahl von Gitterzellen in y-Richtung
+0031 nz Anzahl von Gitterzellen in z-Richtung (i.d.R. vom Programm gesetzt)
+0032 x0 X-Koordinate der linken unteren Ecke (m)
+0033 y0 Y-Koordinate der linken unteren Ecke (m)
+0034 ------ Monitor Punkte (optional) -----------------------------------------
+0035 hp Höhe über Grund (m)
+0036 xp x-Koordinate (m)
+0037 yp y-Koordinate (m)
+0038 ------ Meteorologie ------------------------------------------------------
+0039 as Name der AKS, alternativ zu az
+0040 az Name der AKTerm, alternativ zu as
+0041 ha Anemometerhöhe (m)
+0042 xa X-Koordinate des Anemometers (m)
+0043 ya Y-Koordinate des Anemometers (m)
+0044 d0 Verdrängungshöhe (m)
+0045 z0 Rauhigkeitslänge (m)
+0046 ------ Position und Ausdehnung der Emissions-Quellen ---------------------
+0047 xq X-Koordinate der linken unteren Ecke (m)
+0048 yq Y-Koordinate der linken unteren Ecke (m)
+0049 hq Bauhöhe der Quelle (m)
+0050 aq Ausdehnung in x-Richtung (m)
+0051 bq Ausdehnung in y-Richtung (m)
+0052 cq Ausdehnung in z-Richtung (m)
+0053 wq Drehwinkel (Grad gegen den Uhrzeigersinn)
+0054 ------ Überhöhungsparameter für Schornsteine und Kühltürme ---------------
+0055 dq Durchmesser der Austrittsöffnung (m)
+0056 qq Wärmestrom, alternativ zu sq oder tq (MW)
+0057 sq Zeitskala der Fahnenüberhöhung, alternativ zu qq oder tq (s)
+0058 tq Austrittstemperatur, alternativ zu qq oder sq (Grad C)
+0059 vq Abgasgeschwindigkeit (m/s)
+0060 -- zusätzlich bei Kühltürmen:
+0061 lq Flüssigwassergehalt des Schwadens (kg/kg)
+0062 rq Relative Feuchte des Schwadens (%)
+0063 ------ Gebäude -----------------------------------------------------------
+0064 ab Ausdehnung in x-Richtung (m)
+0065 bb Ausdehnung in y-Richtung (m)
+0066 cb Ausdehnung in z-Richtung (m)
+0067 wb Drehwinkel (Grad gegen den Uhrzeigersinn)
+0068 xb x-Koordinate der linken unteren Ecke (m)
+0069 yb y-Koordinate der linken unteren Ecke (m)
+0070 -- alternativ:
+0071 rb Name der Datei mit den aufgerasterten Gebäuden 
+0072 ------ Quellstärken für Gase ---------------------------------------------
+0073 bzl  Benzol
+0074 f    Fluorwasserstoff, angegeben als F
+0075 hg   Quecksilber, Hg
+0076 nh3  Ammoniak, NH3
+0077 no   Stickstoffmonoxid, NO
+0078 no2  Stickstoffdioxid, NO2
+0079 nox  Stickstoffoxide, NOx, angegeben als NO2
+0080 odor Geruchsstoff
+0081 so2  Schwefeldioxid, SO2
+0082 tce  Tetrachlorethen
+0083 xx   Nicht näher benanntes Gas
+0084 ------ Quellstärken für Stäube, Zusätze -1, -2, -3, -4, -u ---------------
+0085 as   Arsen, As
+0086 cd   Cadmium, Cd
+0087 hg   Quecksilber, Hg
+0088 ni   Nickel, Ni
+0089 pb   Blei, Pb
+0090 pm   Staub allgemein (PM10 ist die Summe aus pm-1 und pm-2)
+0091 tl   Thallium, Tl
+0092 xx   Nicht näher benannter Staub
+0093 ------ Ende der Auflistung -----------------------------------------------
+**** TalMtm
+0000 TMT: Datei \"%s\" ausgeschrieben.
+0001 Ungültiger Wert von Kref!
+0002 Interner Fehler!
+0003 Inkonsistente Datenstruktur!
+0004 Unzulässige Array-Struktur!
+0005 Array kann nicht angelegt werden!
+0006 Für den Stoff \"%s\" liegen keine Ergebnisse vor!
+0007 Parameter \"groups\" nicht im Dateikopf gefunden!
+0008 TMT: Zulässige Überschreitungen auf %d geändert.
+0009 Array kann nicht geschrieben werden!
+0010 TalEval: Unbekannte Option: \"%s\" 
+0011 TMT: Auswertung der Ausbreitungsrechnung für \"%s\"
+0012 TMT: %ld Tagesmittel (davon ungültig: %d)
+0013 Datei \"%s\" nicht lesbar!
+0014 Nur %ld Dateien von %ld gefunden!
+0015 Fehler bei der Berechnung des Maximums!
+0016 Fehler beim Schreiben des Ergebnisses!
+0017 TMT: Dateien erstellt von %s.
+**** TalQtl
+0000 TalQuantil Version %s %s
+0001 Berechnung von höchsten Stundenmitteln, Perzentilen oder\n        Überschreitungswahrscheinlichkeiten
+0002 Aufruf: TalQuantil  <Pfad>  <Option> ... 
+0003 Option: -i<InputFile>     Dateiname der Verteilungsfunktion
+0004         -g<Netz>          Netz-Kennzeichnung der Ausgabe-Dateien
+0005         -o<OutputFile>    Name der Ausgabedatei
+0006         -K<Kennung>       Kennung für den Ausgabedatei-Kopf
+0007         -s<Stoff>         Gewünschter Stoff
+0008         -m<Zahl>          Höchstes Stundenmittel mit <Zahl> Überschreitungen
+0009 oder falls Flag +QTL in param.def gesetzt ist:
+0010         -p<Perzentil>     Perzentil <Perzentil> berechnen
+0011         -f<Wert>          Überschreitungswahrsch. von <Wert> berechnen
+0012 TQL: Berechnung von Kurzzeit-Mittelwerten für \"%s\"
+0013 TQL: Anzahl zulässiger Überschreitungen auf %d geändert.
+0014 TQL: Datei \"%s\" ausgeschrieben.
+0015 Die Datei \"%s\" ist keine Verteilungs-Tabelle!
+0016 Interner Fehler!
+0017 Interner Fehler bei %d,%d,%d,%d
+0018 Datei \"%s\" kann nicht geschrieben werden!
+0019 Gewünschte Größe aus Histogramm nicht berechenbar!
+0020 Gewünschte Größe aus Maximalwerten nicht berechenbar!
+0024 Es fehlen Angaben, was berechnet werden soll!
+**** TalDef
+0001 Geländedatei \"%s\" nicht lesbar!
+0002 Datei \"%s\" kann nicht ausgeschrieben werden!
+0003 Entweder Option Blm=.. oder Option(en) NOSHEAR|SPREAD!
+0004 Die Zeitreihe \"%s\" konnte nicht geschrieben werden!
+0005 Die Zeitreihe muß bei 0 Uhr eines Tages beginnen (gefunden \"%s\")!
+**** TalAKS
+0000 %s: Klasse %d mit %6.4f
+0001 %s: Summe = %6.4f
+0002 Statistik \"%s\" mit Summe=%1.4f normalisiert\n
+0004 In Klasse %d: Summe=%4.0f\n
+0005 Datei unvollständig!
+0008 Eingabe: %s
+0012 Die Wetterstatistik muß im TA-Luft-Format vorliegen!
+0013 Format-Fehler in der Wetterstatistik!
+0014 Datei \"%s\" ausgeschrieben.
+0016 %s (%1.1f mm/h), Klasse: %1.1f, Einheit: %s\n\n
+0017 Wr\\Wg:
+0018    Summe\n-----+
+0019 Summe:
+0020 Mittel: %1.2f\n\n
+0021 - Erzeugt von AUSTAL2000 (TalAKS %s)\n- Wetterstatistik %s\n
+0023 Entweder Option Blm=.. oder Option(en) NOSHEAR|SPREAD!
+0025 - TalAKS %s: Wetterstatistik \"%s\"\n
+0026 - Formale Zeitreihe zum Anlegen einer Windfeld-Bibliothek\n
+0028 TalAKS %s: Umwandlung TA-Luft-Statistik
+0029 Ausbreitungsrechnung für %d Situationen
+0035 Summe der Gewichte = %5.5f != 1.000!
+**** TalAKT
+0000 Die Datei \"%s\" kann nicht eingelesen werden!\n
+0001 Unbekanntes Zeilenformat (Zeile zu kurz).\n
+0002 Unbekanntes Zeilenformat (neues DWD-Format).\n
+0003 Datei im DWD-Format ab 01.04.1998.\n
+0004 Unbekanntes Zeilenformat (altes DWD-Format).\n
+0005 Datei im DWD-Format vor 01.04.1998.\n
+0006 Ungültige Angabe der Anemometerhöhen!
+0007 Unzureichende Anzahl von Anemometerhöhen!
+0008 Anemometerhöhe nicht lesbar!
+0009 Ungültiges Zeilenformat der AKTerm!
+0010 \nAKTerm \"%s\" mit %d Zeilen, Format %d\n
+0011 Die AKTerm enthält zu wenig Daten!
+0012 Zu wenig Elemente (<9) in Zeile %d.
+0013 Zu wenig Elemente (<15) in Zeile %d!
+0014 Ungültige Datenfolge in Zeile %d <%s>!
+0015 SOLL: %d %04d-%02d-%02d.%02d:00:00
+0016 IST:  %d %04d-%02d-%02d.%02d:00:00
+0018 Aufruf:  TalAKTerm <Pfad> [<Option>]\n
+0019 Option:  -a<xa>,<ya>,<ha>   Anemometerposition (m)\n
+0020          -B<WindLib> Pfad+Name der Windfeldbibliothek\n
+0021          -f<AKTerm>  Name der DWD-Zeitreihe\n
+0022          -l<l>       Ausgabe von METLIB.DEF\n
+0023                      <l>= Anzahl der Windrichtungen (2 oder 36)\n
+0024          -m<Monat>   Zeitreihe nur für den Monat <Monat> \n
+0025          -s<seed>    Anfangszahl für Zufallszahlengenerator\n
+0026          -u<umin>    Mindestwert der Windgeschwindigkeit, Standard: %1.1f m/s\n
+0027          -z<z0>,<d0> Z0 und D0 (m), Standard: %1.1f, %1.1f\n
+**** TalMon
+0001 Datei \"%s\" kann nicht gelesen werden!
+0002 Inkonsistente Datenstruktur!
+0003 Datei \"%s\" konnte nicht ausgeschrieben werden!
+0004 Auswertung für die Beurteilungspunkte:
+0005 ======================================
+0006  Gesamtbelastung
+0007 ================
+0008  Zusatzbelastung
+0009 ================
+0010 PUNKT   
+0011 Datei \"%s\" mit inkonsistenter Dimensionierung!
+0012 Zeitreihe \"%s\" hat inkompatible Struktur (%d)!
+0013 TMO: Keine Konzentrationswerte für \"%s\" vorhanden!
+0014 TMO: Zeitreihe an den Monitor-Punkten für \"%s\"
+0015 TMO: Datei \"%s%s\" ausgeschrieben.
+0016 Fehler bei der Zeitreihenberechnung!
+0017 Fehler beim Schreiben der Zeitreihe!
+**** TalPrf
+0006 Keine Windfeldbibliothek gefunden!
+0008 Basisfelder \"%s\" und \"%s\" für die Überlagerung nicht geeignet (f1=%1.1f, f2=%1.1f)!
+0011 Windfeld \"w%sa%d%d\" nicht gefunden!
+0012 Diffusionsfeld \"k%sa%d%d\" nicht gefunden!
+0013 Diffusionsfeld \"k%sd%d%d\" nicht gefunden!
+0014 Turbulenzfeld \"v%sa%d%d\" nicht gefunden!
+0015 Turbulenzfeld \"v%sd%d%d\" nicht gefunden!
+0016 Windfeld \"vx%sa%d%d\" nicht gefunden!
+0017 Windfeld \"vy%sa%d%d\" nicht gefunden!
+0018 Datei \"zg%d%d\" nicht gefunden!
+0019 Datei \"zp%d%d\" nicht gefunden!
+0020 Bibliotheksfelder \"neues K\" werden verwendet
+0021 Bibliotheksfelder \"zusätzliches K\" werden verwendet
+0022  (Netze 
+0023 Bibliotheksfelder \"neue Sigmas\" werden verwendet
+0024 Bibliotheksfelder \"zusätzliche Sigmas\" werden verwendet
+0025 Windfelder in Bibliothek \"%s\" nicht gefunden!
+0026 Ungültiger Bibliothek-Name \"%s\"!
+0027 Nicht registrierte Bibliotheksdatei \"%s\"!
+0028 Bibliothek \"%s\" enthält keine verwendbaren Windfelder!
+0029 In der Bibliothek \"%s\" fehlen %d benötigte Felder!
+0033 Anemometer-Position (%1.1f,%1.1f) außerhalb aller Netze!
+0035 Ungeeignetes Windfeld \"%s\" (Va=%4.2lf)!
+0036 Feld \"%s\" kann keinem bekannten Netz zugeordnet werden!
+0037 \"%s\" nicht definiert!
+**** TALuti
+0000 Unverständlicher Dateiname \"%s\"
+0001 Datei \"%s\" nicht lesbar!
+0002 Daten in Datei \"%s\" haben ungültige Dimensionszahl!
+0003 Auswertung für die Beurteilungspunkte: Zusatzbelastung\n
+0004 ======================================================\n
+0005 PUNKT   
+0006 Fehler bei der Berechnung der Geruchsstundenhäufigkeiten
+0007 Maximalwerte, 
+0008 ==============
+0009 Konzentration
+0010 =============
+0011 bei
+0012  bei z=%1.1f m
+0013 ============
+0014 Deposition
+0015 ==========
+0016 \nMaximalwert der Geruchsstundenhäufigkeit 
+0017 =========================================
+0018   RANDGEBIET!
+0019   n.v.
+**** TalUtl
+0000 Es werden alle Dateien in \"%s\" gelöscht. Weiter? (j/n): 
+0001 jJ
+**** TalVsp
+0003 \nProgramm \"%s\" nicht gefunden!\n\n
+0004 VspCallVDISP.4: Datei \"%s\" nicht lesbar!
+0005 VspCallVDISP.5: Lesefehler in Zeile %d!
+0006 VspCallVDISP.6: Lesefehler in Zeile %d!
+**** TalWrk
+0001 Abgasfahnenüberhöhung kann nicht berechnet werden!
+0004 Partikel kann nicht aus einer Gebäudezelle entfernt werden!
+0016 Ein Partikel wurde innerhalb einer Gebäudezelle freigesetzt.\n    (Position x=%1.3f, y=%1.3f, z=%1.3f)\n    Beseitigen Sie die Überlappung von Gebäudezellen und Quellen!\n
+0018 Fertig berechnet: %5.1f %%\r
+**** TalCfg
+0000 de
+0001 t
+0002 i
+0003 z
+0004 s
+0005 j
+0006 s
+0007 zbpz
+0008 zbpv
+0009 zbps
+0010 zeitreihe
