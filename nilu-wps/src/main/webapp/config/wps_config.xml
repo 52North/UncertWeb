@@ -73,7 +73,9 @@
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
 			<Property name="Algorithm" active="true">org.uncertweb.wps.NILUProcess</Property>	
 			<Property name="resultFileName" active="true">oslo_mete_20110103.nc</Property>	
-			<Property name="parametersFileName" active="true">Parameters.txt</Property>	
+			<Property name="parametersFileName" active="true">job_request_id.txt</Property>	
+			<Property name="incomingFolder" active="true">incoming</Property>	
+			<Property name="resultsFolder" active="true">results</Property>	
 			<Property name="ftpHost" active="true">128.176.147.93</Property>	
       		<Property name="ftpPort" active="true">21</Property>
       		<Property name="ftpUser" active="true">NILUTestUser</Property>

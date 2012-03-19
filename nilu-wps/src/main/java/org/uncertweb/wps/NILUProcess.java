@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,11 +36,12 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 
 	private List<String> errors;
 	
-	private final String inputIDStartDate = "start-date";
-	private final String inputIDEndDate = "end-date";
-	private final String inputIDReceptorPoints = "receptor-points";
-	private final String inputIDComponent = "component";
-	private final String inputIDNumberOfRealisations = "number-of-realisations";
+	private final String inputIDStartDate = "sdate";
+	private final String inputIDEndDate = "edate";
+	private final String inputIDSite = "site";
+	private final String inputIDComponent = "cmpd";
+	private final String inputIDNumberOfRealisations = "nens";
+	private final String intputIDNumberOfForecastHours = "nhrs";
 	private final String outputIDPredictedConcentrations = "predicted-concentrations";
 	
 	public static final String OS_Name = System.getProperty("os.name");
@@ -88,9 +91,11 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 		} else if (arg0.equals(inputIDEndDate)) {	
 //			return LiteralDateTimeBinding.class;
 			return LiteralStringBinding.class;
-		} else if (arg0.equals(inputIDReceptorPoints)) {
-			return LiteralStringBinding.class;//TODO: define format
+		} else if (arg0.equals(inputIDSite)) {
+			return LiteralStringBinding.class;
 		} else if (arg0.equals(inputIDComponent)) {
+			return LiteralStringBinding.class;
+		} else if (arg0.equals(intputIDNumberOfForecastHours)) {
 			return LiteralStringBinding.class;
 		} else if (arg0.equals(inputIDNumberOfRealisations)) {	
 			return LiteralIntBinding.class;	
@@ -123,9 +128,10 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 
 		String startDate;
 		String endDate;
-		String receptorPoints;
+		String site;
 		String component;
 		int numberOfRealisations;
+		int numberOfForecastHours;
 
 		startDate = ((LiteralStringBinding) extractData(inputData, inputIDStartDate))
 				.getPayload().toString();
@@ -133,7 +139,7 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 		endDate = ((LiteralStringBinding) extractData(inputData, inputIDEndDate))
 				.getPayload().toString();
 		
-		receptorPoints = ((LiteralStringBinding) extractData(inputData, inputIDReceptorPoints))
+		site = ((LiteralStringBinding) extractData(inputData, inputIDSite))
 				.getPayload().toString();
 		
 		component = ((LiteralStringBinding) extractData(inputData, inputIDComponent))
@@ -142,16 +148,24 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 		numberOfRealisations = ((LiteralIntBinding) extractData(inputData, inputIDNumberOfRealisations))
 				.getPayload();
 		
-		String parametersFileFullPath = tmpDir + File.separatorChar + parametersFileName;
+		numberOfForecastHours = ((LiteralIntBinding) extractData(inputData, intputIDNumberOfForecastHours))
+				.getPayload();
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyymmddhhmmss");
+		
+		String parametersFileNameID = parametersFileName.replace("id", sdf.format(new Date()));
+		
+		String parametersFileFullPath = tmpDir + File.separatorChar + parametersFileNameID;
 		
 		try {
 			BufferedWriter parametersFileWriter = new BufferedWriter(new FileWriter(parametersFileFullPath));
-			
+
+			parametersFileWriter.write(inputIDSite + " = " + site + "\n");
 			parametersFileWriter.write(inputIDStartDate + " = " + startDate + "\n");
 			parametersFileWriter.write(inputIDEndDate + " = " + endDate + "\n");
-			parametersFileWriter.write(inputIDReceptorPoints + " = " + receptorPoints + "\n");
-			parametersFileWriter.write(inputIDComponent+ " = " + component + "\n");
+			parametersFileWriter.write(intputIDNumberOfForecastHours + " = " + numberOfForecastHours + "\n");
 			parametersFileWriter.write(inputIDNumberOfRealisations + " = " + numberOfRealisations + "\n");
+			parametersFileWriter.write(inputIDComponent+ " = " + component + "\n");
 			
 			parametersFileWriter.flush();
 			parametersFileWriter.close();
@@ -161,7 +175,7 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 		} 
 		
 		try {
-			ftpUtil.upload(parametersFileFullPath, parametersFileName);
+			ftpUtil.upload(parametersFileFullPath, parametersFileNameID);
 		} catch (IOException e1) {
 			logger.error(e1);
 		}	
@@ -177,7 +191,7 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 
 				for (String string : files) {
 					logger.info("found file: " + string);
-					if (string.equals(resultFileName)) {
+					if (string.contains(resultFileName)) {
 						logger.info("found result");
 						finished = true;
 						break;

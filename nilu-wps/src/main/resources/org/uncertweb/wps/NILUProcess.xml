@@ -9,16 +9,19 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 		<ows:Metadata xlink:title="air quality"/>
 		<DataInputs>
 			<Input minOccurs="0" maxOccurs="1">
-				<ows:Identifier>receptor-points</ows:Identifier>
-				<ows:Title>input features</ows:Title>
-				<ows:Abstract>points</ows:Abstract>
+				<ows:Identifier>site</ows:Identifier>
+				<ows:Title>Site</ows:Title>
+				<ows:Abstract>Site</ows:Abstract>
 				<LiteralData>
 					<ows:DataType ows:reference="xs:string"/>
-					<ows:AnyValue></ows:AnyValue>
+					<ows:AllowedValues>
+					<ows:Value>oslo</ows:Value>
+					<ows:Value>rotterdam</ows:Value>
+					</ows:AllowedValues>
 				</LiteralData>
 			</Input>
 			<Input minOccurs="0" maxOccurs="1">
-				<ows:Identifier>start-date</ows:Identifier>
+				<ows:Identifier>sdate</ows:Identifier>
 				<ows:Title>start time and date</ows:Title>
 				<ows:Abstract>start time and date. server uses CEST.</ows:Abstract>
 				<LiteralData>
@@ -27,7 +30,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				</LiteralData>
 			</Input>
 			<Input minOccurs="0" maxOccurs="1">
-				<ows:Identifier>end-date</ows:Identifier>
+				<ows:Identifier>edate</ows:Identifier>
 				<ows:Title>end time and date</ows:Title>
 				<ows:Abstract>end time and date. server uses CEST.</ows:Abstract>
 				<LiteralData>
@@ -36,27 +39,42 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				</LiteralData>
 			</Input>
 			<Input minOccurs="0" maxOccurs="1">
-				<ows:Identifier>component</ows:Identifier>
+				<ows:Identifier>cmpd</ows:Identifier>
 				<ows:Title>component</ows:Title>
 				<ows:Abstract>component</ows:Abstract>
 				<LiteralData>
 					<ows:DataType ows:reference="xs:string"/>
 					<ows:AllowedValues>
-						<ows:Value>co2</ows:Value>
+						<ows:Value>no2</ows:Value>
 						<ows:Value>nox</ows:Value>
+						<ows:Value>pm10</ows:Value>
 						<ows:Value>all</ows:Value>
 					</ows:AllowedValues>
 				</LiteralData>
 			</Input>			
 			<Input minOccurs="0" maxOccurs="1">
-				<ows:Identifier>number-of-realisations</ows:Identifier>
+				<ows:Identifier>nens</ows:Identifier>
 				<ows:Title>number of realisations</ows:Title>
 				<ows:Abstract>number of realisations</ows:Abstract>
 				<LiteralData>
 					<ows:DataType ows:reference="xs:integer"/>
 					<ows:AllowedValues>
+						<ows:Value>00</ows:Value>
 						<ows:Value>25</ows:Value>
 						<ows:Value>50</ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>			
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>nhrs</ows:Identifier>
+				<ows:Title>number of forecast hours</ows:Title>
+				<ows:Abstract>number of forecast hours</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"/>
+					<ows:AllowedValues>
+						<ows:Value>24</ows:Value>
+						<ows:Value>48</ows:Value>
+						<ows:Value>72</ows:Value>
 					</ows:AllowedValues>
 				</LiteralData>
 			</Input>

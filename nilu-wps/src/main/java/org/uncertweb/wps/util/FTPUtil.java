@@ -18,6 +18,8 @@ public class FTPUtil {
 	private int port;
 	private String usr;
 	private String pwd;
+	private String incomingFolder;
+	private String resultsFolder;
 
 	static boolean abort = false;
 	static boolean finished = false;
@@ -40,6 +42,12 @@ public class FTPUtil {
 			} else if (property.getName().equalsIgnoreCase("ftpPwd")
 					&& property.getActive()) {
 				pwd = property.getStringValue();
+			}else if (property.getName().equalsIgnoreCase("incomingFolder")
+					&& property.getActive()) {
+				incomingFolder = property.getStringValue();
+			}else if (property.getName().equalsIgnoreCase("resultsFolder")
+					&& property.getActive()) {
+				resultsFolder = property.getStringValue();
 			}
 		}
 	}
@@ -54,7 +62,7 @@ public class FTPUtil {
 		try {
 			ftpClient.connect(host, port);
 			ftpClient.login(usr, pwd);
-			filenameList = ftpClient.listNames();
+			filenameList = ftpClient.listNames("/" + resultsFolder);
 			ftpClient.logout();
 		} finally {
 			ftpClient.disconnect();
@@ -81,7 +89,7 @@ public class FTPUtil {
 			logger.debug(ftpClient.getReplyString());
 			
 			fos = new FileOutputStream(localResultFile);
-			resultOk &= ftpClient.retrieveFile(remoteSourceFile, fos);
+			resultOk &= ftpClient.retrieveFile(resultsFolder + "/" + remoteSourceFile, fos);
 			logger.debug(ftpClient.getReplyString());
 			
 			resultOk &= ftpClient.logout();
@@ -117,7 +125,7 @@ public class FTPUtil {
 			logger.debug(ftpClient.getReplyString());
 
 			fis = new FileInputStream(localSourceFile);
-			resultOk &= ftpClient.storeFile(remoteResultFile, fis);
+			resultOk &= ftpClient.storeFile(incomingFolder + "/" + remoteResultFile, fis);
 			logger.debug(ftpClient.getReplyString());
 
 			resultOk &= ftpClient.logout();

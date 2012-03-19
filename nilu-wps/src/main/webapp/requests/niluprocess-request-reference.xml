@@ -4,33 +4,39 @@
 	<ows:Identifier>org.uncertweb.wps.NILUProcess</ows:Identifier>  
 	<wps:DataInputs>	
 		<wps:Input>
-			<ows:Identifier>start-date</ows:Identifier>
+			<ows:Identifier>sdate</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>2012-02-06</wps:LiteralData>
+				<wps:LiteralData>20120206</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>		
 		<wps:Input>
-			<ows:Identifier>end-date</ows:Identifier>
+			<ows:Identifier>edate</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>2012-02-06</wps:LiteralData>
+				<wps:LiteralData>20120206</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
-			<ows:Identifier>number-of-realisations</ows:Identifier>
+			<ows:Identifier>nens</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData>25</wps:LiteralData>
 			</wps:Data>
 		</wps:Input> 
 		<wps:Input>
-			<ows:Identifier>component</ows:Identifier>
+			<ows:Identifier>nhrs</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>24</wps:LiteralData>
+			</wps:Data>
+		</wps:Input> 
+		<wps:Input>
+			<ows:Identifier>cmpd</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData>nox</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>     
 		<wps:Input>
-			<ows:Identifier>receptor-points</ows:Identifier>
+			<ows:Identifier>site</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>51.1 7.3 51.1 7.3 51.1 7.3 51.1 7.3</wps:LiteralData>
+				<wps:LiteralData>oslo</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>		
 	</wps:DataInputs>	
