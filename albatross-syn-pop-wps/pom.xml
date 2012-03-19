@@ -70,7 +70,7 @@
     </dependency>
   </dependencies>
   <build>
-  		<finalName>albatross-wps</finalName>
+  		<finalName>albatross-syn-pop-wps</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -93,7 +93,7 @@
 				<configuration>
 					<server>localhost</server>
 					<!--<url>http://localhost:8080/manager</url> -->
-					<path>/albatross-wps</path>
+					<path>/albatross-syn-pop-wps</path>
 				</configuration>
 			</plugin>
 			<plugin>
