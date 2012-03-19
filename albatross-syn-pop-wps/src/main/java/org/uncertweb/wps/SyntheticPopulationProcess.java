@@ -60,7 +60,6 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private final String inputIDZones = "zones";
 	private final String inputIDPostcodeAreas = "postcode-areas";
 	private final String inputIDIsBootstrapping ="isBootstrapping";
-	private final String inputIDRandomNumberSeed = "randomNumberSeed";
 
 	private final String outputIDProjectFile = "project-file";
 	private final String outputIDExportFile = "export-file";
@@ -70,26 +69,52 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private String municipalities;
 	private String zones;
 	private String postcodeAreas;
-	private String randomNumberSeed;
 	private Boolean isBootstrapping;
 	
 	private Workspace ws;
 	private ProjectFile projectFile;
 	
-	private static Set<File> filesSet;
-	private static Set<Pair<Process, Long>> processSet;
+	private static ProcessMonitorThread processMonitorThread = ProcessMonitorThread.getInstance();
+	private static WorkspaceCleanerThread workspaceCleanerThread = WorkspaceCleanerThread.getInstance();
 	
+	//scheduler valid for all instances of the wps
+	private static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
+	
+	
+	//According to the language spec the static initializer block is only loaded once -> when the class is initialized by the JRE
 	static{
 		
 		readProperties();
 		
-		filesSet = Collections.synchronizedSet(new HashSet<File>());
-		processSet = Collections.synchronizedSet(new HashSet<Pair<Process, Long>>());
+		processMonitorThread.setInterruptTime(processInterruptTime);
+		workspaceCleanerThread.setInterruptTime(folderRemoveCycle);
+
+		//This is ridiculous... no schedule methods for callables, on the other side the will run forever as the call is inside a try block
+		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					workspaceCleanerThread.call();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+			}
+		}, 1,1, TimeUnit.MINUTES);
 		
-		ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
-		
-		scheduledExecutorService.schedule(new WorkspaceCleanerThread(filesSet), folderRemoveCycle, TimeUnit.MINUTES);
-		scheduledExecutorService.schedule(new ProcessMonitorThread(processSet,(long) processInterruptTime), 1, TimeUnit.MINUTES);
+		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					processMonitorThread.call();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+			}
+		}, 1,1, TimeUnit.MINUTES);
 		
 	}
 
@@ -114,9 +139,6 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			return LiteralIntBinding.class;
 		}
 		if (id.equals(inputIDMunicipalities)) {
-			return LiteralIntBinding.class;
-		}
-		if(id.equals(inputIDRandomNumberSeed)){
 			return LiteralIntBinding.class;
 		}
 		if(id.equals(inputIDIsBootstrapping)){
@@ -145,9 +167,6 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 
 		this.checkAndCopyInput(inputData);
-		
-		System.out.println(isBootstrapping);
-		System.out.println(randomNumberSeed);
 
 		this.setupFolder();
 
@@ -256,17 +275,6 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		
 		isBootstrapping = ((LiteralBooleanBinding) isBootstrappingList.get(0)).getPayload();
 		
-		//check this only if bootstrapping is active
-		if (isBootstrapping) {
-			List<IData> randomNumberSeedList = inputData
-					.get(inputIDRandomNumberSeed);
-
-			if (randomNumberSeedList == null || randomNumberSeedList.isEmpty()) {
-				throw new IllegalArgumentException(
-						"randomNumberSeed is missing");
-			}
-			randomNumberSeed = ((LiteralIntBinding) randomNumberSeedList.get(0)).getPayload().toString();
-		}
 
 	}
 
@@ -280,8 +288,13 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 				ws.getWorkspaceFolder().getPath(), genpopHouseholds, rwdataHouseholds,
 				municipalities, zones, postcodeAreas);
 		
-		filesSet.add(ws.getWorkspaceFolder());
-		filesSet.add(ws.getPublicFolder());
+		
+		Set<Pair<File, Long>> fileSet = new HashSet<Pair<File,Long>>();
+		
+		fileSet.add(new Pair<File, Long>(ws.getWorkspaceFolder(), System.currentTimeMillis()));
+		fileSet.add(new Pair<File, Long>(ws.getPublicFolder(), System.currentTimeMillis()));
+		
+		workspaceCleanerThread.addFileSet(fileSet);
 
 	}
 
@@ -301,7 +314,11 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 			proc = pb.start(); 
 			
-			processSet.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
+			//make sure the new process is supervised
+			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process,Long>>();
+			currentProcess.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
+			
+			processMonitorThread.addProcessSet(currentProcess);
 
 			ExecutorService executorService = Executors.newFixedThreadPool(2);
 			

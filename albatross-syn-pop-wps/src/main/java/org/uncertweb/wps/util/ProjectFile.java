@@ -88,6 +88,8 @@ public class ProjectFile {
 
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f)));  
 
+		//TODO random Seed
+		out.println("0");
 		out.println(genpopHouseholds);
 		out.println(rwdataHouseholds);
 		out.println(postcodeAreas);
