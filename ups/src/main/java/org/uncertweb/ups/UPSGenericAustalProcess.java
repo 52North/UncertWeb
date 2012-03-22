@@ -3,23 +3,15 @@ package org.uncertweb.ups;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,13 +28,13 @@ import net.opengis.wps.x100.ComplexDataDescriptionType;
 import net.opengis.wps.x100.ComplexDataType;
 import net.opengis.wps.x100.DocumentOutputDefinitionType;
 import net.opengis.wps.x100.ExecuteDocument;
+import net.opengis.wps.x100.ExecuteDocument.Execute;
 import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.InputDescriptionType;
 import net.opengis.wps.x100.InputType;
 import net.opengis.wps.x100.OutputDataType;
 import net.opengis.wps.x100.OutputDescriptionType;
 import net.opengis.wps.x100.ProcessDescriptionType;
-import net.opengis.wps.x100.ExecuteDocument.Execute;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
@@ -58,7 +50,6 @@ import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.UncertWebDataConstants;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
-import org.n52.wps.io.data.binding.complex.UncertMLBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
@@ -68,26 +59,17 @@ import org.n52.wps.server.LocalAlgorithmRepository;
 import org.n52.wps.server.WebProcessingService;
 import org.opengis.feature.simple.SimpleFeature;
 import org.uncertml.IUncertainty;
-import org.uncertml.distribution.continuous.LogNormalDistribution;
 import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
-import org.uncertml.exception.UncertaintyEncoderException;
-import org.uncertml.exception.UncertaintyParserException;
-import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.io.XMLEncoder;
-import org.uncertml.io.XMLParser;
 import org.uncertml.sample.AbstractRealisation;
 import org.uncertml.sample.AbstractSample;
 import org.uncertml.sample.ContinuousRealisation;
-import org.uncertml.sample.ISample;
 import org.uncertweb.api.gml.Identifier;
-import org.uncertweb.api.gml.io.XmlBeansGeometryEncoder;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.exceptions.OMParsingException;
-import org.uncertweb.api.om.io.JSONObservationEncoder;
-import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -99,13 +81,10 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 
@@ -530,7 +509,29 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		
 		// add inputs for request
 		Map<String, Object> inputs = new HashMap<String, Object>();
-		File f = new File("c:/temp/ucoll.xml");			
+		
+		//make ucoll.xml file object
+		String ucollPath;
+		if(System.getProperty("os.name").contains("Windows")){
+			ucollPath = System.getenv("TMP");
+		}else{
+			ucollPath = System.getenv("CATALINA_TMPDIR");
+		}
+		ucollPath += System.getProperty("file.separator") + "UPS";
+		File f = new File(ucollPath);
+		if (!f.exists()) {
+			f.mkdir();
+		}
+		ucollPath += System.getProperty("file.separator") + "ucoll.xml";
+		f = new File(ucollPath);	
+		if(!f.exists()) {
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		try {
 			String s = new XBObservationEncoder().encodeObservationCollection(uColl);				
 			BufferedWriter b = new BufferedWriter(new FileWriter(f));				
