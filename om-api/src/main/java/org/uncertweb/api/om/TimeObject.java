@@ -1,9 +1,13 @@
 package org.uncertweb.api.om;
 
 import java.net.URI;
+import java.sql.Time;
+import java.util.concurrent.TimeoutException;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.joda.time.ReadableInstant;
+import org.joda.time.ReadableInterval;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.uncertweb.api.om.exceptions.OMParsingException;
@@ -196,6 +200,42 @@ public class TimeObject {
 		result = prime * result + ((href == null) ? 0 : href.hashCode());
 		result = prime * result	+ ((interval == null) ? 0 : interval.hashCode());
 		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null)
+			return false;
+		if (o instanceof TimeObject) {
+			TimeObject t = (TimeObject) o;
+			if (t.isInstant() && isInstant()) {
+				return t.getDateTime().getMillis() == getDateTime().getMillis();
+			} else if (t.isInterval() && isInterval()) {
+				return t.getInterval().getStartMillis() == getInterval()
+						.getStartMillis()
+						&& t.getInterval().getEndMillis() == getInterval()
+								.getEndMillis();
+			} else if (t.isGeneralTime() && isGeneralTime()) {
+				return t.getGeneralTime().equals(getGeneralTime());
+			}
+		} else if (o instanceof ReadableInstant) {
+			if (isInstant()) {
+				return ((ReadableInstant) o).getMillis() == getDateTime()
+						.getMillis();
+			}
+		} else if (o instanceof ReadableInterval) {
+			if (isInterval()) {
+				return ((ReadableInterval) o).getStartMillis() == getInterval()
+						.getStartMillis()
+						&& ((ReadableInterval) o).getEndMillis() == getInterval()
+								.getEndMillis();
+			}
+		} else if (o instanceof IGeneralTime) {
+			if (isGeneralTime()) {
+				return o.equals(getGeneralTime());
+			}
+		}
+		return false;
 	}
 
 	@Override
