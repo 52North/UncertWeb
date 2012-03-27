@@ -24,7 +24,19 @@
 			<url>scp://giv-uw.uni-muenster.de:/var/www/m2/repo</url>
 		</repository>
 	</distributionManagement>
-	
+	<repositories>		
+    <repository>
+      <id>n52-releases</id>
+      <name>52n Releases</name>
+      <url>http://52north.org/maven/repo/releases</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+	</repositories>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

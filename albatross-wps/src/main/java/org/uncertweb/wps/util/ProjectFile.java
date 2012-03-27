@@ -28,6 +28,8 @@ public class ProjectFile {
 	
 	private File projectFile;
 	
+	private String randomNumberSeed;
+	
 	/**
 	 * Creates a new ProjectFile. It can be accessed by {@link ProjectFile#getProjectFile()}
 	 * 
@@ -40,7 +42,7 @@ public class ProjectFile {
 	 * @param zones
 	 * @param postcodeAreas
 	 */
-	public ProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas) {
+	public ProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas, String randomNumberSeed) {
 		
 		this.fileLocation = fileLocation;
 		this.dataLocation = dataLocation+File.separator;
@@ -56,6 +58,7 @@ public class ProjectFile {
 		//in our case datalocation and file location are the same 
 		this.dataLocation = fileLocation+File.separator;
 		
+		this.randomNumberSeed = randomNumberSeed;
 		
 		projectFile = new File(this.fileLocation+File.separator+projectFileName);
 		
@@ -87,7 +90,9 @@ public class ProjectFile {
 	
 	private void fillProjectFile(File f) throws IOException{
 
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f)));  
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f))); 
+		
+		out.println(randomNumberSeed);
 
 		out.println(genpopHouseholds);
 		out.println(rwdataHouseholds);
@@ -115,5 +120,55 @@ public class ProjectFile {
 		
 		out.flush();
 		out.close();
+	}
+	
+	public static void newInputDrawProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas, String randomNumberSeed){
+		
+		File projectFile = new File(fileLocation+File.separator+projectFileName);
+		
+		PrintWriter out = null;
+		
+		try {
+			out = new PrintWriter(new BufferedWriter(new FileWriter(projectFile)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
+		out.println(randomNumberSeed);
+
+		out.println(genpopHouseholds);
+		out.println(rwdataHouseholds);
+		out.println(postcodeAreas);
+		out.println(zones);
+		out.println(municipalities);
+		
+		out.println(dataLocation+"locindex+.bin");
+		out.println(dataLocation+"afst-nl-car.bin");
+		out.println(dataLocation+"afst-nl-slow.bin");
+		
+		//this file will be written
+		out.println("tijd-nl-car.bin");
+		
+		out.println(dataLocation+"reach-alt-nl-car.bin");
+		out.println(dataLocation+"zonedist-ext-Base.bin");
+		
+		//this file will be written
+		out.println("locs-nl.bin");
+		
+		out.println(dataLocation+"times-nl.bin");
+		out.println(dataLocation+"exportBin.bin");
+		out.println(dataLocation+"test.prd");
+		out.println(dataLocation+"test_syn.txt");
+		out.println(dataLocation+"relmat2004.dat");
+		out.println(dataLocation+"wrkmat2004.dat");
+		out.println(dataLocation+"sampleBa00.dat");
+		out.println(dataLocation+"dtrees-NL.dta");
+		out.println(dataLocation+"Syspars_test.txt");
+		out.println(dataLocation+"PADTdata.bin");
+		
+		out.flush();
+		out.close();
+		
+		
 	}
 }

@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -98,25 +97,52 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private Workspace ws;
 	private ProjectFile projectFile;
 	
-	private static Set<File> filesSet;
-	private static Set<Pair<Process, Long>> processSet;
+	private static ProcessMonitorThread processMonitorThread = ProcessMonitorThread.getInstance();
+	private static WorkspaceCleanerThread workspaceCleanerThread = WorkspaceCleanerThread.getInstance();
 	
 	private static int folderRemoveCycle;
 	private static int processInterruptTime;
 	
-	static{
+	//scheduler valid for all instances of the wps
+	private static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
 		
-		readProperties();
 		
-		filesSet = Collections.synchronizedSet(new HashSet<File>());
-		processSet = Collections.synchronizedSet(new HashSet<Pair<Process, Long>>());
-		
-		ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
-		
-		scheduledExecutorService.schedule(new WorkspaceCleanerThread(filesSet), folderRemoveCycle, TimeUnit.MINUTES);
-		scheduledExecutorService.schedule(new ProcessMonitorThread(processSet,(long) processInterruptTime), 1, TimeUnit.MINUTES);
-		
-	}
+		//According to the language spec the static initializer block is only loaded once -> when the class is initialized by the JRE
+		static{
+			
+			readProperties();
+			
+			processMonitorThread.setInterruptTime(processInterruptTime);
+			workspaceCleanerThread.setInterruptTime(folderRemoveCycle);
+
+			//This is ridiculous... no schedule methods for callables, on the other side the will run forever as the call is inside a try block
+			scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						workspaceCleanerThread.call();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+				}
+			}, 1,1, TimeUnit.MINUTES);
+			
+			scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						processMonitorThread.call();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+				}
+			}, 1,1, TimeUnit.MINUTES);
+			
+		}
 
 	@Override
 	public List<String> getErrors() {
@@ -145,6 +171,9 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		if (id.equals(inputIDExportFile)) {
 			return LiteralStringBinding.class;
 		}
+		if(id.equals(inputIDRandomNumberSeed)){
+			return LiteralIntBinding.class;
+		}
 		if (id.equals(inputIDExportFileBin)) {
 			return LiteralStringBinding.class;
 		}
@@ -170,19 +199,28 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 
-		this.readProperties();
+		//this.readProperties();
 
 		this.checkAndCopyInput(inputData);
 
 		this.setupFolder();
 
 		this.downloadFiles();
+		
+		//is input draw required?
+		//TODO
+		if(true){
+			
+			this.setupInputDraw();
+			
+			this.runInputDraw();
+		}
 
 		this.runModel();
 
+		//Taos post processing
 		this.setupPostProcessing();
 		
-		//Taos post processing
 		this.runPostProcessing();
 		
 		OutputMapper om = new OutputMapper();
@@ -323,9 +361,15 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		projectFile = new ProjectFile("ProjectFile.prj", ws
 				.getWorkspaceFolder().getPath(), ws.getWorkspaceFolder()
 				.getPath(), genpopHouseholds, rwdataHouseholds, municipalities,
-				zones, postcodeAreas);
+				zones, postcodeAreas,randomNumberSeed);
 		
-		filesSet.add(ws.getWorkspaceFolder());
+		
+		Set<Pair<File, Long>> fileSet = new HashSet<Pair<File,Long>>();
+		
+		fileSet.add(new Pair<File, Long>(ws.getWorkspaceFolder(), System.currentTimeMillis()));
+		fileSet.add(new Pair<File, Long>(ws.getPublicFolder(), System.currentTimeMillis()));
+		
+		workspaceCleanerThread.addFileSet(fileSet);
 
 	}
 
@@ -361,9 +405,83 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		
 	}
 	
+	private void setupInputDraw(){
+		
+		ProjectFile.newInputDrawProjectFile("InputDrawProjectFile.prj", ws
+				.getWorkspaceFolder().getPath(), ws.getWorkspaceFolder()
+				.getPath(), genpopHouseholds, rwdataHouseholds, municipalities,
+				zones, postcodeAreas,randomNumberSeed);
+		
+	}
+	private void runInputDraw(){
+		
+		Process proc = null;
+
+		try {
+
+			List<String> commands = new ArrayList<String>();
+
+			commands.add(ws.getWorkspaceFolder().getPath() + File.separator
+					+ "Inputdraw.exe");
+
+			ProcessBuilder pb = new ProcessBuilder(commands);
+
+			pb.directory(ws.getWorkspaceFolder());
+
+			proc = pb.start();
+			
+			//make sure the new process is supervised
+			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process,Long>>();
+			currentProcess.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
+			
+			processMonitorThread.addProcessSet(currentProcess);
+
+
+			ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+			executorService.submit(new ReadingThread(proc.getInputStream(), "out"));
+			executorService.submit(new ReadingThread(proc.getErrorStream(), "err"));
+
+			OutputStream stdout = proc.getOutputStream();
+
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+					stdout));
+
+			out.write("InputDrawProjectFile.prj");
+			out.newLine();
+			out.flush();
+
+			out.write("link-sd.txt");
+			out.newLine();
+			out.flush();
+			
+			out.write("area-sd.txt");
+			out.newLine();
+			out.flush();
+
+		} catch (IOException e1) {
+
+			e1.printStackTrace();
+		}
+
+		try {
+
+			int result = proc.waitFor();
+			System.out.println("Return value for input draw: " + result);
+			if(result != 0){
+				throw new RuntimeException("could not run input draw properly. Try again.");
+			}
+
+		} catch (InterruptedException e) {
+
+			e.printStackTrace();
+		}
+
+	}
+	
 	private void runPostProcessing(){
 		
-		 String configFile = ws.getWorkspaceFolder().getAbsolutePath()+File.separator+"postprocessing"+File.separator+"config_uw.xml";
+		 	String configFile = ws.getWorkspaceFolder().getAbsolutePath()+File.separator+"postprocessing"+File.separator+"config_uw.xml";
 		 
 		    ApplicationContext context = new FileSystemXmlApplicationContext(configFile);
 
@@ -405,7 +523,12 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 			proc = pb.start();
 			
-			processSet.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
+			//make sure the new process is supervised
+			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process,Long>>();
+			currentProcess.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
+			
+			processMonitorThread.addProcessSet(currentProcess);
+
 
 			ExecutorService executorService = Executors.newFixedThreadPool(2);
 
