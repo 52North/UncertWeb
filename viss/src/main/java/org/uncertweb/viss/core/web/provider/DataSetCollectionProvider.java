@@ -24,6 +24,7 @@ package org.uncertweb.viss.core.web.provider;
 import static org.uncertweb.viss.core.util.JSONConstants.DATASETS_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.HREF_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.ID_KEY;
+import static org.uncertweb.viss.core.util.JSONConstants.PHENOMENON_KEY;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET_LIST_TYPE;
 
@@ -87,7 +88,10 @@ public class DataSetCollectionProvider implements
 			for (IDataSet r : o) {
 				URI uri = uriInfo.getBaseUriBuilder()
 				    .path(RESTServlet.DATASET).build(r.getResource().getId(), r.getId());
-				aJ.put(new JSONObject().put(ID_KEY, r.getId()).put(HREF_KEY, uri));
+				aJ.put(new JSONObject()
+				.put(ID_KEY, r.getId())
+				.put(PHENOMENON_KEY, r.getPhenomenon())
+				.put(HREF_KEY, uri));
 			}
 			JSONObject j = new JSONObject().put(DATASETS_KEY, aJ);
 			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);

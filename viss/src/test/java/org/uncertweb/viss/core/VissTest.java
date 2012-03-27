@@ -244,12 +244,10 @@ public class VissTest extends JerseyTest {
 	public void testTime() throws JSONException {
 		ObjectId r = addResource(NETCDF_TYPE, getOsloMetStream());
 		ObjectId d = getDataSetsForResource(r)[0];
-		
 		String v = getVisualizersForDataset(r, d)[0];
-
 		System.out.println(getVisualizerForDataset(r, d, v).toString(4));
 		String s = createVisualization(r, d, v, new JSONObject(
-			"{\"time\":\"2011-01-02T17:00:00.000Z\",\"realisation\":0,\"sample\":15}"));
+			"{\"time\":\"2011-01-02T15:00:00.000Z\",\"realisation\":0,\"sample\":15}"));
 	}
 	
 	private JSONObject getDataSetForResource(ObjectId r, ObjectId d) {
