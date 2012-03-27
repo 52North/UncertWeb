@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Schema for uncertain input types of Albatross Model Service-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:un="http://www.uncertml.org/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.uncertml.org/2.0" schemaLocation="http://uncertml.org/uncertml.xsd"/>
+	<xs:element name="UncertainAlbatrossInput">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="albatrossID"/>
+				<xs:element name="uncertainty" type="un:AbstractUncertaintyType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
