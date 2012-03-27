@@ -133,7 +133,7 @@ public class OutputMapper {
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String strLine;
 			while ((strLine = br.readLine()) != null)   {
-				String[] lineParts = strLine.split(",");
+				String[] lineParts = strLine.split("\t");
 				//jump over empty lines and over line declaring mode columns
 				if (!lineParts[0].equals("\"\"")&&!lineParts[0].equals("\"mode\"")){
 					

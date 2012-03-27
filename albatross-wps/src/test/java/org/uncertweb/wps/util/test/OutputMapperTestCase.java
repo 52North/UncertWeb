@@ -19,9 +19,11 @@ public class OutputMapperTestCase extends TestCase {
 	public void testOutputMapper() throws Exception {
 		//read XML Observation Collection
 		OutputMapper mapper = new OutputMapper();
-		//mapper.encodeODMatrix(pathToExamples+"/OUT_odmatrix.csv");
-		IObservationCollection obsCol = mapper.encodeIndicators("src/test/resources/OUT_indicators.csv");
 		XBObservationEncoder obsEncoder = new XBObservationEncoder();
+		
+		IObservationCollection obsCol = mapper.encodeODMatrix(pathToExamples+"/OUT_odmatrix.csv");
 		System.out.print(obsEncoder.encodeObservationCollection(obsCol));
+//		obsCol = mapper.encodeIndicators("src/test/resources/OUT_indicators.csv");
+//		System.out.print(obsEncoder.encodeObservationCollection(obsCol));
 	}
 }
