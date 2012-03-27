@@ -40,7 +40,7 @@ import static org.uncertweb.viss.core.web.RESTServlet.RESOURCE_PARAM_P;
 import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZATION_PARAM_P;
 import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZATION_SLD;
 import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZERS_FOR_DATASET;
-import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZER_FOR_DATASET;
+import static org.uncertweb.viss.core.web.RESTServlet.*;
 import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZER_PARAM_P;
 
 import java.io.IOException;
@@ -57,10 +57,10 @@ import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.uncertweb.utils.UwStringUtils;
 import org.uncertweb.viss.core.util.JSONConstants;
 import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.core.vis.IVisualizer;
@@ -95,7 +95,7 @@ public class VissTest extends JerseyTest {
 		org.slf4j.bridge.SLF4JBridgeHandler.install();
 	}
 
-//	@Before
+	@Before
 	public void deleteAll() throws JSONException {
 		JSONObject j = getWebResource().path(RESOURCES)
 				.accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);
@@ -119,6 +119,10 @@ public class VissTest extends JerseyTest {
 		return getClass().getResourceAsStream("/data/netcdf/oslo_met_20110102.nc");
 	}
 
+	private InputStream getOsloCbgStream() {
+		return getClass().getResourceAsStream("/data/netcdf/oslo_cbg_20110101.nc");
+	}
+	
 	private InputStream getSLDStream() {
 		return getClass().getResourceAsStream("/data/sld/raster.xml");
 	}
@@ -146,6 +150,7 @@ public class VissTest extends JerseyTest {
 		testStream(getOMStream());
 		testStream(getMahalanobianStream());
 		testStream(getOsloMetStream());
+		testStream(getOsloCbgStream());
 		testStream(getAggregationResultStream());
 		testStream(getUncertaintyCollectionStream());
 	}
@@ -178,7 +183,7 @@ public class VissTest extends JerseyTest {
 		}
 	}
 	
-	private void getVisualizerForDataset(ObjectId r, ObjectId ds, String s) throws JSONException {
+	private JSONObject getVisualizerForDataset(ObjectId r, ObjectId ds, String s) throws JSONException {
 		String path = VISUALIZER_FOR_DATASET
 			.replace(RESOURCE_PARAM_P, r.toString())
 			.replace(DATASET_PARAM_P, ds.toString())
@@ -186,7 +191,7 @@ public class VissTest extends JerseyTest {
 		JSONObject cr = getWebResource()
 				.path(path)
 				.get(JSONObject.class);
-		System.out.println(cr.toString(4));
+		return cr;
 	}
 
 	private String[] getVisualizersForDataset(ObjectId r, ObjectId ds) {
@@ -237,11 +242,23 @@ public class VissTest extends JerseyTest {
 	
 	@Test
 	public void testTime() throws JSONException {
-		ObjectId oid = addResource(NETCDF_TYPE, getOsloMetStream());
-		ObjectId[] datasets = getDataSetsForResource(oid);
-		System.out.println(UwStringUtils.join(", ", (Object[])datasets));
+		ObjectId r = addResource(NETCDF_TYPE, getOsloMetStream());
+		ObjectId d = getDataSetsForResource(r)[0];
+		
+		String v = getVisualizersForDataset(r, d)[0];
+
+		System.out.println(getVisualizerForDataset(r, d, v).toString(4));
+		String s = createVisualization(r, d, v, new JSONObject(
+			"{\"time\":\"2011-01-02T17:00:00.000Z\",\"realisation\":0,\"sample\":15}"));
 	}
 	
+	private JSONObject getDataSetForResource(ObjectId r, ObjectId d) {
+		String path = DATASET.replace(RESOURCE_PARAM_P, r.toString()).replace(
+				DATASET_PARAM_P, d.toString());
+		JSONObject j = getWebResource().path(path).get(JSONObject.class);
+		return j;
+	}
+
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();

@@ -21,7 +21,14 @@
  */
 package org.uncertweb.viss.vis.netcdf;
 
-import static org.uncertweb.utils.UwCollectionUtils.list;
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.NaN;
+import static java.lang.Double.POSITIVE_INFINITY;
+import static java.lang.Double.compare;
+import static java.lang.Double.isNaN;
+import static org.apache.commons.math.util.FastMath.abs;
+import static org.apache.commons.math.util.FastMath.max;
+import static org.apache.commons.math.util.FastMath.min;
 import static org.uncertweb.utils.UwCollectionUtils.map;
 import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.ATTRIBUTE_ANCILLARY_VARIABLES;
 import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.ATTRIBUTE_COORDINATES;
@@ -180,7 +187,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 	}
 
 	private static final String UNKNOWN_UNIT = javax.measure.unit.BaseUnit.ONE.toString();
-	static final Logger log = LoggerFactory.getLogger(UncertaintyVariable.class);
+	private static final Logger log = LoggerFactory.getLogger(UncertaintyVariable.class);
 	private final GeometryFactory fac = new GeometryFactory();
 	private final UncertaintyNetCDF file;
 	private final Variable variable;
@@ -201,6 +208,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 	private int timeDimension;
 	private int sampleDimension;
 	private List<TimeObject> times;
+	private Envelope envelope = null;
 
 	public UncertaintyVariable(final UncertaintyNetCDF f, final Variable v) {
 		this.variable = v;
@@ -384,12 +392,22 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			};
 		}
 
-		final int index = getTimes().indexOf(to);
+		int index = -1;
+		int j = 0;
+		for (TimeObject t : getTimes()) {
+			log.debug("TimeLayer: {}", t);
+			if (t.equals(to)) {
+				index = j;
+				break;
+			}
+			++j;
+		}
 		if (index < 0) {
 			throw new IllegalArgumentException("no such time");
 		}
 		return new TemporalUncertaintyValueIterable(to, index);
 	}
+	
 
 	private Attribute getNotNullAttribute(final String attribute) {
 		return getNotNullAttribute(getVariable(), attribute);
@@ -417,7 +435,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 
 	public boolean isInvalid(final Variable v, final double n) {
 		final Number mv = getMissingValue(v);
-		return Double.compare(mv.doubleValue(), n) == 0;
+		return compare(mv.doubleValue(), n) == 0;
 	}
 
 	private Index setIndex(final Index i, final int time, final int height,
@@ -591,25 +609,69 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 		return getTime() != null;
 	}
 
+	private static final double EPSILON = 1e-4;
+
+	public static boolean dequal(double a, double b) {
+		double d = a / b;
+		return abs(d - 1.0) < EPSILON;
+	}	
+	public static void main(String[] args) {
+		double a = 3.4332275390625E-5;
+		double b = 3.0517578125E-5;
+		System.out.println(a/b);
+		System.out.println(abs(a/b-1.0));
+	}
+	
 	public Envelope getEnvelope() {
-		Variable lon = getLongitude();
-		Variable lat = getLatitude();
-		try {
+		if (envelope == null) {
+			double a = Double.POSITIVE_INFINITY;
 			// X=LON,Y=LAT!!!
-			int lonS = getLongitudeSize();
-			int latS = getLatitudeSize();
-			double lon1 = lon.read(list(new ucar.ma2.Range(0, 0))).getDouble(0);
-			double lon2 = lon.read(list(new ucar.ma2.Range(lonS - 1, lonS - 1))).getDouble(0);
-			double lat1 = lat.read(list(new ucar.ma2.Range(0, 0))).getDouble(0);
-			double lat2 = lat.read(list(new ucar.ma2.Range(latS - 1, latS - 1))).getDouble(0);
-			double lonMin = Math.min(lon1, lon2);
-			double lonMax = Math.max(lon1, lon2);
-			double latMin = Math.min(lat1, lat2);
-			double latMax = Math.max(lat1, lat2);
-			return new Envelope2D(Constants.EPSG4326, lonMin, latMin, lonMax - lonMin, latMax - latMin);
-		} catch (Exception e) {
-			throw VissError.internal(e);
+			final int lonS = getLongitudeSize();
+			final int latS = getLatitudeSize();
+
+			if (lonS < 2) {
+				throw VissError.internal("Can not generate Envelope for NetCDF with "
+								+ lonS + " x-cells.");
+			}
+			if (latS < 2) {
+				throw VissError.internal("Can not generate Envelope for NetCDF with "
+								+ latS + " y-cells.");
+			}
+			
+			Array lon = getLongitudeArray();
+			Array lat = getLatitudeArray();
+
+			double latMax = NEGATIVE_INFINITY;
+			double latMin = POSITIVE_INFINITY;
+			double lonMax = NEGATIVE_INFINITY;
+			double lonMin = POSITIVE_INFINITY;
+			
+			for (int i = 0; i < lonS; ++i) {
+				double d = lon.getDouble(i);
+				lonMax = max(lonMax, d);
+				lonMin = min(lonMin, d);
+			}
+			
+			for (int i = 0; i < latS; ++i) {
+				double d = lat.getDouble(i);
+				latMax = max(latMax, d);
+				latMin = min(latMin, d);
+			}
+			
+			double latSep = (latMax-latMin)/(latS-1);
+			double lonSep = (lonMax-lonMin)/(lonS-1);
+			
+			
+			// points in center of cell
+			lonMin -= lonSep/2;
+			lonMax += lonSep/2;
+			latMin -= latSep/2;
+			latMax += latSep/2;
+			
+			envelope = new Envelope2D(Constants.EPSG4326, lonMin, latMin,
+					lonMax - lonMin, latMax - latMin);
 		}
+		return envelope;
 	}
 
 	public WriteableGridCoverage getCoverage(String layerName) {
@@ -629,7 +691,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 		b.setCoordinateReferenceSystem(Constants.EPSG4326);
 		log.debug("ImageSize: {}x{}", lonSize, latSize);
 		// FIXME this removes the cross, but thats somewhat ugly
-		b.setImageSize(lonSize - 1, latSize - 1);
+		b.setImageSize(lonSize, latSize);
 		
 		Envelope e = getEnvelope();
 		log.debug("Envelope: {}", e);
@@ -684,5 +746,4 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 
 		return sb.toString();
 	}
-
 }
