@@ -35,6 +35,7 @@ import net.opengis.om.x20.OMAbstractObservationType;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObservationCollection;
 import net.opengis.om.x20.OMBooleanObservationDocument;
+import net.opengis.om.x20.OMCategoryObservationDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscreteNumericObservationCollection;
 import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
@@ -94,6 +95,7 @@ import org.uncertweb.api.om.observation.collections.ReferenceObservationCollecti
 import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.BooleanResult;
+import org.uncertweb.api.om.result.CategoryResult;
 import org.uncertweb.api.om.result.IntegerResult;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.result.ReferenceResult;
@@ -480,6 +482,12 @@ public class XBObservationEncoder implements IObservationEncoder {
 			xb_obsDoc = OMTextObservationDocument.Factory.newInstance();
 			xb_obs = ((OMTextObservationDocument) xb_obsDoc)
 					.addNewOMTextObservation();
+
+		} else if (obs.getResult() instanceof CategoryResult) {
+
+			xb_obsDoc = OMCategoryObservationDocument.Factory.newInstance();
+			xb_obs = ((OMCategoryObservationDocument) xb_obsDoc)
+					.addNewOMCategoryObservation();
 
 		} else if (obs.getResult() instanceof UncertaintyResult) {
 
