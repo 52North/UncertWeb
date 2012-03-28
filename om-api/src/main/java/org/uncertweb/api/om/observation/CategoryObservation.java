@@ -36,8 +36,7 @@ public class CategoryObservation extends AbstractObservation{
 	 * @param result
 	 *            result
 	 */
-	public CategoryObservation(Identifier identifier,
-			TimeObject phenomenonTime, TimeObject resultTime, URI procedure,
+	public CategoryObservation(TimeObject phenomenonTime, TimeObject resultTime, URI procedure,
 			URI observedProperty, SpatialSamplingFeature featureOfInterest,
 			CategoryResult result) {
 		super(phenomenonTime, resultTime, procedure, observedProperty,
