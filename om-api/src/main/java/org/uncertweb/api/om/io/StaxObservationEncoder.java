@@ -16,8 +16,13 @@ import javax.xml.stream.XMLStreamWriter;
 import org.uncertweb.api.om.OMConstants;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
+import org.uncertweb.api.om.observation.collections.CategoryObservationCollection;
+import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.ReferenceObservationCollection;
+import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 
 
@@ -95,7 +100,18 @@ public class StaxObservationEncoder implements IObservationEncoder{
 				writer.writeStartElement(UncertaintyObservationCollection.NAME);
 			} else if (obsCol instanceof MeasurementCollection){
 				writer.writeStartElement(MeasurementCollection.NAME);
+			}else if (obsCol instanceof BooleanObservationCollection){
+				writer.writeStartElement(BooleanObservationCollection.NAME);
+			}else if (obsCol instanceof TextObservationCollection){
+				writer.writeStartElement(TextObservationCollection.NAME);
+			}else if (obsCol instanceof CategoryObservationCollection){
+				writer.writeStartElement(CategoryObservationCollection.NAME);
+			}else if (obsCol instanceof DiscreteNumericObservationCollection){
+				writer.writeStartElement(DiscreteNumericObservationCollection.NAME);
+			}else if (obsCol instanceof ReferenceObservationCollection){
+				writer.writeStartElement(ReferenceObservationCollection.NAME);
 			}
+			
 			writer.writeDefaultNamespace(OMConstants.NS_OM);
 			writer.writeNamespace(OMConstants.NS_OM_PREFIX, OMConstants.NS_OM);
 			writer.writeNamespace(OMConstants.NS_GML_PREFIX, OMConstants.NS_GML);
