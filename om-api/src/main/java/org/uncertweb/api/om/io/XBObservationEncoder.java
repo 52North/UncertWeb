@@ -17,6 +17,7 @@ import javax.xml.namespace.QName;
 import net.opengis.gml.x32.AbstractGeometryDocument;
 import net.opengis.gml.x32.AbstractGeometryType;
 import net.opengis.gml.x32.BoundingShapeType;
+import net.opengis.gml.x32.CodeType;
 import net.opengis.gml.x32.CodeWithAuthorityType;
 import net.opengis.gml.x32.EnvelopeType;
 import net.opengis.gml.x32.MeasureType;
@@ -53,6 +54,7 @@ import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
 import net.opengis.om.x20.OMUncertaintyObservationDocument;
 import net.opengis.om.x20.UWBooleanObservationType;
+import net.opengis.om.x20.UWCategoryObservationType;
 import net.opengis.om.x20.UWDiscreteNumericObservationType;
 import net.opengis.om.x20.UWMeasurementType;
 import net.opengis.om.x20.UWReferenceObservationType;
@@ -1132,7 +1134,17 @@ public class XBObservationEncoder implements IObservationEncoder {
 			((UWTextObservationType) xb_obs).setResult(((TextResult) obs
 					.getResult()).getTextValue());
 
-		} else if (obs.getResult() instanceof UncertaintyResult
+		} 
+		else if (obs.getResult() instanceof CategoryResult
+				&& xb_obs instanceof UWCategoryObservationType) {
+			CodeType xb_mResult = ((UWCategoryObservationType) xb_obs)
+					.addNewResult();
+			CategoryResult resultObject = (CategoryResult) obs.getResult();
+			
+			xb_mResult.setCodeSpace(resultObject.getCodeSpace());
+			xb_mResult.setStringValue(resultObject.getCategoryValue());
+		} 
+		else if (obs.getResult() instanceof UncertaintyResult
 				&& xb_obs instanceof UWUncertaintyObservationType) {
 
 			UncertaintyPropertyType xb_uncResult = ((UWUncertaintyObservationType) xb_obs)
