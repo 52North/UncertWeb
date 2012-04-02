@@ -77,11 +77,9 @@ public class StaxObservationEncoder implements IObservationEncoder{
 			encodeObservationCollection(obsCol,fos);
 			fos.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new OMEncodingException(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new OMEncodingException(e);
 		}
 	}
 
@@ -131,8 +129,7 @@ public class StaxObservationEncoder implements IObservationEncoder{
 			writer.close();
 
 		} catch (XMLStreamException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new OMEncodingException(e);
 		}
 	}
 
