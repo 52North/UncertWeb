@@ -245,9 +245,9 @@ public class XBObservationParser implements IObservationParser {
 			return oc;
 		}
 		else if (xb_obsColDoc instanceof OMCategoryObservationCollectionDocument){
-			OMCategoryObservationCollection xb_ocType = ((OMCategoryObservationCollectionDocument)xb_obsColDoc).getOMTextObservationCollection();
+			OMCategoryObservationCollection xb_ocType = ((OMCategoryObservationCollectionDocument)xb_obsColDoc).getOMCategoryObservationCollection();
 			UWCategoryObservationType[] xb_obsArray = xb_ocType.getOMCategoryObservationArray();
-			List<TextObservation> obsList = new ArrayList<TextObservation>(xb_obsArray.length);
+			List<CategoryObservation> obsList = new ArrayList<CategoryObservation>(xb_obsArray.length);
 			for (UWCategoryObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
@@ -255,7 +255,7 @@ public class XBObservationParser implements IObservationParser {
 				CategoryObservation obs = (CategoryObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
-			oc = new TextObservationCollection(obsList);
+			oc = new CategoryObservationCollection(obsList);
 			return oc;
 		}
 		

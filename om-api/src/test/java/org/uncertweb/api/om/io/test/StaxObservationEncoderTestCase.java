@@ -22,6 +22,7 @@ public class StaxObservationEncoderTestCase extends TestCase {
 	public void testObservationEncoder() throws Exception {
 
 		obsCol_Point_TimeInstant_Double();
+		obsColCatObs();
 	}
 	
 	/**
@@ -108,6 +109,31 @@ public class StaxObservationEncoderTestCase extends TestCase {
 		assertEquals(obs1.getResultQuality()[0].getUom(),
 				obs2.getResultQuality()[0].getUom());
 
+	}
+	
+	private void obsColCatObs() throws Exception{
+		// read XML example file
+		// read XML example file
+		String xmlString;
+		try {
+		 xmlString = TestUtils.readXmlFile(pathToExamples
+				+ "/ObsCol_Categories.xml");
+		}
+		catch (IOException ioe){
+			xmlString = TestUtils.readXmlFile(localPath + pathToExamples
+					+ "/ObsCol_Categories.xml");
+		}
+		
+		XBObservationParser parser = new XBObservationParser();
+		IObservationCollection obsCol = parser
+				.parseObservationCollection(xmlString);
+
+		
+
+		// encode XML example file
+		StaxObservationEncoder encoder = new StaxObservationEncoder();
+		String obsColString = encoder.encodeObservationCollection(obsCol);
+		System.out.println(obsColString);
 	}
 	
 	
