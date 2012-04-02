@@ -16,6 +16,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import net.opengis.gml.x32.AbstractTimePrimitiveType;
+import net.opengis.gml.x32.CodeType;
 import net.opengis.gml.x32.CodeWithAuthorityType;
 import net.opengis.gml.x32.DirectPositionType;
 import net.opengis.gml.x32.EnvelopeType;
@@ -31,6 +32,7 @@ import net.opengis.om.x20.FoiPropertyType;
 import net.opengis.om.x20.OMAbstractObservationType;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObservationCollection;
+import net.opengis.om.x20.OMCategoryObservationCollectionDocument.OMCategoryObservationCollection;
 import net.opengis.om.x20.OMBooleanObservationDocument;
 import net.opengis.om.x20.OMCategoryObservationDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
@@ -49,8 +51,10 @@ import net.opengis.om.x20.OMTextObservationCollectionDocument.OMTextObservationC
 import net.opengis.om.x20.OMTextObservationDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
+import net.opengis.om.x20.OMCategoryObservationCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationDocument;
 import net.opengis.om.x20.UWBooleanObservationType;
+import net.opengis.om.x20.UWCategoryObservationType;
 import net.opengis.om.x20.UWDiscreteNumericObservationType;
 import net.opengis.om.x20.UWMeasurementType;
 import net.opengis.om.x20.UWReferenceObservationType;
@@ -95,6 +99,7 @@ import org.uncertweb.api.om.observation.collections.ReferenceObservationCollecti
 import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.BooleanResult;
+import org.uncertweb.api.om.result.CategoryResult;
 import org.uncertweb.api.om.result.IntegerResult;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.result.ReferenceResult;
@@ -234,6 +239,20 @@ public class XBObservationParser implements IObservationParser {
 				xb_omDoc.setOMObservation(xb_obs);
 				
 				TextObservation obs = (TextObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			oc = new TextObservationCollection(obsList);
+			return oc;
+		}
+		else if (xb_obsColDoc instanceof OMCategoryObservationCollectionDocument){
+			OMCategoryObservationCollection xb_ocType = ((OMCategoryObservationCollectionDocument)xb_obsColDoc).getOMTextObservationCollection();
+			UWCategoryObservationType[] xb_obsArray = xb_ocType.getOMCategoryObservationArray();
+			List<TextObservation> obsList = new ArrayList<TextObservation>(xb_obsArray.length);
+			for (UWCategoryObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				CategoryObservation obs = (CategoryObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
 			oc = new TextObservationCollection(obsList);
@@ -502,7 +521,17 @@ public class XBObservationParser implements IObservationParser {
 						resultTime, validTime, procedure, observedProperty,
 						featureOfInterest, resultQuality, result);
 
-			} else if (xb_obsType instanceof UWUncertaintyObservationType) {
+			} 
+			else if (xb_obsType instanceof UWCategoryObservationType) {
+
+				CodeType value = ((UWCategoryObservationType)xb_obsType).getResult();
+
+				CategoryResult result = new CategoryResult(value.getStringValue(),value.getCodeSpace());
+				obs = new CategoryObservation(identifier, boundedBy, phenomenonTime,
+						resultTime, validTime, procedure, observedProperty,
+						featureOfInterest, resultQuality, result);
+
+			}else if (xb_obsType instanceof UWUncertaintyObservationType) {
 
 				UncertaintyPropertyType xb_uncPropType = ((UWUncertaintyObservationType) xb_obsType).getResult();
 

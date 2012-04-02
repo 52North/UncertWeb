@@ -45,3 +45,4 @@ You can contact staschc@uni-muenster.de if you have further questions or comment
 ###################################
 ## Revision History
 0.0.8 - updated dependency to GML API to 0.0.5
+0.0.9 - updated dependency to GML API to 0.0.6 (due to schema change in OM profile) and added CategoryObservationCollection
