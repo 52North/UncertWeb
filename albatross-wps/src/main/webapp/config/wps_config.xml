@@ -5,9 +5,10 @@
 <WPSConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://n52.org/wps schema_v1.xsd" xmlns="http://n52.org/wps">
 	<Datahandlers>
 		<ParserList>
-			
 			<Parser name="UncertWebParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true" />
-			
+			<Parser name="AlbatrossUInputParser" className="org.uncertweb.wps.io.datahandler.AlbatrossUInputParser" active="true" >
+			<Format mimetype="application/xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd"/>
+			</Parser> 
 		</ParserList>
 		<GeneratorList>
 			
