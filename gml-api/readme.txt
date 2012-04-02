@@ -45,3 +45,4 @@ You can contact staschc@uni-muenster.de if you have further questions or comment
 ###################################
 ## Revision History
 0.0.5 - changed MultiPolygon to MultiSurface; added posList element in LinearRing
+0.0.6 - updated dependency to xb-uw-profiles to version 0.0.6
