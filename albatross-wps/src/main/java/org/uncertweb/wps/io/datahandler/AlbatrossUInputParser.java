@@ -19,6 +19,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.datahandler.parser.AbstractParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,5 +128,9 @@ public class AlbatrossUInputParser extends AbstractParser {
 
 		return stringWriter.toString();
 	}
-
+	
+	@Override
+	public Class<?>[] getSupportedDataBindings() {
+		return new Class<?>[]{GenericFileDataBinding.class};
+	}
 }
