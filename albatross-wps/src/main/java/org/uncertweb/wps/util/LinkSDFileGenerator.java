@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.uncertweb.wps.io.data.binding.complex.AlbatrossUInput;
 
 /**
@@ -48,7 +49,7 @@ public class LinkSDFileGenerator {
 			Double sd = albatrossUInput.get(i).getStandardDeviation().getValues().get(0);
 			List<String> albatrossIds = albatrossUInput.get(i).getAlbatrossIDs();
 			
-			lines.add(sd+"\t"+"1"+"\t"+albatrossIds.toArray().toString());
+			lines.add(sd+"\t"+"1"+"\t"+StringUtils.join(albatrossIds, ','));
 		}
 		
 		UncertainOutputWriter.toFile(targetFile, lines);

@@ -68,7 +68,7 @@ public class AlbatrossUInputParser extends AbstractParser {
 
 				if (localName != null) {
 					if (localName.equals("albatrossID")) {
-						albatrossIDs.add(node.getNodeValue());
+						albatrossIDs.add(node.getChildNodes().item(0).getNodeValue());
 					} else if (localName.equals("parameter")) {
 						/*
 						 * value of attribute "name"

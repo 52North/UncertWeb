@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.uncertweb.wps.io.data.binding.complex.AlbatrossUInput;
 
 /**
@@ -54,7 +55,7 @@ public class AreaSDFileGenerator {
 			
 			List<String> albatrossIds = albatrossUInput.get(0).getAlbatrossIDs();
 			
-			lines.add(sd+"\t"+loc+"\t"+albatrossIds.toArray().toString());
+			lines.add(sd+"\t"+loc+"\t"+StringUtils.join(albatrossIds, ','));
 		}
 		
 		UncertainOutputWriter.toFile(targetFile, lines);

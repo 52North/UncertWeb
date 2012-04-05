@@ -218,22 +218,26 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 		this.downloadFiles();
 
-		// is input draw required?
-		// TODO
+		// If the user passes some uncert area and uncert link ML through the request it is likely that his/her intention was to perform an inputDraw run.
+		// Thus we check if the values are not null and therefore contain some data, if thats the case the link-sd and area-sd files are written in the workspace and 
+		// the inputDraw.exe is called afterwards
 		if (uncertArea != null && uncertLink != null) {
 
 			this.setupInputDraw();
 
 			this.runInputDraw();
 		}
-
+		
+		//The Rwdata.exe (often named 'Albatross') is called.
 		this.runModel();
 
-		// Taos post processing
+		// Taos post processing is setup, this requires the creation of some files.
 		this.setupPostProcessing();
 
+		// The postprocessing method was a former external jar file that was decompiled and directly integrated into the code.
 		this.runPostProcessing();
 
+		// The by the postprocessing process generated files are parsed and send to the user.
 		OutputMapper om = new OutputMapper();
 		IObservationCollection indicatorCol = null;
 		IObservationCollection odMatrixCol = null;
@@ -252,9 +256,17 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 		result.put(outputIDODMatrix, odMatrixOutput);
 		result.put(outputIDindicators, indOutput);
+		
 		return result;
 	}
 
+	/**
+	 * This wps requires a 'albatross-process.properties' file in order to define important initial values by the user.
+	 * The values are valid for the time the wps runs in his container. Thus, one has to restart the wps to load any kind of changes.
+	 * The reason is that some values are required before the first run takes place. To be more detailed: during the loading of the class
+	 * it is is already necessary to have some defined cycles. These are the folder remove time and the process kill time, because the threads
+	 * for supervising the folders and process run globally.
+	 */
 	private static void readProperties() {
 
 		Properties properties = new Properties();
@@ -264,7 +276,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 			File configFile = new File(WPSConfig.getInstance().getConfigPath());
 			File propertiesFile = new File(configFile.getParent()
 					+ File.separator
-					+ "albatross-synthetic-population-process.properties");
+					+ "albatross-process.properties");
 
 			FileInputStream fileInputStream = new FileInputStream(
 					propertiesFile);
@@ -492,13 +504,13 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 				uncertLink);
 
 		linkSDFileGenerator.toFile(new File(ws.getWorkspaceFolder().getPath()
-				+ File.pathSeparator + "link-sd.txt"));
+				+ File.separator + "link-sd.txt"));
 
 		AreaSDFileGenerator areaSDFileGenerator = new AreaSDFileGenerator(
 				uncertArea);
 
 		areaSDFileGenerator.toFile(new File(ws.getWorkspaceFolder().getPath()
-				+ File.pathSeparator + "area-sd.txt"));
+				+ File.separator + "area-sd.txt"));
 
 	}
 
