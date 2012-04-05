@@ -366,6 +366,9 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 		List<IData> uncertLinkList = inputData.get(inputIDUncertLink);
 
+		uncertLink = new ArrayList<AlbatrossUInput>();
+		uncertArea = new ArrayList<AlbatrossUInput>();
+		
 		if (uncertLinkList != null) {
 			for (IData currentLinkList : uncertLinkList) {
 

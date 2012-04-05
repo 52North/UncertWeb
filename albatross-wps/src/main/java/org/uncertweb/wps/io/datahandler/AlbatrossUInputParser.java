@@ -131,6 +131,6 @@ public class AlbatrossUInputParser extends AbstractParser {
 	
 	@Override
 	public Class<?>[] getSupportedDataBindings() {
-		return new Class<?>[]{GenericFileDataBinding.class};
+		return new Class<?>[]{AlbatrossUInputBinding.class};
 	}
 }
