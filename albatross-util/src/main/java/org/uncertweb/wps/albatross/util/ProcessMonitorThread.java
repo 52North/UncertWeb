@@ -1,5 +1,6 @@
 package org.uncertweb.wps.albatross.util;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -14,19 +15,36 @@ public class ProcessMonitorThread implements Callable<Void>{
 	private Set<Pair<Process, Long>> processSet;
 	private Long interruptTime;
 	
+	private static ProcessMonitorThread instance = new ProcessMonitorThread();
+	
+	private ProcessMonitorThread(){
+		
+		processSet = new HashSet<Pair<Process,Long>>();
+		interruptTime = 0l;
+		
+	}
+	
+	public static ProcessMonitorThread getInstance(){
+		
+		return instance;
+	}
+	
+	public synchronized boolean addProcessSet(Set<Pair<Process, Long>> process){
+		
+		return this.processSet.addAll(process);
+	}
+	
 	/**
 	 * 
-	 * @param processSet set of processes
-	 * @param interruptTime time until the thread will be interrupted - in minutes
+	 * @param processInterruptTime time until the thread will be interrupted - in minutes
 	 */
-	public ProcessMonitorThread(Set<Pair<Process, Long>> processSet, Long interruptTime) {
+	public synchronized void setInterruptTime(int processInterruptTime){
 		
-		this.processSet = processSet;
-		this.interruptTime = TimeUnit.MILLISECONDS.convert(interruptTime,TimeUnit.MINUTES);
+		this.interruptTime = TimeUnit.MILLISECONDS.convert(processInterruptTime,TimeUnit.MINUTES);
 	}
-
+	
 	@Override
-	public Void call() throws Exception {
+	public synchronized Void call() throws Exception {
 		
 		synchronized (processSet) {
 			
@@ -42,7 +60,7 @@ public class ProcessMonitorThread implements Callable<Void>{
 					currentPair.getLeft().destroy();
 					iterator.remove();
 					
-					throw new RuntimeException("Process was destroyed by the system. Try again.");
+					//throw new RuntimeException("Process was destroyed by the system. Try again.");
 				}
 				
 				//process terminated correct, remove it from set
