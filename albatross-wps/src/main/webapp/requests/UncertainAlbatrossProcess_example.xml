@@ -123,13 +123,13 @@
 		<wps:Input>
 			<ows:Identifier>export-file</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>http://giv-sos.uni-muenster.de:8080/publicFolder/example/export.txt</wps:LiteralData>
+				<wps:LiteralData>http://128.176.133.106:8080/public/1784402506/export.txt</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>export-file-bin</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>http://giv-sos.uni-muenster.de:8080/publicFolder/example/exportBin.bin</wps:LiteralData>
+				<wps:LiteralData>http://128.176.133.106:8080/public/1784402506/exportBin.bin</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 	</wps:DataInputs>

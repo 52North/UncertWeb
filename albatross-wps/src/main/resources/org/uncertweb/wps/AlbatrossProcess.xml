@@ -131,15 +131,6 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					</Supported>
 				</ComplexData>
 			</Input>
-			<Input minOccurs="0" maxOccurs="100">
-				<ows:Identifier>randomNumberSeed</ows:Identifier>
-				<ows:Title>seed for calculating pseudo random numbers</ows:Title>
-				<ows:Abstract></ows:Abstract>
-				<LiteralData>
-					<ows:DataType ows:reference="xs:integer"></ows:DataType>
-					<ows:AnyValue></ows:AnyValue>
-				</LiteralData>
-			</Input>
 		</DataInputs>
 		<ProcessOutputs>
 			<Output>
@@ -180,7 +171,6 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					</Supported>
 				</ComplexOutput>
 			</Output>
-			
 		</ProcessOutputs>
 	</ProcessDescription>
 </wps:ProcessDescriptions>

@@ -21,9 +21,6 @@
 			<Property name="Algorithm" active="true">org.uncertweb.wps.AlbatrossProcess</Property>
 		</Repository>
 			
-		
-           
-		
 	</AlgorithmRepositoryList>
 	<RemoteRepositoryList>
 	
