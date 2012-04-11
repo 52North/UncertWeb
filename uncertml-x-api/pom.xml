@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.uncertweb</groupId>
 		<artifactId>uncertweb-parent</artifactId>
-		<version>1.1-SNAPSHOT</version>
+		<version>1.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>uncertml-x-api</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>org.uncertml</groupId>
 			<artifactId>uncertml</artifactId>
-			<version>2.0-SNAPSHOT</version>
+			<version>2.0.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
