@@ -38,18 +38,20 @@ conf.sos.ds.password=*****	your DB-password
 ## Installation instructions:
 
 #1 Checkout and name this project and 52North SOS ( https://
-svn.52north.org/svn/swe/main/SOS/Service/trunk/SOS/52n-sos ).
+svn.52north.org/svn/swe/main/SOS/Service/trunk/SOS/52n-sos ) and name
+them e.g. '52n-sos-uncertainty' and '52n-sos' 
 
-Install your 52North SOS according to it's documentation (\doc\howto\
-how2install_SOS.pdf). You don't have to build it yet.
+Install your 52North SOS according to it's documentation (52n-sos\doc\
+howto\how2install_SOS.pdf). You don't have to build it yet.
 
 #2 Extend your DB's data model by executing the following SQL script on
 your database:
-db\extend_datamodel_postgres83.sql
+52n-sos\db\extend_datamodel_postgres83.sql
 
-#3 Copy the properties file at conf\build.properties to your SOS
-configuration directory (52n-sos\conf). Re-adjust it as described in
-SOS documentation (52n-sos\doc\howto\how2install_SOS.pdf chap. 3.5.2).
+#3 Copy the properties file at 52n-sos-uncertainty\conf\build.properties
+to your SOS configuration directory (52n-sos\conf). Re-adjust it as
+described in SOS documentation (52n-sos\doc\howto\how2install_SOS.pdf
+chap. 3.5.2).
 
 Alternatively you might just change the following properties in your
 already configured properties file:
@@ -73,7 +75,7 @@ Add...
 				<module>52n-sos-coding</module>
 				<!-- Relative path to your u-SOS project's module
 					** Change if you chose another name ** -->
-				<module>../u-sos/52n-sos-uncertainty</module>
+				<module>../52n-sos-uncertainty</module>
 			</modules>
 			<properties>
 				<!-- Name of SOS ** Change if you want another name ** -->
@@ -119,4 +121,4 @@ mvn install -Punc,with-deploy -Denv=dev -Dlocal.configfile=\conf\build.propertie
 #8 Use the Test Client (for specification 1.0.0) and select
 GetCapabilities request to check whether u-SOS is working correctly.
 
-There are more sample requests in examples\requests_uSOS .
+There are more sample requests in 52n-sos-uncertainty\examples\requests_uSOS .
