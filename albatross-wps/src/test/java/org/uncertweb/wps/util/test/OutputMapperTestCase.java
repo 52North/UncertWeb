@@ -1,7 +1,6 @@
 package org.uncertweb.wps.util.test;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.wps.util.OutputMapper;
@@ -12,10 +11,11 @@ import org.uncertweb.wps.util.OutputMapper;
  * @author staschc
  *
  */
-public class OutputMapperTestCase extends TestCase {
+public class OutputMapperTestCase {
 	
 	private String pathToExamples = "src/test/resources";
 	
+	@Test
 	public void testOutputMapper() throws Exception {
 		//read XML Observation Collection
 		OutputMapper mapper = new OutputMapper();
@@ -23,7 +23,8 @@ public class OutputMapperTestCase extends TestCase {
 		
 		IObservationCollection obsCol = mapper.encodeODMatrix(pathToExamples+"/OUT_odmatrix.csv");
 		System.out.print(obsEncoder.encodeObservationCollection(obsCol));
-//		obsCol = mapper.encodeIndicators("src/test/resources/OUT_indicators.csv");
-//		System.out.print(obsEncoder.encodeObservationCollection(obsCol));
+		obsCol = mapper.encodeIndicators(pathToExamples+"/OUT_indicators.csv");
+		System.out.print(obsEncoder.encodeObservationCollection(obsCol));
 	}
+	
 }
