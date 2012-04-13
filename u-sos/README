@@ -37,18 +37,20 @@ conf.sos.ds.password=*****	your DB-password
 ######################################################################
 ## Installation instructions:
 
-#1 Checkout and name this project and 52North SOS ( https://
-svn.52north.org/svn/swe/main/SOS/Service/trunk/SOS/52n-sos ) and name
-them e.g. '52n-sos-uncertainty' and '52n-sos' 
+#1 Checkout and install 52North SOS ( https://svn.52north.org/svn/swe
+/main/SOS/Service/trunk/SOS/52n-sos ) or update your older release to
+version 3.5.0+
 
-Install your 52North SOS according to it's documentation (52n-sos\doc\
-howto\how2install_SOS.pdf). You don't have to build it yet.
+#2 Checkout this project ( https://svn.52north.org/svn/geostatistics
+/main/uncertweb/u-sos/trunk ).
 
-#2 Extend your DB's data model by executing the following SQL script on
-your database:
-52n-sos\db\extend_datamodel_postgres83.sql
+Go on, assuming your SOS project's name is '52n-sos' and your
+uncertainty module is named '52n-sos-uncertainty'.
 
-#3 Copy the properties file at 52n-sos-uncertainty\conf\build.properties
+#4 Extend the datamodel of your SOS by the request given in
+52n-sos-uncertainty\db\extend_datamodel_postgres83.sql .
+
+#5 Copy the properties file at 52n-sos-uncertainty\conf\build.properties
 to your SOS configuration directory (52n-sos\conf). Re-adjust it as
 described in SOS documentation (52n-sos\doc\howto\how2install_SOS.pdf
 chap. 3.5.2).
@@ -61,7 +63,7 @@ conf.sos.capabilitiesCacheController=org.n52.sos.uncertainty.cache.CapabilitiesC
 conf.sos.listeners=org.n52.sos.GetCapabilitiesListener,org.n52.sos.uncertainty.GetObservationListener,org.n52.sos.DescribeSensorListener,org.n52.sos.GetResultListener,org.n52.sos.GetFeatureOfInterestListener,org.n52.sos.GetFeatureOfInterestTimeListener,org.n52.sos.GetDomainFeatureListener,org.n52.sos.UpdateSensorListener,org.n52.sos.InsertObservationListener,org.n52.sos.RegisterSensorListener,org.n52.sos.DescribeFeatureTypeListener,org.n52.sos.GetObservationByIdListener
 conf.sos.10.postRequestDecoder=org.n52.sos.uncertainty.decode.impl.HttpPostRequestDecoderMobile
 
-#5 Add this project's profile to your SOS POM (52n-sos\pom.xml). Don't
+#6 Add this project's profile to your SOS POM (52n-sos\pom.xml). Don't
 forget to use the correct relative path from SOS project to u-SOS
 project (under modules). You chose your project's name during checkout.
 Add...
@@ -85,9 +87,9 @@ Add...
 			</properties>
 		</profile>
 		
-...to <profiles></profiles>
+...to <profiles></profiles>.
 
-#6 Add this project's profile as a dependency to your SOS service
+#7 Add this project's profile as a dependency to your SOS service
 module's POM (52n-sos\52n-sos-service\pom.xml).
 Add...
 
@@ -110,15 +112,16 @@ Add...
 			</dependencies>
 		</profile>
 
-...to <dependencies></dependencies>
+...to <dependencies></dependencies>.
 
-#7 Build and deploy u-SOS: Make sure that your Tomcat and your Postgres
+#8 Build and deploy u-SOS: Make sure that your Tomcat and your Postgres
 are started. Open a command line and go to your SOS project folder.
-Type in the following command line expression:
+Type in the following command line expression, where PATH is the absolute
+path to your 52North SOS project:
 
-mvn install -Punc,with-deploy -Denv=dev -Dlocal.configfile=\conf\build.properties
+mvn install -Punc,with-deploy -Denv=dev -Dlocal.configfile=PATH\conf\build.properties
 
-#8 Use the Test Client (for specification 1.0.0) and select
+#9 Use the Test Client (for specification 1.0.0) and select
 GetCapabilities request to check whether u-SOS is working correctly.
 
 There are more sample requests in 52n-sos-uncertainty\examples\requests_uSOS .
