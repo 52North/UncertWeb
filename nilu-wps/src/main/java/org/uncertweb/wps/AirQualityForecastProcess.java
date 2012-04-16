@@ -2,8 +2,12 @@ package org.uncertweb.wps;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,9 +34,9 @@ import org.uncertweb.wps.util.FTPUtil;
 
 import ucar.nc2.NetcdfFile;
 
-public class NILUProcess extends AbstractObservableAlgorithm {
+public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 
-	private static Logger logger = Logger.getLogger(NILUProcess.class);
+	private static Logger logger = Logger.getLogger(AirQualityForecastProcess.class);
 
 	private List<String> errors;
 	
@@ -48,13 +52,14 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 
 	private boolean finished;
 	private boolean abort;
+	private boolean testRun;
 	private String resultFileName;
 	private String parametersFileName;
 	private String tmpDir;
 
 	private FTPUtil ftpUtil;
 	
-	public NILUProcess(){
+	public AirQualityForecastProcess(){
 		this.errors = new ArrayList<String>();
 		ftpUtil  = new FTPUtil();		
 		Property[] propertyArray = WPSConfig.getInstance()
@@ -68,7 +73,10 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 			} else if (property.getName().equalsIgnoreCase("parametersFileName")
 					&& property.getActive()) {
 				parametersFileName = property.getStringValue();
-			} 
+			}else if(property.getName().equalsIgnoreCase("testRun")
+					&& property.getActive()){
+				testRun = Boolean.parseBoolean(property.getStringValue());
+			}
 		}
 		if(OS_Name.contains("Windows")){
 			tmpDir = System.getenv("TMP");
@@ -114,6 +122,9 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 		
+		String resultFileFullPath = "";
+		
+		if(!testRun){
 		/*
 		 * get input data
 		 * create txt out of them
@@ -216,7 +227,7 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 
 		}
 		
-		String resultFileFullPath = tmpDir + File.separator + resultFileName;
+		resultFileFullPath = tmpDir + File.separator + resultFileName;
 		
 		try {
 			ftpUtil.download(resultFileFullPath, resultFileName);
@@ -224,10 +235,51 @@ public class NILUProcess extends AbstractObservableAlgorithm {
 			logger.error(e);
 		}
 		
+		}else{		
+
+			logger.debug("################ Test run ###############");
+			
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			resultFileFullPath = tmpDir + File.separator + resultFileName;
+			
+			try {
+				URL url = new URL("http://v-soknos.uni-muenster.de:8080/data/oslo_mete_20110103.nc");
+				
+//				InputStream in = url.openStream();
+//				
+//				int i;
+//				
+//				FileOutputStream fOut = new FileOutputStream(new File(resultFileFullPath));
+//				
+//				while ((i = in.read()) != -1) {
+//					System.out.print((char)i);
+//					fOut.write(i);
+//				}
+				
+				org.apache.commons.io.FileUtils.copyURLToFile(url, new File(resultFileFullPath));
+				
+//				in.close();
+//				fOut.flush();
+//				fOut.close();
+				
+				
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
 		Map<String, IData> result = new HashMap<String, IData>();
 		
 		try {
-			NetCDFBinding ndw = new NetCDFBinding(new NetcdfUWFile(new NetcdfFile(resultFileFullPath)));
+//			NetCDFBinding ndw = new NetCDFBinding(new NetcdfUWFile(new NetcdfFile(resultFileFullPath)));
+			NetCDFBinding ndw = new NetCDFBinding(new NetcdfUWFile(NetcdfFile.open(resultFileFullPath)));
 			result.put(outputIDPredictedConcentrations, ndw);
 		} catch (NetcdfUWException e) {
 			e.printStackTrace();

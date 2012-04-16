@@ -4,42 +4,43 @@
 	-->
 <WPSConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://n52.org/wps schema_v1.xsd" xmlns="http://n52.org/wps">
 	<Datahandlers>
-		<ParserList>
-		 <Parser name="GML3BasicParser" className="org.n52.wps.io.datahandler.parser.GML3BasicParser" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.0.0/base/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.0.1/base/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.1.0/base/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.1.1/base/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
+		<ParserList>	
+			<Parser name="GML3BasicParser" className="org.n52.wps.io.datahandler.parser.GML3BasicParser" active="true">
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.0.0" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.0.1" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.1.0" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.1.1" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.2.1" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
 			</Parser>
-			
 			<Parser name="SimpleGMLParser" className="org.n52.wps.io.datahandler.parser.SimpleGMLParser" active="true">
-				<Property name="supportedSchema" active="true">http://www.opengeospatial.org/gmlpacket.xsd</Property>
-				<Property name="supportedSchema" active="true">http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
+				<Format mimetype="text/xml" schema="http://www.opengeospatial.org/gmlpacket.xsd"/>
+				<Format mimetype="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
 			</Parser>
 			<Parser name="GML2BasicParser" className="org.n52.wps.io.datahandler.parser.GML2BasicParser" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.0.0/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.1/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2.1/feature.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.0.0" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.1" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.2" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.2.1" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
 			</Parser>
-			
-			
-			
 			<Parser name="GML2BasicParser4Files" className="org.n52.wps.io.datahandler.parser.GML2BasicParser4Files" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.0.0/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.1/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2.1/feature.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.0.0" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.1" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.2" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.2.1" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
 			</Parser>
 		 <Parser name="UncertWebIODataParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true">
             <Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
@@ -48,8 +49,12 @@
             <Property name="supportedFormat" active="true">application/x-netcdf</Property>
             <Property name="supportedFormat" active="true">application/x-uncertml</Property>
             <Property name="supportedFormat" active="true">application/gml+xml</Property>
-				<Property name="supportedFormat" active="true">application/x-om-u+xml</Property>
+			<Property name="supportedFormat" active="true">application/x-om-u+xml</Property>
             <Property name="supportedEncoding" active="true">UTF-8</Property>
+				<Format mimetype="application/x-uncertml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd"/>
+				<Format mimetype="application/x-om-u+xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"/>
+				<Format mimetype="application/gml+xml"/>
+				<Format mimetype="application/x-netcdf"/>
   		 </Parser>   
 			
 			
@@ -64,6 +69,10 @@
             	<Property name="supportedFormat" active="true">application/gml+xml</Property>
 				<Property name="supportedFormat" active="true">application/x-om-u+xml</Property>
             	<Property name="supportedEncoding" active="true">UTF-8</Property>
+				<Format mimetype="application/x-uncertml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd"/>
+				<Format mimetype="application/x-om-u+xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"/>
+				<Format mimetype="application/gml+xml"/>
+				<Format mimetype="application/x-netcdf"/>
    			</Generator>
 				
 			
@@ -71,7 +80,7 @@
 	</Datahandlers>
 	<AlgorithmRepositoryList>
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
-			<Property name="Algorithm" active="true">org.uncertweb.wps.NILUProcess</Property>	
+			<Property name="Algorithm" active="true">org.uncertweb.wps.AirQualityForecastProcess</Property>	
 			<Property name="resultFileName" active="true">oslo_mete_20110103.nc</Property>	
 			<Property name="parametersFileName" active="true">job_request_id.txt</Property>	
 			<Property name="incomingFolder" active="true">incoming</Property>	
@@ -80,6 +89,7 @@
       		<Property name="ftpPort" active="true">21</Property>
       		<Property name="ftpUser" active="true">NILUTestUser</Property>
       		<Property name="ftpPwd" active="true">2#9gRK4</Property>
+      		<Property name="testRun" active="true">true</Property>
 		</Repository>
 				
 	</AlgorithmRepositoryList>

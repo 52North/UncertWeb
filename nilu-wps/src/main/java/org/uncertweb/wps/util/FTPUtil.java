@@ -53,7 +53,7 @@ public class FTPUtil {
 	}
 
 	/**
-	 * list files of homedirectory of user ftp connection defined in wps config
+	 * list files of results directory of user ftp connection defined in wps config
 	 */
 	public String[] list() throws IOException {
 		FTPClient ftpClient = new FTPClient();
