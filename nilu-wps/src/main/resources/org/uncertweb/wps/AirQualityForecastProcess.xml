@@ -8,7 +8,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 		<ows:Metadata xlink:title="model"/>
 		<ows:Metadata xlink:title="air quality"/>
 		<DataInputs>
-			<Input minOccurs="0" maxOccurs="1">
+			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>site</ows:Identifier>
 				<ows:Title>Site</ows:Title>
 				<ows:Abstract>Site</ows:Abstract>
@@ -20,7 +20,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					</ows:AllowedValues>
 				</LiteralData>
 			</Input>
-			<Input minOccurs="0" maxOccurs="1">
+			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>sdate</ows:Identifier>
 				<ows:Title>start time and date</ows:Title>
 				<ows:Abstract>start time and date. server uses CEST.</ows:Abstract>
@@ -29,7 +29,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
-			<Input minOccurs="0" maxOccurs="1">
+			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>edate</ows:Identifier>
 				<ows:Title>end time and date</ows:Title>
 				<ows:Abstract>end time and date. server uses CEST.</ows:Abstract>
@@ -38,7 +38,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
-			<Input minOccurs="0" maxOccurs="1">
+			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>cmpd</ows:Identifier>
 				<ows:Title>component</ows:Title>
 				<ows:Abstract>component</ows:Abstract>
@@ -52,7 +52,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					</ows:AllowedValues>
 				</LiteralData>
 			</Input>			
-			<Input minOccurs="0" maxOccurs="1">
+			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>nens</ows:Identifier>
 				<ows:Title>number of realisations</ows:Title>
 				<ows:Abstract>number of realisations</ows:Abstract>
@@ -65,7 +65,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					</ows:AllowedValues>
 				</LiteralData>
 			</Input>			
-			<Input minOccurs="0" maxOccurs="1">
+			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>nhrs</ows:Identifier>
 				<ows:Title>number of forecast hours</ows:Title>
 				<ows:Abstract>number of forecast hours</ows:Abstract>
@@ -76,6 +76,15 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 						<ows:Value>48</ows:Value>
 						<ows:Value>72</ows:Value>
 					</ows:AllowedValues>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="9999">
+				<ows:Identifier>recp</ows:Identifier>
+				<ows:Title>receptor points</ows:Title>
+				<ows:Abstract>receptor points, format: x,y,z</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
 		</DataInputs>
