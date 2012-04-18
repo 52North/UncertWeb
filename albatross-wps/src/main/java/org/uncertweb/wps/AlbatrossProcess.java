@@ -221,7 +221,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		// If the user passes some uncert area and uncert link ML through the request it is likely that his/her intention was to perform an inputDraw run.
 		// Thus we check if the values are not null and therefore contain some data, if thats the case the link-sd and area-sd files are written in the workspace and 
 		// the inputDraw.exe is called afterwards
-		if (uncertArea != null && uncertLink != null) {
+		if (!uncertArea.isEmpty() && !uncertLink.isEmpty()) {
 
 			this.setupInputDraw();
 

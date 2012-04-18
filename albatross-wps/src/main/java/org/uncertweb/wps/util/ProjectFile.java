@@ -134,6 +134,9 @@ public class ProjectFile {
 			e.printStackTrace();
 		} 
 		
+		
+		dataLocation += File.separator;
+		
 		out.println(randomNumberSeed);
 
 		out.println(genpopHouseholds);

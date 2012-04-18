@@ -1,16 +1,16 @@
-/**
- * 
- */
 package org.uncertweb.wps.util;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.uncertweb.wps.io.data.binding.complex.AlbatrossUInput;
 
 /**
+ * Container for the area-sd.txt file required by the InputDraw.exe.
+ * 
  * @author s_voss13
  *
  */
@@ -18,12 +18,31 @@ public class LinkSDFileGenerator {
 	
 	private List<AlbatrossUInput> albatrossUInput;
 	
+	/**
+	 * Constructs a new object, which is capable of creating the link-sd.txt file for the InputDraw.exe.
+	 * 
+	 * @param albatrossUInput
+	 */
 	public LinkSDFileGenerator(List<AlbatrossUInput> albatrossUInput ) {
 		
-		this.albatrossUInput = albatrossUInput;
+		if(albatrossUInput == null)
+			throw new NullPointerException("albatrossUInput can not be null");
+		
+		this.albatrossUInput = Collections.unmodifiableList(albatrossUInput);
+
 	}
 	
+	/**
+	 * Sends the content of the object to a file which will be created if it does not exist.
+	 * If the file exists the content will be written either way, which is indeed not useful.
+	 * Therefore it is recommend to point to a new file.
+	 * 
+	 * @param targetFile
+	 */
 	public void toFile(File targetFile){
+		
+		if(targetFile == null)
+			throw new NullPointerException("tagetFile can not be null");
 		
 		/**
 		 * target file may look like:

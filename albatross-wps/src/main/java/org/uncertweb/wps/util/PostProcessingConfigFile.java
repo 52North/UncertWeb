@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.uncertweb.wps.util;
 
 import java.io.BufferedWriter;
@@ -10,6 +7,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
+ * The postprocessing requires a configuration file that includes several paths. It is basically a xml document. However, the document has to be adjusted for every 
+ * specific workspace. This class is intended to build this file from  the given parameters.
+ * 
  * @author s_voss13
  *
  */
@@ -18,6 +18,18 @@ public class PostProcessingConfigFile {
 	private File postProcessingConfigFile;
 	private String exportFilePath, areaFilePath,odmFilePath,indicatorsFilePath,postProcessingPath;
 	
+	/**
+	 * Creates a new "physical" post processing config file. As the post processing program expects only a predefined name for the file the constructor needs only the folder name.
+	 * The config file will be created inside this folder. This is only the case if the file does not exist. The config file consists of 5 paths. 3 of them link to already existing files
+	 * inside the workspace and two of them (indicators and odMatrix) are creating by the post processing program. The file can be determined with the {@link PostProcessingConfigFile#getPostProcessingConfigFile()}
+	 * method. For later usage of the generated files find the {@link PostProcessingConfigFile#getIndicatorsPath()} and {@link PostProcessingConfigFile#getOdmPath()} methods.
+	 * 
+	 * @param exportFilePath
+	 * @param areaFilePath
+	 * @param odmFilePath
+	 * @param indicatorsFilePath
+	 * @param postProcessingPath
+	 */
 	public PostProcessingConfigFile(String exportFilePath, String areaFilePath, String odmFilePath, String indicatorsFilePath, String postProcessingPath){
 		
 		this.exportFilePath = exportFilePath;
@@ -27,7 +39,6 @@ public class PostProcessingConfigFile {
 		this.postProcessingPath = postProcessingPath;
 		
 		postProcessingConfigFile = new File(this.postProcessingPath+File.separator+"config_uw.xml");
-		
 		
 		try {
 			postProcessingConfigFile.createNewFile();

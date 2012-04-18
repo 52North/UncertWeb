@@ -11,6 +11,12 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 /**
+ * The workspace is the core folder for a albatross run. All files are located inside this workspace. This is also true for the prostprocessing files. They are encapsulated into a single
+ * folder, but still located inside the workspace. To make sure that every run is separated from each other every workspace has a unique number. Nevertheless one original workspace exists.
+ * This workspace contains all static files and runnables. After coping this data into one of the generated workspace the WPS starts to run the runnables and local changes are made in
+ * the specific workspace. In order to publish results on the web (e.g. via tomcat) a method {@link Workspace#copyResultIntoPublicFolder(List)} to copy selected files exist. The list of files
+ * to copy can be defined by the user in the corresponding config file for the this WPS. Moreover methods to get the workspace and public folder are available.
+ * 
  * @author s_voss13
  * 
  */
@@ -19,6 +25,13 @@ public class Workspace {
 	private File originalDataFolder, workspaceFolder, publicFolder;
 	private String folderNumber;
 
+	/**
+	 * Creates the workspace folder, the public folder and copies the original data into the workspace folder. If the folders does not exist the will be created.
+	 * 
+	 * @param originalDataFolder
+	 * @param workspace
+	 * @param publicFolder
+	 */
 	public Workspace(String originalDataFolder, String workspace,
 			String publicFolder) {
 
@@ -45,6 +58,11 @@ public class Workspace {
 		return this.folderNumber;
 	}
 
+	/**
+	 * Copies the given files from the workspace into the public folder.
+	 * 
+	 * @param files
+	 */
 	public void copyResultIntoPublicFolder(List<String> files) {
 		
 		for(String currentFileName : files){
@@ -79,30 +97,7 @@ public class Workspace {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		/*
-		FileReader in = null;
-		try {
-			in = new FileReader(inputFile);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		FileWriter out;
-		try {
-			int c;
-
-			out = new FileWriter(outputFile);
-			while ((c = in.read()) != -1)
-				out.write(c);
-
-			in.close();
-			out.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-
+		
 	}
 
 	private void copyDirectory(File sourceLocation, File targetLocation) {

@@ -1,16 +1,16 @@
-/**
- * 
- */
 package org.uncertweb.wps.util;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.uncertweb.wps.io.data.binding.complex.AlbatrossUInput;
 
 /**
+ * Container for the area-sd.txt file required by the InputDraw.exe
+ *  
  * @author s_voss13
  *
  */
@@ -18,13 +18,31 @@ public class AreaSDFileGenerator {
 	
 	private List<AlbatrossUInput> albatrossUInput;
 	
+	/**
+	 * Constructs a new object, which is capable of creating the area-sd.txt file for the InputDraw.exe.
+	 *
+	 * @param albatrossUInput
+	 */
 	public AreaSDFileGenerator(List<AlbatrossUInput> albatrossUInput) {
 		
-		this.albatrossUInput = albatrossUInput;
+		if(albatrossUInput == null)
+			throw new NullPointerException("albatrossUInput can not be null");
+		
+		this.albatrossUInput = Collections.unmodifiableList(albatrossUInput);
 		
 	}
 	
+	/**
+	 * Sends the content of the object to a file which will be created if it does not exist.
+	 * If the file exists the content will be written either way, which is indeed not useful.
+	 * Therefore it is recommend to point to a new file.
+	 * 
+	 * @param targetFile a (preferably) non existing file
+	 */
 	public void toFile(File targetFile){
+		
+		if(targetFile == null)
+			throw new NullPointerException("target File can not be null");
 		
 		/**
 		 * the target File may look like:
@@ -59,7 +77,6 @@ public class AreaSDFileGenerator {
 		}
 		
 		UncertainOutputWriter.toFile(targetFile, lines);
-		
 		
 	}
 }
