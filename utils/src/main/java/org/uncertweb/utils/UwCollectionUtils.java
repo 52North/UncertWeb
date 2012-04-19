@@ -36,9 +36,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class UwCollectionUtils extends UwUtils {
-	
+
 	public static <T extends Number> double[] toDoubleArray(T[] l) {
-		if (l == null) { 
+		if (l == null) {
 			return null;
 		}
 		double[] a = new double[l.length];
@@ -47,7 +47,7 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static double[] toDoubleArray(Collection<? extends Number> l) {
 		if (l == null) {
 			return null;
@@ -59,9 +59,9 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static <T extends Number> int[] toIntArray(T[] l) {
-		if (l == null) { 
+		if (l == null) {
 			return null;
 		}
 		int[] a = new int[l.length];
@@ -70,7 +70,7 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static int[] toIntArray(Collection<? extends Number> l) {
 		if (l == null) {
 			return null;
@@ -82,9 +82,9 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static <T extends Number> long[] toLongArray(T[] l) {
-		if (l == null) { 
+		if (l == null) {
 			return null;
 		}
 		long[] a = new long[l.length];
@@ -93,7 +93,7 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static long[] toLongArray(Collection<? extends Number> l) {
 		if (l == null) {
 			return null;
@@ -105,9 +105,9 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static <T extends Number> short[] toShortArray(T[] l) {
-		if (l == null) { 
+		if (l == null) {
 			return null;
 		}
 		short[] a = new short[l.length];
@@ -116,7 +116,7 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static short[] toShortArray(Collection<? extends Number> l) {
 		if (l == null) {
 			return null;
@@ -128,9 +128,9 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static <T extends Number> byte[] toByteArray(T[] l) {
-		if (l == null) { 
+		if (l == null) {
 			return null;
 		}
 		byte[] a = new byte[l.length];
@@ -139,7 +139,7 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static byte[] toByteArray(Collection<? extends Number> l) {
 		if (l == null) {
 			return null;
@@ -151,9 +151,9 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static <T extends Number> float[] toFloatArray(T[] l) {
-		if (l == null) { 
+		if (l == null) {
 			return null;
 		}
 		float[] a = new float[l.length];
@@ -162,7 +162,7 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	public static float[] toFloatArray(Collection<? extends Number> l) {
 		if (l == null) {
 			return null;
@@ -174,13 +174,16 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return a;
 	}
-	
+
 	@SuppressWarnings("serial")
 	public static <T> Set<T> set(final T t) {
-		return new HashSet<T>(1) {{ add(t); }};
+		return new HashSet<T>(1) {
+			{
+				add(t);
+			}
+		};
 	}
 
-	
 	@SuppressWarnings("serial")
 	public static <T> Set<T> set(final T... elements) {
 		if (elements == null || elements.length == 0)
@@ -193,13 +196,22 @@ public class UwCollectionUtils extends UwUtils {
 		};
 	}
 
-	
+	@SuppressWarnings("serial")
+	public static <T> Set<T> set(final Iterable<? extends T> elements) {
+		return new HashSet<T>() {
+			{
+				for (T t : elements)
+					add(t);
+			}
+		};
+	}
+
 	public static <T> void addAll(Collection<T> col, T[] elem) {
 		for (T t : elem) {
 			col.add(t);
 		}
 	}
-	
+
 	@SuppressWarnings("serial")
 	public static <T> Set<T> combineSets(final Set<T>... values) {
 		if (values == null || values.length == 0) {
@@ -223,7 +235,7 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return set;
 	}
-	
+
 	public static <T> Set<T> asSet(T[] col) {
 		if (col == null || col.length == 0)
 			return Collections.emptySet();
@@ -243,7 +255,7 @@ public class UwCollectionUtils extends UwUtils {
 		}
 		return list;
 	}
-	
+
 	public static <T> List<T> asList(T[] col) {
 		if (col == null || col.length == 0)
 			return Collections.emptyList();
@@ -256,16 +268,20 @@ public class UwCollectionUtils extends UwUtils {
 	public static <T> List<T> list() {
 		return new LinkedList<T>();
 	}
-	
+
 	public static <T> List<T> tsList() {
 		return new CopyOnWriteArrayList<T>();
 	}
 
 	@SuppressWarnings("serial")
 	public static <T> List<T> list(final T t) {
-		return new ArrayList<T>(1) {{add(t);}};
+		return new ArrayList<T>(1) {
+			{
+				add(t);
+			}
+		};
 	}
-	
+
 	@SuppressWarnings("serial")
 	public static <T> List<T> list(final T... elements) {
 		if (elements == null || elements.length == 0)
@@ -277,7 +293,7 @@ public class UwCollectionUtils extends UwUtils {
 			}
 		};
 	}
-	
+
 	public static <T> T[] sort(T[] t) {
 		Arrays.sort(t);
 		return t;
@@ -297,13 +313,14 @@ public class UwCollectionUtils extends UwUtils {
 	}
 
 	public static <T> Set<T> tsSet() {
-		return Collections.newSetFromMap(UwCollectionUtils.<T, Boolean> tsMap());
+		return Collections
+				.newSetFromMap(UwCollectionUtils.<T, Boolean> tsMap());
 	}
 
 	public static <T, U> Map<T, U> map() {
 		return new HashMap<T, U>();
 	}
-	
+
 	public static <T, U> Map<T, U> tsMap() {
 		return new ConcurrentHashMap<T, U>();
 	}

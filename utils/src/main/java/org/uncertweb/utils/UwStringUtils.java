@@ -46,7 +46,7 @@ public class UwStringUtils extends UwUtils {
 			sb.append(sep).append(String.valueOf(col[i]));
 		return sb.toString();
 	}
-
+	
 	public static String join(String sep, Iterable<? extends Object> col) {
 		Iterator<? extends Object> i;
 		if (col == null || (!(i = col.iterator()).hasNext()))
