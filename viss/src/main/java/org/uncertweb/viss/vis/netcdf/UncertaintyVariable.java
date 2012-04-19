@@ -147,9 +147,9 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 	
 	public GridCoordinates getGridCoordinatesForIndex(int x, int y, int xs, int ys) {
 		switch (getOrigin()) {
-		case UPPER_LEFT: return new GridCoordinates2D(x, y);
-		case UPPER_RIGHT: return new GridCoordinates2D(x, ys - y - 1);
-		case LOWER_LEFT: return new GridCoordinates2D(xs - x - 1, y);
+		case UPPER_LEFT:  return new GridCoordinates2D(         x,          y);
+		case UPPER_RIGHT: return new GridCoordinates2D(xs - x - 1,          y);
+		case LOWER_LEFT:  return new GridCoordinates2D(         x, ys - y - 1);
 		case LOWER_RIGHT: return new GridCoordinates2D(xs - x - 1, ys - y - 1);
 		default:
 			return null;
@@ -727,8 +727,8 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 	}
 
 	public Point getGeometry(final int lon, final int lat, final int height) {
-		final double x = getLatitudeArray().getDouble(lat);
-		final double y = getLongitudeArray().getDouble(lon);
+		final double x = getLongitudeArray().getDouble(lon);
+		final double y = getLatitudeArray().getDouble(lat);
 		Coordinate c = null;
 		if (hasZComponent()) {
 			c = new Coordinate(x, y, getHeightArray().getDouble(height));
@@ -771,17 +771,18 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			
 			if (x0 < xn) {
 				if (y0 < yn) {
-					origin = Origin.UPPER_LEFT;
+					origin = Origin.LOWER_LEFT;
 				} else {
-					origin = Origin.UPPER_RIGHT;
+					origin = Origin.UPPER_LEFT;
 				}
 			} else {
 				if (y0 < yn) {
-					origin = Origin.LOWER_LEFT;
-				} else {
 					origin = Origin.LOWER_RIGHT;
+				} else {
+					origin = Origin.UPPER_RIGHT;
 				}
 			}
+			log.debug("Origin: {}", origin);
 		}
 		return origin;
 	}
