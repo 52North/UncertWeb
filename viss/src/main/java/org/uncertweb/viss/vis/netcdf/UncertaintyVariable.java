@@ -52,6 +52,7 @@ import org.geotools.coverage.grid.GridCoordinates2D;
 import org.geotools.coverage.grid.GridCoverageBuilder;
 import org.geotools.geometry.Envelope2D;
 import org.joda.time.DateTime;
+import org.opengis.coverage.grid.GridCoordinates;
 import org.opengis.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +80,10 @@ import com.vividsolutions.jts.geom.Point;
 
 public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 
+	public enum Origin {
+		UPPER_LEFT, UPPER_RIGHT, LOWER_LEFT, LOWER_RIGHT;
+	}
+	
 	private final class TemporalUncertaintyValueIterable implements
 			Iterable<UncertaintyValue> {
 		private final TimeObject to;
@@ -120,7 +125,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 		public UncertaintyValue next() {
 			final IUncertainty u = getValue(tI, hI, oI, aI);
 			final Point p = getGeometry(oI, aI, hI);
-			UncertaintyValue v = new UncertaintyValue(u, p, to, new GridCoordinates2D(oI, aI));
+			UncertaintyValue v = new UncertaintyValue(u, p, to, getGridCoordinatesForIndex(oI, aI, oS, aS));
 			incIndex();
 			return v;
 		}
@@ -139,7 +144,18 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			throw new UnsupportedOperationException();
 		}
 	}
-
+	
+	public GridCoordinates getGridCoordinatesForIndex(int x, int y, int xs, int ys) {
+		switch (getOrigin()) {
+		case UPPER_LEFT: return new GridCoordinates2D(x, y);
+		case UPPER_RIGHT: return new GridCoordinates2D(x, ys - y - 1);
+		case LOWER_LEFT: return new GridCoordinates2D(xs - x - 1, y);
+		case LOWER_RIGHT: return new GridCoordinates2D(xs - x - 1, ys - y - 1);
+		default:
+			return null;
+		}
+	}
+	
 	private final class UncertaintyValueIterator implements
 			Iterator<UncertaintyValue> {
 		private int oI = 0;
@@ -162,7 +178,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			final IUncertainty u = getValue(tI, hI, oI, aI);
 			final Point p = getGeometry(oI, aI, hI);
 			final TimeObject t = getTime(tI);
-			UncertaintyValue v = new UncertaintyValue(u, p, t, new GridCoordinates2D(oI, aI));
+			UncertaintyValue v = new UncertaintyValue(u, p, t, getGridCoordinatesForIndex(oI, aI, oS, aS));
 			incIndex();
 			return v;
 		}
@@ -724,6 +740,50 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 
 	public String getName() {
 		return getName(getVariable());
+	}
+	
+	
+	private Origin origin;
+	public Origin getOrigin() {
+		if (this.origin == null) {
+			double a = Double.POSITIVE_INFINITY;
+			// X=LON,Y=LAT!!!
+			final int xs = getLongitudeSize();
+			final int ys = getLatitudeSize();
+
+			if (xs < 2) {
+				throw VissError.internal("Can not generate Envelope for NetCDF with "
+								+ xs + " x-cells.");
+			}
+			if (ys < 2) {
+				throw VissError.internal("Can not generate Envelope for NetCDF with "
+								+ ys + " y-cells.");
+			}
+			
+			Array x = getLongitudeArray();
+			Array y = getLatitudeArray();
+
+			// assumes ordered coordinates...
+			double x0 = x.getDouble(0);
+			double y0 = y.getDouble(0);
+			double xn = x.getDouble(xs - 1);
+			double yn = y.getDouble(ys - 1);
+			
+			if (x0 < xn) {
+				if (y0 < yn) {
+					origin = Origin.UPPER_LEFT;
+				} else {
+					origin = Origin.UPPER_RIGHT;
+				}
+			} else {
+				if (y0 < yn) {
+					origin = Origin.LOWER_LEFT;
+				} else {
+					origin = Origin.LOWER_RIGHT;
+				}
+			}
+		}
+		return origin;
 	}
 
 	private String getName(final Variable v) {
