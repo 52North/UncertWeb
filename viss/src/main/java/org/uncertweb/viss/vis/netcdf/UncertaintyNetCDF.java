@@ -50,7 +50,7 @@ public class UncertaintyNetCDF {
 		this.f = f;
 	}
 
-	protected boolean checkForUWConvention(NetcdfFile f) {
+	protected boolean checkForUWConvention() {
 		for (String s : getNotNullGlobalAttribute(ATTRIBUTE_CONVENTIONS)
 				.getStringValue().split(" "))
 			if (s.equals(UW_CONVENTION))

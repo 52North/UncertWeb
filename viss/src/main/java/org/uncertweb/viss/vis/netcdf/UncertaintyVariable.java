@@ -22,10 +22,8 @@
 package org.uncertweb.viss.vis.netcdf;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.NaN;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.lang.Double.compare;
-import static java.lang.Double.isNaN;
 import static org.apache.commons.math.util.FastMath.abs;
 import static org.apache.commons.math.util.FastMath.max;
 import static org.apache.commons.math.util.FastMath.min;
@@ -50,6 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.geotools.coverage.grid.GridCoordinates2D;
 import org.geotools.coverage.grid.GridCoverageBuilder;
 import org.geotools.geometry.Envelope2D;
 import org.joda.time.DateTime;
@@ -121,8 +120,9 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 		public UncertaintyValue next() {
 			final IUncertainty u = getValue(tI, hI, oI, aI);
 			final Point p = getGeometry(oI, aI, hI);
+			UncertaintyValue v = new UncertaintyValue(u, p, to, new GridCoordinates2D(oI, aI));
 			incIndex();
-			return new UncertaintyValue(u, p, to);
+			return v;
 		}
 
 		private void incIndex() {
@@ -162,8 +162,9 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			final IUncertainty u = getValue(tI, hI, oI, aI);
 			final Point p = getGeometry(oI, aI, hI);
 			final TimeObject t = getTime(tI);
+			UncertaintyValue v = new UncertaintyValue(u, p, t, new GridCoordinates2D(oI, aI));
 			incIndex();
-			return new UncertaintyValue(u, p, t);
+			return v;
 		}
 
 		private void incIndex() {
@@ -474,7 +475,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			for (int j = 0; j < length; ++j) {
 				i.setDim(this.sampleDimension, j);
 				array[j] = new Double(getArray().getDouble(i));
-				log.debug("array[{}] = {}", j, array[j]);
+//				log.debug("array[{}] = {}", j, array[j]);
 			}
 			log.debug("Realisations: {}", array);
 			
@@ -527,8 +528,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			final Array ta = getTimeArray();
 			final DateUnit du = getDateUnit();
 			for (int i = 0; i < getTimeSize(); i++) {
-				this.times.add(new TimeObject(new DateTime(du.makeDate(ta
-						.getDouble(i)))));
+				this.times.add(new TimeObject(new DateTime(du.makeDate(ta.getDouble(i)))));
 			}
 		}
 		return this.times;
@@ -639,28 +639,24 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 			}
 			
 			Array lon = getLongitudeArray();
-			Array lat = getLatitudeArray();
-
-			double latMax = NEGATIVE_INFINITY;
-			double latMin = POSITIVE_INFINITY;
 			double lonMax = NEGATIVE_INFINITY;
 			double lonMin = POSITIVE_INFINITY;
-			
 			for (int i = 0; i < lonS; ++i) {
 				double d = lon.getDouble(i);
 				lonMax = max(lonMax, d);
 				lonMin = min(lonMin, d);
 			}
+			double lonSep = (lonMax-lonMin)/(lonS-1);
 			
+			Array lat = getLatitudeArray();
+			double latMax = NEGATIVE_INFINITY;
+			double latMin = POSITIVE_INFINITY;
 			for (int i = 0; i < latS; ++i) {
 				double d = lat.getDouble(i);
 				latMax = max(latMax, d);
 				latMin = min(latMin, d);
 			}
-			
 			double latSep = (latMax-latMin)/(latS-1);
-			double lonSep = (lonMax-lonMin)/(lonS-1);
-			
 			
 			// points in center of cell
 			lonMin -= lonSep/2;
@@ -690,7 +686,7 @@ public class UncertaintyVariable implements Iterable<UncertaintyValue> {
 		final GridCoverageBuilder b = new GridCoverageBuilder();
 		b.setCoordinateReferenceSystem(Constants.EPSG4326);
 		log.debug("ImageSize: {}x{}", lonSize, latSize);
-		// FIXME this removes the cross, but thats somewhat ugly
+		
 		b.setImageSize(lonSize, latSize);
 		
 		Envelope e = getEnvelope();

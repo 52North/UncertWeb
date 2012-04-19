@@ -151,8 +151,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 				IUncertainty u = UriBasedUncertaintyParser.map(mainUri, uriMap);
 				t.transform(gp, temp);
 				Point p = f.createPoint(new Coordinate(temp.getY(), temp.getX()));
-				return new UncertaintyValue(u, p, null); //TODO time?
-				
+				return new UncertaintyValue(u, p, null, new GridCoordinates2D(gp)); //TODO time?
 			} catch (InvalidGridGeometryException e) {
 				throw VissError.internal(e);
 			} catch (TransformException e) {
@@ -236,7 +235,8 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 							nv.getLocation().getY(), 
 							nv.getLocation().getX());
 			try{
-				wgc.setValueAtPos(location, value);
+				wgc.setValueAtGridPos(nv.getGridLocation().getCoordinateValue(0), nv.getGridLocation().getCoordinateValue(1), value);
+//				wgc.setValueAtPos(location, value);
 			} catch (ArrayIndexOutOfBoundsException t) {
 				log.debug("Tryed setting value @{} to {}", location, value);
 				throw t;

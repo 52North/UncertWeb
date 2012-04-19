@@ -21,6 +21,7 @@
  */
 package org.uncertweb.viss.core.vis;
 
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,16 +40,17 @@ public class WriteableGridCoverage {
 	private static final int MAX_PENDING_VALUES = 10000;
 
 	private class PendingValue {
-		private Point2D.Double pos;
+		private Point2D pos;
 		private Number value;
 
-		public PendingValue(Point2D.Double pos, Number value) {
+		public PendingValue(Point2D pos, Number value) {
 			this.pos = pos;
 			this.value = value;
 		}
 	}
 
 	private List<PendingValue> pendingValues = new ArrayList<PendingValue>();
+	private List<PendingValue> pendingGridValues = new ArrayList<PendingValue>();
 	private GridCoverage2D gridCov;
 	private MathTransform2D worldToGrid = null;
 
@@ -66,32 +68,45 @@ public class WriteableGridCoverage {
 		    .getY()), value));
 		flushCache(false);
 	}
+	
+	public void setValueAtGridPos(int x, int y, Number value) {
+		pendingGridValues.add(new PendingValue(new Point(x,y), value));
+		flushCache(false);
+	}
 
 	private void flushCache(boolean force) {
-		if (pendingValues.size() >= MAX_PENDING_VALUES
-		    || (force && pendingValues.size() > 0)) {
-			if (worldToGrid == null) {
-				try {
-					worldToGrid = gridCov.getGridGeometry().getGridToCRS2D().inverse();
-				} catch (NoninvertibleTransformException e) {
-					throw VissError
-					    .internal("Could not create geographic to grid coords transform");
+		int pending = pendingValues.size(), pendingGrid = pendingGridValues.size();
+		if (pending + pendingGrid >= MAX_PENDING_VALUES || force) {
+			if (pending + pendingGrid > 0) {
+				WritableRandomIter writeIter = RandomIterFactory.createWritable(new TiledImage(gridCov.getRenderedImage(), true), null);
+				if (pending > 0) {
+					if (worldToGrid == null) {
+						try {
+							worldToGrid = gridCov.getGridGeometry().getGridToCRS2D().inverse();
+						} catch (NoninvertibleTransformException e) {
+							throw VissError.internal("Could not create geographic to grid coords transform");
+						}
+					}
+					final Point2D.Double gridPos = new Point2D.Double();
+					for (PendingValue pv : pendingValues) {
+						try {
+							worldToGrid.transform(pv.pos, gridPos);
+							writeIter.setSample((int) gridPos.x, (int) gridPos.y, 0, pv.value == null ? Double.NaN : pv.value.doubleValue());
+						} catch (TransformException e) {
+							throw VissError
+									.internal("Could not transform location ["
+											+ pv.pos + "] to grid coords");
+						}
+					}
+					pendingValues.clear();
+				}
+				if (pendingGrid > 0) {
+					for (PendingValue pv : pendingGridValues) {
+						writeIter.setSample((int) pv.pos.getX(), (int) pv.pos.getY(), 0, pv.value == null ? Double.NaN : pv.value.doubleValue());
+					}
+					pendingGridValues.clear();
 				}
 			}
-			WritableRandomIter writeIter = RandomIterFactory.createWritable(
-			    new TiledImage(gridCov.getRenderedImage(), true), null);
-			final Point2D.Double gridPos = new Point2D.Double();
-			for (PendingValue pv : pendingValues) {
-				try {
-					worldToGrid.transform(pv.pos, gridPos);
-					writeIter.setSample((int) gridPos.x, (int) gridPos.y, 0,
-					    pv.value == null ? Double.NaN : pv.value.doubleValue());
-				} catch (TransformException e) {
-					throw VissError.internal("Could not transform location [" + pv.pos
-					    + "] to grid coords");
-				}
-			}
-			pendingValues.clear();
 		}
 	}
 }

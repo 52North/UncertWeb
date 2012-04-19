@@ -21,6 +21,7 @@
  */
 package org.uncertweb.viss.core;
 
+import org.opengis.coverage.grid.GridCoordinates;
 import org.uncertml.IUncertainty;
 import org.uncertml.io.JSONEncoder;
 import org.uncertweb.api.om.TimeObject;
@@ -32,12 +33,14 @@ public class UncertaintyValue {
 	
 	private IUncertainty v;
 	private Point l;
+	private GridCoordinates g;
 	private TimeObject t;
 
-	public UncertaintyValue(IUncertainty v, Point l, TimeObject t) {
+	public UncertaintyValue(IUncertainty v, Point l, TimeObject t, GridCoordinates gridLocation) {
 		this.v = v;
 		this.l = l;
 		this.t = t;
+		this.g = gridLocation;
 	}
 
 	public IUncertainty getValue() {
@@ -46,6 +49,9 @@ public class UncertaintyValue {
 
 	public Point getLocation() {
 		return l;
+	}
+	public GridCoordinates getGridLocation() {
+		return g;
 	}
 
 	public TimeObject getTime() {
