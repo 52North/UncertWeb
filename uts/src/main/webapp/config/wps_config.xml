@@ -7,20 +7,20 @@
 		<ParserList>
 		 	
 			<Parser name="GenericFileParser" className="org.n52.wps.io.datahandler.binary.GenericFileParser" active="true">
-				<Property name="supportedFormat" active="true">application/x-zipped-shp</Property>
-				<Property name="supportedFormat" active="true">application/img</Property>
-				<Property name="supportedFormat" active="true">image/tiff</Property>
-				<Property name="supportedFormat" active="true">application/geotiff</Property>
-				<Property name="supportedFormat" active="true">application/dbase</Property>
-				<Property name="supportedFormat" active="true">application/remap</Property>
-				<Property name="supportedFormat" active="true">application/x-erdas-hfa</Property>
-				<!-- <Property name="supportedFormat" active="true">application/x-netcdf</Property> -->
-				<Property name="supportedFormat" active="true">application/dgn</Property>
-				<Property name="supportedFormat" active="true">image/jpeg</Property>
-				<Property name="supportedFormat" active="true">image/png</Property>
-				<Property name="supportedFormat" active="true">application/x-geotiff</Property>
-				<Property name="supportedFormat" active="true">text/plain</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
+				<Format mimetype="application/x-zipped-shp" encoding="base64"/>
+				<Format mimetype="application/img" encoding="base64"/>
+				<Format mimetype="image/tiff" encoding="base64"/>
+				<Format mimetype="application/geotiff" encoding="base64"/>
+				<Format mimetype="application/dbase" encoding="base64"/>
+				<Format mimetype="application/remap" encoding="base64"/>
+				<Format mimetype="application/x-erdas-hfa" encoding="base64"/>
+				<Format mimetype="application/x-netcdf" encoding="base64"/>
+				<Format mimetype="application/dgn" encoding="base64"/>
+				<Format mimetype="image/jpeg" encoding="base64"/>
+				<Format mimetype="image/png" encoding="base64"/>
+				<Format mimetype="application/x-geotiff" encoding="base64"/>
+				<Format mimetype="application/hdf4-eos" encoding="base64"/>
+				<Format mimetype="text/plain" encoding="base64"/>
 			</Parser>	
 	
 					
@@ -35,21 +35,21 @@
 		
 		<GeneratorList>
 			<Generator name="GenericFileGenerator" className="org.n52.wps.io.datahandler.binary.GenericFileGenerator" active="true">
-				<Property name="supportedFormat" active="true">application/x-zipped-shp</Property>
-				<Property name="supportedFormat" active="true">application/shp</Property>
-				<Property name="supportedFormat" active="true">application/img</Property>
-				<Property name="supportedFormat" active="true">image/tiff</Property>
-				<Property name="supportedFormat" active="true">application/geotiff</Property>
-				<Property name="supportedFormat" active="true">application/dbase</Property>
-				<Property name="supportedFormat" active="true">application/remap</Property>
-				<Property name="supportedFormat" active="true">application/x-erdas-hfa</Property>
-				<Property name="supportedFormat" active="true">application/x-netcdf</Property>
-				<Property name="supportedFormat" active="true">application/dgn</Property>
-				<Property name="supportedFormat" active="true">image/jpeg</Property>
-				<Property name="supportedFormat" active="true">image/png</Property>
-				<Property name="supportedFormat" active="true">application/x-geotiff</Property>
-				<Property name="supportedFormat" active="true">text/plain</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
+				<Format mimetype="application/x-zipped-shp" encoding="base64"/>
+				<Format mimetype="application/shp" encoding="base64"/>
+				<Format mimetype="application/img" encoding="base64"/>
+				<Format mimetype="image/tiff" encoding="base64"/>
+				<Format mimetype="image/geotiff" encoding="base64"/>
+				<Format mimetype="application/geotiff" encoding="base64"/>
+				<Format mimetype="application/dbase" encoding="base64"/>
+				<Format mimetype="application/remap" encoding="base64"/>
+				<Format mimetype="application/x-erdas-hfa" encoding="base64"/>
+				<Format mimetype="application/x-netcdf" encoding="base64"/>
+				<Format mimetype="application/dgn" encoding="base64"/>
+				<Format mimetype="image/jpeg" encoding="base64"/>
+				<Format mimetype="image/png" encoding="base64"/>
+				<Format mimetype="application/x-geotiff" encoding="base64"/>
+				<Format mimetype="text/plain" encoding="base64"/>
 			</Generator>			
 			<!-- 
 			################
