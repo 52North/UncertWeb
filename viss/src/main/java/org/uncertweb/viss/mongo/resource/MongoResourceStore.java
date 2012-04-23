@@ -136,11 +136,11 @@ public class MongoResourceStore implements IResourceStore {
 			throws IOException {
 		if (mt.equals(GEOTIFF_TYPE)) {
 			return new MongoGeoTIFFResource(f, oid, checksum);
-		} else if (mt.equals(NETCDF_TYPE) || mt.equals(X_NETCDF_TYPE)) {
+		} else if (mt.isCompatible(NETCDF_TYPE) || mt.isCompatible(X_NETCDF_TYPE)) {
 			return new MongoNetCDFResource(f, oid, checksum);
-		} else if (mt.equals(OM_2_TYPE)) {
+		} else if (mt.isCompatible(OM_2_TYPE)) {
 			return new MongoOMResource(f, oid, checksum);
-		} else if (mt.equals(JSON_UNCERTAINTY_COLLECTION_TYPE)) {
+		} else if (mt.isCompatible(JSON_UNCERTAINTY_COLLECTION_TYPE)) {
 			return new MongoUncertaintyCollectionResource(f, oid, checksum);
 		}
 		throw VissError.internal("Can not create resource for '" + mt + "'");

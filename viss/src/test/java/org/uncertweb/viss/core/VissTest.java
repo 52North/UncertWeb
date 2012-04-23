@@ -49,6 +49,8 @@ import java.io.InputStream;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import junit.framework.Assert;
+
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.apache.commons.io.IOUtils;
@@ -57,10 +59,12 @@ import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.uncertweb.utils.UwTimeUtils;
 import org.uncertweb.viss.core.util.JSONConstants;
 import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.core.vis.IVisualizer;
@@ -115,6 +119,10 @@ public class VissTest extends JerseyTest {
 		return getClass().getResourceAsStream("/data/netcdf/biotemp.nc");
 	}
 	
+	private InputStream getBiotempWithTimeStream() {
+		return getClass().getResourceAsStream("/data/netcdf/biotemp-t.nc");
+	}
+	
 	private InputStream getOsloMetStream() {
 		return getClass().getResourceAsStream("/data/netcdf/oslo_met_20110102.nc");
 	}
@@ -153,6 +161,7 @@ public class VissTest extends JerseyTest {
 		testStream(getOsloCbgStream());
 		testStream(getAggregationResultStream());
 		testStream(getUncertaintyCollectionStream());
+		testStream(getBiotempWithTimeStream());
 	}
 	
 	private void testStream(InputStream is) {
@@ -162,9 +171,10 @@ public class VissTest extends JerseyTest {
 
 	@Test
 	public void testUncertaintyCollection() throws JSONException {
-		test();test();
+		testUncertaintyCollection_();
+		testUncertaintyCollection_();
 	}
-	private void test() throws JSONException {
+	private void testUncertaintyCollection_() throws JSONException {
 		ObjectId r = addResource(MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE, getUncertaintyCollectionStream());
 		for (ObjectId ds : getDataSetsForResource(r)) {
 			for (String s : getVisualizersForDataset(r, ds))  {
@@ -223,7 +233,7 @@ public class VissTest extends JerseyTest {
 		JSONObject res = getVisualization(r, ds, vis);
 		System.err.println(res.toString(4));
 	}
-	
+
 	private JSONObject getVisualization(ObjectId resource, ObjectId dataset, String vis) {
 		return getWebResource().path(RESTServlet.VISUALIZATION
 				.replace(RESTServlet.RESOURCE_PARAM_P, resource.toString())
@@ -240,17 +250,82 @@ public class VissTest extends JerseyTest {
 		System.err.println(res.toString(4));
 	}
 	
+	@Test 
+	public void testMimeTypeParameterForNetCDF() throws JSONException {
+		ObjectId r = addResource(MediaType.valueOf("application/netcdf; encoding=\"utf-8\""), getAggregationResultStream());
+		ObjectId ds = getDataSetsForResource(r)[0];
+		String vis = createVisualization(r, ds, MeanStatistic.class.getSimpleName());
+		JSONObject res = getVisualization(r, ds, vis);
+		System.err.println(res.toString(4));
+	}
+	
+	@Test
+	public void testMimeTypeParameterForOM() throws JSONException {
+		ObjectId oid = addResource(MediaType.valueOf("application/vnd.ogc.om+xml; encoding=\"utf-8\""), getOMStream());
+		ObjectId[] datasets = getDataSetsForResource(oid);
+		createVisualization(oid, datasets[0], getNameForVisualizer(Mean.class));
+	}
+	
+	@Test
+	public void testMimeTypeParameterForUC() throws JSONException {
+		ObjectId r = addResource(MediaType.valueOf("application/vnd.org.uncertweb.viss.uncertainty-collection+json; encoding=\"utf-8\""), getUncertaintyCollectionStream());
+		int created = 0;
+		for (ObjectId ds : getDataSetsForResource(r)) {
+			for (String s : getVisualizersForDataset(r, ds))  {
+				if (s.equals("MeanStatistic")
+						|| s.equals("StandardDeviationStatistic")
+						|| s.equals("ProbabilityStatistic")) {
+					getVisualizerForDataset(r,ds, s);
+					createVisualization(r, ds, s);
+					++created;
+				}
+				if (s.equals("Realisation")) {
+					getVisualizerForDataset(r, ds, s);
+					createVisualization(r, ds, s, new JSONObject().put(
+							RealisationVisualizer.REALISATION_PARAMETER, 0));
+					++created;
+				}
+			}
+		}
+		Assert.assertEquals(5, created);
+	}	
+	
 	@Test
 	public void testTime() throws JSONException {
 		ObjectId r = addResource(NETCDF_TYPE, getOsloMetStream());
 		ObjectId d = getDataSetsForResource(r)[0];
 		String v = getVisualizersForDataset(r, d)[0];
-		System.out.println(getVisualizerForDataset(r, d, v).toString(4));
-		String s = createVisualization(r, d, v, new JSONObject(
-			"{\"time\":\"2011-01-02T15:00:00.000Z\",\"realisation\":0,\"sample\":15}"));
+		createVisualization(r, d, v, new JSONObject().put("time", "2011-01-02T15:00:00.000Z").put("realisation", 0).put("sample", 15));
 	}
 	
-	private JSONObject getDataSetForResource(ObjectId r, ObjectId d) {
+	
+	@Test
+	public void testBiotempTime() throws JSONException {
+		ObjectId r = addResource(NETCDF_TYPE, getBiotempWithTimeStream());
+		ObjectId[] datasets = getDataSetsForResource(r);
+		assertEquals(1, datasets.length);
+		ObjectId d = datasets[0];
+		
+		String[] visualizers = getVisualizersForDataset(r, d);
+		assertEquals(7, visualizers.length);
+		
+		DateTime begin = UwTimeUtils.parseDateTime("2012-04-01T09:00:00.000Z");
+		for (int i = 0; i < 6; ++i) {
+			String time = UwTimeUtils.format(begin.plusHours(i));
+			JSONObject timep = new JSONObject().put("time", time);
+			createVisualization(r, d, getNameForVisualizer(Mean.class), timep);
+			createVisualization(r, d, getNameForVisualizer(Variance.class), timep);
+			createVisualization(r, d, getNameForVisualizer(StandardDeviation.class), timep);
+			createVisualization(r, d, getNameForVisualizer(Probability.class), new JSONObject()
+					.put(Probability.MAX_PARAMETER, 0.5D).put("time", time));
+			createVisualization(r, d, getNameForVisualizer(ProbabilityForInterval.class), new JSONObject()
+					.put(ProbabilityForInterval.MIN_PARAMETER, 0.3D)
+					.put(ProbabilityForInterval.MAX_PARAMETER, 0.6D)
+					.put("time", time));
+		}
+	}
+	
+	public JSONObject getDataSetForResource(ObjectId r, ObjectId d) {
 		String path = DATASET.replace(RESOURCE_PARAM_P, r.toString()).replace(
 				DATASET_PARAM_P, d.toString());
 		JSONObject j = getWebResource().path(path).get(JSONObject.class);
