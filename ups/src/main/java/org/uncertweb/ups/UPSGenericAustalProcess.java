@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -56,7 +58,6 @@ import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.io.datahandler.generator.SimpleGMLGenerator;
 import org.n52.wps.server.AbstractObservableAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
-import org.n52.wps.server.WebProcessingService;
 import org.opengis.feature.simple.SimpleFeature;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
@@ -96,7 +97,8 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 //	private String localPath = "D:\\JavaProjects\\ups";
 //	private String resPath = localPath
 //			+ "\\src\\main\\resources\\austalResources";	
-	private String tempPath = "C:\\WebResources\\UPS\\";
+	private String tempPath = this.loadTempPath();
+	private final static String SEPARATOR = System.getProperty("file.separator");
 	private String utsAddress = "http://localhost:8080/uts/WebProcessingService";
 
 	private Map<String, IData> staticInputsList = null;	
@@ -124,10 +126,10 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 
 	private String modelIdentifier;
 
-	private List<IObservationCollection> sampleObservationCollections;
+//	private List<IObservationCollection> sampleObservationCollections;
 	private String resourceURL;
-	private String referenceURL;
-	private WPSClientSession utsSession;
+//	private String referenceURL;
+//	private WPSClientSession utsSession;
 	
 	public UPSGenericAustalProcess(){
 		
@@ -135,13 +137,20 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		for(Property property : propertyArray){
 			// check the name and active state
 			if(property.getName().equalsIgnoreCase("Temp_Home") && property.getActive()){
-				tempPath = property.getStringValue()+ "\\";
+				tempPath = property.getStringValue();
 //				localPath = property.getStringValue();
 //				resPath = localPath
 //				+ "\\src\\main\\resources";
 			}else if(property.getName().equalsIgnoreCase("FullUTSAddress") && property.getActive()){
 				utsAddress = property.getStringValue();
 			}
+		}
+		
+		//check if temp directory is existent
+		File tempFolder = new File (tempPath);
+		if (!tempFolder.exists()) {
+			//create folder
+			tempFolder.mkdirs();
 		}
 		
 		try {
@@ -156,17 +165,28 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 			}
 			
 			String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
-			String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
+//			String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
 			if(host == null) {
 				host = InetAddress.getLocalHost().getCanonicalHostName();
 			}
-			referenceURL = "http://" + host + ":" + hostPort+ "/" + 
-					WebProcessingService.WEBAPP_PATH + "/" + 
-					WebProcessingService.SERVLET_PATH + "/" + "resources/outputs/" + randomUUID + "/";
+//			referenceURL = "http://" + host + ":" + hostPort+ "/" + 
+//					WebProcessingService.WEBAPP_PATH + "/" + 
+//					WebProcessingService.SERVLET_PATH + "/" + "resources/outputs/" + randomUUID + "/";
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private String loadTempPath() {
+		String path;
+		if(System.getProperty("os.name").contains("Windows")){
+			path = System.getenv("TMP");
+		}else{
+			path = System.getenv("CATALINA_TMPDIR");
+		}
+		
+		return path;
 	}
 
 	@Override
@@ -249,7 +269,8 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 					timeValueMap.put(ti, values);					
 					mightyMap.put(id, timeValueMap);
 					
-				}else{
+				}
+				else{
 					
 					/*
 					 * spatialfeature exists
@@ -400,48 +421,59 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		
 		// get samples for OM collection
 		IObservationCollection iobs = null;
-		if(uobsColl.getObservations().get(0).getResult().getValue() instanceof NormalDistribution)
-				iobs = Gaussian2Samples(uobsColl);
-		else if(uobsColl.getObservations().get(0).getResult().getValue() instanceof MultivariateNormalDistribution)
+		if(uobsColl.getObservations().get(0).getResult().getValue() instanceof NormalDistribution) {
+			iobs = Gaussian2Samples(uobsColl);
+		}
+		else if(uobsColl.getObservations().get(0).getResult().getValue() instanceof MultivariateNormalDistribution) {
 			iobs = MultivariateGaussian2Samples(uobsColl);
+		}
+		
+		if (iobs == null) {
+			throw new RuntimeException("Uncertainty Obs Coll is Null. InputID: " + uncertainInputId);
+		}
 		
 		// loop through observations with samples
-		for (AbstractObservation obs : iobs.getObservations()) {	
-			UncertaintyObservation abstractObservation = (UncertaintyObservation) obs;
-			UncertaintyResult result = abstractObservation.getResult();			
-			IUncertainty resultUncertainty = result.getUncertaintyValue();							
-			try {		
-				if(resultUncertainty instanceof AbstractSample){	
-					AbstractSample abstractSample = (AbstractSample) resultUncertainty;
-					ContinuousRealisation realisations = (ContinuousRealisation) abstractSample.getRealisations().get(0);				
-					if(uobsColl.getObservations().get(0).getResult().getValue() instanceof NormalDistribution){
-						Double[] samples = realisations.getValues().toArray(new Double[0]);
-						samples2Measurement(samples, abstractObservation, uncertainInputId);
-					}
-					else if(uobsColl.getObservations().get(0).getResult().getValue() instanceof MultivariateNormalDistribution){
-						Double[] r = realisations.getValues().toArray(new Double[0]);
-						int sampleLength = r.length/numberOfRealisations;
-						Double[][] samples = new Double[numberOfRealisations][sampleLength];
-						
-						int count = 0;
-						for(int i = 0; i<numberOfRealisations; i++){
-							for(int j=0; j<sampleLength;j++){
-								samples[i][j] = r[count];
-								count++;
-							}							
+		try {
+			for (AbstractObservation obs : iobs.getObservations()) {	
+				UncertaintyObservation abstractObservation = (UncertaintyObservation) obs;
+				UncertaintyResult result = abstractObservation.getResult();			
+				IUncertainty resultUncertainty = result.getUncertaintyValue();							
+				try {		
+					if(resultUncertainty instanceof AbstractSample){	
+						AbstractSample abstractSample = (AbstractSample) resultUncertainty;
+						ContinuousRealisation realisations = (ContinuousRealisation) abstractSample.getRealisations().get(0);				
+						if(uobsColl.getObservations().get(0).getResult().getValue() instanceof NormalDistribution){
+							Double[] samples = realisations.getValues().toArray(new Double[0]);
+							samples2Measurement(samples, abstractObservation, uncertainInputId);
 						}
-												
-						multivariateSamples2Measurement(uncertainInputId, abstractObservation, samples, 
-								sampleLength);
-					}
+						else if(uobsColl.getObservations().get(0).getResult().getValue() instanceof MultivariateNormalDistribution){
+							Double[] r = realisations.getValues().toArray(new Double[0]);
+							int sampleLength = r.length/numberOfRealisations;
+							Double[][] samples = new Double[numberOfRealisations][sampleLength];
+							
+							int count = 0;
+							for(int i = 0; i<numberOfRealisations; i++){
+								for(int j=0; j<sampleLength;j++){
+									samples[i][j] = r[count];
+									count++;
+								}							
+							}
+													
+							multivariateSamples2Measurement(uncertainInputId, abstractObservation, samples, 
+									sampleLength);
+						}
+							
+					}else if(resultUncertainty instanceof AbstractRealisation){
 						
-				}else if(resultUncertainty instanceof AbstractRealisation){
-					
+					}
+				} catch (Exception e) {
+					e.printStackTrace();				
 				}
-			} catch (Exception e) {
-				e.printStackTrace();				
 			}
-		}	
+		}
+		catch (Throwable t) {
+			throw new RuntimeException(t);
+		}
 	}
 	
 	private IObservationCollection Gaussian2Samples(UncertaintyObservationCollection uColl){
@@ -449,7 +481,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 
 		// connect to UTS
 		WPSClientSession session = WPSClientSession.getInstance();
-		ExecuteDocument execDocUTS = null;
+//		ExecuteDocument execDocUTS = null;
 		try {
 			session.connect(utsAddress);
 		} catch (WPSClientException e) {
@@ -471,17 +503,23 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 
 		// Run WPS and get output (= Realisation object)
 		ExecuteResponseDocument responseDoc = null;
+		
+		String unRealString = "";
 		try {
-			responseDoc = (ExecuteResponseDocument) session.execute(
-				utsAddress, execDoc);
+			//convert to String due to type mismatch
+			String respDoc = session.execute(utsAddress, execDoc).toString();
+			responseDoc = ExecuteResponseDocument.Factory.parse(respDoc);
 			
 			OutputDataType oType = responseDoc.getExecuteResponse().getProcessOutputs().getOutputArray(0);
 			// all output elements
 			Node wpsComplexData = oType.getData().getComplexData().getDomNode();
 			// the complex data node
 			Node unRealisation = wpsComplexData.getChildNodes().item(0); 
-			// the realisation node			 
-			iobs = new XBObservationParser().parseObservationCollection(nodeToString(unRealisation));
+			// the realisation node			
+			unRealString = nodeToString(unRealisation);
+			unRealString = unRealString.replaceAll("&lt;", "<");
+			unRealString = unRealString.replaceAll("&gt;", ">");
+			iobs = new XBObservationParser().parseObservationCollection(unRealString);
 	
 		} catch (WPSClientException e) {// Auto-generated catch block
 				e.printStackTrace();
@@ -490,6 +528,8 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		} catch (TransformerFactoryConfigurationError e) {
 			e.printStackTrace();
 		} catch (TransformerException e) {
+			e.printStackTrace();
+		} catch (XmlException e) {
 			e.printStackTrace();
 		}
 		return iobs;
@@ -500,7 +540,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 
 		// connect to UTS
 		WPSClientSession session = WPSClientSession.getInstance();
-		ExecuteDocument execDocUTS = null;
+//		ExecuteDocument execDocUTS = null;
 		try {
 			session.connect(utsAddress);
 		} catch (WPSClientException e) {
@@ -511,16 +551,11 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		Map<String, Object> inputs = new HashMap<String, Object>();
 		
 		//make ucoll.xml file object
-		String ucollPath;
-		if(System.getProperty("os.name").contains("Windows")){
-			ucollPath = System.getenv("TMP");
-		}else{
-			ucollPath = System.getenv("CATALINA_TMPDIR");
-		}
-		ucollPath += System.getProperty("file.separator") + "UPS";
+		String ucollPath = tempPath;
+		ucollPath += SEPARATOR + "UPS";
 		File f = new File(ucollPath);
 		if (!f.exists()) {
-			f.mkdir();
+			f.mkdirs();
 		}
 		ucollPath += System.getProperty("file.separator") + "ucoll.xml";
 		f = new File(ucollPath);	
@@ -558,6 +593,8 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 
 		// Run WPS and get output (= Realisation object)
 		ExecuteResponseDocument responseDoc = null;
+		
+		String unRealString = "";
 		try {
 			responseDoc = (ExecuteResponseDocument) session.execute(
 				utsAddress, execDoc);
@@ -567,8 +604,11 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 			Node wpsComplexData = oType.getData().getComplexData().getDomNode();
 			// the complex data node
 			Node unRealisation = wpsComplexData.getChildNodes().item(0); 
-			// the realisation node			 
-			iobs = new XBObservationParser().parseObservationCollection(nodeToString(unRealisation));
+			// the realisation node		
+			unRealString = nodeToString(unRealisation);
+			unRealString = unRealString.replaceAll("&lt;", "<");
+			unRealString = unRealString.replaceAll("&gt;", ">");
+			iobs = new XBObservationParser().parseObservationCollection(unRealString);
 	
 		} catch (WPSClientException e) {// Auto-generated catch block
 				e.printStackTrace();
@@ -707,8 +747,12 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		for(String identifier : staticInputsList.keySet()){
 			// write observation collections to files and provide only reference
 			if(staticInputsList.get(identifier).getPayload() instanceof IObservationCollection){
-				File f = new File(tempPath + identifier + ".xml");			
+				File f = new File(tempPath  + SEPARATOR + identifier + ".xml");	
 				try {
+					if (!f.exists()) {
+						f.createNewFile();
+					}
+					
 					String s = new XBObservationEncoder().encodeObservationCollection((IObservationCollection)staticInputsList.get(identifier).getPayload());				
 					BufferedWriter b = new BufferedWriter(new FileWriter(f));				
 					b.write(s);
@@ -721,13 +765,14 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 					e.printStackTrace();
 				}
 				inputMap.put(identifier, "file:///" + f.getAbsoluteFile());			
-			}else if(staticInputsList.get(identifier).getPayload() instanceof FeatureCollection){
+			}
+			else if(staticInputsList.get(identifier).getPayload() instanceof FeatureCollection){
 				// read template and change only coordinates	
 				FeatureCollection<?,?> fc = (FeatureCollection<?,?>) staticInputsList.get(identifier).getPayload();
 				FeatureIterator<?> iterator = fc.features();
 				int srs = 31467;
 				String coordinates = "";
-				File f = new File(tempPath + identifier + ".xml");	
+				File f = new File(tempPath + SEPARATOR + identifier + ".xml");	
 				
 				if(identifier.equals("receptor-points")){					
 					//TODO: implement for different features
@@ -739,14 +784,15 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 							if(lineString.getSRID()!=0)
 								srs = lineString.getSRID();
 							// loop through coordinates and add them to the string
-							int coordinateCount = lineString.getCoordinates().length;							
+//							int coordinateCount = lineString.getCoordinates().length;							
 							for (int i = 0; i < lineString.getCoordinates().length; i++) {
 								Coordinate coord = lineString.getCoordinates()[i];
 								coordinates = coordinates +coord.x + ","+coord.y+" ";
 							}
 						}
 					}
-				}else if(identifier.equals("central-point")){
+				}
+				else if(identifier.equals("central-point")){
 						//TODO: implement for different features
 						while (iterator.hasNext()) {
 							SimpleFeature feature = (SimpleFeature) iterator.next();
@@ -763,7 +809,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 				// read template file
 				try {
 					String templatePath = WPSConfig.getConfigPath().substring(0,WPSConfig.getConfigPath().indexOf("config/")).concat("resources/austal-inputs/");
-					File fIn = new File(templatePath + identifier+".xml");					
+					File fIn = new File(templatePath + identifier + ".xml");					
 					BufferedReader bread = new BufferedReader(new FileReader(fIn));				
 					String content = "";					
 					String line = "";								
@@ -782,7 +828,10 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 						content = content.concat(line);				
 					}
 						
-					// write new file						
+					// write new file	
+					if (!f.exists()) {
+						f.createNewFile();
+					}
 					BufferedWriter b = new BufferedWriter(new FileWriter(f));				
 					b.write(content);
 					b.flush();
@@ -826,9 +875,13 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 		
 		// add all uncertain inputs
 		for (String id : uncertainInputSamplesMap.keySet()) {			
-			File f = new File(tempPath + id.replace(uncertaintyPrefix, "")+ runNumber + ".xml");			
+			File f = new File(tempPath + SEPARATOR + id.replace(uncertaintyPrefix, "")+ runNumber + ".xml");			
 			try {
-				String s = new XBObservationEncoder().encodeObservationCollection(uncertainInputSamplesMap.get(id).get(runNumber));				
+				if (!f.exists()) {
+					f.createNewFile();
+				}
+				//get next observation collection. Index is always 0 as the first is removed after storing to file
+				String s = new XBObservationEncoder().encodeObservationCollection(uncertainInputSamplesMap.get(id).get(0));				
 				BufferedWriter b = new BufferedWriter(new FileWriter(f));				
 				b.write(s);
 				b.flush();
@@ -839,10 +892,30 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			catch (Throwable t) {
+				//TODO: remove catch
+				String msg = "error while writing to " + f.getAbsolutePath();
+				msg += ": " + t.getMessage();
+				msg += "; input id: " + id;
+				msg += "; runNumber: " + runNumber;
+				if (f.exists()) {
+					msg += "; file exists";
+				}
+				else {
+					msg += "; file does not exist";
+				}
+				
+				List<IObservationCollection> l = uncertainInputSamplesMap.get(id);
+				msg += "; number of collections for" + id + ": " + l.size();
+				
+				throw new RuntimeException(msg, t);
+			}
+			
 			inputs.put(id.replace(uncertaintyPrefix, ""), "file:///" + f.getAbsoluteFile());
 			
 			// free memory
-			uncertainInputSamplesMap.get(id).remove((runNumber));
+			//Attention: this causes the next/actual element to be at index 0 always!
+			uncertainInputSamplesMap.get(id).remove((0));
 		}
 		System.gc();
 		
@@ -862,34 +935,70 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 			e.printStackTrace();
 		}
 		
+		
 		 //Run austal WPS and get output (Realisation object)
 		 ExecuteResponseDocument response1 = null;
 		 try {
-		 response1 = (ExecuteResponseDocument) session.execute(serviceURL,
-		 execDoc);
-		 
-		 OutputDataType oType =
-			 response1.getExecuteResponse().getProcessOutputs().getOutputArray(0);
+			 response1 = (ExecuteResponseDocument) session.execute(serviceURL,
+					 execDoc);
+			 
+			 OutputDataType oType =
+				response1.getExecuteResponse().getProcessOutputs().getOutputArray(0);
 			 // all output elements
 			 Node wpsComplexData = oType.getData().getComplexData().getDomNode();
 			 // the complex data node
 			 Node unRealisation = wpsComplexData.getChildNodes().item(0); 
-			 // the realisation node			 
-			 IObservationCollection iobs = new XBObservationParser().parseObservationCollection(nodeToString(unRealisation));
-		 
+			 // the realisation node
+			 String realString = nodeToString(unRealisation);
+			 if (realString.contains("CDATA")) {
+				 //remove all CDATA captions 
+				 Pattern pattern = Pattern.compile("<![CDATA[", Pattern.LITERAL);
+				 Matcher matcher = pattern.matcher(realString);
+				 realString = matcher.replaceAll("");
+				 realString = realString.replaceAll("]]", "");
+				 if (realString.contains("CDATA")) {
+					 throw new RuntimeException("CDATA not sufficiently removed");
+				 }
+			 }
+//			 else {
+//				 throw new RuntimeException("CDATA not found");
+//			 }
+			 
+			 realString.replaceAll("&lt;", "<");
+			 realString.replaceAll("&gt;", ">");
+//			 throw new RuntimeException("AustalResult: " + realString);
+			 IObservationCollection iobs = new XBObservationParser().parseObservationCollection(realString);
+			 
+			 //TODO remove throw, reactivate return
 			 return iobs;
 			 
-		 } catch (WPSClientException e) {
+		 } 
+		 catch (WPSClientException e) {
 			 logger.error(e);
-		 } catch (OMParsingException e) {
+			 //TODO: remove throw
+			 throw new RuntimeException("Wps Client Exception", e);
+		 } 
+		 catch (OMParsingException e) {
 			 logger.error(e);
-		} catch (TransformerFactoryConfigurationError e) {
+			//TODO: remove throw
+			 throw new RuntimeException("OM Parsing Exception: " + e.getMessage(), e.getCause());
+		} 
+		 catch (TransformerFactoryConfigurationError e) {
 			 logger.error(e);
-		} catch (TransformerException e) {
+			//TODO: remove throw
+			 throw new RuntimeException("Transformer Factory Exception", e);
+		} 
+		 catch (TransformerException e) {
 			 logger.error(e);
+			//TODO: remove throw
+			 throw new RuntimeException("Transformer Exception", e);
 		}
-		 
-		return null;	
+//		 catch (Throwable t) {
+//			//TODO: remove throw
+//			 throw new RuntimeException("other error (exception)", t);
+//		 }
+		//TODO reactivate return
+//		return null;	
 	}
 	
 	
@@ -991,6 +1100,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 								+ inputName + ", "+ UncertWebDataConstants.MIME_TYPE_OMX_XML);
 					}
 				}else if(inputValue instanceof Map){
+					@SuppressWarnings("unchecked")
 					Map<String, String> inputMap = (Map<String, String>) inputValue;
 					if(inputMimeTypes.contains(inputMap.get("mimeType"))){
 						InputType input = execDoc.getExecute().getDataInputs().addNewInput();
@@ -1030,6 +1140,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 				else if (inputValue instanceof FeatureCollection) {
 					if(inputMimeTypes.contains(UncertWebDataConstants.MIME_TYPE_TEXT_XML)){
 						// make String from GML object
+						@SuppressWarnings("rawtypes")
 						GTVectorDataBinding g = new GTVectorDataBinding((FeatureCollection) inputValue);						
 						StringWriter buffer = new StringWriter();
 						SimpleGMLGenerator generator = new SimpleGMLGenerator();
