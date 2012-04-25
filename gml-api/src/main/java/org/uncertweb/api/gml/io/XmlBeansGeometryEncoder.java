@@ -398,7 +398,8 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 *			XML String of MultiPolygon
 	 */
 	private String encodeMultiPolygon(MultiPolygon geom) {
-		return encodeMultiPolygon2Doc(geom).xmlText(getGMLOptions());
+//		return encodeMultiPolygon2Doc(geom).xmlText(getGMLOptions());
+		return encodeMultiPolygon2MultiSurfaceDoc(geom).xmlText(getGMLOptions());
 	}
 	
 	/**
@@ -409,7 +410,8 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * @return
 	 *			XMLBeans representation of MultiPolygon
 	 */
-	public MultiSurfaceDocument encodeMultiPolygon2Doc(MultiPolygon gmlMls){
+	//public MultiSurfaceDocument encodeMultiPolygon2Doc(MultiPolygon gmlMls){
+	public MultiSurfaceDocument encodeMultiPolygon2MultiSurfaceDoc(MultiPolygon gmlMls){
 		MultiSurfaceDocument xb_mlsDoc = MultiSurfaceDocument.Factory.newInstance();
 		MultiSurfaceType xb_mls = xb_mlsDoc.addNewMultiSurface();
 		//set gml ID
