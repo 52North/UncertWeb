@@ -1005,7 +1005,8 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 			} else if (obs.getFeatureOfInterest().getShape() instanceof MultiPolygon) {
 				xb_geometry = encoder
-						.encodeMultiPolygon2Doc((MultiPolygon) obs
+//						.encodeMultiPolygon2Doc((MultiPolygon) obs
+						.encodeMultiPolygon2MultiSurfaceDoc((MultiPolygon) obs
 								.getFeatureOfInterest().getShape());
 
 			} else {
