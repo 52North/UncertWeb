@@ -7,21 +7,17 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.io.data.binding.complex.UncertMLBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.util.r.process.ExtendedRConnection;
-import org.rosuda.REngine.REXP;
 import org.uncertml.IUncertainty;
-import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
 import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.sample.RandomSample;
 import org.uncertml.statistic.CovarianceMatrix;
-import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
@@ -248,6 +244,7 @@ public class MultivariateGaussian2Samples extends AbstractAlgorithm {
 						// remove brackets []
 						tempCovMat = tempCovMat.substring(1, tempCovMat.length() - 1);
 						c.tryVoidEval("covmat.gauss <- matrix(c(" + tempCovMat + "), nrow = " + dim + ")");
+						
 
 						// Mean vector 
 						String tempMeanVec = mnd.getMean().toString(); // [x, y, z]
