@@ -72,18 +72,37 @@ public class Workspace {
 
 	}
 
+	/**
+	 * Returns the {@link File} pointing to the original workspace where the initial data is located.
+	 * @return the file to the original workspace
+	 */
 	public File getOriginalDataFolder() {
 		return originalDataFolder;
 	}
 
+	/**
+	 * Returns the {@link File} pointing to the new workspace.
+	 * @return the file to the new workspace
+	 */
 	public File getWorkspaceFolder() {
 		return workspaceFolder;
 	}
 
+	/**
+	 * Returns the {@link File} pointing to the new created public folder.
+	 * @return the file to the new public folder
+	 */
 	public File getPublicFolder() {
 		return publicFolder;
 	}
 
+	/**
+	 * Copies a file with the help of apaches FileUtilities.
+	 * 
+	 * @param sourceLocation the source location
+	 * @param targetLocation the target location
+	 * @param fileName the existing! file name
+	 */
 	private void copyFile(File sourceLocation, File targetLocation,
 			String fileName) {
 
@@ -94,12 +113,19 @@ public class Workspace {
 		try {
 			FileUtils.copyFile(inputFile, outputFile);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
 
+	/**
+	 * Copies a complete directory into another one. This is achieved by using recursion. 
+	 * If the target location does not exist, the location will be created.
+	 * the source location has to be a directory.
+	 * 
+	 * @param sourceLocation the source location
+	 * @param targetLocation the target location
+	 */
 	private void copyDirectory(File sourceLocation, File targetLocation) {
 
 		if (sourceLocation.isDirectory()) {
@@ -146,6 +172,13 @@ public class Workspace {
 		}
 	}
 
+	/**
+	 * Creates a directory if it does not already exists. If the parent does not exist it will be created too.
+	 * This is true for the whole path.
+	 * 
+	 * @param s the new directory
+	 * @return the file to the new directory
+	 */
 	private File createDirectory(String s) {
 
 		if (!new File(s).getParentFile().exists()) {
@@ -158,6 +191,13 @@ public class Workspace {
 		return new File(s);
 	}
 
+	/**
+	 * Generates a unique workspace number. It is done by testing if the suggested number is already used in the workspace. If this is true
+	 * a new number will be generated.
+	 * 
+	 * @param workspace the workspace in which a new number is required.
+	 * @return a unique number
+	 */
 	private String generateUniqueWorkspaceNumber(String workspace) {
 
 		int number = this.generateRandomNumber();

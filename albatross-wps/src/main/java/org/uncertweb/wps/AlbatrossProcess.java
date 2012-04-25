@@ -52,8 +52,8 @@ import uw.odmatrix.ODMain;
 import uw.odmatrix.ODMatrix;
 
 /**
- * implements a process that invokes the Albatross Model and returns the outputs
- * according to the UncertWeb profiles
+ * Implements a process that invokes the Albatross Model and returns the outputs
+ * according to the UncertWeb profiles.
  * 
  * @author Steffan Voss
  * 
@@ -128,7 +128,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		workspaceCleanerThread.setInterruptTime(folderRemoveCycle);
 
 		// This is ridiculous... no schedule methods for callables, on the other
-		// side the will run forever as the call is inside a try block
+		// side this will run forever as the call is inside a try block, this may be important for example if it is impossible to remove a folder and the the thread crashs.
 		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
 
 			@Override
@@ -209,6 +209,20 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		return null;
 	}
 
+	/**
+	 * The main entry for the WPS...
+	 * The following steps can be distinguished:
+	 * 1. The parameters are checked.
+	 * 2. The folder aka 'workspace' will be created and all files are copied to this new folder. This includes also the creation of the project file.
+	 * 3. Additional files, e.g. exportbin.bin are downloaded from the web as described in the WPS request.
+	 * 4. Check if the user defined uncert area and/or uncert link as parameter
+	 *     [If this is the case]
+	 *     4.1. Create the InputDraw.exe confioguration files and write the link-sd.txt and area-sd.txt files as input for the InputDraw.exe
+	 *     4.2. Run the InputDraw.exe.
+	 * 5. Run the albatross model exe.
+	 * 6. Setup the postprocessing. This includes the creation of the post processing config file (xml).
+	 * 7. The program reads the post processing output and maps it to om before it is returned.
+	 */
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 
@@ -304,6 +318,12 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 				.getProperty("processInterruptTime"));
 	}
 
+	/**
+	 * All user defined parameters are checked if they are not <code>null</code>. 
+	 * Afterwars they are copied to the local members for futher use.
+	 * 
+	 * @param inputData
+	 */
 	private void checkAndCopyInput(Map<String, List<IData>> inputData) {
 
 		if (inputData == null)
@@ -400,6 +420,10 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 	}
 
+	/**
+	 * The method creates the workspace and public folder and places the newly created project file inside the workspace folder.
+	 * Moreover - and this is important - the workspace and public folders are added to the workspace cleaner thread.
+	 */
 	private void setupFolder() {
 
 		// workspace bauen
@@ -411,6 +435,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 				.getPath(), genpopHouseholds, rwdataHouseholds, municipalities,
 				zones, postcodeAreas, randomNumberSeed);
 
+		// add the files to the file cleaner thread.
 		Set<Pair<File, Long>> fileSet = new HashSet<Pair<File, Long>>();
 
 		fileSet.add(new Pair<File, Long>(ws.getWorkspaceFolder(), System
@@ -431,9 +456,9 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 		try {
 			downloadFile(this.exportFile, ws.getWorkspaceFolder()
-					+ File.separator + this.exportFileNameProp);
+					+ File.separator + AlbatrossProcess.exportFileNameProp);
 			downloadFile(this.exportFileBin, ws.getWorkspaceFolder()
-					+ File.separator + this.exportFileBinNameProp);
+					+ File.separator + AlbatrossProcess.exportFileBinNameProp);
 		} catch (IOException e) {
 
 			e.printStackTrace();
@@ -442,7 +467,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	}
 
 	/**
-	 * Wrapper for the apache URL2file method.
+	 * Wrapper for the apache URL2file method from the FileUtilities.
 	 * 
 	 * @param urlString
 	 * @param filename
@@ -594,8 +619,14 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 	}
 
+	/**
+	 * The post progressing step consists of the creation of the configuration file for the post processing and the actual run.
+	 * In this step the method points to the post processing configuration file and gives this path as argument to the system, such that 
+	 * the spring based system can determine the beans required to run the post processing. The actual run of the post processing is the last step in this method.
+	 */
 	private void runPostProcessing() {
 
+		// determine the path to the post processing description
 		String configFile = ws.getWorkspaceFolder().getAbsolutePath()
 				+ File.separator + "postprocessing" + File.separator
 				+ "config_uw.xml";
@@ -621,10 +652,15 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 			e.printStackTrace();
 		}
 
-		// System.out.println("== >>> FINISH.");
-
 	}
 
+	/**
+	 * The albotross model requires two input values. The first one is the project file, which contains all necessary paths to the input files for the exe.
+	 * The second one is the so called 'export' file a path to a file were human readable output will be written.
+	 * 
+	 * The external exe is encapsulated with the help of the {@link ProcessBuilder}. Therefore it is possible to monitor the running process. If the process
+	 * runs longer as allowed the monitoring thread will destroy the current process. 
+	 */
 	private void runModel() {
 
 		Process proc = null;
