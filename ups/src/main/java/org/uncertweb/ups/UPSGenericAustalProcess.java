@@ -892,24 +892,6 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			catch (Throwable t) {
-				//TODO: remove catch
-				String msg = "error while writing to " + f.getAbsolutePath();
-				msg += ": " + t.getMessage();
-				msg += "; input id: " + id;
-				msg += "; runNumber: " + runNumber;
-				if (f.exists()) {
-					msg += "; file exists";
-				}
-				else {
-					msg += "; file does not exist";
-				}
-				
-				List<IObservationCollection> l = uncertainInputSamplesMap.get(id);
-				msg += "; number of collections for" + id + ": " + l.size();
-				
-				throw new RuntimeException(msg, t);
-			}
 			
 			inputs.put(id.replace(uncertaintyPrefix, ""), "file:///" + f.getAbsoluteFile());
 			
@@ -949,7 +931,7 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 			 // the complex data node
 			 Node unRealisation = wpsComplexData.getChildNodes().item(0); 
 			 // the realisation node
-			 String realString = nodeToString(unRealisation);
+			 String realString = unRealisation.getNodeValue();
 			 if (realString.contains("CDATA")) {
 				 //remove all CDATA captions 
 				 Pattern pattern = Pattern.compile("<![CDATA[", Pattern.LITERAL);
@@ -960,45 +942,21 @@ public class UPSGenericAustalProcess extends AbstractObservableAlgorithm {
 					 throw new RuntimeException("CDATA not sufficiently removed");
 				 }
 			 }
-//			 else {
-//				 throw new RuntimeException("CDATA not found");
-//			 }
 			 
-			 realString.replaceAll("&lt;", "<");
-			 realString.replaceAll("&gt;", ">");
-//			 throw new RuntimeException("AustalResult: " + realString);
+			 realString = realString.replaceAll("&lt;", "<");
+			 realString = realString.replaceAll("&gt;", ">");
 			 IObservationCollection iobs = new XBObservationParser().parseObservationCollection(realString);
 			 
-			 //TODO remove throw, reactivate return
 			 return iobs;
 			 
 		 } 
 		 catch (WPSClientException e) {
 			 logger.error(e);
-			 //TODO: remove throw
-			 throw new RuntimeException("Wps Client Exception", e);
 		 } 
 		 catch (OMParsingException e) {
 			 logger.error(e);
-			//TODO: remove throw
-			 throw new RuntimeException("OM Parsing Exception: " + e.getMessage(), e.getCause());
 		} 
-		 catch (TransformerFactoryConfigurationError e) {
-			 logger.error(e);
-			//TODO: remove throw
-			 throw new RuntimeException("Transformer Factory Exception", e);
-		} 
-		 catch (TransformerException e) {
-			 logger.error(e);
-			//TODO: remove throw
-			 throw new RuntimeException("Transformer Exception", e);
-		}
-//		 catch (Throwable t) {
-//			//TODO: remove throw
-//			 throw new RuntimeException("other error (exception)", t);
-//		 }
-		//TODO reactivate return
-//		return null;	
+		return null;	
 	}
 	
 	
