@@ -56,7 +56,6 @@
       </wps:Data>
     </wps:Input> 
   </wps:DataInputs>	
-  </wps:DataInputs>
   
   <wps:ResponseForm>
 	<wps:ResponseDocument>
