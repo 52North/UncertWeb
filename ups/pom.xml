@@ -81,30 +81,53 @@
        		<artifactId>52n-wps-io-uncertweb</artifactId>
    			<version>0.0.4-SNAPSHOT</version>
    		</dependency>
-    	
-
-			<dependency> <groupId>org.n52.wps</groupId>
+	   	<dependency>
+	      <groupId>org.uncertml</groupId>
+	      <artifactId>uncertml</artifactId>
+	      <version>2.0.5-SNAPSHOT</version>
+	    </dependency>
+    	<dependency> 
+    		<groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-webapp</artifactId>
-			<version>${wps.version}</version> <scope>compile</scope>
-			<type>war</type> <exclusions>
-		
+			<version>${wps.version}</version> 
+			<scope>compile</scope>
+			<type>war</type> 
+			<exclusions>
 			<!-- we don't need them ... -->
-			<exclusion> <groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-gridgain</artifactId> </exclusion> <exclusion>
-			<groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-unicore</artifactId> </exclusion> <exclusion>
-			<groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-sextante</artifactId> </exclusion> <exclusion>
-			<groupId>org.n52.wps</groupId> <artifactId>52n-wps-ags</artifactId>
-			</exclusion> <exclusion> <groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-webadmin</artifactId> </exclusion> <exclusion>
-			<groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-transactional</artifactId> </exclusion>
-			<exclusion> <groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-install-wizard</artifactId> </exclusion>
-			<exclusion> <groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-grass</artifactId> </exclusion> </exclusions>
-			</dependency>
+				<exclusion> 
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-gridgain</artifactId> 
+				</exclusion> 
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-unicore</artifactId> 
+				</exclusion> 
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-sextante</artifactId> 
+				</exclusion> 
+				<exclusion>
+					<groupId>org.n52.wps</groupId> 
+					<artifactId>52n-wps-ags</artifactId>
+				</exclusion> 
+				<exclusion> 
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-webadmin</artifactId> 
+				</exclusion> 
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-transactional</artifactId> 
+				</exclusion>
+				<exclusion> 
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-install-wizard</artifactId> 
+				</exclusion>
+				<exclusion> 
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-grass</artifactId> 
+				</exclusion> 
+			</exclusions>
+		</dependency>
 
 		<!-- Testing dependencies -->
 

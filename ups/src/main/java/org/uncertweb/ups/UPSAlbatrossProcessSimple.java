@@ -1,10 +1,22 @@
 package org.uncertweb.ups;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import net.opengis.om.x20.FoiPropertyType;
+import net.opengis.om.x20.OMMeasurementCollectionDocument;
+import net.opengis.om.x20.OMTextObservationCollectionDocument;
+import net.opengis.om.x20.UWMeasurementType;
+import net.opengis.om.x20.UWTextObservationType;
+import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
+import net.opengis.samplingSpatial.x20.ShapeType;
+import net.opengis.wps.x100.DataType;
 import net.opengis.wps.x100.ExecuteDocument;
 import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.InputDescriptionType;
@@ -12,12 +24,28 @@ import net.opengis.wps.x100.OutputDataType;
 import net.opengis.wps.x100.ProcessDescriptionType;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlException;
 import org.n52.wps.client.WPSClientException;
 import org.n52.wps.client.WPSClientSession;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
+import org.uncertweb.api.gml.Identifier;
+import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.observation.Measurement;
+import org.uncertweb.api.om.observation.TextObservation;
+import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.TextObservationCollection;
+import org.uncertweb.api.om.result.MeasureResult;
+import org.uncertweb.api.om.result.TextResult;
+import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * @author t_ever02
@@ -31,102 +59,91 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 	/**
 	 * identifier for model service URL (Albatross)
 	 */
-	private static final String INPUT_ID_MODEL_SERVICE_URL = "ModelServiceURL";	
+	private static final String INPUT_ID_MODEL_SERVICE_URL = "AlbatrossServiceURL";	
 	
 	
 	/**
-	 * identifier for model service URL (Albatross)
+	 * identifier for syn pop service URL
 	 */
-	private static final String INPUT_ID_POP_MODEL_SERVICE_URL = "ModelServiceURL";	
+	private static final String INPUT_ID_SYN_POP_MODEL_SERVICE_URL = "SynPopServiceURL";	
 	
 
 	/**
-	 * identifier for process identifier of the simulated process/model
+	 * identifier for process identifier of the simulated process/model (Albatross)
 	 */
-	private static final String INPUT_ID_SIMULATION_PROCESS_IDENTIFIER = "IdentifierSimulatedProcess"; 
+	private static final String INPUT_ID_SIMULATION_PROCESS_IDENTIFIER = "IdentifierAlbatrossProcess"; 
 	
 	
 	/**
 	 * identifier for process identifier of the simulated process/model
 	 */
-	private static final String INPUT_ID_SYN_POP_PROCESS_IDENTIFIER = "IdentifierSimulatedProcess"; 
+	private static final String INPUT_ID_SYN_POP_PROCESS_IDENTIFIER = "IdentifierSynPopProcess"; 
 	
 	
 	/**
-	 * identifier for static inputs
+	 * identifier for static input: Number of houses created by genpop
 	 */	
 	private static final String INPUT_ID_GENPOP = "genpop-households"; 
 	
 	
 	/**
-	 * identifier for static inputs
+	 * identifier for static input: Number of household activity sets created by rwdata
 	 */	
 	private static final String INPUT_ID_RWDATA = "rwdata-households"; 
 	
 	
 	/**
-	 * identifier for static inputs
+	 * identifier for static input: Number of postal code areas (PC4)
 	 */	
-	private static final String INPUT_ID_POSTCODE_AREAS = "postcode-areas"; 
+	private static final String INPUT_ID_POSTAL_CODE_AREAS = "postcode-areas"; 
 	
 	
 	/**
-	 * identifier for static inputs
+	 * identifier for static input: Number of (larger) zones
 	 */	
 	private static final String INPUT_ID_ZONES = "zones"; 
 	
 	
 	/**
-	 * identifier for static inputs
+	 * identifier for static input: Number of municipalities
 	 */	
 	private static final String INPUT_ID_MUNICIPALITIES = "municipalities"; 
 	
 	
 	/**
-	 * identifier for static inputs
+	 * identifier for the path to the export file created by syn-pop
 	 */	
 	private static final String INPUT_ID_EXPORT_FILE= "export-file"; 
 	
 	
 	/**
-	 * identifier for static inputs
+	 * identifier for the path to the binary export file created by syn-pop
 	 */	
 	private static final String INPUT_ID_EXPORT_FILE_BIN = "export-file-bin";    
 	
 	
 	/**
-	 * identifier for static inputs
+	 * identifier for the bootstrapping flag
 	 */	
 	private static final String INPUT_ID_IS_BOOTSTRAPPING = "isBootstrapping";  
+	
+	
+	/**
+	 * identifier for the first Albatross output
+	 */
+	private static final String OUTPUT_ID_OD_MATRIX = "ODmatrix";
+	
+	
+	/**
+	 * identifier for the second Albatross output
+	 */
+	private static final String OUTPUT_ID_INDICATORS = "indicatorrs";
 	
 	
 	/**
 	 * List of errors that occurred during the execution of the process
 	 */
 	private List<String> errors;
-	
-//	private List<String> inputIDs;
-	
-	
-//	/*
-//	 * identifier for requested output uncertainty type
-//	 */	
-//	private static final String INPUT_ID_OUTPUT_UNCERT_TYPE = "OutputUncertaintyType";
-//	
-//	
-//	/*
-//	 * identifier for the uncertain output
-//	 */	
-//	private static final String OUTPUT_ID_UNCERT_PROCESS_OUTPUTS = "UncertainProcessOutputs";	
-	
-	
-//	private ExecuteDocument exDoc = null;
-//	
-	
-//	
-
-//
-//	List<MeasurementCollection> realisationCollection;
 	
 	
 	@Override
@@ -151,7 +168,7 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		HashMap<String, Object> inputs = new HashMap<String, Object>();
 		
 		// Retrieve syn pop model service URL from input. Must exist!
-		IData iData = inputData.get(INPUT_ID_POP_MODEL_SERVICE_URL).get(0);
+		IData iData = inputData.get(INPUT_ID_SYN_POP_MODEL_SERVICE_URL).get(0);
 		String popModelServiceURL = (String) iData.getPayload();
 		
 		// Retrieve model service URL from input. Must exist!
@@ -177,8 +194,8 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		inputs.put(INPUT_ID_RWDATA, iData.getPayload());
 		
 		// Retrieve postcode-areas from input. Must exist!
-		iData = inputData.get(INPUT_ID_POSTCODE_AREAS).get(0);
-		inputs.put(INPUT_ID_POSTCODE_AREAS, iData.getPayload());
+		iData = inputData.get(INPUT_ID_POSTAL_CODE_AREAS).get(0);
+		inputs.put(INPUT_ID_POSTAL_CODE_AREAS, iData.getPayload());
 		
 		// Retrieve zones from input. Must exist!
 		iData = inputData.get(INPUT_ID_ZONES).get(0);
@@ -210,6 +227,11 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		String exportPath = this.extractProperty(response, INPUT_ID_EXPORT_FILE);
 		String exportBinPath = this.extractProperty(response, INPUT_ID_EXPORT_FILE_BIN);
 		
+		if (exportBinPath == null || exportPath == null) {
+			this.errors.add("could not extract results from syn-pop-WPS response");
+			return new HashMap<String, IData>();
+		}
+		
 		//adjust inputs map
 		inputs.put(INPUT_ID_EXPORT_FILE, exportPath);
 		inputs.put(INPUT_ID_EXPORT_FILE_BIN, exportBinPath);
@@ -226,141 +248,254 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		//execute request
 		response = this.executeRequest(execDoc, modelServiceURL);
 		
-		//TODO: build result when the Albatross WPS works
-		return null;
+		//build result
+		HashMap<String, IData> result = new HashMap<String, IData>();
+		
+		/*
+		 * parse ODMatrix
+		 * 
+		 * make a TextObservationCollection object
+		 * for each observation in the OD Matrix build the Observation object (e.g. TextObservation)
+		 * add all observations to the collection
+		 * make a new OMBinding object with collection as parameter
+		 * put OMBinding in result map
+		 * 
+		 * 
+		 */
+		String odMatrixString = this.extractProperty(response, OUTPUT_ID_OD_MATRIX);
+		
+		try {
+			//parse result collection
+			OMTextObservationCollectionDocument ocDoc = OMTextObservationCollectionDocument.Factory.parse(odMatrixString);
+			
+			//build representations for each observation and add to result collection
+			TextObservationCollection textObservationCollection = new TextObservationCollection();
+			
+			//observation and content types
+			TextObservation textObservation;
+			UWTextObservationType observation;
+			String s;
+			TimeObject phenomenonTime;
+			TimeObject resultTime;
+			URI procedure;
+			URI observedProperty;
+			SpatialSamplingFeature featureOfInterest;
+			TextResult textResult;
+			
+			//parse each observation in result collection
+			UWTextObservationType[] observations = ocDoc.getOMTextObservationCollection().getOMTextObservationArray();
+			for (int i = 0; i < observations.length; i++) {
+				observation = observations[i];
+				
+				//phenomenon time
+				s = observation.getPhenomenonTime().getAbstractTimePrimitive().xmlText();
+				s = s.split(">")[2];
+				s = s.substring(0, s.indexOf("</"));
+				phenomenonTime = new TimeObject(s);
+				
+				//result time
+				s = observation.getResultTime().getTimeInstant().getTimePosition().getStringValue();
+				resultTime = new TimeObject(s);
+				
+				//procedure
+				s = observation.getProcedure().getHref();
+				procedure = new URI(s);
+				
+				//observed property
+				s = observation.getObservedProperty().getHref();
+				observedProperty = new URI(s);
+				
+				//feature of interest
+				featureOfInterest = this.createSamplngFeature(observation.getFeatureOfInterest());
+				
+				//text result
+				s = observation.getResult();
+				textResult = new TextResult(s);
+				
+				//build representation
+				textObservation = new TextObservation(phenomenonTime , resultTime, procedure, observedProperty, featureOfInterest, textResult);
+				
+				//add to collection representation
+				textObservationCollection.addObservation(textObservation);
+			}
+			
+			//build IData object and add to result map
+			OMBinding odMatrix = new OMBinding(textObservationCollection);
+			result.put(OUTPUT_ID_OD_MATRIX, odMatrix);
+		} 
+		catch (XmlException e) {
+			e.printStackTrace();
+			this.errors.add(e.getMessage());
+		}
+		catch (IndexOutOfBoundsException e) {
+			e.printStackTrace();
+			this.errors.add(e.getMessage());
+		} 
+		catch (URISyntaxException e) {
+			e.printStackTrace();
+			this.errors.add(e.getMessage());
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+			this.errors.add(e.getMessage());
+		}
 		
 
+		/*
+		 * parse indicators
+		 * 
+		 * same procedure as above
+		 */
+		String indicatorString = this.extractProperty(response, OUTPUT_ID_INDICATORS);
+		
+		try {
+			OMMeasurementCollectionDocument mcDoc = OMMeasurementCollectionDocument.Factory.parse(indicatorString);
+			
+			//build measurement collection object
+			MeasurementCollection measurementCollection = new MeasurementCollection();
+			
+			//measurement and content types
+			Measurement measurementObj;
+			UWMeasurementType measurement;
+			TimeObject phenomenonTime;
+			TimeObject resultTime;
+			URI procedure;
+			URI observedProperty;
+			SpatialSamplingFeature featureOfInterest;
+			MeasureResult measureResult;
+			String s;
+			
+			//parse each measurement in the measurement collection
+			UWMeasurementType[] measurements = mcDoc.getOMMeasurementCollection().getOMMeasurementArray();
+			for (int i = 0; i < measurements.length; i++) {
+				measurement = measurements[i];
+				
+				//phenomenon time
+				s = measurement.getPhenomenonTime().getAbstractTimePrimitive().xmlText();
+				s = s.split(">")[2];
+				s = s.substring(0, s.indexOf("</"));
+				phenomenonTime = new TimeObject(s);
+				
+				//result time
+				s = measurement.getResultTime().getTimeInstant().getTimePosition().getStringValue();
+				resultTime = new TimeObject(s);
+				
+				//procedure
+				s = measurement.getProcedure().getHref();
+				procedure = new URI(s);
+				
+				//observed property
+				s = measurement.getObservedProperty().getHref();
+				observedProperty = new URI(s);
+				
+				//feature of interest
+				featureOfInterest = this.createSamplngFeature(measurement.getFeatureOfInterest());
+				
+				//result
+				measureResult = new MeasureResult(measurement.getResult().getDoubleValue(), measurement.getResult().getUom());
+				
+				//build representation
+				measurementObj = new Measurement(phenomenonTime, resultTime, procedure, observedProperty, featureOfInterest, measureResult);
+				
+				//add to collection implementation
+				measurementCollection.addObservation(measurementObj);
+			}
+			
+			//build IData object and add to result map
+			OMBinding indicators = new OMBinding(measurementCollection);
+			result.put(OUTPUT_ID_INDICATORS, indicators);
+		}
+		catch (XmlException e) {
+			e.printStackTrace();
+			this.errors.add(e.getMessage());
+		}
+		catch (URISyntaxException e) {
+			e.printStackTrace();
+			this.errors.add(e.getMessage());
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+			this.errors.add(e.getMessage());
+		}
 
-//		//TODO: remove array list? (size = 1 because of just one realization run)
-//		ArrayList<MeasurementCollection> realisationCollection = new ArrayList<MeasurementCollection>(1);
-//		
-//		/*
-//		 * fill the map that is required to create the executedocument
-//		 */
-//		Map<String, Object> idsAndValues = new HashMap<String, Object>(this.getInputIDs().size());
-//		
-//		for (String id : getInputIDs()) {
-//			list = inputData.get(id);
-//			IData data = list.get(0);			
-//			if(data instanceof LiteralStringBinding){
-//				idsAndValues.put(id,data.getPayload());				
-//			}
-//		}
-//		
-//		try {
-//			this.exDoc = createExecuteDocument(this.modelServiceURL, this.modelIdentifier, idsAndValues, "indicators");
-//		} catch (Exception e) {
-//			this.errors.add(e.getMessage());
-//			logger.error(e);
-//			throw new RuntimeException(e);			
-//		}
-//		
-//		for (int i = 0; i < this.numberOfRealisations; i++) {
-//			handleResponse(i);
-//		}
-//		
-//		/*
-//		 *TODO: check output uncertainty type 
-//		 */
-//		
-//		//TODO: write result as output
-//		
-////		UncertaintyObservationCollection resultCollection = createResultCollection();
-////		
-////		UncertaintyObservationCollection uobscoll = new UncertaintyObservationCollection();
-////		
-//		Map<String, IData> result = new HashMap<String, IData>();
-////		
-////		result.put(OUTPUT_ID_UNCERT_PROCESS_OUTPUTS, new OMBinding(resultCollection));
-//		
-//		return result;
-//	}
-//
-//	private UncertaintyObservationCollection createResultCollection(){
-//	
-//		UncertaintyObservationCollection uobscoll = new UncertaintyObservationCollection();
-//
-//		/*
-//		 * its the same satial and temporal extent for all measurements
-//		 * so take the first one and save the attributes (phenomenonTime, feautureOfInterest,...)
-//		 */
-//		Measurement m = this.realisationCollection.get(0).getObservations().get(0);
-//		
-//		/*
-//		 * create hashmap with identifier of observed property and values of the different realisations
-//		 */
-//		Map<String, List<Double>> observedPropertyValuesMap = new HashMap<String, List<Double>>(this.realisationCollection.get(0).getObservations().size());
-//		Map<String, String> observedPropertyResultUOMMap = new HashMap<String, String>(this.realisationCollection.get(0).getObservations().size());
-//		
-//		for (MeasurementCollection obscoll : this.realisationCollection) {
-//			
-//			MeasurementCollection mcoll = obscoll;
-//			
-//			for (Measurement tmpm : mcoll.getObservations()) {
-//				
-//				if(!observedPropertyValuesMap.keySet().contains(tmpm.getObservedProperty().toString())){
-//					
-//					List<Double> valuesList = new ArrayList<Double>();
-//					
-//					valuesList.add(tmpm.getResult().getMeasureValue());
-//					
-//					observedPropertyValuesMap.put(tmpm.getObservedProperty().toString(), valuesList);
-//					observedPropertyResultUOMMap.put(tmpm.getObservedProperty().toString(), tmpm.getResult().getUnitOfMeasurement());
-//				}else{
-//					observedPropertyValuesMap.get(tmpm.getObservedProperty().toString()).add(tmpm.getResult().getMeasureValue());
-//				}
-//				
-//			}
-//		}
-//		
-//		/*
-//		 * iterate over observedproperties and create uncertaintyobservations
-//		 * with attributes of Measurement "m" and the respective values
-//		 */
-//		
-//		int counter = 0;
-//		
-//		for (String uriString : observedPropertyValuesMap.keySet()) {
-//			
-//			List<Double> values = observedPropertyValuesMap.get(uriString);
-//			
-//			URI uri = null;
-//
-//			URI procedure = null;
-//			
-//			URI observedProperty = null;
-//			
-//			try {
-//				uri = new URI("http://uncertweb.org"); 
-//				procedure = new URI(
-//						"http://www.uncertweb.org/models/albatross");
-//				observedProperty = new URI(
-//						uriString);
-//			} catch (URISyntaxException e) {
-//					e.printStackTrace();
-//			}
-//			/*
-//			 * TODO: if the bug in the api gets fixed remove weight and id
-//			 */
-//
-//			ContinuousRealisation cr = new ContinuousRealisation(values);
-//
-//
-//			UncertaintyResult uResult = new UncertaintyResult(cr, observedPropertyResultUOMMap.get(uriString));
-//			
-////			Identifier identifier = new Identifier(uri, "Albatross" + counter);	
-//			
-//			UncertaintyObservation uob = new UncertaintyObservation(m.getPhenomenonTime(), m.getResultTime(), procedure, observedProperty, m.getFeatureOfInterest(), uResult);
-//			
-//			uobscoll.addObservation(uob);
-//			
-//			counter++;
-//		}
-//		
-//		return uobscoll;
+		//return process outputs
+		return result;
 	}
 	
 	
+	/**
+	 * Creates a {@link SpatialSamplingFeature} from an O&M Observation
+	 * 
+	 * @param observation the observation as {@link UWTextObservationType}
+	 * 
+	 * @return the sampling feature object
+	 * @throws URISyntaxException in case of malformed href URIs
+	 * @throws ParseException in case of WKT geometry parsing problems
+	 */
+	private SpatialSamplingFeature createSamplngFeature(FoiPropertyType foi) throws URISyntaxException, ParseException {
+		
+		if (foi.isSetHref()) {
+			//just href
+			return new SpatialSamplingFeature(new URI(foi.getHref()));
+		}
+		
+		SFSpatialSamplingFeatureType spatialSamplingFeatureType = foi.getSFSpatialSamplingFeature();
+		
+		String sampledFeature;
+		if (spatialSamplingFeatureType.getSampledFeature().isNil()) {
+			sampledFeature = null;
+		}
+		else {
+			sampledFeature = spatialSamplingFeatureType.getSampledFeature().xmlText();
+		}
+		
+		Geometry shape = this.parseGeometry(spatialSamplingFeatureType);
+		
+		if (spatialSamplingFeatureType.isSetIdentifier()) {
+			//add identifier
+			URI codeSpace = new URI(spatialSamplingFeatureType.getIdentifier().getCodeSpace());
+			Identifier identifier = new Identifier(codeSpace, spatialSamplingFeatureType.getIdentifier().getStringValue());
+			
+			
+			if (spatialSamplingFeatureType.isSetBoundedBy()) {
+				//also add bounded by
+				//TODO implement, bounded by is optional and ignored by now
+//				return new SpatialSamplingFeature(identifier, boundedBy, sampledFeature, shape);
+			}
+			
+			return new SpatialSamplingFeature(identifier, sampledFeature, shape);
+		}
+		
+		return new SpatialSamplingFeature(sampledFeature, shape);
+	}
+
+
+	/**
+	 * parses a {@link Geometry} from the shape information of a spatial sampling feature
+	 * 
+	 * @param spatialSamplingFeatureType the sampling feature
+	 * 
+	 * @return a {@link Polygon} of the feature shape
+	 * @throws ParseException in case the WKT text could not be parsed
+	 */
+	private Geometry parseGeometry(SFSpatialSamplingFeatureType spatialSamplingFeatureType) throws ParseException {
+		ShapeType shape = spatialSamplingFeatureType.getShape();
+		
+		String s = shape.getAbstractGeometry().xmlText();
+		
+		//cut by posList
+		String[] sArray = s.split("posList");
+		s = sArray[1];
+		s.substring(1, s.indexOf("</"));
+		
+		//build WKT polygon
+		s = "Polygon ((" + s + "))";
+		
+		WKTReader reader = new WKTReader();
+		return reader.read(s);
+	}
+
+
 	/**
 	 * Extracts the String value of a Property from a WPS execute response
 	 * 
@@ -387,10 +522,24 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 			if (output == null) {
 				return null;
 			}
+			if (!output.isSetData()) {
+				return null;
+			}
+			
+			DataType data = output.getData();
 			
 			//get data content
-			if (output.getData().isSetLiteralData()) {
-				return output.getData().getLiteralData().getStringValue();
+			if (data.isSetLiteralData()) {
+				return data.getLiteralData().getStringValue();
+			}
+			else if (data.isSetComplexData()) {
+				//get complex data
+				String complexData = data.getComplexData().xmlText();
+				
+				//extract from CDATA caption
+				complexData = this.removeCDATA(complexData);
+				
+				return complexData;
 			}
 		}
 		catch (Throwable t) {
@@ -400,6 +549,30 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		}
 		
 		return null;
+	}
+
+
+	/**
+	 * Removes a CDATA caption from a XML text and 
+	 * replaces &lt; and &gt; by '<' and '>'
+	 * 
+	 * @param xmlText the XML ass text string
+	 * 
+	 * @return the updated text
+	 */
+	private String removeCDATA(String xmlText) {
+		String text = xmlText;
+		//remove CDATA caption
+		Pattern pattern = Pattern.compile("<![CDATA[", Pattern.LITERAL);
+		Matcher matcher = pattern.matcher(text);
+		text = matcher.replaceAll("");
+		text = text.replaceAll("]]", "");
+		
+		//replace encoded < and >
+		text = text.replaceAll("&lt;", "<");
+		text = text.replaceAll("&gt;", ">");
+		
+		return text;
 	}
 
 
@@ -423,50 +596,6 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		}
 	}
 	
-//	private void handleResponse(int runNumber) {
-//		try {
-//			 ExecuteResponseDocument response =
-//			 (ExecuteResponseDocument)WPSClientSession.getInstance().execute(this.modelServiceURL,
-//			 this.exDoc);
-////			ExecuteResponseDocument response = ExecuteResponseDocument.Factory
-////					.parse(new File(
-////							"C:\\UncertWeb\\Albatross\\alb_resp_indicators.xml"));
-//
-//			OutputDataType oType = response.getExecuteResponse()
-//					.getProcessOutputs().getOutputArray(0);
-//			Node wpsComplexData = oType.getData().getComplexData().getDomNode();
-//			// the complex data node
-//			Node unRealisation = wpsComplexData.getChildNodes().item(0);
-//			// the realisation node
-//			IObservationCollection iobs = null;
-//			try {
-//				iobs = new XBObservationParser()
-//						.parseObservationCollection(nodeToString(unRealisation));
-//			} catch (Exception e) {
-//				unRealisation = wpsComplexData.getChildNodes().item(1);
-//				iobs = new XBObservationParser()
-//						.parseObservationCollection(nodeToString(unRealisation));
-//			}
-//			/*
-//			 * gather all responses
-//			 */
-//			this.realisationCollection.add((MeasurementCollection)iobs);
-//
-//			logger.debug(response);
-//		} catch (Exception e) {
-//			this.errors.add(e.getMessage());
-//			logger.error(e);
-//		}
-//	}
-	
-//	private String nodeToString(Node node) throws TransformerFactoryConfigurationError, TransformerException {
-//		StringWriter stringWriter = new StringWriter();
-//		Transformer transformer = TransformerFactory.newInstance().newTransformer();
-//		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-//		transformer.transform(new DOMSource(node), new StreamResult(stringWriter));
-//		
-//		return stringWriter.toString();
-//	}
 	
 	@Override
 	public List<String> getErrors() {
@@ -475,25 +604,44 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 
 	@Override
 	public Class<? extends IData> getInputDataType(String id) {
-		if (id.equals(INPUT_ID_SIMULATION_PROCESS_IDENTIFIER)) {
+		if (id.equals(INPUT_ID_MODEL_SERVICE_URL)) {
 			return LiteralStringBinding.class;
 		} 
-		else if (id.equals(INPUT_ID_MODEL_SERVICE_URL)) {
+		else if (id.equals(INPUT_ID_SYN_POP_MODEL_SERVICE_URL)) {
 			return LiteralStringBinding.class;
 		} 
-//		else if(getInputIDs().contains(id)) {
-			return LiteralStringBinding.class;			
-//		}
-//		return null;
-			//TODO implement
+		else if (id.equals(INPUT_ID_SIMULATION_PROCESS_IDENTIFIER)) {
+			return LiteralStringBinding.class;
+		}
+		else if (id.equals(INPUT_ID_SYN_POP_PROCESS_IDENTIFIER)) {
+			return LiteralStringBinding.class;
+		}
+		else if (id.equals(INPUT_ID_GENPOP)) {
+			return LiteralStringBinding.class;
+		}
+		else if (id.equals(INPUT_ID_RWDATA)) {
+			return LiteralStringBinding.class;
+		}
+		else if (id.equals(INPUT_ID_POSTAL_CODE_AREAS)) {
+			return LiteralStringBinding.class;
+		}
+		else if (id.equals(INPUT_ID_ZONES)) {
+			return LiteralStringBinding.class;
+		}
+		else if (id.equals(INPUT_ID_MUNICIPALITIES)) {
+			return LiteralStringBinding.class;
+		}
+		return null;
 	}
 
 	@Override
 	public Class<? extends IData> getOutputDataType(String id) {
-//		if (id.equals(OUTPUT_ID_UNCERT_PROCESS_OUTPUTS)) {
-//			return UncertWebIODataBinding.class;
-//		}
-		//TODO implement
+		if (id.equals(OUTPUT_ID_OD_MATRIX)) {
+			return UncertWebIODataBinding.class;
+		}
+		else if (id.equals(OUTPUT_ID_INDICATORS)) {
+			return UncertWebIODataBinding.class;
+		}
 		return null;
 	}
 	
@@ -535,21 +683,4 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 			return null;
 		}
 	}
-	
-	
-//	private List<String> getInputIDs(){
-//		
-//		if(this.inputIDs == null){			
-//			this.inputIDs = new ArrayList<String>();
-//			this.inputIDs.add(INPUT_ID_EXPORT_FILE);
-//			this.inputIDs.add(INPUT_ID_EXPORT_FILE_BIN);
-//			this.inputIDs.add(INPUT_ID_GENPOP);
-//			this.inputIDs.add(INPUT_ID_MUNICIPALITIES);
-//			this.inputIDs.add(INPUT_ID_POSTCODE_AREAS);
-//			this.inputIDs.add(INPUT_ID_RWDATA);
-//			this.inputIDs.add(INPUT_ID_ZONES);
-//		}		
-//		return this.inputIDs;
-//	}
-
 }
