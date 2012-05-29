@@ -43,5 +43,6 @@ public class ServiceMetadataTestCase extends TestCase {
 		}
 		ServiceMetadata md = new ServiceMetadata(p);
 		assertEquals("1km by 1km to 10km by 10km", md.getSpatialResolutions());
+		System.out.println(md.serialize());
 	}
 }

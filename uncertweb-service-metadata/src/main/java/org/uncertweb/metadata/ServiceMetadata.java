@@ -2,6 +2,7 @@ package org.uncertweb.metadata;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Properties;
 
 /**
@@ -92,6 +93,7 @@ public class ServiceMetadata {
 		this.variableUncertaintyTypes = props.getProperty("@variable-uncertainty-types");
 		this.variableUOMs = props.getProperty("@variable-units-of-measure");
 		this.misc = props.getProperty("@misc");
+		this.props = props;
 	}
 	
 	/**
@@ -126,8 +128,10 @@ public class ServiceMetadata {
 	 * @return {@link String} containing the serialized service metadata
 	 */
 	public String serialize() {
-		//FIXME needs to be re-implemented to support our UncertWeb format
-		return props.toString();
+		String result = props.toString();
+		result = result.replace("{", "");
+		result = result.replace(",", "");
+		return result;
 	}
 
 	/**
