@@ -59,7 +59,7 @@ public class GeneralTimeInstant implements IGeneralTime{
 			int pos = timeString.indexOf(Seperators.HOUR_SEP);
 			String hoursS = timeString.substring(pos+1, pos+3);
 			int hours = Integer.parseInt(hoursS);
-			if (hours>=0&&day<=59){
+			if (hours>=0&&hours<=24){
 				setHour(hours);
 			}
 			valid=true;
