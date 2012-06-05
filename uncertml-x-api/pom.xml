@@ -7,7 +7,7 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>uncertml-x-api</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>Extended UncertML API</name>
 	<description>Provides parsers and encoders for extended UncertML</description>
 	<organization>
@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>xb-uncertml-rv</artifactId>
-			<version>0.0.4</version>
+			<version>0.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>

@@ -24,11 +24,36 @@ public class NormalSpatialField extends AbstractSpatialField implements IDistrib
 	 * 
 	 * @param covarianceParameter
 	 * 
+	 */
+	public NormalSpatialField(SampleReference sampleReference,INormalCovarianceParameter covarianceParameter){
+		super.samples=sampleReference;
+		this.covarianceParameter=covarianceParameter;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param sampleReference
+	 * 
+	 * @param covarianceParameter
+	 * 
 	 * @param spatialTrend
 	 */
 	public NormalSpatialField(SampleReference sampleReference,INormalCovarianceParameter covarianceParameter, double[] spatialTrend){
 		super.samples=sampleReference;
 		this.covarianceParameter=covarianceParameter;
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param gp
+	 * @param spatialTrendp
+	 */
+	public NormalSpatialField(INormalCovarianceParameter gp,
+			double[] spatialTrendp) {
+		this.covarianceParameter = gp;
+		this.spatialTrend = spatialTrendp;
 	}
 
 	/**

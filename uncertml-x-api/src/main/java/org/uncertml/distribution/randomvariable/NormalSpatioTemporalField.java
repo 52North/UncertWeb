@@ -37,6 +37,51 @@ public class NormalSpatioTemporalField extends AbstractSpatioTemporalField imple
 		setSpatialTrend(spatialTrend);
 		setTemporalTrend(temporalTrend);
 	}
+	
+	/**
+	 * constructor
+	 * 
+	 * @param sampleReference
+	 * 			reference to samples
+	 * @param covarianceParameter
+	 * 			covariance parameter can be either variogram function or covariance matrix
+	 * @param spatialTrend
+	 * 			coefficients of spatial trend polynom
+	 * */
+	public NormalSpatioTemporalField(SampleReference sampleReference,INormalCovarianceParameter covarianceParameter,double[] spatialTrend){
+		super.samples=sampleReference;
+		setCovarianceParameter(covarianceParameter);
+		setTemporalTrend(temporalTrend);
+	}
+	
+
+	/**
+	 * constructor with samples and cov parameter
+	 * 
+	 * @param ref
+	 * 			sample reference
+	 * @param gp
+	 * 			covariance parameter
+	 */
+	public NormalSpatioTemporalField(SampleReference ref,
+			INormalCovarianceParameter gp) {
+		super.samples=ref;
+		setCovarianceParameter(gp);
+	}
+
+	/**
+	 * constructor with covariance paramter and trend parameters
+	 * 
+	 * @param gp
+	 * @param spatialTrend2
+	 * @param temporalTrend2
+	 */
+	public NormalSpatioTemporalField(INormalCovarianceParameter gp,
+			double[] spatialTrend2, double[] temporalTrend2) {
+		setCovarianceParameter(gp);
+		setSpatialTrend(spatialTrend2);
+		setTemporalTrend(temporalTrend2);
+	}
 
 	/**
 	 * @return the spatialTrend

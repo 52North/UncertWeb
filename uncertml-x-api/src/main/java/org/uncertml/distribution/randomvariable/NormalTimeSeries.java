@@ -33,6 +33,24 @@ public class NormalTimeSeries extends AbstractTimeSeries implements IDistributio
 		this.covarianceParameter = covarianceParameter;
 		this.temporalTrend = temporalTrend;
 	}
+	
+	public NormalTimeSeries(INormalCovarianceParameter covarianceParameter,
+			double[] temporalTrend) {
+		super();
+		this.covarianceParameter = covarianceParameter;
+		this.temporalTrend = temporalTrend;
+	}
+
+	/**
+	 * 
+	 * @param ref
+	 * @param gp
+	 */
+	public NormalTimeSeries(SampleReference ref, INormalCovarianceParameter gp) {
+		super();
+		super.setSamples(ref);
+		this.covarianceParameter=gp;
+	}
 
 	/**
 	 * @return the covarianceParameter
