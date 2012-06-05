@@ -43,6 +43,8 @@ import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
 import net.opengis.om.x20.OMMeasurementDocument;
+import net.opengis.om.x20.OMObservationCollectionDocument;
+import net.opengis.om.x20.OMObservationCollectionDocument.OMObservationCollection;
 import net.opengis.om.x20.OMObservationDocument;
 import net.opengis.om.x20.OMReferenceObservationCollectionDocument;
 import net.opengis.om.x20.OMReferenceObservationCollectionDocument.OMReferenceObservationCollection;
@@ -93,6 +95,7 @@ import org.uncertweb.api.om.observation.collections.BooleanObservationCollection
 import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.ObservationCollection;
 import org.uncertweb.api.om.observation.collections.ReferenceObservationCollection;
 import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
@@ -265,7 +268,33 @@ public class XBObservationEncoder implements IObservationEncoder {
 		this.gmlID4TimeStrings = new HashMap<String, String>();
 		this.gmlID4sfIdentifier = new HashMap<String, String>();
 
-		// BooleanObservation collection
+		// Observation collection
+		//encoding of common ObservationCollection needs to be tested!!
+		if (obsCol instanceof ObservationCollection) {
+			OMObservationCollectionDocument result = OMObservationCollectionDocument.Factory
+					.newInstance();
+			OMObservationCollection xb_boCol = result
+					.addNewOMObservationCollection();
+			if (obsCol.getGmlId() != null) {
+				xb_boCol.setId(obsCol.getGmlId());
+			}
+			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol)
+					.getMembers().iterator();
+			while (obsIter.hasNext()) {
+				OMAbstractObservationType xb_obs = xb_boCol
+						.addNewOMObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
+						.next(), idPrefix);
+				xb_obs.set(xb_boDoc.getOMObservation());
+			}
+			reset();
+			XmlCursor cursor = result.newCursor();
+			if (cursor.toFirstChild())
+			{
+			  cursor.setAttributeText(new QName("http://www.w3.org/2001/XMLSchema-instance","schemaLocation"), OMConstants.NS_OM + " " + OMConstants.OM_SCHEMA_LOCATION);
+			}
+			return result;
+		}
 		if (obsCol instanceof BooleanObservationCollection) {
 			OMBooleanObservationCollectionDocument result = OMBooleanObservationCollectionDocument.Factory
 					.newInstance();

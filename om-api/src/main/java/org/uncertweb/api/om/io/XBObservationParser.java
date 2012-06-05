@@ -41,6 +41,8 @@ import net.opengis.om.x20.OMDiscreteNumericObservationDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument.OMMeasurementCollection;
 import net.opengis.om.x20.OMMeasurementDocument;
+import net.opengis.om.x20.OMObservationCollectionDocument;
+import net.opengis.om.x20.OMObservationCollectionDocument.OMObservationCollection;
 import net.opengis.om.x20.OMObservationDocument;
 import net.opengis.om.x20.OMProcessPropertyType;
 import net.opengis.om.x20.OMReferenceObservationCollectionDocument;
@@ -95,6 +97,7 @@ import org.uncertweb.api.om.observation.collections.CategoryObservationCollectio
 import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.ObservationCollection;
 import org.uncertweb.api.om.observation.collections.ReferenceObservationCollection;
 import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
@@ -154,8 +157,23 @@ public class XBObservationParser implements IObservationParser {
 			xb_obsColDoc = XmlObject.Factory.parse(xmlObsCol);
 		
 
-		//Measurement collection
-		if (xb_obsColDoc instanceof OMMeasurementCollectionDocument) {
+			//common observation collection
+			//TODO parsing of common observation collection needs to be tested!!
+			if (xb_obsColDoc instanceof OMObservationCollectionDocument) {
+				OMObservationCollection xb_ocType = ((OMObservationCollectionDocument)xb_obsColDoc).getOMObservationCollection();
+				OMAbstractObservationType[] xb_obsArray = xb_ocType.getOMObservationArray();
+				List<AbstractObservation> obsList = new ArrayList<AbstractObservation>(xb_obsArray.length);
+				for (OMAbstractObservationType xb_obs:xb_obsArray){
+					OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+					xb_omDoc.setOMObservation(xb_obs);
+					obsList.add(parseObservationDocument(xb_omDoc));
+				}
+				oc = new ObservationCollection(obsList);
+				return oc;
+			}
+			
+			//Measurement collection
+			else if (xb_obsColDoc instanceof OMMeasurementCollectionDocument) {
 			OMMeasurementCollection xb_ocType = ((OMMeasurementCollectionDocument)xb_obsColDoc).getOMMeasurementCollection();
 			UWMeasurementType[] xb_obsArray = xb_ocType.getOMMeasurementArray();
 			List<Measurement> obsList = new ArrayList<Measurement>(xb_obsArray.length);

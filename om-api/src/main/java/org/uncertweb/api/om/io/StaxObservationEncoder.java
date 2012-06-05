@@ -21,6 +21,7 @@ import org.uncertweb.api.om.observation.collections.CategoryObservationCollectio
 import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.ObservationCollection;
 import org.uncertweb.api.om.observation.collections.ReferenceObservationCollection;
 import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
@@ -93,8 +94,10 @@ public class StaxObservationEncoder implements IObservationEncoder{
 			//set character escaping on false!
 			((com.sun.xml.internal.stream.writers.XMLStreamWriterImpl)writer).setEscapeCharacters(false);
 			writer.writeStartDocument();
-			
 			if (obsCol instanceof UncertaintyObservationCollection){
+				writer.writeStartElement(ObservationCollection.NAME);
+			}
+			else if (obsCol instanceof UncertaintyObservationCollection){
 				writer.writeStartElement(UncertaintyObservationCollection.NAME);
 			} else if (obsCol instanceof MeasurementCollection){
 				writer.writeStartElement(MeasurementCollection.NAME);
