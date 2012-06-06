@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<om:OM_ObservationCollection gml:id="obsTest1" xmlns:om="http://www.opengis.net/om/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:sf="http://www.opengis.net/sampling/2.0" xmlns:un="http://www.uncertml.org/2.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" xsi:schemaLocation="http://www.opengis.net/om/2.0 http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd">
+	<!--=============================================================
+	observation for activity number==============================================================-->
+	<om:OM_CategoryObservation gml:id="o1">
+<!--=============================================================
+	phenomenon time is parsed==============================================================-->	
+	<om:phenomenonTime>
+		<gml:TimeInstant gml:id="ot1t">
+			<gml:timePosition>D3h03/D3h12m42</gml:timePosition>
+		</gml:TimeInstant>
+	</om:phenomenonTime>
+	<!--=============================================================
+	result time is same as phenomenon time==============================================================-->
+	<om:resultTime xlink:href="#ot1t"/>
+	<!--=============================================================
+	procedure is combination of gender_age_Hhid_counter; counter is for id of individuals per household
+	==============================================================-->
+	<om:procedure xlink:href="http://www.example.org/register/process/1_3_1_01"/>
+	<!--=============================================================
+	as described in D7.2
+	==============================================================-->
+	<om:observedProperty xlink:href="http://www.uncertweb.org/variables/albatross/actionNumber"/>
+	<!--=============================================================
+	feature of interest carries the sampling geometry of the observation; in this case the geometry of the postal code area
+	==============================================================-->
+	<om:featureOfInterest>
+		<sams:SF_SpatialSamplingFeature gml:id="SamplingPolygon1">
+		<!-- PCC-->
+		  <gml:identifier codeSpace="http://www.uncertweb.org">3052</gml:identifier>
+			<sf:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface"/>
+			<sf:sampledFeature xlink:href="http://www.uncertweb.org/features/amsterdam"/>
+			<sams:shape>
+				<gml:Polygon gml:id="polygon1">
+					<gml:exterior>
+						<gml:LinearRing>
+							<gml:posList>52.79 7.87 52.79 8.87 53.79 8.87 53.79 7.87 52.79 7.87</gml:posList>
+						</gml:LinearRing>
+					</gml:exterior>
+				</gml:Polygon>
+			</sams:shape>
+		</sams:SF_SpatialSamplingFeature>
+	</om:featureOfInterest>
+	
+	<!--=============================================================
+	observation result is column value of Actnr
+	==============================================================-->
+	<om:result codeSpace="http://www.uncertweb.org/">1</om:result>
+</om:OM_CategoryObservation>
+<!--=============================================================
+	observation for activity type
+	==============================================================-->
+<om:OM_CategoryObservation gml:id="o2">
+	<om:phenomenonTime xlink:href="#ot1t"/>
+	<om:resultTime xlink:href="#ot1t"/>
+	<om:procedure xlink:href="http://www.example.org/register/process/1_3_1_01"/>
+	<om:observedProperty xlink:href="http://www.uncertweb.org/variables/albatross/activityType"/>
+	<om:featureOfInterest xlink:href="#SamplingPolygon1"/>
+	<om:result codeSpace="http://www.uncertweb.org/">9</om:result>
+</om:OM_CategoryObservation>
+<!--=============================================================
+	observation for travel mode
+	==============================================================-->
+<om:OM_CategoryObservation gml:id="o3">
+	<om:phenomenonTime xlink:href="#ot1t"/>
+	<om:resultTime xlink:href="#ot1t"/>
+	<om:procedure xlink:href="http://www.example.org/register/process/1_3_1_01"/>
+	<om:observedProperty xlink:href="http://www.uncertweb.org/variables/albatross/travelMode"/>
+	<om:featureOfInterest xlink:href="#SamplingPolygon1"/>
+	<om:result codeSpace="http://www.uncertweb.org/">0</om:result>
+</om:OM_CategoryObservation>
+<!--=============================================================
+	observation for isHome variable
+	==============================================================-->
+	<om:OM_BooleanObservation gml:id="o4">
+	<om:phenomenonTime xlink:href="#ot1t"/>
+	<om:resultTime xlink:href="#ot1t"/>
+	<om:procedure xlink:href="http://www.example.org/register/process/1_3_1_01"/>
+	<om:observedProperty xlink:href="http://www.uncertweb.org/variables/albatross/travelMode"/>
+	<om:featureOfInterest xlink:href="#SamplingPolygon1"/>
+	<!-- 1=true; 0=false -->
+	<om:result>true</om:result>
+</om:OM_BooleanObservation>
+</om:OM_ObservationCollection>

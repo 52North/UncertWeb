@@ -278,14 +278,19 @@ public class XBObservationEncoder implements IObservationEncoder {
 			if (obsCol.getGmlId() != null) {
 				xb_boCol.setId(obsCol.getGmlId());
 			}
-			Iterator<BooleanObservation> obsIter = ((BooleanObservationCollection) obsCol)
+			Iterator<AbstractObservation> obsIter = ((ObservationCollection) obsCol)
 					.getMembers().iterator();
 			while (obsIter.hasNext()) {
-				OMAbstractObservationType xb_obs = xb_boCol
-						.addNewOMObservation();
-				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
-						.next(), idPrefix);
-				xb_obs.set(xb_boDoc.getOMObservation());
+				AbstractObservation absObs = obsIter.next();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(absObs, idPrefix);
+				
+				xb_boCol.addNewOMObservation().set(xb_boDoc.getOMObservation());
+				XmlCursor newCursor = result.newCursor();
+				newCursor.toFirstChild();
+				if (newCursor.toChild(new QName(OMConstants.NS_OM,"OM_Observation"))){
+					newCursor.setName(new QName(OMConstants.NS_OM,absObs.getName(),OMConstants.NS_OM_PREFIX));
+					newCursor.removeAttribute(new QName("http://www.w3.org/2001/XMLSchema-instance","type"));
+				}
 			}
 			reset();
 			XmlCursor cursor = result.newCursor();
@@ -1273,6 +1278,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 */
 	private XmlOptions getOMOptions() {
 		XmlOptions xmlOptions = new XmlOptions();
+		xmlOptions.setSaveNamespacesFirst();
 		xmlOptions.setSaveAggressiveNamespaces();
 		Map<String, String> lPrefixMap = new Hashtable<String, String>();
 		lPrefixMap.put(OMConstants.NS_GML, OMConstants.NS_GML_PREFIX);
