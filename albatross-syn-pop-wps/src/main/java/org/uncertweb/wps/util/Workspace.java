@@ -11,6 +11,8 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 /**
+ * Functionality around the workspace generation is encapsulated in this class. By creating a new instance the workspace will be created.
+ * 
  * @author s_voss13
  * 
  */
@@ -19,6 +21,14 @@ public class Workspace {
 	private File originalDataFolder, workspaceFolder, publicFolder;
 	private String folderNumber;
 
+	/**
+	 * By calling this ctor a new workspace and public folder will be created. Additionally the content of the original data folder is copied into the new workspace. 
+	 * Some additional files may ba copied after the run into the public folder.
+	 * 
+	 * @param originalDataFolder the path to the original data
+	 * @param workspace the path to the workspace folder
+	 * @param publicFolder the path to a folder which is visible from the outside
+	 */
 	public Workspace(String originalDataFolder, String workspace,
 			String publicFolder) {
 
@@ -40,11 +50,22 @@ public class Workspace {
 
 	}
 	
+	/**
+	 * Returns the number which was assigned to the workspace.
+	 * This number is part of the workspace folder name.
+	 * 
+	 * @return the number assigned to the workspace.
+	 */
 	public String getFolderNumber(){
 		
 		return this.folderNumber;
 	}
 
+	/**
+	 * Copies a {@link List} of (existing) files into the in the configuration file defined public folder.
+	 * 
+	 * @param files a {@link List} of files to copy
+	 */
 	public void copyResultIntoPublicFolder(List<String> files) {
 		
 		for(String currentFileName : files){
@@ -54,18 +75,39 @@ public class Workspace {
 
 	}
 
+	/**
+	 * Returns the {@link File} to the folder were the original data can be found.
+	 * @return the {@link File} to the original data.
+	 */
 	public File getOriginalDataFolder() {
 		return originalDataFolder;
 	}
 
+	/**
+	 * Returns the {@link File} to the workspace folder.
+	 * @return the {@link File} to the workspace folder.
+	 */
 	public File getWorkspaceFolder() {
 		return workspaceFolder;
 	}
 
+	/**
+	 * Returns the {@link File} to the public folder.
+	 * 
+	 * @return the {@link File} to the public folder.
+	 */
 	public File getPublicFolder() {
 		return publicFolder;
 	}
 
+	/**
+	 * Copies a single file from a given source folder into a target folder.
+	 * The file name must be a valid file.
+	 * 
+	 * @param sourceLocation
+	 * @param targetLocation
+	 * @param fileName
+	 */
 	private void copyFile(File sourceLocation, File targetLocation,
 			String fileName) {
 
@@ -76,35 +118,18 @@ public class Workspace {
 		try {
 			FileUtils.copyFile(inputFile, outputFile);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
-		/*
-		FileReader in = null;
-		try {
-			in = new FileReader(inputFile);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		FileWriter out;
-		try {
-			int c;
-
-			out = new FileWriter(outputFile);
-			while ((c = in.read()) != -1)
-				out.write(c);
-
-			in.close();
-			out.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-
 	}
 
+	/**
+	 * The method copies all folders and file from the source directory into the target directory. This is done recursive. 
+	 * Thus we have a deep copy of the source folder.
+	 * 
+	 * @param sourceLocation
+	 * @param targetLocation
+	 */
 	private void copyDirectory(File sourceLocation, File targetLocation) {
 
 		if (sourceLocation.isDirectory()) {
@@ -151,6 +176,12 @@ public class Workspace {
 		}
 	}
 
+	/**
+	 * Creates a new directory. If the parent folder does not exist it will be created too.
+	 * 
+	 * @param s a valid directory
+	 * @return the {@link File}
+	 */
 	private File createDirectory(String s) {
 
 		if (!new File(s).getParentFile().exists()) {
@@ -163,6 +194,13 @@ public class Workspace {
 		return new File(s);
 	}
 
+	/**
+	 * Generates a unique number for a new workspace. To ensure that the number is really unique, the method checks the already existing numbers in the workspace. 
+	 * Thus it is guaranteed that non existing number is reused.
+	 * 
+	 * @param workspace a valid path to the target workspace
+	 * @return a unique workspace number
+	 */
 	private String generateUniqueWorkspaceNumber(String workspace) {
 
 		int number = this.generateRandomNumber();

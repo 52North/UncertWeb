@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.uncertweb.wps.util;
 
 import java.io.BufferedWriter;
@@ -10,6 +7,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
+ * To run the synthetic population exe a project file is mandatory. This project file contains the parameter and paths to additional files, which contain data like postcode areas.
+ * Thus, the order of arguments is important. The file is plain text.
+ * 
  * @author s_voss13
  *
  */
@@ -64,7 +64,7 @@ public class ProjectFile {
 			projectFile.createNewFile();
 			this.fillProjectFile(projectFile);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		
@@ -72,6 +72,15 @@ public class ProjectFile {
 
 	public String getProjectFileName() {
 		return projectFileName;
+	}
+	
+	/**
+	 * This methods works only if the format of the original format is name.xyz
+	 * @return
+	 */
+	public String getProjectFileNameAfterSampleDrawRun(){
+		
+		return projectFileName.substring(0, projectFileName.length()-4) + "-0" + projectFileName.substring(projectFileName.length()-4,projectFileName.length());
 	}
 
 	/**
@@ -88,7 +97,8 @@ public class ProjectFile {
 
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f)));  
 
-		//TODO random Seed
+		//TODO random Seed - according to the latest statement the first entry is the random number seed. The problem is that the program needs no random number seed...
+		// I hope we can clarify this after the random sampling exe arrives
 		out.println("0");
 		out.println(genpopHouseholds);
 		out.println(rwdataHouseholds);
@@ -116,5 +126,25 @@ public class ProjectFile {
 		
 		out.flush();
 		out.close();
+	}
+	
+	public static void newInputDrawProjectFile(String projectFileName, String fileLocation, String noCases, String noCasesNew){
+		
+		File projectFile = new File(fileLocation+File.separator+projectFileName);
+		
+		PrintWriter out = null;
+		
+		try {
+			out = new PrintWriter(new BufferedWriter(new FileWriter(projectFile)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
+		out.println(noCases);
+		out.println(noCasesNew);	
+		
+		out.flush();
+		out.close();	
+		
 	}
 }

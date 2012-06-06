@@ -63,6 +63,9 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 	private final String outputIDProjectFile = "project-file";
 	private final String outputIDExportFile = "export-file";
+	
+	private final String inputIDNoCases = "noCases";
+	private final String inputIDNoCasesNew = "noCasesNew";
 
 	private String genpopHouseholds;
 	private String rwdataHouseholds;
@@ -70,6 +73,8 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private String zones;
 	private String postcodeAreas;
 	private Boolean isBootstrapping;
+	private String noCases;
+	private String noCasesNew;
 	
 	private Workspace ws;
 	private ProjectFile projectFile;
@@ -144,6 +149,12 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		if(id.equals(inputIDIsBootstrapping)){
 			return LiteralBooleanBinding.class;
 		}
+		if(id.equals(inputIDNoCases)){
+			return LiteralIntBinding.class;
+		}
+		if(id.equals(inputIDNoCasesNew)){
+			return LiteralIntBinding.class;
+		}
 		else {
 			return GenericFileDataBinding.class;
 		}
@@ -169,6 +180,17 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		this.checkAndCopyInput(inputData);
 
 		this.setupFolder();
+		
+		//what we have to do if this is the case...
+		//create a config input file wiith two additional parameters
+		//run the sampleDraw exe and take care about the input project file
+		if(isBootstrapping){
+			
+			this.setupSampleDraw();
+			
+			this.runSampleDraw();
+			
+		}
 
 		this.runModel();
 		
@@ -185,6 +207,10 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		return result;
 	}
 
+	/**
+	 * Reads the properties from the 'albatross-synthetic-population-process.properties' file.
+	 * 
+	 */
 	private static void readProperties() {
 
 		Properties properties = new Properties();
@@ -218,6 +244,11 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		
 	}
 
+	/**
+	 * Checks if the parameters are available and not <code>null</code>.
+	 * 
+	 * @param inputData a {@link List} of input data.
+	 */
 	private void checkAndCopyInput(Map<String, List<IData>> inputData) {
 
 		if (inputData == null)
@@ -275,9 +306,37 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		
 		isBootstrapping = ((LiteralBooleanBinding) isBootstrappingList.get(0)).getPayload();
 		
+		//if the user set the bootstrapping flag he/she has to provide two additional parameters
+		if(isBootstrapping){
+			
+			List<IData> noCasesList = inputData.get(inputIDNoCases);
+			
+			if(noCasesList == null || noCasesList.isEmpty()){
+				throw new IllegalArgumentException("number of cases is missing");
+			}
+			
+			noCases = ((LiteralIntBinding) noCasesList.get(0))
+					.getPayload().toString();
+			
+			List<IData> noCasesNewList = inputData.get(inputIDNoCasesNew);
+			
+			if(noCasesNewList == null || noCasesNewList.isEmpty()){
+				throw new IllegalArgumentException("number of cases NEW is missing");
+			}
+			
+			noCasesNew = ((LiteralIntBinding) noCasesNewList.get(0))
+					.getPayload().toString();
+		}
+		
 
 	}
 
+	/**
+	 * The synthetic population run requires a workspace, a public folder and a customized project file.
+	 * The project file contains the paths to the current workspace.
+	 * All these folder are created within this method and the required data is copied.
+	 * Additionally the newly created files are supervised and deleted after a certain time (defines in the properties).
+	 */
 	private void setupFolder() {
 
 		// workspace bauen
@@ -289,6 +348,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 				municipalities, zones, postcodeAreas);
 		
 		
+		//supervise the newly created folder and remove them after a specific time
 		Set<Pair<File, Long>> fileSet = new HashSet<Pair<File,Long>>();
 		
 		fileSet.add(new Pair<File, Long>(ws.getWorkspaceFolder(), System.currentTimeMillis()));
@@ -297,7 +357,89 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		workspaceCleanerThread.addFileSet(fileSet);
 
 	}
+	
+	private void setupSampleDraw(){
+		
+		ProjectFile.newInputDrawProjectFile("config.txt", ws.getWorkspaceFolder().getPath(), noCases, noCasesNew);
+	}
+	
+	private void runSampleDraw(){
+		
+		Process proc = null;
 
+		try {
+
+			List<String> commands = new ArrayList<String>();
+
+			commands.add(ws.getWorkspaceFolder().getPath() + File.separator + "SampleDraw.exe");
+
+			ProcessBuilder pb = new ProcessBuilder(commands);
+
+			pb.directory(ws.getWorkspaceFolder());
+
+			proc = pb.start(); 
+			
+			//make sure the new process is supervised
+			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process,Long>>();
+			currentProcess.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
+			
+			processMonitorThread.addProcessSet(currentProcess);
+
+			ExecutorService executorService = Executors.newFixedThreadPool(2);
+			
+			executorService.submit(new ReadingThread(proc.getInputStream(), "out"));
+			executorService.submit(new ReadingThread(proc.getErrorStream(), "err"));
+
+			OutputStream stdout = proc.getOutputStream();
+
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+					stdout));
+
+			//the project file as argument
+			out.write(projectFile.getProjectFileName());
+			out.newLine();
+			out.flush();
+
+			//the configt.txt as argument
+			out.write("config.txt");
+			out.newLine();
+			out.flush();
+
+		} catch (IOException e1) {
+			
+			e1.printStackTrace();
+		}
+
+		int result = 0;
+		
+		try {
+
+			result = proc.waitFor();
+			
+			System.out.println("Return value: " + result);
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		finally{
+			
+			if(result != 0){
+				throw new RuntimeException("Could not run sample draw properly. Try again.");
+			}
+		}
+		
+	}
+
+	/**
+	 * The 'Genpop.exe' is the core component of the synthetic population service.
+	 * The method runs the exe inside the workspace and sets the two required arguemnts.
+	 * The first argument is the projectfile, which contains the paths to the necessary data files.
+	 * The second argument is the filename of the output. This name can be specified in the properties file and is usually 'export.txt'.
+	 * 
+	 * The process itself is also monitored. If the process runs longer then the specified time for processes from the properties file it will be canceled.
+	 */
 	private void runModel() {
 
 		Process proc = null;
@@ -330,10 +472,31 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
 					stdout));
 
-			out.write(projectFile.getProjectFileName());
-			out.newLine();
-			out.flush();
+			/*
+			 * and now... it gets dirty
+			 * if the sample draw run was made (bootstrapping) the name of the project files changes, because the new 
+			 * project file points to different files it works like projFile.txt -> projFile-0.prj
+			 */
+			
+			if(!isBootstrapping){
+				
+				//the project file as argument
+				out.write(projectFile.getProjectFileName());
+				out.newLine();
+				out.flush();
+			
+			}
+			
+			if(isBootstrapping){
+				
+				//the project file as argument
+				out.write(projectFile.getProjectFileNameAfterSampleDrawRun());
+				out.newLine();
+				out.flush();
+				
+			}
 
+			//the export.txt as argument
 			out.write(exportFileNameProp);
 			out.newLine();
 			out.flush();

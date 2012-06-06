@@ -37,7 +37,19 @@
 		<wps:Input>
 			<ows:Identifier>isBootstrapping</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>false</wps:LiteralData>
+				<wps:LiteralData>true</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>noCases</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>28764</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>noCasesNew</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>28764</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 	</wps:DataInputs>
