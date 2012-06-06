@@ -1,8 +1,6 @@
 package org.uncertweb.api.om;
 
 import java.net.URI;
-import java.sql.Time;
-import java.util.concurrent.TimeoutException;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;

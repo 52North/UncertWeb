@@ -36,17 +36,18 @@ public class GeneralTimeInstant implements IGeneralTime{
 	 * 
 	 */
 	public GeneralTimeInstant(String timeString) throws OMParsingException{
-		boolean valid = true;
+		boolean valid = false;
 		if (timeString.contains(Seperators.MONTH_SEP)){
 			int pos = timeString.indexOf(Seperators.MONTH_SEP);
 			String monthS = timeString.substring(pos+1, pos+3);
 			int month = Integer.parseInt(monthS);
 			if (month>=1&&month<=12){
 				setMonth(month);
+				valid=true;
 			}
 			else{
-			valid=false;	
-			}
+				valid=false;	
+				}
 		}
 		if (timeString.contains(Seperators.DAY_SEP)){
 			int pos = timeString.indexOf(Seperators.DAY_SEP);
@@ -54,6 +55,7 @@ public class GeneralTimeInstant implements IGeneralTime{
 			int day = Integer.parseInt(dayS);
 			if (day>=1&&day<=7){
 				setDay(day);
+				valid=true;
 			}
 			else{
 				valid=false;	
@@ -65,6 +67,7 @@ public class GeneralTimeInstant implements IGeneralTime{
 			int hours = Integer.parseInt(hoursS);
 			if (hours>=0&&hours<=24){
 				setHour(hours);
+				valid=true;
 			}
 			else{
 				valid=false;	
@@ -77,6 +80,7 @@ public class GeneralTimeInstant implements IGeneralTime{
 			int min = Integer.parseInt(minS);
 			if (min>=0&&min<=59){
 				setMinute(min);
+				valid=true;
 			}
 			else{
 				valid=false;	
@@ -89,6 +93,7 @@ public class GeneralTimeInstant implements IGeneralTime{
 			int sec = Integer.parseInt(secS);
 			if (sec>=0&&sec<=59){
 				setSecond(sec);
+				valid=true;
 			}
 			else{
 				valid=false;	
