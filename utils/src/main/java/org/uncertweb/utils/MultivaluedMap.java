@@ -10,6 +10,8 @@ public interface MultivaluedMap<K, V> extends Map<K, List<V>> {
 
 	void add(K key, Iterable<? extends V> values);
 
+	<U extends Iterable<? extends V>> void addAll(Map<K, U> col);
+	
 	V getFirst(K key);
 
 }

@@ -3,6 +3,7 @@ package org.uncertweb.utils;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class MultivaluedHashMap<K, V> extends HashMap<K, List<V>> implements
 		MultivaluedMap<K, V> {
@@ -53,6 +54,13 @@ public class MultivaluedHashMap<K, V> extends HashMap<K, List<V>> implements
 	
 	public static <X,Y> MultivaluedHashMap<X,Y> create(){
 		return new MultivaluedHashMap<X,Y>();
+	}
+
+	@Override
+	public <U extends Iterable<? extends V>> void addAll(Map<K, U> col) {
+		for (Entry<K, U> e : col.entrySet()) {
+			add(e.getKey(), e.getValue());
+		}		
 	}
 
 }
