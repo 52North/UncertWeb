@@ -47,6 +47,84 @@ public class UwStringUtils extends UwUtils {
 		return sb.toString();
 	}
 	
+	
+	public static String join(String sep, int... col) {
+		if (col == null || col.length == 0)
+			return "";
+		if (col.length == 1)
+			return String.valueOf(col[0]);
+		StringBuilder sb = new StringBuilder(String.valueOf(col[0]));
+		for (int i = 1; i < col.length; ++i)
+			sb.append(sep).append(String.valueOf(col[i]));
+		return sb.toString();
+	}
+	
+	public static String join(String sep, double... col) {
+		if (col == null || col.length == 0)
+			return "";
+		if (col.length == 1)
+			return String.valueOf(col[0]);
+		StringBuilder sb = new StringBuilder(String.valueOf(col[0]));
+		for (int i = 1; i < col.length; ++i)
+			sb.append(sep).append(String.valueOf(col[i]));
+		return sb.toString();
+	}
+	
+	public static String join(String sep, float... col) {
+		if (col == null || col.length == 0)
+			return "";
+		if (col.length == 1)
+			return String.valueOf(col[0]);
+		StringBuilder sb = new StringBuilder(String.valueOf(col[0]));
+		for (int i = 1; i < col.length; ++i)
+			sb.append(sep).append(String.valueOf(col[i]));
+		return sb.toString();
+	}
+	
+	public static String join(String sep, char... col) {
+		if (col == null || col.length == 0)
+			return "";
+		if (col.length == 1)
+			return String.valueOf(col[0]);
+		StringBuilder sb = new StringBuilder(String.valueOf(col[0]));
+		for (int i = 1; i < col.length; ++i)
+			sb.append(sep).append(String.valueOf(col[i]));
+		return sb.toString();
+	}
+	
+	public static String join(String sep, byte... col) {
+		if (col == null || col.length == 0)
+			return "";
+		if (col.length == 1)
+			return String.valueOf(col[0]);
+		StringBuilder sb = new StringBuilder(String.valueOf(col[0]));
+		for (int i = 1; i < col.length; ++i)
+			sb.append(sep).append(String.valueOf(col[i]));
+		return sb.toString();
+	}
+	
+	public static String join(String sep, long... col) {
+		if (col == null || col.length == 0)
+			return "";
+		if (col.length == 1)
+			return String.valueOf(col[0]);
+		StringBuilder sb = new StringBuilder(String.valueOf(col[0]));
+		for (int i = 1; i < col.length; ++i)
+			sb.append(sep).append(String.valueOf(col[i]));
+		return sb.toString();
+	}
+	
+	public static String join(String sep, short... col) {
+		if (col == null || col.length == 0)
+			return "";
+		if (col.length == 1)
+			return String.valueOf(col[0]);
+		StringBuilder sb = new StringBuilder(String.valueOf(col[0]));
+		for (int i = 1; i < col.length; ++i)
+			sb.append(sep).append(String.valueOf(col[i]));
+		return sb.toString();
+	}
+	
 	public static String join(String sep, Iterable<? extends Object> col) {
 		Iterator<? extends Object> i;
 		if (col == null || (!(i = col.iterator()).hasNext()))

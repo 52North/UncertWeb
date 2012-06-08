@@ -21,6 +21,7 @@
  */
 package org.uncertweb.utils;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -74,5 +75,13 @@ public class UwIOUtils extends UwUtils {
 		con.setDoOutput(false);
 		con.setDoInput(true);
 		saveToFile(f, con.getInputStream());
+	}
+
+	public static void closeQuietly(Closeable c) {
+		try {
+			c.close();
+		} catch (IOException e) {
+			// ignore
+		}
 	}
 }

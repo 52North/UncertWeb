@@ -44,6 +44,8 @@ public class UwConstants {
 	}
 	public enum URL {
 		INAPPLICABLE("http://www.opengis.net/def/nil/OGC/0/inapplicable"),
+		UNKNOWN("http://www.opengis.net/def/nil/OGC/0/unknown"),
+		MISSING("http://www.opengis.net/def/nil/OGC/0/missing"),
 		SAMPLING_TIME("http://www.opengis.net/def/property/OGC/0/SamplingTime"),
 		FEATURE_OF_INTEREST("http://www.opengis.net/def/property/OGC/0/FeatureOfInterest"),
 		EPSG_SRS_PREFIX("http://www.opengis.net/def/crs/EPSG/0/");

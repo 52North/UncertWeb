@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -324,6 +326,10 @@ public class UwCollectionUtils extends UwUtils {
 	public static <T, U> Map<T, U> tsMap() {
 		return new ConcurrentHashMap<T, U>();
 	}
+	
+	public static <T extends Enum<T>, V> Map<T, V> enumMap(Class<T> c) {
+		return new EnumMap<T, V>(c);
+	}
 
 	public static <T> boolean in(T t, T[] ts) {
 		if (t == null) {
@@ -341,4 +347,100 @@ public class UwCollectionUtils extends UwUtils {
 	public static <T> Collection<T> collection(T... ts) {
 		return list(ts);
 	}
+	
+	
+	
+	public static <T extends Comparable<? super T>> int binarySearch(List<T> a, T key) {
+		int l = 0;
+		int h = a.size() - 1;
+
+		while (l <= h) {
+			int m = (l + h) >>> 1;
+			T midVal = a.get(m);
+			int cmp = midVal.compareTo(key);
+			if (cmp < 0) {
+				l = m + 1;
+			} else if (cmp > 0) {
+				h = m - 1;
+			} else {
+				return m;
+			}
+		}
+		return -1;
+	}
+	
+	public static <T> int binarySearch(List<T> a, T key, Comparator<? super T> c) {
+		int l = 0;
+		int h = a.size() - 1;
+
+		while (l <= h) {
+			int m = (l + h) >>> 1;
+			T t = a.get(m);
+			int cmp = c.compare(t, key);
+			if (cmp < 0) {
+				l = m + 1;
+			} else if (cmp > 0) {
+				h = m - 1;
+			} else {
+				return m;
+			}
+		}
+		return -1;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T[] append(T[] a, T t) {
+		T[] n = (T[]) Arrays.copyOf(a, a.length + 1, a.getClass());
+		n[a.length + 1] = t;
+		return n;
+	}
+	
+	public static int[] append(int[] a, int t) {
+		int[] n = Arrays.copyOf(a, a.length + 1);
+		n[a.length] = t;
+		return n;
+	}
+	
+	public static long[] append(long[] a, long t) {
+		long[] n = Arrays.copyOf(a, a.length + 1);
+		n[a.length] = t;
+		return n;	
+	}
+
+	public static short[] append(short[] a, short t) {
+		short[] n = Arrays.copyOf(a, a.length + 1);
+		n[a.length] = t;
+		return n;	
+	}
+
+	public static byte[] append(byte[] a, byte t) {
+		byte[] n = Arrays.copyOf(a, a.length + 1);
+		n[a.length] = t;
+		return n;	
+	}
+
+	public static boolean[] append(boolean[] a, boolean t) {
+		boolean[] n = Arrays.copyOf(a, a.length + 1);
+		n[a.length] = t;
+		return n;	
+	}
+
+	public static double[] append(double[] a, double t) {
+		double[] n = Arrays.copyOf(a, a.length + 1);
+		n[a.length] = t;
+		return n;	
+	}
+
+	public static float[] append(float[] a, float t) {
+		float[] n = Arrays.copyOf(a, a.length + 1);
+		n[a.length] = t;
+		return n;	
+	}
+
+	public static char[] append(char[] a, char t) {
+		char[] n = Arrays.copyOf(a, a.length + 1);
+		n[a.length] = t;
+		return n;	
+	}
+	
 }
