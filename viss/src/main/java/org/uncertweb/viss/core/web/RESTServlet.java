@@ -26,14 +26,14 @@ import static org.uncertweb.viss.core.util.MediaTypes.GEOTIFF;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_CREATE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET_LIST;
-import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST;
-import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST_TYPE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_SCHEMA;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_UNCERTAINTY_COLLECTION;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_LIST;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_STYLE;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_STYLE_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.NETCDF;
@@ -57,6 +57,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -80,8 +81,10 @@ import org.uncertweb.viss.core.Viss;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
+import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizer;
+import org.uncertweb.viss.core.vis.VisualizationStyle;
 
 @Path("/")
 public class RESTServlet {
@@ -109,8 +112,12 @@ public class RESTServlet {
 	public static final String VISUALIZERS_FOR_DATASET = DATASET + VISUALIZERS;
 	public static final String VISUALIZER_FOR_DATASET = DATASET + VISUALIZER;
 	
-	public static final String VISUALIZATION_SLD = VISUALIZATION + "/sld";
 	
+	public static final String STYLE_PARAM = "style";
+	public static final String STYLE_PARAM_P = "{" + STYLE_PARAM + "}";
+	public static final String STYLES_FOR_VISUALIZATION = VISUALIZATION + "/styles";
+	public static final String STYLE_FOR_VISUALIZATION = STYLES_FOR_VISUALIZATION + "/" + STYLE_PARAM_P;
+	public static final String SLD_FOR_STYLE = STYLE_FOR_VISUALIZATION + "/sld";
 	public static final String SCHEMA = "/schema";
 	
 	private static Logger log = LoggerFactory.getLogger(RESTServlet.class);
@@ -132,48 +139,52 @@ public class RESTServlet {
 	@POST
 	@Path(RESOURCES)
 	@Produces(JSON_RESOURCE)
-	@Consumes({JSON_REQUEST, NETCDF, X_NETCDF, GEOTIFF, OM_2, JSON_UNCERTAINTY_COLLECTION })
+	@Consumes({ NETCDF, X_NETCDF, GEOTIFF, OM_2, JSON_UNCERTAINTY_COLLECTION })
 	public Response createResource(InputStream is,
 			@HeaderParam(HttpHeaders.CONTENT_TYPE) MediaType h, @Context UriInfo uriI) {
 		log.debug("Putting Resource.");
+		IResource r = Viss.getInstance().createResource(is, h);
+		URI uri = uriI.getBaseUriBuilder().path(RESOURCE).build(r.getId());
+		return Response.created(uri).entity(r).build();
+	}
+	
+	@POST
+	@Path(RESOURCES)
+	@Produces(JSON_RESOURCE)
+	@Consumes(JSON_CREATE)
+	public Response createResourceFromReference(JSONObject j, @Context UriInfo uriI) {
+		log.debug("Putting Resource.");
 		IResource r = null;
-		if (h.equals(JSON_REQUEST_TYPE)) {
-			try {
-				JSONObject j = new JSONObject(IOUtils.toString(is));
-				log.debug("Fetching resource described as json: {}\n", j.toString(4));
-				URL url = new URL(j.getString("url"));
-				HttpURLConnection con = (HttpURLConnection) url.openConnection();
-				String method = j.optString("method");
-				if (method == null || method.trim().isEmpty()) {
-					method = "GET";
-				}
-				con.setRequestMethod(method);
-				String req = j.optString("request");
-				if (req != null && !req.trim().isEmpty()) {
-					String reqMt = j.optString("requestMediaType");
-					if (reqMt != null) {
-						con.setRequestProperty("Content-Type", reqMt);
-					}
-					con.setDoOutput(true);
-					OutputStream os = null;
-					try {
-						os = con.getOutputStream();
-						IOUtils.write(req, os);
-					} finally {
-						IOUtils.closeQuietly(os);
-					}
-				}
-				r = Viss.getInstance().createResource(con.getInputStream(),
-						MediaType.valueOf(j.getString("responseMediaType")));
-			} catch (Exception e) {
-				throw VissError.internal(e);
-			} finally {
-				IOUtils.closeQuietly(is);
+		try {
+			log.debug("Fetching resource described as json: {}\n", j.toString(4));
+			URL url = new URL(j.getString("url"));
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			String method = j.optString("method");
+			if (method == null || method.trim().isEmpty()) {
+				method = "GET";
 			}
-		} else {
-			r = Viss.getInstance().createResource(is, h);
+			con.setRequestMethod(method);
+			String req = j.optString("request");
+			if (req != null && !req.trim().isEmpty()) {
+				String reqMt = j.optString("requestMediaType");
+				if (reqMt != null) {
+					con.setRequestProperty("Content-Type", reqMt);
+				}
+				con.setDoOutput(true);
+				OutputStream os = null;
+				try {
+					os = con.getOutputStream();
+					IOUtils.write(req, os);
+				} finally {
+					IOUtils.closeQuietly(os);
+				}
+			}
+			r = Viss.getInstance().createResource(con.getInputStream(),
+					MediaType.valueOf(j.getString("responseMediaType")));
+		} catch (Exception e) {
+			throw VissError.internal(e);
 		}
-		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getResource").build(r.getId());
+		URI uri = uriI.getBaseUriBuilder().path(RESOURCE).build(r.getId());
 		return Response.created(uri).entity(r).build();
 	}
 
@@ -271,7 +282,7 @@ public class RESTServlet {
 		URI uri = uriI.getBaseUriBuilder().path(VISUALIZATION).build(
 				v.getDataSet().getResource().getId(),
 				v.getDataSet().getId(), 
-				v.getVisId());
+				v.getId());
 		log.debug("Created URI: {}",uri);
 		return Response.created(uri).entity(v).build();
 	}
@@ -297,33 +308,81 @@ public class RESTServlet {
 		Viss.getInstance().deleteVisualization(oid, dataset, vis);
 	}
 
-	@POST
-	@Path(VISUALIZATION_SLD)
-	@Consumes(STYLED_LAYER_DESCRIPTOR)
-	public Response setSldForVisualization(
-			@PathParam(RESOURCE_PARAM) ObjectId oid,
+	@GET
+	@Path(STYLES_FOR_VISUALIZATION)
+	@Produces(JSON_VISUALIZATION_STYLE_LIST)
+	public Set<VisualizationStyle> getStyles(
+			@PathParam(RESOURCE_PARAM) ObjectId resource,
 			@PathParam(DATASET_PARAM) ObjectId dataset,
-			@PathParam(VISUALIZATION_PARAM) String vis, 
-			StyledLayerDescriptorDocument sld,
-			@Context UriInfo uriI) {
-		log.debug("Posting SLD for visualization of resource with ObjectId \"{}\"",
-				oid);
-		Viss.getInstance().setSldForVisualization(oid, dataset, vis, sld);
-		URI uri = uriI.getBaseUriBuilder().path(getClass(), "getSldForVisualization").build(oid, dataset, vis);
-		return Response.created(uri).build();
+			@PathParam(VISUALIZATION_PARAM) String vis) {
+		log.debug("Getting Styles for visualization \"{}\"", vis);
+		return Viss.getInstance().getStyles(resource, dataset, vis);
 	}
 
 	@GET
-	@Path(VISUALIZATION_SLD)
-	@Produces(STYLED_LAYER_DESCRIPTOR)
-	public StyledLayerDescriptorDocument getSldForVisualization(
-			@PathParam(RESOURCE_PARAM) ObjectId oid, 
+	@Path(STYLE_FOR_VISUALIZATION)
+	@Produces(JSON_VISUALIZATION_STYLE)
+	public VisualizationStyle getStyle(
+			@PathParam(RESOURCE_PARAM) ObjectId resource,
 			@PathParam(DATASET_PARAM) ObjectId dataset,
-			@PathParam(VISUALIZATION_PARAM) String vis) {
-		log.debug("Getting SLD for Visualization with ObjectId \"{}\"", oid);
-		return Viss.getInstance().getSldForVisualization(oid, dataset, vis);
+			@PathParam(VISUALIZATION_PARAM) String vis,
+			@PathParam(STYLE_PARAM) ObjectId style) {
+		log.debug("Getting Style {} for visualization \"{}\"", style, vis);
+		return Viss.getInstance().getStyle(resource, dataset, vis, style);
 	}
 	
+	@GET
+	@Path(SLD_FOR_STYLE)
+	@Produces(STYLED_LAYER_DESCRIPTOR)
+	public StyledLayerDescriptorDocument getSld(
+			@PathParam(RESOURCE_PARAM) ObjectId resource,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
+			@PathParam(VISUALIZATION_PARAM) String vis,
+			@PathParam(STYLE_PARAM) ObjectId style) {
+		log.debug("Getting Style {} for visualization \"{}\"", style, vis);
+		return Viss.getInstance().getSldForStyle(resource, dataset, vis, style);
+	}
+
+	@DELETE
+	@Path(STYLE_FOR_VISUALIZATION)
+	public void deleteStyle(
+			@PathParam(RESOURCE_PARAM) ObjectId resource,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
+			@PathParam(VISUALIZATION_PARAM) String vis,
+			@PathParam(STYLE_PARAM) ObjectId style) {
+		log.debug("Deleting Style {} for visualization \"{}\"", style, vis);
+		Viss.getInstance().deleteStyle(resource, dataset, vis, style);
+	}
+
+	@POST
+	@Path(STYLES_FOR_VISUALIZATION)
+	@Produces(JSON_VISUALIZATION_STYLE)
+	@Consumes(STYLED_LAYER_DESCRIPTOR)
+	public Response addStyle(
+			@PathParam(RESOURCE_PARAM) ObjectId resource,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
+			@PathParam(VISUALIZATION_PARAM) String vis, 
+			@Context UriInfo uriI,
+			StyledLayerDescriptorDocument sld) {
+		log.debug("Adding Style for visualization \"{}\"", vis);
+		VisualizationStyle style = Viss.getInstance().addStyle(resource, dataset, vis, sld);
+		URI uri = uriI.getBaseUriBuilder().path(STYLE_FOR_VISUALIZATION).build(resource, dataset, vis, style.getId());
+		return Response.created(uri).entity(style).type(MediaTypes.JSON_VISUALIZATION_STYLE_TYPE).build();
+	}
+
+	@PUT
+	@Path(STYLE_FOR_VISUALIZATION)
+	@Produces(JSON_VISUALIZATION_STYLE)
+	@Consumes(STYLED_LAYER_DESCRIPTOR)
+	public VisualizationStyle changeStyle(
+			@PathParam(RESOURCE_PARAM) ObjectId resource,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
+			@PathParam(VISUALIZATION_PARAM) String vis, 
+			@PathParam(STYLE_PARAM) ObjectId style,
+			StyledLayerDescriptorDocument sld) {
+		log.debug("Changing Style for visualization \"{}\"", vis);
+		return Viss.getInstance().changeStyle(resource, dataset, vis, style, sld);
+	}
 	
 	private static final Lock schemaLock = new ReentrantLock();
 	private static final Map<MediaType, JSONObject> schemas = UwCollectionUtils.map();
@@ -364,8 +423,8 @@ public class RESTServlet {
 		} finally {
 			schemaLock.unlock();
 		}
-
-
 	}
+	
+	
 
 }

@@ -23,8 +23,6 @@ package org.uncertweb.viss.core.vis;
 
 import java.util.Set;
 
-import net.opengis.sld.StyledLayerDescriptorDocument;
-
 import org.codehaus.jettison.json.JSONObject;
 import org.opengis.coverage.grid.GridCoverage;
 import org.uncertweb.viss.core.resource.IDataSet;
@@ -38,7 +36,7 @@ public interface IVisualization {
 
 	/**
 	 * @param dataSet
-	 *          the dataSet to set
+	 *            the dataSet to set
 	 */
 	public void setDataSet(IDataSet dataSet);
 
@@ -49,7 +47,7 @@ public interface IVisualization {
 
 	/**
 	 * @param creator
-	 *          the creator to set
+	 *            the creator to set
 	 */
 	public void setCreator(IVisualizer creator);
 
@@ -60,7 +58,7 @@ public interface IVisualization {
 
 	/**
 	 * @param parameters
-	 *          the parameters to set
+	 *            the parameters to set
 	 */
 	public void setParameters(JSONObject parameters);
 
@@ -71,18 +69,18 @@ public interface IVisualization {
 
 	/**
 	 * @param reference
-	 *          the reference to set
+	 *            the reference to set
 	 */
 	public void setReference(IVisualizationReference reference);
 
 	/**
 	 * @return the visId
 	 */
-	public String getVisId();
+	public String getId();
 
 	/**
 	 * @param visId
-	 *          the visId to set
+	 *            the visId to set
 	 */
 	public void setVisId(String visId);
 
@@ -93,7 +91,7 @@ public interface IVisualization {
 
 	/**
 	 * @param minValue
-	 *          the minValue to set
+	 *            the minValue to set
 	 */
 	public void setMinValue(Double minValue);
 
@@ -104,7 +102,7 @@ public interface IVisualization {
 
 	/**
 	 * @param maxValue
-	 *          the maxValue to set
+	 *            the maxValue to set
 	 */
 	public void setMaxValue(Double maxValue);
 
@@ -115,20 +113,9 @@ public interface IVisualization {
 
 	/**
 	 * @param uom
-	 *          the uom to set
+	 *            the uom to set
 	 */
 	public void setUom(String uom);
-
-	/**
-	 * @return the sld
-	 */
-	public StyledLayerDescriptorDocument getSld();
-
-	/**
-	 * @param sld
-	 *          the sld to set
-	 */
-	public void setSld(StyledLayerDescriptorDocument sld);
 
 	/**
 	 * @return the coverages
@@ -137,8 +124,14 @@ public interface IVisualization {
 
 	/**
 	 * @param coverages
-	 *          the coverages to set
+	 *            the coverages to set
 	 */
 	public void setCoverages(Set<GridCoverage> coverages);
+
+	public void addStyle(VisualizationStyle style);
+
+	public void removeStyle(VisualizationStyle style);
+
+	public Set<VisualizationStyle> getStyles();
 
 }

@@ -50,6 +50,8 @@ public interface IDataSet {
 	public void setResource(IResource r);
 
 	public Object getContent();
+	
+	public String getUom();
 
 	public void setContent(Object c);
 }

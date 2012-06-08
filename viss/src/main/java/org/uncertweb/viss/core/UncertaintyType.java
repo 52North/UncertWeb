@@ -1,4 +1,5 @@
-/* Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+/*
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
  *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
@@ -158,6 +159,10 @@ public enum UncertaintyType {
 			return LESS_THAN_URI;
 		default: return null;
 		}
+	}
+	
+	public Set<URI> getAlias() {
+		return alias;
 	}
 	
 	private UncertaintyType(Class<? extends IUncertainty> clazz, URI... uris) {

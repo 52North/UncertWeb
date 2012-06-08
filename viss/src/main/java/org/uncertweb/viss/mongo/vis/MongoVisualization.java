@@ -23,8 +23,6 @@ package org.uncertweb.viss.mongo.vis;
 
 import java.util.Set;
 
-import net.opengis.sld.StyledLayerDescriptorDocument;
-
 import org.codehaus.jettison.json.JSONObject;
 import org.opengis.coverage.grid.GridCoverage;
 import org.uncertweb.utils.UwCollectionUtils;
@@ -32,7 +30,9 @@ import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizationReference;
 import org.uncertweb.viss.core.vis.IVisualizer;
+import org.uncertweb.viss.core.vis.VisualizationStyle;
 
+import com.google.code.morphia.annotations.PostLoad;
 import com.google.code.morphia.annotations.Reference;
 import com.google.code.morphia.annotations.Transient;
 
@@ -45,15 +45,20 @@ public class MongoVisualization implements IVisualization {
 	private double minValue;
 	private double maxValue;
 	private String uom;
+	private Set<VisualizationStyle> styles = UwCollectionUtils.set();;
 
 	@Reference
 	private IDataSet dataSet;
-	
-	@Transient
-	private StyledLayerDescriptorDocument sld;
 
 	@Transient
 	private Set<GridCoverage> coverages = UwCollectionUtils.set();
+	
+	@PostLoad
+	public void postLoad() {
+		for (VisualizationStyle s : getStyles()) {
+			s.setVis(this);
+		}
+	}
 
 	@Override
 	public IVisualizer getCreator() {
@@ -86,7 +91,7 @@ public class MongoVisualization implements IVisualization {
 	}
 
 	@Override
-	public String getVisId() {
+	public String getId() {
 		return visId;
 	}
 
@@ -126,16 +131,6 @@ public class MongoVisualization implements IVisualization {
 	}
 
 	@Override
-	public StyledLayerDescriptorDocument getSld() {
-		return sld;
-	}
-
-	@Override
-	public void setSld(StyledLayerDescriptorDocument sld) {
-		this.sld = sld;
-	}
-
-	@Override
 	public Set<GridCoverage> getCoverages() {
 		return coverages;
 	}
@@ -153,6 +148,21 @@ public class MongoVisualization implements IVisualization {
 	@Override
 	public void setDataSet(IDataSet dataSet) {
 		this.dataSet = dataSet;
+	}
+
+	@Override
+	public void addStyle(VisualizationStyle style) {
+		this.styles.add(style);
+	}
+
+	@Override
+	public void removeStyle(VisualizationStyle style) {
+		this.styles.remove(style);
+	}
+
+	@Override
+	public Set<VisualizationStyle> getStyles() {
+		return this.styles;
 	}
 
 }

@@ -68,7 +68,7 @@ public class DataSetProvider implements MessageBodyWriter<IDataSet> {
 	}
 
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return mt.equals(JSON_DATASET_TYPE) && IDataSet.class.isAssignableFrom(t);
+		return mt.isCompatible(JSON_DATASET_TYPE) && IDataSet.class.isAssignableFrom(t);
 	}
 
 	public void writeTo(IDataSet r, Class<?> t, Type gt, Annotation[] a,
@@ -80,8 +80,8 @@ public class DataSetProvider implements MessageBodyWriter<IDataSet> {
 			for (IVisualization v : r.getVisualizations()) {
 				URI uri = uriInfo.getBaseUriBuilder()
 					    .path(RESTServlet.VISUALIZATION)
-					    .build(r.getResource().getId(),r.getId(), v.getVisId());
-					vis.put(new JSONObject().put(ID_KEY, v.getVisId()).put(HREF_KEY, uri));
+					    .build(r.getResource().getId(),r.getId(), v.getId());
+					vis.put(new JSONObject().put(ID_KEY, v.getId()).put(HREF_KEY, uri));
 			}
 			JSONObject j = new JSONObject()
 				.put(ID_KEY, r.getId())

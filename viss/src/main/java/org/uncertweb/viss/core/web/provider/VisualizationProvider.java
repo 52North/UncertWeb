@@ -21,16 +21,17 @@
  */
 package org.uncertweb.viss.core.web.provider;
 
-import static org.uncertweb.viss.core.util.JSONConstants.CUSTOM_SLD_KEY;
-import static org.uncertweb.viss.core.util.JSONConstants.HREF_KEY;
-import static org.uncertweb.viss.core.util.JSONConstants.ID_KEY;
+import static org.uncertweb.utils.UwJsonConstants.HREF_KEY;
+import static org.uncertweb.utils.UwJsonConstants.ID_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.LAYERS_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.MAX_VALUE_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.MIN_VALUE_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.PARAMS;
 import static org.uncertweb.viss.core.util.JSONConstants.REFERENCE_KEY;
+import static org.uncertweb.viss.core.util.JSONConstants.STYLES_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.UOM_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.URL_KEY;
+import static org.uncertweb.viss.core.util.JSONConstants.VISUALIZER_KEY;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_TYPE;
 
@@ -39,6 +40,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Set;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -55,6 +57,7 @@ import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizationReference;
+import org.uncertweb.viss.core.vis.VisualizationStyle;
 import org.uncertweb.viss.core.web.RESTServlet;
 
 import com.sun.jersey.core.util.ReaderWriter;
@@ -94,20 +97,30 @@ public class VisualizationProvider implements MessageBodyWriter<IVisualization> 
 					.build(v.getDataSet().getResource().getId(),
 							v.getDataSet().getId(),
 							v.getCreator().getShortName());
+			
+			
 			JSONObject j = new JSONObject()
-					.put(ID_KEY, v.getVisId())
-					.put("visualizer",
+					.put(ID_KEY, v.getId())
+					.put(VISUALIZER_KEY,
 							new JSONObject().put(ID_KEY,
 									v.getCreator().getShortName()).put(
 									HREF_KEY, uri))
 					.put(PARAMS, v.getParameters())
 					.put(MIN_VALUE_KEY, v.getMinValue())
 					.put(MAX_VALUE_KEY, v.getMaxValue())
-					.put(UOM_KEY, v.getUom())
-					.put(CUSTOM_SLD_KEY, v.getSld() != null);
-
+					.put(UOM_KEY, v.getUom());
+			
+			Set<VisualizationStyle> styles = v.getStyles();
+			if (styles != null) {
+				URI su = uriInfo
+						.getBaseUriBuilder()
+						.path(RESTServlet.STYLES_FOR_VISUALIZATION)
+						.build(v.getDataSet().getResource().getId(),
+								v.getDataSet().getId(), v.getId());
+				j.put(STYLES_KEY, su);
+			}
+			
 			IVisualizationReference vr = v.getReference();
-
 			if (vr != null) {
 				JSONArray ar = new JSONArray();
 				for (String l : vr.getLayers()) {

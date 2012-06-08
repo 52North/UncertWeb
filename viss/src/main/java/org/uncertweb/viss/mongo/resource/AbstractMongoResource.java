@@ -30,6 +30,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.utils.UwIOUtils;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 
@@ -177,7 +178,7 @@ public abstract class AbstractMongoResource<T> implements IResource {
 	}
 	
 	protected void finalize() {
-		this.close();
+		UwIOUtils.closeQuietly(this);
 	}
-
+	
 }

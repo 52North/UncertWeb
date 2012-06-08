@@ -21,28 +21,28 @@
  */
 package org.uncertweb.viss.mongo.resource;
 
+import org.uncertweb.netcdf.INcUwVariable;
 import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.resource.time.ITemporalExtent;
-import org.uncertweb.viss.vis.netcdf.UncertaintyVariable;
 
 import com.google.code.morphia.annotations.Polymorphic;
 import com.google.code.morphia.annotations.PrePersist;
 import com.google.code.morphia.annotations.Property;
 
 @Polymorphic
-public class MongoNetCDFDataSet extends AbstractMongoDataSet<UncertaintyVariable>{
-	
+public class MongoNetCDFDataSet extends AbstractMongoDataSet<INcUwVariable> {
+
 	@Property
 	private String variableName;
-	
+
 	public MongoNetCDFDataSet() {
-	}	
-	
-	public MongoNetCDFDataSet(MongoNetCDFResource resource, UncertaintyVariable v) {
+	}
+
+	public MongoNetCDFDataSet(MongoNetCDFResource resource, INcUwVariable v) {
 		super(resource);
 		setContent(v);
 	}
-	
+
 	@Override
 	public String getPhenomenon() {
 		return getContent().getName();
@@ -52,20 +52,26 @@ public class MongoNetCDFDataSet extends AbstractMongoDataSet<UncertaintyVariable
 	public UncertaintyType getType() {
 		return getContent().getType();
 	}
-	
+
 	@Override
 	protected ITemporalExtent loadTemporalExtent() {
 		return getExtent(getContent().getTimes());
 	}
 
 	@PrePersist
-	public void saveVariableAsString(){
+	public void saveVariableAsString() {
 		this.variableName = getContent().getName();
 	}
 
 	@Override
-	protected UncertaintyVariable loadContent() {
-		return ((MongoNetCDFResource) getResource()).getContent().getVariable(this.variableName);
+	protected INcUwVariable loadContent() {
+		return ((MongoNetCDFResource) getResource()).getContent()
+				.getPrimaryVariable(this.variableName);
 	}
-	
+
+	@Override
+	public String getUom() {
+		return getContent().getUnit();
+	}
+
 }

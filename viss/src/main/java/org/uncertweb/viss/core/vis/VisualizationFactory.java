@@ -134,7 +134,7 @@ public class VisualizationFactory {
 	public static IVisualization validate(IVisualization vis) {
 		Validate.notNull(vis);
 		Validate.notNull(vis.getDataSet());
-		Validate.notNull(vis.getVisId());
+		Validate.notNull(vis.getId());
 		Validate.notNull(vis.getCreator());
 		Validate.notNull(vis.getParameters());
 		Validate.notNull(vis.getMinValue());

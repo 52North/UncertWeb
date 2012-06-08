@@ -21,13 +21,14 @@
  */
 package org.uncertweb.viss.core.resource;
 
+import java.io.Closeable;
 import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 
 import org.bson.types.ObjectId;
 
-public interface IResource {
+public interface IResource extends Closeable {
 
 	public ObjectId getId();
 
@@ -38,6 +39,4 @@ public interface IResource {
 	public Object getResource();
 
 	public Set<IDataSet> getDataSets();
-	
-	public void close();
 }

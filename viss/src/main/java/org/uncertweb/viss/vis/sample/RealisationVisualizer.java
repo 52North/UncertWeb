@@ -27,6 +27,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertml.IUncertainty;
 import org.uncertml.sample.ContinuousRealisation;
+import org.uncertweb.netcdf.NcUwVariableWithDimensions;
 import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
@@ -35,7 +36,6 @@ import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Id;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
-import org.uncertweb.viss.vis.netcdf.UncertaintyVariable;
 
 @Id("Realisation")
 @Description("Visualizers a Realisation")
@@ -71,9 +71,9 @@ public class RealisationVisualizer extends
 		try {
 			Map<String, JSONObject> options = super.getOptionsForDataSet(r);
 			Object o = r.getContent();
-			if (o instanceof UncertaintyVariable) {
-				ContinuousRealisation real = (ContinuousRealisation) ((UncertaintyVariable) r
-						.getContent()).iterator().next().getValue();
+			if (o instanceof NcUwVariableWithDimensions) {
+				ContinuousRealisation real = (ContinuousRealisation) ((NcUwVariableWithDimensions) r
+						.getContent()).iterator().next().getResult().getValue();
 				options.get(REALISATION_PARAMETER)
 				.put(JSONSchema.Key.MAXIMUM,
 						real.getValues().size()-1);

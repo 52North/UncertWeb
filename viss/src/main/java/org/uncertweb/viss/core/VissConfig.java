@@ -21,14 +21,14 @@
  */
 package org.uncertweb.viss.core;
 
-import static org.uncertweb.viss.core.util.Constants.CLEAN_UP_INTERVAL_DEFAULT;
-import static org.uncertweb.viss.core.util.Constants.CLEAN_UP_INTERVAL_KEY;
-import static org.uncertweb.viss.core.util.Constants.CONFIG_FILE;
-import static org.uncertweb.viss.core.util.Constants.DELETE_OLDER_THAN_PERIOD_DEFAULT;
-import static org.uncertweb.viss.core.util.Constants.DELETE_OLDER_THAN_PERIOD_KEY;
-import static org.uncertweb.viss.core.util.Constants.RESOURCE_STORE_KEY;
-import static org.uncertweb.viss.core.util.Constants.WMS_ADAPTER_KEY;
-import static org.uncertweb.viss.core.util.Constants.WORKING_DIR_KEY;
+import static org.uncertweb.viss.core.util.VissConstants.CLEAN_UP_INTERVAL_DEFAULT;
+import static org.uncertweb.viss.core.util.VissConstants.CLEAN_UP_INTERVAL_KEY;
+import static org.uncertweb.viss.core.util.VissConstants.CONFIG_FILE;
+import static org.uncertweb.viss.core.util.VissConstants.DELETE_OLDER_THAN_PERIOD_DEFAULT;
+import static org.uncertweb.viss.core.util.VissConstants.DELETE_OLDER_THAN_PERIOD_KEY;
+import static org.uncertweb.viss.core.util.VissConstants.RESOURCE_STORE_KEY;
+import static org.uncertweb.viss.core.util.VissConstants.WMS_ADAPTER_KEY;
+import static org.uncertweb.viss.core.util.VissConstants.WORKING_DIR_KEY;
 
 import java.io.File;
 import java.util.Properties;

@@ -87,8 +87,8 @@ public class VisualizationCollectionProvider implements
 			for (IVisualization v : o) {
 				URI uri = uriInfo.getBaseUriBuilder()
 						.path(RESTServlet.VISUALIZATION)
-						.build(v.getDataSet().getResource().getId(),v.getDataSet().getId(), v.getVisId());
-				vis.put(new JSONObject().put(ID_KEY, v.getVisId()).put(HREF_KEY, uri));
+						.build(v.getDataSet().getResource().getId(),v.getDataSet().getId(), v.getId());
+				vis.put(new JSONObject().put(ID_KEY, v.getId()).put(HREF_KEY, uri));
 			}
 			JSONObject j = new JSONObject().put(VISUALIZATIONS_KEY, vis);
 			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);

@@ -34,11 +34,13 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.utils.UwIOUtils;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.resource.IResourceStore;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizer;
+import org.uncertweb.viss.core.vis.VisualizationStyle;
 import org.uncertweb.viss.core.vis.VisualizerFactory;
 import org.uncertweb.viss.core.wms.WMSAdapter;
 
@@ -141,7 +143,7 @@ public class Viss {
 			} catch (Exception e) {
 				throw VissError.internal(e);
 			} finally {
-				resource.close();
+				UwIOUtils.closeQuietly(resource);
 				lock.usingResource(resource, false);
 			}
 		} else {
@@ -160,7 +162,7 @@ public class Viss {
 		for (IVisualization v : getDataset(r, dataset).getVisualizations()) {
 			if (v.getCreator().getShortName().equals(visualizer)) {
 				log.debug("Found Visualizer {}", visualizer);
-				log.debug("ID: {}; Parameters: {}", v.getVisId(), v.getParameters());
+				log.debug("ID: {}; Parameters: {}", v.getId(), v.getParameters());
 				if (param == v.getParameters()) {
 					return v;
 				}
@@ -208,7 +210,7 @@ public class Viss {
 
 	public IVisualization getVisualization(IResource r, ObjectId dataset, String vis) {
 		for (IVisualization v : getDataset(r, dataset).getVisualizations()) {
-			if (v.getVisId().equals(vis))
+			if (v.getId().equals(vis))
 				return v;
 		}
 		throw VissError.noSuchVisualization();
@@ -240,6 +242,67 @@ public class Viss {
 	public Set<IVisualizer> getVisualizers(ObjectId oid, ObjectId dataSet) {
 		return VisualizerFactory.getVisualizersForDataSet(getDataSet(oid, dataSet));
 	}
+	
+
+	protected VisualizationStyle getStyle(IVisualization vis, ObjectId style) {
+		for (VisualizationStyle s : vis.getStyles()) {
+			if (s.getId().equals(style)) {
+				return s;
+			}
+		}
+		throw VissError.noSuchStyle();
+	}
+	
+	public IVisualizer getVisualizer(ObjectId oid, ObjectId dataset, String visualizer) {
+		return VisualizerFactory.getVisualizerForDataSet(getDataSet(oid, dataset), visualizer);
+	}
+
+	public Set<VisualizationStyle> getStyles(ObjectId resource, ObjectId dataset, String vis) {
+		return getVisualization(getResource(resource), dataset, vis).getStyles();
+	}
+
+	public VisualizationStyle getStyle(ObjectId resource, ObjectId dataset, String vis, ObjectId style) {
+		return getStyle(getVisualization(getResource(resource), dataset, vis), style);
+	}
+
+	
+	public void deleteStyle(ObjectId resource, ObjectId dataset, String vis, ObjectId style) {
+		IResource r = getResource(resource);
+		IVisualization v = getVisualization(r, dataset, vis);
+		VisualizationStyle s = getStyle(v, style);
+		getWMS().deleteStyle(s);
+		v.removeStyle(s);
+		getStore().saveResource(r);
+	}
+
+	public VisualizationStyle addStyle(ObjectId resource, ObjectId dataset, String vis, StyledLayerDescriptorDocument sld) {
+		IResource r = getResource(resource);
+		IVisualization v = getVisualization(r, dataset, vis);
+		VisualizationStyle s = new VisualizationStyle(v, sld);
+		v.addStyle(s);
+		getWMS().addStyle(s);
+		getStore().saveResource(r);
+		return s;
+	}
+	
+	public VisualizationStyle changeStyle(ObjectId resource, ObjectId dataset,
+			String vis, ObjectId style, StyledLayerDescriptorDocument sld) {
+		IResource r = getResource(resource);
+		IVisualization v = getVisualization(r, dataset, vis);
+		VisualizationStyle s = getStyle(v, style);
+		getWMS().deleteStyle(s);
+		s.setSld(sld);
+		getWMS().addStyle(s);
+		return s;
+	}
+
+	public StyledLayerDescriptorDocument getSldForStyle(ObjectId resource,
+			ObjectId dataset, String vis, ObjectId style) {
+		IResource r = getResource(resource);
+		IVisualization v = getVisualization(r, dataset, vis);
+		VisualizationStyle s = getStyle(v, style);
+		return getWMS().getStyle(s);
+	}
 
 	public IResource getResource(ObjectId oid) {
 		return getStore().get(oid);
@@ -249,29 +312,12 @@ public class Viss {
 		return getStore().getAllResources();
 	}
 
-	public StyledLayerDescriptorDocument getSldForVisualization(ObjectId oid, ObjectId dataset, String vis) {
-		return getWMS().getSldForVisualization(getVisualization(oid, dataset, vis));
-	}
-
-	public void setSldForVisualization(ObjectId oid, ObjectId dataset, String vis, StyledLayerDescriptorDocument sld) {
-		IResource r = getResource(oid);
-		IVisualization v = getVisualization(r, dataset, vis);
-		v.setSld(sld);
-		getWMS().setSldForVisualization(v);
-		getStore().saveResource(r);
-
-	}
-
 	protected IResourceStore getStore() {
 		return this.store;
 	}
 
 	protected WMSAdapter getWMS() {
 		return this.wms;
-	}
-
-	public IVisualizer getVisualizer(ObjectId oid, ObjectId dataset, String visualizer) {
-		return VisualizerFactory.getVisualizerForDataSet(getDataSet(oid, dataset), visualizer);
 	}
 
 }

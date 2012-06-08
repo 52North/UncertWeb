@@ -54,6 +54,10 @@ public class VissError extends WebApplicationException {
 		}
 	}
 
+	public static VissError internal(String messageFormat, Object... o) {
+		return new VissError(Status.INTERNAL_SERVER_ERROR, String.format(messageFormat, o));
+	}
+	
 	public static VissError internal(String message) {
 		return new VissError(Status.INTERNAL_SERVER_ERROR, message);
 	}
@@ -82,6 +86,10 @@ public class VissError extends WebApplicationException {
 
 	public static VissError noSuchVisualizer() {
 		return notFound("No such Visualizer.");
+	}
+	
+	public static VissError noSuchStyle() {
+		return notFound("No such VisualizationStyle.");
 	}
 
 	public static VissError noSuchVisualization() {

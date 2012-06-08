@@ -25,41 +25,24 @@ import org.uncertweb.utils.UwJsonConstants;
 
 public class JSONConstants extends UwJsonConstants {
 
-	public static final String CUSTOM_SLD_KEY = "customSld";
-
 	public static final String DATASETS_KEY = "dataSets";
-
 	public static final String DESCRIPTION_KEY = "description";
-
 	public static final String LAYERS_KEY = "layers";
-
 	public static final String MAX_VALUE_KEY = "maxValue";
-
 	public static final String MIME_TYPE_KEY = "mimeType";
-
 	public static final String MIN_VALUE_KEY = "minValue";
-
 	public static final String OPTIONS_KEY = "options";
-
 	public static final String PARAMS = "params";
-
 	public static final String PHENOMENON_KEY = "phenomenon";
-
 	public static final String REFERENCE_KEY = "reference";
-
 	public static final String RESOURCES_KEY = "resources";
-
 	public static final String SUPPORTED_UNCERTAINTIES_KEY = "supportedUncertainties";
-
 	public static final String UNCERTAINTY_TYPE_KEY = "type";
-
 	public static final String UOM_KEY = "uom";
-
+	public static final String STYLES_KEY = "styles";
+	public static final String SLD_KEY = "sld";
 	public static final String URL_KEY = "url";
-
 	public static final String VISUALIZATIONS_KEY = "visualizations";
-
 	public static final String VISUALIZER_KEY = "visualizer";
-
 	public static final String VISUALIZERS_KEY = "visualizers";
 }

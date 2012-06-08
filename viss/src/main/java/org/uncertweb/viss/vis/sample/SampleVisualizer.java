@@ -26,9 +26,12 @@ import java.util.Map;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertml.IUncertainty;
+import org.uncertml.io.JSONEncoder;
 import org.uncertml.sample.AbstractRealisation;
 import org.uncertml.sample.AbstractSample;
 import org.uncertml.sample.ContinuousRealisation;
+import org.uncertml.sample.RandomSample;
+import org.uncertweb.netcdf.NcUwVariableWithDimensions;
 import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
@@ -37,7 +40,6 @@ import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Id;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
-import org.uncertweb.viss.vis.netcdf.UncertaintyVariable;
 
 @Id("Sample")
 @Description("Visualizes a Sample")
@@ -91,15 +93,13 @@ public class SampleVisualizer extends
 	public Map<String, JSONObject> getOptionsForDataSet(IDataSet r) {
 		try {
 			Map<String, JSONObject> options = super.getOptionsForDataSet(r);
-			UncertaintyVariable uv = ((UncertaintyVariable) r.getContent());
-			AbstractSample as = (AbstractSample) uv.iterator().next().getValue();
+			NcUwVariableWithDimensions uv = ((NcUwVariableWithDimensions) r.getContent());
+			AbstractSample as = (AbstractSample) uv.iterator().next().getResult().getValue();
 			AbstractRealisation ar = as.getRealisations().get(0);
 			ContinuousRealisation cr = (ContinuousRealisation) ar;
 			
-			options.get(SAMPLE_PARAMETER)
-					.put(JSONSchema.Key.MAXIMUM, as.getRealisations().size() - 1);
-			options.get(REALISATION_PARAMETER)
-					.put(JSONSchema.Key.MAXIMUM, cr.getValues().size() - 1);
+			options.get(SAMPLE_PARAMETER).put(JSONSchema.Key.MAXIMUM, as.getRealisations().size() - 1);
+			options.get(REALISATION_PARAMETER).put(JSONSchema.Key.MAXIMUM, cr.getValues().size() - 1);
 			
 			return options;
 		} catch (JSONException e) {
@@ -124,4 +124,12 @@ public class SampleVisualizer extends
 		}
 	}
 
+	public static void main(String[] args) {
+	IUncertainty u = new RandomSample(new AbstractRealisation[] { 
+			new ContinuousRealisation(new double[] { 1.1, 1.2, 1.3 }),
+			new ContinuousRealisation(new double[] { 1.0, 1.1, 1.2 })
+	});
+	System.out.println(new JSONEncoder().encode(u));
+	}
+	
 }

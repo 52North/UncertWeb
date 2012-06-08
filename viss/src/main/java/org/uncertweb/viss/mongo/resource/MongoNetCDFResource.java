@@ -26,22 +26,17 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
+import org.uncertweb.netcdf.NcUwFile;
+import org.uncertweb.netcdf.INcUwVariable;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.MediaTypes;
-import org.uncertweb.viss.vis.netcdf.UncertaintyNetCDF;
-import org.uncertweb.viss.vis.netcdf.UncertaintyVariable;
-
-import ucar.nc2.NetcdfFile;
 
 import com.google.code.morphia.annotations.Polymorphic;
 
 @Polymorphic
-public class MongoNetCDFResource extends
-		AbstractMongoResource<UncertaintyNetCDF> {
-
-	private static final boolean LOAD_TO_MEMORY = false;
+public class MongoNetCDFResource extends AbstractMongoResource<NcUwFile> {
 
 	public MongoNetCDFResource(File f, ObjectId oid, long checksum) {
 		super(MediaTypes.NETCDF_TYPE, f, oid, checksum);
@@ -50,30 +45,29 @@ public class MongoNetCDFResource extends
 	public MongoNetCDFResource() {
 		super(MediaTypes.NETCDF_TYPE);
 	}
-	
+
 	@Override
 	protected Set<IDataSet> createDataSets() {
 		log.debug("Loading Datasets.");
 		Set<IDataSet> dss = UwCollectionUtils.set();
-		for (UncertaintyVariable v : getContent().getVariables()) {
+		for (INcUwVariable v : getContent().getPrimaryVariables()) {
 			log.debug("Creating dataset from Variable '{}'", v.getName());
-			dss.add(new MongoNetCDFDataSet(this, v));
+			if (v.isUncertaintyVariable()) {
+				dss.add(new MongoNetCDFDataSet(this, v));
+			}
 		}
 		return dss;
 	}
 
 	@Override
-	protected UncertaintyNetCDF loadContent() {
+	protected NcUwFile loadContent() {
 		log.debug("Size: {}", getFile().length());
 		String path = getFile().getAbsolutePath();
-		NetcdfFile f;
 		try {
-			f = (LOAD_TO_MEMORY) ? NetcdfFile.openInMemory(path)
-					: NetcdfFile.open(path);
+			return new NcUwFile(path);
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
-		return new UncertaintyNetCDF(f);
 	}
 
 	@Override
@@ -84,5 +78,5 @@ public class MongoNetCDFResource extends
 		} catch (IOException e) {
 		}
 	}
-	
+
 }

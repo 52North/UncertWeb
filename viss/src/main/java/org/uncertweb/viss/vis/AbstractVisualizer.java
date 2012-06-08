@@ -164,6 +164,7 @@ public abstract class AbstractVisualizer implements IVisualizer {
 	protected boolean isTimeAware() {
 		return isTimeAware(getDataSet());
 	}
+	
 	protected boolean isTimeAware(IDataSet ds) {
 		return !(ds.getTemporalExtent() == null || ds.getTemporalExtent() instanceof NoTemporalExtent);
 	}

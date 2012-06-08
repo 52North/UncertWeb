@@ -31,9 +31,9 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
+import org.uncertweb.netcdf.NcUwObservation;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.UncertaintyType;
-import org.uncertweb.viss.core.UncertaintyValue;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.JSONSchema;
@@ -279,11 +279,11 @@ public abstract class NormalDistributionVisualizer extends
 		double min = Double.POSITIVE_INFINITY;
 		double max = Double.NEGATIVE_INFINITY;
 		
-		Iterator<UncertaintyValue> i = getIteratorForDataSet(r);		
+		Iterator<NcUwObservation> i = getIteratorForDataSet(r);		
 		while (i.hasNext()){
-			UncertaintyValue val = i.next();
-			if (val.getValue() != null) {
-				NormalDistribution nd = (NormalDistribution) val.getValue();
+			NcUwObservation val = i.next();
+			if (val.getResult() != null) {
+				NormalDistribution nd = (NormalDistribution) val.getResult().getValue();
 				double m = nd.getMean().get(0);
 				double sd = FastMath.sqrt(nd.getVariance().get(0));
 				min = FastMath.min(min, m - tsd * sd);

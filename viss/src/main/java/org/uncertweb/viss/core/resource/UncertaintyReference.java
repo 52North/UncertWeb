@@ -1,10 +1,30 @@
+/*
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
+ *                   48155 Muenster, Germany                  info@52north.org
+ *
+ * Author: Christian Autermann
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
+ * Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package org.uncertweb.viss.core.resource;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
@@ -14,6 +34,8 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertml.statistic.ConstraintType;
 import org.uncertml.statistic.ProbabilityConstraint;
+import org.uncertweb.utils.MultivaluedHashMap;
+import org.uncertweb.utils.MultivaluedMap;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.UncertaintyType;
 
@@ -28,7 +50,7 @@ public class UncertaintyReference {
 	private File f;
 
 	@Transient
-	private Map<URI, Number[]> additionalUris;
+	private MultivaluedMap<URI, Object> additionalUris;
 
 	private List<ProbabilityConstraint> constraints;
 
@@ -116,21 +138,21 @@ public class UncertaintyReference {
 		this.json = json;
 	}
 
-	public Map<URI, Number[]> getAdditionalUris() {
+	public MultivaluedMap<URI, Object> getAdditionalUris() {
 		if (additionalUris == null) {
-			additionalUris = UwCollectionUtils.map();
+			additionalUris = new MultivaluedHashMap<URI, Object>();
 			if (constraints != null) {
 				for (ProbabilityConstraint pc : constraints) {
-					additionalUris.put(
+					additionalUris.add(
 							UncertaintyType.getURIforConstraint(pc.getType()),
-							new Number[] { Double.valueOf(pc.getValue()) });
+							Double.valueOf(pc.getValue()));
 				}
 			}
 		}
 		return additionalUris;
 	}
 
-	public void setAdditionalUris(Map<URI, Number[]> additionalUris) {
+	public void setAdditionalUris(MultivaluedMap<URI, Object> additionalUris) {
 		this.additionalUris = additionalUris;
 	}
 

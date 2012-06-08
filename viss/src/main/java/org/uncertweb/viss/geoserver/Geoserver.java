@@ -307,12 +307,13 @@ public class Geoserver {
 		return r;
 	}
 
-	public void deleteStyle(String s) throws IOException {
+	public boolean deleteStyle(String s) throws IOException {
 		log.debug("Deleting Style '{}'", s);
 		HttpURLConnection con;
 		con = RestBuilder.path(url("styles/%s"), s).auth(this.user, this.pass)
 				.param("purge", true).delete();
 		logCon("Style deletion", con);
+		return isOk(con);
 	}
 
 	public Set<String> getCoverageStores(String ws) throws IOException,

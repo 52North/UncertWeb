@@ -26,6 +26,7 @@ import net.opengis.sld.StyledLayerDescriptorDocument;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizationReference;
+import org.uncertweb.viss.core.vis.VisualizationStyle;
 
 public interface WMSAdapter {
 
@@ -35,9 +36,11 @@ public interface WMSAdapter {
 
 	public boolean deleteVisualization(IVisualization vis);
 
-	public boolean setSldForVisualization(IVisualization vis);
+	public StyledLayerDescriptorDocument getStyle(VisualizationStyle visualization);
 
-	public StyledLayerDescriptorDocument getSldForVisualization(
-	    IVisualization visualization);
+	public boolean deleteStyle(VisualizationStyle s);
+
+	public boolean addStyle(VisualizationStyle s);
+
 
 }

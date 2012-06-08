@@ -47,14 +47,9 @@
 	</developers>
 
 	<properties>
-		<geotools.version>8.0-M1</geotools.version>
-		<jersey.version>1.8</jersey.version>
-		<morphia.version>0.99</morphia.version>
-
-		<filter.logs>com.sun.jersey.api.container.filter.LoggingFilter</filter.logs>
-		<filter.gzip>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</filter.gzip>
-		<filter.response>${filter.gzip}</filter.response>
-		<filter.request>${filter.gzip}</filter.request>
+		<geotools.version>8.0-RC1</geotools.version>
+		<jersey.version>[1.12,)</jersey.version>
+		<morphia.version>[0.99,)</morphia.version>
 	</properties>
 
 	<dependencies>
@@ -62,22 +57,22 @@
 		<dependency>
 			<groupId>org.uncertml</groupId>
 			<artifactId>uncertml</artifactId>
-			<version>2.0.5-SNAPSHOT</version>
+			<version>[2.0.5-SNAPSHOT,)</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>netcdf-u-api</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>[1.0-SNAPSHOT,)</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>om-api</artifactId>
-			<version>0.0.8-SNAPSHOT</version>
+			<version>[0.0.8-SNAPSHOT,)</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>uncertweb-utils</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>[1.0.0-SNAPSHOT,)</version>
 		</dependency>
 
 		<!-- Geotools ###################################################### -->
@@ -122,14 +117,14 @@
 
 		<!-- Utils ######################################################### -->
 		<dependency>
-			<groupId>org.apache.commons</groupId>
+			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>1.3.2</version>
+			<version>2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.5</version>
+			<version>1.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -142,9 +137,14 @@
 			<version>2.2</version>
 		</dependency>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>${slf4j-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
-			<version>0.9.5</version>
+			<version>0.9.8</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -157,18 +157,11 @@
 			</exclusions>
 		</dependency>
 
-
 		<!-- Testing ####################################################### -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jul-to-slf4j</artifactId>
-			<version>1.6.1</version>
+			<version>[4.10,)</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -229,68 +222,19 @@
 			<url>http://reflections.googlecode.com/svn/repo</url>
 		</repository>
 	</repositories>
-
-	<profiles>
-		<profile>
-			<id>withDeploy</id>
-			<activation></activation>
-			<properties>
-				<response.filter>${cors.filter};${logging.filter}</response.filter>
-				<request.filter>${logging.filter}</request.filter>
-			</properties>
-			<build>
-				<defaultGoal>tomcat:deploy</defaultGoal>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>properties-maven-plugin</artifactId>
-						<version>1.0-alpha-2</version>
-						<executions>
-							<execution>
-								<phase>initialize</phase>
-								<goals>
-									<goal>read-project-properties</goal>
-								</goals>
-								<configuration>
-									<files>
-										<file>${basedir}/deploy.properties</file>
-									</files>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>tomcat-maven-plugin</artifactId>
-						<version>1.1</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>deploy</goal>
-								</goals>
-								<configuration>
-									<update>true</update>
-									<mode>war</mode>
-									<url>${deploy.tomcat.manager.url}</url>
-									<path>/${project.artifactId}</path>
-									<password>${deploy.tomcat.manager.password}</password>
-									<username>${deploy.tomcat.manager.username}</username>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>withLogging</id>
-			<properties>
-				<filter.response>${filter.logs}</filter.response>
-				<filter.request>${filter.logs}</filter.request>
-			</properties>
-		</profile>
-	</profiles>
-	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>mc-release</id>
+			<name>Local Maven repository of releases</name>
+			<url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<resources>
@@ -319,7 +263,7 @@
 				<configuration>
 					<filterDeploymentDescriptors>true</filterDeploymentDescriptors>
 					<webResources>
-						 <resource>
+						<resource>
 							<directory>schema</directory>
 							<targetPath>WEB-INF/classes/schema</targetPath>
 							<filtering>false</filtering>
@@ -388,7 +332,78 @@
 					</includes>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<configuration>
+					<header>license-header.txt</header>
+					<failIfMissing>true</failIfMissing>
+					<aggregate>true</aggregate>
+					<strictCheck>true</strictCheck>
+					<mapping>
+						<java>SLASHSTAR_STYLE</java>
+					</mapping>
+					<excludes>
+						<exclude>schema/**</exclude>
+						<exclude>target/**</exclude>
+						<exclude>**/src/test/resources/**</exclude>
+						<exclude>**/src/main/resources/**</exclude>
+						<exclude>**/src/main/webapp/**</exclude>
+						<exclude>**/src/main/xsd/**</exclude>
+						<exclude>**/*.txt</exclude>
+						<exclude>**/*.json</exclude>
+						<exclude>**/*.xml</exclude>
+						<exclude>**/*.nc</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>license-check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>license-update</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.mycila.maven-license-plugin</groupId>
+										<artifactId>maven-license-plugin</artifactId>
+										<versionRange>[1.9.0,)</versionRange>
+										<goals>
+											<goal>format</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 </project>
 	

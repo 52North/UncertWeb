@@ -1,25 +1,28 @@
+/*
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
+ *                   48155 Muenster, Germany                  info@52north.org
+ *
+ * Author: Christian Autermann
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
+ * Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package org.uncertweb.viss.core;
 
+import static org.uncertweb.netcdf.NcUwConstants.Fragments.*;
 import static org.uncertweb.utils.UwCollectionUtils.toDoubleArray;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_ALPHA;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_BETA;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_DEGREES_OF_FREEDOM;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_DENOMINATOR;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_LEVEL;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_LOCATION;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_LOG_SCALE;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_LOWER;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_MAXIMUM;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_MEAN;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_MINIMUM;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_NUMERATOR;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_ORDER;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_RATE;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_SCALE;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_SHAPE;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_UPPER;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_VALUE;
-import static org.uncertweb.viss.vis.netcdf.NetCDFConstants.PARAMETER_VARIANCE;
 
 import java.net.URI;
 import java.util.List;
@@ -94,85 +97,85 @@ public class UriBasedUncertaintyParser {
 		protected static IUncertainty map(final UncertaintyType t, final Map<URI, Number[]> v) {
 			switch (t) {
 			case BETA_DISTRIBUTION:
-				return new BetaDistribution(getDouble(t, v, PARAMETER_ALPHA),
-						getDouble(t, v, PARAMETER_BETA));
+				return new BetaDistribution(getDouble(t, v, ALPHA),
+						getDouble(t, v, BETA));
 			case CAUCHY_DISTRIBUTION:
 				return new CauchyDistribution(getDouble(t, v,
-						PARAMETER_LOCATION), getDouble(t, v, PARAMETER_SCALE));
+						LOCATION), getDouble(t, v, SCALE));
 			case CHI_SQUARE_DISTRIBUTION:
 				return new ChiSquareDistribution(getIntegr(t, v,
-						PARAMETER_DEGREES_OF_FREEDOM));
+						DEGREES_OF_FREEDOM));
 			case EXPONENTIAL_DISTRIBUTION:
 				return new ExponentialDistribution(getIntegr(t, v,
-						PARAMETER_RATE));
+						RATE));
 			case F_DISTRIBUTION:
 				return new FDistribution(
-						getIntegr(t, v, PARAMETER_DENOMINATOR), getIntegr(t, v,
-								PARAMETER_NUMERATOR));
+						getIntegr(t, v, DENOMINATOR), getIntegr(t, v,
+								NUMERATOR));
 			case GAMMA_DISTRIBUTION:
-				return new GammaDistribution(getDouble(t, v, PARAMETER_SHAPE),
-						getDouble(t, v, PARAMETER_SCALE));
+				return new GammaDistribution(getDouble(t, v, SHAPE),
+						getDouble(t, v, SCALE));
 			case INVERSE_GAMMA_DISTRIBUTION:
 				return new InverseGammaDistribution(getDouble(t, v,
-						PARAMETER_SHAPE), getDouble(t, v, PARAMETER_SCALE));
+						SHAPE), getDouble(t, v, SCALE));
 			case LAPLACE_DISTRIBUTION:
 				return new LaplaceDistribution(getDouble(t, v,
-						PARAMETER_LOCATION), getDouble(t, v, PARAMETER_SCALE));
+						LOCATION), getDouble(t, v, SCALE));
 			case LOGISTIC_DISTRIBUTION:
 				return new LogisticDistribution(getDouble(t, v,
-						PARAMETER_LOCATION), getDouble(t, v, PARAMETER_SCALE));
+						LOCATION), getDouble(t, v, SCALE));
 			case LOG_NORMAL_DISTRIBUTION:
 				return new LogNormalDistribution(getDouble(t, v,
-						PARAMETER_LOG_SCALE), getDouble(t, v, PARAMETER_SHAPE));
+						LOG_SCALE), getDouble(t, v, SHAPE));
 			case NORMAL_DISTRIBUTION:
-				return new NormalDistribution(getDouble(t, v, PARAMETER_MEAN),
-						getDouble(t, v, PARAMETER_VARIANCE));
+				return new NormalDistribution(getDouble(t, v, MEAN),
+						getDouble(t, v, VARIANCE));
 			case NORMAL_INVERSE_GAMMA_DISTRIBUTION:
 				return new NormalInverseGammaDistribution(getDouble(t, v,
-						PARAMETER_MEAN), getDouble(t, v, "varianceScaling"),
-						getDouble(t, v, PARAMETER_SHAPE), getDouble(t, v,
-								PARAMETER_SCALE));
+						MEAN), getDouble(t, v, "varianceScaling"),
+						getDouble(t, v, SHAPE), getDouble(t, v,
+								SCALE));
 			case PARETO_DISTRIBUTION:
-				return new ParetoDistribution(getDouble(t, v, PARAMETER_SCALE),
-						getDouble(t, v, PARAMETER_SHAPE));
+				return new ParetoDistribution(getDouble(t, v, SCALE),
+						getDouble(t, v, SHAPE));
 			case POISSON_DISTRIBUTION:
-				return new PoissonDistribution(getIntegr(t, v, PARAMETER_RATE));
+				return new PoissonDistribution(getIntegr(t, v, RATE));
 			case STUDENT_T_DISTRIBUTION:
 				return new StudentTDistribution(
-						getDouble(t, v, PARAMETER_MEAN), getDouble(t, v,
-								PARAMETER_VARIANCE), getIntegr(t, v,
-								PARAMETER_DEGREES_OF_FREEDOM));
+						getDouble(t, v, MEAN), getDouble(t, v,
+								VARIANCE), getIntegr(t, v,
+								DEGREES_OF_FREEDOM));
 			case UNIFORM_DISTRIBUTION:
 				return new UniformDistribution(getDouble(t, v,
-						PARAMETER_MINIMUM), getDouble(t, v, PARAMETER_MAXIMUM));
+						MINIMUM), getDouble(t, v, MAXIMUM));
 			case WEIBULL_DISTRIBUTION:
 				return new WeibullDistribution(
-						getDouble(t, v, PARAMETER_SCALE), getDouble(t, v,
-								PARAMETER_SHAPE));
+						getDouble(t, v, SCALE), getDouble(t, v,
+								SHAPE));
 			case CENTRED_MOMENT:
-				return new CentredMoment(getIntegr(t, v, PARAMETER_ORDER),
-						getDouble(t, v, PARAMETER_VALUE));
+				return new CentredMoment(getIntegr(t, v, ORDER),
+						getDouble(t, v, VALUE));
 			case INTERQUATILE_RANGE:
-				return new InterquartileRange(getDouble(t, v, PARAMETER_LOWER),
-						getDouble(t, v, PARAMETER_UPPER));
+				return new InterquartileRange(getDouble(t, v, LOWER),
+						getDouble(t, v, UPPER));
 			case MOMENT:
-				return new Moment(getIntegr(t, v, PARAMETER_ORDER), getDouble(
-						t, v, PARAMETER_VALUE));
+				return new Moment(getIntegr(t, v, ORDER), getDouble(
+						t, v, VALUE));
 			case DECILE:
-				return new Decile(getIntegr(t, v, PARAMETER_LEVEL), getDouble(
-						t, v, PARAMETER_VALUE));
+				return new Decile(getIntegr(t, v, LEVEL), getDouble(
+						t, v, VALUE));
 			case PERCENTILE:
-				return new Percentile(getIntegr(t, v, PARAMETER_LEVEL),
-						getDouble(t, v, PARAMETER_VALUE));
+				return new Percentile(getIntegr(t, v, LEVEL),
+						getDouble(t, v, VALUE));
 			case QUANTILE:
-				return new Quantile(getIntegr(t, v, PARAMETER_LEVEL),
-						getDouble(t, v, PARAMETER_VALUE));
+				return new Quantile(getIntegr(t, v, LEVEL),
+						getDouble(t, v, VALUE));
 			case QUARTILE:
-				return new Quartile(getIntegr(t, v, PARAMETER_LEVEL),
-						getDouble(t, v, PARAMETER_VALUE));
+				return new Quartile(getIntegr(t, v, LEVEL),
+						getDouble(t, v, VALUE));
 			case RANGE:
-				return new Range(getDouble(t, v, PARAMETER_LOWER), getDouble(t,
-						v, PARAMETER_UPPER));
+				return new Range(getDouble(t, v, LOWER), getDouble(t,
+						v, UPPER));
 			case STANDARD_DEVIATION:
 				return new StandardDeviation(getDouble(t, v));
 			case COEFFICIENT_OF_VARIATION:

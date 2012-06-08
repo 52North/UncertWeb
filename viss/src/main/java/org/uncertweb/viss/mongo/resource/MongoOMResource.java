@@ -254,7 +254,7 @@ public class MongoOMResource extends
 	public void close() {
 		if (resources != null) {
 			for (AbstractMongoResource<?> r : resources) {
-				r.close();
+				UwIOUtils.closeQuietly(r);
 			}
 		}
 	}

@@ -14,12 +14,22 @@
 
 		<init-param>
 			<param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-			<param-value>${filter.request}</param-value>
+			<param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
 		</init-param>
 
 		<init-param>
 			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-			<param-value>org.uncertweb.viss.core.web.filter.CorsFilter;${filter.response}</param-value>
+			<param-value>org.uncertweb.viss.core.web.filter.CorsFilter;com.sun.jersey.api.container.filter.LoggingFilter</param-value>
+		</init-param>
+		<!-- com.sun.jersey.api.container.filter.GZIPContentEncodingFilter -->
+		<init-param>
+			<param-name>com.sun.jersey.config.feature.logging.DisableEntitylogging</param-name>
+			<param-value>true</param-value>
+		</init-param>
+
+		<init-param>
+			<param-name>com.sun.jersey.config.feature.DisableWADL</param-name>
+			<param-value>true</param-value>
 		</init-param>
 		
 		<load-on-startup>1</load-on-startup>
@@ -27,6 +37,9 @@
 	
 	<listener>
 		<listener-class>org.uncertweb.viss.core.VissConfig$ContextListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.uncertweb.viss.core.web.JerseyLoggingListener</listener-class>
 	</listener>
 
 	<servlet-mapping>

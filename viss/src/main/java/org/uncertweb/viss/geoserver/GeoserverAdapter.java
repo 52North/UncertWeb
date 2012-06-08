@@ -50,10 +50,12 @@ import org.slf4j.LoggerFactory;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.utils.UwStringUtils;
 import org.uncertweb.viss.core.VissError;
+import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.vis.DefaultVisualizationReference;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizationReference;
+import org.uncertweb.viss.core.vis.VisualizationStyle;
 import org.uncertweb.viss.core.wms.WMSAdapter;
 
 public class GeoserverAdapter implements WMSAdapter {
@@ -191,22 +193,17 @@ public class GeoserverAdapter implements WMSAdapter {
 	@Override
 	public boolean deleteResource(IResource resource) {
 		try {
-			return getGeoserver()
-					.deleteWorkspace(resource.getId().toString());
-		} catch (Exception e) {
-			throw VissError.internal(e);
-		}
-	}
-
-	@Override
-	public boolean setSldForVisualization(IVisualization vis) {
-		try {
-			String stylename = getStyleName(vis);
-			if (getGeoserver().createStyle(vis.getSld(), stylename)) {
-				return getGeoserver().setStyle(getLayerName(vis), stylename);
+			
+			for (IDataSet ds : resource.getDataSets()) {
+				for (IVisualization v : ds.getVisualizations()) {
+					for (VisualizationStyle s : v.getStyles()) {
+						deleteStyle(s);
+					}
+				}
 			}
-			return false;
-		} catch (IOException e) {
+			
+			return getGeoserver().deleteWorkspace(resource.getId().toString());
+		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
 	}
@@ -215,19 +212,32 @@ public class GeoserverAdapter implements WMSAdapter {
 	public boolean deleteVisualization(IVisualization vis) {
 		try {
 			boolean deleted = getGeoserver().deleteCoverageStore(getWorkspaceName(vis), getCoverageStoreName(vis));
-			getGeoserver().deleteStyle(getStyleName(vis));
+			for (VisualizationStyle s : vis.getStyles()) {
+				deleteStyle(s);
+			}
 			return deleted;
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
 	}
 
+	private String getWorkspaceName(IVisualization vis) {
+		return vis.getDataSet().getResource().getId().toString();
+	}
+	
+	private String getCoverageStoreName(IVisualization vis) {
+		return vis.getDataSet().getId() + ":" + vis.getId();
+	}
+	
+	private String getLayerName(IVisualization vis) {
+		return getWorkspaceName(vis) + ":" + getCoverageStoreName(vis);
+	}
+	
 	@Override
-	public StyledLayerDescriptorDocument getSldForVisualization(
-			IVisualization vis) {
+	public StyledLayerDescriptorDocument getStyle(VisualizationStyle vis) {
 		StyledLayerDescriptorDocument sld;
 		try {
-			sld = getGeoserver().getStyle(getStyleName(vis));
+			sld = getGeoserver().getStyle(vis.getId().toString());
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -236,21 +246,27 @@ public class GeoserverAdapter implements WMSAdapter {
 		}
 		return sld;
 	}
-	
-	private String getWorkspaceName(IVisualization vis) {
-		return vis.getDataSet().getResource().getId().toString();
+
+	@Override
+	public boolean deleteStyle(VisualizationStyle s) {
+		try {
+			return getGeoserver().deleteStyle(s.getId().toString());
+		} catch (IOException e) {
+			throw VissError.internal(e);
+		}
+		
 	}
-	
-	private String getStyleName(IVisualization vis) {
-		return getLayerName(vis);
-	}
-	
-	private String getCoverageStoreName(IVisualization vis) {
-		return vis.getDataSet().getId() + ":" + vis.getVisId();
-	}
-	
-	private String getLayerName(IVisualization vis) {
-		return getWorkspaceName(vis) + ":" + getCoverageStoreName(vis);
+
+	@Override
+	public boolean addStyle(VisualizationStyle s) {
+		try {
+			if (getGeoserver().createStyle(s.getSld(), s.getId().toString())) {
+				return getGeoserver().setStyle(getLayerName(s.getVis()), s.getId().toString());
+			}
+			return false;
+		} catch (IOException e) {
+			throw VissError.internal(e);
+		}
 	}
 	
 }

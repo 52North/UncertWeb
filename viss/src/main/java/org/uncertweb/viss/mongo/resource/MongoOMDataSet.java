@@ -31,6 +31,7 @@ import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.resource.time.ITemporalExtent;
@@ -88,6 +89,21 @@ public class MongoOMDataSet extends
 	@Override
 	protected IObservationCollection loadContent() {
 		return ((MongoOMResource) getResource()).getObservationsForPhenomenon(getPhenomenon());
+	}
+
+	@Override
+	public String getUom() {
+		String uom = null;
+		for (AbstractObservation ao : getContent().getObservations()) {
+			IResource referencedResource = (IResource) ao.getResult().getValue();
+			String uom2 = referencedResource.getDataSets().iterator().next().getUom();
+			if (uom == null) {
+				uom = uom2;
+			} else if (!uom.equals(uom2)) {
+				throw VissError.internal("Different UOMs");
+			}
+		}
+		return uom;
 	}
 
 }

@@ -38,7 +38,7 @@ import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
-import org.uncertweb.viss.core.util.Constants;
+import org.uncertweb.viss.core.util.VissConstants;
 
 public class VisualizerFactory {
 
@@ -50,7 +50,7 @@ public class VisualizerFactory {
 
 	static {
 		String packages = VissConfig.getInstance().get(
-		    Constants.SEARCH_PACKAGES_KEY);
+		    VissConstants.SEARCH_PACKAGES_KEY);
 		if (packages != null && (packages = packages.trim()).length() != 0) {
 			for (String p : packages.split(",")) {
 				searchPackage(p);
