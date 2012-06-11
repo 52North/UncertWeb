@@ -67,7 +67,7 @@ public class VisualizationCollectionProvider implements
 
 	@Override
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return mt.equals(JSON_VISUALIZATION_LIST_TYPE)
+		return mt.isCompatible(JSON_VISUALIZATION_LIST_TYPE)
 				&& UwReflectionUtils.isParameterizedWith(gt, Iterable.class,
 						IVisualization.class);
 	}

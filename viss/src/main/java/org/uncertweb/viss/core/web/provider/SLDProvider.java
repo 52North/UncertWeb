@@ -56,7 +56,7 @@ public class SLDProvider extends
 
 	@Override
 	public boolean isReadable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return mt.equals(STYLED_LAYER_DESCRIPTOR_TYPE)
+		return mt.isCompatible(STYLED_LAYER_DESCRIPTOR_TYPE)
 		    && StyledLayerDescriptorDocument.class.isAssignableFrom(t);
 	}
 

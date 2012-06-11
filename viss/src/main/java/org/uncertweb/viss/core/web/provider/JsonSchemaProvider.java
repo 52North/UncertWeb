@@ -48,8 +48,8 @@ import com.sun.jersey.core.util.ReaderWriter;
 public class JsonSchemaProvider implements MessageBodyWriter<JSONObject> {
 
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return (mt.equals(JSON_SCHEMA_TYPE) || mt
-		    .equals(MediaType.APPLICATION_JSON))
+		return (mt.isCompatible(JSON_SCHEMA_TYPE) || mt
+		    .isCompatible(MediaType.APPLICATION_JSON_TYPE))
 		    && JSONObject.class.isAssignableFrom(t);
 	}
 

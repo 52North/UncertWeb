@@ -76,7 +76,7 @@ public class VisualizationProvider implements MessageBodyWriter<IVisualization> 
 	@Override
 	public boolean isWriteable(Class<?> type, Type gt, Annotation[] a,
 			MediaType mt) {
-		return mt.equals(JSON_VISUALIZATION_TYPE)
+		return mt.isCompatible(JSON_VISUALIZATION_TYPE)
 				&& IVisualization.class.isAssignableFrom(type);
 	}
 

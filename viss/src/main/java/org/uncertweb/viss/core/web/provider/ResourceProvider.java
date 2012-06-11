@@ -66,9 +66,7 @@ public class ResourceProvider implements MessageBodyWriter<IResource> {
 	}
 
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return (mt.equals(JSON_RESOURCE_TYPE) || mt
-		    .equals(MediaType.TEXT_HTML_TYPE))
-		    && IResource.class.isAssignableFrom(t);
+		return mt.isCompatible(JSON_RESOURCE_TYPE) && IResource.class.isAssignableFrom(t);
 	}
 
 	public void writeTo(IResource r, Class<?> t, Type gt, Annotation[] a,

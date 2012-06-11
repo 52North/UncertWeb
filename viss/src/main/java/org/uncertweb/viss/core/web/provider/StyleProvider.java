@@ -21,8 +21,8 @@
  */
 package org.uncertweb.viss.core.web.provider;
 
+import static org.uncertweb.utils.UwJsonConstants.HREF_KEY;
 import static org.uncertweb.utils.UwJsonConstants.ID_KEY;
-import static org.uncertweb.viss.core.util.JSONConstants.SLD_KEY;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_STYLE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_STYLE_TYPE;
 
@@ -85,7 +85,7 @@ public class StyleProvider implements MessageBodyWriter<VisualizationStyle> {
 							v.getVis().getDataSet().getId(), 
 							v.getVis().getId(),
 							v.getId());
-			JSONObject j = new JSONObject().put(ID_KEY, v.getId()).put(SLD_KEY, su);
+			JSONObject j = new JSONObject().put(ID_KEY, v.getId()).put(HREF_KEY, su);
 			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);
 		} catch (JSONException e) {
 			throw VissError.internal(e);
