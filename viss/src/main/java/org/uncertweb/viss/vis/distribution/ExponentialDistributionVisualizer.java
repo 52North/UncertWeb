@@ -24,11 +24,11 @@ package org.uncertweb.viss.vis.distribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.ExponentialDistribution;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.EXPONENTIAL_DISTRIBUTION)
+@Type(NcUwUncertaintyType.EXPONENTIAL_DISTRIBUTION)
 public abstract class ExponentialDistributionVisualizer extends
     AbstractAnnotatedUncertaintyViusalizer {
 

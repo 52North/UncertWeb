@@ -21,6 +21,21 @@
  */
 package org.uncertweb.netcdf.util;
 
+import static org.uncertweb.utils.IntervalRelation.CONTAINS;
+import static org.uncertweb.utils.IntervalRelation.DURING;
+import static org.uncertweb.utils.IntervalRelation.EQUALS;
+import static org.uncertweb.utils.IntervalRelation.FINISHED_BY;
+import static org.uncertweb.utils.IntervalRelation.FINISHES;
+import static org.uncertweb.utils.IntervalRelation.MEETS;
+import static org.uncertweb.utils.IntervalRelation.MET_BY;
+import static org.uncertweb.utils.IntervalRelation.OVERLAPPED_BY;
+import static org.uncertweb.utils.IntervalRelation.OVERLAPS;
+import static org.uncertweb.utils.IntervalRelation.PRECEDES;
+import static org.uncertweb.utils.IntervalRelation.PRECEDES_BY;
+import static org.uncertweb.utils.IntervalRelation.STARTED_BY;
+import static org.uncertweb.utils.IntervalRelation.STARTS;
+import static org.uncertweb.utils.IntervalRelation.getRelations;
+
 import java.util.Comparator;
 import java.util.Set;
 
@@ -52,28 +67,22 @@ public class TimeObjectComparator implements Comparator<TimeObject> {
 			return o1.getDateTime().compareTo(o2.getDateTime());
 		}
 		if (o1.isInterval() && o2.isInterval()) {
-			Set<IntervalRelation> rels = IntervalRelation.getRelations(
-					o1.getInterval(), o2.getInterval());
-			if (rels.contains(IntervalRelation.EQUALS))
+			Set<IntervalRelation> rels = getRelations(o1.getInterval(), o2.getInterval());
+			if (rels.contains(EQUALS))
 				return 0;
-			if (rels.contains(IntervalRelation.PRECEDES)
-					|| rels.contains(IntervalRelation.MEETS))
+			if (rels.contains(PRECEDES) || rels.contains(MEETS))
 				return -1;
-			if (rels.contains(IntervalRelation.PRECEDES_BY)
-					|| rels.contains(IntervalRelation.MET_BY))
+			if (rels.contains(PRECEDES_BY) || rels.contains(MET_BY))
 				return 1;
-			if (rels.contains(IntervalRelation.STARTS)
-					|| rels.contains(IntervalRelation.FINISHED_BY))
+			if (rels.contains(STARTS) || rels.contains(FINISHED_BY))
 				return -1;
-			if (rels.contains(IntervalRelation.FINISHES)
-					|| rels.contains(IntervalRelation.STARTED_BY))
+			if (rels.contains(FINISHES) || rels.contains(STARTED_BY))
 				return 1;
-			if (rels.contains(IntervalRelation.OVERLAPS))
+			if (rels.contains(OVERLAPS))
 				return -1;
-			if (rels.contains(IntervalRelation.OVERLAPPED_BY))
+			if (rels.contains(OVERLAPPED_BY))
 				return 1;
-			if (rels.contains(IntervalRelation.CONTAINS)
-					|| rels.contains(IntervalRelation.DURING))
+			if (rels.contains(CONTAINS) || rels.contains(DURING))
 				return 0;
 		}
 		return 0;

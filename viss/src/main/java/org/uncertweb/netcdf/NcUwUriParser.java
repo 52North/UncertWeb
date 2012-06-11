@@ -74,18 +74,16 @@ import org.uncertml.statistic.StatisticCollection;
 import org.uncertweb.netcdf.NcUwConstants.Fragments;
 import org.uncertweb.utils.MultivaluedMap;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.viss.core.UncertaintyType;
-import org.uncertweb.viss.core.UriBasedUncertaintyParser;
 
 public class NcUwUriParser {
 	protected static final Logger log = LoggerFactory
-			.getLogger(UriBasedUncertaintyParser.class);
+			.getLogger(NcUwUriParser.class);
 
 //	private final JSONEncoder enc = new JSONEncoder();
-	private final UncertaintyType type;
+	private final NcUwUncertaintyType type;
 	private final MultivaluedMap<URI, Object> values;
 	
-	public NcUwUriParser(final UncertaintyType type, final MultivaluedMap<URI, Object> v) {
+	public NcUwUriParser(final NcUwUncertaintyType type, final MultivaluedMap<URI, Object> v) {
 		this.type = type;
 		this.values = v;
 	}
@@ -94,7 +92,7 @@ public class NcUwUriParser {
 		return this.values;
 	}
 
-	public UncertaintyType getType() {
+	public NcUwUncertaintyType getType() {
 		return this.type;
 	}
 	
@@ -117,6 +115,10 @@ public class NcUwUriParser {
 //			}
 //			log.debug("Parsing map:\n{}", sb);
 //		}
+		if (getValues() == null || getValues().isEmpty()) {
+			return null;
+		}
+		
 		IUncertainty u = _parse();
 //		if (log.isDebugEnabled()) {
 //			log.debug("Parsed Uncertainty: {}", enc.encode(u));
@@ -370,24 +372,24 @@ public class NcUwUriParser {
 
 		final List<ProbabilityConstraint> constraints = UwCollectionUtils.list();
 
-		final List<Object> gt = getValues().get(UncertaintyType.GREATER_THAN_URI);
+		final List<Object> gt = getValues().get(NcUwUncertaintyType.GREATER_THAN_URI);
 		if (gt != null && gt.size() != 0) {
 			constraints.add(new ProbabilityConstraint(
 					ConstraintType.GREATER_THAN, ((Number) gt.get(0))
 					.doubleValue()));
 		}
-		final List<Object> lt = getValues().get(UncertaintyType.LESS_THAN_URI);
+		final List<Object> lt = getValues().get(NcUwUncertaintyType.LESS_THAN_URI);
 		if (lt != null && lt.size() != 0) {
 			constraints.add(new ProbabilityConstraint(ConstraintType.LESS_THAN,
 					((Number) lt.get(0)).doubleValue()));
 		}
-		final List<Object> ge = getValues().get(UncertaintyType.GREATER_OR_EQUAL_URI);
+		final List<Object> ge = getValues().get(NcUwUncertaintyType.GREATER_OR_EQUAL_URI);
 		if (ge != null && ge.size() != 0) {
 			constraints.add(new ProbabilityConstraint(
 					ConstraintType.GREATER_OR_EQUAL, ((Number) ge.get(0))
 					.doubleValue()));
 		}
-		final List<Object> le = getValues().get(UncertaintyType.LESS_OR_EQUAL_URI);
+		final List<Object> le = getValues().get(NcUwUncertaintyType.LESS_OR_EQUAL_URI);
 		if (le != null && le.size() != 0) {
 			constraints.add(new ProbabilityConstraint(
 					ConstraintType.LESS_OR_EQUAL, ((Number) le.get(0))
@@ -404,9 +406,9 @@ public class NcUwUriParser {
 	public StatisticCollection parseStatisticCollection() {
 		StatisticCollection col = new StatisticCollection();
 		for (URI uri : getValues().keySet()) {
-			UncertaintyType type = UncertaintyType.fromURI(uri);
-			if (type != UncertaintyType.STATISTIC_COLLECTION
-					&& type.getSuperType() == UncertaintyType.STATISTIC) {
+			NcUwUncertaintyType type = NcUwUncertaintyType.fromURI(uri);
+			if (type != NcUwUncertaintyType.STATISTIC_COLLECTION
+					&& type.getSuperType() == NcUwUncertaintyType.STATISTIC) {
 				IStatistic u = (IStatistic) parse(uri, getValues());
 				col.add(u);
 			}
@@ -452,10 +454,10 @@ public class NcUwUriParser {
 	}
 
 	public static IUncertainty parse(final URI main, final MultivaluedMap<URI, Object> v) {
-		return parse(UncertaintyType.fromURI(main), v);
+		return parse(NcUwUncertaintyType.fromURI(main), v);
 	}
 
-	public static IUncertainty parse(final UncertaintyType t, final MultivaluedMap<URI, Object> v) {
+	public static IUncertainty parse(final NcUwUncertaintyType t, final MultivaluedMap<URI, Object> v) {
 		return new NcUwUriParser(t, v).parse();
 	}
 }

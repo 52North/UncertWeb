@@ -24,7 +24,7 @@ package org.uncertweb.viss.core.resource;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.resource.time.ITemporalExtent;
 import org.uncertweb.viss.core.vis.IVisualization;
 
@@ -37,7 +37,7 @@ public interface IDataSet {
 
 	public ITemporalExtent getTemporalExtent();
 
-	public UncertaintyType getType();
+	public NcUwUncertaintyType getType();
 
 	public IResource getResource();
 

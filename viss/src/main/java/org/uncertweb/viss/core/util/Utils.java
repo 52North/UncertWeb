@@ -29,7 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.zip.CRC32;
+import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -54,7 +54,7 @@ public class Utils {
 	    throws IOException {
 		CheckedOutputStream cos = null;
 		try {
-			cos = new CheckedOutputStream(new FileOutputStream(f), new CRC32());
+			cos = new CheckedOutputStream(new FileOutputStream(f), new Adler32());
 			IOUtils.copy(is, cos);
 			return cos.getChecksum().getValue();
 		} finally {

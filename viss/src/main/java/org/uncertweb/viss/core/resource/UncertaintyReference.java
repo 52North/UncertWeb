@@ -34,10 +34,10 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertml.statistic.ConstraintType;
 import org.uncertml.statistic.ProbabilityConstraint;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.utils.MultivaluedHashMap;
 import org.uncertweb.utils.MultivaluedMap;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.viss.core.UncertaintyType;
 
 import com.google.code.morphia.annotations.Transient;
 
@@ -45,7 +45,7 @@ public class UncertaintyReference {
 
 	private MediaType mime;
 	private URI ref;
-	private UncertaintyType type;
+	private NcUwUncertaintyType type;
 	private JSONObject json;
 	private File f;
 
@@ -66,11 +66,11 @@ public class UncertaintyReference {
 				"mimeType"));
 		URI ref = new URI(o.getJSONObject("ref").getString("url"));
 		o.remove("ref");
-		UncertaintyType type = UncertaintyType.fromURI(new URI(o
+		NcUwUncertaintyType type = NcUwUncertaintyType.fromURI(new URI(o
 				.getString("type")));
 		o.remove("type");
 
-		if (type == UncertaintyType.PROBABILITY) {
+		if (type == NcUwUncertaintyType.PROBABILITY) {
 			constraints = UwCollectionUtils.list();
 			JSONArray jconstraints = o.getJSONArray("constraints");
 			for (int i = 0; i < jconstraints.length(); ++i) {
@@ -98,7 +98,7 @@ public class UncertaintyReference {
 		this.ref = ref;
 	}
 
-	public void setType(UncertaintyType type) {
+	public void setType(NcUwUncertaintyType type) {
 		this.type = type;
 	}
 
@@ -110,7 +110,7 @@ public class UncertaintyReference {
 		return ref;
 	}
 
-	public UncertaintyType getType() {
+	public NcUwUncertaintyType getType() {
 		return type;
 	}
 
@@ -144,7 +144,7 @@ public class UncertaintyReference {
 			if (constraints != null) {
 				for (ProbabilityConstraint pc : constraints) {
 					additionalUris.add(
-							UncertaintyType.getURIforConstraint(pc.getType()),
+							NcUwUncertaintyType.getURIforConstraint(pc.getType()),
 							Double.valueOf(pc.getValue()));
 				}
 			}

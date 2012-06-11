@@ -29,8 +29,7 @@ import java.lang.annotation.Target;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.uncertweb.utils.UwStringUtils;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 
 public abstract class AbstractAnnotatedUncertaintyViusalizer extends
     AbstractMultiResourceTypeVisualizer {
@@ -38,7 +37,7 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface Type {
-		UncertaintyType[] value();
+		NcUwUncertaintyType[] value();
 	}
 
 	@Target(ElementType.TYPE)
@@ -54,15 +53,14 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 	}
 
 	@Override
-	public Set<UncertaintyType> getCompatibleUncertaintyTypes() {
+	public Set<NcUwUncertaintyType> getCompatibleUncertaintyTypes() {
 		Type t = findAnnotation(Type.class, getClass());
-		Set<UncertaintyType> result = new HashSet<UncertaintyType>();
+		Set<NcUwUncertaintyType> result = new HashSet<NcUwUncertaintyType>();
 		if (t != null) {
-			for (UncertaintyType ut : t.value()) {
+			for (NcUwUncertaintyType ut : t.value()) {
 				result.add(ut);
 			}
 		}
-		log.debug("Compatible Types ({}): {}", result.size(), UwStringUtils.join(", ", result));
 		return result;
 	}
 	
@@ -76,21 +74,12 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 
 	}
 
-	private static <T extends Annotation> T findAnnotation(Class<T> annotation,
-	    Class<?> c) {
-		log.debug("Searching for annotation {} in {}", annotation, c);
+	private static <T extends Annotation> T findAnnotation(Class<T> annotation, Class<?> c) {
 		T t = null;
 		while ((t = c.getAnnotation(annotation)) == null && c != null) {
 			if (t == null) {
-				log.debug("Annotation not in {}. Searching in Superclass...", c);
 				c = c.getSuperclass();
-				log.debug("Superclass is {}", c);
 			}
-		}
-		if (t != null) {
-			log.debug("Found annotation in {}", c);
-		} else {
-			log.debug("Found no annotation. Gone up till {}.", c);
 		}
 		return t;
 	}

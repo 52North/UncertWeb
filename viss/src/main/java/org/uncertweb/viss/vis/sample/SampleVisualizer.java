@@ -32,7 +32,7 @@ import org.uncertml.sample.AbstractSample;
 import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.sample.RandomSample;
 import org.uncertweb.netcdf.NcUwVariableWithDimensions;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.JSONSchema;
@@ -44,9 +44,9 @@ import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 @Id("Sample")
 @Description("Visualizes a Sample")
 @Type({
-	UncertaintyType.UNKNOWN_SAMPLE,
-	UncertaintyType.SYSTEMATIC_SAMPLE,
-	UncertaintyType.RANDOM_SAMPLE
+	NcUwUncertaintyType.UNKNOWN_SAMPLE,
+	NcUwUncertaintyType.SYSTEMATIC_SAMPLE,
+	NcUwUncertaintyType.RANDOM_SAMPLE
 })
 public class SampleVisualizer extends
 		AbstractAnnotatedUncertaintyViusalizer {

@@ -28,7 +28,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.uncertml.IUncertainty;
 import org.uncertml.sample.ContinuousRealisation;
 import org.uncertweb.netcdf.NcUwVariableWithDimensions;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.JSONSchema;
@@ -39,7 +39,7 @@ import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
 @Id("Realisation")
 @Description("Visualizers a Realisation")
-@Type(UncertaintyType.CONTINUOUS_REALISATION)
+@Type(NcUwUncertaintyType.CONTINUOUS_REALISATION)
 public class RealisationVisualizer extends
 		AbstractAnnotatedUncertaintyViusalizer {
 

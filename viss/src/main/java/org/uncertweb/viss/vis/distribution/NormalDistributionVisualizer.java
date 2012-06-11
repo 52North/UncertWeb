@@ -32,15 +32,15 @@ import org.codehaus.jettison.json.JSONObject;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertweb.netcdf.NcUwObservation;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.JSONSchema;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.NORMAL_DISTRIBUTION)
+@Type(NcUwUncertaintyType.NORMAL_DISTRIBUTION)
 public abstract class NormalDistributionVisualizer extends
 		AbstractAnnotatedUncertaintyViusalizer {
 

@@ -23,11 +23,11 @@ package org.uncertweb.viss.vis.distribution;
 
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.LaplaceDistribution;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.LAPLACE_DISTRIBUTION)
+@Type(NcUwUncertaintyType.LAPLACE_DISTRIBUTION)
 public abstract class LaplaceDistributionVisualizer extends
     AbstractAnnotatedUncertaintyViusalizer {
 	@Override

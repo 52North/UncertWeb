@@ -24,11 +24,11 @@ package org.uncertweb.viss.vis.distribution;
 import org.apache.commons.math.distribution.WeibullDistributionImpl;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.WeibullDistribution;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.WEIBULL_DISTRIBUTION)
+@Type(NcUwUncertaintyType.WEIBULL_DISTRIBUTION)
 public abstract class WeibullDistributionVisualizer extends
     AbstractAnnotatedUncertaintyViusalizer {
 	@Override

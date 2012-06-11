@@ -24,11 +24,11 @@ package org.uncertweb.viss.vis.distribution;
 import org.apache.commons.math.distribution.CauchyDistributionImpl;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.CauchyDistribution;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.CAUCHY_DISTRIBUTION)
+@Type(NcUwUncertaintyType.CAUCHY_DISTRIBUTION)
 public abstract class CauchyDistributionVisualizer extends
     AbstractAnnotatedUncertaintyViusalizer {
 

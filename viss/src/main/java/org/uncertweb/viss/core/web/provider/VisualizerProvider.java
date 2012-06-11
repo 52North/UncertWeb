@@ -43,7 +43,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.LoggerFactory;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.IVisualizer;
@@ -70,7 +70,7 @@ public class VisualizerProvider implements MessageBodyWriter<IVisualizer> {
 			JSONObject j = new JSONObject().putOpt(DESCRIPTION_KEY, v.getDescription())
 			    .put(ID_KEY, v.getShortName());
 			JSONArray ar = new JSONArray();
-			for (UncertaintyType ut : v.getCompatibleUncertaintyTypes()) {
+			for (NcUwUncertaintyType ut : v.getCompatibleUncertaintyTypes()) {
 				ar.put(ut.getURI());
 			}
 			j.put(SUPPORTED_UNCERTAINTIES_KEY, ar);

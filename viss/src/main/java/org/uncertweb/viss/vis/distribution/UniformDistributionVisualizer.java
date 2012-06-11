@@ -23,11 +23,11 @@ package org.uncertweb.viss.vis.distribution;
 
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.UniformDistribution;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.UNIFORM_DISTRIBUTION)
+@Type(NcUwUncertaintyType.UNIFORM_DISTRIBUTION)
 public abstract class UniformDistributionVisualizer extends
     AbstractAnnotatedUncertaintyViusalizer {
 	@Override

@@ -101,8 +101,7 @@ public class VissError extends WebApplicationException {
 	}
 
 	public static VissError invalidParameter(String name) {
-		return new VissError(Status.BAD_REQUEST, "Invalid Visualizer Parameter: '"
-		    + name + "'");
+		return new VissError(Status.BAD_REQUEST, "Invalid Visualizer Parameter: '" + name + "'");
 	}
 
 	public static VissError incompatibleVisualizer() {

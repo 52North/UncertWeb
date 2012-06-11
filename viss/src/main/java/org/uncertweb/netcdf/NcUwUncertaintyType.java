@@ -19,7 +19,7 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core;
+package org.uncertweb.netcdf;
 
 import java.net.URI;
 import java.util.Set;
@@ -77,7 +77,7 @@ import org.uncertml.statistic.StandardDeviation;
 import org.uncertml.statistic.StatisticCollection;
 import org.uncertweb.utils.UwCollectionUtils;
 
-public enum UncertaintyType {
+public enum NcUwUncertaintyType {
 	
 	
 	// UNKNOWN(IUncertainty.class),
@@ -144,7 +144,7 @@ public enum UncertaintyType {
 	public final URI uri;
 	private Set<URI> alias;
 	public final Class<? extends IUncertainty> clazz;
-	public final UncertaintyType type;
+	public final NcUwUncertaintyType type;
 	
 	
 	public static URI getURIforConstraint(ConstraintType ct) {
@@ -165,11 +165,11 @@ public enum UncertaintyType {
 		return alias;
 	}
 	
-	private UncertaintyType(Class<? extends IUncertainty> clazz, URI... uris) {
+	private NcUwUncertaintyType(Class<? extends IUncertainty> clazz, URI... uris) {
 		this(clazz, null, uris);
 	}
 	
-	private UncertaintyType(Class<? extends IUncertainty> clazz, UncertaintyType type, URI... uris) {
+	private NcUwUncertaintyType(Class<? extends IUncertainty> clazz, NcUwUncertaintyType type, URI... uris) {
 		this.uri = URI.create(UncertML.getURI(clazz));
 		this.clazz = clazz;
 		this.type = type;
@@ -183,8 +183,8 @@ public enum UncertaintyType {
 		return URI.create(this.getURI().toString() + "#" + name);
 	}
 
-	public static UncertaintyType fromURI(URI uri) {
-		for (UncertaintyType s : values()) {
+	public static NcUwUncertaintyType fromURI(URI uri) {
+		for (NcUwUncertaintyType s : values()) {
 			if (s.getURI().equals(uri) || s.alias.contains(uri)) {
 				return s;
 			} 
@@ -196,7 +196,7 @@ public enum UncertaintyType {
 		return this.uri;
 	}
 	
-	public UncertaintyType getSuperType() {
+	public NcUwUncertaintyType getSuperType() {
 		return this.type;
 	}
 }

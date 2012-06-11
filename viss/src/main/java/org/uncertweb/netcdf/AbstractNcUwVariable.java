@@ -37,7 +37,6 @@ import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.utils.MultivaluedMap;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.viss.core.UncertaintyType;
 
 import ucar.nc2.Variable;
 
@@ -112,8 +111,8 @@ public abstract class AbstractNcUwVariable implements INcUwVariable {
 	}
 
 	@Override
-	public UncertaintyType getType() {
-		return UncertaintyType.fromURI(getRef());
+	public NcUwUncertaintyType getType() {
+		return NcUwUncertaintyType.fromURI(getRef());
 	}
 
 	protected URI getRef() {
@@ -271,20 +270,13 @@ public abstract class AbstractNcUwVariable implements INcUwVariable {
 	@Override
 	public NcUwObservation getObservation(NcUwCoordinate c) {
 		IUncertainty u = getValue(c);
-		if (u == null) {
-			return null;
-		}
 		return new NcUwObservation(getTime(c), getProcedure(),
 				getObservedProperty(), getFeature(c), 
 				getGridCoordinates(c), u, getUnit());
 	}
 	
 	protected IUncertainty getValue(NcUwCoordinate c) {
-		MultivaluedMap<URI, Object> map = getValueMap(c);
-		if (map == null) {
-			return null;
-		}
-		return NcUwUriParser.parse(getType(), map);
+		return NcUwUriParser.parse(getType(), getValueMap(c));
 	}
 	
 	protected AbstractNcUwVariable getParent() {

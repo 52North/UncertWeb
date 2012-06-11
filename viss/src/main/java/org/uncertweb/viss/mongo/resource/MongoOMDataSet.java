@@ -29,8 +29,8 @@ import org.joda.time.Interval;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
@@ -55,8 +55,8 @@ public class MongoOMDataSet extends
 	}
 
 	@Override
-	public UncertaintyType getType() {
-		Set<UncertaintyType> set = UwCollectionUtils.set();
+	public NcUwUncertaintyType getType() {
+		Set<NcUwUncertaintyType> set = UwCollectionUtils.set();
 		for (AbstractObservation ao : getContent().getObservations()) {
 			IResource r = (IResource) ao.getResult().getValue();
 			for (IDataSet ds : r.getDataSets()) {

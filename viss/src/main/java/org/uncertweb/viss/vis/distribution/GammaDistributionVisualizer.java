@@ -24,11 +24,11 @@ package org.uncertweb.viss.vis.distribution;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.GammaDistribution;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.GAMMA_DISTRIBUTION)
+@Type(NcUwUncertaintyType.GAMMA_DISTRIBUTION)
 public abstract class GammaDistributionVisualizer extends
     AbstractAnnotatedUncertaintyViusalizer {
 

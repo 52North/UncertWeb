@@ -120,21 +120,19 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		throw VissError.internal("Not yet implemented");
 	}
 
-	protected IVisualization visualize(Iterator<NcUwObservation> vals,
-			WriteableGridCoverage wgc) {
+	protected IVisualization visualize(Iterator<NcUwObservation> vals, WriteableGridCoverage wgc) {
 		Double min = null, max = null;
 		while (vals.hasNext()) {
 			NcUwObservation nv = vals.next();
-			if (nv == null) continue;
 			Double value = null;
-			if (nv != null && nv.getResult() != null) {
+			if (nv != null && nv.getResult() != null && nv.getResult().getValue() != null) {
 				double v = evaluate(nv.getResult().getValue());
 				if (!Double.isNaN(v) && !Double.isInfinite(v)) {
 					value = Double.valueOf(v);
 					if (min == null || min.doubleValue() > v)
-						min = Double.valueOf(v);
+						min = value;
 					if (max == null || max.doubleValue() < v)
-						max = Double.valueOf(v);
+						max = value;
 				}
 			}
 			try {
@@ -148,11 +146,18 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 				throw t;
 			}
 		}
+		
 		log.debug("min: {}; max: {}", min, max);
-		return VisualizationFactory.getBuilder().setDataSet(getDataSet())
-				.setId(getId(getParams())).setCreator(this)
-				.setParameters(getParams()).setMin(min).setMax(max)
-				.setUom(getUom()).setCoverage(wgc.getGridCoverage()).build();
+		return VisualizationFactory.getBuilder()
+				.setDataSet(getDataSet())
+				.setId(getId(getParams()))
+				.setCreator(this)
+				.setParameters(getParams())
+				.setMin(min)
+				.setMax(max)
+				.setUom(getUom())
+				.setCoverage(wgc.getGridCoverage())
+				.build();
 	}
 
 	protected String getUom() {

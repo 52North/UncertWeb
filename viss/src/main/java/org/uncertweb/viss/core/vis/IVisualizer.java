@@ -27,14 +27,14 @@ import java.util.Set;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONObject;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.resource.IDataSet;
 
 public interface IVisualizer {
 
 	public Set<MediaType> getCompatibleMediaTypes();
 
-	public Set<UncertaintyType> getCompatibleUncertaintyTypes();
+	public Set<NcUwUncertaintyType> getCompatibleUncertaintyTypes();
 
 	public String getShortName();
 

@@ -24,11 +24,11 @@ package org.uncertweb.viss.vis.distribution;
 import org.apache.commons.math.distribution.PoissonDistributionImpl;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.PoissonDistribution;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.POISSON_DISTRIBUTION)
+@Type(NcUwUncertaintyType.POISSON_DISTRIBUTION)
 public abstract class PoissonDistributionVisualizer extends
     AbstractAnnotatedUncertaintyViusalizer {
 	@Override

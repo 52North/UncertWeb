@@ -55,6 +55,7 @@ import junit.framework.Assert;
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.math.distribution.NormalDistribution;
 import org.apache.xmlbeans.XmlException;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
@@ -70,6 +71,7 @@ import org.uncertweb.viss.core.util.JSONConstants;
 import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.core.web.RESTServlet;
+import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Mean;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Probability;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.ProbabilityForInterval;
@@ -106,7 +108,7 @@ public class VissTest extends JerseyTest {
 		org.slf4j.bridge.SLF4JBridgeHandler.install();
 	}
 
-	@Before
+//	@Before
 	public void deleteAll() throws JSONException {
 		JSONObject j = getWebResource().path(RESOURCES)
 				.accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);
@@ -148,16 +150,15 @@ public class VissTest extends JerseyTest {
 
 	@Test
 	public void testUncertaintyCollection() throws JSONException {
-		testUncertaintyCollection_();
-		testUncertaintyCollection_();
+		_testUncertaintyCollection();
+		_testUncertaintyCollection();
 	}
-	private void testUncertaintyCollection_() throws JSONException {
+	
+	private void _testUncertaintyCollection() throws JSONException {
 		ObjectId r = addResource(MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE, getUncertaintyCollectionStream());
 		for (ObjectId ds : getDataSetsForResource(r)) {
 			for (String s : getVisualizersForDataset(r, ds))  {
-				if (s.equals("MeanStatistic")
-						|| s.equals("StandardDeviationStatistic")
-						|| s.equals("ProbabilityStatistic")) {
+				if (s.equals("MeanStatistic") || s.equals("StandardDeviationStatistic") || s.equals("ProbabilityStatistic")) {
 					getVisualizerForDataset(r,ds, s);
 					createVisualization(r, ds, s);
 				}
@@ -260,7 +261,10 @@ public class VissTest extends JerseyTest {
 		ObjectId r = addResource(NETCDF_TYPE, EU_JUNE);
 		ObjectId d = getDataSetsForResource(r)[0];
 		String v = getVisualizersForDataset(r, d)[0];
-		createVisualization(r, d, v, new JSONObject().put("time", "2005-11-11T00:00:00.000Z").put("realisation", 0).put("sample", 15));
+		
+		createVisualization(
+				r, d, "Distribution-Normal-Mean",
+				new JSONObject().put("time", "2005-11-11T00:00:00.000Z"));
 	}
 	
 	
@@ -343,7 +347,7 @@ public class VissTest extends JerseyTest {
 			.put("method", "GET")
 			.put("responseMediaType", mt.toString());
 		ClientResponse res = getWebResource().path(RESOURCES).accept(JSON_RESOURCE_TYPE)
-				.entity(req, MediaTypes.JSON_CREATE).post(ClientResponse.class);
+				.entity(req, MediaTypes.JSON_REQUEST).post(ClientResponse.class);
 		assertEquals(Status.CREATED.getStatusCode(), res.getStatus());
 		JSONObject j = getWebResource().path(res
 						.getLocation().getPath()).get(JSONObject.class);

@@ -26,6 +26,7 @@ import static org.uncertweb.viss.core.util.MediaTypes.GEOTIFF;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_CREATE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET_LIST;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_SCHEMA;
@@ -123,8 +124,8 @@ public class RESTServlet {
 	private static Logger log = LoggerFactory.getLogger(RESTServlet.class);
 	
 	@GET
-	public Response wadl(@Context UriInfo uriI) {
-		URI uri = uriI.getBaseUriBuilder().path("application.wadl").build();
+	public Response root(@Context UriInfo uriI) {
+		URI uri = uriI.getBaseUriBuilder().path(RESOURCES).build();
 		return Response.noContent().location(uri).status(Status.MOVED_PERMANENTLY).build();
 	}
 
@@ -151,7 +152,7 @@ public class RESTServlet {
 	@POST
 	@Path(RESOURCES)
 	@Produces(JSON_RESOURCE)
-	@Consumes(JSON_CREATE)
+	@Consumes(JSON_REQUEST)
 	public Response createResourceFromReference(JSONObject j, @Context UriInfo uriI) {
 		log.debug("Putting Resource.");
 		IResource r = null;
@@ -308,6 +309,13 @@ public class RESTServlet {
 		Viss.getInstance().deleteVisualization(oid, dataset, vis);
 	}
 
+	
+	
+	
+	
+	
+	
+	
 	@GET
 	@Path(STYLES_FOR_VISUALIZATION)
 	@Produces(JSON_VISUALIZATION_STYLE_LIST)

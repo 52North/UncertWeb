@@ -32,9 +32,9 @@ import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.utils.UwStringUtils;
-import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
@@ -151,7 +151,7 @@ public class VisualizerFactory {
 			log.debug("Testing {} for compatibility", shortNamesByCreator.get(v));
 			IVisualizer vis = getVisualizer(shortNamesByCreator.get(v));
 			log.debug("Testing {} for compatibility", vis);
-			Set<UncertaintyType> comp = vis.getCompatibleUncertaintyTypes();
+			Set<NcUwUncertaintyType> comp = vis.getCompatibleUncertaintyTypes();
 			log.debug("Compatible Types ({}): {}", comp.size(), UwStringUtils.join(", ", comp));
 			log.debug("Dataset type: {}", dataSet.getType());
 			if (comp.contains(dataSet.getType())) {

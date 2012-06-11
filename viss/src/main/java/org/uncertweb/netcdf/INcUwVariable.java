@@ -31,7 +31,6 @@ import org.opengis.geometry.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.netcdf.util.WriteableGridCoverage;
-import org.uncertweb.viss.core.UncertaintyType;
 
 import ucar.nc2.Variable;
 
@@ -53,7 +52,7 @@ public interface INcUwVariable extends Iterable<NcUwObservation> {
 	public abstract CoordinateReferenceSystem getCRS();
 	public abstract WriteableGridCoverage getCoverage();
 	public abstract Set<? extends INcUwVariable> getAncillaryVariables();
-	public abstract UncertaintyType getType();
+	public abstract NcUwUncertaintyType getType();
 	public abstract URI getObservedProperty();
 	public abstract URI getProcedure();
 	public abstract String getName();

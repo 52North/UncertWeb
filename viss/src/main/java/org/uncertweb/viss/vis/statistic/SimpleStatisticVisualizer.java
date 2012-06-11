@@ -23,7 +23,7 @@ package org.uncertweb.viss.vis.statistic;
 
 import org.uncertml.IUncertainty;
 import org.uncertml.statistic.ContinuousStatistic;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 
 public abstract class SimpleStatisticVisualizer extends
@@ -39,47 +39,47 @@ public abstract class SimpleStatisticVisualizer extends
 		return ((ContinuousStatistic) u).getValues().get(0);
 	}
 
-	@Type(UncertaintyType.STANDARD_DEVIATION)
+	@Type(NcUwUncertaintyType.STANDARD_DEVIATION)
 	@Description("Returns the Standard Deviation.")
 	public static class StandardDeviationStatistic extends
 	    SimpleStatisticVisualizer {}
 
-	@Type(UncertaintyType.COEFFICIENT_OF_VARIATION)
+	@Type(NcUwUncertaintyType.COEFFICIENT_OF_VARIATION)
 	@Description("Returns the coefficient of variation.")
 	public static class CoefficientOfVariationStatistic extends
 	    SimpleStatisticVisualizer {}
 
-	@Type(UncertaintyType.CORRELATION)
+	@Type(NcUwUncertaintyType.CORRELATION)
 	@Description("Returns the correalation")
 	public static class CorrelationStatistic extends
 	    SimpleStatisticVisualizer {}
 
-	@Type(UncertaintyType.KURTOSIS)
+	@Type(NcUwUncertaintyType.KURTOSIS)
 	@Description("Returns the kutosis.")
 	public static class KurtosisStatistic extends
 	    SimpleStatisticVisualizer {}
 
-	@Type(UncertaintyType.MEAN)
+	@Type(NcUwUncertaintyType.MEAN)
 	@Description("Returns the mean.")
 	public static class MeanStatistic extends 
 			SimpleStatisticVisualizer {}
 
-	@Type(UncertaintyType.MEDIAN)
+	@Type(NcUwUncertaintyType.MEDIAN)
 	@Description("Returns the median.")
 	public static class MedianStatistic extends 
 			SimpleStatisticVisualizer {}
 
-	@Type(UncertaintyType.MODE)
+	@Type(NcUwUncertaintyType.MODE)
 	@Description("Returns the mode.")
 	public static class ModeStatistic extends 
 			SimpleStatisticVisualizer {}
 
-	@Type(UncertaintyType.SKEWNESS)
+	@Type(NcUwUncertaintyType.SKEWNESS)
 	@Description("Returns the skewness.")
 	public static class SkewnessStatistic extends
 	    SimpleStatisticVisualizer {}
 	
-	@Type(UncertaintyType.PROBABILITY)
+	@Type(NcUwUncertaintyType.PROBABILITY)
 	@Description("Returns the probability.")
 	public static class ProbabilityStatistic extends
 	    SimpleStatisticVisualizer {}

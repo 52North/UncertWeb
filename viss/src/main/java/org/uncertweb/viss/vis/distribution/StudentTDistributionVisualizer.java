@@ -24,11 +24,11 @@ package org.uncertweb.viss.vis.distribution;
 import org.apache.commons.math.distribution.TDistributionImpl;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.StudentTDistribution;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.STUDENT_T_DISTRIBUTION)
+@Type(NcUwUncertaintyType.STUDENT_T_DISTRIBUTION)
 public abstract class StudentTDistributionVisualizer extends
     AbstractAnnotatedUncertaintyViusalizer {
 

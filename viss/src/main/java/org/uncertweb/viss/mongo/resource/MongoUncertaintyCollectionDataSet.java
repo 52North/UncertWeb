@@ -31,8 +31,8 @@ import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.opengis.coverage.grid.GridCoverage;
 import org.slf4j.Logger;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.utils.UwIOUtils;
-import org.uncertweb.viss.core.UncertaintyType;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.UncertaintyReference;
@@ -46,7 +46,7 @@ public class MongoUncertaintyCollectionDataSet extends
 
 	@Embedded
 	private UncertaintyReference ref;
-	private UncertaintyType type;
+	private NcUwUncertaintyType type;
 
 	public MongoUncertaintyCollectionDataSet() {
 	}
@@ -65,7 +65,7 @@ public class MongoUncertaintyCollectionDataSet extends
 	}
 
 	@Override
-	public UncertaintyType getType() {
+	public NcUwUncertaintyType getType() {
 		if (type == null) { 
 			type = getContent().getType();
 		}

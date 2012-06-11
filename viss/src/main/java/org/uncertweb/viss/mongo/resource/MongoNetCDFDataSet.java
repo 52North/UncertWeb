@@ -21,8 +21,10 @@
  */
 package org.uncertweb.viss.mongo.resource;
 
+import javax.measure.unit.Unit;
+
 import org.uncertweb.netcdf.INcUwVariable;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.resource.time.ITemporalExtent;
 
 import com.google.code.morphia.annotations.Polymorphic;
@@ -49,7 +51,7 @@ public class MongoNetCDFDataSet extends AbstractMongoDataSet<INcUwVariable> {
 	}
 
 	@Override
-	public UncertaintyType getType() {
+	public NcUwUncertaintyType getType() {
 		return getContent().getType();
 	}
 
@@ -71,7 +73,8 @@ public class MongoNetCDFDataSet extends AbstractMongoDataSet<INcUwVariable> {
 
 	@Override
 	public String getUom() {
-		return getContent().getUnit();
+		String s = getContent().getUnit();
+		return (s == null) ? Unit.ONE.toString() : s;
 	}
 
 }

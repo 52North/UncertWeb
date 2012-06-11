@@ -23,11 +23,11 @@ package org.uncertweb.viss.vis.distribution;
 
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.LogNormalDistribution;
-import org.uncertweb.viss.core.UncertaintyType;
+import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
 import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
 
-@Type(UncertaintyType.LOG_NORMAL_DISTRIBUTION)
+@Type(NcUwUncertaintyType.LOG_NORMAL_DISTRIBUTION)
 public abstract class LogNormalDistributionVisualizer extends
     AbstractAnnotatedUncertaintyViusalizer {
 	@Override
