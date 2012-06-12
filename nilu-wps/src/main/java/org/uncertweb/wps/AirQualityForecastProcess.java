@@ -45,6 +45,7 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 	private final String inputIDSite = "site";
 	private final String inputIDComponent = "cmpd";
 	private final String inputIDNumberOfRealisations = "nens";
+	private final String inputIDNumberOfDaysForSpinning = "nspd";
 	private final String inputIDNumberOfForecastHours = "nhrs";
 	private final String inputIDReceptorPoints = "recp";
 	private final String outputIDPredictedConcentrations = "predicted-concentrations";
@@ -106,6 +107,8 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 			return LiteralStringBinding.class;
 		} else if (arg0.equals(inputIDNumberOfForecastHours)) {
 			return LiteralIntBinding.class;
+		} else if (arg0.equals(inputIDNumberOfDaysForSpinning)) {
+			return LiteralIntBinding.class;
 		} else if (arg0.equals(inputIDReceptorPoints)) {
 			return LiteralStringBinding.class;
 		} else if (arg0.equals(inputIDNumberOfRealisations)) {	
@@ -147,6 +150,7 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 		List<IData> receptorPoints;
 		int numberOfRealisations;
 		int numberOfForecastHours;
+		int numberOfDaysForSpinning;
 
 		startDate = ((LiteralStringBinding) extractData(inputData, inputIDStartDate))
 				.getPayload().toString();
@@ -163,15 +167,18 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 		numberOfRealisations = ((LiteralIntBinding) extractData(inputData, inputIDNumberOfRealisations))
 				.getPayload();
 		
+		numberOfDaysForSpinning = ((LiteralIntBinding) extractData(inputData, inputIDNumberOfDaysForSpinning))
+				.getPayload();
+		
 		numberOfForecastHours = ((LiteralIntBinding) extractData(inputData, inputIDNumberOfForecastHours))
 				.getPayload();
 		
 		receptorPoints = inputData
 				.get(inputIDReceptorPoints);
 
-		if (receptorPoints == null || receptorPoints.isEmpty())
-			throw new IllegalArgumentException(
-					"could not find input for " + inputIDReceptorPoints);
+//		if (receptorPoints == null || receptorPoints.isEmpty())
+//			throw new IllegalArgumentException(
+//					"could not find input for " + inputIDReceptorPoints);
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyymmddhhmmss");
 		
@@ -185,14 +192,18 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 			parametersFileWriter.write(inputIDSite + " = " + site + "\n");
 			parametersFileWriter.write(inputIDStartDate + " = " + startDate + "\n");
 			parametersFileWriter.write(inputIDEndDate + " = " + endDate + "\n");
+			parametersFileWriter.write(inputIDNumberOfDaysForSpinning + " = " + numberOfDaysForSpinning + "\n");
 			parametersFileWriter.write(inputIDNumberOfForecastHours + " = " + numberOfForecastHours + "\n");
 			parametersFileWriter.write(inputIDNumberOfRealisations + " = " + numberOfRealisations + "\n");
 			parametersFileWriter.write(inputIDComponent+ " = " + component + "\n");
 			
-			for (IData iData : receptorPoints) {
-				parametersFileWriter.write(inputIDReceptorPoints + " = " + (String)iData.getPayload() + "\n");
-			}
-			
+				if (receptorPoints != null) {
+
+					for (IData iData : receptorPoints) {
+						parametersFileWriter.write(inputIDReceptorPoints
+								+ " = " + (String) iData.getPayload() + "\n");
+					}
+				}
 			parametersFileWriter.flush();
 			parametersFileWriter.close();
 			

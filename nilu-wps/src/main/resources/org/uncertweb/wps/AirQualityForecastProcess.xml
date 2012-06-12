@@ -53,6 +53,19 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 				</LiteralData>
 			</Input>			
 			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>nspd</ows:Identifier>
+				<ows:Title>number of days for spinning</ows:Title>
+				<ows:Abstract>number of days for spinning up the TAPM model</ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"/>
+					<ows:AllowedValues>
+						<ows:Value>0</ows:Value>
+						<ows:Value>1</ows:Value>
+						<ows:Value>2</ows:Value>
+					</ows:AllowedValues>
+				</LiteralData>
+			</Input>				
+			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>nens</ows:Identifier>
 				<ows:Title>number of realisations</ows:Title>
 				<ows:Abstract>number of realisations</ows:Abstract>
