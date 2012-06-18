@@ -34,12 +34,22 @@ import org.uncertweb.api.om.converter.ShapeFileConverterProperties.FILETYPE;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.BooleanObservation;
+import org.uncertweb.api.om.observation.CategoryObservation;
 import org.uncertweb.api.om.observation.Measurement;
+import org.uncertweb.api.om.observation.TextObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
+import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
+import org.uncertweb.api.om.observation.collections.CategoryObservationCollection;
+import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
+import org.uncertweb.api.om.result.BooleanResult;
+import org.uncertweb.api.om.result.CategoryResult;
 import org.uncertweb.api.om.result.MeasureResult;
+import org.uncertweb.api.om.result.TextResult;
 import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
@@ -429,6 +439,14 @@ public class ShapeFileConverter {
 		String obsType = props.getObsPropsType();
 		if (obsType.equals("double")) {
 			result = new MeasurementCollection();
+		}else if(obsType.equals("integer")) {
+			result = new DiscreteNumericObservationCollection();
+		}else if(obsType.equals("text")) {
+			result = new TextObservationCollection();
+		}else if(obsType.equals("category")) {
+			result = new CategoryObservationCollection();
+		}else if(obsType.equals("boolean")) {
+			result = new BooleanObservationCollection();
 		}
 		FeatureCollection<SimpleFeatureType, SimpleFeature> foiCollection = getFCollectionFromShpFile(new File(shpFilePath).toURL(), props.getFeatClassName());
 		Map<String,SpatialSamplingFeature> sf4featureID=new HashMap<String,SpatialSamplingFeature>(foiCollection.size());
@@ -472,9 +490,16 @@ public class ShapeFileConverter {
 				sf = createSamplingFeature(textFID, (Geometry) geom);
 			}
 
+	//		sf.setSampledFeature("http://giv-uw2.uni-muenster.de/profileDictionary#p2");
 			// retrieve phenomenonTime
 			TimeObject to = props.getPhenTime();
-
+			
+			// else get time in the shapefile attribute table
+			if(!props.getPhenTimeColName().equals("")){
+				String phenTime = (String) feature.getAttribute(props.getPhenTimeColName());
+				to = ShapeFileConverterUtil.parsePhenTime(phenTime);
+			}
+				
 			// retrieve procedure(s)
 			String procID = props.getProcId();
 			if (procID != null) {
@@ -486,6 +511,7 @@ public class ShapeFileConverter {
 			while (iter.hasNext()) {
 				String attName = iter.next();
 				Object value = feature.getAttribute(attName);
+				// for double values
 				if (value != null && value instanceof Double) {
 					double numericResult = ((Double) value).doubleValue();
 					MeasureResult meas = new MeasureResult(numericResult, props
@@ -497,7 +523,39 @@ public class ShapeFileConverter {
 					result.addObservation(obs);
 					counter += 1;
 				}
-
+				// for boolean values
+				else if (value != null && value instanceof Boolean) {
+					boolean booleanResult = (Boolean) value;
+					BooleanResult res = new BooleanResult(booleanResult);
+					AbstractObservation obs = new BooleanObservation(
+							to, to, new URI(procID), new URI(props
+									.getObsPropsPrefix()
+									+ attName), sf, res);
+					result.addObservation(obs);
+					counter += 1;
+				}
+				// for text values
+				else if (value != null && value instanceof String && obsType.equals("text")) {
+					String textResult = (String) value;
+					TextResult res = new TextResult(textResult);
+					AbstractObservation obs = new TextObservation(
+							to, to, new URI(procID), new URI(props
+									.getObsPropsPrefix()
+									+ attName), sf, res);
+					result.addObservation(obs);
+					counter += 1;
+				}
+				// for category values
+				else if (value != null && value instanceof String && obsType.equals("category")) {
+					String textResult = (String) value;
+					CategoryResult res = new CategoryResult(textResult, props.getUom());
+					AbstractObservation obs = new CategoryObservation(
+							to, to, new URI(procID), new URI(props
+									.getObsPropsPrefix()
+									+ attName), sf, res);
+					result.addObservation(obs);
+					counter += 1;
+				}
 			}
 		}
 
@@ -692,17 +750,6 @@ public class ShapeFileConverter {
 			sf = new SpatialSamplingFeature(identifier,null, geom);
 		}
 		else if (geom instanceof Point) {
-//			MultiPolygon mp = (MultiPolygon) geom;
-//			int size = mp.getNumGeometries();
-//			LineString[] lsArray = new LineString[size];
-//			for (int i = 0; i < size; i++) {
-//				lsArray[i] = new GeometryFactory().createLineString(((MultiPolygon) mls
-//						.getGeometryN(i)).getCoordinateSequence());
-//				lsArray[i].setSRID(srid);
-//				multiGeomCounter++;
-//			}
-//			MultiPolygon
-//			MultiLineString gmlLineString =  new GeometryFactory().createMultiLineString(lsArray);
 			Identifier identifier = new Identifier(new URI("http://www.uncertweb.org"),id);
 			sf = new SpatialSamplingFeature(identifier,null, geom);
 		}
