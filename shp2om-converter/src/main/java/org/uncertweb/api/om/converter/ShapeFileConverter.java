@@ -57,6 +57,7 @@ import au.com.bytecode.opencsv.CSVReader;
 
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFReader;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
@@ -451,7 +452,7 @@ public class ShapeFileConverter {
 		FeatureCollection<SimpleFeatureType, SimpleFeature> foiCollection = getFCollectionFromShpFile(new File(shpFilePath).toURL(), props.getFeatClassName());
 		Map<String,SpatialSamplingFeature> sf4featureID=new HashMap<String,SpatialSamplingFeature>(foiCollection.size());
 		FeatureIterator<SimpleFeature> features = foiCollection.features();
-		
+		SpatialSamplingFeature lastSF = null;
 		
 //		// read shapefile
 //		ShapefileDataStore store = new ShapefileDataStore(new URL(shpFilePath));
@@ -484,11 +485,32 @@ public class ShapeFileConverter {
 			textFID = fidPrefix+id;
 			Object geom = feature.getDefaultGeometry();
 
-			SpatialSamplingFeature sf = null;
+			
+			SpatialSamplingFeature sf = null;		
+			
 			// create samplingFeature
 			if (geom instanceof Geometry) {
-				sf = createSamplingFeature(textFID, (Geometry) geom);
+				
+				// check if this feature already exists in the observations list						
+				boolean same = true;
+				if(lastSF!=null){
+					Coordinate[] coords = ((Geometry)geom).getCoordinates();
+					Coordinate[] lastCoords = lastSF.getShape().getCoordinates();					
+					// loop through coordinates and see if all are the same
+					for(int i=0; i<coords.length; i++){
+						same = same & (coords[i].x==lastCoords[i].x) & (coords[i].y==lastCoords[i].y);
+					}
+				}else
+					same= false;
+				
+				if(same)
+					sf = lastSF;
+				else{
+					sf = createSamplingFeature(textFID, (Geometry) geom);
+					lastSF = sf;
+				}					
 			}
+			
 
 	//		sf.setSampledFeature("http://giv-uw2.uni-muenster.de/profileDictionary#p2");
 			// retrieve phenomenonTime
