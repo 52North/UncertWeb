@@ -17,9 +17,11 @@ import org.joda.time.DateTime;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.CategoryObservation;
 import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
@@ -69,7 +71,7 @@ public class CSVEncoder implements IObservationEncoder{
 		//column names for uncertainty values
 		static final String CN_ND_MEAN="NormalDistribution.Mean";
 		static final String CN_ND_VAR="NormalDistribution.Variance";
-		
+		static final String CN_REALISATION = "Realisation.";
 		//TODO add more columnnames!
 	}
 	
@@ -125,10 +127,20 @@ public class CSVEncoder implements IObservationEncoder{
 		
 		//initialize CSVEncoer
 		CSVWriter encoder = new CSVWriter(writer);
+				
+		List<? extends AbstractObservation> obs = obsCol.getObservations();
+		AbstractObservation o = obsCol.getObservations().get(0);
+		// for realisations find the observations with longest list of realisations
+		if(o instanceof UncertaintyObservation && ((UncertaintyObservation)o).getResult().getUncertaintyValue() instanceof ContinuousRealisation){
+			for (int i=0;i<obs.size();i++){
+				int currLength = ((ContinuousRealisation)((UncertaintyObservation)obs.get(i)).getResult().getUncertaintyValue()).getValues().size();
+				if(currLength>((ContinuousRealisation)((UncertaintyObservation)o).getResult().getUncertaintyValue()).getValues().size())
+					o = obs.get(i);
+			}
+		}
 		
 		//write columnnames
-		encoder.writeNext(getColumnNames(obsCol.getObservations().get(0)));
-		List<? extends AbstractObservation> obs = obsCol.getObservations();
+		encoder.writeNext(getColumnNames(o));
 		for (int i=0;i<obs.size();i++){
 			encoder.writeNext(getLine4Obs(obs.get(i)));
 		}
@@ -207,7 +219,7 @@ public class CSVEncoder implements IObservationEncoder{
 		if (obs instanceof UncertaintyObservation){
 			uncertainty = ((UncertaintyObservation)obs).getResult().getUncertaintyValue();
 		}
-		else {
+		else if(obs.getResultQuality()!=null){
 			DQ_UncertaintyResult[] rqArray = obs.getResultQuality();
 			if (rqArray.length==1){
 				uncertainty = rqArray[0].getValues()[0];
@@ -226,6 +238,16 @@ public class CSVEncoder implements IObservationEncoder{
 			this.columnNumber4UncertaintyColName.put(Columns.CN_ND_MEAN, columns.indexOf(Columns.CN_ND_MEAN));
 			columns.add(Columns.CN_ND_VAR);
 			this.columnNumber4UncertaintyColName.put(Columns.CN_ND_VAR, columns.indexOf(Columns.CN_ND_VAR));
+		}
+		else if(uncertainty!=null && uncertainty instanceof ContinuousRealisation){
+			this.columnNumber4UncertaintyColName = new HashMap<String,Integer>();
+			for(int i=0; i<((ContinuousRealisation)uncertainty).getValues().size(); i++){
+				columns.add(Columns.CN_REALISATION+i);
+				this.columnNumber4UncertaintyColName.put(Columns.CN_REALISATION+i, columns.indexOf(Columns.CN_REALISATION+i));				
+			}
+		}
+		else{
+			this.columnNumber4UncertaintyColName = new HashMap<String,Integer>();
 		}
 		String[] result = new String[columns.size()];
 		columns.toArray(result);
@@ -270,7 +292,15 @@ public class CSVEncoder implements IObservationEncoder{
 			}
 		}
 		else if (obs instanceof UncertaintyObservation){
-			
+			IUncertainty uncertainty = ((UncertaintyObservation)obs).getResult().getUncertaintyValue();
+			if(uncertainty!=null && uncertainty instanceof ContinuousRealisation){
+				for(int i=0; i<((ContinuousRealisation)uncertainty).getValues().size(); i++){
+					int rPos = this.columnNumber4UncertaintyColName.get(Columns.CN_REALISATION+i);
+					result[rPos]=""+((ContinuousRealisation)uncertainty).getValues().get(i);
+				}
+			}
+		} else if(obs instanceof CategoryObservation){
+			result[6] = obs.getResult().getValue().toString();
 		}
 		else {
 			throw new RuntimeException("CSVEncoder currently only supports Measurements and UncertaintyObservations");
