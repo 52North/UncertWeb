@@ -44,7 +44,7 @@ public class GeneralTimeInterval implements IGeneralTime{
 	}
 	
 	public String toString(){
-		return start.toString()+INTERVAL_SEP+end.toString()+end.toString();
+		return start.toString()+INTERVAL_SEP+end.toString();
 	}
 
 }
