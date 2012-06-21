@@ -56,7 +56,7 @@ public class ObservationCollection implements IObservationCollection{
 
 		@Override
 		public void addObservation(AbstractObservation obs) throws IllegalArgumentException {
-			this.members.add((Measurement)obs);
+			this.members.add(obs);
 		}
 
 		@Override
