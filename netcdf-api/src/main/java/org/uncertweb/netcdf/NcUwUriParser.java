@@ -25,7 +25,6 @@ import static org.uncertweb.utils.UwCollectionUtils.toDoubleArray;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,24 +100,24 @@ public class NcUwUriParser {
 		if (getValues() == null || getValues().isEmpty()) {
 			return null;
 		}
-		if (log.isDebugEnabled()) {
-			StringBuilder sb = new StringBuilder();
-			for (Entry<URI, List<Object>> e : getValues().entrySet()) {
-				sb.append(e.getKey()).append(":\n");
-				StringBuilder line = new StringBuilder(90).append("\t");
-				for (Object o : e.getValue()) {
-					line.append(o).append(", ");
-					if (line.length()>=80) {
-						sb.append(line.append("\n"));
-						line = new StringBuilder("\t");
-					}
-				}
-				if (line.length() > 1) 
-					sb.append(line);
-				sb.append("\n");
-			}
-			log.debug("Parsing map:\n{}", sb);
-		}
+//		if (log.isDebugEnabled()) {
+//			StringBuilder sb = new StringBuilder();
+//			for (Entry<URI, List<Object>> e : getValues().entrySet()) {
+//				sb.append(e.getKey()).append(":\n");
+//				StringBuilder line = new StringBuilder(90).append("\t");
+//				for (Object o : e.getValue()) {
+//					line.append(o).append(", ");
+//					if (line.length()>=80) {
+//						sb.append(line.append("\n"));
+//						line = new StringBuilder("\t");
+//					}
+//				}
+//				if (line.length() > 1) 
+//					sb.append(line);
+//				sb.append("\n");
+//			}
+//			log.debug("Parsing map:\n{}", sb);
+//		}
 		
 		IUncertainty u = _parse();
 //		if (log.isDebugEnabled()) {
