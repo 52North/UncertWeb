@@ -516,7 +516,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 	}
 
 	protected MultivaluedMap<URI, Object> getValueMap(NcUwCoordinate c) {
-		log.debug("Getting value: {}", c);
+//		log.debug("Getting value: {}", c);
 		final MultivaluedMap<URI, Object> map = MultivaluedHashMap.create();
 		
 		for (final NcUwDimension d : getDimensions()) {
