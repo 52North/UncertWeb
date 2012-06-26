@@ -20,6 +20,7 @@ public class ProjectFile {
 	private String municipalities;
 	private String zones;
 	private String postcodeAreas;
+	private Boolean modelUncertainty;
 	
 	private String fileLocation;
 	private String dataLocation;
@@ -40,7 +41,7 @@ public class ProjectFile {
 	 * @param zones
 	 * @param postcodeAreas
 	 */
-	public ProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas) {
+	public ProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas, Boolean modelUncertainty) {
 		
 		this.fileLocation = fileLocation;
 		this.dataLocation = dataLocation+File.separator;
@@ -50,6 +51,7 @@ public class ProjectFile {
 		this.municipalities = municipalities;
 		this.zones = zones;
 		this.postcodeAreas = postcodeAreas;
+		this.modelUncertainty = modelUncertainty;
 		
 		this.projectFileName = projectFileName;
 		
@@ -97,9 +99,17 @@ public class ProjectFile {
 
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f)));  
 
-		//TODO random Seed - according to the latest statement the first entry is the random number seed. The problem is that the program needs no random number seed...
-		// I hope we can clarify this after the random sampling exe arrives
-		out.println("0");
+		/**
+		 * (just model uncertainty first line=0, or just input uncertainty (first line=not 0
+		 */
+		
+		if (modelUncertainty){
+			 out.println("0");
+		}
+		else{
+			out.println("1");
+		}
+		
 		out.println(genpopHouseholds);
 		out.println(rwdataHouseholds);
 		out.println(postcodeAreas);

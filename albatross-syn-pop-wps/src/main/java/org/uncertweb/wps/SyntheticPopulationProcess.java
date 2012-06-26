@@ -60,6 +60,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private final String inputIDZones = "zones";
 	private final String inputIDPostcodeAreas = "postcode-areas";
 	private final String inputIDIsBootstrapping ="isBootstrapping";
+	private final String inputIDIsModelUncertainty = "isModelUncertainty";
 
 	private final String outputIDProjectFile = "project-file";
 	private final String outputIDExportFile = "export-file";
@@ -75,6 +76,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private Boolean isBootstrapping;
 	private String noCases;
 	private String noCasesNew;
+	private Boolean isModelUncertainty;
 	
 	private Workspace ws;
 	private ProjectFile projectFile;
@@ -146,7 +148,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		if (id.equals(inputIDMunicipalities)) {
 			return LiteralIntBinding.class;
 		}
-		if(id.equals(inputIDIsBootstrapping)){
+		if(id.equals(inputIDIsBootstrapping) || id.equals(inputIDIsModelUncertainty)){
 			return LiteralBooleanBinding.class;
 		}
 		if(id.equals(inputIDNoCases)){
@@ -297,6 +299,10 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		municipalities = ((LiteralIntBinding) municipalitiesList.get(0))
 				.getPayload().toString();
 		
+		List<IData> modelUncertaintyList = inputData
+				.get(inputIDIsModelUncertainty);
+		
+		isModelUncertainty = ((LiteralBooleanBinding) modelUncertaintyList.get(0)).getPayload();
 		
 		List<IData> isBootstrappingList = inputData.get(inputIDIsBootstrapping);
 		
@@ -345,7 +351,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		// create projectFile...
 		projectFile = new ProjectFile("ProjectFile.prj", ws.getWorkspaceFolder().getPath(),
 				ws.getWorkspaceFolder().getPath(), genpopHouseholds, rwdataHouseholds,
-				municipalities, zones, postcodeAreas);
+				municipalities, zones, postcodeAreas,isModelUncertainty);
 		
 		
 		//supervise the newly created folder and remove them after a specific time

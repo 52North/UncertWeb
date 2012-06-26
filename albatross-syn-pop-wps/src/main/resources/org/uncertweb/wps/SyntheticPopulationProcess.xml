@@ -81,6 +81,15 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>isModelUncertainty</ows:Identifier>
+				<ows:Title>Indicates whether model uncertainty (true) should be used or just input uncertainty (false).</ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:boolean"></ows:DataType>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
 		</DataInputs>
 		<ProcessOutputs>
 			<Output>
