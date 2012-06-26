@@ -3,7 +3,9 @@ package org.uncertweb.wps.util.test;
 import org.junit.Test;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.wps.io.outputmapper.AlbatrossOutputMapper;
 import org.uncertweb.wps.io.outputmapper.OutputMapper;
+import org.uncertweb.wps.util.AlbatrossOutputParser;
 
 /**
  * TestCase for CSV Observation Encoder
@@ -25,6 +27,16 @@ public class OutputMapperTestCase {
 		System.out.print(obsEncoder.encodeObservationCollection(obsCol));
 		obsCol = mapper.encodeIndicators(pathToExamples+"/OUT_indicators.csv");
 		System.out.print(obsEncoder.encodeObservationCollection(obsCol));
+	}
+	
+	@Test
+	public void testAlbatrossOutputMapper() throws Exception{
+		
+		IObservationCollection col = AlbatrossOutputMapper.encodeAlbatrossOutput(AlbatrossOutputParser.parse(pathToExamples+"/export.txt"));
+		
+		XBObservationEncoder encoder = new XBObservationEncoder();
+		
+		System.out.println(encoder.encodeObservationCollection(col));
 	}
 	
 }
