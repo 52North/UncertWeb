@@ -149,19 +149,27 @@ public static IObservationCollection encodeAlbatrossOutput(Set<HouseHold> househ
 
 		Geometry geom = null;
 
-		while (iter.hasNext()) {
+		while (iter.hasNext()){
 			SimpleFeature sf = iter.next();
 			String ppcFromFile = sf.getAttribute("CEN_NUMBER").toString();
-
-			geom = (Geometry) sf.getDefaultGeometry();
+			
+			geom = (Geometry)sf.getDefaultGeometry();
 			geom.setSRID(4326);
+			
+			//and for all member of the collection
+			int nGeo = geom.getNumGeometries();
+			
+			for(int i = 0; i < nGeo; i++){
+				
+				geom.getGeometryN(i).setSRID(4326);
+			}
 
-			// we will probably put some values again and again... however the
-			// value will be just replaced
-			ppcMap.put(ppcFromFile, geom);
+			//if not part of the map -> add
+			if(!ppcMap.containsKey(ppcFromFile))
+				ppcMap.put(ppcFromFile, geom);
 		}
-
-		return geom;
+				
+	return geom;
 	}
 
 }
