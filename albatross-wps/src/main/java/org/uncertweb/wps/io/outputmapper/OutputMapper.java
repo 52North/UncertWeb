@@ -253,6 +253,14 @@ public class OutputMapper {
 			SimpleFeature sf = iter.next();
 			geom = (Geometry)sf.getDefaultGeometry();
 			geom.setSRID(4326);
+			
+			//and for all member of the collection
+			int nGeo = geom.getNumGeometries();
+			
+			for(int i = 0; i < nGeo; i++){
+				
+				geom.getGeometryN(i).setSRID(4326);
+			}
 		}
 		return geom;
 	}
