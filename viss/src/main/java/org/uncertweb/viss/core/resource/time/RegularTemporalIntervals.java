@@ -21,13 +21,18 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
-import static org.uncertweb.viss.core.util.JSONConstants.INTERVAL_SIZE_KEY;
+import static org.uncertweb.utils.UwJsonConstants.INTERVAL_SIZE_KEY;
+
+import java.util.Set;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeInterval;
+import org.joda.time.Interval;
+import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent.CanBeInterval;
 
 public class RegularTemporalIntervals extends AbstractRegularTemporalExtent implements CanBeInterval{
 
@@ -51,5 +56,34 @@ public class RegularTemporalIntervals extends AbstractRegularTemporalExtent impl
 	public JSONObject toJson() throws JSONException {
 		return super.toJson().put(INTERVAL_SIZE_KEY,
 				getIntervalSize().getMillis());
+	}
+
+	
+	@Override
+	public boolean contains(DateTime t) {
+		return t.getMillis() >= getBegin().getMillis() && t.getMillis() <= getEnd().getMillis();
+	}
+
+	@Override
+	public boolean contains(Interval i) {
+		if (!contains(i.getStart()) || !contains(i.getEnd())) {
+			return false;
+		}
+		return getBegin().getMillis() - i.getStartMillis()	% getSep().getMillis() == 0
+				&& i.getStartMillis() - i.getEndMillis() == getSep().getMillis();
+	}
+
+	@Override
+	public Set<TimeObject> toInstances() {
+		Set<TimeObject> to = UwCollectionUtils.set();
+		Duration size = getIntervalSize();
+		long endMillis = getEnd().getMillis();
+		DateTime begin = getBegin();
+		DateTime end = null;
+		while ((end = begin.plus(size)).getMillis() <= endMillis) {
+			to.add(new TimeObject(begin, end));
+			begin = end;
+		}
+		return to;
 	}
 }

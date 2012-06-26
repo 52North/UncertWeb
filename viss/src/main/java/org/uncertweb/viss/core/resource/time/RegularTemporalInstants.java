@@ -21,15 +21,21 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
-import static org.uncertweb.viss.core.util.JSONConstants.SEPERATOR_KEY;
+import static org.uncertweb.utils.UwJsonConstants.SEPERATOR_KEY;
+
+import java.util.Set;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeInstant;
+import org.joda.time.Interval;
+import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent.CanBeInstant;
 
-public class RegularTemporalInstants extends AbstractRegularTemporalExtent implements CanBeInstant{
+public class RegularTemporalInstants extends AbstractRegularTemporalExtent
+		implements CanBeInstant {
 
 	public RegularTemporalInstants() {
 	}
@@ -50,5 +56,32 @@ public class RegularTemporalInstants extends AbstractRegularTemporalExtent imple
 	@Override
 	public JSONObject toJson() throws JSONException {
 		return super.toJson().put(SEPERATOR_KEY, getSeperator().getMillis());
+	}
+
+	@Override
+	public boolean contains(DateTime t) {
+		if (t.isBefore(getBegin()) || t.isAfter(getEnd())) {
+			return false;
+		}
+		return ((t.getMillis() - getBegin().getMillis()) % getSeperator().getMillis()) == 0;
+	}
+
+	@Override
+	public boolean contains(Interval i) {
+		if (i.getStartMillis() == i.getEndMillis()) {
+			return contains(i.getStart());
+		}else {
+			return false;
+		}
+	}
+
+	@Override
+	public Set<TimeObject> toInstances() {
+		DateTime dt = getBegin();
+		Set<TimeObject> to = UwCollectionUtils.set(new TimeObject(dt));
+		while (dt.getMillis() <= getEnd().getMillis()) {
+			to.add(new TimeObject(dt = dt.plus(getSeperator())));
+		}
+		return to;
 	}
 }

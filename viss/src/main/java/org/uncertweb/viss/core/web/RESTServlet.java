@@ -31,6 +31,7 @@ import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_SCHEMA;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_UNCERTAINTY_COLLECTION;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_VALUE_REQUEST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_STYLE;
@@ -77,7 +78,9 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.utils.UwCollectionUtils;
+import org.uncertweb.viss.core.ValueRequest;
 import org.uncertweb.viss.core.Viss;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
@@ -86,6 +89,7 @@ import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.core.vis.VisualizationStyle;
+
 
 @Path("/")
 public class RESTServlet {
@@ -113,6 +117,7 @@ public class RESTServlet {
 	public static final String VISUALIZERS_FOR_DATASET = DATASET + VISUALIZERS;
 	public static final String VISUALIZER_FOR_DATASET = DATASET + VISUALIZER;
 	
+	public static final String VALUE_OF_DATASET = DATASET + "/value";
 	
 	public static final String STYLE_PARAM = "style";
 	public static final String STYLE_PARAM_P = "{" + STYLE_PARAM + "}";
@@ -391,6 +396,18 @@ public class RESTServlet {
 		log.debug("Changing Style for visualization \"{}\"", vis);
 		return Viss.getInstance().changeStyle(resource, dataset, vis, style, sld);
 	}
+	
+	@POST
+	@Path(VALUE_OF_DATASET)
+	@Produces(JSON_UNCERTAINTY_COLLECTION)
+	@Consumes(JSON_VALUE_REQUEST)
+	public IObservationCollection getValue(
+			@PathParam(RESOURCE_PARAM) ObjectId resource,
+			@PathParam(DATASET_PARAM) ObjectId dataset,
+			ValueRequest req) {
+		return Viss.getInstance().getValue(resource, dataset, req);
+	}
+	
 	
 	private static final Lock schemaLock = new ReentrantLock();
 	private static final Map<MediaType, JSONObject> schemas = UwCollectionUtils.map();

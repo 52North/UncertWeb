@@ -69,7 +69,7 @@ public abstract class SimpleStatisticVisualizer extends
 	public static class MedianStatistic extends 
 			SimpleStatisticVisualizer {}
 
-	@Type(NcUwUncertaintyType.MODE)
+	@Type(NcUwUncertaintyType.CONTINOUS_MODE)
 	@Description("Returns the mode.")
 	public static class ModeStatistic extends 
 			SimpleStatisticVisualizer {}

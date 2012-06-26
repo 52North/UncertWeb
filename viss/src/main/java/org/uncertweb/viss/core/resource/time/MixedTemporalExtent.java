@@ -21,34 +21,36 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
-import static org.uncertweb.viss.core.util.JSONConstants.INSTANTS_KEY;
-import static org.uncertweb.viss.core.util.JSONConstants.INTERVALS_KEY;
+import static org.uncertweb.utils.UwJsonConstants.INSTANTS_KEY;
+import static org.uncertweb.utils.UwJsonConstants.INTERVALS_KEY;
 
 import java.util.List;
+import java.util.Set;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeBoth;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent.CanBeBoth;
 
 public class MixedTemporalExtent extends AbstractIrregularTemporalExtent implements CanBeBoth {
 
-	private List<ITemporalExtent> extents;
+	private List<AbstractTemporalExtent> extents;
 
 	public MixedTemporalExtent() {
 	}
 
-	public MixedTemporalExtent(List<ITemporalExtent> l) {
+	public MixedTemporalExtent(List<AbstractTemporalExtent> l) {
 		setExtents(l);
 	}
 
-	public void setExtents(List<ITemporalExtent> extents) {
+	public void setExtents(List<AbstractTemporalExtent> extents) {
 		setInterval(findOverallInterval(extents));
 		this.extents = extents;
 	}
 
-	public List<ITemporalExtent> getExtents() {
+	public List<AbstractTemporalExtent> getExtents() {
 		return this.extents;
 	}
 
@@ -56,7 +58,7 @@ public class MixedTemporalExtent extends AbstractIrregularTemporalExtent impleme
 	public JSONObject toJson() throws JSONException {
 		List<JSONObject> instants = UwCollectionUtils.list();
 		List<JSONObject> intervals = UwCollectionUtils.list();
-		for (ITemporalExtent te : getExtents()) {
+		for (AbstractTemporalExtent te : getExtents()) {
 			if (te instanceof TemporalInstant) {
 				instants.add(te.toJson());
 			} else if (te instanceof AbstractTemporalInterval) {
@@ -65,6 +67,25 @@ public class MixedTemporalExtent extends AbstractIrregularTemporalExtent impleme
 		}
 		return super.toJson().put(INSTANTS_KEY, new JSONArray(instants))
 				.put(INTERVALS_KEY, new JSONArray(intervals));
+	}
+
+	@Override
+	public boolean contains(TimeObject t) {
+		for (AbstractTemporalExtent e : getExtents()) {
+			if (e.contains(t)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Set<TimeObject> toInstances() {
+		Set<TimeObject> to = UwCollectionUtils.set();
+		for (AbstractTemporalExtent e : getExtents()) {
+			to.addAll(e.toInstances());
+		}
+		return to;
 	}
 
 }

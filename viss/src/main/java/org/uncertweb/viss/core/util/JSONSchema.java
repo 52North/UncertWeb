@@ -99,6 +99,8 @@ public class JSONSchema {
 		public static final String TYPE = "type";
 
 		public static final String UNIQUE_ITEMS = "uniqueItems";
+		
+		public static final String ENUM = "enum";
 	}
 
 	public static class Type {

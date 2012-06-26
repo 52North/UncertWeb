@@ -24,17 +24,20 @@ package org.uncertweb.viss.mongo.resource;
 import java.net.URI;
 import java.util.Set;
 
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
+import org.geotools.geometry.Envelope2D;
+import org.opengis.geometry.Envelope;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent;
+
+import com.vividsolutions.jts.geom.Point;
 
 public class MongoOMDataSet extends
 		AbstractMongoDataSet<IObservationCollection> {
@@ -71,19 +74,14 @@ public class MongoOMDataSet extends
 	}
 
 	@Override
-	protected ITemporalExtent loadTemporalExtent() {
-		Set<DateTime> instants = UwCollectionUtils.set();
-		Set<Interval> intervals = UwCollectionUtils.set();
+	protected AbstractTemporalExtent loadTemporalExtent() {
+		Set<TimeObject> times = UwCollectionUtils.set();
 		for (AbstractObservation ao : getContent().getObservations()) {
-			//TODO respect temporal extent of referenced resource
-			TimeObject to = ao.getPhenomenonTime();
-			if (to.getInterval() != null) {
-				intervals.add(to.getInterval());
-			} else if (to.getDateTime() != null) {
-				instants.add(to.getDateTime());
-			}
+			times.add(ao.getPhenomenonTime());
+			times.addAll(((IResource) ao.getResult().getValue()).getDataSets()
+					.iterator().next().getTemporalExtent().toInstances());
 		}
-		return getExtent(instants, intervals);
+		return AbstractTemporalExtent.getExtent(times);
 	}
 
 	@Override
@@ -104,6 +102,36 @@ public class MongoOMDataSet extends
 			}
 		}
 		return uom;
+	}
+
+	@Override
+	public Envelope2D getSpatialExtent() {
+		Envelope e  = null;
+		for (AbstractObservation ao : getContent().getObservations()) {
+			Envelope e2 = ((IResource) ao.getResult().getValue()).getDataSets().iterator().next().getSpatialExtent();
+			if (e == null) {
+				e = e2;
+			} else if (!e.equals(e2)) {
+				throw VissError.internal("Different envelopes");
+			}
+		}
+		return (Envelope2D) e;
+	}
+
+	@Override
+	public IObservationCollection getValue(Point p, TimeObject t) {
+		IObservationCollection col = new UncertaintyObservationCollection();
+		
+		for (AbstractObservation ao : getContent().getObservations()) {
+			IDataSet ds = ((IResource) ao.getResult().getValue()).getDataSets().iterator().next();
+			if ((p != null && !ds.hasPoint(p))
+					|| (t != null && !ao.getPhenomenonTime().equals(t) && !ds.hasTime(t))) {
+				continue;
+			}
+			col.addObservationCollection(ds.getValue(p, (t != null && !ds.hasTime(t)) ? null : t));
+			
+		}
+		return col;
 	}
 
 }

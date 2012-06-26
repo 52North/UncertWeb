@@ -86,7 +86,7 @@ public class DataSetProvider implements MessageBodyWriter<IDataSet> {
 			JSONObject j = new JSONObject()
 				.put(ID_KEY, r.getId())
 				.put(PHENOMENON_KEY, r.getPhenomenon())
-				.put(UNCERTAINTY_TYPE_KEY, r.getType().uri)
+				.put(UNCERTAINTY_TYPE_KEY, r.getType().getUri())
 				.put(TEMPORAL_EXTENT_KEY, r.getTemporalExtent().toJson())
 				.put(VISUALIZATIONS_KEY, vis);
 

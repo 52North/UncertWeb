@@ -42,7 +42,7 @@ public class DateTimeConverter extends TypeConverter implements
 		if (value == null)
 			return null;
 		DateTime dt = (DateTime) value;
-		return dt.getMillis();
+		return new Date(dt.getMillis());
 	}
 
 	@Override

@@ -21,25 +21,16 @@
  */
 package org.uncertweb.viss.mongo.resource;
 
-import java.util.List;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.Interval;
+import org.geotools.geometry.Envelope2D;
 import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.netcdf.NcUwHelper;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent;
-import org.uncertweb.viss.core.resource.time.IrregularTemporalInstants;
-import org.uncertweb.viss.core.resource.time.IrregularTemporalIntervals;
-import org.uncertweb.viss.core.resource.time.MixedTemporalExtent;
-import org.uncertweb.viss.core.resource.time.RegularTemporalInstants;
-import org.uncertweb.viss.core.resource.time.RegularTemporalIntervals;
-import org.uncertweb.viss.core.resource.time.TemporalInstant;
-import org.uncertweb.viss.core.resource.time.TemporalInterval;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent;
 import org.uncertweb.viss.core.vis.IVisualization;
 
 import com.google.code.morphia.annotations.Embedded;
@@ -48,6 +39,7 @@ import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Polymorphic;
 import com.google.code.morphia.annotations.Reference;
 import com.google.code.morphia.annotations.Transient;
+import com.vividsolutions.jts.geom.Point;
 
 @Polymorphic
 @Entity("datasets")
@@ -63,7 +55,7 @@ public abstract class AbstractMongoDataSet<T> implements IDataSet {
 	private Set<IVisualization> visualizations = UwCollectionUtils.set();
 	
 	@Embedded
-	private ITemporalExtent temporalExtent;
+	private AbstractTemporalExtent temporalExtent;
 
 	@Transient
 	private T content;
@@ -110,7 +102,7 @@ public abstract class AbstractMongoDataSet<T> implements IDataSet {
 	}
 
 	@Override
-	public ITemporalExtent getTemporalExtent() {
+	public AbstractTemporalExtent getTemporalExtent() {
 		if (this.temporalExtent == null) {
 			this.temporalExtent = loadTemporalExtent();
 		}
@@ -131,96 +123,21 @@ public abstract class AbstractMongoDataSet<T> implements IDataSet {
 		this.content = (T) c;
 	}
 
+	@Override
+	public boolean hasTime(TimeObject t) {
+		return getTemporalExtent().contains(t);
+	}
+	
+	@Override
+	public abstract Envelope2D getSpatialExtent();
 	protected abstract T loadContent();
-	protected abstract ITemporalExtent loadTemporalExtent();
+	protected abstract AbstractTemporalExtent loadTemporalExtent();
 	
-
-	public static ITemporalExtent getExtent(Iterable<? extends TimeObject> times) {
-		if (times == null) {
-			return ITemporalExtent.NO_TEMPORAL_EXTENT;
-		}
-		Set<DateTime> instants = UwCollectionUtils.set();
-		Set<Interval> intervals = UwCollectionUtils.set();
-		for (TimeObject time : times) {
-			if (time.isInstant()) {
-				instants.add(time.getDateTime());
-			} else { 
-				intervals.add(time.getInterval()); 
-			}	
-		}
-		return getExtent(instants, intervals);
+	@Override
+	public boolean hasPoint(Point p) {
+		Envelope2D e = getSpatialExtent();
+		return e.contains(NcUwHelper.toDirectPosition(p,
+				e.getCoordinateReferenceSystem()));
 	}
 	
-	public static ITemporalExtent getExtent(Set<DateTime> instants,
-			Set<Interval> intervals) {
-		if (instants == null || instants.isEmpty()) {
-			if (intervals == null || intervals.isEmpty()) {
-				return ITemporalExtent.NO_TEMPORAL_EXTENT;
-			} else {
-				if (intervals.size() == 1) {
-					return new TemporalInterval(intervals.iterator().next());
-				} else {
-					Long duration = null;
-					boolean irregular = false;
-					DateTime begin = null, end = null;
-					for (Interval i : intervals) {
-						if (!irregular) {
-							if (duration == null) {
-								duration = Long.valueOf(i.toDurationMillis());
-							} else if (i.toDurationMillis() != duration
-									.longValue()) {
-								irregular = true;
-								break;
-							}
-						}
-						if (begin == null || i.getStart().isBefore(begin)) {
-							begin = i.getStart();
-						}
-						if (end == null || i.getEnd().isAfter(end)) {
-							end = i.getEnd();
-						}
-					}
-					if (irregular) {
-						return new IrregularTemporalIntervals(
-								UwCollectionUtils.asList(intervals));
-					} else {
-						return new RegularTemporalIntervals(begin, end,
-								new Duration(duration.longValue()));
-					}
-				}
-			}
-		} else {
-			if (intervals == null || intervals.isEmpty()) {
-				if (instants.size() == 1) {
-					return new TemporalInstant(instants.iterator().next());
-				} else {
-					DateTime[] dts = UwCollectionUtils.sort(instants
-							.toArray(new DateTime[instants.size()]));
-					Duration duration = new Duration(dts[0], dts[1]);
-					boolean irregular = false;
-					for (int i = 2; i < dts.length && !irregular; ++i) {
-						if (!duration.isEqual(new Duration(dts[i - 1], dts[i]))) {
-							irregular = true;
-						}
-					}
-					if (irregular) {
-						return new IrregularTemporalInstants(
-								UwCollectionUtils.asList(instants));
-					} else {
-						return new RegularTemporalInstants(dts[0],
-								dts[dts.length - 1], duration);
-					}
-				}
-			} else {
-				List<ITemporalExtent> l = UwCollectionUtils.list();
-				for (DateTime t : instants) {
-					l.add(new TemporalInstant(t));
-				}
-				for (Interval i : intervals) {
-					l.add(new TemporalInterval(i));
-				}
-				return new MixedTemporalExtent(l);
-			}
-		}
-	}
 }

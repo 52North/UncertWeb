@@ -29,7 +29,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-public abstract class AbstractTemporalInterval implements ITemporalExtent {
+public abstract class AbstractTemporalInterval extends AbstractTemporalExtent {
 
 	private Interval interval;
 

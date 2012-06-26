@@ -51,7 +51,7 @@ public class NcUwFileTest {
 		NcUwFile f = new NcUwFile(getEUJune());
 		for (INcUwVariable v : f.getPrimaryVariables()) {
 			if (v.isUncertaintyVariable()) {
-				System.out.printf("%s: %s", v.getName(), v.getType().getURI());
+				System.out.printf("%s: %s", v.getName(), v.getType().getUri());
 				System.out.println(v.getEnvelope());
 				CoordinateReferenceSystem crs = v.getCRS();
 				System.out.println(crs);

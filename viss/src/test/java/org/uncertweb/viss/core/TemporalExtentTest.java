@@ -22,7 +22,6 @@
 package org.uncertweb.viss.core;
 
 import static org.junit.Assert.assertEquals;
-import static org.uncertweb.viss.mongo.resource.AbstractMongoDataSet.getExtent;
 
 import java.util.Set;
 
@@ -31,7 +30,7 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.junit.Test;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent;
 import org.uncertweb.viss.core.resource.time.IrregularTemporalInstants;
 import org.uncertweb.viss.core.resource.time.IrregularTemporalIntervals;
 import org.uncertweb.viss.core.resource.time.MixedTemporalExtent;
@@ -44,17 +43,14 @@ public class TemporalExtentTest {
 
 	@Test
 	public void test() {
-
 		DateTime begin = new DateTime();
 		Set<DateTime> instants = UwCollectionUtils.set(begin);
 		for (int i = 0; i <= 1000; ++i) {
 			instants.add(begin.plusHours(i));
 		}
-		assertEquals(RegularTemporalInstants.class, getExtent(instants, null)
-				.getClass());
+		assertEquals(RegularTemporalInstants.class, AbstractTemporalExtent.getExtent(instants, null).getClass());
 		instants.add(begin.plusSeconds(1));
-		assertEquals(IrregularTemporalInstants.class, getExtent(instants, null)
-				.getClass());
+		assertEquals(IrregularTemporalInstants.class, AbstractTemporalExtent.getExtent(instants, null).getClass());
 
 		Duration d = new Duration(1000 * 60 * 60);
 		Set<Interval> intervals = UwCollectionUtils.set();
@@ -65,28 +61,13 @@ public class TemporalExtentTest {
 			}
 			intervals.add(new Interval(s, d));
 		}
-		assertEquals(RegularTemporalIntervals.class, getExtent(null, intervals)
-				.getClass());
-
+		assertEquals(RegularTemporalIntervals.class, AbstractTemporalExtent.getExtent(null, intervals).getClass());
 		intervals.add(new Interval(begin, d.plus(1)));
-		assertEquals(IrregularTemporalIntervals.class,
-				getExtent(null, intervals).getClass());
-
-		assertEquals(ITemporalExtent.NO_TEMPORAL_EXTENT, getExtent(null, null));
-		assertEquals(
-				ITemporalExtent.NO_TEMPORAL_EXTENT,
-				getExtent(UwCollectionUtils.<DateTime> set(),
-						UwCollectionUtils.<Interval> set()));
-		assertEquals(MixedTemporalExtent.class, getExtent(instants, intervals)
-				.getClass());
-		assertEquals(TemporalInstant.class,
-				getExtent(UwCollectionUtils.set(new DateTime()), null)
-						.getClass());
-		assertEquals(
-				TemporalInterval.class,
-				getExtent(
-						null,
-						UwCollectionUtils.set(new Interval(begin, begin.plus(d))))
-						.getClass());
+		assertEquals(IrregularTemporalIntervals.class, AbstractTemporalExtent.getExtent(null, intervals).getClass());
+		assertEquals(AbstractTemporalExtent.NO_TEMPORAL_EXTENT, AbstractTemporalExtent.getExtent(null, null));
+		assertEquals(AbstractTemporalExtent.NO_TEMPORAL_EXTENT, AbstractTemporalExtent.getExtent(UwCollectionUtils.<DateTime>set(), UwCollectionUtils.<Interval>set()));
+		assertEquals(MixedTemporalExtent.class, AbstractTemporalExtent.getExtent(instants, intervals).getClass());
+		assertEquals(TemporalInstant.class, AbstractTemporalExtent.getExtent(UwCollectionUtils.set(new DateTime()), null).getClass());
+		assertEquals(TemporalInterval.class, AbstractTemporalExtent.getExtent(null, UwCollectionUtils.set(new Interval(begin, begin.plus(d))))	.getClass());
 	}
 }

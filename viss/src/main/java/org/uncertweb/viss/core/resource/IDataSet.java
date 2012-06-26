@@ -24,9 +24,14 @@ package org.uncertweb.viss.core.resource;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
+import org.opengis.geometry.Envelope;
+import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent;
 import org.uncertweb.viss.core.vis.IVisualization;
+
+import com.vividsolutions.jts.geom.Point;
 
 public interface IDataSet {
 	public ObjectId getId();
@@ -35,11 +40,19 @@ public interface IDataSet {
 
 	public String getPhenomenon();
 
-	public ITemporalExtent getTemporalExtent();
+	public Envelope getSpatialExtent();
+	
+	public AbstractTemporalExtent getTemporalExtent();
 
 	public NcUwUncertaintyType getType();
+	
+	public boolean hasTime(TimeObject t);
+	
+	public boolean hasPoint(Point p);
 
 	public IResource getResource();
+	
+	public IObservationCollection getValue(Point p, TimeObject t);
 
 	public Set<IVisualization> getVisualizations();
 

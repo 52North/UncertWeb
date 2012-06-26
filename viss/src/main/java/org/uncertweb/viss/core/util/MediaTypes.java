@@ -22,6 +22,7 @@
 package org.uncertweb.viss.core.util;
 
 import static javax.ws.rs.core.MediaType.valueOf;
+
 import javax.ws.rs.core.MediaType;
 
 public class MediaTypes {
@@ -39,6 +40,7 @@ public class MediaTypes {
 	private static final String VISUALIZATION_STYLE_LIST = VISUALIZATION_STYLE + ".list";
 	private static final String CREATE = PRE + "create";
 	private static final String REQUEST = PRE + "request";
+	private static final String VALUE_REQUEST = PRE + "value-request";
 	private static final String UNCERTAINTY_COLLECTION = PRE + "uncertainty-collection";
 	
 	public static final String JSON_RESOURCE = RESOURCE + "+json";
@@ -100,6 +102,11 @@ public class MediaTypes {
 	public static final MediaType JSON_REQUEST_TYPE = valueOf(JSON_REQUEST);
 	public static final String XML_REQUEST = REQUEST + "+xml";
 	public static final MediaType XML_REQUEST_TYPE = valueOf(XML_REQUEST);
+	
+	public static final String JSON_VALUE_REQUEST = VALUE_REQUEST + "+json";
+	public static final MediaType JSON_VALUE_REQUEST_TYPE = valueOf(JSON_VALUE_REQUEST);
+	public static final String XML_VALUE_REQUEST = VALUE_REQUEST + "+xml";
+	public static final MediaType XML_VALUE_REQUEST_TYPE = valueOf(XML_VALUE_REQUEST);
 
 	public static final String NETCDF = "application/netcdf";
 	public static final MediaType NETCDF_TYPE = valueOf(NETCDF);
@@ -111,6 +118,9 @@ public class MediaTypes {
 
 	public static final String OM_2 = "application/vnd.ogc.om+xml";
 	public static final MediaType OM_2_TYPE = valueOf(OM_2);
+	
+	public static final String JSON_OBSERVATION_COLLECTION = "application/vnd.ogc.om+json";
+	public static final MediaType JSON_OBSERVATION_COLLECTION_TYPE = valueOf(JSON_OBSERVATION_COLLECTION);
 
 	public static final String STYLED_LAYER_DESCRIPTOR = "application/vnd.ogc.sld+xml";
 	public static final MediaType STYLED_LAYER_DESCRIPTOR_TYPE = valueOf(STYLED_LAYER_DESCRIPTOR);

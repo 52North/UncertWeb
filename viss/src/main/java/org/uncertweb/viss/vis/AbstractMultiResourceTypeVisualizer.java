@@ -49,7 +49,6 @@ import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 import org.uncertweb.viss.core.resource.UncertaintyReference;
-import org.uncertweb.viss.core.util.VissConstants;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.VisualizationFactory;
 
@@ -95,7 +94,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		int missingValue = -999;
 		final GridCoverageBuilder b = new GridCoverageBuilder();
 		// TODO CRS for GeoTiff
-		b.setCoordinateReferenceSystem(VissConstants.EPSG4326);
+		b.setCoordinateReferenceSystem(gc.getCoordinateReferenceSystem());
 		log.debug("Image size: {}x{}", width, height);
 		b.setImageSize(width, height);
 		log.debug("Envelope: " + gc.getEnvelope());
@@ -112,7 +111,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		WriteableGridCoverage wgc = new WriteableGridCoverage(
 				b.getGridCoverage2D());
 		return visualize(
-				new CoverageIterator(gc, ur.getType().uri,
+				new CoverageIterator(gc, ur.getType().getUri(),
 						ur.getAdditionalUris()), wgc);
 	}
 
@@ -222,7 +221,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 	protected static Iterator<NcUwObservation> getIteratorForDataSet(IDataSet r) {
 		Object o = r.getContent();
 		if (o instanceof GridCoverage2D) {
-			return new CoverageIterator((GridCoverage2D) o, r.getType().uri,
+			return new CoverageIterator((GridCoverage2D) o, r.getType().getUri(),
 					((UncertaintyReference) r).getAdditionalUris());
 		} else if (o instanceof NcUwVariableWithDimensions) {
 			return ((NcUwVariableWithDimensions) o).iterator();

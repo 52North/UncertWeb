@@ -19,20 +19,26 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.netcdf;
+package org.uncertweb.viss.vis.statistic;
 
-public class NcUwException extends Error {
-	private static final long serialVersionUID = -6138042931970958970L;
+import java.util.Set;
 
-	public NcUwException(Throwable t) {
-		super(t);
+import org.uncertml.IUncertainty;
+
+public class QuantileVisualizer extends AbstractLevelVisualizer {
+
+	@Override
+	protected Set<Double> getLevels() {
+		
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public NcUwException(String format, Throwable cause, Object... param) {
-		super(String.format(format, param), cause);
+	@Override
+	protected double evaluate(IUncertainty u, double level) {
+//		Quantile q = (Quantile) u;
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
-	public NcUwException(String format, Object... param) {
-		this(format, null, param);
-	}
 }

@@ -21,15 +21,17 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
-import static org.uncertweb.viss.core.util.JSONConstants.INTERVALS_KEY;
+import static org.uncertweb.utils.UwJsonConstants.INTERVALS_KEY;
 
 import java.util.List;
+import java.util.Set;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.Interval;
+import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeInterval;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent.CanBeInterval;
 
 public class IrregularTemporalIntervals extends AbstractIrregularTemporalExtent implements CanBeInterval {
 
@@ -65,4 +67,23 @@ public class IrregularTemporalIntervals extends AbstractIrregularTemporalExtent 
 		return super.toJson().put(INTERVALS_KEY, toJSONArray(getIntervals()));
 	}
 
+	@Override
+	public boolean contains(TimeObject t) {
+		for (TemporalInterval e : getIntervals()) {
+			if (e.contains(t)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Set<TimeObject> toInstances() {
+		Set<TimeObject> to = UwCollectionUtils.set();
+		for (TemporalInterval ti : intervals) {
+			to.add(new TimeObject(ti.getInterval()));
+		}
+		return to;
+	}
+	
 }

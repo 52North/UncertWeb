@@ -27,6 +27,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.uncertweb.api.om.TimeObject;
 
 public abstract class AbstractIrregularTemporalExtent extends AbstractTemporalInterval {
 
@@ -38,9 +39,9 @@ public abstract class AbstractIrregularTemporalExtent extends AbstractTemporalIn
 	 * @return
 	 */
 	protected static Interval findOverallInterval(
-	    List<? extends ITemporalExtent> instants) {
+	    List<? extends AbstractTemporalExtent> instants) {
 		DateTime start = null, end = null;
-		for (ITemporalExtent o : instants) {
+		for (AbstractTemporalExtent o : instants) {
 			Interval i = o.toInterval();
 			if (i != null) {
 				if (i.getStart() != null
@@ -55,13 +56,25 @@ public abstract class AbstractIrregularTemporalExtent extends AbstractTemporalIn
 		return new Interval(start, end);
 	}
 
-	protected JSONArray toJSONArray(List<? extends ITemporalExtent> values)
+	protected JSONArray toJSONArray(List<? extends AbstractTemporalExtent> values)
 	    throws JSONException {
 		JSONArray a = new JSONArray();
-		for (ITemporalExtent o : values) {
+		for (AbstractTemporalExtent o : values) {
 			a.put(o.toJson());
 		}
 		return a;
+	}
+	@Override
+	public abstract boolean contains(TimeObject t);
+	
+	@Override
+	public boolean contains(DateTime t) {
+		return contains(new TimeObject(t));
+	}
+
+	@Override
+	public boolean contains(Interval i) {
+		return contains(new TimeObject(i));
 	}
 
 }

@@ -34,6 +34,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.utils.UwIOUtils;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
@@ -43,6 +44,8 @@ import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.core.vis.VisualizationStyle;
 import org.uncertweb.viss.core.vis.VisualizerFactory;
 import org.uncertweb.viss.core.wms.WMSAdapter;
+
+import com.vividsolutions.jts.geom.Point;
 
 public class Viss {
 	private class CleanUpThread extends TimerTask {
@@ -318,6 +321,16 @@ public class Viss {
 
 	protected WMSAdapter getWMS() {
 		return this.wms;
+	}
+
+	public IObservationCollection getValue(ObjectId resource, ObjectId dataset, ValueRequest req) {
+		IDataSet ds = getDataSet(resource, dataset);
+		if (req.getLocation() != null) {
+			if (!(req.getLocation() instanceof Point)) {
+				throw VissError.badRequest("currently only points are supported.");
+			}
+		}
+		return ds.getValue((Point) req.getLocation(), req.getTime());
 	}
 
 }

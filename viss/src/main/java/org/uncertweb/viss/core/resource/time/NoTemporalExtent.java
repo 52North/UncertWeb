@@ -21,14 +21,19 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
+import java.util.Set;
+
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.utils.UwCollectionUtils;
 
 /*
  * Has to be a top level class for MongoDB
  */
-public class NoTemporalExtent implements ITemporalExtent {
+public class NoTemporalExtent extends AbstractTemporalExtent {
 
 	@Override
 	public JSONObject toJson() throws JSONException {
@@ -42,14 +47,26 @@ public class NoTemporalExtent implements ITemporalExtent {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || o instanceof NoTemporalExtent) {
-			return true;
-		}
-		return false;
+		return o == null || o instanceof NoTemporalExtent;
 	}
 
 	@Override
 	public Interval toInterval() {
 		return null;
+	}
+
+	@Override
+	public boolean contains(DateTime t) {
+		return false;
+	}
+
+	@Override
+	public boolean contains(Interval i) {
+		return false;
+	}
+
+	@Override
+	public Set<TimeObject> toInstances() {
+		return UwCollectionUtils.set();
 	}
 }

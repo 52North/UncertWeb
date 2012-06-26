@@ -21,15 +21,25 @@
  */
 package org.uncertweb.viss.mongo.resource;
 
+import java.util.Iterator;
+
 import javax.measure.unit.Unit;
 
+import org.geotools.geometry.Envelope2D;
+import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
+import org.uncertweb.netcdf.AbstractNcUwIterator;
 import org.uncertweb.netcdf.INcUwVariable;
+import org.uncertweb.netcdf.NcUwCoordinate;
+import org.uncertweb.netcdf.NcUwObservation;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent;
 
 import com.google.code.morphia.annotations.Polymorphic;
 import com.google.code.morphia.annotations.PrePersist;
 import com.google.code.morphia.annotations.Property;
+import com.vividsolutions.jts.geom.Point;
 
 @Polymorphic
 public class MongoNetCDFDataSet extends AbstractMongoDataSet<INcUwVariable> {
@@ -44,7 +54,7 @@ public class MongoNetCDFDataSet extends AbstractMongoDataSet<INcUwVariable> {
 		super(resource);
 		setContent(v);
 	}
-
+	
 	@Override
 	public String getPhenomenon() {
 		return getContent().getName();
@@ -56,8 +66,8 @@ public class MongoNetCDFDataSet extends AbstractMongoDataSet<INcUwVariable> {
 	}
 
 	@Override
-	protected ITemporalExtent loadTemporalExtent() {
-		return getExtent(getContent().getTimes());
+	protected AbstractTemporalExtent loadTemporalExtent() {
+		return AbstractTemporalExtent.getExtent(getContent().getTimes());
 	}
 
 	@PrePersist
@@ -75,6 +85,34 @@ public class MongoNetCDFDataSet extends AbstractMongoDataSet<INcUwVariable> {
 	public String getUom() {
 		String s = getContent().getUnit();
 		return (s == null) ? Unit.ONE.toString() : s;
+	}
+
+	@Override
+	public IObservationCollection getValue(Point p, TimeObject t) {
+		UncertaintyObservationCollection col = new UncertaintyObservationCollection();
+		NcUwCoordinate c = new NcUwCoordinate();
+		if (p != null) {
+			c.merge(getContent().getIndex(p));
+		}
+		if (t != null) {
+			c.merge(getContent().getIndex(t));
+		}
+		if (c.isEmpty()) {
+			return col;
+		}
+		Iterator<NcUwObservation> i = new AbstractNcUwIterator(getContent(), c) {};
+		while (i.hasNext()) {
+			NcUwObservation o = i.next();
+			if (o != null && o.hasValue()) {
+				col.addObservation(o);
+			}
+		}
+		return col;
+	}
+
+	@Override
+	public Envelope2D getSpatialExtent() {
+		return getContent().getEnvelope();
 	}
 
 }

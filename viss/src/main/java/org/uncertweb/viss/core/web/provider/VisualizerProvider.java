@@ -71,7 +71,7 @@ public class VisualizerProvider implements MessageBodyWriter<IVisualizer> {
 			    .put(ID_KEY, v.getShortName());
 			JSONArray ar = new JSONArray();
 			for (NcUwUncertaintyType ut : v.getCompatibleUncertaintyTypes()) {
-				ar.put(ut.getURI());
+				ar.put(ut.getUri());
 			}
 			j.put(SUPPORTED_UNCERTAINTIES_KEY, ar);
 			if (v.getDataSet() != null) {

@@ -21,27 +21,40 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
-import static org.uncertweb.viss.core.util.JSONConstants.INSTANTS_KEY;
+import static org.uncertweb.utils.UwJsonConstants.INSTANTS_KEY;
 
 import java.util.List;
+import java.util.Set;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent.CanBeInstant;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent.CanBeInstant;
 
 public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent implements CanBeInstant{
 
-	protected static List<TemporalInstant> toTemporalInstantList(
-			List<DateTime> instants) {
+	protected static List<TemporalInstant> toTemporalInstantList(Iterable<DateTime> instants) {
 		List<TemporalInstant> ti = UwCollectionUtils.list();
 		for (DateTime i : instants) {
 			ti.add(new TemporalInstant(i));
 		}
 		return ti;
 	}
-
+	
+	protected static List<TimeObject> toTimeObjects(Iterable<DateTime> instants, Iterable<Interval> intervals) {
+		List<TimeObject> l = UwCollectionUtils.list();
+		for (DateTime dt : instants) {
+			l.add(new TimeObject(dt));
+		}
+		for (Interval i : intervals) {
+			l.add(new TimeObject(i));
+		}
+		return l;
+	}
+	
 	private List<TemporalInstant> instants;
 
 	public IrregularTemporalInstants() {
@@ -63,4 +76,24 @@ public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent i
 	public JSONObject toJson() throws JSONException {
 		return super.toJson().put(INSTANTS_KEY, toJSONArray(getInstants()));
 	}
+
+	@Override
+	public boolean contains(TimeObject t) {
+		for (TemporalInstant i : getInstants()) {
+			if (i.contains(t)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public Set<TimeObject> toInstances() {
+		Set<TimeObject> to = UwCollectionUtils.set();
+		for (TemporalInstant i : instants) {
+			to.add(new TimeObject(i.getInstant()));
+		}
+		return to;
+	}
+
 }

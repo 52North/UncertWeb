@@ -23,26 +23,43 @@ package org.uncertweb.viss.mongo.resource;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.util.List;
 
 import javax.measure.unit.Unit;
 
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.geometry.Envelope2D;
 import org.opengis.coverage.grid.GridCoverage;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.uncertml.IUncertainty;
+import org.uncertweb.api.om.TimeObject;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
+import org.uncertweb.netcdf.NcUwHelper;
+import org.uncertweb.netcdf.NcUwObservation;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
+import org.uncertweb.netcdf.NcUwUriParser;
+import org.uncertweb.utils.MultivaluedMap;
+import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.utils.UwIOUtils;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.UncertaintyReference;
-import org.uncertweb.viss.core.resource.time.ITemporalExtent;
+import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent;
 import org.uncertweb.viss.core.util.MediaTypes;
 
 import com.google.code.morphia.annotations.Embedded;
+import com.vividsolutions.jts.geom.Point;
 
 public class MongoUncertaintyCollectionDataSet extends
 		AbstractMongoDataSet<UncertaintyReference> {
+	
+	private static final Logger log = LoggerFactory.getLogger(MongoUncertaintyCollectionDataSet.class);
+
 
 	@Embedded
 	private UncertaintyReference ref;
@@ -101,16 +118,6 @@ public class MongoUncertaintyCollectionDataSet extends
 		}
 		return ref;
 	}
-	public static void main(String[] agrs) throws IOException {
-		File f = new File("/tmp/viss/resources/4f45fe4a44ae15101b4f6d1e/RES-295738633449198922");
-		for (int i = 0; i < 100; ++i) {
-			GeoTiffReader r = new GeoTiffReader(f);
-			GridCoverage2D gc = r.read(null);
-			log.debug("GridCoverage: {}", gc);
-		}
-	}
-	
-	private static final Logger log = org.slf4j.LoggerFactory.getLogger(MongoUncertaintyCollectionDataSet.class);
 	
 	private File downloadReference() throws IOException {
 		MongoResourceStore store = (MongoResourceStore) 
@@ -122,8 +129,8 @@ public class MongoUncertaintyCollectionDataSet extends
 	}
 	
 	@Override
-	protected ITemporalExtent loadTemporalExtent() {
-		return ITemporalExtent.NO_TEMPORAL_EXTENT;
+	protected AbstractTemporalExtent loadTemporalExtent() {
+		return AbstractTemporalExtent.NO_TEMPORAL_EXTENT;
 	}
 
 	@Override
@@ -135,6 +142,32 @@ public class MongoUncertaintyCollectionDataSet extends
 				return u.toString();
 		}
 		return Unit.ONE.toString();
+	}
+
+	@Override
+	public IObservationCollection getValue(Point p, TimeObject t) {
+		GridCoverage gc = (GridCoverage) getContent().getContent();
+		double[] v = gc.evaluate(NcUwHelper.toDirectPosition(p,
+						gc.getCoordinateReferenceSystem()), (double[]) null);
+		List<Number> n = UwCollectionUtils.list();
+		for (double d : v) {
+			n.add(new Double(d));
+		}
+		MultivaluedMap<URI, Object> uris = getContent().getAdditionalUris();
+		uris.add(getContent().getRef(), n);
+		IUncertainty u = NcUwUriParser.parse(getContent().getType(), uris);
+		IObservationCollection col = new UncertaintyObservationCollection();
+		col.addObservation(new NcUwObservation(null, null, null, p, null, u));
+		return col;
+	}
+	
+	@Override
+	public Envelope2D getSpatialExtent() {
+		if (getContent().getContent() instanceof GridCoverage) {
+			return (Envelope2D) ((GridCoverage) getContent().getContent())
+					.getEnvelope();
+		}
+		return null;
 	}
 
 }

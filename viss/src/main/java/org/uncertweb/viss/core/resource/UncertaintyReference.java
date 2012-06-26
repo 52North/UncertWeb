@@ -66,7 +66,7 @@ public class UncertaintyReference {
 				"mimeType"));
 		URI ref = new URI(o.getJSONObject("ref").getString("url"));
 		o.remove("ref");
-		NcUwUncertaintyType type = NcUwUncertaintyType.fromURI(new URI(o
+		NcUwUncertaintyType type = NcUwUncertaintyType.fromUri(new URI(o
 				.getString("type")));
 		o.remove("type");
 
