@@ -21,10 +21,11 @@
  */
 package org.uncertweb.viss.core.web.provider;
 
-import static org.uncertweb.viss.core.util.JSONConstants.HREF_KEY;
-import static org.uncertweb.viss.core.util.JSONConstants.ID_KEY;
+import static org.uncertweb.utils.UwJsonConstants.HREF_KEY;
+import static org.uncertweb.utils.UwJsonConstants.ID_KEY;
+import static org.uncertweb.utils.UwJsonConstants.SPATIAL_EXTENT_KEX;
+import static org.uncertweb.utils.UwJsonConstants.TEMPORAL_EXTENT_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.PHENOMENON_KEY;
-import static org.uncertweb.viss.core.util.JSONConstants.TEMPORAL_EXTENT_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.UNCERTAINTY_TYPE_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.VISUALIZATIONS_KEY;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET;
@@ -45,9 +46,13 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.xmlbeans.XmlException;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.opengis.geometry.Envelope;
+import org.uncertweb.api.gml.io.JSONGeometryEncoder;
+import org.uncertweb.netcdf.NcUwHelper;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.Utils;
@@ -55,6 +60,7 @@ import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.web.RESTServlet;
 
 import com.sun.jersey.core.util.ReaderWriter;
+import com.vividsolutions.jts.geom.Geometry;
 
 @Provider
 @Produces({ JSON_DATASET })
@@ -88,11 +94,26 @@ public class DataSetProvider implements MessageBodyWriter<IDataSet> {
 				.put(PHENOMENON_KEY, r.getPhenomenon())
 				.put(UNCERTAINTY_TYPE_KEY, r.getType().getUri())
 				.put(TEMPORAL_EXTENT_KEY, r.getTemporalExtent().toJson())
+				.put(SPATIAL_EXTENT_KEX, envelopeToJson(r.getSpatialExtent()))
 				.put(VISUALIZATIONS_KEY, vis);
 
 			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);
 		} catch (JSONException e) {
 			throw VissError.internal(e);
+		}
+	
+	}
+	
+	private JSONObject envelopeToJson(Envelope e) {
+		Geometry g = NcUwHelper.envelopeToPolygon(e, true);
+		try {
+			return new JSONObject(new JSONGeometryEncoder().encodeGeometry(g));
+		} catch (XmlException x) {
+			throw VissError.internal(x);
+		} catch (org.json.JSONException x) {
+			throw VissError.internal(x);
+		} catch (JSONException x) {
+			throw VissError.internal(x);
 		}
 	}
 	

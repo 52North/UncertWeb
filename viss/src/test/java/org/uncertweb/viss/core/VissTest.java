@@ -148,7 +148,7 @@ public class VissTest extends JerseyTest {
 		IOUtils.closeQuietly(is);
 	}
 
-	@Test
+	@Test@Ignore
 	public void testUncertaintyCollection() throws JSONException {
 		_testUncertaintyCollection();
 		_testUncertaintyCollection();
@@ -232,7 +232,7 @@ public class VissTest extends JerseyTest {
 		createVisualization(oid, datasets[0], getNameForVisualizer(Mean.class));
 	}
 	
-	@Test
+	@Test@Ignore
 	public void testMimeTypeParameterForUC() throws JSONException {
 		ObjectId r = addResource(MediaType.valueOf("application/vnd.org.uncertweb.viss.uncertainty-collection+json; encoding=\"utf-8\""), getUncertaintyCollectionStream());
 		int created = 0;
@@ -256,12 +256,11 @@ public class VissTest extends JerseyTest {
 		Assert.assertEquals(5, created);
 	}	
 	
-	@Test
+	@Test@Ignore
 	public void testTime() throws JSONException {
 		ObjectId r = addResource(NETCDF_TYPE, EU_JUNE);
 		ObjectId d = getDataSetsForResource(r)[0];
 		String v = getVisualizersForDataset(r, d)[0];
-		
 		createVisualization(
 				r, d, "Distribution-Normal-Mean",
 				new JSONObject().put("time", "2005-11-11T00:00:00.000Z"));
