@@ -41,8 +41,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
+      <version>4.10</version>
     </dependency>
     <dependency>
     	<groupId>org.n52.wps</groupId>
@@ -50,6 +49,12 @@
     	<version>${wps.version}</version>
     	<type>jar</type>
     	<scope>compile</scope>
+    	<exclusions>
+    		<exclusion>
+    			<artifactId>gmlpacket-2.0</artifactId>
+    			<groupId>org.n52.wps</groupId>
+    		</exclusion>
+    	</exclusions>
     </dependency>
     <dependency>
     	<groupId>org.n52.wps</groupId>
@@ -68,7 +73,7 @@
     <dependency>
     	<groupId>org.uncertweb</groupId>
     	<artifactId>52n-wps-io-uncertweb</artifactId>
-		<version>0.0.5-SNAPSHOT</version>
+		<version>0.0.6-SNAPSHOT</version>
     </dependency>
     <dependency>
     	<groupId>org.apache.commons</groupId>
@@ -99,11 +104,6 @@
     	<groupId>org.uncertweb</groupId>
     	<artifactId>albatross</artifactId>
     	<version>0.0.2</version>
-    </dependency>
-    <dependency>
-    	<groupId>org.uncertweb</groupId>
-    	<artifactId>netcdf-u-api</artifactId>
-    	<version>1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
     	<groupId>org.uncertweb</groupId>
