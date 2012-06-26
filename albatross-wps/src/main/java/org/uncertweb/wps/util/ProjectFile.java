@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.uncertweb.wps.util;
 
 import java.io.BufferedWriter;
@@ -28,7 +25,7 @@ public class ProjectFile {
 	
 	private File projectFile;
 	
-	private String randomNumberSeed;
+	private Boolean randomNumberSeed;
 	
 	/**
 	 * Creates a new ProjectFile. It can be accessed by {@link ProjectFile#getProjectFile()}
@@ -42,7 +39,7 @@ public class ProjectFile {
 	 * @param zones
 	 * @param postcodeAreas
 	 */
-	public ProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas, String randomNumberSeed) {
+	public ProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas, Boolean randomNumberSeed) {
 		
 		this.fileLocation = fileLocation;
 		this.dataLocation = dataLocation+File.separator;
@@ -92,7 +89,16 @@ public class ProjectFile {
 
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f))); 
 		
-		out.println(randomNumberSeed);
+		/**
+		 * (just model uncertainty first line=0, or just input uncertainty (first line=not 0
+		 */
+		
+		if (randomNumberSeed){
+			 out.println("0");
+		}
+		else{
+			out.println("1");
+		}
 
 		out.println(genpopHouseholds);
 		out.println(rwdataHouseholds);
@@ -122,7 +128,7 @@ public class ProjectFile {
 		out.close();
 	}
 	
-	public static void newInputDrawProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas, String randomNumberSeed){
+	public static void newInputDrawProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas, Boolean isModelUncertainty){
 		
 		File projectFile = new File(fileLocation+File.separator+projectFileName);
 		
@@ -137,7 +143,16 @@ public class ProjectFile {
 		
 		dataLocation += File.separator;
 		
-		out.println(randomNumberSeed);
+		/**
+		 * (just model uncertainty first line=0, or just input uncertainty (first line=not 0
+		 */
+		
+		if (isModelUncertainty){
+			 out.println("0");
+		}
+		else{
+			out.println("1");
+		}
 
 		out.println(genpopHouseholds);
 		out.println(rwdataHouseholds);

@@ -1,4 +1,4 @@
-package org.uncertweb.wps.util;
+package org.uncertweb.wps.io.outputmapper;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

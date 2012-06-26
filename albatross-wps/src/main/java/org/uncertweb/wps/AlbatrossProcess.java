@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,22 +28,26 @@ import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
+import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
+import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.wps.albatross.util.Pair;
 import org.uncertweb.wps.albatross.util.ProcessMonitorThread;
 import org.uncertweb.wps.albatross.util.ReadingThread;
 import org.uncertweb.wps.albatross.util.WorkspaceCleanerThread;
+import org.uncertweb.wps.io.AreaSDFileGenerator;
+import org.uncertweb.wps.io.LinkSDFileGenerator;
 import org.uncertweb.wps.io.data.binding.complex.AlbatrossUInput;
 import org.uncertweb.wps.io.data.binding.complex.AlbatrossUInputBinding;
-import org.uncertweb.wps.util.AreaSDFileGenerator;
-import org.uncertweb.wps.util.LinkSDFileGenerator;
-import org.uncertweb.wps.util.OutputMapper;
+import org.uncertweb.wps.io.outputmapper.AlbatrossOutputMapper;
+import org.uncertweb.wps.io.outputmapper.OutputMapper;
+import org.uncertweb.wps.util.AlbatrossOutputParser;
 import org.uncertweb.wps.util.PostProcessingConfigFile;
 import org.uncertweb.wps.util.ProjectFile;
 import org.uncertweb.wps.util.Workspace;
@@ -65,7 +70,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private final String inputIDMunicipalities = "municipalities";
 	private final String inputIDZones = "zones";
 	private final String inputIDPostcodeAreas = "postcode-areas";
-	private final String inputIDRandomNumberSeed = "randomNumberSeed";
+	private final String inputIDIsModelUncertainty = "isModelUncertainty";
 
 	private final String inputIDExportFile = "export-file";
 	private final String inputIDExportFileBin = "export-file-bin";
@@ -74,8 +79,9 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private final String inputIDUncertArea = "uncert-area";
 
 	private final String outputIDExportFile = "export-file";
-	private final String outputIDODMatrix = "ODmatrix";
-	private final String outputIDindicators = "indicators";
+	private final String outputIDODMatrix = "om_ODmatrix";
+	private final String outputIDindicators = "om_indicators";
+	private final String outputIDSchedules = "om_schedules";
 
 	private String exportFile;
 	private String exportFileBin;
@@ -85,7 +91,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private String municipalities;
 	private String zones;
 	private String postcodeAreas;
-	private String randomNumberSeed;
+	private Boolean isModelUncertainty;
 
 	private String indicators;
 	private String odMatrix;
@@ -184,8 +190,8 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		if (id.equals(inputIDExportFile)) {
 			return LiteralStringBinding.class;
 		}
-		if (id.equals(inputIDRandomNumberSeed)) {
-			return LiteralIntBinding.class;
+		if (id.equals(inputIDIsModelUncertainty)) {
+			return LiteralBooleanBinding.class;
 		}
 		if (id.equals(inputIDExportFileBin)) {
 			return LiteralStringBinding.class;
@@ -203,7 +209,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		if (id.equalsIgnoreCase(outputIDExportFile)) {
 
 			return LiteralStringBinding.class;
-		} else if (id.equals(outputIDODMatrix) || id.equals(outputIDindicators)) {
+		} else if (id.equals(outputIDODMatrix) || id.equals(outputIDindicators) || id.equals(outputIDSchedules)) {
 			return OMBinding.class;
 		}
 		return null;
@@ -267,9 +273,19 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		Map<String, IData> result = new HashMap<String, IData>();
 		OMBinding indOutput = new OMBinding(indicatorCol);
 		OMBinding odMatrixOutput = new OMBinding(odMatrixCol);
+		OMBinding schedules = null;
+		
+		try {
+			IObservationCollection collection = AlbatrossOutputMapper.encodeAlbatrossOutput(AlbatrossOutputParser.parse(ws.getWorkspaceFolder()+File.separator+exportFileNameProp));
+			schedules = new OMBinding(collection);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		} 
 
 		result.put(outputIDODMatrix, odMatrixOutput);
 		result.put(outputIDindicators, indOutput);
+		result.put(outputIDSchedules, schedules);
 		
 		return result;
 	}
@@ -320,7 +336,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 	/**
 	 * All user defined parameters are checked if they are not <code>null</code>. 
-	 * Afterwars they are copied to the local members for futher use.
+	 * Afterwards they are copied to the local members for futher use.
 	 * 
 	 * @param inputData
 	 */
@@ -389,12 +405,12 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 				.getPayload().toString();
 
 		List<IData> randomNumberSeedList = inputData
-				.get(inputIDRandomNumberSeed);
+				.get(inputIDIsModelUncertainty);
+		/*
 		if (randomNumberSeedList == null || randomNumberSeedList.isEmpty()) {
 			throw new IllegalArgumentException("randomNumberSeed is missing");
-		}
-		randomNumberSeed = ((LiteralIntBinding) randomNumberSeedList.get(0))
-				.getPayload().toString();
+		}*/
+		isModelUncertainty = ((LiteralBooleanBinding) randomNumberSeedList.get(0)).getPayload();
 
 		List<IData> uncertLinkList = inputData.get(inputIDUncertLink);
 
@@ -433,7 +449,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		projectFile = new ProjectFile("ProjectFile.prj", ws
 				.getWorkspaceFolder().getPath(), ws.getWorkspaceFolder()
 				.getPath(), genpopHouseholds, rwdataHouseholds, municipalities,
-				zones, postcodeAreas, randomNumberSeed);
+				zones, postcodeAreas, isModelUncertainty);
 
 		// add the files to the file cleaner thread.
 		Set<Pair<File, Long>> fileSet = new HashSet<Pair<File, Long>>();
@@ -522,7 +538,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		ProjectFile.newInputDrawProjectFile("InputDrawProjectFile.prj", ws
 				.getWorkspaceFolder().getPath(), ws.getWorkspaceFolder()
 				.getPath(), genpopHouseholds, rwdataHouseholds, municipalities,
-				zones, postcodeAreas, randomNumberSeed);
+				zones, postcodeAreas, isModelUncertainty);
 
 		// schreiben der beiden dateien
 		LinkSDFileGenerator linkSDFileGenerator = new LinkSDFileGenerator(
