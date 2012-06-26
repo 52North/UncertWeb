@@ -3,7 +3,7 @@ package org.uncertweb.wps.util.test;
 import org.junit.Test;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
-import org.uncertweb.wps.util.OutputMapper;
+import org.uncertweb.wps.io.outputmapper.OutputMapper;
 
 /**
  * TestCase for CSV Observation Encoder
