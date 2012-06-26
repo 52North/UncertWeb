@@ -443,4 +443,40 @@ public class UwCollectionUtils extends UwUtils {
 		return n;	
 	}
 	
+	public static <T> Set<T> filter(Set<? extends T> s, Filter<? super T>... filter) {
+		return filter(s, UwCollectionUtils.<T> set(), filter);
+	}
+
+	public static <T> List<T> filter(List<? extends T> s,
+			Filter<? super T>... filter) {
+		return filter(s, UwCollectionUtils.<T> list(), filter);
+	}
+
+	public static <T> Collection<T> filter(Collection<? extends T> s,
+			Filter<? super T>... filter) {
+		return filter(s, UwCollectionUtils.<T> list(), filter);
+	}
+
+	public static <T, V extends Collection<T>> V filter(
+			Iterable<? extends T> source, V target, Filter<? super T>... filter) {
+		for (T t : source) {
+			boolean failed = false;
+			for (Filter<? super T> f : filter) {
+				if (!f.test(t)) {
+					failed = true;
+					break;
+				}
+			}
+			if (!failed) {
+				target.add(t);
+			}
+		}
+		return target;
+	}
+	
+	
+	public static interface Filter<T> {
+		public boolean test(T t);
+	}
+	
 }
