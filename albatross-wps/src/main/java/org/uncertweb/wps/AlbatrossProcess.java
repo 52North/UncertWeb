@@ -404,13 +404,10 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		municipalities = ((LiteralIntBinding) municipalitiesList.get(0))
 				.getPayload().toString();
 
-		List<IData> randomNumberSeedList = inputData
+		List<IData> modelUncertaintyList = inputData
 				.get(inputIDIsModelUncertainty);
-		/*
-		if (randomNumberSeedList == null || randomNumberSeedList.isEmpty()) {
-			throw new IllegalArgumentException("randomNumberSeed is missing");
-		}*/
-		isModelUncertainty = ((LiteralBooleanBinding) randomNumberSeedList.get(0)).getPayload();
+		
+		isModelUncertainty = ((LiteralBooleanBinding) modelUncertaintyList.get(0)).getPayload();
 
 		List<IData> uncertLinkList = inputData.get(inputIDUncertLink);
 
