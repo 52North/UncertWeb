@@ -248,12 +248,12 @@ public class XBObservationEncoder extends AbstractHookedObservationEncoder<OMObs
 	 *          if encoding fails
 	 */
 	public synchronized XmlObject encodeObservationCollectionDocument(
-		IObservationCollection obsCol) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
+		IObservationCollection obsCol) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException, OMEncodingException {
 		return encodeObservationCollectionDocument(obsCol, null);
 	}	
 	
 	public synchronized XmlObject encodeObservationCollectionDocument(
-			IObservationCollection obsCol, String idPrefix) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
+			IObservationCollection obsCol, String idPrefix) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException, OMEncodingException {
 		this.isCol = true;
 		this.timeIdCounter = 0;
 		this.sfIdCounter = 0;
@@ -469,12 +469,12 @@ public class XBObservationEncoder extends AbstractHookedObservationEncoder<OMObs
 	 *          if encoding fails
 	 */
 	public synchronized OMObservationDocument encodeObservationDocument(
-		AbstractObservation obs) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
+		AbstractObservation obs) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException, OMEncodingException {
 		return encodeObservationDocument(obs, null);
 	}
 	
 	public synchronized OMObservationDocument encodeObservationDocument(
-			AbstractObservation obs, String idPrefix) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
+			AbstractObservation obs, String idPrefix) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException, OMEncodingException{
 
 		// initialize maps for IDs and timestrings
 		if (!this.isCol) {

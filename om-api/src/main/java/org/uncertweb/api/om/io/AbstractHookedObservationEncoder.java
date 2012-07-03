@@ -4,13 +4,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 
 public abstract class AbstractHookedObservationEncoder<T> implements
 		IObservationEncoder {
 
 	public interface EncoderHook<T> {
-		public void encode(AbstractObservation ao, T encodedObject);
+		public void encode(AbstractObservation ao, T encodedObject) throws OMEncodingException;
 	}
 
 	/** encoder hooks */
