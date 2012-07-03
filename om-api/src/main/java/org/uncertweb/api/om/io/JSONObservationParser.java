@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.xmlbeans.XmlException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -385,11 +384,11 @@ public class JSONObservationParser implements IObservationParser{
 	 */
 	private SpatialSamplingFeature parseSamplingFeature(JSONObject jfoi) throws IllegalArgumentException, JSONException, URISyntaxException {
 		Geometry geom;
-		try {
+//		try {
 			geom = new JSONGeometryDecoder().parseUwGeometry(jfoi.getString("shape"));
-		} catch (XmlException e) {
-			throw new IllegalArgumentException(e);
-		}
+//		} catch (XmlException e) {
+//			throw new IllegalArgumentException(e);
+//		}
 		String sampledFeature = jfoi.getString("sampledFeature");
 		Identifier identifier =null;
 		if (jfoi.has("identifier")){
@@ -407,7 +406,7 @@ public class JSONObservationParser implements IObservationParser{
 	 * @throws JSONException
 	 * 			if parsing fails
 	 */
-	private TimeObject parseTime(JSONObject jsonObject) throws JSONException {
+	public TimeObject parseTime(JSONObject jsonObject) throws JSONException {
 		
 		//time is TimePeriod, has to be checked first, as it also contains TimeInstants.
 		if (jsonObject.has("TimePeriod")) {

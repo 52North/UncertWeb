@@ -7,14 +7,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.opengis.om.x20.OMObservationDocument;
+
 import org.uncertweb.api.om.OMConstants;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
+import org.uncertweb.api.om.io.AbstractHookedObservationEncoder.EncoderHook;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
 import org.uncertweb.api.om.observation.collections.CategoryObservationCollection;
@@ -38,7 +42,7 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
  * @author staschc
  *
  */
-public class StaxObservationEncoder implements IObservationEncoder{
+public class StaxObservationEncoder implements IObservationEncoder {
 	
 	
 	/**
@@ -51,10 +55,19 @@ public class StaxObservationEncoder implements IObservationEncoder{
 	 * 
 	 */
 	public StaxObservationEncoder() { 
-		this.xbEncoder = new XBObservationEncoder();
+		this(null);
+	}
+
+	/**
+	 * constructor; initializes XmlBeans encoder
+	 * 
+	 */
+	public StaxObservationEncoder(Collection<EncoderHook<OMObservationDocument>> hooks) { 
+		this.xbEncoder = new XBObservationEncoder(hooks);
 		this.xbEncoder.setIsCol(true);
 	}
 
+	
 	@Override
 	public String encodeObservationCollection(IObservationCollection obsCol)
 			throws OMEncodingException {

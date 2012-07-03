@@ -4,13 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -120,18 +118,8 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Kiesow, staschc
  * 
  */
-public class XBObservationEncoder implements IObservationEncoder {
+public class XBObservationEncoder extends AbstractHookedObservationEncoder<OMObservationDocument> {
 	
-	private static final Set<EncoderHook> hooks = new HashSet<EncoderHook>();
-	
-	public static final Set<EncoderHook> getHooks() {
-		return Collections.unmodifiableSet(hooks);
-	}
-	
-	public static final void registerHook(EncoderHook hook) {
-		synchronized (hooks) { hooks.add(hook); }
-	}
-
 	// ////////////////////////////////////////////
 	// counters used for generating gml IDs
 	/**id counter for temporal elements; is resetted to 0, if encoding of a new observation collection starts.*/
@@ -149,7 +137,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 	
 	/**encoder for geometries*/
 	private XmlBeansGeometryEncoder encoder;
-
+	
 
 	// maps used for caching information about already encoded geometries
 	
@@ -183,11 +171,16 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * 
 	 */
 	public XBObservationEncoder(){
+		this(null);
+	}
+
+	public XBObservationEncoder(Collection<EncoderHook<OMObservationDocument>> hooks) {
+		super(hooks);
 		encoder = new XmlBeansGeometryEncoder();
 		this.gmlID4TimeStrings = new HashMap<String, String>();
 		this.gmlID4sfIdentifier = new HashMap<String, String>();
 	}
-
+	
 	/**
 	 * encodes an observation collection
 	 * 
@@ -593,7 +586,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 		}
 		}
 		
-		for (EncoderHook hook : getHooks()) {
+		for (EncoderHook<OMObservationDocument> hook : getHooks()) {
 			hook.encode(obs, xb_obsDoc);
 		}
 		

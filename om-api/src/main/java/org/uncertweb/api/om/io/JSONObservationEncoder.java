@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.List;
 
 import org.json.JSONException;
@@ -33,20 +34,31 @@ import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
  * @author staschc
  *
  */
-public class JSONObservationEncoder implements IObservationEncoder{
+public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSONObject> {
 
+
+	public JSONObservationEncoder() {
+		this(null);
+	}
 	
+	public JSONObservationEncoder(
+			Collection<EncoderHook<JSONObject>> hooks) {
+		super(hooks);
+	}
+
 	@Override
 	public String encodeObservation(AbstractObservation obs) throws OMEncodingException {
-		String jsonString;
 		JSONStringer writer = new JSONStringer();
 		try {
 			encodeObservation(writer,obs);
+			JSONObject j = new JSONObject(writer.toString());
+			for (EncoderHook<JSONObject> eh : getHooks()) {
+				eh.encode(obs, j);
+			}
+			return j.toString();
 		} catch (JSONException e) {
 			throw new OMEncodingException(e);
 		}
-		jsonString=writer.toString();
-		return jsonString;
 	}
 
 	
