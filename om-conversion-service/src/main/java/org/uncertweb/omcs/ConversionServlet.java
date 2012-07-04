@@ -60,7 +60,7 @@ public class ConversionServlet {
 						 @QueryParam("url") URL url) {
 
 		if (url == null) throw missingQueryParameter("url");
-		if (from == null) throw missingQueryParameter("type");
+		if (from == null) throw missingQueryParameter("from");
 
 		try {
 			return post(from, to, url.openStream());
