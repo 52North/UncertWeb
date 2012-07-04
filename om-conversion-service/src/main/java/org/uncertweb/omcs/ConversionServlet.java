@@ -55,16 +55,13 @@ public class ConversionServlet {
 
 	@GET
 	@Produces({ JSON, XML, CSV })
-	public Response get(@QueryParam("type") MediaType from,
-						 @HeaderParam("accept") MediaType to,
-						 @QueryParam("to") MediaType qto,
+	public Response get(@QueryParam("from") MediaType from,
+						 @QueryParam("to") MediaType to,
 						 @QueryParam("url") URL url) {
 
 		if (url == null) throw missingQueryParameter("url");
 		if (from == null) throw missingQueryParameter("type");
-		
-		if (qto != null) to = qto;
-		
+
 		try {
 			return post(from, to, url.openStream());
 		} catch (IOException e) {
