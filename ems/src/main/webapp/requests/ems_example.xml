@@ -1,0 +1,41 @@
+<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0  http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+	<ows:Identifier>org.uncertweb.ems.EMSalgorithm</ows:Identifier> 
+	<wps:DataInputs>  	
+		<wps:Input>
+			<ows:Identifier>numberOfSamples</ows:Identifier>
+			<wps:Data dataType="xs:integer">
+				<wps:LiteralData>500</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>					
+		<wps:Input>
+			<ows:Identifier>outputUncertaintyType</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>http://www.uncertml.org/statistics/mean</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>	
+		<wps:Input>
+			<ows:Identifier>outputUncertaintyType</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>http://www.uncertml.org/statistics/standard-deviation</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		
+		<wps:Input>
+			<ows:Identifier>airQualityData</ows:Identifier>
+			 <wps:Reference xlink:href="http://giv-uw.uni-muenster.de/data/netcdf/aqms_2010-04-07.nc" mimeType="application/x-netcdf"/>
+		</wps:Input>	
+
+		<wps:Input>
+			<ows:Identifier>activityProfile</ows:Identifier>
+			 <wps:Reference xlink:href="http://giv-uw.uni-muenster.de/data/om/profile_p10.xml" mimeType="application/x-om-u+xml"/>
+		</wps:Input>		
+			
+	</wps:DataInputs>	
+	<wps:ResponseForm>
+		<wps:ResponseDocument>
+			<wps:Output mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd">
+				<ows:Identifier>result</ows:Identifier>
+			</wps:Output>
+		</wps:ResponseDocument>
+	</wps:ResponseForm>
+</wps:Execute>
