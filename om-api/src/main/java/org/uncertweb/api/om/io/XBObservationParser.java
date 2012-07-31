@@ -390,7 +390,21 @@ public class XBObservationParser implements IObservationParser {
 			oc = new TextObservationCollection(obsList);
 			return oc;
 		}
-		
+		//CategoryObservation collection
+		else if (xb_obsColDoc instanceof OMCategoryObservationCollectionDocument){
+			OMCategoryObservationCollection xb_ocType = ((OMCategoryObservationCollectionDocument)xb_obsColDoc).getOMCategoryObservationCollection();
+			UWCategoryObservationType[] xb_obsArray = xb_ocType.getOMCategoryObservationArray();
+			List<CategoryObservation> obsList = new ArrayList<CategoryObservation>(xb_obsArray.length);
+			for (UWCategoryObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				CategoryObservation obs = (CategoryObservation)parseObservationDocument(xb_omDoc);
+				obsList.add(obs);
+			}
+			oc = new CategoryObservationCollection(obsList);
+			return oc;
+		}
 		
 		else {
 			throw new OMParsingException("ObservationCollection type" + xb_obsColDoc.getClass() + "is not supported by this parser!");
