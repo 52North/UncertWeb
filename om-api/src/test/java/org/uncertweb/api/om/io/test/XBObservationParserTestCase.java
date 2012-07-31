@@ -38,7 +38,7 @@ public class XBObservationParserTestCase extends TestCase {
 //		point_TimeInstant_Double();
 //		obsCol_Measurement();
 		obsCol_generic();
-//		point_TimeInstant_Uncertainty();
+		point_TimeInstant_Uncertainty();
 //		point_TimeInstant_FOIref();
 		testJSON();
 	}
@@ -247,7 +247,7 @@ public class XBObservationParserTestCase extends TestCase {
 		assertEquals("GREATER_THAN", ((Probability)uncertainty).getConstraints().get(0).getType().name());
 		assertEquals(35.0, ((Probability)uncertainty).getConstraints().get(0).getValue());
 		assertEquals(0.25, ((Probability)uncertainty).getValues().get(0).doubleValue());
-		
+		System.out.println(new JSONObservationEncoder().encodeObservation(obs));
 	}	
 	
 	private void point_TimeInstant_FOIref() throws Exception{

@@ -118,7 +118,9 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Kiesow, staschc
  * 
  */
+
 public class XBObservationEncoder extends AbstractHookedObservationEncoder<OMObservationDocument> {
+	
 	
 	// ////////////////////////////////////////////
 	// counters used for generating gml IDs
