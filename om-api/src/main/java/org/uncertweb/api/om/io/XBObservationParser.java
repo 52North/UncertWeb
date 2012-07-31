@@ -110,7 +110,11 @@ import org.uncertweb.api.om.result.TextResult;
 import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.w3.x1999.xlink.ActuateAttribute.Actuate;
+import org.w3.x1999.xlink.ActuateType;
 import org.w3.x1999.xlink.ShowAttribute.Show;
+import org.w3.x1999.xlink.ShowType;
+import org.w3.x1999.xlink.ShowType.Enum;
+import org.w3.x1999.xlink.TypeType;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -619,13 +623,13 @@ public class XBObservationParser implements IObservationParser {
 			} else if (xb_obsType instanceof UWReferenceObservationType) {
 
 				ReferenceType xb_referenceType = ((UWReferenceObservationType)xb_obsType).getResult();
-				String type = xb_referenceType.getType();
+				TypeType.Enum type = xb_referenceType.getType();
 				String href = xb_referenceType.getHref();
 				String role = xb_referenceType.getRole();
 				String arcrole = xb_referenceType.getArcrole();
 				String title = xb_referenceType.getTitle();
-				Show.Enum show = xb_referenceType.getShow();
-				Actuate.Enum actuate = xb_referenceType.getActuate();
+				ShowType.Enum show = xb_referenceType.getShow();
+				ActuateType.Enum actuate = xb_referenceType.getActuate();
 
 				ReferenceResult result = new ReferenceResult(type, href, role,
 						arcrole, title, show, actuate);
