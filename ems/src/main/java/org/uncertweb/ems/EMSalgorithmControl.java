@@ -66,7 +66,7 @@ public class EMSalgorithmControl {
 		/*
 		 *  1) get input data
 		 */
-		for(int p=7; p<profiles.length; p++){
+		for(int p=0; p<profiles.length; p++){
 			System.out.println("Started exposure modelling for profile: "+profiles[p]);
 			
 			String parameter = "PM2_5";

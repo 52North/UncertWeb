@@ -24,6 +24,7 @@ import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
 import org.uncertweb.api.netcdf.exception.NetcdfUWException;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.ems.activityprofiles.Profile;
 import org.uncertweb.ems.exposuremodelling.IndoorModel;
 import org.uncertweb.ems.exposuremodelling.OutdoorModel;
@@ -199,7 +200,9 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 		 *  4) prepare result
 		 */	
 		// get OM file
-		IObservationCollection exposureProfile = profile.getExposureProfileObservationCollection("lognormal");
+		UncertaintyObservationCollection exposureProfile = (UncertaintyObservationCollection) profile.getExposureProfileObservationCollection("normal");
+		
+		Utils.writeObsCollXML(exposureProfile, resourcesPath+"/outputs/exposure_test.xml");
 		
 		Map<String, IData> result = new HashMap<String, IData>(1);
 		OMBinding uwData = new OMBinding(exposureProfile);
@@ -208,56 +211,6 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 		
 	}
 
-	
-	private String writeNetCDFfile(NetcdfUWFile aqNCfile, String filepath){
-		String mainVariable = "";
-		
-		try{
-			// get main variable as parameter
-			mainVariable = aqNCfile.getPrimaryVariable().getName();
-						
-			//new NetCDF file
-			NetcdfFileWriteable ncFile = NetcdfUWFileWriteable.createNew(
-					filepath, true);
-			NetcdfUWFileWriteable ncUWfile = new NetcdfUWFileWriteable(ncFile);
-			
-			// write attributes
-			// not necessary here
-			
-			// add dimensions
-			ncUWfile.getNetcdfFileWritable().setRedefineMode(false);
-			List<Dimension> dims = aqNCfile.getNetcdfFile().getDimensions();
-			for (Dimension d : dims){
-				ncUWfile.getNetcdfFileWritable().addDimension(null, d);
-			}
-
-			// write variables
-			List<Variable> varIter = aqNCfile.getNetcdfFile().getVariables();
-			for (Variable var : varIter) {
-				// add variable
-				ncFile.setRedefineMode(true);
-				ncFile.addVariable(null, var);
-				// write variable
-				ncFile.setRedefineMode(false);
-				ncFile.write(var.getName(), var.read());
-			}
-			
-			// write data
-			ncUWfile.getNetcdfFileWritable().setRedefineMode(false);
-			
-			// close file
-			ncUWfile.getNetcdfFile().close();
-		}catch (IOException ioe) {
-	  		System.out.println("trying to open " + ""+ " " + ioe);
-	  	} catch (NetcdfUWException e) {
-			e.printStackTrace();
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
-		}
-		
-		
-		return mainVariable;
-	}
 	
 	private List<String> extractStatisticsFromRequest(List<IData> statParams){
 		List<String> params = new ArrayList<String>(statParams.size());
