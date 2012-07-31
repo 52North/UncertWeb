@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import junit.framework.TestCase;
 import net.opengis.om.x20.OMObservationDocument;
 
+import org.uncertml.x20.NormalDistributionDocument;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.gml.geometry.GmlGeometryFactory;
 import org.uncertweb.api.om.TimeObject;
@@ -35,10 +36,12 @@ public class XBObservationEncoderTestCase extends TestCase {
 	
 	public void testObservationEncoder() throws Exception {
 
+		NormalDistributionDocument normalDoc = NormalDistributionDocument.Factory.newInstance();
+		normalDoc.xmlText();
 		point_TimeInstant_DoubleTest();
 		obsCol_Point_TimeInstant_Double();
 		encodeObsTP();
-		encode_Point_TimeInstant_FOIref();
+//		encode_Point_TimeInstant_FOIref();
 	}
 
 	/**
