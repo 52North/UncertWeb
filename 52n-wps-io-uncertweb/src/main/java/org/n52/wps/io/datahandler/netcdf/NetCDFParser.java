@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.datahandler.AbstractUwParser;
-import org.uncertweb.api.netcdf.NetcdfUWFile;
+import org.uncertweb.netcdf.NcUwFile;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.utils.UwIOUtils;
 
@@ -44,8 +44,7 @@ public class NetCDFParser extends AbstractUwParser {
 			File tmp = File.createTempFile("ncInput", ".nc");
 			UwIOUtils.saveToFile(tmp, is);
 			tmp.deleteOnExit();
-			NetcdfFile ncdf = NetcdfFile.open(tmp.getAbsolutePath());
-			return new NetCDFBinding(new NetcdfUWFile(ncdf));
+			return new NetCDFBinding(new NcUwFile(tmp.getAbsolutePath()));
 		} catch (Exception e) {
 			String message = "Error while parsing NetCDF-U file";
 			log.warn(message, e);

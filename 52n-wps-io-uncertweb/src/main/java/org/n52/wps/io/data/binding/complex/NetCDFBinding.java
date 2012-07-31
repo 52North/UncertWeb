@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
-import org.uncertweb.api.netcdf.NetcdfUWFile;
+import org.uncertweb.netcdf.NcUwFile;
 
 /**
  * binding class for NetCDFData containing a NetCDF-U file
@@ -23,25 +23,25 @@ public class NetCDFBinding extends UncertWebIODataBinding {
 	/**
 	 * payload is NetCDF-U file
 	 */
-	private NetcdfUWFile payload;
+	private NcUwFile payload;
 
 	/**
 	 * constructor
 	 * 
 	 * @param data
 	 */
-	public NetCDFBinding(NetcdfUWFile data) {
+	public NetCDFBinding(NcUwFile data) {
 		this.payload = data;
 	}
 
 	@Override
-	public NetcdfUWFile getPayload() {
+	public NcUwFile getPayload() {
 		return payload;
 	}
 
 	@Override
 	public Class<?> getSupportedClass() {
-		return NetcdfUWFile.class;
+		return NcUwFile.class;
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class NetCDFBinding extends UncertWebIODataBinding {
 	 */
 	public InputStream getInputStream() {
 		try {
-			return new FileInputStream(new File(this.payload.getNetcdfFile().getLocation()));
+			return new FileInputStream(new File(this.payload.getFile().getLocation()));
 		} catch (FileNotFoundException e) {
 			log.info("Temporary NetCDF file could not be loaded: "+e.getMessage());
 			throw new RuntimeException(e);
