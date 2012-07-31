@@ -7,7 +7,7 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>52n-wps-io-uncertweb</artifactId>
-	<version>0.0.6-SNAPSHOT</version>
+	<version>0.0.7-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<repositories>
 		<repository>
@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.uncertweb</groupId>
 			<artifactId>om-api</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.uncertweb</groupId>
@@ -39,8 +39,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.uncertweb</groupId>
-			<artifactId>netcdf-u-api</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<artifactId>netcdf-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
