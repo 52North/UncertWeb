@@ -1,0 +1,28 @@
+###############################
+# UncertWeb IO Extension for the data fromats used in the UncertWeb project
+###############################
+
+####################################
+##Project Structure
+The project contains the following folders:
+
+(i) src: contains the Java classes of the implementation of the O&M profile
+
+
+####################################
+##Required Software
+
+Following Software needs to be installed:
+
+-Eclipse (www.eclipse.org) or similar IDE
+-Maven http://maven.apache.org/
+
+Optional:
+
+-M2Eclipse http://maven.apache.org/eclipse-plugin.html
+
+
+###################################
+## Questions? Issues?
+
+You can contact staschc@uni-muenster.de if you have further questions or comments.
