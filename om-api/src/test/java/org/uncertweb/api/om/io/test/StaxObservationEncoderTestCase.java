@@ -36,11 +36,11 @@ public class StaxObservationEncoderTestCase extends TestCase {
 		// read XML example file
 		String xmlString;
 		try {
-		 xmlString = TestUtils.readXmlFile(pathToExamples
+		 xmlString = Utils.readXmlFile(pathToExamples
 				+ "/ObsCol_Measurements.xml");
 		}
 		catch (IOException ioe){
-			xmlString = TestUtils.readXmlFile(localPath + pathToExamples
+			xmlString = Utils.readXmlFile(localPath + pathToExamples
 					+ "/ObsCol_Measurements.xml");
 		}
 
@@ -116,11 +116,11 @@ public class StaxObservationEncoderTestCase extends TestCase {
 		// read XML example file
 		String xmlString;
 		try {
-		 xmlString = TestUtils.readXmlFile(pathToExamples
+		 xmlString = Utils.readXmlFile(pathToExamples
 				+ "/ObsCol_Categories.xml");
 		}
 		catch (IOException ioe){
-			xmlString = TestUtils.readXmlFile(localPath + pathToExamples
+			xmlString = Utils.readXmlFile(localPath + pathToExamples
 					+ "/ObsCol_Categories.xml");
 		}
 		

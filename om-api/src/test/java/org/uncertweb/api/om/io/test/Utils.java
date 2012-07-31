@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class TestUtils {
+public class Utils {
 	public static String readXmlFile(String filePath) throws IOException {
 		String result = "";
 		BufferedReader in = new BufferedReader(new InputStreamReader(

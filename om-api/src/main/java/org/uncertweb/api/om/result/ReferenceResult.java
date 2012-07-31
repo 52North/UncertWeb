@@ -1,7 +1,8 @@
 package org.uncertweb.api.om.result;
 
-import org.w3.x1999.xlink.ShowAttribute.Show;
-import org.w3.x1999.xlink.ActuateAttribute.Actuate;
+import org.w3.x1999.xlink.ActuateType;
+import org.w3.x1999.xlink.ShowType;
+import org.w3.x1999.xlink.TypeType;
 
 
 
@@ -13,13 +14,13 @@ import org.w3.x1999.xlink.ActuateAttribute.Actuate;
  */
 public class ReferenceResult implements IResult {
 
-	private String type;
+	private TypeType.Enum type;
 	private String href;
 	private String role;
 	private String arcrole;
 	private String title;
-	private Show.Enum show;
-	private Actuate.Enum actuate;
+	private ShowType.Enum show;
+	private ActuateType.Enum actuate;
 	private Object result;
 
 	/**
@@ -42,31 +43,31 @@ public class ReferenceResult implements IResult {
 	
 	/**
 	 * Constructor with all possible attributes
-	 * @param type
+	 * @param type2
 	 * @param href
 	 * 			reference
 	 * @param role
 	 * 			role of reference
 	 * @param arcrole
-	 * @param show
-	 * @param actuate
+	 * @param show2
+	 * @param actuate2
 	 */
-	public ReferenceResult(String type, String href, String role, String arcrole, String title, Show.Enum show, Actuate.Enum actuate) {
-		this.type = type;
+	public ReferenceResult(TypeType.Enum type2, String href, String role, String arcrole, String title, ShowType.Enum show2, ActuateType.Enum actuate2) {
+		this.type = type2;
 		this.href = href;
 		this.role = role;
 		this.arcrole = arcrole;
 		this.title = title;
-		this.show = show;
-		this.actuate = actuate;
+		this.show = show2;
+		this.actuate = actuate2;
 	}
 
 	// specific getters and setters
-	public String getType() {
+	public TypeType.Enum getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(TypeType.Enum type) {
 		this.type = type;
 	}
 
@@ -102,19 +103,19 @@ public class ReferenceResult implements IResult {
 		this.title = title;
 	}
 
-	public Show.Enum getShow() {
+	public ShowType.Enum getShow() {
 		return show;
 	}
 
-	public void setShow(Show.Enum show) {
+	public void setShow(ShowType.Enum show) {
 		this.show = show;
 	}
 
-	public Actuate.Enum getActuate() {
+	public ActuateType.Enum getActuate() {
 		return actuate;
 	}
 
-	public void setActuate(Actuate.Enum actuate) {
+	public void setActuate(ActuateType.Enum actuate) {
 		this.actuate = actuate;
 	}
 

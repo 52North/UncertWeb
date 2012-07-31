@@ -53,7 +53,7 @@ public class XBObservationParserTestCase extends TestCase {
 				
 				//parse xmlFile
 				if (!path.contains("svn")){
-					String xmlString = TestUtils.readXmlFile(path);
+					String xmlString = Utils.readXmlFile(path);
 					XBObservationParser parser = new XBObservationParser();
 					IObservationCollection obsCol = parser.parse(xmlString);
 					System.out.println("-----XMLfile read from path " + path);
@@ -79,11 +79,11 @@ public class XBObservationParserTestCase extends TestCase {
 		// read XML example file
 		String xmlString;
 		try {
-		 xmlString = TestUtils.readXmlFile(pathToExamples
+		 xmlString = Utils.readXmlFile(pathToExamples
 				+ "/ObsCol_Measurements.xml");
 		}
 		catch (IOException ioe){
-			xmlString = TestUtils.readXmlFile(localPath + pathToExamples
+			xmlString = Utils.readXmlFile(localPath + pathToExamples
 					+ "/ObsCol_Measurements.xml");
 		}
 		XBObservationParser parser = new XBObservationParser();
@@ -97,11 +97,11 @@ public class XBObservationParserTestCase extends TestCase {
 		// read XML example file
 		String xmlString;
 		try {
-		 xmlString = TestUtils.readXmlFile(pathToExamples
+		 xmlString = Utils.readXmlFile(pathToExamples
 				+ "/Obs_albatross_output.xml");
 		}
 		catch (IOException ioe){
-			xmlString = TestUtils.readXmlFile(localPath + pathToExamples
+			xmlString = Utils.readXmlFile(localPath + pathToExamples
 					+ "/Obs_albatross_output.xml");
 		}
 		XBObservationParser parser = new XBObservationParser();
@@ -115,11 +115,11 @@ public class XBObservationParserTestCase extends TestCase {
 		// read XML example file
 		String xmlString;
 		try {
-		 xmlString = TestUtils.readXmlFile(pathToExamples
+		 xmlString = Utils.readXmlFile(pathToExamples
 				+ "/obsCol_austal.xml");
 		}
 		catch (IOException ioe){
-			xmlString = TestUtils.readXmlFile(localPath + pathToExamples
+			xmlString = Utils.readXmlFile(localPath + pathToExamples
 					+ "/obsCol_austal.xml");
 		}
 		XBObservationParser parser = new XBObservationParser();
@@ -134,11 +134,11 @@ public class XBObservationParserTestCase extends TestCase {
 		// read XML example file
 		String xmlString;
 		try {
-		 xmlString = TestUtils.readXmlFile(pathToExamples
+		 xmlString = Utils.readXmlFile(pathToExamples
 				+ "/Obs_Point_TimeInstant_double.xml");
 		}
 		catch (IOException ioe){
-			xmlString = TestUtils.readXmlFile(localPath + pathToExamples
+			xmlString = Utils.readXmlFile(localPath + pathToExamples
 					+ "/Obs_Point_TimeInstant_double.xml");
 		}
 
@@ -197,11 +197,11 @@ public class XBObservationParserTestCase extends TestCase {
 		// read XML example file
 		String xmlString;
 		try {
-			 xmlString = TestUtils.readXmlFile(pathToExamples
+			 xmlString = Utils.readXmlFile(pathToExamples
 					+ "//Obs_Point_TimeInstant_uncertainty.xml");
 			}
 			catch (IOException ioe){
-				xmlString = TestUtils.readXmlFile(localPath + pathToExamples
+				xmlString = Utils.readXmlFile(localPath + pathToExamples
 						+ "/Obs_Point_TimeInstant_uncertainty.xml");
 			}
 
@@ -254,11 +254,11 @@ public class XBObservationParserTestCase extends TestCase {
 		// read XML example file
 		String xmlString;
 		try {
-			 xmlString = TestUtils.readXmlFile(pathToExamples
+			 xmlString = Utils.readXmlFile(pathToExamples
 					+ "//Obs_Point_TimeInstant_double_SFref.xml");
 			}
 			catch (IOException ioe){
-				xmlString = TestUtils.readXmlFile(localPath + pathToExamples
+				xmlString = Utils.readXmlFile(localPath + pathToExamples
 						+ "/Obs_Point_TimeInstant_double_SFref.xml");
 			}
 

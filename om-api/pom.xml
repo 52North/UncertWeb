@@ -1,41 +1,58 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.uncertweb</groupId>
-    <artifactId>uncertweb-parent</artifactId>
-    <version>1.2-SNAPSHOT</version>
-  </parent>
-  <artifactId>om-api</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.uncertweb</groupId>
+		<artifactId>uncertweb-parent</artifactId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
+	<artifactId>om-api</artifactId>
+	<version>1.0.2-SNAPSHOT</version>
 
-  <repositories>
-    <repository>
-      <id>UncertWebMavenRepository</id>
-      <name>UncertWeb Maven Repository</name>
-      <url>http://giv-uw.uni-muenster.de/m2/repo</url>
-    </repository>
-  </repositories>
+	<repositories>
+		<repository>
+			<id>UncertWebMavenRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+		</repository>
+	</repositories>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.uncertml</groupId>
-      <artifactId>uncertml</artifactId>
-      <version>2.0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.uncertweb</groupId>
-      <artifactId>gml-api</artifactId>
-      <version>0.0.7-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
-      <version>2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.parsers</groupId>
-      <artifactId>jaxp-ri</artifactId>
-      <version>1.4.1</version>
-    </dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.uncertml</groupId>
+			<artifactId>uncertml</artifactId>
+			<version>2.0.5-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>uncertml-x-api</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>gml-api</artifactId>
+			<version>0.0.8-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.parsers</groupId>
+			<artifactId>jaxp-ri</artifactId>
+			<version>1.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
