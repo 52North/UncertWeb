@@ -6,27 +6,22 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>gml-api</artifactId>
-	<version>0.0.7-SNAPSHOT</version>
+	<version>0.0.8-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
-			<groupId>org.uncertml</groupId>
-			<artifactId>uncertml</artifactId>
-			<version>2.0.5-SNAPSHOT</version>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>uncertml-x-api</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.uncertweb</groupId>
 			<artifactId>xb-uw-profiles</artifactId>
-			<version>0.0.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.vividsolutions</groupId>
-			<artifactId>jts</artifactId>
-			<version>1.11</version>
-		</dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>1.6</version>
+			<version>0.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
