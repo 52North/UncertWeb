@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>om-api</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -74,6 +74,11 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>netcdf-api</artifactId>
 			<version>[1.0.0-SNAPSHOT,)</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>xb-sld</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 
 		<!-- Geotools ###################################################### -->
@@ -286,26 +291,6 @@
 				<configuration>
 					<!-- <doCheck>true</doCheck> -->
 					<doUpdate>false</doUpdate>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>xmlbeans-maven-plugin</artifactId>
-				<version>2.3.3</version>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>xmlbeans</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<download>true</download>
-					<javaSource>1.5</javaSource>
-					<sourceSchemas>
-						<sourceSchema>sld/1.0.0/StyledLayerDescriptor.xsd</sourceSchema>
-					</sourceSchemas>
 				</configuration>
 			</plugin>
 			<plugin>
