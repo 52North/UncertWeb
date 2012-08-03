@@ -29,6 +29,7 @@ import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.io.JSONObservationEncoder;
 import org.uncertweb.api.om.io.StaxObservationEncoder;
+import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
@@ -50,68 +51,67 @@ public class Utils {
 		return sosDate;
 	}
 	
-	public static void writeObsCollXML(IObservationCollection obs, String filepath){		   
-        // save result locally
-		File file = new File(filepath);
-			
-		// encode
-		try {
-			new StaxObservationEncoder().encodeObservationCollection(obs,file);
-		} catch (OMEncodingException e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void writeObsCollXMLStax(IObservationCollection obs, String filepath){		   
+//        // save result locally
+//		File file = new File(filepath);
+//			
+//		// encode
+//		try {
+//			new StaxObservationEncoder().encodeObservationCollection(obs,file);
+//		} catch (OMEncodingException e) {
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	public static void writeObsCollXML(IObservationCollection obs, String filepath){		   
+//        // save result locally
+//		File file = new File(filepath);
+//			
+//		// encode
+//		try {
+//			new XBObservationEncoder().encodeObservationCollection(obs,file);
+//		} catch (OMEncodingException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
-	public static void writeObsCollJSON(IObservationCollection obs, String filepath){		   
-        // save result locally
-		File file = new File(filepath);
-			
-		// encode
-		try {
-			new JSONObservationEncoder().encodeObservationCollection(obs, file);
-//			File jsonFile = new File(jsonFilepath);
-//			// encode, store (for using in austal request later)
-//			try {
-//				
-//			} catch (OMEncodingException e) {
-//				e.printStackTrace();
-//			}
-		} catch (OMEncodingException e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void writeObsCollJSON(IObservationCollection obs, String filepath){		   
+//        // save result locally
+//		File file = new File(filepath);
+//			
+//		// encode
+//		try {
+//			new JSONObservationEncoder().encodeObservationCollection(obs, file);
+////			File jsonFile = new File(jsonFilepath);
+////			// encode, store (for using in austal request later)
+////			try {
+////				
+////			} catch (OMEncodingException e) {
+////				e.printStackTrace();
+////			}
+//		} catch (OMEncodingException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
-	public static IObservationCollection readObsColl(String filepath){
-		File file = new File(filepath);
-        IObservationCollection obs = null;
-		try {
-			InputStream in = new FileInputStream(file);
-			XmlObject xml = XmlObject.Factory.parse(in);			
-			XBObservationParser omParser = new XBObservationParser();
-			obs = (IObservationCollection) omParser.parse(xml.xmlText());
-//			  if (xml instanceof OMUncertaintyObservationCollectionDocumentImpl){
-//				 obs = (IObservationCollection) omParser.parse(xml.xmlText());
-//			  }	else if(xml instanceof OMMeasurementCollectionDocumentImpl){
-//				  obs = (IObservationCollection) omParser.parse(xml.xmlText());
-//			  }else if(xml instanceof OMBooleanObservationCollectionDocumentImpl){
-//				  obs = (IObservationCollection) omParser.parse(xml.xmlText());
-//			  }else if(xml instanceof OMTextObservationCollectionDocumentImpl){
-//				  obs = (IObservationCollection) omParser.parse(xml.xmlText());
-//			  }else if(xml instanceof OMCategoryObservationDocumentImpl){
-//				  obs = (IObservationCollection) omParser.parse(xml.xmlText());
-//			  }
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (XmlException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (OMParsingException e) {
-			e.printStackTrace();
-		}    
-		
-		return obs;
-	}
+//	public static IObservationCollection readObsColl(String filepath) throws FileNotFoundException, XmlException, IOException, OMParsingException{
+//		File file = new File(filepath);
+//        
+//		InputStream in = new FileInputStream(file);
+//		XmlObject xml = XmlObject.Factory.parse(in);			
+//		XBObservationParser omParser = new XBObservationParser();
+//		IObservationCollection obs = (IObservationCollection) omParser.parse(xml.xmlText());
+//		if (xml instanceof OMUncertaintyObservationCollectionDocumentImpl||
+//				xml instanceof OMMeasurementCollectionDocumentImpl ||
+//				xml instanceof OMBooleanObservationCollectionDocumentImpl ||
+//				xml instanceof OMTextObservationCollectionDocumentImpl ||
+//				xml instanceof OMCategoryObservationDocumentImpl){
+//			obs = (IObservationCollection) omParser.parse(xml.xmlText());
+//		}else{
+//			throw new OMParsingException("Observation Collection type is not supported!");
+//		}	
+//		return obs;
+//	}
 	
 	
 	public static void writeCSV(HashMap<String, double[]> data, String filename){

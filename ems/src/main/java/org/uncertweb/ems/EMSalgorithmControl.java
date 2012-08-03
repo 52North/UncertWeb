@@ -3,38 +3,21 @@ package org.uncertweb.ems;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
 
-import net.opengis.om.x20.impl.OMBooleanObservationCollectionDocumentImpl;
-import net.opengis.om.x20.impl.OMCategoryObservationDocumentImpl;
-import net.opengis.om.x20.impl.OMMeasurementCollectionDocumentImpl;
-import net.opengis.om.x20.impl.OMTextObservationCollectionDocumentImpl;
-import net.opengis.om.x20.impl.OMUncertaintyObservationCollectionDocumentImpl;
-
-import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.uncertweb.api.netcdf.NetcdfUWFile;
-import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
-import org.uncertweb.api.netcdf.exception.NetcdfUWException;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
-import org.uncertweb.api.om.exceptions.OMParsingException;
-import org.uncertweb.api.om.io.CSVEncoder;
+import org.uncertweb.api.om.io.JSONObservationEncoder;
 import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
-import org.uncertweb.ems.activityprofiles.Profile;
-import org.uncertweb.ems.exposuremodelling.IndoorModel;
-import org.uncertweb.ems.exposuremodelling.OutdoorModel;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
+import org.uncertweb.ems.data.profiles.Profile;
+import org.uncertweb.ems.exposuremodel.IndoorModel;
+import org.uncertweb.ems.exposuremodel.OutdoorModel;
 import org.uncertweb.ems.util.Utils;
 
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
-import ucar.nc2.Variable;
+
 
 /**
  * Class to test methodology of the service
@@ -81,22 +64,17 @@ public class EMSalgorithmControl {
 			boolean useIndoorSources = true;
 			
 			
-			// air quality data
-//			NetcdfUWFile aq = null;
-//			try {
-//		  		NetcdfFile ncfile = NetcdfFile.open(ncFile);
-//		  		aq = new NetcdfUWFile(ncfile);
-//		  		parameter = writeNetCDFfile(aq, nctempFile);
-//		  	} catch (IOException ioe) {
-//		  		System.out.println("trying to open " + ""+ " " + ioe);
-//		  	} catch (NetcdfUWException e) {
-//				e.printStackTrace();
-//			} 
-			
 			// activity profile
 			//TODO: implement realisations handling with UncertML doc containing href to realisation documents (Albatross data)
 			//TODO: implement handling of more than one individual in the collection?
-			Profile profile = new Profile(Utils.readObsColl(omFile));
+			Profile profile = null;
+			try {
+				XmlObject xml = XmlObject.Factory.parse(new FileInputStream(omFile));		
+				profile = new Profile((IObservationCollection) new XBObservationParser().parse(xml.xmlText()));			
+			} catch (Exception e) {		
+				e.printStackTrace();
+				throw new RuntimeException("Error while reading OM input: " + e.getMessage(), e);
+			}
 			System.out.println("Created Profile.");
 			
 			/*
@@ -156,12 +134,16 @@ public class EMSalgorithmControl {
 			// loop through observations and set time to one time step
 			
 			// store OM file
+			try {
 			if(useIndoorSources){
-				Utils.writeObsCollXML(exposureProfile, resourcesPath+"/outputs/exposure_"+parameter+"_"+profiles[p]+".xml");
-				Utils.writeObsCollJSON(exposureProfile, resourcesPath+"/outputs/exposure_"+parameter+"_"+profiles[p]+".json");
+				new StaxObservationEncoder().encodeObservationCollection(exposureProfile, new File(resourcesPath+"/outputs/exposure_"+parameter+"_"+profiles[p]+".xml"));		
+				new JSONObservationEncoder().encodeObservationCollection(exposureProfile, new File(resourcesPath+"/outputs/exposure_"+parameter+"_"+profiles[p]+".json"));
 			}else{
-				Utils.writeObsCollXML(exposureProfile, resourcesPath+"/outputs/exposure_"+parameter+"_out_"+profiles[p]+".xml");
-				Utils.writeObsCollJSON(exposureProfile, resourcesPath+"/outputs/exposure_"+parameter+"_out_"+profiles[p]+".json");
+				new StaxObservationEncoder().encodeObservationCollection(exposureProfile, new File(resourcesPath+"/outputs/exposure_"+parameter+"_out_"+profiles[p]+".xml"));
+				new JSONObservationEncoder().encodeObservationCollection(exposureProfile, new File(resourcesPath+"/outputs/exposure_"+parameter+"_out_"+profiles[p]+".json"));
+			}} catch (OMEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			
 			// store OM JSON file
@@ -172,54 +154,4 @@ public class EMSalgorithmControl {
 		}
 	}
 	
-	
-	private String writeNetCDFfile(NetcdfUWFile aqNCfile, String filepath){
-		String mainVariable = "";
-		
-		try{
-			// get main variable as parameter
-			mainVariable = aqNCfile.getPrimaryVariable().getName();
-						
-			//new NetCDF file
-			NetcdfFileWriteable ncFile = NetcdfUWFileWriteable.createNew(
-					filepath, true);
-			NetcdfUWFileWriteable ncUWfile = new NetcdfUWFileWriteable(ncFile);
-			
-			// write attributes
-			// not necessary here
-			
-			// add dimensions
-			ncUWfile.getNetcdfFileWritable().setRedefineMode(false);
-			List<Dimension> dims = aqNCfile.getNetcdfFile().getDimensions();
-			for (Dimension d : dims){
-				ncUWfile.getNetcdfFileWritable().addDimension(null, d);
-			}
-
-			// write variables
-			List<Variable> varIter = aqNCfile.getNetcdfFile().getVariables();
-			for (Variable var : varIter) {
-				// add variable
-				ncFile.setRedefineMode(true);
-				ncFile.addVariable(null, var);
-				// write variable
-				ncFile.setRedefineMode(false);
-				ncFile.write(var.getName(), var.read());
-			}
-			
-			// write data
-			ncUWfile.getNetcdfFileWritable().setRedefineMode(false);
-			
-			// close file
-			ncUWfile.getNetcdfFile().close();
-		}catch (IOException ioe) {
-	  		System.out.println("trying to open " + ""+ " " + ioe);
-	  	} catch (NetcdfUWException e) {
-			e.printStackTrace();
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
-		}
-		
-		
-		return mainVariable;
-	}
 }

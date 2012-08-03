@@ -1,6 +1,8 @@
 package org.uncertweb.ems;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,9 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.UncertWebDataConstants;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.complex.NetCDFBinding;
@@ -18,17 +24,22 @@ import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
+import org.n52.wps.io.datahandler.om.OMXmlParser;
 import org.n52.wps.server.AbstractObservableAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
-import org.uncertweb.api.netcdf.NetcdfUWFile;
-import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
-import org.uncertweb.api.netcdf.exception.NetcdfUWException;
+//import org.uncertweb.api.netcdf.NetcdfUWFile;
+//import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
+//import org.uncertweb.api.netcdf.exception.NetcdfUWException;
+import org.uncertweb.api.om.exceptions.OMParsingException;
+import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
-import org.uncertweb.ems.activityprofiles.Profile;
-import org.uncertweb.ems.exposuremodelling.IndoorModel;
-import org.uncertweb.ems.exposuremodelling.OutdoorModel;
+import org.uncertweb.ems.data.profiles.Profile;
+import org.uncertweb.ems.exposuremodel.IndoorModel;
+import org.uncertweb.ems.exposuremodel.OutdoorModel;
 import org.uncertweb.ems.util.Utils;
+import org.uncertweb.netcdf.NcUwFile;
+
 
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
@@ -43,6 +54,7 @@ import ucar.nc2.Variable;
 public class EMSalgorithm extends AbstractObservableAlgorithm{
 
 	private List<String> errors = new ArrayList<String>();
+	private static Logger log = Logger.getLogger(EMSalgorithm.class);
 	
 	private static String resourcesPath = "C:/WebResources/EMS";
 	
@@ -112,19 +124,18 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 			}
 		}
 		
-		// air quality data
-		NetcdfUWFile ncFile = null;
+		NcUwFile ncFile = null;
 		String nctempFile = "";
 		List<IData> ncList = inputMap.get(INPUT_IDENTIFIER_AIR_QUALITY);
 		if(ncList != null && ncList.size()!=0){
 			IData tmp = ncList.get(0);
 			if(tmp instanceof NetCDFBinding){
-				ncFile = ((NetCDFBinding)tmp).getPayload();
-				nctempFile = ncFile.getNetcdfFile().getLocation();
+				ncFile = ((NetCDFBinding)tmp).getPayload();				
+				nctempFile = ncFile. getUnderlyingFile().getAbsolutePath();
 				nctempFile = nctempFile.replace("\\","/");
 			}
 		}
-
+		
 		//	number of samples	
 		int indoorIterations = 100;
 		List<IData> samplesList = inputMap.get(INPUT_IDENTIFIER_NUMBER_OF_SAMPLES);
@@ -159,12 +170,15 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 //		String nctempFile = resourcesPath+"/tmp.nc";
 		
 		// get main variable as parameter
-		String parameter = "";
-		try{
-			parameter = ncFile.getPrimaryVariable().getName();
-		}catch (NetcdfUWException e) {
-			e.printStackTrace();
-		} 
+		String parameter = ncFile.getPrimaryVariableNames().toArray(new String[1])[0];
+//		try{
+//			parameter = ncFile.getPrimaryVariable().getName();
+//		}catch (NetcdfUWException e) {
+//			e.printStackTrace();
+//		} 
+		
+		//TODO: for Albatross, convert GeneralTime into specific time for overlay!
+	 	
 		
 		// create profile
 		Profile profile = new Profile(omFile);
@@ -177,9 +191,9 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 		outdoor.performOutdoorOverlay(profile, nctempFile, omtempFile,parameter);
 	
 		// estimate COSP uncertainties for PM10
-		if(parameter.equals("PM10")){
-			outdoor.estimateCOSPUncertainty(profile, omtempFile, cospIterations);
-		}
+//		if(parameter.equals("PM10")){
+//			outdoor.estimateCOSPUncertainty(profile, omtempFile, cospIterations);
+//		}
 		
 		// perform averaging of profile observations
 		profile.aggregateProfile(minuteResolution);		
@@ -190,19 +204,28 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 		 *  3) perform indoor model if activity data is available
 		 */
 		// create indoor model with parameters
-		IndoorModel indoor = new IndoorModel();
-		indoor.readParametersFile("DE", parameter.replace("_", "."), resourcesPath+"/indoorModel/parameters.csv");
-					
-		// estimate indoor concentration
-		indoor.runModel(profile, indoorIterations, minuteResolution, useIndoorSources);
+//		IndoorModel indoor = new IndoorModel();
+//		indoor.readParametersFile("DE", parameter.replace("_", "."), resourcesPath+"/indoorModel/parameters.csv");
+//					
+//		// estimate indoor concentration
+//		indoor.runModel(profile, indoorIterations, minuteResolution, useIndoorSources);
 		
 		/*
 		 *  4) prepare result
 		 */	
 		// get OM file
-		UncertaintyObservationCollection exposureProfile = (UncertaintyObservationCollection) profile.getExposureProfileObservationCollection("normal");
+//		UncertaintyObservationCollection exposureProfile = (UncertaintyObservationCollection) profile.getExposureProfileObservationCollection("normal");
 		
-		Utils.writeObsCollXML(exposureProfile, resourcesPath+"/outputs/exposure_test.xml");
+//		Utils.writeObsCollXML(exposureProfile, resourcesPath+"/outputs/exposure_test.xml");
+		UncertaintyObservationCollection exposureProfile = null;		
+		try {
+			XmlObject xml = XmlObject.Factory.parse(new FileInputStream("D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/largeStreets.xml"));		
+			exposureProfile = (UncertaintyObservationCollection) new XBObservationParser().parse(xml.xmlText());			
+		} catch (Exception e) {		
+			e.printStackTrace();
+			log.info("Error while reading OM input: " + e.getMessage());
+			throw new RuntimeException("Error while reading OM input: " + e.getMessage(), e);
+		}
 		
 		Map<String, IData> result = new HashMap<String, IData>(1);
 		OMBinding uwData = new OMBinding(exposureProfile);

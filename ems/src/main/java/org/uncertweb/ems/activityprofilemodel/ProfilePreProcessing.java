@@ -1,8 +1,9 @@
-package org.uncertweb.ems.activityprofiles;
+package org.uncertweb.ems.activityprofilemodel;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -21,6 +22,7 @@ import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.converter.ShapeFileConverter;
 import org.uncertweb.api.om.converter.ShapeFileConverterProperties;
+import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.CategoryObservation;
@@ -28,11 +30,13 @@ import org.uncertweb.api.om.observation.TextObservation;
 import org.uncertweb.api.om.observation.collections.CategoryObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.TextObservationCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.CategoryResult;
 import org.uncertweb.api.om.result.TextResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
-import org.uncertweb.ems.util.Utils;
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlObject;
+
 import au.com.bytecode.opencsv.CSVReader;
 
 /**
@@ -42,7 +46,7 @@ import au.com.bytecode.opencsv.CSVReader;
  */
 public class ProfilePreProcessing {
 
-	private static Logger LOGGER = Logger.getLogger(ProfilePreProcessing.class);
+	private static Logger log = Logger.getLogger(ProfilePreProcessing.class);
 	private static String resourcesPath = "C:/WebResources/EMS/profiles";
 	private static String profileLink = "http://giv-uw2.uni-muenster.de/activityprofiles";
 	private static int gps_srid = 4326;
@@ -84,11 +88,10 @@ public class ProfilePreProcessing {
 				
 				
 				// save OM file
-				Utils.writeObsCollXML(profile, resourcesPath+"/profile_"+profiles[p]+".xml");
-			}
-			
-		}catch(Exception e){
+				new StaxObservationEncoder().encodeObservationCollection(profile, new File( resourcesPath+"/profile_"+profiles[p]+".xml"));		
+		}}catch(Exception e){
 			e.printStackTrace();
+			log.info("Error while pre-processing profile data: " + e.getMessage());
 		}
 		
 		
@@ -224,7 +227,7 @@ public class ProfilePreProcessing {
 			c.voidEval("writeOGR(diary[,c(\"io\",\"time\")], dsn=path, layer=name, driver=\"ESRI Shapefile\",overwrite_layer=TRUE)");
 			
 		}catch (Exception e) {
-				LOGGER
+				log
 					.debug("Error while preprocessing GPS tracks: "
 							+ e.getMessage());
 			throw new RuntimeException(
@@ -250,8 +253,15 @@ public class ProfilePreProcessing {
 		ShapeFileConverterProperties props = new ShapeFileConverterProperties(propertiesPath);
 		
 		// read GPS observation collection
-		IObservationCollection gpsObs = Utils.readObsColl(gpsPath);
-		
+		IObservationCollection gpsObs = null;
+		try {
+			XmlObject xml = XmlObject.Factory.parse(new FileInputStream(gpsPath));		
+			gpsObs = (IObservationCollection) new XBObservationParser().parse(xml.xmlText());			
+		} catch (Exception e) {		
+			e.printStackTrace();
+			log.info("Error while reading OM input: " + e.getMessage());
+			throw new RuntimeException("Error while reading OM input: " + e.getMessage(), e);
+		}
 		// read diary file
 		Diary diary = readDiary(diaryPath);
 		

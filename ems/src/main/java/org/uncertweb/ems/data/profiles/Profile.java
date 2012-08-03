@@ -1,4 +1,4 @@
-package org.uncertweb.ems.activityprofiles;
+package org.uncertweb.ems.data.profiles;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,7 +39,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * Stores information on ST position, ME location and activity of individuals
+ * Stores information on ST positions, ME location and activity of individuals
  * @author Lydia Gerharz
  *
  */
