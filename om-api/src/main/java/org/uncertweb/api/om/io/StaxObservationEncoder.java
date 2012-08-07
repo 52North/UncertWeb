@@ -107,10 +107,8 @@ public class StaxObservationEncoder implements IObservationEncoder {
 			//set character escaping on false!
 			((com.sun.xml.internal.stream.writers.XMLStreamWriterImpl)writer).setEscapeCharacters(false);
 			writer.writeStartDocument();
+			
 			if (obsCol instanceof UncertaintyObservationCollection){
-				writer.writeStartElement(ObservationCollection.NAME);
-			}
-			else if (obsCol instanceof UncertaintyObservationCollection){
 				writer.writeStartElement(UncertaintyObservationCollection.NAME);
 			} else if (obsCol instanceof MeasurementCollection){
 				writer.writeStartElement(MeasurementCollection.NAME);
@@ -124,6 +122,9 @@ public class StaxObservationEncoder implements IObservationEncoder {
 				writer.writeStartElement(DiscreteNumericObservationCollection.NAME);
 			}else if (obsCol instanceof ReferenceObservationCollection){
 				writer.writeStartElement(ReferenceObservationCollection.NAME);
+			}
+			else if (obsCol instanceof ObservationCollection){
+				writer.writeStartElement(ObservationCollection.NAME);
 			}
 			
 			writer.writeDefaultNamespace(OMConstants.NS_OM);
