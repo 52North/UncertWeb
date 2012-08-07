@@ -10,6 +10,9 @@ import org.uncertweb.api.om.OMConstants;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -70,13 +73,13 @@ public class SpatialSamplingFeature {
 	public SpatialSamplingFeature(Identifier identifier, String sampledFeature,
 			Geometry shape) throws IllegalArgumentException {
 
-		if (shape instanceof Point){
+		if (shape instanceof Point || shape instanceof MultiPoint){
 			this.featureType = OMConstants.NS_SFT + OMConstants.EN_SAMPLINGPOINT;
 		}
-		else if (shape instanceof LineString){
+		else if (shape instanceof LineString || shape instanceof MultiLineString){
 			this.featureType = OMConstants.NS_SFT + OMConstants.EN_SAMPLINGCURVE;
 		}
-		else if (shape instanceof Polygon){
+		else if (shape instanceof Polygon || shape instanceof MultiPolygon){
 			this.featureType = OMConstants.NS_SFT + OMConstants.EN_SAMPLINGSURFACE;
 		}
 		else if (shape instanceof RectifiedGrid){
