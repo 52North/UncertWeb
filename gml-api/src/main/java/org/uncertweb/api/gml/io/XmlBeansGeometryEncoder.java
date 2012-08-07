@@ -343,7 +343,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		MultiLineStringType xb_mls = xb_mlsDoc.addNewMultiLineString();
 		//set gml ID
 		xb_mls.setId(generateGmlId());
-		
+		xb_mls.setSrsName(UwGMLUtil.EPSG_URL+gmlMls.getSRID());
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
 			LineStringPropertyType xb_ls = xb_mls.addNewLineStringMember();
@@ -379,6 +379,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		MultiPointType xb_mls = xb_mlsDoc.addNewMultiPoint();
 		//set gml ID
 		xb_mls.setId(generateGmlId());
+		xb_mls.setSrsName(UwGMLUtil.EPSG_URL+gmlMls.getSRID());
 		
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
@@ -416,11 +417,13 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		MultiSurfaceType xb_mls = xb_mlsDoc.addNewMultiSurface();
 		//set gml ID
 		xb_mls.setId(generateGmlId());
-		
+		xb_mls.setSrsName(UwGMLUtil.EPSG_URL+gmlMls.getSRID());
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
 			PolygonPropertyType xb_ls = xb_mls.addNewSurfaceMember();
-			PolygonDocument xb_lsDoc = encodePolygon2Doc((Polygon)gmlMls.getGeometryN(i));
+			Polygon poly = (Polygon)gmlMls.getGeometryN(i);
+//			poly.setSRID(gmlMls.getSRID());
+			PolygonDocument xb_lsDoc = encodePolygon2Doc(poly);
 			xb_ls.set(xb_lsDoc);
 		}
 		return xb_mlsDoc;
