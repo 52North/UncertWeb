@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureCollection;
@@ -25,8 +24,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.uncertml.distribution.continuous.LogNormalDistribution;
 import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
-import org.uncertml.exception.UncertaintyEncoderException;
-import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertml.statistic.CovarianceMatrix;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
@@ -62,7 +59,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 
@@ -77,7 +73,7 @@ import com.vividsolutions.jts.geom.Point;
 public class ShapeFileConverter {
 
 	private int counter = 0;
-	private int multiGeomCounter = 0;
+	
 
 	/** properties read from shp2om.properties file */
 	private ShapeFileConverterProperties props;
@@ -162,7 +158,7 @@ public class ShapeFileConverter {
 			SpatialSamplingFeature sf = null;
 			// create samplingFeature
 			if (geom instanceof Geometry) {
-				sf = createSamplingFeature(textFID, (Geometry) geom);
+				sf = ShapeFileConverterUtil.createSamplingFeature(textFID, (Geometry) geom);
 			}
 			sf4featureID.put(textFID, sf);
 			//TODO only encode feature once and then use xlink:href to reference the feature
@@ -323,7 +319,7 @@ public class ShapeFileConverter {
 			SpatialSamplingFeature sf = null;
 			// create samplingFeature
 			if (geom instanceof Geometry) {
-				sf = createSamplingFeature(id, (Geometry) geom);
+				sf = ShapeFileConverterUtil.createSamplingFeature(id, (Geometry) geom);
 			}
 			sf4featureID.put(id, sf);
 			//TODO only encode feature once and then use xlink:href to reference the feature
@@ -506,7 +502,7 @@ public class ShapeFileConverter {
 				if(same)
 					sf = lastSF;
 				else{
-					sf = createSamplingFeature(textFID, (Geometry) geom);
+					sf = ShapeFileConverterUtil.createSamplingFeature(textFID, (Geometry) geom);
 					lastSF = sf;
 				}					
 			}
@@ -618,7 +614,7 @@ public class ShapeFileConverter {
 			SpatialSamplingFeature sf = null;
 			// create samplingFeature
 			if (geom instanceof Geometry) {
-				sf = createSamplingFeature(textFID, (Geometry) geom);
+				sf = ShapeFileConverterUtil.createSamplingFeature(textFID, (Geometry) geom);
 			}
 			sf4featureID.put(textFID, sf);
 			//TODO only encode feature once and then use xlink:href to reference the feature
@@ -726,58 +722,7 @@ public class ShapeFileConverter {
 
 	}
 
-	/**
-	 * helper method for creating SpatialSamplingFeature from featureID and JTS
-	 * geometry
-	 * 
-	 * @param id
-	 *            gml id of the geometry
-	 * @param geom
-	 *            JTS geometry of the sampling feature
-	 * @return POJO representation of the SamplingFeature
-	 * @throws URISyntaxException 
-	 *             if parsing fails
-	 */
-	private SpatialSamplingFeature createSamplingFeature(String id,
-			Geometry geom) throws URISyntaxException {
-		SpatialSamplingFeature sf = null;
-		int srid = geom.getSRID();
-		if (geom instanceof MultiLineString) {
-			MultiLineString mls = (MultiLineString) geom;
-			int size = mls.getNumGeometries();
-			LineString[] lsArray = new LineString[size];
-			for (int i = 0; i < size; i++) {
-				lsArray[i] = new GeometryFactory().createLineString(((LineString) mls
-						.getGeometryN(i)).getCoordinateSequence());
-				lsArray[i].setSRID(srid);
-				multiGeomCounter++;
-			}
-			MultiLineString gmlLineString =  new GeometryFactory().createMultiLineString(lsArray);
-			Identifier identifier = new Identifier(new URI("http://www.uncertweb.org"),id);
-			sf = new SpatialSamplingFeature(identifier,null, gmlLineString);
-		}
-		else if (geom instanceof MultiPolygon) {
-//			MultiPolygon mp = (MultiPolygon) geom;
-//			int size = mp.getNumGeometries();
-//			LineString[] lsArray = new LineString[size];
-//			for (int i = 0; i < size; i++) {
-//				lsArray[i] = new GeometryFactory().createLineString(((MultiPolygon) mls
-//						.getGeometryN(i)).getCoordinateSequence());
-//				lsArray[i].setSRID(srid);
-//				multiGeomCounter++;
-//			}
-//			MultiPolygon
-//			MultiLineString gmlLineString =  new GeometryFactory().createMultiLineString(lsArray);
-			Identifier identifier = new Identifier(new URI("http://www.uncertweb.org"),id);
-			sf = new SpatialSamplingFeature(identifier,null, geom);
-		}
-		else if (geom instanceof Point) {
-			Identifier identifier = new Identifier(new URI("http://www.uncertweb.org"),id);
-			sf = new SpatialSamplingFeature(identifier,null, geom);
-		}
-		// TODO add further geometry types	
-		return sf;
-	}
+	
 	
 	
 	/**
