@@ -44,6 +44,7 @@ You can contact staschc@uni-muenster.de if you have further questions or comment
 
 ###################################
 ## Revision History
+1.0.3 - bugfixes for sampling feature types for multigeometries, encoding of UncertaintyObservation collection
 1.0.1 - bugfix for generic observation collection
 1.0.0 - added generic observation collection
 0.0.8 - updated dependency to GML API to 0.0.5
