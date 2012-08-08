@@ -46,7 +46,7 @@ public class OMConstants {
 	public static final String NS_GMD_PREFIX = "gmd";
 	
 	
-	public static final String OM_SCHEMA_LOCATION = "http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd";
+	public static final String OM_SCHEMA_LOCATION = "http://52north.org/schema/geostatistics/uncertweb/Profiles/OM/UncertWeb_OM.xsd";
 	
 	/**definition URL for sampling feature types*/ 
 	public static final String NS_SFT = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/";
