@@ -88,7 +88,7 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 	 */
 	private void encodeMultiPolygon(JSONStringer writer,MultiPolygon geom) throws JSONException {
 		writer.object();
-		writer.key("type").value(UwGMLUtil.MULTIPOLYGON_TYPE);
+		writer.key("type").value("MultiPolygon");
 		writer.key("coordinates");
 		writer.array();
 		int size = geom.getNumGeometries();
