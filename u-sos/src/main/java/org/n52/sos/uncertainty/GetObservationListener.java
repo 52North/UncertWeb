@@ -117,7 +117,7 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 								(OMUncertaintyObservationCollectionDocument) xb_obsCol,
 								zipCompression);
 					}
-					// TODO add further uncertainty types here
+					// TODO add further observation types here
 					// else if (om2obsCol instanceof BooleanObservation) {
 					// response = new BooleanObservationResponse(xb_obsCol,
 					// zipCompression);

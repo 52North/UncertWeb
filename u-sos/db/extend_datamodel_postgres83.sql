@@ -12,7 +12,8 @@ DROP TABLE IF EXISTS u_uncertainty CASCADE;
 DROP TABLE IF EXISTS u_value_unit CASCADE;
 DROP TABLE IF EXISTS u_normal CASCADE;
 DROP TABLE IF EXISTS u_mean CASCADE;
-DROP TABLE IF EXISTS u_mean_values CASCADE;
+DROP TABLE IF EXISTS u_realisation CASCADE;
+
 
 --------------------------------------------------
 -- Create tables
@@ -23,6 +24,7 @@ CREATE TABLE obs_unc (
   observation_id INTEGER NOT NULL,
   uncertainty_id INTEGER NOT NULL,
   gml_identifier VARCHAR(100) NOT NULL,
+
   PRIMARY KEY (observation_id, uncertainty_id)
 );
 
@@ -33,6 +35,7 @@ CREATE TABLE u_uncertainty (
   uncertainty_values_id SERIAL NOT NULL,
   uncertainty_type VARCHAR (100) NOT NULL,
   value_unit_id INTEGER NOT NULL,
+
   PRIMARY KEY (uncertainty_id),
   UNIQUE (uncertainty_values_id)
 );
@@ -42,6 +45,7 @@ CREATE TABLE u_uncertainty (
 CREATE TABLE u_value_unit (
   value_unit_id SERIAL NOT NULL,
   value_unit TEXT UNIQUE NOT NULL,
+
   PRIMARY KEY (value_unit_id)
 );
 
@@ -52,6 +56,7 @@ CREATE TABLE u_normal (
   normal_id INTEGER NOT NULL,
   mean NUMERIC NOT NULL,
   var NUMERIC NOT NULL,
+
   PRIMARY KEY (normal_id, mean, var)
 );
 
@@ -60,17 +65,21 @@ CREATE TABLE u_normal (
 -- mean_id maps u_uncertainty uncertainty_values_id
 CREATE TABLE u_mean (
   mean_id INTEGER NOT NULL,
-  mean_values_id INTEGER NOT NULL,
-  PRIMARY KEY (mean_id, mean_values_id)
+  mean_values NUMERIC[],
+
+  PRIMARY KEY (mean_id)
 );
 
--- table: u_mean_values
--- represents a list of mean values
-CREATE TABLE u_mean_values (
-  mean_values_id SERIAL NOT NULL,
-  mean_value NUMERIC NOT NULL,
-  PRIMARY KEY (mean_values_id),
-  UNIQUE (mean_value)
+-- table: u_realisation
+-- represents the realisation uncertainty type
+-- realisation_id maps u_uncertainty uncertainty_values_id
+CREATE TABLE u_realisation (
+  realisation_id INTEGER NOT NULL,
+  weight NUMERIC,
+  continuous_values NUMERIC[],
+  categorical_values VARCHAR(50)[],
+
+  PRIMARY KEY (realisation_id)
 );
 
 
@@ -94,7 +103,10 @@ ALTER TABLE u_normal ADD FOREIGN KEY (normal_id) REFERENCES u_uncertainty (uncer
 
 -- foreign keys for u_mean and u_mean_values table
 ALTER TABLE u_mean ADD FOREIGN KEY (mean_id) REFERENCES u_uncertainty (uncertainty_values_id) ON UPDATE CASCADE;
-ALTER TABLE u_mean ADD FOREIGN KEY (mean_values_id) REFERENCES u_mean_values (mean_values_id) ON UPDATE CASCADE;
+
+-- foreign keys for u_realisation and dependend tables
+ALTER TABLE u_realisation ADD FOREIGN KEY (realisation_id) REFERENCES u_uncertainty (uncertainty_values_id) ON UPDATE CASCADE;
+
 
 --------------------------------------------------
 -- Add and alter table constraints
@@ -103,3 +115,6 @@ ALTER TABLE u_mean ADD FOREIGN KEY (mean_values_id) REFERENCES u_mean_values (me
 -- original check constraint will be replaced
 ALTER TABLE phenomenon DROP CONSTRAINT phenomenon_valuetype_check;
 ALTER TABLE phenomenon ADD CHECK (valuetype IN ('uncertaintyType', 'booleanType', 'countType', 'textType', 'categoryType', 'numericType', 'isoTimeType', 'spatialType', 'commonType','externalReferenceType'));
+
+-- check uncertainty types
+-- ALTER TABLE u_uncertainty ADD CHECK (uncertainty_type IN ('norm_dist', 'mean', 'real'));

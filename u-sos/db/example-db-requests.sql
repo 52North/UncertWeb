@@ -211,31 +211,35 @@ WHERE
 ----------------------------------------------------------------------------------------------------
 -- Request for uncertainty information of given observation IDs
 ----------------------------------------------------------------------------------------------------
-
-SELECT obs_unc.observation_id,
-	u_uncertainty.uncertainty_id,
-	obs_unc.gml_identifier,
-	u_value_unit.value_unit,
-	u_uncertainty.uncertainty_type,
-
+	
+SELECT observation_id,
+	obs_unc.uncertainty_id,
+	gml_identifier,
+	value_unit,
+	uncertainty_type,
+	
 	-- mean type
-	u_mean_values.mean_value,
-
+	mean_values,
+	
 	-- normal type
-	u_normal.mean,
-	u_normal.var
-
-FROM (obs_unc
---	LEFT OUTER JOIN obs_unc ON obs_unc.observation_id = observation.observation_id
+	mean,
+	var,
+	
+	-- realisation type
+	weight,
+	continuous_values,
+	categorical_values
+	
+FROM ( obs_unc
 	LEFT OUTER JOIN u_uncertainty ON u_uncertainty.uncertainty_id = obs_unc.uncertainty_id
 	LEFT OUTER JOIN u_value_unit ON u_value_unit.value_unit_id = u_uncertainty.value_unit_id
-	-- normal type
-	LEFT OUTER JOIN u_normal ON u_normal.normal_id = u_uncertainty.uncertainty_values_id
 	-- mean type
 	LEFT OUTER JOIN u_mean ON u_mean.mean_id = u_uncertainty.uncertainty_values_id
-	LEFT OUTER JOIN u_mean_values ON u_mean_values.mean_values_id = u_mean.mean_values_id
-	)
-
-WHERE (obs_unc.observation_id = 12
-	OR obs_unc.observation_id = 15
-	OR obs_unc.observation_id = 22)
+	-- normal type
+	LEFT OUTER JOIN u_normal ON u_normal.normal_id = u_uncertainty.uncertainty_values_id
+	-- realisation type
+	LEFT OUTER JOIN u_realisation ON u_realisation.realisation_id = u_uncertainty.uncertainty_values_id
+	
+) WHERE ( obs_unc.observation_id = 1
+	OR obs_unc.observation_id = 2
+)

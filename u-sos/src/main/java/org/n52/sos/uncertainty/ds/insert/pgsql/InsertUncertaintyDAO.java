@@ -19,6 +19,9 @@ import org.n52.sos.uncertainty.ds.pgsql.PGDAOUncertaintyConstants;
 import org.n52.sos.uncertainty.ogc.IUncertainObservation;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
+import org.uncertml.sample.AbstractRealisation;
+import org.uncertml.sample.CategoricalRealisation;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.statistic.Mean;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 
@@ -64,7 +67,7 @@ public class InsertUncertaintyDAO {
 	public int insertUncertainty(IUncertainObservation obs, IUncertainty unc,
 			String valueUnit, Connection trCon) throws SQLException,
 			OwsExceptionReport {
-		
+
 		return this.insertUncertainty(obs, unc, null, valueUnit, trCon);
 	}
 
@@ -219,6 +222,11 @@ public class InsertUncertaintyDAO {
 				// insert mean and mean values table
 				insertMean((Mean) unc, uncValID, con);
 
+			} else if (unc instanceof AbstractRealisation) {
+
+				// insert realisation and realisation values table
+				insertRealisation((AbstractRealisation) unc, uncValID, con);
+
 				// TODO add further uncertainty types here
 				// } else if (unc instanceof ???) {
 				// }
@@ -243,7 +251,7 @@ public class InsertUncertaintyDAO {
 	}
 
 	/**
-	 * inserts uncertainties from result quality of uncertainties into database
+	 * inserts uncertainties from result quality into database; temporarily only single uncertainties of single result qualities are supported
 	 * 
 	 * @param obs
 	 *            associated observation
@@ -259,20 +267,48 @@ public class InsertUncertaintyDAO {
 		List<String> valueUnits = new ArrayList<String>();
 
 		DQ_UncertaintyResult[] quality = obs.getUncQuality();
-		if (quality != null && quality.length > 0) {
+		if (quality != null && quality.length == 1) {
 
-			// collect all uncertainties
-			for (DQ_UncertaintyResult uncRes : quality) {
-
-				String valueUnit = uncRes.getUom();
-				IUncertainty[] uncs = uncRes.getValues();
-
-				for (IUncertainty unc : uncs) {
-
-					uncIDs.add(insertUncertainty(obs, unc, valueUnits,
-							valueUnit, trCon));
-				}
+//			// collect all uncertainties
+//			for (DQ_UncertaintyResult uncRes : quality) {
+//
+//				String valueUnit = uncRes.getUom();
+//				IUncertainty[] uncs = uncRes.getValues();
+//
+//				for (IUncertainty unc : uncs) {
+//
+//					uncIDs.add(insertUncertainty(obs, unc, valueUnits,
+//							valueUnit, trCon));
+//				}
+//			}
+			IUncertainty[] uncs = quality[0].getValues();
+			
+			if (uncs != null && uncs.length == 1) {
+				
+				// get and insert single uncertainty
+				uncIDs.add(insertUncertainty(obs, uncs[0], valueUnits,
+						quality[0].getUom(), trCon));
+				
+			} else if (uncs.length > 1) {
+				
+				String message = "Error while executing insertUncertainty operation. Only a single uncertainty per result quality is supported.";
+				OwsExceptionReport se = new OwsExceptionReport(
+						ExceptionLevel.DetailedExceptions);
+				se.addCodedException(ExceptionCode.OptionNotSupported, null,
+						message);
+				LOGGER.error(message);
+				throw se;
 			}
+			
+		} else if (quality.length > 1) {
+			
+			String message = "Error while executing insertUncertainty operation. Only single result qualities are supported.";
+			OwsExceptionReport se = new OwsExceptionReport(
+					ExceptionLevel.DetailedExceptions);
+			se.addCodedException(ExceptionCode.OptionNotSupported, null,
+					message);
+			LOGGER.error(message);
+			throw se;
 		}
 
 		return uncIDs;
@@ -402,74 +438,112 @@ public class InsertUncertaintyDAO {
 
 	private void insertMean(Mean unc, int uncValID, Connection con)
 			throws SQLException {
-		StringBuilder insertStmt;
-		Statement stmt;
-		String query;
-		ResultSet rs;
-		int meanValID;
-		List<Double> meanValList = new ArrayList<Double>();
-
-		for (double value : unc.getValues()) {
-
-			// double values among one Mean are ignored
-			if (!meanValList.contains(value)) {
-
-				meanValID = Integer.MIN_VALUE;
-				insertStmt = new StringBuilder();
-
-				// check whether this particular mean value is already set
-				query = "SELECT " + PGDAOUncertaintyConstants.uMMeanValIdCn
-						+ " AS meanValID FROM "
-						+ PGDAOUncertaintyConstants.uMeanValTn + " WHERE "
-						+ PGDAOUncertaintyConstants.uMVMeanValCn + " = "
-						+ value + ";";
-
-				stmt = con.createStatement();
-				rs = stmt.executeQuery(query);
-				while (rs.next()) {
-					meanValID = rs.getInt("meanValID");
-				}
-
-				if (meanValID == Integer.MIN_VALUE) {
-					// mean value not yet set
-
-					// insert mean value table
-					insertStmt.append(" INSERT INTO "
-							+ PGDAOUncertaintyConstants.uMeanValTn + " ("
-							+ PGDAOUncertaintyConstants.uMVMeanValCn
-							+ ") VALUES (" + value + ");");
-
-					// insert mean table
-					insertStmt
-							.append(" INSERT INTO "
-									+ PGDAOUncertaintyConstants.uMeanTn + " ("
-									+ PGDAOUncertaintyConstants.uMMeanIdCn
-									+ ", "
-									+ PGDAOUncertaintyConstants.uMMeanValIdCn
-									+ ") VALUES (" + uncValID
-									+ ", currval(pg_get_serial_sequence('"
-									+ PGDAOUncertaintyConstants.uMeanValTn
-									+ "', '"
-									+ PGDAOUncertaintyConstants.uMMeanValIdCn
-									+ "')));");
-
-				} else {
-					// mean value already set
-
-					// insert mean table
-					insertStmt.append(" INSERT INTO "
-							+ PGDAOUncertaintyConstants.uMeanTn + " ("
-							+ PGDAOUncertaintyConstants.uMMeanIdCn + ", "
-							+ PGDAOUncertaintyConstants.uMMeanValIdCn
-							+ ") VALUES ('" + uncValID + "', '" + meanValID
-							+ "');");
-				}
-
-				stmt = con.createStatement();
-				stmt.execute(insertStmt.toString());
-				meanValList.add(value);
+		
+		StringBuilder insertStmt = new StringBuilder();
+		List<Double> meanVals;
+		StringBuilder arrayInput;
+		
+		// create array of values as a String
+		meanVals = unc.getValues();
+		arrayInput = new StringBuilder("'{");
+		
+		if (meanVals.size() > 0) {
+			
+			arrayInput.append(meanVals.get(0));
+		}
+		if (meanVals.size() > 1) {
+		
+			for (int i = 1; i < meanVals.size(); i++) {
+				arrayInput.append(", " + meanVals.get(i) + "");
 			}
 		}
+		arrayInput.append("}'");
+
+		// insert realisation
+		insertStmt.append(" INSERT INTO "
+				+ PGDAOUncertaintyConstants.uMeanTn + " ("
+				+ PGDAOUncertaintyConstants.uMMeanIdCn
+				+ ", "
+				+ PGDAOUncertaintyConstants.uMMeanValsCn
+				+ ") VALUES (" + uncValID
+				+ ", " + arrayInput + ");");
+		
+		Statement stmt = con.createStatement();
+		stmt.execute(insertStmt.toString());
+	}
+
+	private void insertRealisation(AbstractRealisation unc, int uncValID,
+			Connection con) throws SQLException {
+
+		StringBuilder insertStmt = new StringBuilder();
+		Double weight = unc.getWeight();
+		List<Double> conVals;
+		List<String> catVals;
+		StringBuilder arrayInput;
+		
+		if (unc instanceof ContinuousRealisation) {
+			
+			// create array of continuous values as a String
+			conVals = ((ContinuousRealisation) unc).getValues();
+			arrayInput = new StringBuilder("'{");
+			
+			if (conVals.size() > 0) {
+				
+				arrayInput.append(conVals.get(0));
+			}
+			if (conVals.size() > 1) {
+			
+				for (int i = 1; i < conVals.size(); i++) {
+					arrayInput.append(", " + conVals.get(i) + "");
+				}
+			}
+			arrayInput.append("}'");
+
+			// insert realisation
+			insertStmt.append(" INSERT INTO "
+					+ PGDAOUncertaintyConstants.uRealTn + " ("
+					+ PGDAOUncertaintyConstants.uRRealIdCn
+					+ ", "
+					+ PGDAOUncertaintyConstants.uRWeightCn
+					+ ", "
+					+ PGDAOUncertaintyConstants.uRConValsCn
+					+ ") VALUES ("
+					+ uncValID + ", " + weight + ", "
+					+ arrayInput + ");");
+			
+		} else if (unc instanceof CategoricalRealisation) {
+			
+			// create array of categories as a String
+			catVals = ((CategoricalRealisation) unc).getCategories();
+			arrayInput = new StringBuilder("'{");
+			
+			if (catVals.size() > 0) {
+				
+				arrayInput.append("\"" + catVals.get(0) + "\"");
+			}
+			if (catVals.size() > 1) {
+			
+				for (int i = 1; i < catVals.size(); i++) {
+					arrayInput.append(", \"" + catVals.get(i) + "\"");
+				}
+			}
+			arrayInput.append("}'");
+			
+			// insert realisation
+			insertStmt.append(" INSERT INTO "
+					+ PGDAOUncertaintyConstants.uRealTn + " ("
+					+ PGDAOUncertaintyConstants.uRRealIdCn
+					+ ", "
+					+ PGDAOUncertaintyConstants.uRWeightCn
+					+ ", "
+					+ PGDAOUncertaintyConstants.uRCatValsCn
+					+ ") VALUES ("
+					+ uncValID + ", " + weight + ", "
+					+ arrayInput + ");");			
+		}
+		
+		Statement stmt = con.createStatement();
+		stmt.execute(insertStmt.toString());
 	}
 
 	/**
@@ -486,6 +560,8 @@ public class InsertUncertaintyDAO {
 			uncType = PGDAOUncertaintyConstants.u_normalDistType;
 		} else if (unc instanceof Mean) {
 			uncType = PGDAOUncertaintyConstants.u_meanType;
+		} else if (unc instanceof AbstractRealisation) {
+			uncType = PGDAOUncertaintyConstants.u_realType;
 		}
 		// TODO add further uncertainty types here
 		// } else if (unc instanceof ???) {

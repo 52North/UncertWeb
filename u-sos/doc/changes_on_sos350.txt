@@ -2,6 +2,9 @@
 ## Changes done on SOS 3.5.0 classes
 ######################################################################
 
+These changes were committed to the 52North SOS repository (Revision 
+11611/11617).
+
 
 SensorMLDecoder.SensorMLDecoder
 	private -> protected (to make other classes able to inherit from SensorMLDecoder)

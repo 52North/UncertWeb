@@ -1,5 +1,5 @@
 ######################################################################
-## Changes done on build.properties
+## Changes done on SOS build.properties
 ######################################################################
 
 This project's sample property file version is based on 52N SOS Version

@@ -1,6 +1,6 @@
 package org.n52.sos.uncertainty.ds.pgsql;
 
-import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,10 +19,10 @@ import javax.xml.namespace.QName;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.n52.sos.Sos1Constants;
+import org.n52.sos.Sos1Constants.GetObservationParams;
 import org.n52.sos.Sos2Constants;
 import org.n52.sos.SosConfigurator;
 import org.n52.sos.SosConstants;
-import org.n52.sos.Sos1Constants.GetObservationParams;
 import org.n52.sos.SosConstants.FirstLatest;
 import org.n52.sos.SosConstants.ValueTypes;
 import org.n52.sos.SosDateTimeUtilities;
@@ -47,14 +47,14 @@ import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionCode;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionLevel;
 import org.n52.sos.request.SosGetObservationRequest;
 import org.n52.sos.uncertainty.SosUncConstants;
-import org.n52.sos.uncertainty.decode.impl.CMean;
 import org.n52.sos.uncertainty.decode.impl.ObservationConverter;
-import org.n52.sos.uncertainty.ogc.IUncertainObservation;
 import org.n52.sos.uncertainty.ogc.om.UNCMeasurementObservation;
 import org.n52.sos.uncertainty.ogc.om.UNCUncertaintyObservation;
 import org.n52.sos.utilities.JTSUtilities;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
+import org.uncertml.sample.CategoricalRealisation;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.statistic.Mean;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
@@ -92,47 +92,114 @@ public class PGSQLGetObservationDAO extends
 	 * 
 	 * @param obsIDs
 	 *            as a list
-	 * @return array with a row for every uncertainty value; null, if obsIDs is
-	 *         empty
+	 * @return list of observation IDs and attached uncertainties; null, if
+	 *         obsIDs is empty
 	 * @throws OwsExceptionReport
 	 */
-	private Object[][] getUncertainty(List<String> obsIDs)
+	private List<WrappedUncertainty> getUncertaintyData(List<String> obsIDs)
 			throws OwsExceptionReport {
 
 		if (obsIDs.isEmpty() || obsIDs.size() < 1) {
 			return null;
 		}
 
-		ArrayList<Object[]> rsList = new ArrayList<Object[]>(obsIDs.size());
+		List<WrappedUncertainty> uncs = new ArrayList<WrappedUncertainty>();
 
 		Connection con = null;
 		try {
 			con = getCPool().getConnection();
 			ResultSet rs = queryUncertainty(obsIDs, con);
-			Object[] row = null;
+
+			String obsID;
+			String gmlID;
+			String valueUnit;
+			String uncType;
+
+			double[] meanValues;
+			Double normalMean;
+			Double normalVar;
+			Double weight;
+			BigDecimal[] realConDecs;
+			double[] realConValues;
+
+			IUncertainty unc;
 
 			while (rs.next()) {
 
-				row = new Object[8];
+				// reset uncertainty
+				unc = null;
 
-				Array.set(row, 0,
-						rs.getString(PGDAOUncertaintyConstants.uOUObsIdCn));
-				Array.set(row, 1,
-						rs.getString(PGDAOUncertaintyConstants.uUUncIdCn));
-				Array.set(row, 2,
-						rs.getString(PGDAOUncertaintyConstants.uOUGmlIdCn));
-				Array.set(row, 3,
-						rs.getString(PGDAOUncertaintyConstants.uVUValUnitCn));
-				Array.set(row, 4,
-						rs.getString(PGDAOUncertaintyConstants.uUUncTypeCn));
-				Array.set(row, 5,
-						rs.getDouble(PGDAOUncertaintyConstants.uMVMeanValCn));
-				Array.set(row, 6,
-						rs.getDouble(PGDAOUncertaintyConstants.uNMeanCn));
-				Array.set(row, 7,
-						rs.getDouble(PGDAOUncertaintyConstants.uNVarCn));
+				// get general data
+				obsID = rs.getString(PGDAOUncertaintyConstants.uOUObsIdCn);
+				// rs.getString(PGDAOUncertaintyConstants.uUUncIdCn);
+				gmlID = rs.getString(PGDAOUncertaintyConstants.uOUGmlIdCn);
+				valueUnit = rs
+						.getString(PGDAOUncertaintyConstants.uVUValUnitCn);
 
-				rsList.add(row);
+				uncType = rs.getString(PGDAOUncertaintyConstants.uUUncTypeCn);
+
+				// get uncertainty specific data create uncertainties
+
+				if (uncType.equals(PGDAOUncertaintyConstants.u_meanType)) {
+					// mean
+
+					// convert BigDecimal[] to double[]
+					BigDecimal[] bigDecs = (BigDecimal[]) rs.getArray(
+							PGDAOUncertaintyConstants.uMMeanValsCn).getArray();
+					meanValues = new double[bigDecs.length];
+
+					for (int i = 0; i < bigDecs.length; i++) {
+						meanValues[i] = bigDecs[i].doubleValue();
+					}
+
+					unc = new Mean(meanValues);
+
+				} else if (uncType
+						.equals(PGDAOUncertaintyConstants.u_normalDistType)) {
+					// normal distribution
+
+					normalMean = rs
+							.getDouble(PGDAOUncertaintyConstants.uNMeanCn);
+					normalVar = rs.getDouble(PGDAOUncertaintyConstants.uNVarCn);
+
+					unc = new NormalDistribution(normalMean, normalVar);
+
+				} else if (uncType.equals(PGDAOUncertaintyConstants.u_realType)) {
+					// realisation
+
+					weight = rs.getDouble(PGDAOUncertaintyConstants.uRWeightCn);
+
+					java.sql.Array conAr = rs
+							.getArray(PGDAOUncertaintyConstants.uRConValsCn);
+					java.sql.Array catAr = rs
+							.getArray(PGDAOUncertaintyConstants.uRCatValsCn);
+
+					if (conAr != null) {
+						// continuous relisation
+
+						// convert BigDecimal[] to double[]
+						realConDecs = (BigDecimal[]) conAr.getArray();
+						realConValues = new double[realConDecs.length];
+
+						for (int i = 0; i < realConDecs.length; i++) {
+							realConValues[i] = realConDecs[i].doubleValue();
+						}
+
+						unc = new ContinuousRealisation(realConValues, weight);
+
+					} else if (catAr != null) {
+						// categorical realisation
+
+						unc = new CategoricalRealisation(
+								(String[]) catAr.getArray(), weight);
+					}
+				}
+				// TODO add further uncertainty types here
+
+				if (unc != null) {
+					uncs.add(new WrappedUncertainty(obsID, gmlID, valueUnit,
+							unc));
+				}
 			}
 
 		} catch (SQLException sqle) {
@@ -148,7 +215,7 @@ public class PGSQLGetObservationDAO extends
 				getCPool().returnConnection(con);
 			}
 		}
-		return rsList.toArray(new Object[0][0]);
+		return uncs;
 	}
 
 	/**
@@ -177,11 +244,18 @@ public class PGSQLGetObservationDAO extends
 				+ PGDAOUncertaintyConstants.uUUncTypeCn);
 
 		// append mean columns
-		query.append(", " + PGDAOUncertaintyConstants.uMVMeanValCn);
+		query.append(", " + PGDAOUncertaintyConstants.uMMeanValsCn);
 
 		// append normal distribution colums
 		query.append(", " + PGDAOUncertaintyConstants.uNMeanCn + ", "
 				+ PGDAOUncertaintyConstants.uNVarCn);
+
+		// append realisation colums
+		query.append(", " + PGDAOUncertaintyConstants.uRWeightCn + ", "
+				+ PGDAOUncertaintyConstants.uRConValsCn + ", "
+				+ PGDAOUncertaintyConstants.uRCatValsCn);
+
+		// TODO add further uncertainty types' table colums here
 
 		// FROM clause
 		query.append(" FROM (" + PGDAOUncertaintyConstants.uObsUncTn
@@ -196,17 +270,12 @@ public class PGSQLGetObservationDAO extends
 				+ PGDAOUncertaintyConstants.uUncertTn + "."
 				+ PGDAOUncertaintyConstants.uVUValUnitIdCn);
 
-		// append mean tables
+		// append mean table
 		query.append(" LEFT OUTER JOIN " + PGDAOUncertaintyConstants.uMeanTn
 				+ " ON " + PGDAOUncertaintyConstants.uMeanTn + "."
 				+ PGDAOUncertaintyConstants.uMMeanIdCn + " = "
 				+ PGDAOUncertaintyConstants.uUncertTn + "."
-				+ PGDAOUncertaintyConstants.uUUncValIdCn + " LEFT OUTER JOIN "
-				+ PGDAOUncertaintyConstants.uMeanValTn + " ON "
-				+ PGDAOUncertaintyConstants.uMeanValTn + "."
-				+ PGDAOUncertaintyConstants.uMMeanValIdCn + " = "
-				+ PGDAOUncertaintyConstants.uMeanTn + "."
-				+ PGDAOUncertaintyConstants.uMMeanValIdCn);
+				+ PGDAOUncertaintyConstants.uUUncValIdCn);
 
 		// append normal distribution table
 		query.append(" LEFT OUTER JOIN " + PGDAOUncertaintyConstants.uNormTn
@@ -214,6 +283,15 @@ public class PGSQLGetObservationDAO extends
 				+ PGDAOUncertaintyConstants.uNNormIdCn + " = "
 				+ PGDAOUncertaintyConstants.uUncertTn + "."
 				+ PGDAOUncertaintyConstants.uUUncValIdCn);
+
+		// append realisation table
+		query.append(" LEFT OUTER JOIN " + PGDAOUncertaintyConstants.uRealTn
+				+ " ON " + PGDAOUncertaintyConstants.uRealTn + "."
+				+ PGDAOUncertaintyConstants.uRRealIdCn + " = "
+				+ PGDAOUncertaintyConstants.uUncertTn + "."
+				+ PGDAOUncertaintyConstants.uUUncValIdCn);
+
+		// TODO add further uncertainty types' tables here
 
 		// append WHERE clause
 		query.append(") WHERE (" + PGDAOUncertaintyConstants.uObsUncTn + "."
@@ -232,76 +310,6 @@ public class PGSQLGetObservationDAO extends
 
 		return resultSet;
 	}
-
-	// /**
-	// * returns an uncertainty to a given observation ID
-	// * @param resultSet result set containing uncertainties
-	// * @param obsID observation ID
-	// * @return corresponding uncertainty or null
-	// * @throws OwsExceptionReport
-	// */
-	// public IUncertainty getUncertaintyFromResultSet(
-	// ResultSet resultSet, String obsID)
-	// throws OwsExceptionReport {
-	//
-	// try {
-	// while (resultSet.next()) {
-	//
-	// // check remaining heap size
-	// // checkFreeMemory(); // used in
-	// // getSingleObservationFromResultSet()
-	//
-	// if (obsID.equals(resultSet
-	// .getString(PGDAOUncertaintyConstants.uOUObsIdCn))) {
-	//
-	// String uncID = resultSet
-	// .getString(PGDAOUncertaintyConstants.uUUncIdCn);
-	//
-	// String gmlID = resultSet
-	// .getString(PGDAOUncertaintyConstants.uOUGmlIdCn);
-	// String valueUnit = resultSet
-	// .getString(PGDAOUncertaintyConstants.uVUValUnitCn);
-	// Double meanVal = resultSet
-	// .getDouble(PGDAOUncertaintyConstants.uMVMeanValCn);
-	// Double normalMean = resultSet
-	// .getDouble(PGDAOUncertaintyConstants.uNMeanCn);
-	// Double normalVar = resultSet
-	// .getDouble(PGDAOUncertaintyConstants.uNVarCn);
-	//
-	// if (meanVal != null) {
-	// // create mean
-	// return new Mean(meanVal);
-	//
-	// } else if (normalMean != null && normalVar != null) {
-	// // create normal distribution
-	// return new NormalDistribution(normalMean, normalVar);
-	//
-	// } else {
-	// OwsExceptionReport se = new OwsExceptionReport(
-	// ExceptionLevel.DetailedExceptions);
-	// se.addCodedException(
-	// OwsExceptionReport.ExceptionCode.MissingParameterValue,
-	// null, "Missing value(s) for uncertainty '"
-	// + uncID + "' of observation '" + obsID
-	// + "'.");
-	// LOGGER.error(se.getMessage());
-	// throw se;
-	// }
-	// }
-	// }
-	//
-	// } catch (SQLException sqle) {
-	// OwsExceptionReport se = new OwsExceptionReport(
-	// ExceptionLevel.DetailedExceptions);
-	// se.addCodedException(ExceptionCode.NoApplicableCode, null,
-	// "Error while creating uncertainty from database query result set: "
-	// + sqle.getMessage());
-	// LOGGER.error(se.getMessage());
-	// throw se;
-	// }
-	//
-	// return null;
-	// }
 
 	/**
 	 * method checks, whether the resultModel parameter is valid for the
@@ -411,13 +419,10 @@ public class PGSQLGetObservationDAO extends
 				obsIDs.add(obs.getObservationID());
 			}
 
+			// get and add uncertainties
 			SosObservationCollection uncOM1ObsCol = null;
-
-			// query uncertainties for observations IDs
-			Object[] unc = getUncertainty(obsIDs);
-
-			// add uncertainties to observation collection
-			uncOM1ObsCol = addUnc2OM1ObsCol(om1ObsCol, unc);
+			List<WrappedUncertainty> uncList = getUncertaintyData(obsIDs);
+			uncOM1ObsCol = addUnc2OM1ObsCol(om1ObsCol, uncList);
 
 			// convert OM1 to OM2 observation collection
 			om2ObsCol = ObservationConverter.getOM2ObsCol(uncOM1ObsCol);
@@ -433,417 +438,84 @@ public class PGSQLGetObservationDAO extends
 	 * 
 	 * @param om1ObsCol
 	 *            O&M 1 observation collection
-	 * @param uncertainties
-	 *            ResultSet of corresponding uncertainties
+	 * @param uncList
+	 *            List corresponding uncertainties
 	 * @return O&M 2 observation collection
 	 * @throws OwsExceptionReport
 	 */
 	public static SosObservationCollection addUnc2OM1ObsCol(
-			SosObservationCollection om1ObsCol, Object[] uncertainties)
-			throws OwsExceptionReport {
+			SosObservationCollection om1ObsCol, List<WrappedUncertainty> uncList) {
 
-		// return collection, if input is empty
-		if (om1ObsCol.getObservationMembers().isEmpty()
-				|| om1ObsCol.getObservationMembers().size() < 1
-				|| uncertainties == null || uncertainties.length < 1) {
-			return om1ObsCol;
+		if (uncList == null || uncList.isEmpty()) {
+			return null;
 		}
 
-		// check whether all input observations are of the same type
-		Iterator<AbstractSosObservation> om1ObsIter = om1ObsCol
+		Iterator<AbstractSosObservation> obsColIt = om1ObsCol
 				.getObservationMembers().iterator();
-		Class<? extends AbstractSosObservation> om1ObsClass = null;
+		while (obsColIt.hasNext()) {
 
-		while (om1ObsIter.hasNext()) {
+			AbstractSosObservation obs = obsColIt.next();
+			String obsID = obs.getObservationID();
 
-			if (om1ObsClass == null) {
-				om1ObsClass = om1ObsIter.next().getClass();
-			} else {
-				if (om1ObsIter.next().getClass() != om1ObsClass) {
-					OwsExceptionReport se = new OwsExceptionReport();
-					se.addCodedException(
-							OwsExceptionReport.ExceptionCode.OperationNotSupported,
-							null,
-							"All observations have to be of the same type (e.g. Measurement).");
-					throw se;
-				}
-			}
-		}
+			if (obs instanceof UNCMeasurementObservation) {
 
-		// ////////////////////////////////////////////////////////
-		// create uncertainty enabled OM1 observations
-		om1ObsIter = om1ObsCol.getObservationMembers().iterator();
+				UNCMeasurementObservation measObs = (UNCMeasurementObservation) obs;
+				boolean withoutUnc = true;
 
-		AbstractSosObservation om1Obs;
-		ArrayList<DQ_UncertaintyResult> uncResult;
-		ArrayList<Mean> uncResMeans;
-		ArrayList<NormalDistribution> uncResNormals;
-		IUncertainty resultUnc;
+				for (int i = 0; i < uncList.size(); i++) {
 
-		String gmlID, valueUnit, uncType = null;
+					if (obsID.equals(uncList.get(i).getObservationID())) {
 
-		while (om1ObsIter.hasNext()) {
-			om1Obs = om1ObsIter.next();
+						// add new uncertainty result
+						// insert and decoder classes should prevent multiple
+						// uncertainties for one observation
 
-			uncResult = null;
-			uncResMeans = null;
-			uncResNormals = null;
-			resultUnc = null;
+						IUncertainty[] uncArr = { uncList.get(i)
+								.getUncertainty() };
+						DQ_UncertaintyResult[] uncRes = { new DQ_UncertaintyResult(
+								uncArr, uncList.get(i).getValueUnit()) };
+						measObs.setUncQuality(uncRes);
 
-			gmlID = null;
-			valueUnit = null;
-			uncType = null;
-
-			if (om1Obs instanceof IUncertainObservation) {
-
-				if (om1Obs instanceof UNCMeasurementObservation) {
-					uncResult = new ArrayList<DQ_UncertaintyResult>();
-				}
-
-				// ////////////////////////////////////////////////////////
-				// get uncertainties from resultSet
-				String obsID = om1Obs.getObservationID();
-
-				String uncID = null;
-				Double meanVal = null;
-				Double normalMean = null;
-				Double normalVar = null;
-
-				IUncertainty unc = null;
-
-				for (int i = 0; i < uncertainties.length; i++) {
-
-					// check remaining heap size
-					// checkFreeMemory(); // used in
-					// getSingleObservationFromResultSet()
-
-					// add new uncertainty, if it belongs to the current
-					// observation
-					Object[] row = (Object[]) uncertainties[i];
-
-					if (obsID.equals(Array.get(row, 0))) {
-
-						// get values from array
-						uncID = (String) Array.get(row, 1);
-						gmlID = (String) Array.get(row, 2);
-						valueUnit = (String) Array.get(row, 3);
-						uncType = (String) Array.get(row, 4);
-						meanVal = (Double) Array.get(row, 5);
-						normalMean = (Double) Array.get(row, 6);
-						normalVar = (Double) Array.get(row, 7);
-
-						if (uncType
-								.equals(PGDAOUncertaintyConstants.u_meanType)) {
-
-							// ////////////////////////////////////////////////////////
-							// create mean (or add mean value)
-							if (om1Obs instanceof UNCMeasurementObservation) {
-								// uncertainty observation
-
-								if (uncResMeans == null) {
-									uncResMeans = new ArrayList<Mean>();
-								}
-								if (uncResMeans.isEmpty()) {
-									uncResMeans.add(new CMean(uncID, meanVal));
-
-								} else {
-
-									// search for means of this uncID
-									boolean contained = false;
-									for (Mean mean : uncResMeans) {
-										if (((CMean) mean).uncertaintyID
-												.equals(uncID)) {
-
-											// add to existing mean
-											((CMean) mean).getValues().add(
-													meanVal);
-											contained = true;
-											break;
-										}
-									}
-									if (!contained) {
-										// add new mean
-										uncResMeans.add(new CMean(uncID,
-												meanVal));
-									}
-								}
-
-							} else if (om1Obs instanceof UNCUncertaintyObservation) {
-								// uncertainty observation
-
-								if (resultUnc == null) {
-									resultUnc = new CMean(uncID, meanVal);
-
-								} else if (resultUnc instanceof CMean) {
-									CMean resultMean = (CMean) resultUnc;
-
-									if (resultMean.uncertaintyID.equals(uncID)) {
-
-										resultMean.getValues().add(meanVal);
-
-									} else {
-										OwsExceptionReport se = new OwsExceptionReport(
-												ExceptionLevel.DetailedExceptions);
-										se.addCodedException(
-												OwsExceptionReport.ExceptionCode.InvalidParameterValue,
-												null,
-												"UncertaintyObservations may have only one uncertainty result.");
-										LOGGER.error(se.getMessage());
-										throw se;
-									}
-
-								} else {
-									OwsExceptionReport se = new OwsExceptionReport(
-											ExceptionLevel.DetailedExceptions);
-									se.addCodedException(
-											OwsExceptionReport.ExceptionCode.InvalidParameterValue,
-											null,
-											"UncertaintyObservations may have only one uncertainty result.");
-									LOGGER.error(se.getMessage());
-									throw se;
-								}
-							}
-
-						} else if (uncType
-								.equals(PGDAOUncertaintyConstants.u_normalDistType)) {
-
-							// ////////////////////////////////////////////////////////
-							// create normal distribution
-
-							unc = new NormalDistribution(normalMean, normalVar);
-
-							if (om1Obs instanceof UNCMeasurementObservation) {
-								// measurement observation
-
-								if (uncResNormals == null
-										|| uncResNormals.isEmpty()) {
-									uncResNormals = new ArrayList<NormalDistribution>();
-								}
-								uncResNormals.add((NormalDistribution) unc);
-
-							} else if (om1Obs instanceof UNCUncertaintyObservation) {
-								// uncertainty observation
-
-								if (resultUnc == null) {
-									resultUnc = unc;
-								} else {
-									OwsExceptionReport se = new OwsExceptionReport(
-											ExceptionLevel.DetailedExceptions);
-									se.addCodedException(
-											OwsExceptionReport.ExceptionCode.InvalidParameterValue,
-											null,
-											"UncertaintyObservations may have only one uncertainty result.");
-									LOGGER.error(se.getMessage());
-									throw se;
-								}
-							}
-
-							// TODO add further uncertainty types here
-							// add further uncertainty types from database
-							// (resultSet)
-							// } else if (om1Obs instanceof
-							// UNC...ObservationConverter) {
-
-						} else {
-							OwsExceptionReport se = new OwsExceptionReport(
-									ExceptionLevel.DetailedExceptions);
-							se.addCodedException(
-									OwsExceptionReport.ExceptionCode.MissingParameterValue,
-									null, "Missing value(s) for uncertainty '"
-											+ uncID + "' of observation '"
-											+ obsID + "'.");
-							LOGGER.error(se.getMessage());
-							throw se;
-						}
+						measObs.setIdentifier(uncList.get(i).getGmlID());
+						withoutUnc = false;
 					}
 				}
+
+				if (withoutUnc) {
+					// remove observations without uncertainty from observation
+					// collection
+					om1ObsCol.getObservationMembers().remove(obs);
+				}
+			} else if (obs instanceof UNCUncertaintyObservation) {
+
+				UNCUncertaintyObservation uncObs = (UNCUncertaintyObservation) obs;
+
+				boolean withoutUnc = true;
+
+				for (int i = 0; i < uncList.size(); i++) {
+
+					// set (single) uncertainty to this observation
+					if (obsID.equals(uncList.get(i).getObservationID())) {
+						uncObs.setUncertainty(uncList.get(i).getUncertainty());
+						uncObs.setIdentifier(uncList.get(i).getGmlID());
+
+						withoutUnc = false;
+						break;
+					}
+				}
+
+				if (withoutUnc) {
+					// remove observations without uncertainty from observation
+					// collection
+					om1ObsCol.getObservationMembers().remove(obs);
+				}
 			}
-
-			// ////////////////////////////////////////////////////////
-			// add uncertainties to current observation
-			// create DQ_UncertaintyResult[]
-			if (om1Obs instanceof UNCMeasurementObservation) {
-
-				// add means to uncertainty result
-				if (uncResMeans != null && !uncResMeans.isEmpty()) {
-					CMean[] means = uncResMeans.toArray(new CMean[0]);
-					uncResult.add(new DQ_UncertaintyResult(means, valueUnit));
-				}
-				// add normal distributions to uncertainty result
-				if (uncResNormals != null && !uncResNormals.isEmpty()) {
-					NormalDistribution[] normals = uncResNormals
-							.toArray(new NormalDistribution[0]);
-					uncResult.add(new DQ_UncertaintyResult(normals, valueUnit));
-				}
-				// add uncertainty result
-				if (uncResult != null && !uncResult.isEmpty()) {
-					DQ_UncertaintyResult[] quality = uncResult
-							.toArray(new DQ_UncertaintyResult[0]);
-					((UNCMeasurementObservation) om1Obs).setUncQuality(quality);
-				}
-			} else if (om1Obs instanceof UNCUncertaintyObservation) {
-				((UNCUncertaintyObservation) om1Obs).setUncertainty(resultUnc);
-			}
-
-			// add gml identifier
-			((IUncertainObservation) om1Obs).setIdentifier(gmlID);
 		}
 
-		// ////////////////////////////////////////////////////////
-		// convert OM1 observation collection with uncertainties to
-		// uncertainty enabled OM2 observation collection
 		return om1ObsCol;
 	}
 
-	/**
-	 * builds and executes the query to get the observations from the database;
-	 * this method is also used from the GetResultDAO
-	 * 
-	 * @param request
-	 *            getObservation request
-	 * @return Returns ResultSet containing the results of the query
-	 * @throws OwsExceptionReport
-	 *             if query failed
-	 */
-	private ResultSet queryObservation(SosGetObservationRequest request,
-			Connection con) throws OwsExceptionReport {
 
-		ResultSet resultSet = null;
-
-        // ////////////////////////////////////////////
-        // get parameters from request
-        String[] offering = request.getOffering();
-        TemporalFilter[] temporalFilter = request.getEventTime();
-        String[] procedures = request.getProcedure();
-        String[] phenomena = request.getObservedProperty();
-        boolean hasSpatialPhens = false;
-        // int maxRecords = request.getMaxRecords();
-        String srsName = request.getSrsName();
-        if (!srsName.equals(SosConstants.PARAMETER_NOT_SET)) {
-            setRequestSrid(ResultSetUtilities.parseSrsName(srsName));
-        }
-        if (filterSpatialPhenomena(phenomena).length > 0) {
-            hasSpatialPhens = true;
-        }
-
-        // ///////////////////////////////////////////////
-        // build query
-        StringBuilder query = new StringBuilder();
-
-        // select clause
-        query.append(getSelectClause(isSupportsQuality(), request.isMobileEnabled()));
-
-        // add geometry column to list, if srsName parameter is set, transform
-        // coordinates into request system
-        query.append(getGeometriesAsTextClause(srsName, request.isMobileEnabled()));
-
-        // natural join of tables       
-		if (request.getResponseFormat() != null
-				&& request.getResponseFormat().equals(
-						SosUncConstants.CONTENT_TYPE_OM2)) {
-
-			query.append(this.getFromClause(isSupportsQuality(), request.isMobileEnabled(), true));
-		} else {
-			query.append(super.getFromClause(isSupportsQuality(), request.isMobileEnabled()));
-		}
-
-        List<String> whereClauses = new ArrayList<String>();
-
-        // append mandatory observedProperty parameters
-        if (phenomena != null && phenomena.length > 0) {
-            whereClauses.add(getWhereClause4ObsProps(phenomena));
-        }
-
-        // append mandatory offering parameter
-        if (offering != null && offering.length > 0) {
-            Set<String> queryOfferings = new HashSet<String>();
-            if (request.getVersion().equals(Sos2Constants.SERVICEVERSION)) {
-                for (String offId : offering) {
-                    if (offId.contains(SosConstants.SEPARATOR_4_OFFERINGS)) {
-                        String[] offArray = offId.split(SosConstants.SEPARATOR_4_OFFERINGS);
-                        StringBuilder offProcQuery = new StringBuilder();
-                        offProcQuery.append("(");
-                        offProcQuery.append(PGDAOConstants.getOfferingIDCn() + " = '" + offArray[0] + "'");
-                        offProcQuery.append(" AND ");
-                        offProcQuery.append(PGDAOConstants.getProcIDCn() + " = '" + offArray[1] + "'");
-                        offProcQuery.append(")");
-                        queryOfferings.add(offProcQuery.toString());
-                    } else {
-                        queryOfferings.add("(" + PGDAOConstants.getOfferingIDCn() + " = '" + offId + "')");
-                    }
-                }
-            } else {
-                for (String off : offering) {
-                    queryOfferings.add("(" + PGDAOConstants.getOfferingIDCn() + " = '" + off + "')");
-                }
-//                queryOfferings = new HashSet<String>(Arrays.asList(offering));
-            }
-            whereClauses.add(getWhereClause4Offering(queryOfferings.toArray(new String[0])));
-        }
-
-        // append feature of interest parameter
-        if (request.getFeatureOfInterest() != null && request.getFeatureOfInterest().length > 0) {
-            whereClauses.add(getWhereClause4Foi(request.getFeatureOfInterest(), request.isMobileEnabled()));
-        }
-
-        // append domain feature parameter
-        if ((request.getDomainFeature() != null && request.getDomainFeature().length > 0)
-                || request.getDomainFeatureSpatialFilter() != null) {
-            whereClauses.add(getWhereClause4DomainFeature(request.getDomainFeature(),
-                    request.getDomainFeatureSpatialFilter()));
-        }
-
-        // append optional parameters
-        if (procedures != null && procedures.length > 0) {
-            whereClauses.add(getWhereClause4Procedures(procedures));
-        }
-        // append temporal filter parameter
-        if (temporalFilter != null && temporalFilter.length > 0) {
-            whereClauses.add(getWhereClause4Time(temporalFilter));
-        }
-
-        // append parameter for Result
-        if (request.getResult() != null) {
-            whereClauses.add(getWhereClause4Result(request.getResult(), offering, phenomena));
-        }
-
-        // append spatial filter parameter
-        if (request.getResultSpatialFilter() != null) {
-            whereClauses.add(getWhereClause4SpatialFilter(request.getResultSpatialFilter()));
-        }
-
-        if (whereClauses.size() > 0) {
-            query.append(" WHERE ");
-            int clauseCount = whereClauses.size();
-            for (int i = 0; i < clauseCount; i++) {
-                query.append("(");
-                query.append(whereClauses.get(i));
-                if (i != clauseCount - 1) {
-                    query.append(") AND ");
-                } else {
-                    query.append(") ");
-                }
-            }
-        }
-        query.append(";");
-
-        LOGGER.info("<<<QUERY>>>: " + query.toString());
-
-        // //////////////////////////////////////////////////
-        // execute query
-        Statement stmt = null;
-        try {
-            stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            resultSet = stmt.executeQuery(query.toString());
-        } catch (SQLException sqle) {
-            OwsExceptionReport se = new OwsExceptionReport(ExceptionLevel.DetailedExceptions);
-            LOGGER.error("An error occured while query the data from the database!", sqle);
-            se.addCodedException(ExceptionCode.NoApplicableCode, null, sqle);
-            throw se;
-        }
-
-        return resultSet;
-	} // end queryObservation
 
 	/**
 	 * creates a from and join clause 4 non spatial
@@ -852,28 +524,33 @@ public class PGSQLGetObservationDAO extends
 	 *            get only observations with uncertainties
 	 * @return String containing the from clause
 	 */
-	private String getFromClause(boolean quality, boolean isMobile, boolean uncertainties) {
+	private String getFromClause(boolean quality, boolean isMobile,
+			boolean uncertainties) {
 		StringBuilder from = new StringBuilder();
-		from.append(" FROM (" + PGDAOConstants.getObsTn() + " NATURAL INNER JOIN "
-				+ PGDAOConstants.getPhenTn() + " NATURAL INNER JOIN "
-				+ PGDAOConstants.getFoiTn());
+		from.append(" FROM (" + PGDAOConstants.getObsTn()
+				+ " NATURAL INNER JOIN " + PGDAOConstants.getPhenTn()
+				+ " NATURAL INNER JOIN " + PGDAOConstants.getFoiTn());
 		if (uncertainties) {
 			from.append(" NATURAL INNER JOIN "
 					+ PGDAOUncertaintyConstants.uObsUncTn);
 		}
 		if (isMobile) {
-			from.append(" LEFT OUTER JOIN " + PGDAOConstants.getObsDfTn() + " ON "
-					+ PGDAOConstants.getObsDfTn() + "." + PGDAOConstants.getObsIDCn() + " = "
-					+ PGDAOConstants.getObsTn() + "." + PGDAOConstants.getObsIDCn()
-					+ " LEFT OUTER JOIN " + PGDAOConstants.getDfTn() + " ON "
+			from.append(" LEFT OUTER JOIN " + PGDAOConstants.getObsDfTn()
+					+ " ON " + PGDAOConstants.getObsDfTn() + "."
+					+ PGDAOConstants.getObsIDCn() + " = "
+					+ PGDAOConstants.getObsTn() + "."
+					+ PGDAOConstants.getObsIDCn() + " LEFT OUTER JOIN "
+					+ PGDAOConstants.getDfTn() + " ON "
 					+ PGDAOConstants.getObsDfTn() + "."
 					+ PGDAOConstants.getDomainFeatureIDCn() + " = "
-					+ PGDAOConstants.getDfTn() + "." + PGDAOConstants.getDomainFeatureIDCn());
+					+ PGDAOConstants.getDfTn() + "."
+					+ PGDAOConstants.getDomainFeatureIDCn());
 		}
 		if (quality) {
 			from.append(" LEFT JOIN " + PGDAOConstants.getQualityTn() + " ON "
-					+ PGDAOConstants.getQualityTn() + "." + PGDAOConstants.getObsIDCn()
-					+ " = " + PGDAOConstants.getObsTn() + "."
+					+ PGDAOConstants.getQualityTn() + "."
+					+ PGDAOConstants.getObsIDCn() + " = "
+					+ PGDAOConstants.getObsTn() + "."
 					+ PGDAOConstants.getObsIDCn());
 		}
 		from.append(")");
@@ -914,28 +591,31 @@ public class PGSQLGetObservationDAO extends
 				String obsID = resultSet.getString(PGDAOConstants.getObsIDCn());
 
 				if (obs4obsIDs.containsKey(obsID)) {
-					
+
 					// mobile enabled
 					if (request.isMobileEnabled()) {
-					
-						if (resultSet.getString(PGDAOConstants.getDomainFeatureIDCn()) != null
+
+						if (resultSet.getString(PGDAOConstants
+								.getDomainFeatureIDCn()) != null
 								&& !resultSet.getString(
 										PGDAOConstants.getDomainFeatureIDCn())
 										.equals("")) {
 							AbstractSosObservation obs = obs4obsIDs.get(obsID);
-							
-							String dfID = resultSet.getString(PGDAOConstants.getDomainFeatureIDCn());
-							obs.addDomainFeatureID(new SosGenericDomainFeature(dfID));
+
+							String dfID = resultSet.getString(PGDAOConstants
+									.getDomainFeatureIDCn());
+							obs.addDomainFeatureID(new SosGenericDomainFeature(
+									dfID));
 						}
 					}
 					// supports quality
 					if (isSupportsQuality()) {
 						String qualityTypeString = resultSet
 								.getString(PGDAOConstants.getQualTypeCn());
-						String qualityUnit = resultSet
-								.getString(PGDAOConstants.getQualUnitCn());
-						String qualityName = resultSet
-								.getString(PGDAOConstants.getQualNameCn());
+						String qualityUnit = resultSet.getString(PGDAOConstants
+								.getQualUnitCn());
+						String qualityName = resultSet.getString(PGDAOConstants
+								.getQualNameCn());
 						String qualityValue = resultSet
 								.getString(PGDAOConstants.getQualValueCn());
 						QualityType qualityType = QualityType
@@ -946,36 +626,38 @@ public class PGSQLGetObservationDAO extends
 					}
 
 				} else {
-					String offeringID = resultSet
-							.getString(PGDAOConstants.getOfferingIDCn());
+					String offeringID = resultSet.getString(PGDAOConstants
+							.getOfferingIDCn());
 					String mimeType = SosConstants.PARAMETER_NOT_SET;
 
 					// create time element
-					String timeString = resultSet
-							.getString(PGDAOConstants.getTimestampCn());
+					String timeString = resultSet.getString(PGDAOConstants
+							.getTimestampCn());
 					DateTime timeDateTime = SosDateTimeUtilities
 							.parseIsoString2DateTime(timeString);
 					TimeInstant time = new TimeInstant(timeDateTime, "");
 
-					String phenID = resultSet
-							.getString(PGDAOConstants.getPhenIDCn());
-					String valueType = resultSet
-							.getString(PGDAOConstants.getValueTypeCn());
-					String procID = resultSet
-							.getString(PGDAOConstants.getProcIDCn());
+					String phenID = resultSet.getString(PGDAOConstants
+							.getPhenIDCn());
+					String valueType = resultSet.getString(PGDAOConstants
+							.getValueTypeCn());
+					String procID = resultSet.getString(PGDAOConstants
+							.getProcIDCn());
 
-					String unit = resultSet.getString(PGDAOConstants.getUnitCn());
+					String unit = resultSet.getString(PGDAOConstants
+							.getUnitCn());
 
 					// domain feature
 					String domainFeatID = null;
 					ArrayList<SosAbstractFeature> domainFeatIDs = null;
 					if (request.isMobileEnabled()) {
-						if (resultSet.getString(PGDAOConstants.getDomainFeatureIDCn()) != null
+						if (resultSet.getString(PGDAOConstants
+								.getDomainFeatureIDCn()) != null
 								&& !resultSet.getString(
 										PGDAOConstants.getDomainFeatureIDCn())
 										.equals("")) {
-							domainFeatID = resultSet
-									.getString(PGDAOConstants.getDomainFeatureIDCn());
+							domainFeatID = resultSet.getString(PGDAOConstants
+									.getDomainFeatureIDCn());
 							domainFeatIDs = new ArrayList<SosAbstractFeature>();
 							domainFeatIDs.add(new SosGenericDomainFeature(
 									domainFeatID));
@@ -983,15 +665,16 @@ public class PGSQLGetObservationDAO extends
 					}
 
 					// feature of interest
-					String foiID = resultSet.getString(PGDAOConstants.getFoiIDCn());
-					String foiName = resultSet
-							.getString(PGDAOConstants.getFoiNameCn());
-					String foiType = resultSet
-							.getString(PGDAOConstants.getFeatureTypeCn());
+					String foiID = resultSet.getString(PGDAOConstants
+							.getFoiIDCn());
+					String foiName = resultSet.getString(PGDAOConstants
+							.getFoiNameCn());
+					String foiType = resultSet.getString(PGDAOConstants
+							.getFeatureTypeCn());
 
 					// foi geometry
-					String foiGeomWKT = resultSet
-							.getString(PGDAOConstants.getFoiGeometry());
+					String foiGeomWKT = resultSet.getString(PGDAOConstants
+							.getFoiGeometry());
 					srid = checkRequestSridQuerySrid(resultSet
 							.getInt(PGDAOConstants.getFoiSrid()));
 					SosAbstractFeature foi = org.n52.sos.uncertainty.ds.pgsql.ResultSetUtilities
@@ -1007,10 +690,10 @@ public class PGSQLGetObservationDAO extends
 					if (isSupportsQuality()) {
 						String qualityTypeString = resultSet
 								.getString(PGDAOConstants.getQualTypeCn());
-						String qualityUnit = resultSet
-								.getString(PGDAOConstants.getQualUnitCn());
-						String qualityName = resultSet
-								.getString(PGDAOConstants.getQualNameCn());
+						String qualityUnit = resultSet.getString(PGDAOConstants
+								.getQualUnitCn());
+						String qualityName = resultSet.getString(PGDAOConstants
+								.getQualNameCn());
 						String qualityValue = resultSet
 								.getString(PGDAOConstants.getQualValueCn());
 						qualityList = new ArrayList<SosQuality>();
@@ -1042,51 +725,54 @@ public class PGSQLGetObservationDAO extends
 						if (valueType
 								.equalsIgnoreCase(SosConstants.ValueTypes.booleanType
 										.name())) {
-							value = resultSet
-									.getString(PGDAOConstants.getTextValueCn());
+							value = resultSet.getString(PGDAOConstants
+									.getTextValueCn());
 						} else if (valueType
 								.equalsIgnoreCase(SosConstants.ValueTypes.countType
 										.name())) {
 							value = Integer.toString((int) Math.round(resultSet
-									.getDouble(PGDAOConstants.getNumericValueCn()))); // make
-																					// sure
-																					// we
-																					// write
-																					// an
-																					// integer
-																					// value
+									.getDouble(PGDAOConstants
+											.getNumericValueCn()))); // make
+																		// sure
+																		// we
+																		// write
+																		// an
+																		// integer
+																		// value
 						} else if (valueType
 								.equalsIgnoreCase(SosConstants.ValueTypes.numericType
 										.name())) {
-							value = resultSet
-									.getString(PGDAOConstants.getNumericValueCn());
+							value = resultSet.getString(PGDAOConstants
+									.getNumericValueCn());
 						} else if (valueType
 								.equalsIgnoreCase(SosConstants.ValueTypes.isoTimeType
 										.name())) {
 							value = new DateTime(
-									resultSet
-											.getLong(PGDAOConstants.getNumericValueCn()))
-									.toString();
+									resultSet.getLong(PGDAOConstants
+											.getNumericValueCn())).toString();
 						} else if (valueType
 								.equalsIgnoreCase(SosConstants.ValueTypes.textType
 										.name())) {
-							value = resultSet
-									.getString(PGDAOConstants.getTextValueCn());
+							value = resultSet.getString(PGDAOConstants
+									.getTextValueCn());
 						} else if (valueType
 								.equalsIgnoreCase(SosConstants.ValueTypes.categoryType
 										.name())) {
-							value = resultSet
-									.getString(PGDAOConstants.getTextValueCn());
+							value = resultSet.getString(PGDAOConstants
+									.getTextValueCn());
 						} else if (valueType
 								.equalsIgnoreCase(SosConstants.ValueTypes.spatialType
 										.name())) {
-							Geometry value_geom = JTSUtilities.createGeometryFromWKT(resultSet.getString(PGDAOConstants
-                                    .getValueGeometry()));
+							Geometry value_geom = JTSUtilities
+									.createGeometryFromWKT(resultSet
+											.getString(PGDAOConstants
+													.getValueGeometry()));
 							srid = checkRequestSridQuerySrid(value_geom
 									.getSRID());
 							if (SosConfigurator.getInstance()
 									.switchCoordinatesForEPSG(srid)) {
-								value_geom = JTSUtilities.switchCoordinate4Geometry(value_geom);
+								value_geom = JTSUtilities
+										.switchCoordinate4Geometry(value_geom);
 							}
 							value = wktWriter.write(value_geom) + "#" + srid;
 
@@ -1120,8 +806,8 @@ public class PGSQLGetObservationDAO extends
 						} else {
 							SosGenericObservation observation = new SosGenericObservation(
 									new ArrayList<String>(), procID,
-									offeringID, getTokenSeperator(), getTupleSeperator(),
-									getNoDataValue());
+									offeringID, getTokenSeperator(),
+									getTupleSeperator(), getNoDataValue());
 							observation.addFeature(foi);
 							observation.addValue(timeDateTime, foiID, phenID,
 									value);
@@ -1143,9 +829,10 @@ public class PGSQLGetObservationDAO extends
 						}
 
 						double value = Double.NaN;
-						if (resultSet.getString(PGDAOConstants.getNumericValueCn()) != null) {
-							value = resultSet
-									.getDouble(PGDAOConstants.getNumericValueCn());
+						if (resultSet.getString(PGDAOConstants
+								.getNumericValueCn()) != null) {
+							value = resultSet.getDouble(PGDAOConstants
+									.getNumericValueCn());
 						}
 
 						SosMeasurement measurement = new SosMeasurement(time,
@@ -1157,13 +844,13 @@ public class PGSQLGetObservationDAO extends
 
 						checkResponseModeInline(request.getResponseMode());
 
-						String value = resultSet
-								.getString(PGDAOConstants.getTextValueCn());
+						String value = resultSet.getString(PGDAOConstants
+								.getTextValueCn());
 						if (value == null || (value != null && value.isEmpty())) {
 							try {
 								value = new DateTime(
-										resultSet
-												.getLong(PGDAOConstants.getNumericValueCn()))
+										resultSet.getLong(PGDAOConstants
+												.getNumericValueCn()))
 										.toString();
 							} catch (Exception e) {
 								// nothing to throw,
@@ -1184,7 +871,8 @@ public class PGSQLGetObservationDAO extends
 								.getInt(PGDAOConstants.getValueSrid()));
 						Geometry jts_value_geometry = ResultSetUtilities
 								.createJTSGeom(value_geomWKT, srid);
-						setBoundedBy(checkEnvelope(getBoundedBy(), jts_value_geometry));
+						setBoundedBy(checkEnvelope(getBoundedBy(),
+								jts_value_geometry));
 
 						SosSpatialObservation spatialObs = new SosSpatialObservation(
 								time, obsID, procID, domainFeatIDs, phenID,
@@ -1194,9 +882,10 @@ public class PGSQLGetObservationDAO extends
 					} else if (resultModel
 							.equals(SosUncConstants.RESULT_MODEL_MEASUREMENT)) {
 						Double value = Double.NaN;
-						if (resultSet.getString(PGDAOConstants.getNumericValueCn()) != null) {
-							value = resultSet
-									.getDouble(PGDAOConstants.getNumericValueCn());
+						if (resultSet.getString(PGDAOConstants
+								.getNumericValueCn()) != null) {
+							value = resultSet.getDouble(PGDAOConstants
+									.getNumericValueCn());
 						}
 
 						UNCMeasurementObservation measurement = new UNCMeasurementObservation(
@@ -1254,18 +943,22 @@ public class PGSQLGetObservationDAO extends
 		setBoundedBy(null);
 
 		try {
-			if (request.getObservedProperty().length == 0 && request.getVersion().equals(Sos1Constants.SERVICEVERSION)) {
-                OwsExceptionReport se = new OwsExceptionReport();
-                se.addCodedException(OwsExceptionReport.ExceptionCode.InvalidParameterValue,
-                        GetObservationParams.observedProperty.toString(),
-                        "The request contains no observed Properties!");
-                throw se;
-            } else {
-                boolean hasSpatialPhen = false;
-                if (Arrays.asList(request.getObservedProperty()).contains(
-                                SosConfigurator.getInstance().getSpatialObsProp4DynymicLocation())) {
-                    hasSpatialPhen = true;
-                }
+			if (request.getObservedProperty().length == 0
+					&& request.getVersion()
+							.equals(Sos1Constants.SERVICEVERSION)) {
+				OwsExceptionReport se = new OwsExceptionReport();
+				se.addCodedException(
+						OwsExceptionReport.ExceptionCode.InvalidParameterValue,
+						GetObservationParams.observedProperty.toString(),
+						"The request contains no observed Properties!");
+				throw se;
+			} else {
+				boolean hasSpatialPhen = false;
+				if (Arrays.asList(request.getObservedProperty()).contains(
+						SosConfigurator.getInstance()
+								.getSpatialObsProp4DynymicLocation())) {
+					hasSpatialPhen = true;
+				}
 				if (request.getObservedProperty().length > 0) {
 					if (!(request.getSrsName() == null
 							|| request.getSrsName().equals("") || !request
@@ -1277,35 +970,49 @@ public class PGSQLGetObservationDAO extends
 					}
 					checkResultModel(request.getResultModel(),
 							request.getObservedProperty());
-	
+
 					List<ResultSet> resultSetList = new ArrayList<ResultSet>();
-	
+
 					con = getCPool().getConnection();
-	
-					// if timeInstant contains "latest", return the last observation
+
+					// if timeInstant contains "latest", return the last
+					// observation
 					// for each phen/proc/foi/df
-					if (request.getEventTime() != null && request.getEventTime().length > 0) {
-	                    for (TemporalFilter tf : request.getEventTime()) {
-	                        if (tf.getTime().getIndeterminateValue() != null) {
-	                            if (tf.getTime().getIndeterminateValue().equals(FirstLatest.latest.name())) {
-	                                resultSetList.add(queryLatestObservations(request, tf, con, hasSpatialPhen));
-	                            } else if (tf.getTime().getIndeterminateValue()
-	                                    .equalsIgnoreCase(FirstLatest.getFirst.name())) {
-	                                resultSetList.add(queryGetFirstObservations(request, tf, con, hasSpatialPhen));
-	                            } else {
-	                                resultSetList.add(queryObservation(request, con, hasSpatialPhen));
-	                            }
-	                        } else {
-	                            resultSetList.add(queryObservation(request, con, hasSpatialPhen));
-	                        }
-	                    }
-	                } else {
-	                    resultSetList.add(queryObservation(request, con, hasSpatialPhen));
-	                }
+					if (request.getEventTime() != null
+							&& request.getEventTime().length > 0) {
+						for (TemporalFilter tf : request.getEventTime()) {
+							if (tf.getTime().getIndeterminateValue() != null) {
+								if (tf.getTime().getIndeterminateValue()
+										.equals(FirstLatest.latest.name())) {
+									resultSetList.add(queryLatestObservations(
+											request, tf, con, hasSpatialPhen));
+								} else if (tf
+										.getTime()
+										.getIndeterminateValue()
+										.equalsIgnoreCase(
+												FirstLatest.getFirst.name())) {
+									resultSetList
+											.add(queryGetFirstObservations(
+													request, tf, con,
+													hasSpatialPhen));
+								} else {
+									resultSetList.add(queryObservation(request,
+											con, hasSpatialPhen));
+								}
+							} else {
+								resultSetList.add(queryObservation(request,
+										con, hasSpatialPhen));
+							}
+						}
+					} else {
+						resultSetList.add(queryObservation(request, con,
+								hasSpatialPhen));
+					}
 					// end get ResultSets
 					for (ResultSet resultSet : resultSetList) {
-	
-						// if resultModel parameter is set in the request, check,
+
+						// if resultModel parameter is set in the request,
+						// check,
 						// whether it is correct and then return request
 						// observations
 						QName resultModel = request.getResultModel();
@@ -1316,7 +1023,7 @@ public class PGSQLGetObservationDAO extends
 							if (request.getResponseMode() == SosConstants.RESPONSE_RESULT_TEMPLATE) {
 								return getResultTemplate(resultSet, request);
 							}
-	
+
 						}
 						// check ResultModel
 						if (resultModel == null
@@ -1334,7 +1041,7 @@ public class PGSQLGetObservationDAO extends
 										.equals(SosUncConstants.RESULT_MODEL_UNCERTAINTY_OBSERVATION)) {
 							response.addColllection(getSingleObservationsFromResultSet(
 									resultSet, request, resultModel));
-	
+
 						} else {
 							OwsExceptionReport se = new OwsExceptionReport();
 							se.addCodedException(

@@ -124,7 +124,7 @@ public class HttpPostRequestDecoderMobile extends
 		try {
 			if (xb_obsType == null) {
 
-				// handle O&M 2 Observations
+				// extract O&M 2 Observations
 
 				if (xb_insertObs.selectChildren(new QName(
 						"http://www.opengis.net/om/2.0",
@@ -151,10 +151,9 @@ public class HttpPostRequestDecoderMobile extends
 									.xmlText()));
 				}
 
-				// TODO add further uncertainty types here
-				// add observation types
+				// TODO add further observation types here
 
-				// handle O&M 2 Observation Collections
+				// extract O&M 2 Observation Collections
 
 				else if (xb_insertObs.selectChildren(new QName(
 						"http://www.opengis.net/om/2.0",
@@ -183,8 +182,7 @@ public class HttpPostRequestDecoderMobile extends
 							OM2Constants.OBS_COL_TYPE_MEASUREMENT))[0]);
 
 				}
-				// TODO add further uncertainty types here
-				// add observation collection types
+				// TODO add further observation collection types here
 
 			}
 		} catch (XmlException xmle) {
@@ -197,6 +195,7 @@ public class HttpPostRequestDecoderMobile extends
 		Collection<AbstractSosObservation> obsCol = null;
 
 		if (om2ObsDoc != null) {
+			// handle single Observation
 
 			AbstractObservation om2Obs = null;
 			try {
@@ -213,7 +212,8 @@ public class HttpPostRequestDecoderMobile extends
 			obsCol.add(ObservationConverter.getOM1Obs(om2Obs));
 
 		} else if (om2UncObsColDoc != null) {
-
+			// handle Uncertainty Observation Collection
+			
 			IObservationCollection om2ObsCol = null;
 			try {
 				om2ObsCol = om2Decoder
@@ -230,7 +230,8 @@ public class HttpPostRequestDecoderMobile extends
 					.getObservationMembers();
 
 		} else if (om2MeasColDoc != null) {
-
+			// handle Measurement Observation Collection
+			
 			IObservationCollection om2ObsCol = null;
 			try {
 				om2ObsCol = om2Decoder

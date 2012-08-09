@@ -14,8 +14,8 @@ public final class PGDAOUncertaintyConstants {
 	// uncertainty type constants
 	public static final String u_normalDistType = "norm_dist";
 	public static final String u_meanType = "mean";
-	// TODO add further uncertainty types here
-
+	public static final String u_realType = "real";
+	
 	// /////////////////////////////////////////////////////////////////////////////////
 	// table names
 	public static final String uObsUncTn = "obs_unc";
@@ -23,7 +23,7 @@ public final class PGDAOUncertaintyConstants {
 	public static final String uValUnitTn = "u_value_unit";
 	public static final String uNormTn = "u_normal";
 	public static final String uMeanTn = "u_mean";
-	public static final String uMeanValTn = "u_mean_values";
+	public static final String uRealTn = "u_realisation";
 
 	// /////////////////////////////////////////////////////////////////////////////////
 	// column names
@@ -48,9 +48,12 @@ public final class PGDAOUncertaintyConstants {
 
 	// column names of mean type table
 	public static final String uMMeanIdCn = "mean_id";
-	public static final String uMMeanValIdCn = "mean_values_id";
+	public static final String uMMeanValsCn = "mean_values";
 	
-    // column names of mean values table
-	public static final String uMVMeanValCn = "mean_value";
-	 
+	// column names of realisation type table
+	public static final String uRRealIdCn = "realisation_id";
+	public static final String uRWeightCn = "weight";
+	public static final String uRConValsCn = "continuous_values";
+	public static final String uRCatValsCn = "categorical_values";
+	
 }
