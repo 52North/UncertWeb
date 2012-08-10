@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.opengis.observation.Observation;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;

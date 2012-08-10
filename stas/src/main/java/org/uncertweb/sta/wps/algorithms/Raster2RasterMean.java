@@ -14,7 +14,6 @@ import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.literal.LiteralDoubleBinding;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.n52.wps.util.r.process.RProcessException;
-import org.opengis.observation.ObservationCollection;
 import org.rosuda.REngine.Rserve.RserveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

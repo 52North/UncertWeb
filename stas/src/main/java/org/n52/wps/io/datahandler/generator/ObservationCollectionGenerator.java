@@ -21,7 +21,8 @@
  */
 package org.n52.wps.io.datahandler.generator;
 
-import static org.n52.wps.io.data.UncertWebDataConstants.*;
+import static org.n52.wps.io.data.UncertWebDataConstants.ENCODING_UTF_8;
+import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_TEXT_XML;
 import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_OM_V1;
 import static org.uncertweb.utils.UwCollectionUtils.set;
 

@@ -27,7 +27,6 @@ import java.util.Map;
 
 import net.opengis.wfs.GetFeatureDocument;
 
-import org.uncertweb.utils.UwXmlUtils.Namespace;
 import org.geotools.feature.FeatureCollection;
 import org.n52.wps.io.IOHandler;
 import org.n52.wps.io.IParser;
@@ -40,6 +39,7 @@ import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.api.ProcessInputHandler;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
+import org.uncertweb.utils.UwXmlUtils.Namespace;
 
 /**
  * Class that handles a {@code String}-URL, a {@code GetFeatureDocument} and a

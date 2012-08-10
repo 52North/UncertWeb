@@ -31,7 +31,6 @@ import net.opengis.sos.x10.GetObservationDocument;
 
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GetObservationRequestBinding;
-import org.n52.wps.io.datahandler.parser.AbstractParser;
 
 /**
  * Parser for {@link GetObservationDocument}s.

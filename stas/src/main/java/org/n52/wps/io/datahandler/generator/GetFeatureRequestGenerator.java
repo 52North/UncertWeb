@@ -36,7 +36,6 @@ import org.apache.xmlbeans.XmlOptions;
 import org.n52.wps.io.LargeBufferStream;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GetFeatureRequestBinding;
-import org.n52.wps.io.datahandler.generator.AbstractGenerator;
 import org.w3c.dom.Node;
 
 /**

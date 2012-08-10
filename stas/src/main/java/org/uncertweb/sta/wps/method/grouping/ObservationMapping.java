@@ -23,7 +23,6 @@ package org.uncertweb.sta.wps.method.grouping;
 
 import java.util.List;
 
-import org.opengis.observation.Observation;
 import org.uncertweb.api.om.observation.AbstractObservation;
 
 /**

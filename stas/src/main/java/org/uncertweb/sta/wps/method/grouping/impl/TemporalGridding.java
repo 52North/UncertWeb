@@ -31,7 +31,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.opengis.observation.Observation;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.utils.Constants;

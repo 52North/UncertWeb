@@ -29,7 +29,6 @@ import net.opengis.sos.x10.GetObservationDocument;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.datahandler.om.OMParser;
 import org.n52.wps.server.AlgorithmParameterException;
-import org.opengis.observation.ObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.api.ProcessInputHandler;

@@ -31,7 +31,6 @@ import net.opengis.wfs.GetFeatureDocument;
 
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GetFeatureRequestBinding;
-import org.n52.wps.io.datahandler.parser.AbstractParser;
 
 /**
  * Parser for {@link GetFeatureDocument}s.

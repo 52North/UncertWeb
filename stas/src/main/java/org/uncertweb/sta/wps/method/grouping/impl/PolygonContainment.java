@@ -38,7 +38,6 @@ import org.n52.wps.server.AlgorithmParameterException;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.observation.Observation;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;

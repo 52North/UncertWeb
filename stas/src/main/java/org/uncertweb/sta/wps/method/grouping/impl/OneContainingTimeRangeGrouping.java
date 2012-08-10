@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.joda.time.DateTime;
-import org.opengis.observation.Observation;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.utils.Constants;

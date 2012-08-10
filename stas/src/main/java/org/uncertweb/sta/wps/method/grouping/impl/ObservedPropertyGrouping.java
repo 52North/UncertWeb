@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opengis.observation.Observation;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
 import org.uncertweb.sta.wps.method.grouping.GroupingMethod;

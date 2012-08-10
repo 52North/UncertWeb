@@ -38,7 +38,6 @@ import java.util.Properties;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
-import org.opengis.observation.Observation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.api.om.observation.AbstractObservation;

@@ -47,7 +47,6 @@ import org.n52.wps.io.data.binding.complex.GetObservationRequestBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.opengis.observation.ObservationCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.api.gml.Identifier;
