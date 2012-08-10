@@ -227,6 +227,7 @@
 					<download>true</download>
 					<javaSource>1.5</javaSource>
 					<sourceSchemas>
+						<sourceSchema>xlink/xlink.xsd</sourceSchema>
 						<sourceSchema>wfs/1.1.0/wfs.xsd</sourceSchema>
 					</sourceSchemas>
 				</configuration>
