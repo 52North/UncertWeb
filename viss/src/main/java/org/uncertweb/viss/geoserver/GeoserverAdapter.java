@@ -28,6 +28,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Set;
@@ -56,25 +58,30 @@ import org.uncertweb.viss.core.vis.DefaultVisualizationReference;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizationReference;
 import org.uncertweb.viss.core.vis.VisualizationStyle;
+import org.uncertweb.viss.core.web.filter.BaseUriProvider;
 import org.uncertweb.viss.core.wms.WMSAdapter;
 
 public class GeoserverAdapter implements WMSAdapter {
-
+	
+	private static final Logger log = LoggerFactory.getLogger(GeoserverAdapter.class);
+	
 	private static final String PROPERTIES_FILE = "/geoserver.properties";
 	private static final String USER_PROPERTY = "user";
 	private static final String PASS_PROPERTY = "pass";
-	private static final String URL_PROPERTY = "baseUrl";
 	private static final String CACHE_PROPERTY = "cacheWorkspaceList";
 	private static final String PATH_PROPERTY = "path";
+
+	private static final String URL_HOST_PROPERTY = "url.host";
+	private static final String URL_PORT_PROPERTY = "url.port";
+	private static final String URL_SECURE_PROPERTY = "url.secure";
+	private static final String URL_PATH_PROPERTY = "url.path";
 	
-	private static final Logger log = LoggerFactory.getLogger(GeoserverAdapter.class);
 	private static Properties p;
 	private Geoserver wms;
-
+	
 	protected static String getProp(String key) {
 		if (p == null) {
-			InputStream is = GeoserverAdapter.class
-					.getResourceAsStream(PROPERTIES_FILE);
+			InputStream is = GeoserverAdapter.class.getResourceAsStream(PROPERTIES_FILE);
 			if (is == null)
 				throw new RuntimeException("Can not find configuration file");
 			p = new Properties();
@@ -97,20 +104,36 @@ public class GeoserverAdapter implements WMSAdapter {
 	public GeoserverAdapter() {
 		String user = getProp(USER_PROPERTY);
 		String pass = getProp(PASS_PROPERTY);
-		String url = getProp(URL_PROPERTY);
 		String path = getProp(PATH_PROPERTY);
 		boolean cache = Boolean.valueOf(getProp(CACHE_PROPERTY));
 		try {
-			if (path != null && !path.trim().isEmpty()) {
-				wms = new Geoserver(user, pass, url, cache, new File(path));
-			} else {
-				wms = new Geoserver(user, pass, url, cache);
-			}
+			String uri = getBaseURI(BaseUriProvider.getBaseURI()).toString();
+			wms = new Geoserver(user, pass, uri, cache, (path != null && !path.trim().isEmpty()) ? new File(path) : null);
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
 	}
 
+	private static URI getBaseURI(URI rq) throws URISyntaxException {
+		rq = (rq == null) ? URI.create("http://localhost:8080/geoserver") : rq;
+		String hostS = getProp(URL_HOST_PROPERTY);
+		String portS = getProp(URL_PORT_PROPERTY);
+		String secureS = getProp(URL_SECURE_PROPERTY);
+		String pathS = getProp(URL_PATH_PROPERTY);
+		
+		String scheme = ((secureS == null || secureS.isEmpty()) ? (rq.getScheme() == null ? false : rq.getScheme().equals("https")) : Boolean.valueOf(secureS)) ? "https" : "http";
+		String host = (hostS == null || hostS.isEmpty()) ? (rq.getHost() == null ? "localhost" : rq.getHost()) : hostS.trim();
+		int port = (portS == null || portS.isEmpty()) ? (rq.getPort() < 0 ? 8080 : rq.getPort()) : Integer.valueOf(portS);
+		String path = "/" + (pathS == null ? "geoserver" : pathS);
+		return new URI(scheme, null, host, port, path, null, null);
+	}
+	
+	
+	public static void main(String[] args) throws URISyntaxException {
+		URI rq = URI.create("https://asdf:8090/viss/resources/0/datasets/1?asdf=2");
+		System.out.println(getBaseURI(rq));
+	}
+	
 	@Override
 	public IVisualizationReference addVisualization(IVisualization vis) {
 		try {

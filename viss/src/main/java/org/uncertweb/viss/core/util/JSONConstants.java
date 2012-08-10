@@ -40,7 +40,6 @@ public class JSONConstants extends UwJsonConstants {
 	public static final String UNCERTAINTY_TYPE_KEY = "type";
 	public static final String UOM_KEY = "uom";
 	public static final String STYLES_KEY = "styles";
-	public static final String SLD_KEY = "sld";
 	public static final String URL_KEY = "url";
 	public static final String VISUALIZATIONS_KEY = "visualizations";
 	public static final String VISUALIZER_KEY = "visualizer";

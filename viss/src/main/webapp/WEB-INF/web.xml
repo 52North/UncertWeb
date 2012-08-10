@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
@@ -9,12 +10,12 @@
 
 		<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>org.uncertweb.viss.core.web</param-value>
+			<param-value>org.uncertweb.viss</param-value>
 		</init-param>
 
 		<init-param>
 			<param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-			<param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
+			<param-value>com.sun.jersey.api.container.filter.LoggingFilter;org.uncertweb.viss.core.web.filter.BaseUriProvider</param-value>
 		</init-param>
 
 		<init-param>

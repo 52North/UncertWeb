@@ -93,11 +93,6 @@ public class Geoserver {
 		}
 	}
 
-	public Geoserver(String user, String pass, String baseurl,
-			boolean cacheWorkspaceList) throws IOException, JSONException {
-		this(user, pass, baseurl, cacheWorkspaceList, null);
-	}
-
 	public boolean containsWorkspace(String name) throws IOException,
 			JSONException {
 		return getWorkspaces().contains(name);

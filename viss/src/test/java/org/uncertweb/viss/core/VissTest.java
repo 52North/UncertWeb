@@ -430,8 +430,8 @@ public class VissTest extends JerseyTest {
 		
 		JSONObject j = cr.getEntity(JSONObject.class);
 		System.out.println("StyleID:" + j.getString(JSONConstants.ID_KEY));
-		
-		String xml = getWebResource().path(URI.create(j.getString(JSONConstants.SLD_KEY)).getPath()).get(String.class);
+		System.out.println(j.toString(4));
+		String xml = getWebResource().path(URI.create(j.getString(JSONConstants.HREF_KEY)).getPath()).get(String.class);
 		
 		System.err.println(xml);
 		StyledLayerDescriptorDocument.Factory.parse(xml);
@@ -442,7 +442,7 @@ public class VissTest extends JerseyTest {
 		
 		j = cr.getEntity(JSONObject.class);
 		System.out.println("StyleID:" + j.getString(JSONConstants.ID_KEY));
-		xml = getWebResource().path(URI.create(j.getString(JSONConstants.SLD_KEY)).getPath()).get(String.class);
+		xml = getWebResource().path(URI.create(j.getString(JSONConstants.HREF_KEY)).getPath()).get(String.class);
 		StyledLayerDescriptorDocument.Factory.parse(xml);
 		
 	}
