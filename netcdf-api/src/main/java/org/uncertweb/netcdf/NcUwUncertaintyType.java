@@ -25,7 +25,6 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Set;
 
-import org.slf4j.LoggerFactory;
 import org.uncertml.IUncertainty;
 import org.uncertml.UncertML;
 import org.uncertml.distribution.IDistribution;
@@ -203,9 +202,7 @@ public enum NcUwUncertaintyType {
 	}
 
 	public URI getParamURI(String name) {
-		URI param = URI.create(this.getUri().toString() + "#" + name);
-		LoggerFactory.getLogger(NcUwUncertaintyType.class).debug("Param Uri: {}", param);
-		return param;
+		return URI.create(this.getUri().toString() + "#" + name);
 	}
 
 	public URI getUri() {
