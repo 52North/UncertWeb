@@ -1,56 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<WPSConfiguration xmlns="http://n52.org/wps">
+<WPSConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://n52.org/wps schema_v2.xsd" xmlns="http://n52.org/wps">
 	<Datahandlers>
 		<ParserList>
-			<Parser name="GetObservationRequestParser" className="org.n52.wps.io.datahandler.parser.GetObservationRequestParser" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Parser>
-			<Parser name="GetFeatureRequestParser" className="org.n52.wps.io.datahandler.parser.GetFeatureRequestParser" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/wfs/1.1.0/wfs.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Parser>
 			<Parser name="GML3BasicParser" className="org.n52.wps.io.datahandler.parser.GML3BasicParser" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/3.2.1/gml.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Parser>
-			<Parser name="GML2BasicParser" className="org.n52.wps.io.datahandler.parser.GML2BasicParser" active="true">
-				<Property name="supportedSchema" active="false">http://schemas.opengis.net/gml/2.0.0/feature.xsd</Property>
-				<Property name="supportedSchema" active="false">http://schemas.opengis.net/gml/2.1.1/feature.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2/feature.xsd</Property>
-				<Property name="supportedSchema" active="false">http://schemas.opengis.net/gml/2.1.2.1/feature.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Parser>
-			<Parser name="KMLParser" className="org.n52.wps.io.datahandler.parser.KMLParser" active="false">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd</Property>
-				<Property name="supportedFormat" active="false">application/vnd.google-earth.kml+xml</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.0.0" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.0.1" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.1.0" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.1.1" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.2.1" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
 			</Parser>
 			<Parser name="SimpleGMLParser" className="org.n52.wps.io.datahandler.parser.SimpleGMLParser" active="true">
-				<Property name="supportedSchema" active="false">http://www.opengeospatial.org/gmlpacket.xsd</Property>
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
+				<Format mimetype="text/xml" schema="http://www.opengeospatial.org/gmlpacket.xsd"/>
+				<Format mimetype="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
+			</Parser>
+			<Parser name="GML2BasicParser" className="org.n52.wps.io.datahandler.parser.GML2BasicParser" active="true">
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.0.0" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.1" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.2" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.2.1" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
+			</Parser>
+			<Parser name="GML2BasicParser4Files" className="org.n52.wps.io.datahandler.parser.GML2BasicParser4Files" active="true">
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.0.0" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.1" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.2" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.2.1" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
+			</Parser>
+			<Parser name="GML3BasicParser4Files" className="org.n52.wps.io.datahandler.parser.GML3BasicParser4Files" active="true">
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.0.0" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.0.1" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.1.0" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.1.1" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.2.1" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
+			</Parser>
+			<Parser name="GetObservationRequestParser" className="org.n52.wps.io.datahandler.parser.GetObservationRequestParser" active="true">
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"/>
+			</Parser>
+			<Parser name="GetFeatureRequestParser" className="org.n52.wps.io.datahandler.parser.GetFeatureRequestParser" active="true">
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"/>
 			</Parser>
 			<Parser name="NetCDFParser" className="org.n52.wps.io.datahandler.netcdf.NetCDFParser" active="true" />
   			<Parser name="OMParser" className="org.n52.wps.io.datahandler.om.OMParser" active="true" />
 		</ParserList>
 		<GeneratorList>
 			<Generator name="GetObservationRequestGenerator" className="org.n52.wps.io.datahandler.generator.GetObservationRequestGenerator" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/sos/1.0.0/sosAll.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
-			</Generator>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"/>
+				</Generator>
 			<Generator name="GetFeatureRequestGenerator" className="org.n52.wps.io.datahandler.generator.GetFeatureRequestGenerator" active="true">
-				<Property name="supportedSchema" active="true">http://schemas.opengis.net/wfs/1.1.0/wfs.xsd</Property>
-				<Property name="supportedFormat" active="true">text/xml</Property>
-				<Property name="supportedEncoding" active="true">UTF-8</Property>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"/>
 			</Generator>
 			<Generator name="NetCDFGenerator" className="org.n52.wps.io.datahandler.netcdf.NetCDFGenerator" active="true" />
    			<Generator name="OMv1Generator" className="org.n52.wps.io.datahandler.generator.ObservationCollectionGenerator" active="true" />
@@ -61,12 +76,7 @@
 		<Repository name="STARepository" className="org.uncertweb.sta.wps.STARepository" active="true" />
 		<Repository name="AggregationAlgorithmRepository" className="org.uncertweb.sta.wps.AggregationAlgorithmRepository" active="true" /> 
 	</AlgorithmRepositoryList>
-	<Server hostname="localhost"
-			hostport="8080"
-			includeDataInputsInResponse="false" 
-			computationTimeoutMilliSeconds="5"
-			cacheCapabilites="false" 
-			webappPath="stas">
-		<Database />
+	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="stas" repoReloadInterval="0">
+		<Database/>
 	</Server>
 </WPSConfiguration>
