@@ -13,10 +13,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.joda.time.Seconds;
 import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.uncertweb.api.om.TimeObject;
@@ -70,18 +73,18 @@ public class ProfilePreProcessing {
 				
 				// 1) Use R preprocessing to create geometry for full 24 hours and remove outliers
 		//		processing.gpsPreProcessing(profiles[p], spatialThr, temporalThr, velocityThr, minuteResolution, GPSpointRatio);
-				System.out.println("Finished GPS preprocessing..");
+				System.out.println("Finished GPS preprocessing.");
 				
 				// 2) make OM documents from preprocessed GPS data
 				// first adapt properties file
-				processing.adaptPropertyFile(profiles[p]);
+	//			processing.adaptPropertyFile(profiles[p]);
 				
 				// perform conversion
-				processing.runSHP2OMConverter(resourcesPath+"/profile.props");
+	//			processing.runSHP2OMConverter(resourcesPath+"/profile.props");
 				
 				//3) Add location and activity information from diary and adjust time spans  
 				IObservationCollection profile = processing.mergeGPSandDiary(profiles[p], resourcesPath+"/gps/"+profiles[p]+"_om.xml",
-						resourcesPath+"/diaries/"+profiles[p]+".csv", resourcesPath+"/profile.props");
+						resourcesPath+"/diaries/"+profiles[p]+".csv", resourcesPath+"/profile.props", minuteResolution);
 				System.out.println("Finished GPS and diary merging.");
 				
 				//4) (optional) read personal information table and add to the profile
@@ -248,7 +251,7 @@ public class ProfilePreProcessing {
 	 * @throws FileNotFoundException 
 	 * @throws URISyntaxException 
 	 */
-	public IObservationCollection mergeGPSandDiary(String profileID, String gpsPath, String diaryPath, String propertiesPath) throws FileNotFoundException, IOException, URISyntaxException{	
+	public IObservationCollection mergeGPSandDiary(String profileID, String gpsPath, String diaryPath, String propertiesPath, int minuteResolution) throws FileNotFoundException, IOException, URISyntaxException{	
 		// get properties
 		ShapeFileConverterProperties props = new ShapeFileConverterProperties(propertiesPath);
 		
@@ -273,18 +276,21 @@ public class ProfilePreProcessing {
 		
 		// new observation collection
 		IObservationCollection profile = new CategoryObservationCollection();
-					
+		
+		// get times
+		TreeMap<DateTime, Interval> times = getTimeIntervals(gpsObs, minuteResolution);
+		
 		// loop through observations
 		for(AbstractObservation obs : gpsObs.getObservations()){
 			// add domain feature (profile id)
-			obs.getFeatureOfInterest().setSampledFeature(profileLink+"#"+profileID);
+	//		obs.getFeatureOfInterest().setSampledFeature(profileLink+"#"+profileID);
 			obs.getFeatureOfInterest().getShape().setSRID(gps_srid);
 			
 			// add gps observation to new profile collection (optional)
-			profile.addObservation(obs);
+	//		profile.addObservation(obs);
 			
 			// get time and activity
-			DateTime resultTime = obs.getResultTime().getDateTime();
+			DateTime resultTime = obs.getPhenomenonTime().getDateTime();
 			String io = (String)obs.getResult().getValue();
 			
 			//TODO implement correct merging -> what to do if both do not match exactly?
@@ -351,7 +357,7 @@ public class ProfilePreProcessing {
 					for(String att:attributes){
 						CategoryResult res = new CategoryResult(diary.getEntry(id, att),props.getUom());
 						//new CategoryObservation(TimeObject phenomenonTime, TimeObject resultTime, URI procedure,URI observedProperty, SpatialSamplingFeature featureOfInterest,CategoryResult result)						
-						AbstractObservation attObs = new CategoryObservation(obs.getResultTime(), obs.getResultTime(),
+						AbstractObservation attObs = new CategoryObservation(new TimeObject(times.get(resultTime)), new TimeObject(times.get(resultTime)),
 								obs.getProcedure(), new URI(props
 										.getObsPropsPrefix()+att),obs.getFeatureOfInterest(),res);							
 						profile.addObservation(attObs);
@@ -400,7 +406,32 @@ public class ProfilePreProcessing {
 		
 	}
 	
-
+	private TreeMap<DateTime, Interval> getTimeIntervals(IObservationCollection obsColl, int minuteInterval){
+		// first get all phenomenon times to sort them
+		TreeMap<DateTime, Interval> times = new TreeMap<DateTime, Interval>();
+		for(AbstractObservation obs : obsColl.getObservations()){
+			times.put(obs.getPhenomenonTime().getDateTime(), null);
+		}
+		
+		// then estimate the intervals for each time
+		TreeMap<DateTime, Interval> newTimes = new TreeMap<DateTime, Interval>();
+		Iterator<DateTime> it = times.keySet().iterator();
+		DateTime lastDt = null;
+		while(it.hasNext()){
+			DateTime currentDt = it.next();
+			if(lastDt!=null){
+				newTimes.put(lastDt, new Interval(lastDt, currentDt));
+			}
+			lastDt = currentDt;			
+		}
+		
+		// for the last time step use overall resolution
+		newTimes.put(lastDt, new Interval(lastDt,lastDt.plusMinutes(minuteInterval)));
+		
+		return(newTimes);
+	} 
+	
+	
 	private void adaptPropertyFile(String profileID) throws FileNotFoundException, IOException{
 		// read file
 		BufferedReader in = new BufferedReader(new FileReader(resourcesPath+"/profile.props"));
