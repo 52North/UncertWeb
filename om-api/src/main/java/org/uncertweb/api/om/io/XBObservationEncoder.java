@@ -34,6 +34,8 @@ import net.opengis.om.x20.OMAbstractObservationType;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObservationCollection;
 import net.opengis.om.x20.OMBooleanObservationDocument;
+import net.opengis.om.x20.OMCategoryObservationCollectionDocument;
+import net.opengis.om.x20.OMCategoryObservationCollectionDocument.OMCategoryObservationCollection;
 import net.opengis.om.x20.OMCategoryObservationDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscreteNumericObservationCollection;
@@ -86,10 +88,12 @@ import org.uncertweb.api.om.OMConstants;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
+import org.uncertweb.api.om.observation.CategoryObservation;
 import org.uncertweb.api.om.observation.Measurement;
 import org.uncertweb.api.om.observation.TextObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
+import org.uncertweb.api.om.observation.collections.CategoryObservationCollection;
 import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
@@ -445,7 +449,28 @@ public class XBObservationEncoder extends AbstractHookedObservationEncoder<OMObs
 			return result;
 		}
 
-		// TODO add CategoryObservationCollection
+		// TODO test CategoryObservationCollection
+		// CategoryObservation collection
+		else if (obsCol instanceof CategoryObservationCollection) {
+			OMCategoryObservationCollectionDocument result = OMCategoryObservationCollectionDocument.Factory
+					.newInstance();
+			OMCategoryObservationCollection xb_boCol = result
+					.addNewOMCategoryObservationCollection();
+			if (obsCol.getGmlId() != null) {
+				xb_boCol.setId(obsCol.getGmlId());
+			}
+			Iterator<CategoryObservation> obsIter = ((CategoryObservationCollection) obsCol)
+					.getMembers().iterator();
+			while (obsIter.hasNext()) {
+				UWCategoryObservationType xb_obs = xb_boCol
+						.addNewOMCategoryObservation();
+				OMObservationDocument xb_boDoc = encodeObservationDocument(obsIter
+						.next(), idPrefix);
+				xb_obs.set(xb_boDoc.getOMObservation());
+			}
+			reset();
+			return result;
+		}
 
 		else {
 			throw new IllegalArgumentException("Collection type is not supported by encoder!");
