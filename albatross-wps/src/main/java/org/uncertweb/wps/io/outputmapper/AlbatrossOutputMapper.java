@@ -48,6 +48,30 @@ public class AlbatrossOutputMapper {
 	public static final String ACTIVITY_TYPE = "http://www.uncertweb.org/variables/albatross/activityType";
 	public static final String TRAVEL_MODE = "http://www.uncertweb.org/variables/albatross/travelMode";
 	public static final String IS_HOME = "http://www.uncertweb.org/variables/albatross/isHome";
+	
+	public static final Map<String,String> ALBATROSS_CODE2ACTIVITY = new HashMap<String,String>(){
+		  {
+		   put("0", "work");
+		   put("1", "business");
+		   put("2", "bring/Gget goods and persons");
+		   put("3", "shop from one store");
+		   put("4", "shop from multiple store");
+		   put("5", "service");
+		   put("6", "social");
+		   put("7", "leisure");
+		   put("8", "tour");
+		   put("9", "at home");
+		  }
+		 };
+		 
+	public static final Map<String,String> ALBATROSS_TRAVELMODE2ACTIVITY = new HashMap<String,String>(){
+		  {
+		   put("0", "car driver");
+		   put("1", "slow(bike or walk)");
+		   put("2", "public");
+		   put("3", "car passenger");
+		  }
+		 };
 
 	private static Map<String, Geometry> ppcMap = new HashMap<String, Geometry>(
 			140);
@@ -55,7 +79,7 @@ public class AlbatrossOutputMapper {
 	private AlbatrossOutputMapper() {
 	};
 
-public static IObservationCollection encodeAlbatrossOutput(Set<HouseHold> households) throws IllegalArgumentException, URISyntaxException, IOException{
+	public static IObservationCollection encodeAlbatrossOutput(Set<HouseHold> households) throws IllegalArgumentException, URISyntaxException, IOException{
 		
 		IObservationCollection observationCollection = new ObservationCollection();
 		
@@ -104,14 +128,16 @@ public static IObservationCollection encodeAlbatrossOutput(Set<HouseHold> househ
 			
 			//add activity type variable
 			URI activityTypeObservedProperty = new URI(ACTIVITY_TYPE);
-			CategoryObservation activityTypeObservation = new CategoryObservation(phenomenonTime, resultTime, procedure, activityTypeObservedProperty, featureOfInterest, new CategoryResult(currentTravel.getTravelMode(),ALBATROSS));
-			
+			String activityType = currentTravel.getActivityType();
+			String activityResult = ALBATROSS_CODE2ACTIVITY.get(activityType);
+			CategoryObservation activityTypeObservation = new CategoryObservation(phenomenonTime, resultTime, procedure, activityTypeObservedProperty, featureOfInterest, new CategoryResult(activityResult,ALBATROSS));
 			observationCollection.addObservation(activityTypeObservation);
 			
 			
 			//add travel mode variable
 			URI travelModeObservedProperty = new URI(TRAVEL_MODE);
-			CategoryObservation travelModeObservation = new CategoryObservation(phenomenonTime, resultTime, procedure, travelModeObservedProperty, featureOfInterest, new CategoryResult( currentTravel.getTravelMode(),ALBATROSS));
+			String travelModeResult = ALBATROSS_TRAVELMODE2ACTIVITY.get(currentTravel.getTravelMode());
+			CategoryObservation travelModeObservation = new CategoryObservation(phenomenonTime, resultTime, procedure, travelModeObservedProperty, featureOfInterest, new CategoryResult(travelModeResult,ALBATROSS));
 			
 			observationCollection.addObservation(travelModeObservation);
 			
@@ -160,7 +186,6 @@ public static IObservationCollection encodeAlbatrossOutput(Set<HouseHold> househ
 			int nGeo = geom.getNumGeometries();
 			
 			for(int i = 0; i < nGeo; i++){
-				
 				geom.getGeometryN(i).setSRID(4326);
 			}
 
