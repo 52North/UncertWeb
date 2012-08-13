@@ -1,5 +1,6 @@
 package org.uncertweb.ems.util;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,6 +34,9 @@ import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.ems.data.profiles.AbstractProfile;
+
+import au.com.bytecode.opencsv.CSVWriter;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -148,4 +152,75 @@ public class Utils {
 	}
 	
 
+	public void writeObsCollRealisations2csv(AbstractProfile profile, String filepath){
+//		File f = new File(filepath);
+//		BufferedWriter writer = null;
+//		try {
+//			writer = new BufferedWriter(new OutputStreamWriter(
+//					new FileOutputStream(f)));
+//		} catch (FileNotFoundException e1) {
+//			e1.printStackTrace();
+//		}
+//		CSVWriter encoder = new CSVWriter(writer);
+//		
+//		// write header
+//		ArrayList<String> currentRow  = new ArrayList<String>();		
+//		currentRow .add("Time");
+//		for(String att : attributesList.get(dateList.get(0)).keySet()){
+//			currentRow .add(att);
+//		}
+//		for(int i=0; i<+outConc.get(dateList.get(0)).length; i++){
+//			currentRow .add("out_"+i);
+//		}
+//		if(!cospUncert.isEmpty()&&cospUncert.size()>0){
+//			for(int i=0; i<+cospUncert.entrySet().iterator().next().getValue().length; i++){
+//				currentRow .add("cosp_"+i);
+//			}
+//		}		
+//		for(int i=0; i<+inConc.entrySet().iterator().next().getValue().length; i++){
+//			currentRow .add("in_"+i);
+//		}
+//		String[] row = new String[currentRow .size()];
+//		currentRow .toArray(row);
+//		encoder.writeNext(row);
+//		
+//		// loop through exposure results and write results in each line
+////		ArrayList<String> currentRow = new ArrayList<String>();
+//		for(String time : dateList){
+//			currentRow = new ArrayList<String>();
+//			
+//			// create row
+//			currentRow.add(time);
+//			for(String att : attributesList.get(dateList.get(0)).keySet()){
+//				currentRow.add(attributesList.get(time).get(att));
+//			}
+//			for(int i=0; i<+outConc.get(time).length; i++){
+//				currentRow.add(outConc.get(time)[i]+"");
+//			}
+//			if(!cospUncert.isEmpty()&&cospUncert.size()>0){
+//				for(int i=0; i<+cospUncert.entrySet().iterator().next().getValue().length; i++){
+//					if(cospUncert.containsKey(time))
+//						currentRow.add(cospUncert.get(time)[i]+"");
+//					else
+//						currentRow.add("");
+//				}
+//			}			
+//			for(int i=0; i<+inConc.entrySet().iterator().next().getValue().length; i++){
+//				if(inConc.containsKey(time))
+//					currentRow.add(inConc.get(time)[i]+"");
+//				else
+//					currentRow.add("");
+//			}
+//			
+//			// write row
+//			currentRow .toArray(row);
+//			encoder.writeNext(row);
+//		}
+//
+//		try {
+//			writer.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+	}
 }
