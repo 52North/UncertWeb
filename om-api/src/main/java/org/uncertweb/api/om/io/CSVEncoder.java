@@ -260,7 +260,11 @@ public class CSVEncoder implements IObservationEncoder{
 		String[] result = new String[totalSize];
 		
 		//set phenomenonTime
-		DateTime time = obs.getPhenomenonTime().getDateTime();
+		DateTime time = null;
+		if(obs.getPhenomenonTime().isInterval())
+			time = obs.getPhenomenonTime().getInterval().getStart();
+		else
+			time = obs.getPhenomenonTime().getDateTime();
 		if (time==null){
 			throw new RuntimeException("CSVEncoder currently only supports time instants for phenomenon time!");
 		}
@@ -298,7 +302,11 @@ public class CSVEncoder implements IObservationEncoder{
 					int rPos = this.columnNumber4UncertaintyColName.get(Columns.CN_REALISATION+i);
 					result[rPos]=""+((ContinuousRealisation)uncertainty).getValues().get(i);
 				}
-			}
+			}else if(uncertainty!=null && uncertainty instanceof NormalDistribution){
+				int meanPos = this.columnNumber4UncertaintyColName.get(Columns.CN_ND_MEAN);
+				int varPos = this.columnNumber4UncertaintyColName.get(Columns.CN_ND_VAR);
+				result[meanPos]=""+((NormalDistribution)uncertainty).getMean().get(0);
+				result[varPos]=""+((NormalDistribution)uncertainty).getVariance().get(0);}		
 		} else if(obs instanceof CategoryObservation){
 			result[6] = obs.getResult().getValue().toString();
 		}
