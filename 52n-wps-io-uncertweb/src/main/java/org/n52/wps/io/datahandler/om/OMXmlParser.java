@@ -78,8 +78,6 @@ public class OMXmlParser extends AbstractUwParser {
 					|| xbDoc instanceof OMTextObservationCollectionDocument
 					|| xbDoc instanceof OMUncertaintyObservationCollectionDocument) {
 
-				// TODO missing: OMCategoryObservationCollectionDocument
-
 				IObservationCollection obsCol = parser
 						.parseObservationCollection(xbDoc);
 				return new OMBinding(obsCol);
