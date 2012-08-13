@@ -304,8 +304,23 @@ public class XBObservationParser implements IObservationParser {
 	public synchronized IObservationCollection parseObservationCollection(XmlObject xb_obsColDoc) throws OMParsingException {
 
 		IObservationCollection oc = null;
+		//common observation collection
+		//TODO parsing of common observation collection needs to be tested!!
+		if (xb_obsColDoc instanceof OMObservationCollectionDocument) {
+			OMObservationCollection xb_ocType = ((OMObservationCollectionDocument)xb_obsColDoc).getOMObservationCollection();
+			OMAbstractObservationType[] xb_obsArray = xb_ocType.getOMObservationArray();
+			List<AbstractObservation> obsList = new ArrayList<AbstractObservation>(xb_obsArray.length);
+			for (OMAbstractObservationType xb_obs:xb_obsArray){
+				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
+				xb_omDoc.setOMObservation(xb_obs);
+				
+				obsList.add(parseObservationDocument(xb_omDoc));
+			}
+			oc = new ObservationCollection(obsList);
+			return oc;
+		}
 		//Measurement collection
-		if (xb_obsColDoc instanceof OMMeasurementCollectionDocument) {
+		else if (xb_obsColDoc instanceof OMMeasurementCollectionDocument) {
 			OMMeasurementCollection xb_ocType = ((OMMeasurementCollectionDocument)xb_obsColDoc).getOMMeasurementCollection();
 			UWMeasurementType[] xb_obsArray = xb_ocType.getOMMeasurementArray();
 			List<Measurement> obsList = new ArrayList<Measurement>(xb_obsArray.length);
