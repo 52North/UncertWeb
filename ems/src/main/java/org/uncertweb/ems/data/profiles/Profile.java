@@ -242,15 +242,6 @@ public class Profile {
 	}
 	
 	
-	// TODO: Implement method to produce OM document with details on concentrations from profile
-	public IObservationCollection getDetailedExposureProfileObservationCollection(){
-		
-		// loop through different metrics (indoor, outdoor contributions...)
-		
-		return null;
-	}
-	
-	
 	private double[] addCOSP2OutConc(String time){
 		// add COSP to outdoor concentration
 		double[] outC = outConc.get(time);
