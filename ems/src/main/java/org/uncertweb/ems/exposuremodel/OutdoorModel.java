@@ -1,26 +1,249 @@
 package org.uncertweb.ems.exposuremodel;
 
-import org.apache.log4j.Logger;
-import org.n52.wps.util.r.process.ExtendedRConnection;
-import org.rosuda.REngine.REXP;
-import org.uncertweb.api.om.observation.collections.IObservationCollection;
-import org.uncertweb.ems.data.profiles.Profile;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.joda.time.format.ISODateTimeFormat;
+import org.n52.wps.util.r.process.ExtendedRConnection;
+import org.n52.wps.util.r.process.RProcessException;
+import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.Rserve.RserveException;
+import org.uncertweb.ems.data.profiles.AbstractProfile;
+import org.uncertweb.ems.data.profiles.Profile;
+import org.uncertweb.ems.util.ExposureModelConstants;
+import org.uncertweb.netcdf.NcUwConstants;
+import org.uncertweb.netcdf.NcUwFile;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Allows the estimation of exposure by overlaying individual trajectories with outdoor concentration
- * @author Lydia Gerharz
+ * @author LydiaGerharz
  *
  */
-public class OutdoorModel {
+public class OutdoorModel implements IModel{
 
 	private static Logger LOGGER = Logger.getLogger(OutdoorModel.class);
+	private final String fileSeparator = System.getProperty("file.separator");
 	private String resPath;
+
 	
-	public OutdoorModel(String resPath){
-		this.resPath = resPath;
+	public OutdoorModel(){
+		if(System.getProperty("os.name").contains("Windows")){
+			resPath = System.getenv("TMP");
+		}else{
+			resPath = System.getenv("CATALINA_TMPDIR");
+		}
+		resPath = "C:/WebResources/EMS"+"/outdoorModel";
 	}
 	
+	public OutdoorModel(String resPath){
+		this.resPath = resPath+"/outdoorModel";
+	}
+
+
+	/**
+	 * executes the outdoor model for the provided activity profile and the air quality NetCDF file
+	 * @param profile
+	 * @param ncFile
+	 * @return
+	 */
+	public void run(List<AbstractProfile> profileList, NcUwFile ncFile) {
+		// get necessary information from NetCDF file
+		String ncFilePath = ncFile. getUnderlyingFile().getAbsolutePath();
+		ncFilePath = ncFilePath.replace("\\","/");
+		String parameter = ncFile.getStringAttribute(NcUwConstants.Attributes.PRIMARY_VARIABLES, true).split(" ")[0];
+		String uom = ncFile.getVariable(parameter).findAttribute("units").getStringValue();
+		
+		// perform overlay
+		ArrayList<TreeMap<DateTime, double[]>> expoVals = null;				
+		
+		// check geometry of the profile's observation collection to call the correct overlay method
+		Geometry obsGeom = profileList.get(0).getObservationCollection().getObservations().get(0).getFeatureOfInterest().getShape();
+		try{
+			if(obsGeom instanceof Point || obsGeom instanceof MultiPoint){
+				expoVals = overlayRaster2Points(profileList, ncFilePath);
+			}else if(obsGeom instanceof MultiPolygon || obsGeom instanceof Polygon){
+				expoVals = overlayRaster2Polygons(profileList, ncFilePath);
+			}
+		}catch(Exception e){
+			LOGGER.debug("Error while executing outdoor model: "
+					+ e.getMessage());
+			throw new RuntimeException("Error while executing outdoor model: "
+					+ e.getMessage(), e);
+		} 		
+		
+		// loop through profiles to add results
+		for(int i=0; i<profileList.size(); i++) {
+			AbstractProfile profile = profileList.get(i);
+			
+			// necessary to find respective Interval in the observation collection
+			TreeMap<DateTime,Interval> dateMap = profile.getStartDatesMap();
+			
+			for(DateTime dt : dateMap.keySet()){
+				double[] c = expoVals.get(i).get(dt);
+				profile.setExposureValue(dateMap.get(dt), c, ExposureModelConstants.ExposureValueTypes.OUTDOOR_SOURCES, parameter, uom);
+			}
+				
+//			Iterator<DateTime> obsIt = dateMap.keySet().iterator();
+//			Iterator<DateTime> resIt = expoVals.get(i).keySet().iterator();
+//			
+//			// add results to profile
+//			while(obsIt.hasNext()&&resIt.hasNext()){
+//				DateTime dt1 = obsIt.next();
+//				DateTime dt2 = resIt.next();
+//				Interval in = dateMap.get(dt1);
+//				double[] c = expoVals.get(i).get(dt2);
+//				profile.setExposureValue(in, c, ExposureModelConstants.ExposureValueTypes.OUTDOOR_SOURCES, parameter, uom);
+//			}
+			
+		}
+		
+	}
+	
+	/**
+	 * performs the overlay for a NetCDF-U raster and polygon locations in R by first disaggregating to points, overlay, and finally aggregate back to polygons
+	 * @param omFilePath
+	 * @param netcdfFilePath
+	 * @return
+	 * @throws RserveException
+	 * @throws RProcessException
+	 * @throws REXPMismatchException
+	 */
+	private ArrayList<TreeMap<DateTime, double[]>> overlayRaster2Polygons(List<AbstractProfile> profileList, String netcdfFilePath) throws RserveException, RProcessException, REXPMismatchException{
+		ArrayList<TreeMap<DateTime, double[]>> expoValsList = new ArrayList<TreeMap<DateTime, double[]>>();
+	//	HashMap<DateTime, double[]> expoVals = new HashMap<DateTime, double[]>();
+		String cmd;
+		ExtendedRConnection c = null;		
+		// establish connection to Rserve running on localhost
+		c = new ExtendedRConnection("127.0.0.1");
+		if (c.needLogin()) {
+			// if server requires authentication, send one
+			c.login("rserve", "aI2)Jad$%");
+		}
+			
+		for (AbstractProfile profile : profileList) {
+			// write geometry of the profile to csv file
+			String omFilePath = resPath + "/om.csv";	
+			profile.writeObsCollGeometry2csv(omFilePath);
+			
+			// set R inputs
+			c.voidEval("omFile <- \""+omFilePath+"\"");
+			c.voidEval("rasterFile <- \""+netcdfFilePath+"\"");
+					
+			// run the prepared script
+			//TODO: set correct path!
+			cmd  = "source(\""+resPath+"/overlay_utils.R\", echo=TRUE)";
+			c.voidEval(cmd);
+					
+			// load files
+			c.voidEval("raster <-readNetCDFU(rasterFile)");
+			c.voidEval("om <- readOMcsv(omFile)");
+				
+			// transform OM data to NetCDF-U projection
+			c.voidEval("om.sp <- spTransform(om@sp, CRS=CRS(proj4string(raster)))");
+			c.voidEval("om.st <- STI(om.sp, om@time)");
+				
+			// 1) disaggregate polygons to points
+			c.voidEval("points <- polygons2points(om.st, 0.00001, 50)");
+			
+			// 2) perform overlay
+			c.voidEval("points.over <- over(points, raster, fn=mean, timeInterval = TRUE)");
+			c.voidEval("points.stdf <- STIDF(points@sp, points@time, points.over)");
+			
+			// 3) aggregate point values to polygons
+			c.voidEval("overlay.mean <- aggregate(points.stdf, om.st, mean, na.rm=T)");
+			c.voidEval("overlay.sd <- aggregate(points.stdf, om.st, sd, na.rm=T)");
+			
+			// get values and dates
+			REXP vals = c.tryEval("as.matrix(overlay.mean@data)");
+			double[][] valueMatrix = vals.asDoubleMatrix();
+			REXP dates = c.tryEval("format(index(om@time),\"%Y-%m-%dT%H:%M:%OS3+00:00\")");
+			String[] dateList = dates.asStrings();			
+				
+			expoValsList.add(new TreeMap<DateTime, double[]>());
+			for(int i=0; i<dateList.length; i++){
+				expoValsList.get(expoValsList.size()-1).put(ISODateTimeFormat.dateTime().parseDateTime(dateList[i]), valueMatrix[i]);
+			}	
+		}
+		
+		// close the R connection
+		c.close();
+				
+		return expoValsList;
+	}
+
+	/**
+	 * performs the overlay for a NetCDF-U raster and point locations in R
+	 * @param omFilePath
+	 * @param netcdfFilePath
+	 * @return
+	 * @throws RserveException
+	 * @throws REXPMismatchException
+	 * @throws RProcessException
+	 */
+	private ArrayList<TreeMap<DateTime, double[]>> overlayRaster2Points(List<AbstractProfile> profileList, String netcdfFilePath) throws RserveException, REXPMismatchException, RProcessException{
+		ArrayList<TreeMap<DateTime, double[]>> expoValsList = new ArrayList<TreeMap<DateTime, double[]>>();
+	//	HashMap<DateTime, double[]> expoVals = new HashMap<DateTime, double[]>();
+		
+		ExtendedRConnection c = null;		
+		// establish connection to Rserve running on localhost
+		c = new ExtendedRConnection("127.0.0.1");
+		if (c.needLogin()) {
+			// if server requires authentication, send one
+			c.login("rserve", "aI2)Jad$%");
+		}
+		
+		for (AbstractProfile profile : profileList) {
+			// write geometry of the profile to csv file
+			String omFilePath = resPath + "/om.csv";	
+			profile.writeObsCollGeometry2csv(omFilePath);
+			
+			// set R inputs
+			c.voidEval("omFile <- \""+omFilePath+"\"");
+			c.voidEval("rasterFile <- \""+netcdfFilePath+"\"");
+			
+			// run the prepared script
+			c.voidEval("source(\""+resPath+"/overlay_utils.R\", echo=TRUE)");
+			
+			// load files
+			c.voidEval("raster <-readNetCDFU(rasterFile)");
+			c.voidEval("om <- readOMcsv(omFile)");
+			
+			// transform OM data to NetCDF-U projection
+			c.voidEval("om.sp <- spTransform(om@sp, CRS=CRS(proj4string(raster)))");
+			c.voidEval("om.st <- STI(om.sp, om@time)");
+			
+			// perform overlay, result is dataframe with ncol=numbReal, nrow=numbPoints
+			c.voidEval("overlay.mean <- over(om.st, raster, fn=mean)");
+			
+			// get values and dates
+			REXP vals = c.tryEval("as.matrix(overlay.mean)");
+			double[][] valueMatrix = vals.asDoubleMatrix();
+			REXP dates = c.tryEval("format(index(om@time),\"%Y-%m-%dT%H:%M:%OS3+00:00\")");
+			String[] dateList = dates.asStrings();
+			c.close();
+				
+			expoValsList.add(new TreeMap<DateTime, double[]>());
+			for(int i=0; i<dateList.length; i++){
+				expoValsList.get(expoValsList.size()-1).put(ISODateTimeFormat.dateTime().parseDateTime(dateList[i]), valueMatrix[i]);
+			}		
+		}
+				
+		return expoValsList;
+	}
 	
 	public Profile performOutdoorOverlay(Profile profile, String ncFilePath, String omFilePath, String parameter) {
 		//TODO: works only for points so far!		
@@ -209,9 +432,6 @@ public class OutdoorModel {
 		return null;
 	}
 	
-	
-	
-	private void writeObservationCollection(IObservationCollection profile, String filepath){
-		
-	}
+
+
 }

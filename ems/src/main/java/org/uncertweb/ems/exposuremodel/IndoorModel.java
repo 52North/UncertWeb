@@ -26,7 +26,7 @@ import au.com.bytecode.opencsv.CSVReader;
  * @author Lydia Gerharz
  *
  */
-public class IndoorModel {
+public class IndoorModel implements IModel{
 	
 	private HashMap<String, IndoorModelParameters> microenvParams;
 	private static Logger LOGGER = Logger.getLogger(IndoorModel.class);
