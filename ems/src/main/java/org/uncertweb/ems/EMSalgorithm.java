@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.joda.time.DateTime;
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
@@ -30,27 +31,42 @@ import org.n52.wps.server.LocalAlgorithmRepository;
 //import org.uncertweb.api.netcdf.NetcdfUWFile;
 //import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
 //import org.uncertweb.api.netcdf.exception.NetcdfUWException;
+import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.exceptions.OMParsingException;
+import org.uncertweb.api.om.io.JSONObservationEncoder;
+import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
+import org.uncertweb.ems.data.profiles.AbstractProfile;
+import org.uncertweb.ems.data.profiles.ActivityProfile;
+import org.uncertweb.ems.data.profiles.GeometryProfile;
+import org.uncertweb.ems.data.profiles.MEProfile;
 import org.uncertweb.ems.data.profiles.Profile;
 import org.uncertweb.ems.exposuremodel.IndoorModel;
 import org.uncertweb.ems.exposuremodel.OutdoorModel;
+import org.uncertweb.ems.io.OMProfileGenerator;
+import org.uncertweb.ems.io.OMProfileParser;
+import org.uncertweb.ems.util.ExposureModelConstants;
 import org.uncertweb.ems.util.Utils;
+import org.uncertweb.netcdf.NcUwConstants;
 import org.uncertweb.netcdf.NcUwFile;
+import org.uncertweb.netcdf.NcUwHelper;
 
 
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
+import ucar.nc2.units.DateUnit;
 
 /**
  * Algorithm to estimate uncertain exposure towards air pollutants
- * @author Lydia Gerharz
- *
+ * @author LydiaGerharz
+ * 
  */
+
 public class EMSalgorithm extends AbstractObservableAlgorithm{
 
 	private List<String> errors = new ArrayList<String>();
@@ -107,12 +123,11 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputMap) {				
 		/*
-		 *  1) get input data
+		 *  1) get WPS inputs
 		 */
 		// other input parameters
-		int cospIterations = 100;
-		boolean useIndoorSources = true;
-		
+//		int cospIterations = 100;
+//		boolean useIndoorSources = true;		
 		
 		// activity data
 		IObservationCollection omFile = null;
@@ -125,14 +140,11 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 		}
 		
 		NcUwFile ncFile = null;
-		String nctempFile = "";
 		List<IData> ncList = inputMap.get(INPUT_IDENTIFIER_AIR_QUALITY);
 		if(ncList != null && ncList.size()!=0){
 			IData tmp = ncList.get(0);
 			if(tmp instanceof NetCDFBinding){
 				ncFile = ((NetCDFBinding)tmp).getPayload();				
-				nctempFile = ncFile. getUnderlyingFile().getAbsolutePath();
-				nctempFile = nctempFile.replace("\\","/");
 			}
 		}
 		
@@ -146,7 +158,7 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 		}
 		
 		// temporal resolution
-		int minuteResolution = 5;
+		int minuteResolution = 0;
 		List<IData> resList = inputMap.get(INPUT_IDENTIFIER_RESOLUTION);
 		if(resList != null && resList.size()!=0){
 			if(resList.get(0) instanceof LiteralIntBinding){
@@ -162,73 +174,108 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 		}	
 		
 		/*
-		 *  2) perform outdoor overlay
+		 *  2) create internal data types
 		 */	
-		OutdoorModel outdoor = new OutdoorModel(resourcesPath);
 		
-		// A) for the moment, do the overlay for GPS tracks in MS with the local version			
-//		String nctempFile = resourcesPath+"/tmp.nc";
-		
-		// get main variable as parameter
-		String parameter = ncFile.getPrimaryVariableNames().toArray(new String[1])[0];
-//		try{
-//			parameter = ncFile.getPrimaryVariable().getName();
-//		}catch (NetcdfUWException e) {
-//			e.printStackTrace();
-//		} 
-		
-		//TODO: for Albatross, convert GeneralTime into specific time for overlay!
-	 	
-		
-		// create profile
-		Profile profile = new Profile(omFile);
+		// 2.1) get time from Netcdf file
+		Variable timeVar = ncFile.getVariable(NcUwConstants.StandardNames.TIME);
+
+		// if no time variable has been found
+		if(timeVar==null){
+			//TODO: throw exception
+		}
 				
-		// write observation geometry file locally
-		String omtempFile = resourcesPath+"/tmp.csv";
-		profile.writeObsCollGeometry2csv(omtempFile);
-		
-		// get outdoor concentration at profile locations
-		outdoor.performOutdoorOverlay(profile, nctempFile, omtempFile,parameter);
-	
-		// estimate COSP uncertainties for PM10
-//		if(parameter.equals("PM10")){
-//			outdoor.estimateCOSPUncertainty(profile, omtempFile, cospIterations);
-//		}
-		
-		// perform averaging of profile observations
-		profile.aggregateProfile(minuteResolution);		
-		
-		// B) TODO: later use STAS for overlay of Albatross data				
-		
-		/*
-		 *  3) perform indoor model if activity data is available
-		 */
-		// create indoor model with parameters
-//		IndoorModel indoor = new IndoorModel();
-//		indoor.readParametersFile("DE", parameter.replace("_", "."), resourcesPath+"/indoorModel/parameters.csv");
-//					
-//		// estimate indoor concentration
-//		indoor.runModel(profile, indoorIterations, minuteResolution, useIndoorSources);
-		
-		/*
-		 *  4) prepare result
-		 */	
-		// get OM file
-//		UncertaintyObservationCollection exposureProfile = (UncertaintyObservationCollection) profile.getExposureProfileObservationCollection("normal");
-		
-//		Utils.writeObsCollXML(exposureProfile, resourcesPath+"/outputs/exposure_test.xml");
-		UncertaintyObservationCollection exposureProfile = null;		
+		// create time list from Netcdf time array
+		//TODO: ensure that this is done in UTC/GMT!!!
+		ArrayList<DateTime> ncTimeList = new ArrayList<DateTime>();
+		String timeUnit = timeVar.getUnitsString();	
 		try {
-			XmlObject xml = XmlObject.Factory.parse(new FileInputStream("D:/JavaProjects/aqMS-wps/src/main/resources/Austal/inputs/largeStreets.xml"));		
-			exposureProfile = (UncertaintyObservationCollection) new XBObservationParser().parse(xml.xmlText());			
-		} catch (Exception e) {		
+			DateUnit dateUnit = new DateUnit(timeUnit);
+			for(int i=1; i<=timeVar.getDimension(0).getLength(); i++){
+				ncTimeList.add(new DateTime(dateUnit.makeDate(i)));
+			}	
+			
+			// if minuteResolution has not been provided make this as default resolution
+			if(minuteResolution==0){
+				String unit = dateUnit.getTimeUnitString();
+				if(unit.equals("days"))
+					minuteResolution = 60*24;
+				else if (unit.equals("hours"))
+					minuteResolution = 60;
+				else if (unit.equals("minutes"))
+					minuteResolution = 1;
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}	
+		
+		// 2.2) create profile list from OM file
+		List<AbstractProfile> profileList = new OMProfileParser().OM2Profiles(omFile, ncTimeList, minuteResolution);
+					
+		/*
+		 *  3) check if modelling is possible
+		 */	
+		
+			
+		
+		/*
+		 * 4) OUTDOOR MODEL
+		 */
+		UncertaintyObservationCollection exposureProfiles = new UncertaintyObservationCollection();
+
+		// get outdoor concentration at profile locations
+		// A) for the moment, do the overlay for GPS tracks in MS with the local version
+		OutdoorModel outdoor = new OutdoorModel();
+		outdoor.run(profileList, ncFile);
+	
+		// perform averaging of profile observations
+		// profile.aggregateProfile(minuteResolution);
+
+		/*
+		 * 5) INDOOR MODEL
+		 */
+		String parameter = ncFile.getStringAttribute(NcUwConstants.Attributes.PRIMARY_VARIABLES, true).split(" ")[0];
+		String uom = ncFile.getVariable(parameter).findAttribute("units").getStringValue();
+		// if activities are available, create indoor model with parameters
+		// if(profile instanceof MEProfile || profile instanceof
+		// ActivityProfile){
+//		String parameter = ncFile.getPrimaryVariableNames().toArray(new String[1])[0];	
+		// IndoorModel indoor = new IndoorModel();
+		// indoor.readParametersFile("DE",parameter,
+		// "src/main/resources/indoorModel/parameters.csv");
+		
+		// indoor.runModel(profileList, indoorIterations, minuteResolution,
+		// false);
+		//
+		// }
+
+		/*
+		 * RESULT COLLECTION
+		 */		
+		// go through each individual profile
+		for (AbstractProfile profile : profileList) {			
+			// get OM file and add to overall observation collection
+			exposureProfiles.addObservationCollection(new OMProfileGenerator()
+					.createExposureProfileObservationCollection(profile,
+							statList));
+		}
+		
+
+		/*
+		 *  5) prepare result
+		 */	
+		//TODO: implement handling of additional uncertainty loop for Albatross outputs
+		
+		// write output locally
+		try {
+			new StaxObservationEncoder().encodeObservationCollection(exposureProfiles,
+					new File(resourcesPath+"/outputs/exposure_test.xml"));
+		} catch (OMEncodingException e) {
 			e.printStackTrace();
-			log.info("Error while reading OM input: " + e.getMessage());
-			throw new RuntimeException("Error while reading OM input: " + e.getMessage(), e);
 		}
 		
 		Map<String, IData> result = new HashMap<String, IData>(1);
-		OMBinding uwData = new OMBinding(exposureProfile);
+		OMBinding uwData = new OMBinding(exposureProfiles);
 		result.put(OUTPUT_IDENTIFIER, uwData);
 		return result;
 		
