@@ -41,7 +41,10 @@
 				<Property name="supportedFormat" active="true">text/xml</Property>
 				<Property name="supportedEncoding" active="true">UTF-8</Property>
 			</Parser>
-		 <Parser name="UncertWebIODataParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true">
+			<Parser name="UncertWebParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true" />
+			 
+			 
+		<!--  <Parser name="UncertWebIODataParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true">
             <Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
             <Property name="supportedSchema" active="true">http://schemas.opengis.net/om/2.0/observation.xsd</Property>
             <Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
@@ -49,13 +52,32 @@
             <Property name="supportedFormat" active="true">application/x-uncertml</Property>
             <Property name="supportedFormat" active="true">application/gml+xml</Property>
 				<Property name="supportedFormat" active="true">application/x-om-u+xml</Property>
-            <Property name="supportedEncoding" active="true">UTF-8</Property>
-  		 </Parser>   
+            <Property name="supportedEncoding" active="true">UTF-8</Property> 
+  		 </Parser>    -->
 			
 			
 		</ParserList>
 		<GeneratorList>
-		       <Generator name="UncertWebIODataGenerator" className="org.n52.wps.io.datahandler.UncertWebIODataGenerator" active="true">
+		<Generator name="GenericFileGenerator" className="org.n52.wps.io.datahandler.binary.GenericFileGenerator" active="true">
+				<Format mimetype="application/x-zipped-shp" encoding="base64"/>
+				<Format mimetype="application/shp" encoding="base64"/>
+				<Format mimetype="application/img" encoding="base64"/>
+				<Format mimetype="image/tiff" encoding="base64"/>
+				<Format mimetype="image/geotiff" encoding="base64"/>
+				<Format mimetype="application/geotiff" encoding="base64"/>
+				<Format mimetype="application/dbase" encoding="base64"/>
+				<Format mimetype="application/remap" encoding="base64"/>
+				<Format mimetype="application/x-erdas-hfa" encoding="base64"/>
+				<Format mimetype="application/x-netcdf" encoding="base64"/>
+				<Format mimetype="application/dgn" encoding="base64"/>
+				<Format mimetype="image/jpeg" encoding="base64"/>
+				<Format mimetype="image/png" encoding="base64"/>
+				<Format mimetype="application/x-geotiff" encoding="base64"/>
+				<Format mimetype="text/plain" encoding="base64"/>
+			</Generator>
+			<Generator name="UncertWebGenerator" className="org.n52.wps.io.datahandler.UncertWebIODataGenerator" active="true" />
+						
+		     <!--   <Generator name="UncertWebIODataGenerator" className="org.n52.wps.io.datahandler.UncertWebIODataGenerator" active="true">  
             	<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
             	<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/2.0/observation.xsd</Property>
             	<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
@@ -64,7 +86,7 @@
             	<Property name="supportedFormat" active="true">application/gml+xml</Property>
 				<Property name="supportedFormat" active="true">application/x-om-u+xml</Property>
             	<Property name="supportedEncoding" active="true">UTF-8</Property>
-   			</Generator>
+   			</Generator> --> 
 				
 			
 		</GeneratorList>
