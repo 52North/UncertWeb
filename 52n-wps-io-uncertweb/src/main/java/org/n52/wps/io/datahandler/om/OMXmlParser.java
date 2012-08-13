@@ -14,6 +14,7 @@ import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
 import net.opengis.om.x20.OMCategoryObservationCollectionDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
+import net.opengis.om.x20.OMObservationCollectionDocument;
 import net.opengis.om.x20.OMObservationDocument;
 import net.opengis.om.x20.OMReferenceObservationCollectionDocument;
 import net.opengis.om.x20.OMTextObservationCollectionDocument;
@@ -72,6 +73,7 @@ public class OMXmlParser extends AbstractUwParser {
 				return new OMBinding(parser.parseObservation(xbDoc.toString()));
 			} else if (xbDoc instanceof OMBooleanObservationCollectionDocument
 					|| xbDoc instanceof OMDiscreteNumericObservationCollectionDocument
+					|| xbDoc instanceof OMObservationCollectionDocument
 					|| xbDoc instanceof OMCategoryObservationCollectionDocument
 					|| xbDoc instanceof OMMeasurementCollectionDocument
 					|| xbDoc instanceof OMReferenceObservationCollectionDocument
