@@ -22,6 +22,6 @@ public class UwJsonConstants {
 	
 	public static final String TEMPORAL_EXTENT_KEY = "temporalExtent";
 	
-	public static final String SPATIAL_EXTENT_KEX = "spatialExtent";
+	public static final String SPATIAL_EXTENT_KEY = "spatialExtent";
 	
 }
