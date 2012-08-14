@@ -21,6 +21,7 @@
  */
 package org.uncertweb.viss.vis.sample;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.codehaus.jettison.json.JSONException;
@@ -31,7 +32,8 @@ import org.uncertml.sample.AbstractRealisation;
 import org.uncertml.sample.AbstractSample;
 import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.sample.RandomSample;
-import org.uncertweb.netcdf.NcUwVariableWithDimensions;
+import org.uncertweb.netcdf.INcUwVariable;
+import org.uncertweb.netcdf.NcUwObservation;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
@@ -93,8 +95,19 @@ public class SampleVisualizer extends
 	public Map<String, JSONObject> getOptionsForDataSet(IDataSet r) {
 		try {
 			Map<String, JSONObject> options = super.getOptionsForDataSet(r);
-			NcUwVariableWithDimensions uv = ((NcUwVariableWithDimensions) r.getContent());
-			AbstractSample as = (AbstractSample) uv.iterator().next().getResult().getValue();
+			
+			AbstractSample as = null;
+			Iterator<NcUwObservation> i = ((INcUwVariable) r.getContent()).iterator();
+			while (as == null && i.hasNext()) {
+				NcUwObservation ob = i.next();
+				if (ob != null && ob.hasValue()) {
+					as = (AbstractSample) ob.getResult().getValue();
+				}
+			}
+			if (as == null) {
+				throw VissError.internal("No valid sample found");
+			}
+			
 			AbstractRealisation ar = as.getRealisations().get(0);
 			ContinuousRealisation cr = (ContinuousRealisation) ar;
 			

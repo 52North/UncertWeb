@@ -282,7 +282,7 @@ public abstract class NormalDistributionVisualizer extends
 		Iterator<NcUwObservation> i = getIteratorForDataSet(r);		
 		while (i.hasNext()){
 			NcUwObservation val = i.next();
-			if (val.getResult() != null) {
+			if (val != null && val.hasValue()) {
 				NormalDistribution nd = (NormalDistribution) val.getResult().getValue();
 				double m = nd.getMean().get(0);
 				double sd = FastMath.sqrt(nd.getVariance().get(0));

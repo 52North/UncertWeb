@@ -21,13 +21,15 @@
  */
 package org.uncertweb.viss.vis.sample;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.uncertml.IUncertainty;
 import org.uncertml.sample.ContinuousRealisation;
-import org.uncertweb.netcdf.NcUwVariableWithDimensions;
+import org.uncertweb.netcdf.INcUwVariable;
+import org.uncertweb.netcdf.NcUwObservation;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
@@ -71,11 +73,20 @@ public class RealisationVisualizer extends
 		try {
 			Map<String, JSONObject> options = super.getOptionsForDataSet(r);
 			Object o = r.getContent();
-			if (o instanceof NcUwVariableWithDimensions) {
-				ContinuousRealisation real = (ContinuousRealisation) ((NcUwVariableWithDimensions) r
-						.getContent()).iterator().next().getResult().getValue();
+			if (o instanceof INcUwVariable) {
+				ContinuousRealisation real = null;
+				Iterator<NcUwObservation> i = ((INcUwVariable) r.getContent()).iterator();
+				while (real == null && i.hasNext()) {
+					NcUwObservation ob = i.next();
+					if (ob != null && ob.hasValue()) {
+						real = (ContinuousRealisation) ob.getResult().getValue();
+					}
+				}
+				if (real == null) {
+					throw VissError.internal("No valid realisation found");
+				}
 				options.get(REALISATION_PARAMETER)
-				.put(JSONSchema.Key.MAXIMUM,
+					.put(JSONSchema.Key.MAXIMUM,
 						real.getValues().size()-1);
 			} else {
 				// geotiff... (just one realisation)

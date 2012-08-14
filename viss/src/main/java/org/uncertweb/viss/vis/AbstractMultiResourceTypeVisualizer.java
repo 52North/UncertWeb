@@ -123,7 +123,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		while (vals.hasNext()) {
 			NcUwObservation nv = vals.next();
 			Double value = null;
-			if (nv != null && nv.getResult() != null && nv.getResult().getValue() != null) {
+			if (nv != null && nv.hasValue()) {
 				double v = evaluate(nv.getResult().getValue());
 				if (!Double.isNaN(v) && !Double.isInfinite(v)) {
 					value = Double.valueOf(v);
