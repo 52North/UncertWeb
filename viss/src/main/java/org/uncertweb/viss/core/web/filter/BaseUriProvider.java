@@ -27,10 +27,14 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 
 public class BaseUriProvider implements ContainerRequestFilter {
+	private static final Logger log = LoggerFactory.getLogger(BaseUriProvider.class);
 	private static final ReentrantLock lock = new ReentrantLock();
 	@Context private UriInfo uriInfo;
 	private static URI baseUri = null;
@@ -52,6 +56,7 @@ public class BaseUriProvider implements ContainerRequestFilter {
 	
 	
 	public static URI getBaseURI() {
+		log.debug("BaseURI: {}", baseUri);
 		return baseUri;
 	}
 }

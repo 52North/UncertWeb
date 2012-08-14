@@ -65,6 +65,8 @@ public class GeoserverAdapter implements WMSAdapter {
 	
 	private static final Logger log = LoggerFactory.getLogger(GeoserverAdapter.class);
 	
+	private static final URI DEFAULT_GEOSERVER_URI = URI.create("http://localhost:8080/geoserver");
+
 	private static final String PROPERTIES_FILE = "/geoserver.properties";
 	private static final String USER_PROPERTY = "user";
 	private static final String PASS_PROPERTY = "pass";
@@ -108,6 +110,7 @@ public class GeoserverAdapter implements WMSAdapter {
 		boolean cache = Boolean.valueOf(getProp(CACHE_PROPERTY));
 		try {
 			String uri = getBaseURI(BaseUriProvider.getBaseURI()).toString();
+			log.debug("Creating new Geoserver (uri={}, tmppath={})",uri, path);
 			wms = new Geoserver(user, pass, uri, cache, (path != null && !path.trim().isEmpty()) ? new File(path) : null);
 		} catch (Exception e) {
 			throw VissError.internal(e);
@@ -115,7 +118,8 @@ public class GeoserverAdapter implements WMSAdapter {
 	}
 
 	private static URI getBaseURI(URI rq) throws URISyntaxException {
-		rq = (rq == null) ? URI.create("http://localhost:8080/geoserver") : rq;
+		rq = (rq == null) ? DEFAULT_GEOSERVER_URI : rq;
+		
 		String hostS = getProp(URL_HOST_PROPERTY);
 		String portS = getProp(URL_PORT_PROPERTY);
 		String secureS = getProp(URL_SECURE_PROPERTY);
@@ -130,7 +134,7 @@ public class GeoserverAdapter implements WMSAdapter {
 	
 	
 	public static void main(String[] args) throws URISyntaxException {
-		URI rq = URI.create("https://asdf:8090/viss/resources/0/datasets/1?asdf=2");
+		URI rq = URI.create("http://giv-uw.uni-muenster.de:9090/viss/resources/0/datasets/1?asdf=2#asdf");
 		System.out.println(getBaseURI(rq));
 	}
 	
