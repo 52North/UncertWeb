@@ -23,7 +23,7 @@ package org.uncertweb.viss.core.web.provider;
 
 import static org.uncertweb.utils.UwJsonConstants.HREF_KEY;
 import static org.uncertweb.utils.UwJsonConstants.ID_KEY;
-import static org.uncertweb.utils.UwJsonConstants.SPATIAL_EXTENT_KEX;
+import static org.uncertweb.utils.UwJsonConstants.SPATIAL_EXTENT_KEY;
 import static org.uncertweb.utils.UwJsonConstants.TEMPORAL_EXTENT_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.PHENOMENON_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.UNCERTAINTY_TYPE_KEY;
@@ -94,7 +94,7 @@ public class DataSetProvider implements MessageBodyWriter<IDataSet> {
 				.put(PHENOMENON_KEY, r.getPhenomenon())
 				.put(UNCERTAINTY_TYPE_KEY, r.getType().getUri())
 				.put(TEMPORAL_EXTENT_KEY, r.getTemporalExtent().toJson())
-				.put(SPATIAL_EXTENT_KEX, envelopeToJson(r.getSpatialExtent()))
+				.put(SPATIAL_EXTENT_KEY, envelopeToJson(r.getSpatialExtent()))
 				.put(VISUALIZATIONS_KEY, vis);
 
 			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);
