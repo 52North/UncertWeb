@@ -62,6 +62,10 @@ import org.uncertml.distribution.multivariate.MultinomialDistribution;
 import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
 import org.uncertml.distribution.multivariate.MultivariateStudentTDistribution;
 import org.uncertml.distribution.multivariate.WishartDistribution;
+import org.uncertml.distribution.randomvariable.NormalSpatialField;
+import org.uncertml.distribution.randomvariable.NormalSpatioTemporalField;
+import org.uncertml.distribution.randomvariable.NormalTimeSeries;
+import org.uncertml.distribution.randomvariable.VariogramFunction;
 import org.uncertml.sample.CategoricalRealisation;
 import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.sample.ISample;
@@ -174,10 +178,15 @@ public enum NcUwUncertaintyType {
 	SKEWNESS(Skewness.class, STATISTIC),
 	STANDARD_DEVIATION(StandardDeviation.class, STATISTIC),
 	VARIANCE(Variance.class, STATISTIC),
-	
+
+	/* uncertml-x-api */
+	NORMAL_SPATIO_TEMPORAL_FIELD(NormalSpatioTemporalField.class, DISTRIBUTION),
+	NORMAL_TIME_SERIES(NormalTimeSeries.class, DISTRIBUTION),
+	NORMAL_SPATIAL_FIELD(NormalSpatialField.class,DISTRIBUTION),
+	VARIOGRAM_FUNCTION(VariogramFunction.class, DISTRIBUTION),
+
 	STATISTIC_COLLECTION(StatisticCollection.class, STATISTIC);
 	
-
 	private static final String CONSTRAINT_URI = UncertML.getURI(ConstraintType.class);
 	private static final URI GREATER_THAN_URI = URI.create(CONSTRAINT_URI + "/greater-than");
 	private static final URI LESS_THAN_URI = URI.create(CONSTRAINT_URI + "/less-than");

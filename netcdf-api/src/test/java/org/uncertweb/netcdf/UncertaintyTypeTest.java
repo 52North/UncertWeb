@@ -76,8 +76,8 @@ public class UncertaintyTypeTest {
 			assertNotNull(uc + "could not be used to generate a URI", uri);
 			final NcUwUncertaintyType type = NcUwUncertaintyType.fromUri(URI.create(uri));
 			final NcUwUncertaintyType fromClass = NcUwUncertaintyType.fromClass(uc);
-			assertNotNull(uri + " not recognized.", type);
-			assertNotNull(uc + " not recognized.", fromClass);
+			assertNotNull(uri + " not recognized (" + uc + ").", type);
+			assertNotNull(uc + " not recognized (" + uri + ").", fromClass);
 			assertEquals(type, fromClass);
 			
 			if (IStatistic.class.isAssignableFrom(uc)) {
