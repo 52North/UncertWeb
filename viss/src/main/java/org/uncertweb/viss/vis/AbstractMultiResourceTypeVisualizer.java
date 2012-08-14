@@ -223,7 +223,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 		if (o instanceof GridCoverage2D) {
 			return new CoverageIterator((GridCoverage2D) o, r.getType().getUri(),
 					((UncertaintyReference) r).getAdditionalUris());
-		} else if (o instanceof NcUwVariableWithDimensions) {
+		} else if (o instanceof INcUwVariable) {
 			return ((NcUwVariableWithDimensions) o).iterator();
 		} else if (o instanceof IObservationCollection) {
 			return new OMIterator((IObservationCollection) o);
