@@ -69,7 +69,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>uncertweb-utils</artifactId>
-			<version>[1.0.0-SNAPSHOT,)</version>
+			<version>[1.0.1-SNAPSHOT,)</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.uncertml</groupId>
