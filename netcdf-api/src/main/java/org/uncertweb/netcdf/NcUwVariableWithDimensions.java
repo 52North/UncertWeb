@@ -68,7 +68,7 @@ import com.vividsolutions.jts.geom.Point;
  * X = LON
  * Y = LAT
  */
-public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
+class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 	private final Map<NcUwDimension, Integer> index = enumMap(NcUwDimension.class);
 	private final Map<NcUwDimension, Index> arrayindex = enumMap(NcUwDimension.class);
 	private final Map<NcUwDimension, Order> orders = enumMap(NcUwDimension.class);

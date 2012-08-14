@@ -40,7 +40,7 @@ import org.uncertweb.utils.UwCollectionUtils;
 
 import ucar.nc2.Variable;
 
-public abstract class AbstractNcUwVariable implements INcUwVariable {
+abstract class AbstractNcUwVariable implements INcUwVariable {
 	protected static final Logger log = LoggerFactory
 			.getLogger(AbstractNcUwVariable.class);
 	private final NcUwFile file;

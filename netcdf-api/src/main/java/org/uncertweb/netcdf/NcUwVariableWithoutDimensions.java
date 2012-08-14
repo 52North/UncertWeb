@@ -38,7 +38,7 @@ import ucar.nc2.Variable;
 
 import com.vividsolutions.jts.geom.Point;
 
-public class NcUwVariableWithoutDimensions extends AbstractNcUwVariable {
+class NcUwVariableWithoutDimensions extends AbstractNcUwVariable {
 
 	private NcUwVariableWithDimensions variableWithDimensions;
 
