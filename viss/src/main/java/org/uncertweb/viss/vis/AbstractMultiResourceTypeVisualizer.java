@@ -42,7 +42,6 @@ import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.netcdf.INcUwVariable;
 import org.uncertweb.netcdf.NcUwObservation;
-import org.uncertweb.netcdf.NcUwVariableWithDimensions;
 import org.uncertweb.netcdf.util.WriteableGridCoverage;
 import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.VissError;
@@ -224,7 +223,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 			return new CoverageIterator((GridCoverage2D) o, r.getType().getUri(),
 					((UncertaintyReference) r).getAdditionalUris());
 		} else if (o instanceof INcUwVariable) {
-			return ((NcUwVariableWithDimensions) o).iterator();
+			return ((INcUwVariable) o).iterator();
 		} else if (o instanceof IObservationCollection) {
 			return new OMIterator((IObservationCollection) o);
 		} else {
