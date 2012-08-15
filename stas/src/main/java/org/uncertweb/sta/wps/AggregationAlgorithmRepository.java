@@ -74,9 +74,12 @@ public class AggregationAlgorithmRepository implements IAlgorithmRepository{
 		for (Class<? extends AbstractAggregationProcess> c : r
 				.getSubTypesOf(AbstractAggregationProcess.class)) {
 			try {
-				
-				AbstractAggregationProcess algo = c.newInstance();
-				result.put(algo.getIdentifier(), algo);
+				//Hack for checking that no abstract class is returned; there seems to be no possibility to check whether the class is abstract;
+				//abstract class causes newInstance to throw exception
+				if (!c.getCanonicalName().contains("Abstract")){
+					AbstractAggregationProcess algo = c.newInstance();
+					result.put(algo.getIdentifier(), algo);
+				}
 			} catch (Exception e) {
 				String errorMsg = "Error while loading aggregation algorithms:"+e.getLocalizedMessage();
 				throw new RuntimeException(errorMsg);
