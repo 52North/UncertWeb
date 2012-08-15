@@ -57,6 +57,10 @@
 			<Parser name="GetFeatureRequestParser" className="org.n52.wps.io.datahandler.parser.GetFeatureRequestParser" active="true">
 				<Format mimetype="text/xml" schema="http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"/>
 			</Parser>
+			<Parser name="GTBinZippedSHPParser" className="org.n52.wps.io.datahandler.parser.GTBinZippedSHPParser" active="true">
+				<Format mimetype="application/x-zipped-shp" encoding="base64"/>
+				<Format mimetype="application/x-zipped-shp"/>
+			</Parser>
 			<Parser name="NetCDFParser" className="org.n52.wps.io.datahandler.netcdf.NetCDFParser" active="true" />
   			<Parser name="OMParser" className="org.n52.wps.io.datahandler.om.OMParser" active="true" />
 		</ParserList>
@@ -67,13 +71,19 @@
 			<Generator name="GetFeatureRequestGenerator" className="org.n52.wps.io.datahandler.generator.GetFeatureRequestGenerator" active="true">
 				<Format mimetype="text/xml" schema="http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"/>
 			</Generator>
+			<Generator name="GTBinZippedSHPGenerator" className="org.n52.wps.io.datahandler.generator.GTBinZippedSHPGenerator" active="true">
+				<Format mimetype="application/x-zipped-shp" encoding="base64"/>
+				<Format mimetype="text/xml" encoding="base64"/>
+				<Format mimetype="application/x-zipped-shp"/>
+				<Format mimetype="text/xml"/>
+			</Generator>
 			<Generator name="NetCDFGenerator" className="org.n52.wps.io.datahandler.netcdf.NetCDFGenerator" active="true" />
    			<Generator name="OMv1Generator" className="org.n52.wps.io.datahandler.generator.ObservationCollectionGenerator" active="true" />
 			<Generator name="OMv2Generator" className="org.n52.wps.io.datahandler.om.OMGenerator" active="true" />
 		</GeneratorList>
 	</Datahandlers>
 	<AlgorithmRepositoryList>
-		<Repository name="STARepository" className="org.uncertweb.sta.wps.STARepository" active="true" />
+		<!-- <Repository name="STARepository" className="org.uncertweb.sta.wps.STARepository" active="true" /> -->
 		<Repository name="AggregationAlgorithmRepository" className="org.uncertweb.sta.wps.AggregationAlgorithmRepository" active="true" /> 
 	</AlgorithmRepositoryList>
 	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="stas" repoReloadInterval="0">
