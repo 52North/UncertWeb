@@ -17,16 +17,13 @@ import org.n52.wps.util.r.process.RProcessException;
 import org.rosuda.REngine.Rserve.RserveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uncertweb.api.netcdf.NetcdfUWFile;
-import org.uncertweb.api.netcdf.exception.NetcdfUWException;
+import org.uncertweb.netcdf.NcUwException;
+import org.uncertweb.netcdf.NcUwFile;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.AggregationInputs;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
 import org.uncertweb.sta.wps.api.ProcessOutput;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
-
-import ucar.nc2.NetcdfFile;
-
 
 /**
  * represents a Raster2Raster approach with 
@@ -176,16 +173,16 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 		//targetGrid
 		List<IData> targetGridInput = inputData.get(TARGETGRID.getId());
 		if (targetGridInput!=null&&targetGridInput.size()==1){
-			NetcdfUWFile ncFile = ((NetCDFBinding)targetGridInput.get(0)).getPayload();
-			targetGridFilePath = ncFile.getNetcdfFile().getLocation();
+			NcUwFile ncFile = ((NetCDFBinding)targetGridInput.get(0)).getPayload();
+			targetGridFilePath = ncFile.getFile().getLocation();
 			targetGridFilePath = targetGridFilePath.replace("\\","/");
 		}
 		
 		//getInputFilePath
 		List<IData> inputDataInput = inputData.get(INPUT_DATA.getId());
 		if (inputDataInput!=null&&inputDataInput.size()==1){
-			NetcdfUWFile ncFile = ((NetCDFBinding)inputDataInput.get(0)).getPayload();
-			inputFilePath = ncFile.getNetcdfFile().getLocation();
+			NcUwFile ncFile = ((NetCDFBinding)inputDataInput.get(0)).getPayload();
+			inputFilePath = ncFile.getFile().getLocation();
 			inputFilePath = inputFilePath.replace("\\","/");
 		}
 		
@@ -268,8 +265,8 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 			//Create response
 			c.tryVoidEval("writeUNetCDF(newfile=\""+outputFilePath+"\", spAgg)");
 		
-			NetcdfFile ncFile = NetcdfFile.open(outputFilePath);
-			NetcdfUWFile uwFile = new NetcdfUWFile(ncFile);
+			//NetcdfFile ncFile = NetcdfFile.open(outputFilePath);
+			NcUwFile uwFile = new NcUwFile(outputFilePath);
 			result.put(AGGREGATED_OUTPUT.getId(), new NetCDFBinding(uwFile));
 		
 		} catch (RserveException e) {
@@ -284,7 +281,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 			String msg = "Error while running R script for aggregation: "+e.getLocalizedMessage();
 			log.debug(msg);
 			throw new RuntimeException(msg);
-		} catch (NetcdfUWException e) {
+		} catch (NcUwException e) {
 			String msg = "Error while running R script for aggregation: "+e.getLocalizedMessage();
 			log.debug(msg);
 			throw new RuntimeException(msg);

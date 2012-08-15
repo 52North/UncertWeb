@@ -51,8 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
-import org.uncertweb.api.om.io.EncoderHook;
-import org.uncertweb.api.om.io.XBObservationEncoder;
+import org.uncertweb.api.om.io.AbstractHookedObservationEncoder.EncoderHook;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.BooleanObservation;
 import org.uncertweb.api.om.observation.CategoryObservation;
@@ -66,6 +65,7 @@ import org.uncertweb.api.om.observation.collections.CategoryObservationCollectio
 import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.ObservationCollection;
 import org.uncertweb.api.om.observation.collections.ReferenceObservationCollection;
 import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
@@ -102,8 +102,8 @@ import org.uncertweb.utils.UwConstants;
 public class GenericObservationAggregationProcess extends
 		ExtendedSelfDescribingAlgorithm {
 	
-	static {
-		XBObservationEncoder.registerHook(new EncoderHook() {
+	
+		EncoderHook<OMObservationDocument> encoderHook = new EncoderHook<OMObservationDocument>() {
 			
 			@Override
 			public void encode(AbstractObservation ao, OMObservationDocument xml) {
@@ -112,12 +112,12 @@ public class GenericObservationAggregationProcess extends
 					String url = Utils.getObservationByIdUrl(o.getSourceUrl(), o.getSourceObservations());
 					ObservationContextType oct = xml.getOMObservation().addNewRelatedObservation().addNewObservationContext();
 					oct.addNewRelatedObservation().setHref(url);
-					oct.addNewRole().setType(Constants.OBSERVATION_PARAMETER_AGGREGATED_OF);
+					oct.addNewRole().setRole(Constants.OBSERVATION_PARAMETER_AGGREGATED_OF);
 				}
 			}
 			
-		});
-	}
+		};
+	
 
 	/**
 	 * The URL of the SOS from which the {@link ObservationCollection} will be
