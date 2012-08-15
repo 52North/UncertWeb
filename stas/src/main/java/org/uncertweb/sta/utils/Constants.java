@@ -122,6 +122,8 @@ public class Constants {
 			public static final String SOS_REQUEST_RETURN_SCHEMA = "SOSResponseSchema";
 			public static final String WFS_REQUEST_ID = "WFSRequest";
 			public static final String WFS_URL_ID = "WFSUrl";
+			public static final String NUMBER_REAL = "NumberOfRealisations";
+			public static final String OUTPUT_UNCERTAINTY = "OutputUncertaintyType";
 
 		}
 
