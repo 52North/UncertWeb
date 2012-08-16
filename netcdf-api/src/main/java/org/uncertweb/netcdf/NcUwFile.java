@@ -95,7 +95,11 @@ public class NcUwFile implements Closeable, Iterable<INcUwVariable> {
 		if (this.primaryVariables == null) {
 			this.primaryVariables = UwCollectionUtils.map();
 			for (final String name : getStringAttribute(NcUwConstants.Attributes.PRIMARY_VARIABLES, true).split(" ")) {
-				this.primaryVariables.put(name, AbstractNcUwVariable.create(this, getVariable(name, true), getCache(), null));
+				try {
+					this.primaryVariables.put(name, AbstractNcUwVariable.create(this, getVariable(name, true), getCache(), null));
+				} catch (NcUwException e) {
+					log.error("Can not process primary variable \"" + name + "\"", e);
+				}
 			}
 		}
 		return this.primaryVariables;
