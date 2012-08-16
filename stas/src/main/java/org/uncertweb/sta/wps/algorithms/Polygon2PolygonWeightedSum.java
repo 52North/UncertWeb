@@ -174,7 +174,6 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 	 */
 	private IObservationCollection runAggregation4TimeObject(TimeObject time, 
 			IObservationCollection originalObs, FeatureCollection targetRegions, int numberOfRealisations) throws STASException {
-		IObservationCollection targetObs = null;
 		//Map<SpatialSamplingFeature, IObservationCollection> obsCols4Fois = sortObsByFoi(originalObs);
 		
 		
@@ -249,7 +248,7 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 				}
 			}
 		}
-		return targetObs;
+		return result;
 	}
 	
 	
@@ -331,11 +330,11 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 	 */
 	private SpatialSamplingFeature createSF4Region(Feature region) throws URISyntaxException{
 		//TODO might need to be fixed; currently per default the name is taken as id not the feature ID (which in general is a number)
-		String name = (region.getName()!=null)?region.getName().getLocalPart():region.getIdentifier().getID();
+		String id = region.getIdentifier().toString();
 		Geometry geom = (Geometry)region.getDefaultGeometryProperty().getValue();
 		URI codeSpace = new URI("http://www.uncertweb.org/features");
-		Identifier id = new Identifier(codeSpace,name);
-		SpatialSamplingFeature sfs = new SpatialSamplingFeature(id,null,geom);
+		Identifier identifier = new Identifier(codeSpace,id);
+		SpatialSamplingFeature sfs = new SpatialSamplingFeature(identifier,null,geom);
 		return sfs;
 	}
 
