@@ -1,5 +1,7 @@
 package org.uncertweb.sta.wps.algorithms;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,12 +14,12 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
-import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.opengis.feature.Feature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertml.sample.ContinuousRealisation;
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
@@ -26,9 +28,9 @@ import org.uncertweb.api.om.observation.collections.ObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
-import org.uncertweb.netcdf.NcUwFile;
 import org.uncertweb.sta.utils.Constants;
 import org.uncertweb.sta.wps.AggregationInputs;
+import org.uncertweb.sta.wps.STASException;
 import org.uncertweb.sta.wps.UncertainAggregationInputs;
 import org.uncertweb.sta.wps.api.AbstractProcessInput;
 import org.uncertweb.sta.wps.api.ProcessOutput;
@@ -116,6 +118,11 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 		return result;
 	}
 	
+	/**
+	 * 
+	 * 
+	 */
+	//TODO currently, variables are not checked; needs to be done in future versions!
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 		Map<String, IData> result = new HashMap<String,IData>();
@@ -137,16 +144,22 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 			targetRegions = ((GTVectorDataBinding)inputRegionsInput.get(0)).getPayload();
 		}
 		
+		/*
+		 * observations are first sorted by time and then for each time stamp, the aggregation is done
+		 */
 		Map<TimeObject,IObservationCollection> obs4time = sortObsByTime(originalObs);
 		Iterator<TimeObject> timeIter = obs4time.keySet().iterator();
 		UncertaintyObservationCollection resultObsCol = new UncertaintyObservationCollection();
 		while (timeIter.hasNext()){
 			TimeObject time = timeIter.next();
-			runAggregation4TimeObject(time,originalObs,targetRegions,uncertInputs.getNumberOfRealisations());
-		
+			try {
+				resultObsCol.addObservationCollection(runAggregation4TimeObject(time,originalObs,targetRegions,uncertInputs.getNumberOfRealisations()));
+			} catch (STASException e) {
+				log.info("Error while execution of aggregation process "+IDENTIFIER+" :"+e.getMessage());
+				throw new RuntimeException(e.getMessage());
+			}
 		}
-		
-		
+		result.put(AGGREGATED_OUTPUT.getId(), new OMBinding(resultObsCol));
 		return result;
 	}
 
@@ -157,16 +170,17 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 	 * @param originalObs
 	 * @param targetRegions
 	 * @return
+	 * @throws STASException 
 	 */
 	private IObservationCollection runAggregation4TimeObject(TimeObject time, 
-			IObservationCollection originalObs, FeatureCollection targetRegions, int numberOfRealisations) {
+			IObservationCollection originalObs, FeatureCollection targetRegions, int numberOfRealisations) throws STASException {
 		IObservationCollection targetObs = null;
 		//Map<SpatialSamplingFeature, IObservationCollection> obsCols4Fois = sortObsByFoi(originalObs);
 		
 		
 		
 		//Iterator<SpatialSamplingFeature> foiIter = obsCols4Fois.keySet().iterator();
-		Map<Feature,RegionAggregates> regionsAggCache = new HashMap<Feature,RegionAggregates>(targetRegions.size());
+		Map<Feature,Map<URI,RegionAggregates>> regionsAggCache = new HashMap<Feature,Map<URI,RegionAggregates>>(targetRegions.size());
 		
 		/*
 		 * iterate over fois and for each target region, check intersection; if FOI intersects, store obsCol with intersection are 
@@ -175,6 +189,7 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 		while (obsIter.hasNext()){
 			//TODO add type check!!
 			UncertaintyObservation uncertObs = (UncertaintyObservation) obsIter.next();
+			URI observedProperty = uncertObs.getObservedProperty();
 			Geometry foiGeom = uncertObs.getFeatureOfInterest().getShape();
 			//iterate over target regions
 			FeatureIterator features = targetRegions.features();
@@ -188,12 +203,21 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 					ContinuousRealisation obsResult = (ContinuousRealisation)uncertObs.getResult().getUncertaintyValue();
 					ContinuousRealisation weightedReal = new ContinuousRealisation(obsResult.getValues(),weight);
 					if (regionsAggCache.containsKey(targetRegion)){
-						regionsAggCache.get(targetRegion).addRealisation(weightedReal);
+						if (regionsAggCache.get(targetRegion).containsKey(observedProperty)){
+							regionsAggCache.get(targetRegion).get(observedProperty).addRealisation(weightedReal);
+						}
+						else {
+							List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
+							realList.add(weightedReal);
+							regionsAggCache.get(targetRegion).put(observedProperty, new RegionAggregates(targetRegion,realList,observedProperty));
+						}
 					}
 					else {
 						List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
 						realList.add(weightedReal);
-						regionsAggCache.put(targetRegion, new RegionAggregates(targetRegion,realList));
+						Map<URI,Polygon2PolygonWeightedSum.RegionAggregates> aggs4ObsProps = new HashMap<URI, Polygon2PolygonWeightedSum.RegionAggregates>();
+						aggs4ObsProps.put(observedProperty,new RegionAggregates(targetRegion,realList,observedProperty));
+						regionsAggCache.put(targetRegion, aggs4ObsProps);
 					}
 				}
 				
@@ -202,46 +226,33 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 		
 		//iterate over regions aggregate cache and run aggregations
 		IObservationCollection result = new UncertaintyObservationCollection();
-		Iterator<RegionAggregates> regionsAggIter = regionsAggCache.values().iterator();
+		Iterator<Map<URI, RegionAggregates>> regionsAggIter = regionsAggCache.values().iterator();
 		while (regionsAggIter.hasNext()){
-			RegionAggregates regionAgg = regionsAggIter.next();
-			ContinuousRealisation aggResult = regionAgg.aggregate(numberOfRealisations);
-			UncertaintyResult obsResult = new UncertaintyResult(aggResult);
-			
-			
+			Map<URI, RegionAggregates> regionAgg = regionsAggIter.next();
+			Iterator<RegionAggregates> obsPropsAggIter = regionAgg.values().iterator();
+			while (obsPropsAggIter.hasNext()){
+				RegionAggregates agg = obsPropsAggIter.next();
+				URI observedProperty = agg.getObservedProperty();
+				ContinuousRealisation aggResult = agg.aggregate(numberOfRealisations);
+				UncertaintyResult obsResult = new UncertaintyResult(aggResult);
+				SpatialSamplingFeature foi = null;
+				try {
+					foi = createSF4Region(agg.getRegion());
+				} catch (URISyntaxException e) {
+					throw new STASException(e.getLocalizedMessage());
+				}
+				try {
+					UncertaintyObservation obs = new UncertaintyObservation(time,time,new URI(IDENTIFIER),observedProperty,foi,obsResult);
+					result.addObservation(obs);
+				} catch (URISyntaxException e) {
+					throw new STASException(e.getLocalizedMessage());
+				}
+			}
 		}
-		
-		
 		return targetObs;
 	}
 	
 	
-	/**
-	 * sorts the input observations by time and provides a map containing the times as keys and the corresponding observation collections as values
-	 * 
-	 * @param obsCol
-	 * 			observation collection that should be sorted by time
-	 * @return
-	 * 			map containing the times as keys and the corresponding observation collections as values
-	 */
-	private Map<SpatialSamplingFeature,IObservationCollection> sortObsByFoi(IObservationCollection obsCol){
-		
-		Map<SpatialSamplingFeature,IObservationCollection> result = new HashMap<SpatialSamplingFeature,IObservationCollection>();
-		Iterator<? extends AbstractObservation> obsIter = obsCol.getObservations().iterator();
-		while (obsIter.hasNext()){
-			AbstractObservation obs = obsIter.next();
-			SpatialSamplingFeature foi = obs.getFeatureOfInterest();
-			if (result.containsKey(foi)){
-				result.get(foi).addObservation(obs);
-			}
-			else {
-				IObservationCollection obsColNew = new ObservationCollection();
-				obsColNew.addObservation(obs);
-				result.put(foi, obsColNew);
-			}
-		}
-		return result;
-	}
 	
 	/**
 	 * sorts the input observations by time and provides a map containing the times as keys and the corresponding observation collections as values
@@ -272,27 +283,25 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 	
 	
 	private class RegionAggregates{
+		private URI observedProperty;
 		private Feature region;
 		private List<ContinuousRealisation> originalObsResults;
 		
 		
 		public RegionAggregates(Feature region,
-				List<ContinuousRealisation> originalObsCols) {
+				List<ContinuousRealisation> originalObsCols, URI observedProperty) {
 			this.region = region;
 			this.originalObsResults = originalObsCols;
+			this.observedProperty=observedProperty;
 		}
 		
 		public Feature getRegion() {
 			return region;
 		}
-		public List<ContinuousRealisation> getOriginalObsCols() {
-			return originalObsResults;
-		}
 		
 		public void addRealisation(ContinuousRealisation realisation){
 			this.originalObsResults.add(realisation);
 		}
-		
 		
 		public ContinuousRealisation aggregate(int numberOfRealisations){
 			List<Double> aggregatedValues = new ArrayList<Double>(numberOfRealisations);
@@ -305,22 +314,29 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 			}
 			return new ContinuousRealisation(aggregatedValues);
 		}
+		public URI getObservedProperty(){
+			return this.observedProperty;
+		}
 	}
 	
-	private class WeightedObsCol{
-		private double weight;
-		private IObservationCollection obsCol;
-		
-		public WeightedObsCol(double weight, IObservationCollection obsCol){
-			this.weight=weight;
-			this.obsCol=obsCol;
-		}
-		public double getWeight() {
-			return weight;
-		}
-		public IObservationCollection getObsCol() {
-			return obsCol;
-		}
+	
+	/**
+	 * helper method for generating a spatial sampling feature from a region
+	 * 
+	 * @param region
+	 * 			
+	 * @return	
+	 * 
+	 * @throws URISyntaxException
+	 */
+	private SpatialSamplingFeature createSF4Region(Feature region) throws URISyntaxException{
+		//TODO might need to be fixed; currently per default the name is taken as id not the feature ID (which in general is a number)
+		String name = (region.getName()!=null)?region.getName().getLocalPart():region.getIdentifier().getID();
+		Geometry geom = (Geometry)region.getDefaultGeometryProperty().getValue();
+		URI codeSpace = new URI("http://www.uncertweb.org/features");
+		Identifier id = new Identifier(codeSpace,name);
+		SpatialSamplingFeature sfs = new SpatialSamplingFeature(id,null,geom);
+		return sfs;
 	}
 
 }
