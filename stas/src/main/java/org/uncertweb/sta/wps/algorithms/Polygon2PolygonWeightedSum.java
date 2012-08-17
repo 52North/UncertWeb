@@ -18,7 +18,10 @@ import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.opengis.feature.Feature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertml.UncertML;
 import org.uncertml.sample.ContinuousRealisation;
+import org.uncertml.statistic.Mean;
+import org.uncertml.statistic.Variance;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -47,6 +50,15 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProcess{
+	
+	///////////////////////
+	// supported uncertainty types
+	private static final String CREAL_URI = UncertML.getURI(ContinuousRealisation.class);
+	private static final String MEAN_URI = UncertML.getURI(Mean.class);
+	private static final String VARIANCE_URI = UncertML.getURI(Variance.class);
+	
+	//default SRS EPSG Code
+	private static final int DEFAULT_SRS = 27700;
 	
 	/**
 	 * Input parameter which contains the input regions
@@ -122,7 +134,6 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 	 * 
 	 * 
 	 */
-	//TODO currently, variables are not checked; needs to be done in future versions!
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 		Map<String, IData> result = new HashMap<String,IData>();
@@ -130,6 +141,25 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 		//get common Inputs
 		AggregationInputs commonInputs = super.getAggregationInputs4Inputs(inputData);
 		UncertainAggregationInputs uncertInputs = super.getUncertainAggregationInputs4Inputs(inputData);
+		
+		if (uncertInputs.getNumberOfRealisations()!=1){
+			return runMonteCarlo(inputData);
+		}
+		else {
+			//TODO implement for non-monte carlo case!!
+			return runMonteCarlo(inputData);
+		}
+	}
+	
+	@Override
+	public Map<String, IData> runMonteCarlo(Map<String, List<IData>> inputData) {
+		
+		Map<String, IData> result = new HashMap<String,IData>();
+		
+		//get common Inputs
+		AggregationInputs commonInputs = super.getAggregationInputs4Inputs(inputData);
+		UncertainAggregationInputs uncertInputs = super.getUncertainAggregationInputs4Inputs(inputData);
+		
 		IObservationCollection originalObs = null;
 		FeatureCollection targetRegions = null;
 		
@@ -153,7 +183,7 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 		while (timeIter.hasNext()){
 			TimeObject time = timeIter.next();
 			try {
-				resultObsCol.addObservationCollection(runAggregation4TimeObject(time,originalObs,targetRegions,uncertInputs.getNumberOfRealisations()));
+				resultObsCol.addObservationCollection(runAggregation4TimeObject(time,originalObs,targetRegions,uncertInputs.getNumberOfRealisations(),uncertInputs.getOutputUncertaintyTypes()));
 			} catch (STASException e) {
 				log.info("Error while execution of aggregation process "+IDENTIFIER+" :"+e.getMessage());
 				throw new RuntimeException(e.getMessage());
@@ -173,7 +203,7 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 	 * @throws STASException 
 	 */
 	private IObservationCollection runAggregation4TimeObject(TimeObject time, 
-			IObservationCollection originalObs, FeatureCollection targetRegions, int numberOfRealisations) throws STASException {
+			IObservationCollection originalObs, FeatureCollection targetRegions, int numberOfRealisations,List<String> uncertaintyTypes) throws STASException {
 		//Map<SpatialSamplingFeature, IObservationCollection> obsCols4Fois = sortObsByFoi(originalObs);
 		
 		
@@ -194,6 +224,7 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 			FeatureIterator features = targetRegions.features();
 			while (features.hasNext()){
 				Feature targetRegion = features.next();
+				
 				Geometry regionGeom = (Geometry)targetRegion.getDefaultGeometryProperty().getValue();
 				if (regionGeom.intersects(foiGeom)){
 					Geometry intersectionArea = regionGeom.intersection(foiGeom);
@@ -233,7 +264,6 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 				RegionAggregates agg = obsPropsAggIter.next();
 				URI observedProperty = agg.getObservedProperty();
 				ContinuousRealisation aggResult = agg.aggregate(numberOfRealisations);
-				UncertaintyResult obsResult = new UncertaintyResult(aggResult);
 				SpatialSamplingFeature foi = null;
 				try {
 					foi = createSF4Region(agg.getRegion());
@@ -241,8 +271,22 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 					throw new STASException(e.getLocalizedMessage());
 				}
 				try {
-					UncertaintyObservation obs = new UncertaintyObservation(time,time,new URI(IDENTIFIER),observedProperty,foi,obsResult);
-					result.addObservation(obs);
+					
+					if (uncertaintyTypes==null||uncertaintyTypes.contains(CREAL_URI)){
+						UncertaintyResult obsResult = new UncertaintyResult(aggResult);
+						UncertaintyObservation obs = new UncertaintyObservation(time,time,new URI(IDENTIFIER),observedProperty,foi,obsResult);
+						result.addObservation(obs);
+					}
+					if (uncertaintyTypes!=null&&uncertaintyTypes.contains(MEAN_URI)){
+						UncertaintyResult obsResult = new UncertaintyResult(computeMean(aggResult));
+						UncertaintyObservation obs = new UncertaintyObservation(time,time,new URI(IDENTIFIER),observedProperty,foi,obsResult);
+						result.addObservation(obs);
+					}
+					if (uncertaintyTypes!=null&&uncertaintyTypes.contains(VARIANCE_URI)){
+						UncertaintyResult obsResult = new UncertaintyResult(computeVariance(aggResult));
+						UncertaintyObservation obs = new UncertaintyObservation(time,time,new URI(IDENTIFIER),observedProperty,foi,obsResult);
+						result.addObservation(obs);
+					}
 				} catch (URISyntaxException e) {
 					throw new STASException(e.getLocalizedMessage());
 				}
@@ -332,10 +376,45 @@ public class Polygon2PolygonWeightedSum extends AbstractUncertainAggregationProc
 		//TODO might need to be fixed; currently per default the name is taken as id not the feature ID (which in general is a number)
 		String id = region.getIdentifier().toString();
 		Geometry geom = (Geometry)region.getDefaultGeometryProperty().getValue();
+		if (geom.getSRID()==0){
+			geom.setSRID(DEFAULT_SRS);
+		}
 		URI codeSpace = new URI("http://www.uncertweb.org/features");
 		Identifier identifier = new Identifier(codeSpace,id);
 		SpatialSamplingFeature sfs = new SpatialSamplingFeature(identifier,null,geom);
 		return sfs;
+	}
+
+	private Mean computeMean(ContinuousRealisation real){
+		List<Double> values = real.getValues();
+		double sum = 0;
+		for (Double value:values){
+			sum+=value;
+		}
+		sum=sum/values.size();
+		return new Mean(sum);
+	}
+	
+	private Variance computeVariance(ContinuousRealisation real){
+		double mean = computeMean(real).getValues().get(0);
+		List<Double> values = real.getValues();
+		double sum = 0;
+		for (Double value:values){
+			sum+=((mean-value)*(mean-value));
+		}
+		sum=sum/values.size();
+		return new Variance(sum);
+	}
+
+
+
+	@Override
+	public List<String> getSupportedUncertaintyTypes() {
+		List<String> result = new ArrayList<String>();
+		result.add(CREAL_URI);
+		result.add(MEAN_URI);
+		result.add(VARIANCE_URI);
+		return result;
 	}
 
 }
