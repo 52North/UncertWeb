@@ -6,7 +6,7 @@
 		<artifactId>uncertweb-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-	<name>UncertWeb O&amp;M Format Conversion Service</name>
+	<name>UncertWeb OM Format Conversion Service</name>
 	<artifactId>om-conversion-service</artifactId>
 	<packaging>war</packaging>
 	<version>1.0.0-SNAPSHOT</version>
