@@ -103,8 +103,7 @@
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
-			<version>[0.9.8,)</version>
-			<scope>test</scope>
+			<version>0.9.8</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
