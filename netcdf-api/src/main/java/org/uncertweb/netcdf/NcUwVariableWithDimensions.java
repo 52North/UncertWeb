@@ -406,10 +406,8 @@ class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 				xSize, ySize, envelope });
 		b.setImageSize(xSize, ySize);
 		b.setEnvelope(envelope);
-		final GridCoverageBuilder.Variable var = b.newVariable(
-				LAYER_NAME, Unit.ONE);
-		var.setLinearTransform(SCALE,
-				OFFSET);
+		final GridCoverageBuilder.Variable var = b.newVariable(LAYER_NAME, Unit.ONE);
+		var.setLinearTransform(SCALE, OFFSET);
 
 		var.addNodataValue(NODATA_VALUE_NAME, NODATA_VALUE);
 		return new WriteableGridCoverage(b.getGridCoverage2D().view(
