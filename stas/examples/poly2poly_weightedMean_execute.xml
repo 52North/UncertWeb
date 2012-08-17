@@ -16,6 +16,24 @@
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
+			<ows:Identifier>OutputUncertaintyType</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData dataType="xs:string">http://www.uncertml.org/statistics/mean</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>OutputUncertaintyType</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData dataType="xs:string">http://www.uncertml.org/statistics/variance</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>OutputUncertaintyType</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData dataType="xs:string"> 	http://www.uncertml.org/samples/continuous-realisation</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
 			<ows:Identifier>NumberOfRealisations</ows:Identifier>
 			<wps:Data>
 				<wps:LiteralData dataType="xs:integer">100</wps:LiteralData>
@@ -33,7 +51,7 @@
 		</wps:Input>
 	</wps:DataInputs>
 	<wps:ResponseForm>
-    <wps:RawDataOutput>
+    <wps:RawDataOutput mimeType="application/x-om-u+xml">
         <ows:Identifier>AggregatedData</ows:Identifier>
     </wps:RawDataOutput>
   </wps:ResponseForm>
