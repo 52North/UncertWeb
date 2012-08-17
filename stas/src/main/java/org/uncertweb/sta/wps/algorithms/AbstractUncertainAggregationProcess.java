@@ -32,7 +32,7 @@ public abstract class AbstractUncertainAggregationProcess extends
 	 */
 	public static final SingleProcessInput<Integer> NUMBER_REAL = new SingleProcessInput<Integer>(
 			Constants.Process.Inputs.NUMBER_REAL, LiteralIntBinding.class,
-			1, 1, null, 1);
+			0, 1, null, 1);
 
 	/**
 	 * Indicates the type of uncertainty that should be returned
@@ -47,6 +47,18 @@ public abstract class AbstractUncertainAggregationProcess extends
 	 * @return the identifier of the process
 	 */
 	public abstract String getIdentifier();
+	
+	/**
+	 * 
+	 * @return the identifier of the process
+	 */
+	public abstract List<String> getSupportedUncertaintyTypes();
+	
+	/**
+	 * 
+	 * @return the identifier of the process
+	 */
+	public abstract Map<String, IData> runMonteCarlo(Map<String, List<IData>> inputData);
 
 	/**
 	 * returns the standard parameters of every error aware aggregation process
@@ -67,10 +79,16 @@ public abstract class AbstractUncertainAggregationProcess extends
 			uoutputTypes = new ArrayList<String>(
 					uoutputTypesList.size());
 			Iterator<IData> uotIter = uoutputTypesList.iterator();
+			List<String> supportedUncertaintTypes = getSupportedUncertaintyTypes();
 			while (uotIter.hasNext()) {
 				String outputUncertaintyType = ((LiteralStringBinding) uotIter
 						.next()).getPayload();
-				uoutputTypes.add(outputUncertaintyType);
+				if (supportedUncertaintTypes.contains(outputUncertaintyType)){
+					uoutputTypes.add(outputUncertaintyType);
+				}
+				else {
+					throw new RuntimeException("Uncertainty type " + outputUncertaintyType + " is not supported by the aggregation algorithm " + getIdentifier()+" !");
+				}
 			}
 		}
 
