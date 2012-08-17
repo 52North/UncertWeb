@@ -55,6 +55,7 @@ import junit.framework.Assert;
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
 import org.apache.commons.math.distribution.NormalDistribution;
 import org.apache.xmlbeans.XmlException;
 import org.bson.types.ObjectId;
@@ -78,8 +79,10 @@ import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Probabil
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.StandardDeviation;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Variance;
 import org.uncertweb.viss.vis.sample.RealisationVisualizer;
+import org.uncertweb.viss.vis.sample.SampleVisualizer;
 import org.uncertweb.viss.vis.statistic.SimpleStatisticVisualizer.MeanStatistic;
 
+import com.mongodb.util.JSON;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -93,7 +96,6 @@ public class VissTest extends JerseyTest {
 	private static final URI BIOTEMP_T = URI.create("http://giv-uw.uni-muenster.de/data/netcdf/biotemp-t.nc");
 	private static final URI BIOTEMP = URI.create("http://giv-uw.uni-muenster.de/data/netcdf/biotemp.nc");
 	private static final URI EU_JUNE = URI.create("http://giv-uw.uni-muenster.de/data/netcdf/EU_June_4.nc");
-
 	private static final String OM_DATE_TIME = "2011-08-02T16:39:17.820+02:00";
 	
 	
@@ -108,7 +110,7 @@ public class VissTest extends JerseyTest {
 		org.slf4j.bridge.SLF4JBridgeHandler.install();
 	}
 
-//	@Before
+	@Before
 	public void deleteAll() throws JSONException {
 		JSONObject j = getWebResource().path(RESOURCES)
 				.accept(JSON_RESOURCE_LIST_TYPE).get(JSONObject.class);
@@ -386,6 +388,21 @@ public class VissTest extends JerseyTest {
 		assertEquals(cdfVisId1, cdfVisId2);
 	}
 
+	@Test
+	public void testOslo() throws JSONException {
+		ObjectId r = addResource(NETCDF_TYPE, VissTest.class.getResourceAsStream("/data/oslo_conc_20110103_new2.nc"));
+		ObjectId ds = getDataSetsForResource(r)[0];
+		String visualizer = getNameForVisualizer(SampleVisualizer.class);
+		JSONObject visualizerDescription = getVisualizerForDataset(r, ds, visualizer);
+		System.err.println(visualizerDescription.toString(4));
+		String vis = createVisualization(r, ds, 
+				visualizer, new JSONObject()
+					.put("realisation", 0)
+					.put("sample", 3)
+					.put("time", "2011-01-03T02:00:00.000+01:00"));
+		System.err.println(vis);
+	}
+	
 	public ObjectId[] getDataSetsForResource(ObjectId resource) {
 		try {
 			JSONObject j = getWebResource().path(

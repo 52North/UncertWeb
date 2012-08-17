@@ -138,11 +138,11 @@ public class SampleVisualizer extends
 	}
 
 	public static void main(String[] args) {
-	IUncertainty u = new RandomSample(new AbstractRealisation[] { 
+		IUncertainty u = new RandomSample(new AbstractRealisation[] { 
 			new ContinuousRealisation(new double[] { 1.1, 1.2, 1.3 }),
 			new ContinuousRealisation(new double[] { 1.0, 1.1, 1.2 })
-	});
-	System.out.println(new JSONEncoder().encode(u));
+		});
+		System.out.println(new JSONEncoder().encode(u));
 	}
 	
 }
