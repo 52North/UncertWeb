@@ -3,7 +3,7 @@
 pkgname=visc-svn
 _pkgname=${pkgname%-svn}
 pkgver=1945
-pkgrel=1
+pkgrel=3
 pkgdesc="UncertWeb Uncertainty Visualization Client"
 arch=(any)
 url="http://uncertweb.org"

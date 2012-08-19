@@ -1,0 +1,33 @@
+#!/bin/sh -e
+
+TARGET=./packages
+DB_NAME=uw-viss
+MAKE_OPS="-s"
+SYNC=false
+
+while getopts t:d:sif o; do
+  case ${o} in 
+    t) TARGET=${OPTARG} ;;
+    d) DB_NAME=${OPTARG} ;;
+    s) SYNC=true ;;
+    f) MAKE_OPS="$MAKE_OPS -f" ;;
+    i) MAKE_OPS="$MAKE_OPS -i" ;;
+    [?]) 
+      echo >&2 "Usage $0 [-sif] [-t target] [-d dbname]"
+      exit 1
+    ;;
+  esac	
+done
+
+# build
+makeworld $MAKE_OPTS ${TARGET} .
+
+# generate repo
+repo-add -d ${TARGET}/${DB_NAME}.db.tar.gz ${TARGET}/*.pkg.tar.xz
+
+if $SYNC; then
+  # sync to givu-uw
+  rsync -ahHPv ${TARGET}/ c_aute01@giv-uw.uni-muenster.de:/srv/http/arch
+fi
+
+# vim:set ts=2 sw=2 et:

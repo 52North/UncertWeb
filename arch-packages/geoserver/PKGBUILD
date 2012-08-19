@@ -3,7 +3,7 @@ _tomcat=tomcat7
 
 pkgname=geoserver
 pkgver=2.1.1
-pkgrel=1
+pkgrel=3
 pkgdesc="Open source WFS/WCS/WMS implementation"
 arch=(any)
 url="http://geoserver.org/"

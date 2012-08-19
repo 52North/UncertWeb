@@ -3,7 +3,7 @@ _tomcat=tomcat7
 
 pkgname=omcs-svn
 pkgver=2023
-pkgrel=1
+pkgrel=3
 pkgdesc="Uncertainty raster visualization service"
 arch=(any)
 url="http://uncertweb.org"
