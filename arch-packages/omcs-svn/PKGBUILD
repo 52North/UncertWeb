@@ -1,0 +1,53 @@
+# Maintainer: Christian Autermann <autermann@uni-muenster.de>
+_tomcat=tomcat7
+
+pkgname=omcs-svn
+pkgver=2023
+pkgrel=1
+pkgdesc="Uncertainty raster visualization service"
+arch=(any)
+url="http://uncertweb.org"
+license=('GPL')
+depends=(${_tomcat})
+makedepends=(maven subversion)
+optdepends=()
+options=(!strip !zipman emptydirs !purge)
+
+_pkgname=${pkgname%-svn}
+_svntrunk="https://svn.52north.org/svn/geostatistics/main/uncertweb/om-conversion-service/trunk"
+_svnmod=${_pkgname}
+_finalname="om-conversion-service"
+_context_path=${_pkgname}
+
+build() {
+  cd ${srcdir}
+  
+  msg "Connecting to ${_svnmod} SVN server..."
+  if [ -d ${_svnmod}/.svn ]; then
+    (cd ${_svnmod} && svn up -r $pkgver)
+  else 
+    svn co ${_svntrunk} --trust-server-cert --non-interactive --config-dir ./ -r $pkgver ${_svnmod}
+  fi
+  msg "SVN checkout done or sever timeout"
+  msg "Starting the build"
+
+  # copy source for build
+  rm -rf ${srcdir}/${_svnmod}-build
+  cp -r ${srcdir}/${_svnmod} ${srcdir}/${_svnmod}-build
+
+  cd ${srcdir}/${_svnmod}-build
+  mvn -B -Dmaven.repo.local="../maven-repo" -DskipTests=true -ff package
+}
+
+package() {
+  cd ${srcdir}/${_svnmod}-build
+  install -dm775 ${pkgdir}/var/{lib,log}/${_tomcat} 
+  install -dm755 ${pkgdir}/var/lib/${_tomcat}/webapps
+  
+  cp -dpr --no-preserve=ownership target/${_finalname} ${pkgdir}/var/lib/${_tomcat}/webapps/${_pkgname}
+  touch ${pkgdir}/var/log/${_tomcat}/${_pkgname}.log
+  chown -R 66:19 ${pkgdir}/var/log/${_tomcat}
+  chown -R 66:66 ${pkgdir}/var/lib/${_tomcat}
+}
+
+# vim:set ts=2 sw=2 et:

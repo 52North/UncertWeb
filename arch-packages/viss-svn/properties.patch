@@ -1,0 +1,43 @@
+Index: src/main/resources/log4j.properties
+===================================================================
+--- src/main/resources/log4j.properties	(revision 1955)
++++ src/main/resources/log4j.properties	(working copy)
+@@ -1,4 +1,4 @@
+-log4j.rootLogger=FATAL, CONSOLE, LOGFILE
++log4j.rootLogger=FATAL, LOGFILE
+ 
+ log4j.logger.org.uncertweb=DEBUG
+ 
+@@ -9,6 +9,6 @@
+ log4j.appender.LOGFILE=org.apache.log4j.DailyRollingFileAppender
+ log4j.appender.LOGFILE.layout=org.apache.log4j.PatternLayout
+ log4j.appender.LOGFILE.layout.ConversionPattern=%-5p %d{HH:mm:ss} %C{1} - %m%n
+-log4j.appender.LOGFILE.file=${catalina.base}/logs/viss.log
++log4j.appender.LOGFILE.file=/var/log/tomcat6/viss.log
+ log4j.appender.LOGFILE.datePattern='.'yyyy-MM-dd
+ 
+Index: src/main/resources/geoserver.properties
+===================================================================
+--- src/main/resources/geoserver.properties	(revision 1955)
++++ src/main/resources/geoserver.properties	(working copy)
+@@ -16,4 +16,4 @@
+ pass=geoserver
+ 
+ # the tmp path, for a same server installation (optional)
+-path=/tmp/geoserver
+\ No newline at end of file
++path=/var/lib/viss/geoserver
+Index: src/main/resources/viss.properties
+===================================================================
+--- src/main/resources/viss.properties	(revision 1955)
++++ src/main/resources/viss.properties	(working copy)
+@@ -4,6 +4,6 @@
+ implementation.visualizationReference=org.uncertweb.viss.core.vis.DefaultVisualizationReference
+ cleanup.interval=PT2H
+ cleanup.deleteBefore=P1D
+-workingDir=/tmp/viss
++workingDir=/var/lib/viss
+ prettyPrintIO=true
+-visualizerSearchPackages=
+\ No newline at end of file
++visualizerSearchPackages=

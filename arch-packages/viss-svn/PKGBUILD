@@ -1,0 +1,90 @@
+# Maintainer: Christian Autermann <autermann@uni-muenster.de>
+_tomcat=tomcat7
+
+pkgname=viss-svn
+_pkgname=${pkgname%-svn}
+pkgver=2019
+pkgrel=1
+pkgdesc="Uncertainty raster visualization service"
+arch=(any)
+url="http://uncertweb.org"
+license=('GPL')
+depends=(${_tomcat} gdal mongodb geoserver=2.1.1)
+makedepends=(maven subversion)
+optdepends=("visc-svn: for the standard same server setup")
+options=(!strip !zipman emptydirs !purge)
+backup=(etc/${_pkgname}/geoserver.properties
+        etc/${_pkgname}/mongo.properties
+        etc/${_pkgname}/${_pkgname}.properties
+        etc/${_pkgname}/log4j.properties
+        etc/${_pkgname}/geoserver.properties)
+source=(properties.patch)
+md5sums=('6e3216a451448ac07af8eb92c7fd7ec8')
+
+_svntrunk="https://svn.52north.org/svn/geostatistics/main/uncertweb/viss/trunk"
+_svnmod=${_pkgname}
+_finalname=${_pkgname}
+
+build() {
+  cd ${srcdir}
+  
+  msg "Connecting to ${_svnmod} SVN server..."
+  if [ -d ${_svnmod}/.svn ]; then
+    (cd ${_svnmod} && svn up -r $pkgver)
+  else 
+    svn co ${_svntrunk} --trust-server-cert --non-interactive --config-dir ./ -r $pkgver ${_svnmod}
+  fi
+  msg "SVN checkout done or sever timeout"
+  msg "Starting the build"
+
+  # copy source for build
+  rm -rf ${srcdir}/${_svnmod}-build
+  cp -r ${srcdir}/${_svnmod} ${srcdir}/${_svnmod}-build
+
+  # entering build directory
+  cd ${srcdir}/${_svnmod}-build
+
+  # patching 
+  patch -Np0 -i ${srcdir}/properties.patch
+
+  # build
+  mvn -B -Dmaven.repo.local="../maven-repo" -DskipTests=true -ff package
+}
+
+package() {
+  cd ${srcdir}/${_svnmod}-build
+
+  # create directories
+  install -dm775 ${pkgdir}/var/{lib,log}/${_tomcat} 
+  install -dm755 ${pkgdir}/var/lib/${_tomcat}/webapps
+  install -dm775 ${pkgdir}/var/lib/${_pkgname}{,/geoserver}
+  install -dm775 ${pkgdir}/etc/{${_pkgname},${_tomcat}{,/Catalina}}
+
+  # copy webapp
+  cp -dpr --no-preserve=ownership target/${_finalname} ${pkgdir}/var/lib/${_tomcat}/webapps/${_pkgname}
+
+  # create log file
+  touch ${pkgdir}/var/log/${_tomcat}/${_pkgname}.log
+
+  # move config files
+  for conf in {geoserver,mongo,viss,log4j}.properties; do
+    local _orig=${pkgdir}/var/lib/${_tomcat}/webapps/${_pkgname}/WEB-INF/classes/${conf} #todo
+    mv ${_orig} ${pkgdir}/etc/${_pkgname}/${conf}
+    ln -s /etc/${_pkgname}/${conf} ${_orig}
+  done
+  unset conf
+
+  mkdir -p ${pkgdir}/etc/${_tomcat}/Catalina/localhost
+  cat > ${pkgdir}/etc/${_tomcat}/Catalina/localhost/${_pkgname}.xml << EOF
+<?xml version="1.0" encoding="UTF-8" ?>
+<Context allowLinking="true" />
+EOF
+
+  # 66=tomcat, 19=log
+  chown -R 66:19 ${pkgdir}/var/log/${_tomcat}
+  chown -R 66:66 ${pkgdir}/var/lib/{${_tomcat},${_pkgname}}
+  chown -R 66:66 ${pkgdir}/etc/${_tomcat}/Catalina
+  chgrp -R 66    ${pkgdir}/etc/${_pkgname}
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,49 @@
+# Maintainer: Christian Autermann <autermann@uni-muenster.de>
+_tomcat=tomcat7
+
+pkgname=geoserver
+pkgver=2.1.1
+pkgrel=1
+pkgdesc="Open source WFS/WCS/WMS implementation"
+arch=(any)
+url="http://geoserver.org/"
+license=('GPL')
+depends=($_tomcat)
+source=(http://giv-uw.uni-muenster.de/$pkgname-$pkgver.war)
+noextract=($pkgname-$pkgver.war)
+md5sums=('1eaa0f9f072956a77f559f0838dd232c')
+builddepends=(unzip)
+options=(!strip !zipman emptydirs !purge)
+
+
+build() {
+  cd ${srcdir}
+  rm -rf ${pkgname}
+  msg "Extracting WAR file"
+  unzip -q ${pkgname}-${pkgver}.war -d ${pkgname}
+  sed -e "s|logs/geoserver\.log|/var/log/${_tomcat}/${pkgname}.log|" \
+	  -i "${pkgname}/data/logging.xml"
+}
+
+package() {
+  cd "$srcdir"
+  install -dm775 ${pkgdir}/var/lib/${_tomcat}
+  install -dm755 ${pkgdir}/var/lib/${_tomcat}/webapps
+  cp -dpr --no-preserve=ownership ${pkgname} ${pkgdir}/var/lib/${_tomcat}/webapps/${pkgname}
+  chown -R 66:66 ${pkgdir}/var/lib/${_tomcat}
+
+  install -dm775 -o 66 -g 19 ${pkgdir}/var/log/${_tomcat}
+  touch ${pkgdir}/var/log/${_tomcat}/${pkgname}.log
+  chown 66:19 ${pkgdir}/var/log/${_tomcat}/${pkgname}.log
+  
+  # move config files
+  install -d -m 775 -g 66 ${pkgdir}/etc/${pkgname}
+  mv ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/security ${pkgdir}/etc/${pkgname}
+  ln -s /etc/${pkgname}/security ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/security
+  for conf in wfs wcs wms logging global; do
+    mv ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/${conf}.xml ${pkgdir}/etc/${pkgname}
+    ln -s /etc/${pkgname}/${conf}.xml ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/${conf}.xml
+  done
+}
+
+# vim:set ts=2 sw=2 et:

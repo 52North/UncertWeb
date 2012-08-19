@@ -1,0 +1,55 @@
+# Maintainer: Christian Autermann <autermann@uni-muenster.de>
+
+pkgname=visc-svn
+_pkgname=${pkgname%-svn}
+pkgver=1945
+pkgrel=1
+pkgdesc="UncertWeb Uncertainty Visualization Client"
+arch=(any)
+url="http://uncertweb.org"
+license=('GPL')
+depends=(apache)
+optdepends=("viss-svn: for the standard same-server setup"
+            "omcs-svn: for the standard same server setup")
+makedepends=(subversion)
+source=(settings_r1945.patch)
+backup=("etc/$_pkgname/settings.js")
+md5sums=('da5553f86cab7d0873109ea18527156a')
+options=(!purge !strip !zipman emptydirs)
+
+_svntrunk="https://svn.52north.org/svn/geostatistics/main/uncertweb/vis-client/trunk/v2"
+_svnmod=${_pkgname}
+_web_path=${_pkgname}
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to ${_svnmod} SVN server..."
+  if [ -d "${_svnmod}/.svn" ]; then
+    (cd ${_svnmod} && svn up -r $pkgver)
+  else 
+    svn co ${_svntrunk} --non-interactive --trust-server-cert --config-dir ./ -r $pkgver ${_svnmod}
+  fi
+  msg "SVN checkout done or server timeout"
+  # copy source for build
+  rm -rf "${srcdir}/${_svnmod}-build"
+  svn export -q "${srcdir}/${_svnmod}" "${srcdir}/${_svnmod}-build"
+  # entering build directory
+  cd "${srcdir}/${_svnmod}-build"
+  # patch settings
+  patch -Np0 -i "${srcdir}/settings_r1945.patch" 
+  # remove example data directory
+  rm -r "${srcdir}/${_svnmod}-build/data"
+}
+
+package() {
+  cd "${srcdir}/${_svnmod}-build"
+  install -dm 755 "${pkgdir}/srv/http"
+  install -dm 755 "${pkgdir}/etc/${_pkgname}"
+  install -dm 755 "${pkgdir}/usr/share"
+  cp -dpr --no-preserve=ownership "." "${pkgdir}/usr/share/${_pkgname}"
+  mv "${pkgdir}/usr/share/${_pkgname}/libs/vis/settings.js" "${pkgdir}/etc/${_pkgname}/settings.js"
+  ln -s "/etc/${_pkgname}/settings.js" "${pkgdir}/usr/share/${_pkgname}/libs/vis/settings.js"
+  ln -s "/usr/share/${_pkgname}" "${pkgdir}/srv/http/${_web_path}"
+}
+
+# vim:set ts=2 sw=2 et:

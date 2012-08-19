@@ -1,0 +1,86 @@
+Index: libs/vis/settings.js
+===================================================================
+--- libs/vis/settings.js	(revision 1950)
++++ libs/vis/settings.js	(working copy)
+@@ -20,41 +20,47 @@
+  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  */
+ 
+-
+ // OM conversion service url
+-var omConversionServiceUrl = "http://giv-uw.uni-muenster.de:8080/omcs";
++var omConversionServiceUrl = "http://" + window.location.host + ":8080/omcs";
+ 
+ // url of visualization service to use
+-var vissUrl = "http://giv-uw.uni-muenster.de:8080/viss";
++var vissUrl = "http://" + window.location.host + ":8080/viss";
+ 
+ // Resources to show by default
+-var defaultResources = [ {
+-	vissUrl : vissUrl,
+-	url : 'http://giv-uw.uni-muenster.de/vis/v2/data/raster/biotemp.nc',
+-	mime : 'application/netcdf'
+-}, {
+-	vissUrl : vissUrl,
+-	url : 'http://giv-uw.uni-muenster.de/vis/v2/data/raster/aggresults.nc',
+-	mime : 'application/netcdf'
+-}, {
+-	vissUrl : vissUrl,
+-	url : 'http://giv-uw.uni-muenster.de/data/netcdf/biotemp-t.nc',
+-	mime : 'application/netcdf'
+-}, {
+-	vissUrl : vissUrl,
+-	url : 'http://giv-uw.uni-muenster.de/vis/v2/data/json/uncertainty-collection.json',
+-	mime : 'application/vnd.org.uncertweb.viss.uncertainty-collection+json'
+-}, {
+-	url : 'data/json/gaussian.json',
+-	mime : 'application/jsom'
+-}, {
+-	url : 'data/json/austalObs.json',
+-	mime : 'application/jsom'
+-}, {
+-	// absolute path required for conversion service
+-	url : 'http://giv-uw.uni-muenster.de/vis/v2/data/xml/cropallocations_realisations.xml',
+-	mime : 'om2' // TODO
+-}, {
+-	url: 'data/json/dummy_WP8.3_output.json',
+-	mime : 'application/jsom'
+-} ];
+\ No newline at end of file
++var defaultResources = [ 
++	{
++		vissUrl : vissUrl,
++		url : 'http://giv-uw.uni-muenster.de/data/netcdf/biotemp-t.nc',
++		mime : 'application/netcdf'
++	}, 
++	{
++		vissUrl : vissUrl,
++		url : 'http://giv-uw.uni-muenster.de/vis/v2/data/json/uncertainty-collection.json',
++		mime : 'application/vnd.org.uncertweb.viss.uncertainty-collection+json'
++	},
++/*	
++	{
++		url : 'data/json/gaussian.json',
++		mime : 'application/jsom'
++	},
++*/
++/*	
++	{
++		url : 'data/json/austalObs.json',
++		mime : 'application/jsom'
++	}, 
++*/
++/*
++	{
++		// absolute path required for conversion service
++		url : 'http://giv-uw.uni-muenster.de/vis/v2/data/xml/cropallocations_realisations.xml',
++		mime : 'om2' // TODO
++	},
++*/
++/*	
++	{
++		url: 'data/json/dummy_WP8.3_output.json',
++		mime : 'application/jsom'
++	} 
++*/
++];
