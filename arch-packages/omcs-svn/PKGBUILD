@@ -12,6 +12,7 @@ depends=(${_tomcat})
 makedepends=(maven subversion)
 optdepends=()
 options=(!strip !zipman emptydirs !purge)
+groups=(uw-viss)
 
 _pkgname=${pkgname%-svn}
 _svntrunk="https://svn.52north.org/svn/geostatistics/main/uncertweb/om-conversion-service/trunk"

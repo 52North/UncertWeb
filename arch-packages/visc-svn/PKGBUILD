@@ -16,6 +16,7 @@ source=(settings_r1945.patch)
 backup=("etc/$_pkgname/settings.js")
 md5sums=('da5553f86cab7d0873109ea18527156a')
 options=(!purge !strip !zipman emptydirs)
+groups=(uw-viss)
 
 _svntrunk="https://svn.52north.org/svn/geostatistics/main/uncertweb/vis-client/trunk/v2"
 _svnmod=${_pkgname}

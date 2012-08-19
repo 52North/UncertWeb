@@ -20,6 +20,7 @@ backup=(etc/${_pkgname}/geoserver.properties
         etc/${_pkgname}/geoserver.properties)
 source=(properties.patch)
 md5sums=('6e3216a451448ac07af8eb92c7fd7ec8')
+groups=(uw-viss)
 
 _svntrunk="https://svn.52north.org/svn/geostatistics/main/uncertweb/viss/trunk"
 _svnmod=${_pkgname}
