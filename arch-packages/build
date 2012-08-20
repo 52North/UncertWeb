@@ -1,12 +1,12 @@
 #!/bin/sh -e
 
-TARGET=./packages
-DB_NAME=uw-viss
+TARGET="./packages"
+DB_NAME="uw-viss"
 MAKE_OPS="--syncdeps --log"
 SYNC=false
-USER=c_aute01
-HOST=giv-uw.uni-muenster.de
-RPATH=/src/http/arch
+USER="c_aute01"
+HOST="giv-uw.uni-muenster.de"
+RPATH="/srv/http/arch"
 CLEAN=false
 
 
@@ -50,7 +50,7 @@ fi
 makeworld $MAKE_OPTS ${TARGET} .
 
 # generate repo
-repo-add -d ${TARGET}/${DB_NAME}.db.tar.gz ${TARGET}/*.pkg.tar.xz
+repo-add ${TARGET}/${DB_NAME}.db.tar.gz ${TARGET}/*.pkg.tar.xz
 
 if $SYNC; then
   # sync to givu-uw
