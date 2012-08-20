@@ -4,7 +4,7 @@ _tomcat=tomcat7
 pkgname=viss-svn
 _pkgname=${pkgname%-svn}
 pkgver=2019
-pkgrel=3
+pkgrel=4
 pkgdesc="Uncertainty raster visualization service"
 arch=(any)
 url="http://uncertweb.org"
@@ -19,7 +19,7 @@ backup=(etc/${_pkgname}/geoserver.properties
         etc/${_pkgname}/log4j.properties
         etc/${_pkgname}/geoserver.properties)
 source=(properties.patch)
-md5sums=('6e3216a451448ac07af8eb92c7fd7ec8')
+md5sums=('79c4167c1967b87e856eefe2ed5cc503')
 groups=(uw-viss)
 
 _svntrunk="https://svn.52north.org/svn/geostatistics/main/uncertweb/viss/trunk"
