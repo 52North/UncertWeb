@@ -2,22 +2,49 @@
 
 TARGET=./packages
 DB_NAME=uw-viss
-MAKE_OPS="-s"
+MAKE_OPS="--syncdeps --log"
 SYNC=false
+USER=c_aute01
+HOST=giv-uw.uni-muenster.de
+RPATH=/src/http/arch
+CLEAN=false
 
-while getopts t:d:sif o; do
+
+function help() {
+      echo >&2 "Usage $0 [-ifc] [-d dbname] [ -s [-u user] [-h host] [-p path]] [-t target]"
+      echo >&2 "    -i         install packages [default: false]"
+      echo >&2 "    -f         overwrite existing packages [default: false]"
+      echo >&2 "    -c         clean target/database/packages [default: false]"
+      echo >&2 "    -d dbname  use \"dbname\" as the repo name [default: uw-viss]"
+      echo >&2 "    -s         sync repo to a remote server [default: false]"
+      echo >&2 "    -u user    the user used to sync [default: c_aute01]"
+      echo >&2 "    -h host    the host used to sync [default: giv-uw.uni-muenster.de]"
+      echo >&2 "    -p path    the path on the remote server [default: /src/http/arch]"
+      echo >&2 "    -t target  the local directory to build the repo database [default: ./packages]"
+      exit 1
+}
+
+while getopts t:u:h:p:d:csfi o 2>/dev/null ; do
   case ${o} in 
     t) TARGET=${OPTARG} ;;
+    u) USER=${OPTARGS} ;;
+    h) HOST=${OPTARGS} ;;
+    p) RPATH=${OPTARGS} ;;
     d) DB_NAME=${OPTARG} ;;
+    c) CLEAN=true ;;
     s) SYNC=true ;;
-    f) MAKE_OPS="$MAKE_OPS -f" ;;
-    i) MAKE_OPS="$MAKE_OPS -i" ;;
+    f) MAKE_OPS="$MAKE_OPS --force" ;;
+    i) MAKE_OPS="$MAKE_OPS --install" ;;
     [?]) 
-      echo >&2 "Usage $0 [-sif] [-t target] [-d dbname]"
-      exit 1
+      help
     ;;
   esac	
 done
+
+if $CLEAN; then
+  rm -rf ${TARGET}
+  rm -rf */{src,pkg} */*.pkg.tar.xz
+fi
 
 # build
 makeworld $MAKE_OPTS ${TARGET} .
@@ -27,7 +54,7 @@ repo-add -d ${TARGET}/${DB_NAME}.db.tar.gz ${TARGET}/*.pkg.tar.xz
 
 if $SYNC; then
   # sync to givu-uw
-  rsync -ahHPv ${TARGET}/ c_aute01@giv-uw.uni-muenster.de:/srv/http/arch
+  rsync -ahHPv ${TARGET}/ ${USER}@${HOST}:${RPATH}
 fi
 
 # vim:set ts=2 sw=2 et:
