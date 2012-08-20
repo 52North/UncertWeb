@@ -3,7 +3,7 @@ _tomcat=tomcat7
 
 pkgname=geoserver
 pkgver=2.1.1
-pkgrel=3
+pkgrel=4
 pkgdesc="Open source WFS/WCS/WMS implementation"
 arch=(any)
 url="http://geoserver.org/"
@@ -44,6 +44,20 @@ package() {
     mv ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/${conf}.xml ${pkgdir}/etc/${pkgname}
     ln -s /etc/${pkgname}/${conf}.xml ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/${conf}.xml
   done
+
+  # remove example data
+  rm -rf ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/demo
+  rm -rf ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/{coverages,layergroups,workspaces,data}/*
+  rm -rf ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/styles/*
+  rm -rf ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/{coverages,layergroups,workspaces,data}/*
+  rm -rf ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/{coverages,layergroups,workspaces,data}/*
+  rm -rf ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/{coverages,layergroups,workspaces,data}/*
+  rm -rf ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/{coverages,layergroups,workspaces,data}/*
+  find ${pkgdir}/var/lib/${_tomcat}/webapps/$pkgname/data/styles -type f -and \
+     ! \( -name raster.xml  -or -name raster.sld \
+      -or -name line.xml    -or -name default_line.sld \
+      -or -name point.xml   -or -name default_point.sld \
+      -or -name polygon.xml -or -name default_polygon.sld \) -delete
 }
 
 # vim:set ts=2 sw=2 et:
