@@ -69,6 +69,12 @@ import com.vividsolutions.jts.geom.Point;
  * Y = LAT
  */
 class NcUwVariableWithDimensions extends AbstractNcUwVariable {
+	private static final String LAYER_NAME = "dasisttotalirrelevant";
+	private static final double SCALE = 1.0D;
+	private static final double OFFSET = 0.0D;
+	private static final int NODATA_VALUE = -999999;// TODO do this dynamically
+	private static final String NODATA_VALUE_NAME = "UNKNOWN";
+	
 	private final Map<NcUwDimension, Integer> index = enumMap(NcUwDimension.class);
 	private final Map<NcUwDimension, Index> arrayindex = enumMap(NcUwDimension.class);
 	private final Map<NcUwDimension, Order> orders = enumMap(NcUwDimension.class);
@@ -80,6 +86,9 @@ class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 	private Origin origin;
 	private DateUnit tUnit;
 	private List<TimeObject> times;
+	private Integer epsgCode = null;
+	private double xDiff, xMin, xMax;
+	private double yDiff, yMin, yMax;
 
 	public NcUwVariableWithDimensions(NcUwFile file, Variable variable, NcUwArrayCache cache, AbstractNcUwVariable parent) {
 		super(file, variable, cache, parent);
@@ -116,12 +125,12 @@ class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		if (t != null) {
 			int i = 0;
 			for (final TimeObject to : getTimes()) {
-//				log.debug("{} == {} = {}", new Object[] { to, t, to.equals(t) });
+				log.debug("{} == {} = {}", new Object[] { to, t, to.equals(t) });
 				if (to.equals(t)) {
 					return new NcUwCoordinate().set(NcUwDimension.T, i);
 				}
+				++i;
 			}
-			++i;
 		}
 		return null;
 	}
@@ -322,13 +331,6 @@ class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		return this.index.keySet();
 	}
 
-	private double xDiff;
-	private double yDiff;
-	private double xMin;
-	private double yMin;
-	private double xMax;
-	private double yMax;
-	
 	protected double getCellWidth() {
 		getEnvelope();
 		return xDiff;
@@ -382,13 +384,6 @@ class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		return this.envelope;
 	}
 
-	private static final String LAYER_NAME = "dasisttotalirrelevant";
-	private static final double SCALE = 1.0D;
-	private static final double OFFSET = 0.0D;
-	private static final int NODATA_VALUE = -999999;// TODO do this dynamically
-	private static final String NODATA_VALUE_NAME = "UNKNOWN";
-
-	
 	@Override
 	public WriteableGridCoverage getCoverage() {
 		INcUwVariable v = NcUwHelper.findGriddedVariable(this);
@@ -545,8 +540,6 @@ class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		}
 		return map;
 	}
-	
-	private Integer epsgCode = null;
 	
 	public int getEpsgCode() {
 		if (epsgCode == null) {

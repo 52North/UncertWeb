@@ -87,13 +87,8 @@ abstract class AbstractNcUwVariable implements INcUwVariable {
 		if (this.observedProperty == null) {
 			final String op = NcUwHelper.getStringAttribute(getVariable(),
 					NcUwConstants.Attributes.OBSERVED_PROPERTY, false);
-			if (op != null) {
-				this.observedProperty = NcUwHelper.toUri(op,
-						NcUwConstants.DEFAULT_OBSERVED_PROPERTY, null);
-			} else {
-				this.observedProperty = NcUwHelper.toUri(getName(),
-						NcUwConstants.DEFAULT_OBSERVED_PROPERTY, null);
-			}
+			this.observedProperty = NcUwHelper.toUri((op != null) ? op : getName(),
+					NcUwConstants.DEFAULT_OBSERVED_PROPERTY, null);
 		}
 		return this.observedProperty;
 	}
@@ -104,7 +99,7 @@ abstract class AbstractNcUwVariable implements INcUwVariable {
 			final String p = NcUwHelper.getStringAttribute(getVariable(),
 					NcUwConstants.Attributes.PROCEDURE, false);
 			this.procedure = NcUwHelper.toUri(p,
-					NcUwConstants.DEFAULT_OBSERVED_PROPERTY, null);
+				NcUwConstants.DEFAULT_PROCEDURE, null);
 		}
 		return this.procedure;
 
@@ -134,8 +129,7 @@ abstract class AbstractNcUwVariable implements INcUwVariable {
 		return crs;
 	}
 
-	public static INcUwVariable findVariableWithCRS(
-			INcUwVariable v) {
+	public static INcUwVariable findVariableWithCRS(INcUwVariable v) {
 		String gm = v.getStringAttribute(NcUwConstants.Attributes.GRID_MAPPING);
 		if (gm != null) {
 			log.debug("Found CRS reference in {}", v.getName());
@@ -159,15 +153,11 @@ abstract class AbstractNcUwVariable implements INcUwVariable {
 			log.debug("No Variable with CRS found");
 			return DefaultGeographicCRS.WGS84;
 		}
-		final String gm = v
-				.getStringAttribute(NcUwConstants.Attributes.GRID_MAPPING);
+		final String gm = v.getStringAttribute(NcUwConstants.Attributes.GRID_MAPPING);
 		final Variable var = v.getVariable(gm, true);
-		final String proj4 = NcUwHelper.getStringAttribute(var,
-				NcUwConstants.Attributes.PROJ4, false);
-		final String wkt = NcUwHelper.getStringAttribute(var,
-				NcUwConstants.Attributes.WKT, false);
-		final String epsg = NcUwHelper.getStringAttribute(var,
-				NcUwConstants.Attributes.EPSG_CODE, false);
+		final String proj4 = NcUwHelper.getStringAttribute(var, NcUwConstants.Attributes.PROJ4, false);
+		final String wkt = NcUwHelper.getStringAttribute(var, NcUwConstants.Attributes.WKT, false);
+		final String epsg = NcUwHelper.getStringAttribute(var, NcUwConstants.Attributes.EPSG_CODE, false);
 
 		try {
 			if (epsg != null) {
@@ -262,9 +252,24 @@ abstract class AbstractNcUwVariable implements INcUwVariable {
 	@Override
 	public Iterable<NcUwObservation> getTimeLayer(TimeObject t) {
 		NcUwCoordinate c = null;
-		if (t == null || (c = getIndex(t)) == null || !c.hasDimension(NcUwDimension.T))
+		if (t == null) {
+			log.warn("getTimeLayer(null)");
 			return new NcUwIterable(this);
-		return new NcUwTemporalIterable(this, c.get(NcUwDimension.T).intValue());
+		}
+		if ((c = getIndex(t)) == null) {
+			log.warn("getIndex(t) == null");
+			return new NcUwIterable(this);
+			
+		}
+		if (!c.hasDimension(NcUwDimension.T)) {
+			log.warn("!c.hasDimension(NcUwDimension.T)");
+			return new NcUwIterable(this);
+		}
+//		if (t == null || (c = getIndex(t)) == null || !c.hasDimension(NcUwDimension.T))
+//			return new NcUwIterable(this);
+		int tindex = c.get(NcUwDimension.T).intValue();
+		log.debug("Selected time index: {}", tindex);
+		return new NcUwTemporalIterable(this, tindex);
 	}
 
 	@Override

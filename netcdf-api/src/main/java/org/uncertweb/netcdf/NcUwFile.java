@@ -98,7 +98,7 @@ public class NcUwFile implements Closeable, Iterable<INcUwVariable> {
 				try {
 					this.primaryVariables.put(name, AbstractNcUwVariable.create(this, getVariable(name, true), getCache(), null));
 				} catch (NcUwException e) {
-					log.error("Can not process primary variable \"" + name + "\"", e);
+					log.error("Can not process primary variable \"" + name + "\": {}", e.getMessage());
 				}
 			}
 		}
