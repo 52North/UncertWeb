@@ -252,22 +252,13 @@ abstract class AbstractNcUwVariable implements INcUwVariable {
 	@Override
 	public Iterable<NcUwObservation> getTimeLayer(TimeObject t) {
 		NcUwCoordinate c = null;
-		if (t == null) {
-			log.warn("getTimeLayer(null)");
-			return new NcUwIterable(this);
+		int tindex = -1;
+		if (t == null || (c = getIndex(t)) == null
+				|| !c.hasDimension(NcUwDimension.T)) {
+			tindex = 0;
+		} else {
+			tindex = c.get(NcUwDimension.T).intValue();
 		}
-		if ((c = getIndex(t)) == null) {
-			log.warn("getIndex(t) == null");
-			return new NcUwIterable(this);
-			
-		}
-		if (!c.hasDimension(NcUwDimension.T)) {
-			log.warn("!c.hasDimension(NcUwDimension.T)");
-			return new NcUwIterable(this);
-		}
-//		if (t == null || (c = getIndex(t)) == null || !c.hasDimension(NcUwDimension.T))
-//			return new NcUwIterable(this);
-		int tindex = c.get(NcUwDimension.T).intValue();
 		log.debug("Selected time index: {}", tindex);
 		return new NcUwTemporalIterable(this, tindex);
 	}
