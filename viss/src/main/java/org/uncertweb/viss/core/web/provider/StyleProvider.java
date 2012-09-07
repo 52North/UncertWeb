@@ -23,72 +23,33 @@ package org.uncertweb.viss.core.web.provider;
 
 import static org.uncertweb.utils.UwJsonConstants.HREF_KEY;
 import static org.uncertweb.utils.UwJsonConstants.ID_KEY;
-import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_STYLE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_STYLE_TYPE;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.net.URI;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.VisualizationStyle;
 import org.uncertweb.viss.core.web.RESTServlet;
 
-import com.sun.jersey.core.util.ReaderWriter;
-
 @Provider
-@Produces(JSON_VISUALIZATION_STYLE)
-public class StyleProvider implements MessageBodyWriter<VisualizationStyle> {
+public class StyleProvider extends
+		AbstractJsonSingleWriterProvider<VisualizationStyle> {
 
-	private UriInfo uriInfo;
-
-	@Context
-	public void setUriInfo(UriInfo uriInfo) {
-		this.uriInfo = uriInfo;
+	protected StyleProvider() {
+		super(VisualizationStyle.class, JSON_VISUALIZATION_STYLE_TYPE);
 	}
 
 	@Override
-	public boolean isWriteable(Class<?> type, Type gt, Annotation[] a,
-			MediaType mt) {
-		return mt.isCompatible(JSON_VISUALIZATION_STYLE_TYPE)
-				&& VisualizationStyle.class.isAssignableFrom(type);
-	}
-
-	@Override
-	public long getSize(VisualizationStyle o, Class<?> t, Type gt, Annotation[] a,
-			MediaType mt) {
-		return -1;
-	}
-
-	@Override
-	public void writeTo(VisualizationStyle v, Class<?> t, Type gt, Annotation[] a,
-			MediaType mt, MultivaluedMap<String, Object> hh, OutputStream es)
-			throws IOException {
-		try {
-			URI su = uriInfo
-					.getBaseUriBuilder()
-					.path(RESTServlet.SLD_FOR_STYLE)
-					.build(v.getVis().getDataSet().getResource().getId(),
-							v.getVis().getDataSet().getId(), 
-							v.getVis().getId(),
-							v.getId());
-			JSONObject j = new JSONObject().put(ID_KEY, v.getId()).put(HREF_KEY, su);
-			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);
-		} catch (JSONException e) {
-			throw VissError.internal(e);
-		}
+	protected JSONObject encode(VisualizationStyle v) throws JSONException {
+		URI su = getUriInfo()
+				.getBaseUriBuilder()
+				.path(RESTServlet.SLD_FOR_STYLE)
+				.build(v.getVis().getDataSet().getResource().getId(),
+						v.getVis().getDataSet().getId(), v.getVis().getId(),
+						v.getId());
+		return new JSONObject().put(ID_KEY, v.getId()).put(HREF_KEY, su);
 	}
 }

@@ -32,107 +32,68 @@ import static org.uncertweb.viss.core.util.JSONConstants.STYLES_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.UOM_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.URL_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.VISUALIZER_KEY;
-import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZATION_TYPE;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Set;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizationReference;
 import org.uncertweb.viss.core.vis.VisualizationStyle;
 import org.uncertweb.viss.core.web.RESTServlet;
 
-import com.sun.jersey.core.util.ReaderWriter;
-
 @Provider
-@Produces(JSON_VISUALIZATION)
-public class VisualizationProvider implements MessageBodyWriter<IVisualization> {
+public class VisualizationProvider extends AbstractJsonSingleWriterProvider<IVisualization> {
 
-	private UriInfo uriInfo;
-
-	@Context
-	public void setUriInfo(UriInfo uriInfo) {
-		this.uriInfo = uriInfo;
+	protected VisualizationProvider() {
+		super(IVisualization.class, JSON_VISUALIZATION_TYPE);
 	}
 
 	@Override
-	public boolean isWriteable(Class<?> type, Type gt, Annotation[] a,
-			MediaType mt) {
-		return mt.isCompatible(JSON_VISUALIZATION_TYPE)
-				&& IVisualization.class.isAssignableFrom(type);
-	}
+	protected JSONObject encode(IVisualization v) throws JSONException {
+		URI uri = getUriInfo()
+				.getBaseUriBuilder()
+				.path(RESTServlet.VISUALIZER_FOR_DATASET)
+				.build(v.getDataSet().getResource().getId(),
+						v.getDataSet().getId(),
+						v.getCreator().getShortName());
 
-	@Override
-	public long getSize(IVisualization o, Class<?> t, Type gt, Annotation[] a,
-			MediaType mt) {
-		return -1;
-	}
+		JSONObject j = new JSONObject()
+				.put(ID_KEY, v.getId())
+				.put(VISUALIZER_KEY,
+						new JSONObject().put(ID_KEY,
+								v.getCreator().getShortName()).put(
+								HREF_KEY, uri))
+				.put(PARAMS, v.getParameters())
+				.put(MIN_VALUE_KEY, v.getMinValue())
+				.put(MAX_VALUE_KEY, v.getMaxValue())
+				.put(UOM_KEY, v.getUom());
 
-	@Override
-	public void writeTo(IVisualization v, Class<?> t, Type gt, Annotation[] a,
-			MediaType mt, MultivaluedMap<String, Object> hh, OutputStream es)
-			throws IOException {
-		try {
-			URI uri = uriInfo
+		Set<VisualizationStyle> styles = v.getStyles();
+		if (styles != null) {
+			URI su = getUriInfo()
 					.getBaseUriBuilder()
-					.path(RESTServlet.VISUALIZER_FOR_DATASET)
+					.path(RESTServlet.STYLES_FOR_VISUALIZATION)
 					.build(v.getDataSet().getResource().getId(),
-							v.getDataSet().getId(),
-							v.getCreator().getShortName());
-			
-			
-			JSONObject j = new JSONObject()
-					.put(ID_KEY, v.getId())
-					.put(VISUALIZER_KEY,
-							new JSONObject().put(ID_KEY,
-									v.getCreator().getShortName()).put(
-									HREF_KEY, uri))
-					.put(PARAMS, v.getParameters())
-					.put(MIN_VALUE_KEY, v.getMinValue())
-					.put(MAX_VALUE_KEY, v.getMaxValue())
-					.put(UOM_KEY, v.getUom());
-			
-			Set<VisualizationStyle> styles = v.getStyles();
-			if (styles != null) {
-				URI su = uriInfo
-						.getBaseUriBuilder()
-						.path(RESTServlet.STYLES_FOR_VISUALIZATION)
-						.build(v.getDataSet().getResource().getId(),
-								v.getDataSet().getId(), v.getId());
-				j.put(STYLES_KEY, su);
-			}
-			
-			IVisualizationReference vr = v.getReference();
-			if (vr != null) {
-				JSONArray ar = new JSONArray();
-				for (String l : vr.getLayers()) {
-					ar.put(l);
-				}
-				j.put(REFERENCE_KEY,
-						new JSONObject().put(URL_KEY, vr.getWmsUrl()).put(
-								LAYERS_KEY, ar));
-			}
-			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);
-		} catch (JSONException e) {
-			throw VissError.internal(e);
+							v.getDataSet().getId(), v.getId());
+			j.put(STYLES_KEY, su);
 		}
+
+		IVisualizationReference vr = v.getReference();
+		if (vr != null) {
+			JSONArray ar = new JSONArray();
+			for (String l : vr.getLayers()) {
+				ar.put(l);
+			}
+			j.put(REFERENCE_KEY,
+					new JSONObject().put(URL_KEY, vr.getWmsUrl()).put(
+							LAYERS_KEY, ar));
+		}
+		return j;
 	}
 }

@@ -26,16 +26,15 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.opengis.coverage.grid.GridCoordinates;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.io.AbstractHookedObservationEncoder.EncoderHook;
 import org.uncertweb.api.om.io.JSONObservationEncoder;
@@ -47,42 +46,30 @@ import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.util.MediaTypes;
 
 @Provider
-@Produces(MediaTypes.JSON_OBSERVATION_COLLECTION)
-public class UncertaintyObservationCollectionProvider implements
-		MessageBodyWriter<IObservationCollection> {
+public class UncertaintyObservationCollectionProvider extends AbstractJsonSingleWriterProvider<IObservationCollection> {
 
-	
-	
+	protected UncertaintyObservationCollectionProvider() {
+		super(IObservationCollection.class, MediaTypes.JSON_OBSERVATION_COLLECTION_TYPE);
+	}
+
 	@SuppressWarnings("unchecked")
-	private JSONObservationEncoder enc = new JSONObservationEncoder(
-			UwCollectionUtils.<EncoderHook<JSONObject>>collection(new EncoderHook<JSONObject>() {
-		@Override
-		public void encode(AbstractObservation ao, JSONObject encodedObject) throws OMEncodingException {
+	private JSONObservationEncoder enc = new JSONObservationEncoder(UwCollectionUtils.<EncoderHook<JSONObject>> collection(new EncoderHook<JSONObject>() {
+		public void encode(AbstractObservation ao, JSONObject eo) throws OMEncodingException {
 			if (ao instanceof NcUwObservation) {
 				try {
-					JSONArray coordinates = new JSONArray();
-					for (int i : ((NcUwObservation) ao).getGridCoordinates().getCoordinateValues()) {
-						coordinates.put(i);
+					JSONArray c = new JSONArray();
+					GridCoordinates gc = ((NcUwObservation) ao)	.getGridCoordinates();
+					if (gc != null) {
+						for (int i : gc.getCoordinateValues()) { c.put(i); }
+						eo.put("gridCoordinate", c);
 					}
-					encodedObject.put("gridCoordinate", coordinates);
-				} catch (JSONException e) {
-					throw new OMEncodingException(e);
+				} catch (JSONException e) { 
+					throw new OMEncodingException(e); 
 				}
 			}
 		}
 	}));
-	
-	@Override
-	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return IObservationCollection.class.isAssignableFrom(t)
-				&& mt.isCompatible(MediaTypes.JSON_OBSERVATION_COLLECTION_TYPE);
-	}
 
-	@Override
-	public long getSize(IObservationCollection t, Class<?> ty, Type gt,
-			Annotation[] a, MediaType mt) {
-		return -1;
-	}
 
 	@Override
 	public void writeTo(IObservationCollection t, Class<?> ty, Type gt,
@@ -90,6 +77,17 @@ public class UncertaintyObservationCollectionProvider implements
 			OutputStream out) throws IOException, WebApplicationException {
 		try {
 			enc.encodeObservationCollection(t, out);
+		} catch (OMEncodingException e) {
+			throw VissError.internal(e);
+		}
+	}
+
+	@Override
+	protected org.codehaus.jettison.json.JSONObject encode(
+			IObservationCollection t)
+			throws org.codehaus.jettison.json.JSONException {
+		try {
+			return new org.codehaus.jettison.json.JSONObject(enc.encodeObservationCollection(t));
 		} catch (OMEncodingException e) {
 			throw VissError.internal(e);
 		}

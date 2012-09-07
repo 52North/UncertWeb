@@ -44,4 +44,8 @@ public class JSONConstants extends UwJsonConstants {
 	public static final String VISUALIZATIONS_KEY = "visualizations";
 	public static final String VISUALIZER_KEY = "visualizer";
 	public static final String VISUALIZERS_KEY = "visualizers";
+	public static final String METHOD_KEY = "method";
+	public static final String REQUEST_MEDIA_TYPE_KEY = "requestMediaType";
+	public static final String REQUEST_KEY = "request";
+	public static final String RESPONSE_MEDIA_TYPE_KEY = "responseMediaType";
 }

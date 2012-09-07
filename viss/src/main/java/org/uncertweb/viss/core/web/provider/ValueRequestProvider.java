@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -45,7 +44,6 @@ import org.uncertweb.viss.core.util.MediaTypes;
 import com.vividsolutions.jts.geom.Geometry;
 
 @Provider
-@Consumes(MediaTypes.JSON_VALUE_REQUEST)
 public class ValueRequestProvider implements MessageBodyReader<ValueRequest> {
 
 	@Override

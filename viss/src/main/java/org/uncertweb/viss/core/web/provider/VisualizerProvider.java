@@ -21,22 +21,12 @@
  */
 package org.uncertweb.viss.core.web.provider;
 
+import static org.uncertweb.utils.UwJsonConstants.ID_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.DESCRIPTION_KEY;
-import static org.uncertweb.viss.core.util.JSONConstants.ID_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.OPTIONS_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.SUPPORTED_UNCERTAINTIES_KEY;
-import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER_TYPE;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jettison.json.JSONArray;
@@ -44,52 +34,32 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
-import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.IVisualizer;
 
-import com.sun.jersey.core.util.ReaderWriter;
-
 @Provider
-@Produces(JSON_VISUALIZER)
-public class VisualizerProvider implements MessageBodyWriter<IVisualizer> {
+public class VisualizerProvider extends
+		AbstractJsonSingleWriterProvider<IVisualizer> {
 
-	@Override
-	public boolean isWriteable(Class<?> type, Type gt, Annotation[] a,
-	    MediaType mt) {
-		return mt.isCompatible(JSON_VISUALIZER_TYPE)
-		    && IVisualizer.class.isAssignableFrom(type);
+	protected VisualizerProvider() {
+		super(IVisualizer.class, JSON_VISUALIZER_TYPE);
 	}
 
 	@Override
-	public void writeTo(IVisualizer v, Class<?> t, Type gt, Annotation[] a,
-	    MediaType mt, MultivaluedMap<String, Object> hh, OutputStream es)
-	    throws IOException {
-		try {
-
-			JSONObject j = new JSONObject().putOpt(DESCRIPTION_KEY, v.getDescription())
-			    .put(ID_KEY, v.getShortName());
-			JSONArray ar = new JSONArray();
-			for (NcUwUncertaintyType ut : v.getCompatibleUncertaintyTypes()) {
-				ar.put(ut.getUri());
-			}
-			j.put(SUPPORTED_UNCERTAINTIES_KEY, ar);
-			if (v.getDataSet() != null) {
-				j.put(OPTIONS_KEY, v.getOptionsForDataSet(v.getDataSet()));
-			} else {
-				LoggerFactory.getLogger(getClass()).info("{}", v.getOptions());
-				j.put(OPTIONS_KEY, v.getOptions());
-			}
-			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);
-		} catch (JSONException e) {
-			VissError.internal(e);
+	protected JSONObject encode(IVisualizer v) throws JSONException {
+		JSONObject j = new JSONObject().putOpt(DESCRIPTION_KEY,
+				v.getDescription()).put(ID_KEY, v.getShortName());
+		JSONArray ar = new JSONArray();
+		for (NcUwUncertaintyType ut : v.getCompatibleUncertaintyTypes()) {
+			ar.put(ut.getUri());
 		}
-	}
-
-	@Override
-	public long getSize(IVisualizer v, Class<?> t, Type g, Annotation[] a,
-	    MediaType m) {
-		return -1;
+		j.put(SUPPORTED_UNCERTAINTIES_KEY, ar);
+		if (v.getDataSet() != null) {
+			j.putOpt(OPTIONS_KEY, v.getOptionsForDataSet(v.getDataSet()));
+		} else {
+			LoggerFactory.getLogger(getClass()).info("{}", v.getOptions());
+			j.putOpt(OPTIONS_KEY, v.getOptions());
+		}
+		return j;
 	}
 
 }

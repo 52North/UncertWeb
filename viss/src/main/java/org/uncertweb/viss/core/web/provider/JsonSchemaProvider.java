@@ -21,52 +21,24 @@
  */
 package org.uncertweb.viss.core.web.provider;
 
-import static org.uncertweb.viss.core.util.MediaTypes.JSON_SCHEMA;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_SCHEMA_TYPE;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.uncertweb.viss.core.VissError;
-import org.uncertweb.viss.core.util.Utils;
-
-import com.sun.jersey.core.util.ReaderWriter;
 
 @Provider
-@Produces(JSON_SCHEMA)
-public class JsonSchemaProvider implements MessageBodyWriter<JSONObject> {
+public class JsonSchemaProvider extends AbstractJsonSingleWriterProvider<JSONObject> {
 
-	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return (mt.isCompatible(JSON_SCHEMA_TYPE) || mt
-		    .isCompatible(MediaType.APPLICATION_JSON_TYPE))
-		    && JSONObject.class.isAssignableFrom(t);
-	}
-
-	public void writeTo(JSONObject r, Class<?> t, Type gt, Annotation[] a,
-	    MediaType mt, MultivaluedMap<String, Object> h, OutputStream es)
-	    throws IOException, WebApplicationException {
-		try {
-			ReaderWriter.writeToAsString(Utils.stringifyJson(r), es, mt);
-		} catch (JSONException e) {
-			throw VissError.internal(e);
-		}
+	protected JsonSchemaProvider(Class<? extends JSONObject> clazz, MediaType mt) {
+		super(JSONObject.class, JSON_SCHEMA_TYPE);
 	}
 
 	@Override
-	public long getSize(JSONObject r, Class<?> t, Type g, Annotation[] a,
-	    MediaType m) {
-		return -1;
+	protected JSONObject encode(JSONObject t) throws JSONException {
+		return t;
 	}
 
 }

@@ -58,6 +58,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -85,6 +86,7 @@ import org.uncertweb.viss.core.Viss;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
+import org.uncertweb.viss.core.util.JSONConstants;
 import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizer;
@@ -163,16 +165,16 @@ public class RESTServlet {
 		IResource r = null;
 		try {
 			log.debug("Fetching resource described as json: {}\n", j.toString(4));
-			URL url = new URL(j.getString("url"));
+			URL url = new URL(j.getString(JSONConstants.URL_KEY));
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			String method = j.optString("method");
+			String method = j.optString(JSONConstants.METHOD_KEY, null);
+			String req = j.optString(JSONConstants.REQUEST_KEY, null);
 			if (method == null || method.trim().isEmpty()) {
-				method = "GET";
+				method = (req == null || req.trim().isEmpty()) ? HttpMethod.GET : HttpMethod.POST;
 			}
 			con.setRequestMethod(method);
-			String req = j.optString("request");
 			if (req != null && !req.trim().isEmpty()) {
-				String reqMt = j.optString("requestMediaType");
+				String reqMt = j.optString(JSONConstants.REQUEST_MEDIA_TYPE_KEY, null);
 				if (reqMt != null) {
 					con.setRequestProperty("Content-Type", reqMt);
 				}
@@ -185,8 +187,8 @@ public class RESTServlet {
 					IOUtils.closeQuietly(os);
 				}
 			}
-			r = Viss.getInstance().createResource(con.getInputStream(),
-					MediaType.valueOf(j.getString("responseMediaType")));
+			MediaType mt = MediaType.valueOf(j.getString(JSONConstants.RESPONSE_MEDIA_TYPE_KEY));
+			r = Viss.getInstance().createResource(con.getInputStream(), mt);
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}

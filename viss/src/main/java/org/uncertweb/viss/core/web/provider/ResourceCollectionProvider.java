@@ -21,78 +21,33 @@
  */
 package org.uncertweb.viss.core.web.provider;
 
-import static org.uncertweb.viss.core.util.JSONConstants.HREF_KEY;
-import static org.uncertweb.viss.core.util.JSONConstants.ID_KEY;
+import static org.uncertweb.utils.UwJsonConstants.HREF_KEY;
+import static org.uncertweb.utils.UwJsonConstants.ID_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.RESOURCES_KEY;
-import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE_LIST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE_LIST_TYPE;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.net.URI;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.uncertweb.utils.UwReflectionUtils;
-import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IResource;
-import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.web.RESTServlet;
 
-import com.sun.jersey.core.util.ReaderWriter;
 @Provider
-@Produces(JSON_RESOURCE_LIST)
-public class ResourceCollectionProvider implements
-    MessageBodyWriter<Iterable<IResource>> {
+public class ResourceCollectionProvider extends
+		AbstractJsonCollectionWriterProvider<IResource> {
 
-	private UriInfo uriInfo;
-
-	@Context
-	public void setUriInfo(UriInfo uriInfo) {
-		this.uriInfo = uriInfo;
+	protected ResourceCollectionProvider() {
+		super(IResource.class, JSON_RESOURCE_LIST_TYPE, RESOURCES_KEY);
 	}
 
 	@Override
-	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
-		return mt.isCompatible(JSON_RESOURCE_LIST_TYPE)
-		    && UwReflectionUtils.isParameterizedWith(gt, Iterable.class, IResource.class);
-	}
-
-	@Override
-	public long getSize(Iterable<IResource> t, Class<?> type, Type genericType,
-	    Annotation[] annotations, MediaType mediaType) {
-		return -1;
-	}
-
-	@Override
-	public void writeTo(Iterable<IResource> o, Class<?> t, Type gt,
-	    Annotation[] a, MediaType mt, MultivaluedMap<String, Object> h,
-	    OutputStream es) throws IOException, WebApplicationException {
-
-		try {
-			JSONArray aJ = new JSONArray();
-			for (IResource r : o) {
-				URI uri = uriInfo.getBaseUriBuilder()
-				    .path(RESTServlet.RESOURCE).build(r.getId());
-				aJ.put(new JSONObject().put(ID_KEY, r.getId()).put(HREF_KEY, uri));
-			}
-			JSONObject j = new JSONObject().put(RESOURCES_KEY, aJ);
-			ReaderWriter.writeToAsString(Utils.stringifyJson(j), es, mt);
-		} catch (JSONException e) {
-			throw VissError.internal(e);
-		}
+	protected JSONObject encode(IResource r) throws JSONException {
+		URI uri = getUriInfo().getBaseUriBuilder().path(RESTServlet.RESOURCE)
+				.build(r.getId());
+		return new JSONObject().put(ID_KEY, r.getId()).put(HREF_KEY, uri);
 	}
 
 }

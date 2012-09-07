@@ -158,9 +158,12 @@ public class VissConfig {
 
 	public XmlOptions getDefaultXmlOptions() {
 		if (defaultXmlOptions == null) {
-			defaultXmlOptions = new XmlOptions().setLoadStripWhitespace()
-			    .setLoadStripProcinsts().setLoadStripComments()
-			    .setLoadTrimTextBuffer().setSaveAggressiveNamespaces();
+			defaultXmlOptions = new XmlOptions()
+				.setLoadStripWhitespace()
+			    .setLoadStripProcinsts()
+			    .setLoadStripComments()
+			    .setLoadTrimTextBuffer()
+			    .setSaveAggressiveNamespaces();
 			if (doPrettyPrint()) {
 				defaultXmlOptions.setSavePrettyPrint();
 			}
