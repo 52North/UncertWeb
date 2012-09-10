@@ -8,6 +8,7 @@ USER="c_aute01"
 HOST="giv-uw.uni-muenster.de"
 RPATH="/srv/http/arch"
 CLEAN=false
+MVN_BUILD_REPO="$(pwd)/maven-repo"
 
 
 function help() {
@@ -24,13 +25,14 @@ function help() {
       exit 1
 }
 
-while getopts t:u:h:p:d:csfi o 2>/dev/null ; do
+while getopts t:u:h:p:d:m:csfi o 2>/dev/null ; do
   case ${o} in 
     t) TARGET=${OPTARG} ;;
     u) USER=${OPTARGS} ;;
     h) HOST=${OPTARGS} ;;
     p) RPATH=${OPTARGS} ;;
     d) DB_NAME=${OPTARG} ;;
+    d) MVN_BUILD_REPO=${OPTARG} ;;
     c) CLEAN=true ;;
     s) SYNC=true ;;
     f) MAKE_OPS="$MAKE_OPS --force" ;;
@@ -45,6 +47,8 @@ if $CLEAN; then
   rm -rf ${TARGET}
   rm -rf */{src,pkg} */*.pkg.tar.xz
 fi
+
+export MVN_BUILD_REPO
 
 # build
 makeworld $MAKE_OPTS ${TARGET} .
