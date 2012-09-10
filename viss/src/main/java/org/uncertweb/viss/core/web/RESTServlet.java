@@ -26,6 +26,7 @@ import static org.uncertweb.viss.core.util.MediaTypes.GEOTIFF;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_CREATE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_DATASET_LIST;
+import static org.uncertweb.viss.core.util.MediaTypes.JSON_OBSERVATION_COLLECTION;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_REQUEST;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_RESOURCE_LIST;
@@ -401,7 +402,7 @@ public class RESTServlet {
 	
 	@POST
 	@Path(VALUE_OF_DATASET)
-	@Produces(JSON_UNCERTAINTY_COLLECTION)
+	@Produces(JSON_OBSERVATION_COLLECTION)
 	@Consumes(JSON_VALUE_REQUEST)
 	public IObservationCollection getValue(
 			@PathParam(RESOURCE_PARAM) ObjectId resource,

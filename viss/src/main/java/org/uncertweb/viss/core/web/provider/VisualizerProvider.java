@@ -27,12 +27,14 @@ import static org.uncertweb.viss.core.util.JSONConstants.OPTIONS_KEY;
 import static org.uncertweb.viss.core.util.JSONConstants.SUPPORTED_UNCERTAINTIES_KEY;
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER_TYPE;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.slf4j.LoggerFactory;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.vis.IVisualizer;
 
@@ -53,13 +55,17 @@ public class VisualizerProvider extends
 			ar.put(ut.getUri());
 		}
 		j.put(SUPPORTED_UNCERTAINTIES_KEY, ar);
+		Map<String, JSONObject> options = null;
 		if (v.getDataSet() != null) {
-			j.putOpt(OPTIONS_KEY, v.getOptionsForDataSet(v.getDataSet()));
+			options = v.getOptionsForDataSet(v.getDataSet());
 		} else {
-			LoggerFactory.getLogger(getClass()).info("{}", v.getOptions());
-			j.putOpt(OPTIONS_KEY, v.getOptions());
+			options = v.getOptions();
 		}
-		return j;
+		JSONObject joptions = new JSONObject();
+		for (Entry<String, JSONObject> e : options.entrySet()) {
+			joptions.putOpt(e.getKey(), e.getValue());
+		}
+		return j.putOpt(OPTIONS_KEY, joptions);
 	}
 
 }

@@ -21,7 +21,7 @@
  */
 package org.uncertweb.viss.core;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -39,6 +39,7 @@ import static org.uncertweb.viss.core.web.RESTServlet.RESOURCE;
 import static org.uncertweb.viss.core.web.RESTServlet.RESOURCES;
 import static org.uncertweb.viss.core.web.RESTServlet.RESOURCE_PARAM_P;
 import static org.uncertweb.viss.core.web.RESTServlet.STYLES_FOR_VISUALIZATION;
+import static org.uncertweb.viss.core.web.RESTServlet.VALUE_OF_DATASET;
 import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZATION_PARAM_P;
 import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZERS_FOR_DATASET;
 import static org.uncertweb.viss.core.web.RESTServlet.VISUALIZER_FOR_DATASET;
@@ -55,8 +56,6 @@ import junit.framework.Assert;
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.math.distribution.NormalDistribution;
 import org.apache.xmlbeans.XmlException;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
@@ -67,12 +66,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.uncertweb.api.om.exceptions.OMParsingException;
+import org.uncertweb.api.om.io.JSONObservationParser;
+import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.utils.UwTimeUtils;
 import org.uncertweb.viss.core.util.JSONConstants;
 import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.core.web.RESTServlet;
-import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Mean;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Probability;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.ProbabilityForInterval;
@@ -82,7 +83,7 @@ import org.uncertweb.viss.vis.sample.RealisationVisualizer;
 import org.uncertweb.viss.vis.sample.SampleVisualizer;
 import org.uncertweb.viss.vis.statistic.SimpleStatisticVisualizer.MeanStatistic;
 
-import com.mongodb.util.JSON;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -97,7 +98,6 @@ public class VissTest extends JerseyTest {
 	private static final URI BIOTEMP = URI.create("http://giv-uw.uni-muenster.de/data/netcdf/biotemp.nc");
 	private static final URI EU_JUNE = URI.create("http://giv-uw.uni-muenster.de/data/netcdf/EU_June_4.nc");
 	private static final String OM_DATE_TIME = "2011-08-02T16:39:17.820+02:00";
-	
 	
 	@BeforeClass
 	public static void initLogger() {
@@ -293,6 +293,58 @@ public class VissTest extends JerseyTest {
 					.put(ProbabilityForInterval.MAX_PARAMETER, 0.6D)
 					.put("time", time));
 		}
+	}
+	protected IObservationCollection getValue(ObjectId r, ObjectId d, JSONObject req) {
+		ClientResponse cr = getWebResource()
+				.path(VALUE_OF_DATASET.replace(RESOURCE_PARAM_P, r.toString())
+						.replace(DATASET_PARAM_P, d.toString()))
+				.entity(req.toString()).type(MediaTypes.JSON_VALUE_REQUEST_TYPE)
+				.post(ClientResponse.class);
+		JSONObservationParser p = new JSONObservationParser();
+		IObservationCollection col = null;
+		try {
+			col = p.parse(cr.getEntity(String.class));
+		} catch (OMParsingException e) {
+			e.printStackTrace(System.err);
+			fail();
+		}
+		return col;
+	}
+	
+	@Test
+	public void testGetOptions() throws JSONException {
+		ObjectId r = addResource(NETCDF_TYPE, BIOTEMP_T);
+		ObjectId d = getDataSetsForResource(r)[0];
+		JSONObject j = getVisualizerForDataset(r,d, getVisualizersForDataset(r, d)[0]);
+		System.err.println(j.toString(4));
+		assertFalse(j.get("options") instanceof String);
+	}
+	
+	@Test
+	public void testGetValue() throws JSONException {
+		ObjectId r = addResource(NETCDF_TYPE, BIOTEMP_T);
+		ObjectId d = getDataSetsForResource(r)[0];
+		
+		JSONObject j = getVisualizerForDataset(r,d, getVisualizersForDataset(r, d)[0]);;
+		System.err.println(getDataSetForResource(r, d).toString(4));
+		JSONObject req = new JSONObject()
+			.put("time", new JSONObject()
+				.put("TimeInstant", new JSONObject()
+					.put("timePosition", "2012-04-01T10:00:00.000Z")))
+			.put("location", new JSONObject()
+				.put("type", "Point")
+				.put("coordinates", new JSONArray()
+					.put(52).put(7))
+				.put("crs", new JSONObject()
+					.put("type","name")
+					.put("properties", new JSONObject()
+							.put("name", "http://www.opengis.net/def/crs/EPSG/0/4326"))));
+
+		System.out.println(req.toString(4));
+		
+		assertNotNull(getValue(r, d, req));
+		
+		
 	}
 	
 	public JSONObject getDataSetForResource(ObjectId r, ObjectId d) {
