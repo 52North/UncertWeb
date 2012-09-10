@@ -66,8 +66,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.io.JSONObservationParser;
+import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.utils.UwTimeUtils;
 import org.uncertweb.viss.core.util.JSONConstants;
@@ -300,10 +302,14 @@ public class VissTest extends JerseyTest {
 						.replace(DATASET_PARAM_P, d.toString()))
 				.entity(req.toString()).type(MediaTypes.JSON_VALUE_REQUEST_TYPE)
 				.post(ClientResponse.class);
+		
+		String s = cr.getEntity(String.class);
+		System.err.println(s);
+		
 		JSONObservationParser p = new JSONObservationParser();
 		IObservationCollection col = null;
 		try {
-			col = p.parse(cr.getEntity(String.class));
+			col = p.parse(s);
 		} catch (OMParsingException e) {
 			e.printStackTrace(System.err);
 			fail();
@@ -321,7 +327,7 @@ public class VissTest extends JerseyTest {
 	}
 	
 	@Test
-	public void testGetValue() throws JSONException {
+	public void testGetValue() throws JSONException, OMEncodingException {
 		ObjectId r = addResource(NETCDF_TYPE, BIOTEMP_T);
 		ObjectId d = getDataSetsForResource(r)[0];
 		
@@ -334,15 +340,17 @@ public class VissTest extends JerseyTest {
 			.put("location", new JSONObject()
 				.put("type", "Point")
 				.put("coordinates", new JSONArray()
-					.put(52).put(7))
+					.put(7).put(52))
 				.put("crs", new JSONObject()
 					.put("type","name")
 					.put("properties", new JSONObject()
 							.put("name", "http://www.opengis.net/def/crs/EPSG/0/4326"))));
 
 		System.out.println(req.toString(4));
-		
-		assertNotNull(getValue(r, d, req));
+		IObservationCollection col = getValue(r, d, req);
+		assertNotNull(col);
+		XBObservationEncoder enc = new XBObservationEncoder();
+		enc.encodeObservationCollection(col, System.err);
 		
 		
 	}

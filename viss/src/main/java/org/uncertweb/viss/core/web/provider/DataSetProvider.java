@@ -59,6 +59,7 @@ public class DataSetProvider extends AbstractJsonSingleWriterProvider<IDataSet> 
 	private JSONObject envelopeToJson(Envelope e) {
 		Geometry g = NcUwHelper.envelopeToPolygon(e, true);
 		try {
+			log.debug("Geomertry Code: {}", g.getSRID());
 			return new JSONObject(new JSONGeometryEncoder().encodeGeometry(g));
 		} catch (XmlException x) {
 			throw VissError.internal(x);
