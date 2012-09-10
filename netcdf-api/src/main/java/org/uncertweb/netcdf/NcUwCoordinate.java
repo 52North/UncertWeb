@@ -126,7 +126,7 @@ public class NcUwCoordinate implements Cloneable {
 	
 	public NcUwCoordinate merge(NcUwCoordinate changes) {
 		for (NcUwDimension d : changes.getDimensions()) {
-			set(d, get(d));
+			set(d, changes.get(d));
 		}
 		return this;
 	}

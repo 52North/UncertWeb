@@ -36,6 +36,7 @@ import org.geotools.coverage.grid.GridCoverageBuilder;
 import org.geotools.coverage.grid.ViewType;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.GeneralDirectPosition;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.GeodeticCalculator;
 import org.joda.time.DateTime;
@@ -44,6 +45,7 @@ import org.opengis.geometry.DirectPosition;
 import org.opengis.geometry.Envelope;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
@@ -137,17 +139,28 @@ class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 	
 	@Override
 	public NcUwCoordinate getIndex(final Point p) {
-		return getIndex(NcUwHelper.toDirectPosition(p, getCRS()));
+		log.debug("Getting Index of {}", p);
+		DirectPosition dp = NcUwHelper.toDirectPosition(p, getCRS());
+		log.debug("Getting Index of {}", dp);
+		return getIndex(dp);
 	}
 
 	@Override
 	public NcUwCoordinate getIndex(DirectPosition p) {
+		CoordinateReferenceSystem crs = getCRS(); 
+		CoordinateReferenceSystem pcrs = p.getCoordinateReferenceSystem();
+		if (pcrs == null) {
+			throw new NullPointerException("CRS should not be null");
+		}
+		if (crs == null) {
+			throw new NullPointerException("CRS should not be null");
+		}
 		if (contains(p)) {
 			try {
-				final GeodeticCalculator calc = new GeodeticCalculator(getCRS());
-				calc.setStartingPosition(CRS.findMathTransform(
-						p.getCoordinateReferenceSystem(), getCRS()).transform(
-						p, null));
+				final GeodeticCalculator calc = new GeodeticCalculator(crs);
+				p = CRS.findMathTransform(pcrs, crs).transform(p, new GeneralDirectPosition(crs));
+				
+				calc.setStartingPosition(p);
 				double mindist = Double.POSITIVE_INFINITY;
 				int minx = -1, miny = -1;
 				for (int x = 0; x < getSize(NcUwDimension.X); ++x) {
@@ -161,9 +174,13 @@ class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 						}
 					}
 				}
-				return new NcUwCoordinate()
+				NcUwCoordinate c = new NcUwCoordinate()
 					.set(NcUwDimension.X, minx)
 					.set(NcUwDimension.Y, miny);
+				
+				log.debug("Found Coordinate: {}", c);
+				
+				return c;
 			} catch (final FactoryException e) {
 				throw new NcUwException(e);
 			} catch (final MismatchedDimensionException e) {
@@ -172,6 +189,8 @@ class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 				throw new NcUwException(e);
 			}
 		} else {
+			log.warn("DirectPosition {} is not in Envelope {}", p, getEnvelope());
+			
 			throw new IndexOutOfBoundsException();
 		}
 	}
@@ -380,6 +399,7 @@ class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 
 			this.envelope = new Envelope2D(getCRS(), 
 					xMin, yMin, xMax - xMin, yMax - yMin);
+			log.debug("Envelope CRS: {}", this.envelope.getCoordinateReferenceSystem());
 		}
 		return this.envelope;
 	}

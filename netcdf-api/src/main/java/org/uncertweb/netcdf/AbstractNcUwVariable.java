@@ -150,8 +150,11 @@ abstract class AbstractNcUwVariable implements INcUwVariable {
 	private static CoordinateReferenceSystem _createCrs(AbstractNcUwVariable orig) {
 		INcUwVariable v = findVariableWithCRS(orig);
 		if (v == null) {
-			log.debug("No Variable with CRS found");
-			return DefaultGeographicCRS.WGS84;
+			try {
+				return NcUwHelper.decodeEpsgCode(4326);
+			} catch (FactoryException e) {
+				return DefaultGeographicCRS.WGS84;
+			}
 		}
 		final String gm = v.getStringAttribute(NcUwConstants.Attributes.GRID_MAPPING);
 		final Variable var = v.getVariable(gm, true);

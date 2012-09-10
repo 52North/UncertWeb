@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.geotools.geometry.GeneralDirectPosition;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.metadata.iso.citation.Citations;
@@ -73,6 +74,16 @@ public class NcUwHelper {
 	private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 	private static final Logger log = LoggerFactory.getLogger(NcUwHelper.class);
 	private static final String PYTHON_SCRIPT;
+	
+	public static final CoordinateReferenceSystem EPSG4326;
+	
+	static {
+		try {
+			EPSG4326 = NcUwHelper.decodeEpsgCode(4326);
+		} catch (FactoryException e) {
+			throw new NcUwException(e);
+		}
+	}
 
 	static {
 		final URL uri = NcUwHelper.class.getResource("/proj2wkt.py");
@@ -347,13 +358,21 @@ public class NcUwHelper {
 
 	public static Polygon envelopeToPolygon(Envelope e, boolean transformToWgs84) {
 		try {
+			ReferencedEnvelope re = new ReferencedEnvelope(e);
 			if (transformToWgs84) {
-//				log.debug("Transforming Envelope {} to WGS84 polygon",e);
-				return JTS.toGeometry(new ReferencedEnvelope(e).transform(DefaultGeographicCRS.WGS84, true, 5));
-			} else {
-//				log.debug("Transforming Envelope {} to polygon",e);
-				return JTS.toGeometry(new ReferencedEnvelope(e));
+				re.transform(EPSG4326, true, 5);
 			}
+			Polygon p = JTS.toGeometry(re);
+			if (transformToWgs84) {
+				p.setSRID(4326);
+			} else {
+				for (ReferenceIdentifier id : re.getCoordinateReferenceSystem().getIdentifiers()) {
+					if (id.getCodeSpace().equalsIgnoreCase("EPSG")) {
+						p.setSRID(Integer.valueOf(id.getCode()).intValue());
+					}
+				}
+			}
+			return p;
 		} catch (final MismatchedDimensionException ex) {
 			throw new NcUwException(ex);
 		} catch (final TransformException ex) {
@@ -372,17 +391,18 @@ public class NcUwHelper {
 				throw new NcUwException(e);
 			}
 		} else {
-			crs = DefaultGeographicCRS.WGS84;
+			crs = EPSG4326;
 		}
+		
+		if (crs == null) {
+			throw new NullPointerException();
+		}
+		
 		DirectPosition dp = JTS.toDirectPosition(p.getCoordinate(), crs);
 		if (targetCRS != null) {
 			try {
-				dp = CRS.findMathTransform(crs, targetCRS).transform(dp, null);
-			} catch (FactoryException e) {
-				throw new NcUwException(e);
-			} catch (MismatchedDimensionException e) {
-				throw new NcUwException(e);
-			} catch (TransformException e) {
+				dp = CRS.findMathTransform(crs, targetCRS).transform(dp, new GeneralDirectPosition(targetCRS));
+			} catch (Exception e) {
 				throw new NcUwException(e);
 			}
 		}
