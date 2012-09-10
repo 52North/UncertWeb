@@ -2,8 +2,8 @@
 
 pkgname=visc-svn
 _pkgname=${pkgname%-svn}
-pkgver=1945
-pkgrel=3
+pkgver=2064
+pkgrel=1
 pkgdesc="UncertWeb Uncertainty Visualization Client"
 arch=(any)
 url="http://uncertweb.org"
@@ -12,9 +12,9 @@ depends=(apache)
 optdepends=("viss-svn: for the standard same-server setup"
             "omcs-svn: for the standard same server setup")
 makedepends=(subversion)
-source=(settings_r1945.patch)
+source=(settings_r2064.patch)
 backup=("etc/$_pkgname/settings.js")
-md5sums=('da5553f86cab7d0873109ea18527156a')
+md5sums=('850241730c188897b8d25ffceb22d6a4')
 options=(!purge !strip !zipman emptydirs)
 groups=(uw-viss)
 

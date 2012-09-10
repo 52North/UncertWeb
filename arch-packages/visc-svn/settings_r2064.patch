@@ -1,12 +1,10 @@
-Index: libs/vis/settings.js
+Index: settings.js
 ===================================================================
---- libs/vis/settings.js	(revision 1950)
-+++ libs/vis/settings.js	(working copy)
-@@ -20,41 +20,47 @@
-  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
+--- settings.js	(revision 2064)
++++ settings.js	(working copy)
+@@ -21,43 +21,43 @@
   */
  
--
  // OM conversion service url
 -var omConversionServiceUrl = "http://giv-uw.uni-muenster.de:8080/omcs";
 +var omConversionServiceUrl = "http://" + window.location.host + ":8080/omcs";
@@ -41,12 +39,11 @@ Index: libs/vis/settings.js
 -}, {
 -	// absolute path required for conversion service
 -	url : 'http://giv-uw.uni-muenster.de/vis/v2/data/xml/cropallocations_realisations.xml',
--	mime : 'om2' // TODO
+-	mime : 'application/x-om-u+xml' 
 -}, {
--	url: 'data/json/dummy_WP8.3_output.json',
+-	url : 'data/json/dummy_WP8.3_output.json',
 -	mime : 'application/jsom'
 -} ];
-\ No newline at end of file
 +var defaultResources = [ 
 +	{
 +		vissUrl : vissUrl,
@@ -64,23 +61,22 @@ Index: libs/vis/settings.js
 +		mime : 'application/jsom'
 +	},
 +*/
-+/*	
-+	{
-+		url : 'data/json/austalObs.json',
-+		mime : 'application/jsom'
-+	}, 
-+*/
 +/*
 +	{
-+		// absolute path required for conversion service
 +		url : 'http://giv-uw.uni-muenster.de/vis/v2/data/xml/cropallocations_realisations.xml',
-+		mime : 'om2' // TODO
++		mime : 'application/x-om-u+xml' // TODO
 +	},
 +*/
 +/*	
 +	{
-+		url: 'data/json/dummy_WP8.3_output.json',
++		url : 'data/json/dummy_WP8.3_output.json',
 +		mime : 'application/jsom'
 +	} 
 +*/
 +];
+ 
+ // Id for user-defined resources, for internal use, connects between
+ // defaultResource map and Ext.ux.VIS.ResourceNodesContainer
+-var nextResourceId = 0;
+\ No newline at end of file
++var nextResourceId = 0;>>>>>>> .r2064

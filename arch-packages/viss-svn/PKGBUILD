@@ -3,8 +3,8 @@ _tomcat=tomcat7
 
 pkgname=viss-svn
 _pkgname=${pkgname%-svn}
-pkgver=2019
-pkgrel=4
+pkgver=2061
+pkgrel=1
 pkgdesc="Uncertainty raster visualization service"
 arch=(any)
 url="http://uncertweb.org"
