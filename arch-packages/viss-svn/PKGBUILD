@@ -49,7 +49,7 @@ build() {
   patch -Np0 -i ${srcdir}/properties.patch
 
   # build
-  mvn -B -Dmaven.repo.local="../maven-repo" -DskipTests=true -ff package
+  mvn -B -Dmaven.repo.local="${MVN_BUILD_REPO:-../maven-repo}" -DskipTests=true -ff package
 }
 
 package() {
@@ -88,4 +88,4 @@ EOF
   chgrp -R 66    ${pkgdir}/etc/${_pkgname}
 }
 
-# vim:set ts=2 sw=2 et:
+# vim:set ts=2 sw=2 ft=sh et:

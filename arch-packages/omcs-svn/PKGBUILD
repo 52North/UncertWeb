@@ -37,7 +37,7 @@ build() {
   cp -r ${srcdir}/${_svnmod} ${srcdir}/${_svnmod}-build
 
   cd ${srcdir}/${_svnmod}-build
-  mvn -B -Dmaven.repo.local="../maven-repo" -DskipTests=true -ff package
+  mvn -B -Dmaven.repo.local="${MVN_BUILD_REPO:-../maven-repo}" -DskipTests=true -ff package
 }
 
 package() {
@@ -51,4 +51,4 @@ package() {
   chown -R 66:66 ${pkgdir}/var/lib/${_tomcat}
 }
 
-# vim:set ts=2 sw=2 et:
+# vim:set ft=sh ts=2 sw=2 et:

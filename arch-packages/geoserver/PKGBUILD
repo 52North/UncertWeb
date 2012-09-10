@@ -60,4 +60,4 @@ package() {
       -or -name polygon.xml -or -name default_polygon.sld \) -delete
 }
 
-# vim:set ts=2 sw=2 et:
+# vim:set ts=2 sw=2 ft=sh et:

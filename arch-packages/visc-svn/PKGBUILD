@@ -53,4 +53,4 @@ package() {
   ln -s "/usr/share/${_pkgname}" "${pkgdir}/srv/http/${_web_path}"
 }
 
-# vim:set ts=2 sw=2 et:
+# vim:set ts=2 sw=2 ft=sh et:
