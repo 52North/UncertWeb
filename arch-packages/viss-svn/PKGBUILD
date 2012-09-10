@@ -3,7 +3,7 @@ _tomcat=tomcat7
 
 pkgname=viss-svn
 _pkgname=${pkgname%-svn}
-pkgver=2061
+pkgver=2069
 pkgrel=1
 pkgdesc="Uncertainty raster visualization service"
 arch=(any)

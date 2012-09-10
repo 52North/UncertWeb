@@ -1,7 +1,7 @@
 Index: settings.js
 ===================================================================
---- settings.js	(revision 2064)
-+++ settings.js	(working copy)
+--- libs/vis/settings.js	(revision 2064)
++++ libs/vis/settings.js	(working copy)
 @@ -21,43 +21,43 @@
   */
  
@@ -79,4 +79,4 @@ Index: settings.js
  // defaultResource map and Ext.ux.VIS.ResourceNodesContainer
 -var nextResourceId = 0;
 \ No newline at end of file
-+var nextResourceId = 0;>>>>>>> .r2064
++var nextResourceId = 0;
