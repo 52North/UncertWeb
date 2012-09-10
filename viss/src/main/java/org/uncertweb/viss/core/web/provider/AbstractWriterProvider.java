@@ -21,7 +21,7 @@ public abstract class AbstractWriterProvider<T> implements MessageBodyWriter<T> 
 	private final MediaType mediaType;
 	@Context private UriInfo uriInfo;
 
-	protected AbstractWriterProvider(Class<?> clazz, MediaType mt) {
+	public AbstractWriterProvider(Class<?> clazz, MediaType mt) {
 		this.classToEncode = clazz;
 		this.mediaType = mt;
 	}

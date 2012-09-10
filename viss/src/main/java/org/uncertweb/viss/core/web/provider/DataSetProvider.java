@@ -52,7 +52,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public class DataSetProvider extends AbstractJsonSingleWriterProvider<IDataSet> {
 
 
-	protected DataSetProvider() {
+	public DataSetProvider() {
 		super(IDataSet.class, JSON_DATASET_TYPE);
 	}
 

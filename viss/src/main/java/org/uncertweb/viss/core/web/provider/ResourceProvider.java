@@ -42,7 +42,7 @@ import org.uncertweb.viss.core.web.RESTServlet;
 public class ResourceProvider extends
 		AbstractJsonSingleWriterProvider<IResource> {
 
-	protected ResourceProvider() {
+	public ResourceProvider() {
 		super(IResource.class, JSON_RESOURCE_TYPE);
 	}
 

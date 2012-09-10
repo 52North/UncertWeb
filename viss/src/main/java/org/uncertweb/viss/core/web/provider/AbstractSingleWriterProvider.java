@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 public abstract class AbstractSingleWriterProvider<T> extends
 		AbstractWriterProvider<T> {
 
-	protected AbstractSingleWriterProvider(Class<? extends T> clazz,
+	public AbstractSingleWriterProvider(Class<? extends T> clazz,
 			MediaType mt) {
 		super(clazz, mt);
 	}

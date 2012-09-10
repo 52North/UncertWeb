@@ -10,7 +10,7 @@ import org.uncertweb.utils.UwReflectionUtils;
 public abstract class AbstractCollectionWriterProvider<T> extends
 		AbstractWriterProvider<Iterable<T>> {
 
-	protected AbstractCollectionWriterProvider(Class<? extends T> clazz,
+	public AbstractCollectionWriterProvider(Class<? extends T> clazz,
 			MediaType mt) {
 		super(clazz, mt);
 	}

@@ -38,7 +38,7 @@ import org.uncertweb.viss.core.web.RESTServlet;
 public class StyleProvider extends
 		AbstractJsonSingleWriterProvider<VisualizationStyle> {
 
-	protected StyleProvider() {
+	public StyleProvider() {
 		super(VisualizationStyle.class, JSON_VISUALIZATION_STYLE_TYPE);
 	}
 

@@ -19,7 +19,7 @@ import com.sun.jersey.core.util.ReaderWriter;
 public abstract class AbstractJsonSingleWriterProvider<T> extends
 		AbstractWriterProvider<T> {
 
-	protected AbstractJsonSingleWriterProvider(Class<? extends T> clazz,
+	public AbstractJsonSingleWriterProvider(Class<? extends T> clazz,
 			MediaType mt) {
 		super(clazz, mt);
 	}

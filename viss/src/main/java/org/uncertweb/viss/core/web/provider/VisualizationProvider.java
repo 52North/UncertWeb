@@ -50,7 +50,7 @@ import org.uncertweb.viss.core.web.RESTServlet;
 @Provider
 public class VisualizationProvider extends AbstractJsonSingleWriterProvider<IVisualization> {
 
-	protected VisualizationProvider() {
+	public VisualizationProvider() {
 		super(IVisualization.class, JSON_VISUALIZATION_TYPE);
 	}
 

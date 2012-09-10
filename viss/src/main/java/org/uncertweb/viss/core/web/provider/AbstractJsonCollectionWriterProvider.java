@@ -23,7 +23,7 @@ public abstract class AbstractJsonCollectionWriterProvider<T> extends
 
 	private final String collectionName;
 
-	protected AbstractJsonCollectionWriterProvider(Class<? extends T> clazz,
+	public AbstractJsonCollectionWriterProvider(Class<? extends T> clazz,
 			MediaType mt, String collectionName) {
 		super(clazz, mt);
 		this.collectionName = collectionName;

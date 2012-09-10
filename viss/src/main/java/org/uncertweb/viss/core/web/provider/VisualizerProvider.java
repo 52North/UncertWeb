@@ -40,7 +40,7 @@ import org.uncertweb.viss.core.vis.IVisualizer;
 public class VisualizerProvider extends
 		AbstractJsonSingleWriterProvider<IVisualizer> {
 
-	protected VisualizerProvider() {
+	public VisualizerProvider() {
 		super(IVisualizer.class, JSON_VISUALIZER_TYPE);
 	}
 

@@ -23,7 +23,6 @@ package org.uncertweb.viss.core.web.provider;
 
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_SCHEMA_TYPE;
 
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jettison.json.JSONException;
@@ -32,7 +31,7 @@ import org.codehaus.jettison.json.JSONObject;
 @Provider
 public class JsonSchemaProvider extends AbstractJsonSingleWriterProvider<JSONObject> {
 
-	protected JsonSchemaProvider(Class<? extends JSONObject> clazz, MediaType mt) {
+	public JsonSchemaProvider() {
 		super(JSONObject.class, JSON_SCHEMA_TYPE);
 	}
 

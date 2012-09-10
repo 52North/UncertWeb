@@ -48,7 +48,7 @@ import org.uncertweb.viss.core.util.MediaTypes;
 @Provider
 public class UncertaintyObservationCollectionProvider extends AbstractJsonSingleWriterProvider<IObservationCollection> {
 
-	protected UncertaintyObservationCollectionProvider() {
+	public UncertaintyObservationCollectionProvider() {
 		super(IObservationCollection.class, MediaTypes.JSON_OBSERVATION_COLLECTION_TYPE);
 	}
 

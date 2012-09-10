@@ -38,7 +38,7 @@ import org.uncertweb.viss.core.web.RESTServlet;
 @Provider
 public class VisualizerCollectionProvider extends AbstractJsonCollectionWriterProvider<IVisualizer> {
 
-	protected VisualizerCollectionProvider() {
+	public VisualizerCollectionProvider() {
 		super(IVisualizer.class, JSON_VISUALIZER_LIST_TYPE, VISUALIZERS_KEY);
 	}
 
