@@ -161,7 +161,7 @@ public class AlbatrossOutputMapper {
 			return ppcMap.get(ppc);
 
 		URL url = AlbatrossOutputMapper.class
-				.getResource("PCA4_Rotterdam_all.shp");
+				.getResource("PCA4digits.shp");
 
 		FileDataStore store = FileDataStoreFinder.getDataStore(url);
 
