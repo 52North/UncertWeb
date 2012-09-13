@@ -76,7 +76,8 @@ public abstract class NcUwConstants {
 		public static final String EPSG_CODE = "epsg_code";
 		public static final String PROCEDURE = "procedure";
 		public static final String OBSERVED_PROPERTY = "observed_property";
-		public static final String Z_ORIENTATION = "positive";
+		public static final String UNITS = "units";
+		public static final String Z_ORIENTATION = "positive";		
 	}
 
 	public static abstract class Axis {

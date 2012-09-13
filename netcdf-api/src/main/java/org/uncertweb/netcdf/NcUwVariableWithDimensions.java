@@ -70,7 +70,7 @@ import com.vividsolutions.jts.geom.Point;
  * X = LON
  * Y = LAT
  */
-class NcUwVariableWithDimensions extends AbstractNcUwVariable {
+public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 	private static final String LAYER_NAME = "dasisttotalirrelevant";
 	private static final double SCALE = 1.0D;
 	private static final double OFFSET = 0.0D;
