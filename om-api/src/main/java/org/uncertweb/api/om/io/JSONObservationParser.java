@@ -390,7 +390,10 @@ public class JSONObservationParser implements IObservationParser{
 		} catch (XmlException e) {
 			throw new IllegalArgumentException(e);
 		}
-		String sampledFeature = jfoi.getString("sampledFeature");
+		String sampledFeature = null;
+		if (jfoi.has("sampledFeature")) {
+			sampledFeature = jfoi.getString("sampledFeature");
+		}
 		Identifier identifier =null;
 		if (jfoi.has("identifier")){
 			identifier = parseIdentifier(jfoi.getJSONObject("identifier"));

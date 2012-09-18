@@ -45,7 +45,10 @@ public class XBObservationParserTestCase extends TestCase {
 	
 
 	public void testJSON() throws Exception{
-		File folder = new File(localPath+pathToExamples);
+		File folder = new File(localPath);
+		if (!folder.exists()) {
+			folder = new File(localPath+pathToExamples);
+		}
 		File[] fileArray = folder.listFiles();
 		if (fileArray!=null){
 			for (int i=0;i<fileArray.length;i++){
