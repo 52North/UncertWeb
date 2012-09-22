@@ -28,16 +28,16 @@
     
     <wps:Input>
       <ows:Identifier>airQualityData</ows:Identifier>
-       <wps:Reference xlink:href="http://ifgi.uni-muenster.de/~l_gerh01/vis/nox_dummy_8days.nc" mimeType="application/x-netcdf"/>
+       <wps:Reference xlink:href="http://ifgi.uni-muenster.de/~l_gerh01/vis/rotterdam_conc_20110402.nc" mimeType="application/x-netcdf"/>
     </wps:Input>  
 
     <wps:Input>
       <ows:Identifier>activityProfile</ows:Identifier>
-       <wps:Reference xlink:href="http://ifgi.uni-muenster.de/~l_gerh01/vis/albatross_output_new2.xml" mimeType="application/x-om-u+xml"/>
+       <wps:Reference xlink:href="http://ifgi.uni-muenster.de/~l_gerh01/vis/albatross_response4_schedules2.xml" mimeType="application/x-om-u+xml"/>
     </wps:Input>    
       
   </wps:DataInputs>  
-  <wps:ResponseForm>
+  <wps:ResponseForm>a
     <wps:ResponseDocument>
       <wps:Output mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd">
         <ows:Identifier>result</ows:Identifier>
