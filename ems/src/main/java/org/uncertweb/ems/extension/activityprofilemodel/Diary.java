@@ -1,4 +1,4 @@
-package org.uncertweb.ems.activityprofilemodel;
+package org.uncertweb.ems.extension.activityprofilemodel;
 
 import java.util.ArrayList;
 import java.util.HashMap;

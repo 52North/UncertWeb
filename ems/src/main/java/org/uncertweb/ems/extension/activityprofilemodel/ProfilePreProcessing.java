@@ -1,4 +1,4 @@
-package org.uncertweb.ems.activityprofilemodel;
+package org.uncertweb.ems.extension.activityprofilemodel;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

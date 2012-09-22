@@ -1,4 +1,4 @@
-package org.uncertweb.ems;
+package org.uncertweb.ems.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +15,6 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
 import org.uncertweb.ems.data.profiles.Profile;
 import org.uncertweb.ems.exposuremodel.OutdoorModel;
 import org.uncertweb.ems.extension.model.IndoorModel;
-import org.uncertweb.ems.util.Utils;
 
 
 
