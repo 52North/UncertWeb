@@ -22,11 +22,12 @@ import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.ObservationCollection;
 import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.ems.data.profiles.AbstractProfile;
-import org.uncertweb.ems.data.profiles.Activity;
-import org.uncertweb.ems.data.profiles.ActivityProfile;
 import org.uncertweb.ems.data.profiles.GeometryProfile;
-import org.uncertweb.ems.data.profiles.MEProfile;
-import org.uncertweb.ems.data.profiles.Microenvironment;
+import org.uncertweb.ems.exceptions.EMSInputException;
+import org.uncertweb.ems.extension.profiles.Activity;
+import org.uncertweb.ems.extension.profiles.ActivityProfile;
+import org.uncertweb.ems.extension.profiles.MEProfile;
+import org.uncertweb.ems.extension.profiles.Microenvironment;
 import org.uncertweb.ems.util.ActivityMapping;
 import org.uncertweb.ems.util.WeekdayMapping;
 
@@ -47,7 +48,7 @@ public class OMProfileParser {
 	
 	
 	/**
-	 *  Fill profile object with information from Observation collection
+	 *  Fills profile objects with information from Observation collection
 	 *  @param iobs
 	 *  @param netcdfList
 	 *  @param minuteResolution
@@ -55,7 +56,7 @@ public class OMProfileParser {
 	public List<AbstractProfile> OM2Profiles(IObservationCollection iobs, ArrayList<DateTime> netcdfList, int minuteResolution){
 		List<AbstractProfile> profilesList = new ArrayList<AbstractProfile>();
 
-		// only add new spatial sampling feature
+		// only add new spatial sampling features (for files with more than one property)
 		URI observedProperty = null;
 		
 		// split into individuals (by procedure id)
@@ -79,36 +80,19 @@ public class OMProfileParser {
 				lastProcedure = obs.getProcedure();
 			}
 				
-			// for the first observation
-			if(observedProperty == null){
-				observedProperty = obs.getObservedProperty();				
-			} 
+			 // for the first observation
+			if(observedProperty == null)
+				observedProperty = obs.getObservedProperty();					
 			
 			// if the selected observed property occurs, update the lists
-			if(observedProperty.equals(obs.getObservedProperty())){
-				
+			if(observedProperty.equals(obs.getObservedProperty())){				
 				// 1) process time object to interval	
 				TimeObject timeObject = obs.getPhenomenonTime();				
-				Interval time = handleTimeFromOM(timeObject, netcdfList);
+				newTimeList = handleTimeFromOM(timeObject, netcdfList, minuteResolution);
+				// TODO: how to treat missing travel time?
 				
 				// only if time period could be matched
-				if(time!=null){
-					// if the interval is too long, create additional timesteps according to the minuteResolution
-					newTimeList = new ArrayList<Interval>();
-					int minuteDuration = time.toPeriod(PeriodType.minutes()).getMinutes();
-					if(minuteDuration>minuteResolution){	
-						int rep = 0;
-						while(minuteDuration>=minuteResolution){
-							newTimeList.add(new Interval(time.getStart().plusMinutes(minuteResolution*rep),time.getStart().plusMinutes(minuteResolution*(rep+1))));
-							minuteDuration -= minuteResolution;
-							rep++;
-						}
-					}else{
-						newTimeList.add(time);
-					}
-					
-					// TODO: how to treat missing travel time?
-					
+				if(!newTimeList.isEmpty()){										
 					// 2) geometry extraction
 					// add current observation to collection for each additional timestep
 					for(Interval newTime : newTimeList){
@@ -119,14 +103,12 @@ public class OMProfileParser {
 					
 					// 3) activity mapping
 					// use last activity list to determine exposure relevant activities and locations
-					if(rawActivities.size()!=0){
+					if(rawActivities.size()!=0)
 						handleActivitiesFromOM(rawActivities, activityMap, meMap, newTimeList, lastProcedure);
-					}
 					
 					// empty list for next collection of activity observations
 					rawActivities = new  HashMap<String, String>();				
-				}			
-				
+				}							
 			}
 						
 			// for each observation: collect activities (observedProperty) 
@@ -136,11 +118,10 @@ public class OMProfileParser {
 		//  process the last activity list
 		// 3) activity mapping
 		// use last activity list to determine exposure relevant activities and locations
-		if(rawActivities.size()!=0){
+		if(rawActivities.size()!=0)
 			handleActivitiesFromOM(rawActivities, activityMap, meMap, newTimeList, lastProcedure);
-		}
 			
-		//  make profiles from the OM collections and activity lists if available
+		//  make profiles from the OM collections and activity lists
 		Set<URI> individuals = obsCollMap.keySet();
 		for(URI uri : individuals){
 			// check if there are valid activities an microenvironments
@@ -152,13 +133,15 @@ public class OMProfileParser {
 					}else{
 						profilesList.add(new MEProfile(obsCollMap.get(uri), meMap.get(uri)));
 					}
-				}else{
+				}else if(!obsCollMap.get(uri).getObservations().isEmpty()){ // only make a profile if observations are available
 					profilesList.add(new GeometryProfile(obsCollMap.get(uri)));
 				}
 			}			
 		}
-		
-		return profilesList;
+		if(!profilesList.isEmpty())
+			return profilesList;
+		else
+			throw new EMSInputException("No valid profiles could be produced from the OM file.");
 	}
 	
 	/**
@@ -167,9 +150,9 @@ public class OMProfileParser {
 	 * @param netcdfList
 	 * @return
 	 */
-	private Interval handleTimeFromOM(TimeObject timeObject, ArrayList<DateTime> netcdfList){
+	private ArrayList<Interval> handleTimeFromOM(TimeObject timeObject, ArrayList<DateTime> netcdfList, int minuteResolution){
 		Interval time = null;
-		
+	
 		// make General time to datetime
 		if(timeObject.isGeneralTime()){
 			// matching of time
@@ -195,6 +178,8 @@ public class OMProfileParser {
 				// loop through netcdf dates to find the respective weekday for the observation
 				for(DateTime dt : netcdfList){
 					String dtDay = dt.dayOfWeek().getAsText(new Locale("en"));
+					int startDay = timeInterval.getStart().getDay();
+					int endDay = timeInterval.getEnd().getDay();
 					// if day and hour are correct, use this date for the generic time
 					if(start==null&&timeInterval.getStart().getDay()==WeekdayMapping.DAY2INTEGER_EN.get(dtDay)&&
 							timeInterval.getStart().getHour()==dt.hourOfDay().get()){
@@ -218,7 +203,22 @@ public class OMProfileParser {
 			time = new Interval(dt, dt);
 		}		
 		
-		return time;
+		ArrayList<Interval> newTimeList = new ArrayList<Interval>();
+		if(time!=null){
+			// if the interval is too long, create additional timesteps according to the minuteResolution				
+			int minuteDuration = time.toPeriod(PeriodType.minutes()).getMinutes();
+			if(minuteDuration>minuteResolution){	
+				int rep = 0;
+				while(minuteDuration>=minuteResolution){
+					newTimeList.add(new Interval(time.getStart().plusMinutes(minuteResolution*rep),time.getStart().plusMinutes(minuteResolution*(rep+1))));
+					minuteDuration -= minuteResolution;
+					rep++;
+				}
+			}else
+				newTimeList.add(time);
+		}
+			
+		return newTimeList;
 	}
 	
 	

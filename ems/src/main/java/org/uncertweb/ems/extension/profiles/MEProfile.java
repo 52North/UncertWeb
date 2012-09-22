@@ -1,4 +1,4 @@
-package org.uncertweb.ems.data.profiles;
+package org.uncertweb.ems.extension.profiles;
 
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -6,6 +6,7 @@ import java.util.TreeMap;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.ems.data.profiles.GeometryProfile;
 
 public class MEProfile extends GeometryProfile {
 	protected HashMap<Interval, Microenvironment> meList;

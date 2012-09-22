@@ -1,4 +1,4 @@
-package org.uncertweb.ems.data.profiles;
+package org.uncertweb.ems.extension.profiles;
 
 public abstract class AbstractActivity {
 

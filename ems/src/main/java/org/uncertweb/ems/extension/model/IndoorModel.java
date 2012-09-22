@@ -1,4 +1,4 @@
-package org.uncertweb.ems.exposuremodel;
+package org.uncertweb.ems.extension.model;
 
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -15,8 +15,8 @@ import org.rosuda.REngine.REXPMismatchException;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.LogNormalDistribution;
 import org.uncertml.distribution.continuous.NormalDistribution;
-import org.uncertweb.ems.data.parameter.IndoorModelParameters;
 import org.uncertweb.ems.data.profiles.Profile;
+import org.uncertweb.ems.extension.model.parameters.IndoorModelParameters;
 
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -26,7 +26,7 @@ import au.com.bytecode.opencsv.CSVReader;
  * @author Lydia Gerharz
  *
  */
-public class IndoorModel implements IModel{
+public class IndoorModel{
 	
 	private HashMap<String, IndoorModelParameters> microenvParams;
 	private static Logger LOGGER = Logger.getLogger(IndoorModel.class);

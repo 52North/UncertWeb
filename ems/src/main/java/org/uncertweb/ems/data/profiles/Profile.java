@@ -78,7 +78,7 @@ public class Profile {
 		
 		for (AbstractObservation obs : iobs.getObservations()) {  				
 			// get time and add SpatialSamplingFeature if it is a new timestep
-			DateTime time = obs.getResultTime().getDateTime();
+			DateTime time = obs.getResultTime().getInterval().getStart();
 			if(!time.equals(lastTime)){
 				dateList.add(time.toString(ISODateTimeFormat.dateTime()));
 				attributesList.put(time.toString(ISODateTimeFormat.dateTime()),  new HashMap<String,String>());				
@@ -121,7 +121,7 @@ public class Profile {
 		
 		// loop through original observations
 		for(int i=0; i<obsColl.getObservations().size(); i++){
-			DateTime time = obsColl.getObservations().get(i).getResultTime().getDateTime();
+			DateTime time = obsColl.getObservations().get(i).getResultTime().getInterval().getStart();
 			
 			// if time is within this interval, collect outdoor concentration
 			if((time.isBefore(start)||time.isEqual(start))&&i<(obsColl.getObservations().size()-1)){

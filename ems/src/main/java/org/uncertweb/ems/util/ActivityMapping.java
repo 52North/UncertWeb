@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.uncertweb.ems.data.profiles.Activity;
+import org.uncertweb.ems.extension.profiles.Activity;
 
 
 /**
@@ -135,11 +135,11 @@ public class ActivityMapping {
 			//*********************************************************************
 			// TODO: THIS IS A WORKAROUND AS LONG AS WE ONLY GET THE CODES FROM THE ALBATROSS MODEL 
 			// check if we have Albatross codes and convert them if necessary
-			if(id.contains("travelMode")){
-				value = ALBATROSS_TRAVELMODE2ACTIVITY.get(value);
-			}else if(id.contains("activityType")){
-				value = ALBATROSS_CODE2ACTIVITY.get(value);
-			}
+//			if(id.contains("travelMode")){
+//				value = ALBATROSS_TRAVELMODE2ACTIVITY.get(value);
+//			}else if(id.contains("activityType")){
+//				value = ALBATROSS_CODE2ACTIVITY.get(value);
+//			}
 			// TODO: The "isHome" parameter is currently wrong, so ignore it
 //			else if(id.contains("isHome")){
 //				if(value.equals("1")||value.equals("true"))
@@ -194,11 +194,11 @@ public class ActivityMapping {
 			//*********************************************************************
 			// TODO: THIS IS A WORKAROUND AS LONG AS WE ONLY GET THE CODES FROM THE ALBATROSS MODEL 
 			// check if we have Albatross codes and convert them if necessary
-			if(id.contains("travelMode")){
-				value = ALBATROSS_TRAVELMODE2ACTIVITY.get(value);
-			}else if(id.contains("activityType")){
-				value = ALBATROSS_CODE2ACTIVITY.get(value);
-			}
+//			if(id.contains("travelMode")){
+//				value = ALBATROSS_TRAVELMODE2ACTIVITY.get(value);
+//			}else if(id.contains("activityType")){
+//				value = ALBATROSS_CODE2ACTIVITY.get(value);
+//			}
 			// TODO: The "isHome" parameter is currently wrong, so ignore it
 //			else if(id.contains("isHome")){
 //				if(value.equals("1")||value.equals("true"))

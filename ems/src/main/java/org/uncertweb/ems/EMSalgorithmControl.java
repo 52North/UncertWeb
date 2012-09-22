@@ -13,8 +13,8 @@ import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.ems.data.profiles.Profile;
-import org.uncertweb.ems.exposuremodel.IndoorModel;
 import org.uncertweb.ems.exposuremodel.OutdoorModel;
+import org.uncertweb.ems.extension.model.IndoorModel;
 import org.uncertweb.ems.util.Utils;
 
 
@@ -127,7 +127,7 @@ public class EMSalgorithmControl {
 			}
 			
 			// get OM file
-			IObservationCollection exposureProfile = profile.getExposureProfileObservationCollection("lognormal");
+			IObservationCollection exposureProfile = profile.getExposureProfileObservationCollection("normal");
 				
 			// create a specific collection for visualisation
 			//IObservationCollection 

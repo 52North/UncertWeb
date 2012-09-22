@@ -1,4 +1,4 @@
-package org.uncertweb.ems.exposuremodel;
+package org.uncertweb.ems.extension.model;
 
 public class IndoorConcentrationModel {
 

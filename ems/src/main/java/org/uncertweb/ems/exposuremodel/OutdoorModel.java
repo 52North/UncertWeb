@@ -1,5 +1,6 @@
 package org.uncertweb.ems.exposuremodel;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.Rserve.RserveException;
 import org.uncertweb.ems.data.profiles.AbstractProfile;
 import org.uncertweb.ems.data.profiles.Profile;
+import org.uncertweb.ems.exceptions.EMSProcessingException;
 import org.uncertweb.ems.util.ExposureModelConstants;
 import org.uncertweb.netcdf.NcUwConstants;
 import org.uncertweb.netcdf.NcUwFile;
@@ -33,11 +35,11 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author LydiaGerharz
  *
  */
-public class OutdoorModel implements IModel{
+public class OutdoorModel{
 
 	private static Logger LOGGER = Logger.getLogger(OutdoorModel.class);
 	private final String fileSeparator = System.getProperty("file.separator");
-	private String resPath;
+	private String resPath, parameter;
 
 	
 	public OutdoorModel(){
@@ -51,6 +53,7 @@ public class OutdoorModel implements IModel{
 	
 	public OutdoorModel(String resPath){
 		this.resPath = resPath+"/outdoorModel";
+//		this.resPath = resPath;
 	}
 
 
@@ -64,7 +67,7 @@ public class OutdoorModel implements IModel{
 		// get necessary information from NetCDF file
 		String ncFilePath = ncFile. getUnderlyingFile().getAbsolutePath();
 		ncFilePath = ncFilePath.replace("\\","/");
-		String parameter = ncFile.getStringAttribute(NcUwConstants.Attributes.PRIMARY_VARIABLES, true).split(" ")[0];
+		parameter = ncFile.getStringAttribute(NcUwConstants.Attributes.PRIMARY_VARIABLES, true).split(" ")[0];
 		String uom = ncFile.getVariable(parameter).findAttribute("units").getStringValue();
 		
 		// perform overlay
@@ -81,9 +84,13 @@ public class OutdoorModel implements IModel{
 		}catch(Exception e){
 			LOGGER.debug("Error while executing outdoor model: "
 					+ e.getMessage());
-			throw new RuntimeException("Error while executing outdoor model: "
+			throw new EMSProcessingException("Error while executing outdoor model: "
 					+ e.getMessage(), e);
 		} 		
+		
+		// if no values were estimated throw an Exception
+		if(expoVals.isEmpty()||expoVals==null||expoVals.size()<1)
+			throw new EMSProcessingException("No exposure values could be estimated as the two datasets do not intersect in space and/or time!");
 		
 		// loop through profiles to add results
 		for(int i=0; i<profileList.size(); i++) {
@@ -96,21 +103,7 @@ public class OutdoorModel implements IModel{
 				double[] c = expoVals.get(i).get(dt);
 				profile.setExposureValue(dateMap.get(dt), c, ExposureModelConstants.ExposureValueTypes.OUTDOOR_SOURCES, parameter, uom);
 			}
-				
-//			Iterator<DateTime> obsIt = dateMap.keySet().iterator();
-//			Iterator<DateTime> resIt = expoVals.get(i).keySet().iterator();
-//			
-//			// add results to profile
-//			while(obsIt.hasNext()&&resIt.hasNext()){
-//				DateTime dt1 = obsIt.next();
-//				DateTime dt2 = resIt.next();
-//				Interval in = dateMap.get(dt1);
-//				double[] c = expoVals.get(i).get(dt2);
-//				profile.setExposureValue(in, c, ExposureModelConstants.ExposureValueTypes.OUTDOOR_SOURCES, parameter, uom);
-//			}
-			
-		}
-		
+		}		
 	}
 	
 	/**
@@ -145,13 +138,18 @@ public class OutdoorModel implements IModel{
 					
 			// run the prepared script
 			//TODO: set correct path!
+			URL url = OutdoorModel.class
+					.getResource("overlay_utils.R");
 			cmd  = "source(\""+resPath+"/overlay_utils.R\", echo=TRUE)";
 			c.voidEval(cmd);
 					
 			// load files
 			c.voidEval("raster <-readNetCDFU(rasterFile)");
 			c.voidEval("om <- readOMcsv(omFile)");
-				
+			
+			// get pollutant
+			parameter = c.tryEval("strsplit(colnames(raster@data)[1],\"_r\")[[1]][1]").asString();
+			
 			// transform OM data to NetCDF-U projection
 			c.voidEval("om.sp <- spTransform(om@sp, CRS=CRS(proj4string(raster)))");
 			c.voidEval("om.st <- STI(om.sp, om@time)");
@@ -159,9 +157,13 @@ public class OutdoorModel implements IModel{
 			// 1) disaggregate polygons to points
 			c.voidEval("points <- polygons2points(om.st, 0.00001, 50)");
 			
-			// 2) perform overlay
-			c.voidEval("points.over <- over(points, raster, fn=mean, timeInterval = TRUE)");
-			c.voidEval("points.stdf <- STIDF(points@sp, points@time, points.over)");
+			// 2) try to perform overlay
+			try{
+				c.voidEval("points.over <- over(points, raster, fn=mean, timeInterval = TRUE)");
+				c.voidEval("points.stdf <- STIDF(points@sp, points@time, points.over)");
+			}catch(Exception e){
+				throw new EMSProcessingException("No exposure values could be estimated as the two datasets do not intersect in space and/or time!", e);	
+			}
 			
 			// 3) aggregate point values to polygons
 			c.voidEval("overlay.mean <- aggregate(points.stdf, om.st, mean, na.rm=T)");
@@ -215,6 +217,9 @@ public class OutdoorModel implements IModel{
 			c.voidEval("omFile <- \""+omFilePath+"\"");
 			c.voidEval("rasterFile <- \""+netcdfFilePath+"\"");
 			
+			// get pollutant
+			parameter = c.tryEval("strsplit(colnames(raster@data)[1],\"_r\")[[1]][1]").asString();
+											
 			// run the prepared script
 			c.voidEval("source(\""+resPath+"/overlay_utils.R\", echo=TRUE)");
 			
@@ -226,8 +231,12 @@ public class OutdoorModel implements IModel{
 			c.voidEval("om.sp <- spTransform(om@sp, CRS=CRS(proj4string(raster)))");
 			c.voidEval("om.st <- STI(om.sp, om@time)");
 			
-			// perform overlay, result is dataframe with ncol=numbReal, nrow=numbPoints
-			c.voidEval("overlay.mean <- over(om.st, raster, fn=mean)");
+			// try to perform overlay, result is dataframe with ncol=numbReal, nrow=numbPoints
+			try{
+				c.voidEval("overlay.mean <- over(om.st, raster, fn=mean)");
+			}catch(Exception e){
+				throw new EMSProcessingException("No exposure values could be estimated as the two datasets do not intersect in space and/or time!", e);	
+			}
 			
 			// get values and dates
 			REXP vals = c.tryEval("as.matrix(overlay.mean)");
@@ -245,6 +254,16 @@ public class OutdoorModel implements IModel{
 		return expoValsList;
 	}
 	
+	
+	/**
+	 * Old method for outdoor modelling
+	 * @deprecated
+	 * @param profile
+	 * @param ncFilePath
+	 * @param omFilePath
+	 * @param parameter
+	 * @return
+	 */
 	public Profile performOutdoorOverlay(Profile profile, String ncFilePath, String omFilePath, String parameter) {
 		//TODO: works only for points so far!		
 		
@@ -265,7 +284,7 @@ public class OutdoorModel implements IModel{
 			c.voidEval("library(rgeos)");
 			c.voidEval("library(maptools)");
 //			cmd = "source(\""+resPath+"/outdoorModel/overlay.R\")";
-			cmd = "load(\""+resPath+"/outdoorModel/overlay.RData\")";
+			cmd = "load(\""+resPath+"/overlay.RData\")";
 			c.voidEval(cmd);
 			
 			// load gps data
@@ -316,7 +335,14 @@ public class OutdoorModel implements IModel{
 		return profile;
 	}
 	
-	
+	/**
+	 * Old method for COSP uncertainty estimation
+	 * @deprecated
+	 * @param profile
+	 * @param omFilePath
+	 * @param nSim
+	 * @return
+	 */
 	public Profile estimateCOSPUncertainty(Profile profile, String omFilePath, int nSim){
 		ExtendedRConnection c = null;		
 		String cmd = "";

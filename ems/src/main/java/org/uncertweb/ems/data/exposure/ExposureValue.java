@@ -11,14 +11,14 @@ import org.uncertweb.ems.util.ExposureModelConstants;
 public class ExposureValue {
 
 	// store information about source (indoor, outdoor)
-	String type;
+	private String type;
 	
 	// store realisations of concentration
-	double[] vals;
+	private double[] vals;
 	
 	// store information about pollutant
-	String pollutant;
-	String uom;
+	private String pollutant;
+	private String uom;
 	
 	public ExposureValue(double[] exposureValues, String type, String pollutant, String uom){
 		setExposureValues(exposureValues);

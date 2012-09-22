@@ -1,4 +1,4 @@
-package org.uncertweb.ems.data.parameter;
+package org.uncertweb.ems.extension.model.parameters;
 
 import java.io.FileReader;
 import java.util.ArrayList;

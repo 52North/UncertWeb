@@ -1,4 +1,5 @@
-package org.uncertweb.ems.data.profiles;
+package org.uncertweb.ems.extension.profiles;
+
 
 /**
  * Stores information about exposure relevant human activity

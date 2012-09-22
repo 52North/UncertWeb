@@ -12,6 +12,7 @@ import org.uncertweb.api.om.io.CSVEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.ems.data.exposure.ExposureValue;
+import org.uncertweb.ems.exceptions.EMSProcessingException;
 
 /**
  * Abstract class for different exposure relevant profile types
@@ -38,8 +39,11 @@ public abstract class AbstractProfile {
 			this.obsColl = observationCollection;		
 		}
 
-		public IObservationCollection getObservationCollection() {			
-			return obsColl;
+		public IObservationCollection getObservationCollection() {	
+			if(obsColl!=null)
+				return obsColl;
+			else
+				throw new EMSProcessingException("Observation Collection for the profile has not been set.");
 		}
 
 		/**
