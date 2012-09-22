@@ -32,6 +32,11 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 								http://schemas.opengis.net/om/2.0/observation.xsd
 							</Schema>
 						</Format>
+						<Format>
+							<MimeType>application/x-uncertml+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+							<Schema>http://uncertml.org/uncertml.xsd</Schema>
+						</Format>
 					</Supported>
 				</ComplexData>
 			</Input>
@@ -66,7 +71,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 							<ows:MaximumValue>1000</ows:MaximumValue>
 						</ows:Range>
 					</ows:AllowedValues>
-					<DefaultValue>10</DefaultValue>
+					<DefaultValue>100</DefaultValue>
 				</LiteralData>
 			</Input>
 			
@@ -82,10 +87,11 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 						<ows:Value>http://www.uncertml.org/statistics/standard-deviation</ows:Value>
 						<ows:Value>http://www.uncertml.org/statistics/variance</ows:Value>	
 					</ows:AllowedValues>
+					<DefaultValue>http://www.uncertml.org/samples/realisation</DefaultValue>
 				</LiteralData>
 			</Input>
 			
-			<Input minOccurs="0" maxOccurs="5">
+			<Input minOccurs="0" maxOccurs="1">
 				<ows:Identifier>minuteResolution</ows:Identifier>
 				<ows:Title>Temporal resolution of the process output</ows:Title>
 				<ows:Abstract>Temporal resolution of the process output in minutes. Min is 1, max is </ows:Abstract>
@@ -97,7 +103,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 							<ows:MaximumValue>525600</ows:MaximumValue>
 						</ows:Range>
 					</ows:AllowedValues>
-					<DefaultValue>10</DefaultValue>
+					<DefaultValue>60</DefaultValue>
 				</LiteralData>
 			</Input>
 			
