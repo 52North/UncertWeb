@@ -333,15 +333,10 @@ public class NcUwHelper {
 
 	public static Point positionToWgs84Point(DirectPosition dp) {
 		try {
-//			log.debug("Before Transformation: {}", dp);
 			MathTransform mt = CRS.findMathTransform(
 					dp.getCoordinateReferenceSystem(),
 					DefaultGeographicCRS.WGS84, true);
-//			log.debug("Transformation: {}\nFrom: {}\nTo: {}", new Object[] {
-//					mt, dp.getCoordinateReferenceSystem(),
-//					DefaultGeographicCRS.WGS84 });
 			DirectPosition transformed = mt.transform(dp, null);
-//			log.debug("After Transformation: {}", transformed);
 			final double[] coord = transformed.getCoordinate();
 			final Point p = GEOMETRY_FACTORY.createPoint(new Coordinate(
 					coord[0], coord[1]));
@@ -356,22 +351,26 @@ public class NcUwHelper {
 		}
 	}
 
-	public static Polygon envelopeToPolygon(Envelope e, boolean transformToWgs84) {
+	public static Polygon envelopeToPolygon(Envelope e, Integer srs) {
 		try {
 			ReferencedEnvelope re = new ReferencedEnvelope(e);
-			if (transformToWgs84) {
-				re.transform(EPSG4326, true, 5);
-			}
-			Polygon p = JTS.toGeometry(re);
-			if (transformToWgs84) {
-				p.setSRID(4326);
-			} else {
+			
+			// no explicit espg code
+			if (srs == null || srs.intValue() < 0) {
+				// try to find the code of the envelope
 				for (ReferenceIdentifier id : re.getCoordinateReferenceSystem().getIdentifiers()) {
 					if (id.getCodeSpace().equalsIgnoreCase("EPSG")) {
-						p.setSRID(Integer.valueOf(id.getCode()).intValue());
+						srs = Integer.valueOf(id.getCode());
+						break;
 					}
 				}
+				// if no code found, transform to EPSG4326
+				if (srs == null || srs.intValue() < 0) {
+					srs = new Integer(4326);
+				}
 			}
+			Polygon p = JTS.toGeometry(re.transform(decodeEpsgCode(srs.intValue()), true, 12));
+			p.setSRID(srs.intValue());
 			return p;
 		} catch (final MismatchedDimensionException ex) {
 			throw new NcUwException(ex);

@@ -150,10 +150,10 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		CoordinateReferenceSystem crs = getCRS(); 
 		CoordinateReferenceSystem pcrs = p.getCoordinateReferenceSystem();
 		if (pcrs == null) {
-			throw new NullPointerException("CRS should not be null");
+			throw new NullPointerException("Point CRS should not be null");
 		}
 		if (crs == null) {
-			throw new NullPointerException("CRS should not be null");
+			throw new NullPointerException("Raster CRS should not be null");
 		}
 		if (contains(p)) {
 			try {
@@ -447,7 +447,9 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 	public int[] translateIndex(NcUwCoordinate c) {
 		final int[] index = new int[getDimensions().size()];
 		for (final NcUwDimension d : c.getDimensions()) {
-			index[getIndex(d)] = c.get(d);
+			int i = getIndex(d);
+			if (i >= 0)
+				index[i] = c.get(d);
 		}
 		return index;
 	}
@@ -581,13 +583,9 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 
 	@Override
 	public SpatialSamplingFeature getFeature(NcUwCoordinate c) {
-		int epsgCode = getEpsgCode();
-		final boolean transformToWGS84 = epsgCode < 0;
-		if (transformToWGS84) { epsgCode = 4326; }
 		Envelope e = (c == null || !c.hasDimension(NcUwDimension.X, NcUwDimension.Y)) ?
 			getEnvelope() : positionToEnvelope(getDirectPosition(c));
-		Geometry g = NcUwHelper.envelopeToPolygon(e, transformToWGS84);
-		g.setSRID(epsgCode);
+		Geometry g = NcUwHelper.envelopeToPolygon(e, getEpsgCode());
 		return new SpatialSamplingFeature(NcUwConstants.DEFAULT_SAMPLING_FEATURE, g);
 	}
 	
