@@ -76,6 +76,7 @@ import org.uncertweb.viss.core.util.JSONConstants;
 import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.core.web.RESTServlet;
+import org.uncertweb.viss.core.web.provider.DataSetProvider;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Mean;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.Probability;
 import org.uncertweb.viss.vis.distribution.NormalDistributionVisualizer.ProbabilityForInterval;
@@ -349,11 +350,70 @@ public class VissTest extends JerseyTest {
 		System.out.println(req.toString(4));
 		IObservationCollection col = getValue(r, d, req);
 		assertNotNull(col);
+		assertTrue(col.getObservations().size() > 0);
 		XBObservationEncoder enc = new XBObservationEncoder();
 		enc.encodeObservationCollection(col, System.err);
-		
-		
 	}
+	
+	@Test
+	public void testGetValueWithDifferentSrs() throws JSONException, OMEncodingException {
+		ObjectId r = addResource(NETCDF_TYPE, BIOTEMP_T);
+		ObjectId d = getDataSetsForResource(r)[0];
+		
+		JSONObject j = getVisualizerForDataset(r,d, getVisualizersForDataset(r, d)[0]);;
+		System.err.println(getDataSetForResource(r, d).toString(4));
+		JSONObject req = new JSONObject()
+			.put("location", new JSONObject()
+				.put("type", "Point")
+				.put("coordinates", new JSONArray()
+					.put(2568717.63923).put(5763380.95098))
+				.put("crs", new JSONObject()
+					.put("type","name")
+					.put("properties", new JSONObject()
+							.put("name", "http://www.opengis.net/def/crs/EPSG/0/31466"))));
+
+		System.out.println(req.toString(4));
+		IObservationCollection col = getValue(r, d, req);
+		assertNotNull(col);
+		assertTrue(col.getObservations().size() > 0);
+		XBObservationEncoder enc = new XBObservationEncoder();
+		enc.encodeObservationCollection(col, System.err);
+	}
+	
+	@Test
+	public void testGetValueWithDifferentSrs2() throws JSONException, OMEncodingException {
+		ObjectId r = addResource(NETCDF_TYPE, BIOTEMP_T);
+		ObjectId d = getDataSetsForResource(r)[0];
+		
+		JSONObject j = getVisualizerForDataset(r,d, getVisualizersForDataset(r, d)[0]);;
+		System.err.println(getDataSetForResource(r, d).toString(4));
+		JSONObject req = new JSONObject("{\"location\":{\"type\":\"Point\",\"coordinates\":[1022139.0431734,6292867.3477923],\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"http://www.opengis.net/def/crs/EPSG/0/3857\"}}}}");
+
+		System.out.println(req.toString(4));
+		IObservationCollection col = getValue(r, d, req);
+		assertNotNull(col);
+		assertTrue(col.getObservations().size() > 0);
+		XBObservationEncoder enc = new XBObservationEncoder();
+		enc.encodeObservationCollection(col, System.err);
+	}
+	
+	@Test
+	public void testGetDataSetWithEpsgCode() throws JSONException, OMEncodingException {
+		ObjectId r = addResource(NETCDF_TYPE, BIOTEMP_T);
+		ObjectId d = getDataSetsForResource(r)[0];
+		
+		String path = DATASET
+				.replace(RESOURCE_PARAM_P, r.toString())
+				.replace(DATASET_PARAM_P, d.toString());
+		JSONObject j = getWebResource().path(path).queryParam(DataSetProvider.EPSG_CODE_QUERY_PARAMETER, "3857").get(JSONObject.class);
+		System.err.println(j.getJSONObject("spatialExtent").toString(4));
+		j = getWebResource().path(path).queryParam(DataSetProvider.EPSG_CODE_QUERY_PARAMETER, "4326").get(JSONObject.class);
+		System.err.println(j.getJSONObject("spatialExtent").toString(4));
+	}
+	
+	
+	   
+
 	
 	public JSONObject getDataSetForResource(ObjectId r, ObjectId d) {
 		String path = DATASET.replace(RESOURCE_PARAM_P, r.toString()).replace(

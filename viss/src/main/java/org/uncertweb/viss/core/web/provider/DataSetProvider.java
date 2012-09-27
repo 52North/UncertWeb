@@ -50,14 +50,15 @@ import com.vividsolutions.jts.geom.Geometry;
 
 @Provider
 public class DataSetProvider extends AbstractJsonSingleWriterProvider<IDataSet> {
-
-
+	public static final String EPSG_CODE_QUERY_PARAMETER = "srs";
+	
 	public DataSetProvider() {
 		super(IDataSet.class, JSON_DATASET_TYPE);
 	}
 
 	private JSONObject envelopeToJson(Envelope e) {
-		Geometry g = NcUwHelper.envelopeToPolygon(e, true);
+		String epsg = getUriInfo().getQueryParameters().getFirst(EPSG_CODE_QUERY_PARAMETER);
+		Geometry g = NcUwHelper.envelopeToPolygon(e, (epsg != null) ? Integer.valueOf(epsg) : null);
 		try {
 			log.debug("Geomertry Code: {}", g.getSRID());
 			return new JSONObject(new JSONGeometryEncoder().encodeGeometry(g));

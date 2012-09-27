@@ -1,0 +1,72 @@
+
+{
+	"type": "object",
+	"properties": {
+		"time": {
+			"type": "object",
+			"properties": {
+				"begin": {
+					"type": "string",
+					"format": "date-time"
+				},
+				"end": {
+					"type": "string",
+					"format": "date-time"
+				},
+				"instant": {
+					"type": "string",
+					"format": "date-time"
+				}
+				
+			},
+			"dependencies": {
+				"begin": "end",
+				"end": "begin"
+			}
+		},
+		"location": {
+			"type": "object",
+			"properties": {
+				"coordinates": {
+					"required": true, 
+					"type": "array"
+					"items": { "type": "number" }, 
+           			"maxLength": 2, 
+					"minLength": 2
+				}, 
+				"crs": {
+					"properties": {
+					    "properties": {
+					        "properties": {
+					            "name": {
+					                "format": "uri", 
+					                "pattern": "^http://www\\.opengis\\.net/def/crs/EPSG/0/[\\d]{4,5}$", 
+					                "required": true, 
+					                "type": "string"
+					            }, 
+					            "required": true, 
+					            "type": "object"
+					        }
+					    }, 
+					    "type": {
+					        "enum": [
+					            "name"
+					        ], 
+					        "required": true, 
+					        "type": "string"
+					    }
+					}, 
+					"required": true, 
+					"type": "object"
+				}, 
+				"type": {
+					"enum": [
+					    "Point"
+					], 
+					"required": true, 
+					"type": "string"
+				}
+			}
+		}
+	}
+}
