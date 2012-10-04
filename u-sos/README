@@ -5,6 +5,9 @@
 This project contains the uncertainty extension for the 52North Sensor 
 Observation Service.
 
+WARNING: As long as uSOS isn't adjusted to the latest changes, please
+use Revision 11617 of 52N SOS.
+
 
 ######################################################################
 ## Folder structure:
@@ -39,7 +42,7 @@ conf.sos.ds.password=*****	your DB-password
 
 #1 Checkout and install 52North SOS ( https://svn.52north.org/svn/swe
 /main/SOS/Service/trunk/SOS/52n-sos ) or update your older release to
-version 3.5.0+
+version 3.5.0-M1 (Revision 11617).
 
 #2 Checkout this project ( https://svn.52north.org/svn/geostatistics
 /main/uncertweb/u-sos/trunk ).
@@ -112,7 +115,7 @@ Add...
 			</dependencies>
 		</profile>
 
-...to <dependencies></dependencies>.
+...to <profiles></profiles>.
 
 #8 Build and deploy u-SOS: Make sure that your Tomcat and your Postgres
 are started. Open a command line and go to your SOS project folder.
