@@ -24,10 +24,7 @@ import org.uncertml.IUncertainty;
 import org.uncertml.distribution.randomvariable.INormalCovarianceParameter;
 import org.uncertml.distribution.randomvariable.NormalSpatialField;
 import org.uncertml.distribution.randomvariable.VariogramFunction;
-import org.uncertweb.api.netcdf.NetcdfUWFile;
-import org.uncertweb.api.netcdf.exception.NetcdfUWException;
-
-import ucar.nc2.NetcdfFile;
+import org.uncertweb.netcdf.NcUwFile;
 
 public class RandomField2Samples extends AbstractAlgorithm{
 	
@@ -98,7 +95,7 @@ public class RandomField2Samples extends AbstractAlgorithm{
 				}
 				
 				NetCDFParser parser = new NetCDFParser();
-				NetcdfUWFile unetCdfFile = ((NetCDFBinding)parser.parse(sampleRef.openStream(),mimeType,null)).getPayload();
+				NcUwFile unetCdfFile = ((NetCDFBinding)parser.parse(sampleRef.openStream(),mimeType,null)).getPayload();
 				
 				//extract variogramFunction
 				INormalCovarianceParameter covParameter = nsField.getCovarianceParameter();
@@ -119,7 +116,7 @@ public class RandomField2Samples extends AbstractAlgorithm{
 				String varName = ((LiteralStringBinding) varInput).getPayload();
 				
 				//run spatial simulation
-				NetcdfUWFile resultFile = getSimulations4NCFile(unetCdfFile,
+				NcUwFile resultFile = getSimulations4NCFile(unetCdfFile,
 						intNSimulations,vgf,varName);
 	
 	
@@ -152,15 +149,15 @@ public class RandomField2Samples extends AbstractAlgorithm{
 	 * @param vgFunction
 	 * @return
 	 */
-	private NetcdfUWFile getSimulations4NCFile(NetcdfUWFile inputFile,
+	private NcUwFile getSimulations4NCFile(NcUwFile inputFile,
 			Integer intNSimulations, VariogramFunction vgFunction, String varName) {
 		
-		NetcdfUWFile result=null;
+		NcUwFile result=null;
 		String tmpDirPath = System.getProperty("java.io.tmpdir");
 		String outputFilePath = tmpDirPath + "/aggResult"+System.currentTimeMillis()+".nc";
 		outputFilePath = outputFilePath.replace("\\", "/");	
 		
-		String inputFilePath = inputFile.getNetcdfFile().getLocation();
+		String inputFilePath = inputFile.getFile().getLocation();
 		inputFilePath = inputFilePath.replace("\\","/");
 		
 		//initialize R Connection
@@ -209,8 +206,8 @@ public class RandomField2Samples extends AbstractAlgorithm{
 			//Create response
 			c.tryVoidEval("writeUNetCDF(newfile=\""+outputFilePath+"\", simData)");
 		
-			NetcdfFile ncFile = NetcdfFile.open(outputFilePath);
-			result = new NetcdfUWFile(ncFile);
+			
+			result = new NcUwFile(outputFilePath);
 			
 		} catch (RserveException e) {
 			String msg = "Error while establishing RServe connection: "+e.getLocalizedMessage();
@@ -224,18 +221,14 @@ public class RandomField2Samples extends AbstractAlgorithm{
 			String msg = "Error while running R script for aggregation: "+e.getLocalizedMessage();
 			LOGGER.debug(msg);
 			throw new RuntimeException(msg);
-		} catch (NetcdfUWException e) {
-			String msg = "Error while running R script for aggregation: "+e.getLocalizedMessage();
-			LOGGER.debug(msg);
-			throw new RuntimeException(msg);
-		}
-		
+		} 
 		//check whether RServe connection is closed
 		finally {
 			if (c != null) {
 				c.close();
 			}
 		}
+		
 		return result;
 	}
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.n52.wps.io.data.IData;
@@ -35,12 +36,16 @@ import org.uncertml.statistic.Range;
 import org.uncertml.statistic.StandardDeviation;
 import org.uncertml.statistic.StatisticCollection;
 import org.uncertml.statistic.Variance;
+import org.uncertml.x20.StatisticsCollectionDocument.StatisticsCollection;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.UncertaintyResult;
+import org.uncertweb.netcdf.INcUwVariable;
+import org.uncertweb.netcdf.NcUwFile;
+import org.uncertweb.netcdf.NcUwVariableWithDimensions;
 
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
@@ -100,8 +105,8 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			// support for NetCDF
 			if (dataInput instanceof NetCDFBinding){
 				// get netCDF file containing the Gaussian Distributions
-				NetcdfUWFile uwNcdfFile = ((NetCDFBinding) dataInput).getPayload();			
-				NetcdfUWFile resultFile = getStatistics4SamplesNCFile(uwNcdfFile,
+				NcUwFile uwNcdfFile = ((NetCDFBinding) dataInput).getPayload();			
+				NcUwFile resultFile = getStatistics4SamplesNCFile(uwNcdfFile,
 					statParams);
 
 				// create resultfile
@@ -254,11 +259,12 @@ public class Samples2Statistics extends AbstractAlgorithm {
 					ContinuousRealisation realisations = null;
 					
 					// get samples for this distribution
-					if(uncertainty instanceof ISample){
-						AbstractSample sample = (AbstractSample) uncertainty;
-						realisations = (ContinuousRealisation) sample.getRealisations().get(0);		
-					}
-					else if(uncertainty instanceof ContinuousRealisation){
+//					if(uncertainty instanceof ISample){
+//						AbstractSample sample = (AbstractSample) uncertainty;
+//						realisations = (ContinuousRealisation) sample.getRealisations().get(0);		
+//					}
+//					else 
+					if(uncertainty instanceof ContinuousRealisation){
 							realisations = (ContinuousRealisation) uncertainty;
 					}
 					if(realisations!=null){
@@ -349,22 +355,30 @@ public class Samples2Statistics extends AbstractAlgorithm {
 	 * @param statParams
 	 * @return
 	 */
-	private NetcdfUWFile getStatistics4SamplesNCFile(NetcdfUWFile inputFile,
+	private NcUwFile getStatistics4SamplesNCFile(NcUwFile inputFile,
 			List<String> statParams) {
 		String tmpDirPath = System.getProperty("java.io.tmpdir");
 		NetcdfUWFileWriteable resultNCFile = null;
 		ExtendedRConnection c = null;
 		try {
-			Variable primaryVariable = inputFile.getPrimaryVariable();
+			
+			Set<INcUwVariable> primaryVariables = inputFile
+					.getPrimaryVariables();
+			if (primaryVariables.size() != 1) {
+				throw new RuntimeException(
+						"Statistics operation only supported for NetCDF-U files with only one variable!");
+			}
+			NcUwVariableWithDimensions primVar = (NcUwVariableWithDimensions) primaryVariables.toArray()[0];
+			
 			//check whether primaryVariable is random or unknown sample
-			Attribute ref = primaryVariable.findAttribute(REF_ATTR_NAME);
+			Attribute ref = primVar.getVariable().findAttribute(REF_ATTR_NAME);
 			//TODO remove second URI provided in example!
 			if (ref==null||!(ref.getStringValue().equals(UncertML.getURI(RandomSample.class))|| ref.getStringValue().equals("http://www.uncertml.org/samples/random")||ref.getStringValue().equals("http://www.uncertml.org/samples/unknown")||ref.getStringValue().equals(UncertML.getURI(UnknownSample.class)))){
 				throw new IOException("Primary variable in Input NetCDF file for samples2statistics process has to be a random sample.");
 			}
 			
 			//get missing value
-			Attribute mvAttr = primaryVariable.findAttribute(MV_ATTR_NAME);
+			Attribute mvAttr = primVar.getVariable().findAttribute(MV_ATTR_NAME);
 			double missingVal = Double.NaN;
 			if (mvAttr!=null){
 				missingVal = mvAttr.getNumericValue().doubleValue();
@@ -393,7 +407,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			resultNCFile = new NetcdfUWFileWriteable(resultFile);
 			
 			// adding lat long dimensions and variables to output file
-			Iterator<Dimension> dimensions = inputFile.getNetcdfFile()
+			Iterator<Dimension> dimensions = inputFile.getFile()
 					.getDimensions().iterator();
 			Dimension latDim = null;
 			Dimension longDim = null;
@@ -411,7 +425,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 					resultFile.addVariableAttribute(LAT_VAR_NAME,
 							UNITS_ATTR_NAME, "degrees_north");
 					resultFile.setRedefineMode(false);
-					resultFile.write(LAT_VAR_NAME, inputFile.getNetcdfFile()
+					resultFile.write(LAT_VAR_NAME, inputFile.getFile()
 							.findVariable(LAT_VAR_NAME).read());
 					
 				} else if (dim.getName().equals(LON_VAR_NAME)) {
@@ -425,7 +439,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 					resultFile.addVariableAttribute(LON_VAR_NAME,
 							UNITS_ATTR_NAME, "degrees_east");
 					resultFile.setRedefineMode(false);
-					resultFile.write(LON_VAR_NAME, inputFile.getNetcdfFile()
+					resultFile.write(LON_VAR_NAME, inputFile.getFile()
 							.findVariable(LON_VAR_NAME).read());
 				}
 				else if (dim.getName().equals(REAL_VAR_NAME)){
@@ -438,27 +452,44 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			dims.add(longDim);
 
 			//add samples variables and add units and missing value attributes from input file
+			if (!resultFile.isDefineMode()) {
+				resultFile.setRedefineMode(true);
+			}
+			
 			HashMap<String,Variable> statVars4statName = new HashMap<String,Variable>(statParams.size());
 			Iterator<String> statParamIterator = statParams.iterator();
-			String primaryVarName = primaryVariable.getName();
+			String primaryVarName = primVar.getName();
+			Variable primVariable = resultNCFile.getNetcdfFileWritable().addVariable(primaryVarName,DataType.DOUBLE,dims);
+			String ancillaryVariablesValue = "";
 			while (statParamIterator.hasNext()){
-				String statistic = statParamIterator.next().replace(UncertML.STATISTIC_URI, "");
+				String statistic = statParamIterator.next().replace("http://www.uncertml.org/statistics/", "");
 				String varName = primaryVarName + "_" + statistic;
 				if (statistic.equalsIgnoreCase("mean")){
 					Variable statisticVar = resultNCFile.addStatisticVariable(varName, DataType.DOUBLE, dims, org.uncertml.statistic.Mean.class);
 					statVars4statName.put(statistic, statisticVar);
-					resultNCFile.setPrimaryVariable(statisticVar);
+					if (ancillaryVariablesValue.equals("")){
+						ancillaryVariablesValue+=primaryVarName+"_mean";
+					}
+					else ancillaryVariablesValue+=" "+primaryVarName+"_mean";
+					//resultNCFile.setPrimaryVariable(statisticVar);
 				}
 				else if (statistic.equals("standard-deviation")){
 					Variable statisticVar = resultNCFile.addStatisticVariable(varName, DataType.DOUBLE, dims, org.uncertml.statistic.StandardDeviation.class);
 					statVars4statName.put(statistic, statisticVar);
+					if (ancillaryVariablesValue.equals("")){
+						ancillaryVariablesValue+=primaryVarName+"_standard-deviation";
+					}
+					else ancillaryVariablesValue+=" "+primaryVarName+"_standard-deviation";
 					//resultNCFile.setPrimaryVariable(statisticVar);
 				}
 			}
-
-
+			
+			resultNCFile.getNetcdfFileWritable().addVariableAttribute(primaryVarName, new Attribute("ancillary_variables",ancillaryVariablesValue));
+			resultNCFile.getNetcdfFileWritable().addVariableAttribute(primaryVarName, new Attribute("ref","http://www.uncertml.org/statistics/statistics-collection"));
+			resultNCFile.setPrimaryVariable(primVariable);
+			
 			// running sample generation in R and adding values to output file
-			Array samplesArray = primaryVariable.read();
+			Array samplesArray = primVar.getArray();
 			ArrayDouble meanArray = new ArrayDouble.D2(latDim.getLength(), longDim.getLength());
 			ArrayDouble sdArray = new ArrayDouble.D2(latDim.getLength(), longDim.getLength());
 			int numbOfRealisations = realDim.getLength();
@@ -499,6 +530,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				}
 			}
 			//write result array to NetCDF file
+			
 			resultNCFile.getNetcdfFileWritable().setRedefineMode(false);
 			if (statVars4statName.containsKey("mean")){
 				resultNCFile.getNetcdfFileWritable().write(primaryVarName+"_mean",meanArray);
@@ -506,7 +538,9 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			if (statVars4statName.containsKey("standard-deviation")){
 				resultNCFile.getNetcdfFileWritable().write(primaryVarName+"_standard-deviation",sdArray);
 			}
+			
 			resultNCFile.getNetcdfFile().close();
+			return new NcUwFile(absoluteResultFilePath);
 		} catch (Exception e) {
 			LOGGER.error(e);
 			throw new RuntimeException(
@@ -518,7 +552,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				c.close();
 			}
 		}
-		return resultNCFile;
+		
 
 	}
 

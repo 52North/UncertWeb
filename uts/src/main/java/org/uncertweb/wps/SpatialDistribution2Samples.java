@@ -20,6 +20,7 @@ import org.rosuda.REngine.Rserve.RserveException;
 import org.uncertml.distribution.randomvariable.VariogramFunction;
 import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.exception.NetcdfUWException;
+import org.uncertweb.netcdf.NcUwFile;
 
 import ucar.nc2.NetcdfFile;
 
@@ -85,7 +86,7 @@ public class SpatialDistribution2Samples extends AbstractAlgorithm{
 			//TODO support U-OM as input
 			if (dataInput instanceof NetCDFBinding){
 			
-			NetcdfUWFile uwNcdfFile = ((NetCDFBinding)dataInput).getPayload();
+			NcUwFile uwNcdfFile = ((NetCDFBinding)dataInput).getPayload();
 			
 			//extract number of simulations inputs
 			IData numbRealsInput = inputData.get(INPUT_ID_NOS)
@@ -103,7 +104,7 @@ public class SpatialDistribution2Samples extends AbstractAlgorithm{
 			
 			
 			//run spatial simulation
-			NetcdfUWFile resultFile = getSimulations4NCFile(uwNcdfFile,
+			NcUwFile resultFile = getSimulations4NCFile(uwNcdfFile,
 					intNSimulations,vgFunction,varName);
 
 
@@ -135,15 +136,15 @@ public class SpatialDistribution2Samples extends AbstractAlgorithm{
 	 * @param vgFunction
 	 * @return
 	 */
-	private NetcdfUWFile getSimulations4NCFile(NetcdfUWFile inputFile,
+	private NcUwFile getSimulations4NCFile(NcUwFile inputFile,
 			Integer intNSimulations, VariogramFunction vgFunction, String varName) {
 		
-		NetcdfUWFile result=null;
+		NcUwFile result=null;
 		String tmpDirPath = System.getProperty("java.io.tmpdir");
 		String outputFilePath = tmpDirPath + "/aggResult"+System.currentTimeMillis()+".nc";
 		outputFilePath = outputFilePath.replace("\\", "/");	
 		
-		String inputFilePath = inputFile.getNetcdfFile().getLocation();
+		String inputFilePath = inputFile.getFile().getLocation();
 		inputFilePath = inputFilePath.replace("\\","/");
 		
 		//initialize R Connection
@@ -192,8 +193,8 @@ public class SpatialDistribution2Samples extends AbstractAlgorithm{
 			//Create response
 			c.tryVoidEval("writeUNetCDF(newfile=\""+outputFilePath+"\", simData)");
 		
-			NetcdfFile ncFile = NetcdfFile.open(outputFilePath);
-			result = new NetcdfUWFile(ncFile);
+			
+			result = new NcUwFile(outputFilePath);
 			
 		} catch (RserveException e) {
 			String msg = "Error while establishing RServe connection: "+e.getLocalizedMessage();
@@ -204,10 +205,6 @@ public class SpatialDistribution2Samples extends AbstractAlgorithm{
 			LOGGER.debug(msg);
 			throw new RuntimeException(msg);
 		} catch (IOException e) {
-			String msg = "Error while running R script for aggregation: "+e.getLocalizedMessage();
-			LOGGER.debug(msg);
-			throw new RuntimeException(msg);
-		} catch (NetcdfUWException e) {
 			String msg = "Error while running R script for aggregation: "+e.getLocalizedMessage();
 			LOGGER.debug(msg);
 			throw new RuntimeException(msg);
