@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+  http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+  <!--identifier of aggregation process; in this example, the observations are grouped spatially to polygons and then the maximum temperature for each polygon is computed-->
+  <ows:Identifier>org.uncertweb.wps.Samples2Statistics</ows:Identifier>
+  <!--
+########################
+##Inputs
+########################
+-->
+  <wps:DataInputs>
+    <!--Variable whose values should be aggregated-->
+    <wps:Input>
+      <ows:Identifier>statistics</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:string">http://www.uncertml.org/statistics/mean</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>statistics</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:string">http://www.uncertml.org/statistics/variance</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <!-- URL to Input O&M file-->
+    <wps:Input>
+      <ows:Identifier>Samples</ows:Identifier>
+      <wps:Reference xlink:href="http://giv-uw.uni-muenster.de/data/om/yield_om_wheat.xml" mimeType="application/x-om-u+xml"/>
+    </wps:Input>
+     </wps:DataInputs>
+   <wps:ResponseForm>
+    <wps:RawDataOutput mimeType="application/x-om-u+xml">
+        <ows:Identifier>statistics</ows:Identifier>
+    </wps:RawDataOutput>
+  </wps:ResponseForm>
+</wps:Execute>

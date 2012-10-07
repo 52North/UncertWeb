@@ -5,12 +5,12 @@
   <wps:DataInputs>
     <wps:Input>
       <ows:Identifier xmlns:ns1="http://www.opengis.net/ows/1.1">distribution</ows:Identifier>
-      <wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/data/biotemperature_normalDistr.nc" mimeType="application/x-netcdf"/>
+      <wps:Reference xlink:href="http://giv-uw.uni-muenster.de/data/netcdf/biotemp.nc" mimeType="application/x-netcdf"/>
     </wps:Input>
     <wps:Input>
       <ows:Identifier>numbReal</ows:Identifier>
       <wps:Data>
-        <wps:LiteralData dataType="xs:integer">1000</wps:LiteralData>
+        <wps:LiteralData dataType="xs:integer">10</wps:LiteralData>
       </wps:Data>
     </wps:Input>
   </wps:DataInputs>

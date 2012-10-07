@@ -5,7 +5,7 @@
   <wps:DataInputs>
     <wps:Input>
       <ows:Identifier xmlns:ns1="http://www.opengis.net/ows/1.1">samples</ows:Identifier>
-      <wps:Reference xlink:href="http://v-mars.uni-muenster.de/uncertweb/data/biotemperature_randomSamples.nc" mimeType="application/x-netcdf"/>
+      <wps:Reference xlink:href="http://giv-uw.uni-muenster.de/data/netcdf/biotemperature_randomSamples.nc" mimeType="application/x-netcdf"/>
     </wps:Input>
     <wps:Input>
       <ows:Identifier>statistics</ows:Identifier>
