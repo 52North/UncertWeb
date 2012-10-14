@@ -185,7 +185,7 @@ public enum NcUwUncertaintyType {
 	NORMAL_SPATIAL_FIELD(NormalSpatialField.class,DISTRIBUTION),
 	VARIOGRAM_FUNCTION(VariogramFunction.class, DISTRIBUTION),
 
-	STATISTIC_COLLECTION(StatisticCollection.class, STATISTIC);
+	STATISTIC_COLLECTION(StatisticCollection.class, STATISTIC,URI.create("http://www.uncertml.org/statistics/statistics-collection"));
 	
 	private static final String CONSTRAINT_URI = UncertML.getURI(ConstraintType.class);
 	private static final URI GREATER_THAN_URI = URI.create(CONSTRAINT_URI + "/greater-than");
