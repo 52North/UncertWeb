@@ -25,12 +25,12 @@ import org.apache.commons.math.distribution.TDistributionImpl;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.StudentTDistribution;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer.Type;
 
 @Type(NcUwUncertaintyType.STUDENT_T_DISTRIBUTION)
 public abstract class StudentTDistributionVisualizer extends
-    AbstractAnnotatedUncertaintyViusalizer {
+    AbstractAnnotatedUncertaintyVisualizer {
 
 	@Id("Distribution-StudentT-Mean")
 	@Description("Returns the variance.")

@@ -127,10 +127,12 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 				double v = evaluate(nv.getResult().getValue());
 				if (!Double.isNaN(v) && !Double.isInfinite(v)) {
 					value = Double.valueOf(v);
-					if (min == null || min.doubleValue() > v)
+					if (min == null || min.doubleValue() > v) {
 						min = value;
-					if (max == null || max.doubleValue() < v)
+					}
+					if (max == null || max.doubleValue() < v) {
 						max = value;
+					}
 				}
 			}
 			try {
@@ -138,13 +140,14 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 						.getCoordinateValue(0), nv.getGridCoordinates()
 						.getCoordinateValue(1), value);
 			} catch (ArrayIndexOutOfBoundsException t) {
-				if (nv.getFeatureOfInterest().getShape() != null)
-					log.debug("Tryed setting value @{} to {}", nv
+				if (nv.getFeatureOfInterest().getShape() != null) {
+					log.debug("Tried setting value @{} to {}", nv
 							.getFeatureOfInterest().getShape(), value);
+				}
 				throw t;
 			}
 		}
-		
+
 		log.debug("min: {}; max: {}", min, max);
 		return VisualizationFactory.getBuilder()
 				.setDataSet(getDataSet())
@@ -170,7 +173,7 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 						.getTemporalExtent()== null ? null : getDataSet()
 						.getTemporalExtent().toJson());
 			} catch (JSONException e) {
-				e.printStackTrace();
+				log.error("JSON Error", e);
 			}
 			TimeObject to = getSelectedTime();
 			log.debug("Selected Time: {}", to);

@@ -21,8 +21,8 @@
  */
 package org.uncertweb.viss.core.resource.time;
 
-import static org.uncertweb.viss.core.util.JSONConstants.BEGIN_KEY;
-import static org.uncertweb.viss.core.util.JSONConstants.END_KEY;
+import static org.uncertweb.utils.UwJsonConstants.BEGIN_KEY;
+import static org.uncertweb.utils.UwJsonConstants.END_KEY;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;

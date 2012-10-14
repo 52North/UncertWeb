@@ -36,6 +36,7 @@ import javax.ws.rs.ext.Provider;
 
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.xmlbeans.XmlException;
 import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
@@ -68,7 +69,9 @@ public class SLDProvider extends
 			MediaType mt, MultivaluedMap<String, String> hh, InputStream es)
 			throws IOException, WebApplicationException {
 		try {
-			return StyledLayerDescriptorDocument.Factory.parse(es, 
+			String encoding = mt.getParameters().get("encoding");
+			String sld = (encoding != null) ? IOUtils.toString(es, encoding) : IOUtils.toString(es);
+			return StyledLayerDescriptorDocument.Factory.parse(sld, 
 					VissConfig.getInstance().getDefaultXmlOptions());
 		} catch (XmlException e) {
 			throw VissError.internal(e);

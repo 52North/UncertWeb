@@ -37,12 +37,12 @@ import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.JSONSchema;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer.Type;
 
 @Type(NcUwUncertaintyType.NORMAL_DISTRIBUTION)
 public abstract class NormalDistributionVisualizer extends
-		AbstractAnnotatedUncertaintyViusalizer {
+		AbstractAnnotatedUncertaintyVisualizer {
 
 	@Id("Distribution-Normal-ProbabilityForInterval")
 	@Description("Returns P(min <= X <= max).")
@@ -76,7 +76,7 @@ public abstract class NormalDistributionVisualizer extends
 		@Override
 		public Map<String, JSONObject> getOptionsForDataSet(IDataSet r) {
 			try {
-				Map<String, JSONObject> options = UwCollectionUtils.map();
+				Map<String, JSONObject> options = super.getOptionsForDataSet(r);
 				double[] minmax = getRange(r);
 				options.put(
 						MIN_PARAMETER,
@@ -165,13 +165,15 @@ public abstract class NormalDistributionVisualizer extends
 
 		@Override
 		public Map<String, JSONObject> getOptionsForDataSet(IDataSet r) {
+			Map<String, JSONObject> map = super.getOptionsForDataSet(r);
 			try {
 				double[] minmax = getRange(r);
-				return UwCollectionUtils.map(
+				map.put(
 						MAX_PARAMETER,
 						createMaxOption()
 								.put(JSONSchema.Key.MINIMUM, minmax[0]).put(
 										JSONSchema.Key.MAXIMUM, minmax[1]));
+				return map;
 			} catch (JSONException e) {
 				throw VissError.internal(e);
 			}

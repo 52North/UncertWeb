@@ -19,40 +19,30 @@
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.uncertweb.viss.core;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
+package org.uncertweb.viss;
 
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.uncertweb.viss.core.resource.IDataSet;
+import org.junit.Test;
 import org.uncertweb.viss.core.util.MediaTypes;
-import org.uncertweb.viss.mongo.resource.AbstractMongoResource;
-import org.uncertweb.viss.mongo.resource.MongoResourceStore;
 import org.uncertweb.viss.vis.sample.SampleVisualizer;
 
-public class OsloTest {
-	public static void main(String[] args) throws IOException,
-			URISyntaxException, JSONException {
-
-		final AbstractMongoResource<?> r = new MongoResourceStore()
-				.getResourceForMediaType(
-						MediaTypes.NETCDF_TYPE,
-						new File(OsloTest.class.getResource(
-								"/data/oslo_conc_20110103_new2.nc").toURI()),
-						new ObjectId(), 0);
-
-		final IDataSet ds = r.getDataSets().iterator().next();
-		final SampleVisualizer v = new SampleVisualizer();
-
-		System.out.println(new JSONObject(v.getOptionsForDataSet(ds)).toString(4));
-		
-		v.visualize(ds, new JSONObject()
-				.put("realisation", 0)
-				.put("sample", 3)
-				.put("time", "2011-01-03T02:00:00.000+01:00"));
+public class OsloTest extends AbstractVissTest {
+	
+	@Test
+	public void testOslo() throws JSONException {
+		ObjectId r = addResource(MediaTypes.NETCDF_TYPE, AbstractVissTest.class.getResourceAsStream("/data/oslo_conc_20110103_new2.nc"));
+		ObjectId ds = getDataSetsForResource(r)[0];
+		String visualizer = getNameForVisualizer(SampleVisualizer.class);
+		JSONObject visualizerDescription = getVisualizerForDataset(r, ds, visualizer);
+		System.err.println(visualizerDescription.toString(4));
+		String vis = createVisualization(r, ds, visualizer, new JSONObject()
+				.put(SampleVisualizer.REALISATION_PARAMETER, 0)
+				.put(SampleVisualizer.SAMPLE_PARAMETER, 3)
+				.put(SampleVisualizer.TIME_PARAMETER, "2011-01-03T02:00:00.000+01:00"));
+		System.err.println(vis);
 	}
+	
+	
 }

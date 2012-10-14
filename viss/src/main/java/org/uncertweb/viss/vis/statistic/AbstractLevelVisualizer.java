@@ -31,9 +31,9 @@ import org.uncertml.IUncertainty;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.JSONSchema;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer;
 
-public abstract class AbstractLevelVisualizer extends AbstractAnnotatedUncertaintyViusalizer {
+public abstract class AbstractLevelVisualizer extends AbstractAnnotatedUncertaintyVisualizer {
 
 	public static final String LEVEL_PARAMETER = "level";
 	public static final String LEVEL_PARAMETER_DESCRIPTION = "the level";

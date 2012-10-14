@@ -25,12 +25,12 @@ import org.apache.commons.math.distribution.FDistributionImpl;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.FDistribution;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer.Type;
 
 @Type(NcUwUncertaintyType.F_DISTRIBUTION)
 public abstract class FDistributionVisualizer extends
-    AbstractAnnotatedUncertaintyViusalizer {
+    AbstractAnnotatedUncertaintyVisualizer {
 
 	@Override
 	public double evaluate(IUncertainty u) {

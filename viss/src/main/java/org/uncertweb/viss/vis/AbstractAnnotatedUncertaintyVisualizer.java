@@ -22,30 +22,36 @@
 package org.uncertweb.viss.vis;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.uncertweb.netcdf.NcUwUncertaintyType;
 
-public abstract class AbstractAnnotatedUncertaintyViusalizer extends
+public abstract class AbstractAnnotatedUncertaintyVisualizer extends
     AbstractMultiResourceTypeVisualizer {
 
+	@Documented
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface Type {
 		NcUwUncertaintyType[] value();
 	}
 
+	@Documented
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface Description {
 		String value();
 	}
 
+	@Documented
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface Id {
@@ -55,28 +61,21 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 	@Override
 	public Set<NcUwUncertaintyType> getCompatibleUncertaintyTypes() {
 		Type t = findAnnotation(Type.class, getClass());
-		Set<NcUwUncertaintyType> result = new HashSet<NcUwUncertaintyType>();
 		if (t != null) {
-			for (NcUwUncertaintyType ut : t.value()) {
-				result.add(ut);
-			}
+			return EnumSet.copyOf(Arrays.asList(t.value()));
 		}
-		return result;
+		return Collections.emptySet();
 	}
 	
 	@Override
 	public String getDescription() {
 		Description t = findAnnotation(Description.class, getClass());
-		if (t == null)
-			return "";
-		else
-			return t.value();
-
+		return (t == null) ? "" : t.value();
 	}
 
-	private static <T extends Annotation> T findAnnotation(Class<T> annotation, Class<?> c) {
+	private static <T extends Annotation> T findAnnotation(Class<T> a, Class<?> c) {
 		T t = null;
-		while ((t = c.getAnnotation(annotation)) == null && c != null) {
+		while ((t = c.getAnnotation(a)) == null && c != null) {
 			if (t == null) {
 				c = c.getSuperclass();
 			}
@@ -87,8 +86,6 @@ public abstract class AbstractAnnotatedUncertaintyViusalizer extends
 	@Override
 	public String getShortName() {
 		Id id = findAnnotation(Id.class, getClass());
-		if (id != null)
-			return id.value();
-		return getClass().getSimpleName();
+		return (id != null) ? id.value() : getClass().getSimpleName();
 	}
 }

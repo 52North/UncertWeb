@@ -24,12 +24,12 @@ package org.uncertweb.viss.vis.distribution;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.InverseGammaDistribution;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer.Type;
 
 @Type(NcUwUncertaintyType.INVERSE_GAMMA_DISTRIBUTION)
 public abstract class InverseGammaDistributionVisualizer extends
-    AbstractAnnotatedUncertaintyViusalizer {
+    AbstractAnnotatedUncertaintyVisualizer {
 	@Override
 	public double evaluate(IUncertainty u) {
 		return evaluate((InverseGammaDistribution) u);

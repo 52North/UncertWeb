@@ -28,7 +28,6 @@ import static org.uncertweb.viss.core.util.JSONConstants.SUPPORTED_UNCERTAINTIES
 import static org.uncertweb.viss.core.util.MediaTypes.JSON_VISUALIZER_TYPE;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.ws.rs.ext.Provider;
 
@@ -55,17 +54,16 @@ public class VisualizerProvider extends
 			ar.put(ut.getUri());
 		}
 		j.put(SUPPORTED_UNCERTAINTIES_KEY, ar);
-		Map<String, JSONObject> options = null;
-		if (v.getDataSet() != null) {
-			options = v.getOptionsForDataSet(v.getDataSet());
-		} else {
-			options = v.getOptions();
-		}
+		Map<String, JSONObject> options = (v.getDataSet() != null) ? 
+				v.getOptionsForDataSet(v.getDataSet()) : v.getOptions();
+		/*
 		JSONObject joptions = new JSONObject();
+		
 		for (Entry<String, JSONObject> e : options.entrySet()) {
 			joptions.putOpt(e.getKey(), e.getValue());
 		}
-		return j.putOpt(OPTIONS_KEY, joptions);
+		*/
+		return j.putOpt(OPTIONS_KEY, new JSONObject(options));
 	}
 
 }

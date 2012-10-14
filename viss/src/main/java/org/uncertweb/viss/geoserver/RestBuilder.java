@@ -30,6 +30,7 @@ import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.codec.binary.Base64;
@@ -38,15 +39,12 @@ import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.viss.core.util.HttpMethod;
 
 public class RestBuilder {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(RestBuilder.class);
-
 	private static final boolean PRINT_CURL_COMMAND = Boolean.TRUE;
-
 	private MediaType response;
 	private MediaType content;
 	private Object entity;
@@ -60,7 +58,7 @@ public class RestBuilder {
 		this.user = user;
 		this.pass = pass;
 		this.auth = "Basic "
-				+ Base64.encodeBase64String((user + ":" + pass).getBytes());
+					+ Base64.encodeBase64String((user + ":" + pass).getBytes());
 		return this;
 	}
 
@@ -124,7 +122,7 @@ public class RestBuilder {
 		return this;
 	}
 
-	private HttpURLConnection build(HttpMethod method) throws IOException {
+	private HttpURLConnection build(String method) throws IOException {
 		if (!this.map.isEmpty()) {
 			StringBuilder sb = new StringBuilder(this.path).append("?");
 			boolean first = true;
@@ -142,8 +140,8 @@ public class RestBuilder {
 
 		if (log.isDebugEnabled() && PRINT_CURL_COMMAND) {
 			log.debug(buildCurlString(user, pass, method, url, content,
-					response, (entity instanceof InputStream) ? "!DATA!"
-							: entity));
+									  response, (entity instanceof InputStream) ? "!DATA!"
+					: entity));
 		}
 
 		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
@@ -193,24 +191,27 @@ public class RestBuilder {
 	}
 
 	protected static String buildCurlString(String user, String pass,
-			HttpMethod method, URL url, MediaType mediaType,
+			String method, URL url, MediaType mediaType,
 			MediaType returnType, Object content) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("curl -v");
 		if (user != null) {
 			sb.append(" -u ").append(user);
-			if (pass != null)
+			if (pass != null) {
 				sb.append(":").append(pass);
+			}
 		}
 		sb.append(" -X").append(method);
-		if (mediaType != null)
+		if (mediaType != null) {
 			sb.append(" -H 'Content-Type: ").append(mediaType).append("'");
-		if (returnType != null)
+		}
+		if (returnType != null) {
 			sb.append(" -H 'Accept: ").append(returnType).append("'");
-		if (content != null)
+		}
+		if (content != null) {
 			sb.append(" -d '").append(content).append("'");
+		}
 		sb.append(" ").append(url.toString());
 		return sb.toString();
 	}
-
 }

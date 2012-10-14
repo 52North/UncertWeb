@@ -25,12 +25,12 @@ import org.apache.commons.math.distribution.BetaDistributionImpl;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.BetaDistribution;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer.Type;
 
 @Type(NcUwUncertaintyType.BETA_DISTRIBUTION)
 public abstract class BetaDistributionVisualizer extends
-    AbstractAnnotatedUncertaintyViusalizer {
+    AbstractAnnotatedUncertaintyVisualizer {
 
 	@Id("Distribution-Beta-Variance")
 	@Description("Returns the variance.")

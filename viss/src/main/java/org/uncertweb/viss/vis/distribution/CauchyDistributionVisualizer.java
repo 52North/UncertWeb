@@ -25,12 +25,12 @@ import org.apache.commons.math.distribution.CauchyDistributionImpl;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.CauchyDistribution;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer.Type;
 
 @Type(NcUwUncertaintyType.CAUCHY_DISTRIBUTION)
 public abstract class CauchyDistributionVisualizer extends
-    AbstractAnnotatedUncertaintyViusalizer {
+    AbstractAnnotatedUncertaintyVisualizer {
 
 	@Id("Distribution-Cauchy-Scale")
 	@Description("Returns the scale.")

@@ -84,7 +84,7 @@ public class VisualizerFactory {
 					}
 				}
 			} catch (Exception e) {
-				log.error("Can not instantiate Visualizer '{}'", c.getName());
+				log.error("Can not instantiate Visualizer '" + c.getName() + "'", e);
 			}
 		}
 	}

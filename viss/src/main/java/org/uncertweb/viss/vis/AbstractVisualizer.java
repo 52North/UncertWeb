@@ -48,11 +48,11 @@ import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizer;
 
 public abstract class AbstractVisualizer implements IVisualizer {
-	
-	public static final String TIME_OPTION = "time";
-	public static final String TIME_OPTION_DESCRIPTION_BOTH = "The time to visualize; either a datetime or an interval represented by two datetimes";
-	public static final String TIME_OPTION_DESCRIPTION_INSTANT = "The time to visualize; a datetime";
-	public static final String TIME_OPTION_DESCRIPTION_INTERVAL = "The time to visualize; an interval represented by two datetimes";
+
+	public static final String TIME_PARAMETER = "time";
+	public static final String TIME_PARAMETER_DESCRIPTION_BOTH = "The time to visualize; either a datetime or an interval represented by two datetimes";
+	public static final String TIME_PARAMETER_DESCRIPTION_INSTANT = "The time to visualize; a datetime";
+	public static final String TIME_PARAMETER_DESCRIPTION_INTERVAL = "The time to visualize; an interval represented by two datetimes";
 	protected static final Logger log = LoggerFactory.getLogger(AbstractVisualizer.class);
 	private Set<MediaType> compatibleTypes;
 	private IDataSet resource;
@@ -109,23 +109,23 @@ public abstract class AbstractVisualizer implements IVisualizer {
 			try {
 				if (r.getTemporalExtent() instanceof CanBeInstant) {
 					JSONObject time = new JSONObject()
-						.put(Key.DESCRIPTION, TIME_OPTION_DESCRIPTION_INSTANT)
+						.put(Key.DESCRIPTION, TIME_PARAMETER_DESCRIPTION_INSTANT)
 						.put(Key.TYPE, Type.STRING)
 						.put(Key.FORMAT, Format.DATETIME);
-					options.put(TIME_OPTION, time);
+					options.put(TIME_PARAMETER, time);
 				} else if (r.getTemporalExtent() instanceof CanBeInterval) {
 					JSONObject time = new JSONObject()
-						.put(Key.DESCRIPTION, TIME_OPTION_DESCRIPTION_INTERVAL)
+						.put(Key.DESCRIPTION, TIME_PARAMETER_DESCRIPTION_INTERVAL)
 						.put(Key.TYPE, Type.ARRAY)
 						.put(Key.ITEMS, new JSONObject()
 							.put(Key.TYPE, Type.STRING)
 							.put(Key.FORMAT, Format.DATETIME))
 						.put(Key.MIN_ITEMS, 2)
 						.put(Key.MAX_ITEMS, 2);
-					options.put(TIME_OPTION, time);
+					options.put(TIME_PARAMETER, time);
 				} else if (r.getTemporalExtent() instanceof CanBeBoth) {
 					JSONObject time = new JSONObject()
-						.put(Key.DESCRIPTION, TIME_OPTION_DESCRIPTION_BOTH)
+						.put(Key.DESCRIPTION, TIME_PARAMETER_DESCRIPTION_BOTH)
 						.put(Key.TYPE, new JSONArray()
 							.put(Type.STRING).put(Type.ARRAY))
 						.put(Key.FORMAT, Format.DATETIME)
@@ -134,7 +134,7 @@ public abstract class AbstractVisualizer implements IVisualizer {
 							.put(Key.FORMAT, Format.DATETIME))
 						.put(Key.MIN_ITEMS, 2)
 						.put(Key.MAX_ITEMS, 2);
-					options.put(TIME_OPTION, time);
+					options.put(TIME_PARAMETER, time);
 				}
 			} catch (JSONException e) {
 				throw VissError.internal(e);
@@ -142,10 +142,10 @@ public abstract class AbstractVisualizer implements IVisualizer {
 		}
 		return options;
 	}
-	
+
 	protected TimeObject getSelectedTime() {
 		try {
-			Object to = getParams().opt(TIME_OPTION);
+			Object to = getParams().opt(TIME_PARAMETER);
 			if (to == null) {
 				return null;
 			} else if (to instanceof String) {
@@ -154,21 +154,21 @@ public abstract class AbstractVisualizer implements IVisualizer {
 				JSONArray a = (JSONArray) to;
 				return new TimeObject(a.getString(0), a.getString(1));
 			} else {
-				throw VissError.invalidParameter(TIME_OPTION);
+				throw VissError.invalidParameter(TIME_PARAMETER);
 			}
 		} catch (JSONException e) {
-			throw VissError.invalidParameter(TIME_OPTION);
+			throw VissError.invalidParameter(TIME_PARAMETER);
 		}
 	}
-	
+
 	protected boolean isTimeAware() {
 		return isTimeAware(getDataSet());
 	}
-	
+
 	protected boolean isTimeAware(IDataSet ds) {
 		return !(ds.getTemporalExtent() == null || ds.getTemporalExtent() instanceof NoTemporalExtent);
 	}
-	
+
 	@Override
 	public IVisualization visualize(IDataSet r, JSONObject params) {
 		setDataSet(r);

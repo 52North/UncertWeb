@@ -24,10 +24,10 @@ package org.uncertweb.viss.vis.statistic;
 import org.uncertml.IUncertainty;
 import org.uncertml.statistic.ContinuousStatistic;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer;
 
 public abstract class SimpleStatisticVisualizer extends
-    AbstractAnnotatedUncertaintyViusalizer {
+    AbstractAnnotatedUncertaintyVisualizer {
 
 	@Override
 	public String getShortName() {

@@ -34,16 +34,16 @@ import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.JSONSchema;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Description;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Id;
-import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyViusalizer.Type;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer.Description;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer.Id;
+import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer.Type;
 
 @Id("Realisation")
 @Description("Visualizers a Realisation")
 @Type(NcUwUncertaintyType.CONTINUOUS_REALISATION)
 public class RealisationVisualizer extends
-		AbstractAnnotatedUncertaintyViusalizer {
+		AbstractAnnotatedUncertaintyVisualizer {
 
 	public static final String REALISATION_PARAMETER = "realisation";
 	public static final String REALISATION_PARAMETER_DESCRIPTION = "The Realisation to visualize";
