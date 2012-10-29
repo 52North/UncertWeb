@@ -6,7 +6,7 @@ library(spacetime)
 # change to your needs, preferably to a local copy. However, writing to NetCDF is by defualt disabled.
 file <- "D:/Tomcat6/apache-tomcat-6.0.32/temp/ncInput1319114818439.nc" 
 
-#"//ifgifiles/projekte/UncertWeb/WP 3 Tools/Spatio-temporal Aggregation/Data/biotemperature_normalDistr.nc"
+# "//ifgifiles/projekte/UncertWeb/WP 3 Tools/Spatio-temporal Aggregation/Data/biotemperature_normalDistr.nc"
 
 uncdf <- open.nc(file, write=F)
 print.nc(uncdf) # gives:
