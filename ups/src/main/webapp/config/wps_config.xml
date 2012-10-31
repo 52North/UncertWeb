@@ -48,6 +48,7 @@
 				<Format mimetype="application/gml+xml"/>
 				<Format mimetype="application/x-netcdf"/>
 				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
+				<Property name="supportedSchema" active="true">http://uncertml.org/uncertml.xsd</Property>
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/2.0/observation.xsd</Property>
 				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
 				<Property name="supportedFormat" active="true">application/x-netcdf</Property>
@@ -58,12 +59,46 @@
 			</Parser>
 		</ParserList>
 		<GeneratorList>
+			<Generator name="GML3BasicGenerator" className="org.n52.wps.io.datahandler.generator.GML3BasicGenerator" active="true">
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.0.0" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.0.1" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.1.0" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.1.1" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/3.2.1" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
+				<Property name="featureTransformerIncludeBounding" active="true">false</Property>
+				<Property name="featureTransformerDecimalPlaces" active="true">4</Property>
+			</Generator>
+			<Generator name="GML2BasicGenerator" className="org.n52.wps.io.datahandler.generator.GML2BasicGenerator" active="true">
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.0.0" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.1" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.2" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
+				<Format mimetype="text/xml; subtype=gml/2.1.2.1" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
+				<Property name="featureTransformerIncludeBounding" active="true">false</Property>
+				<Property name="featureTransformerDecimalPlaces" active="true">4</Property>
+			</Generator>
+			<Generator name="SimpleGMLGenerator" className="org.n52.wps.io.datahandler.generator.SimpleGMLGenerator" active="true">
+				<Format mimetype="text/xml" schema="http://www.opengeospatial.org/gmlpacket.xsd"/>
+				<Format mimetype="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
+			</Generator>
+		
+		
 			<Generator name="UncertWebIODataGenerator" className="org.n52.wps.io.datahandler.UncertWebIODataGenerator" active="true">
 				<Format mimetype="application/x-uncertml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd"/>
 				<Format mimetype="application/x-om-u+xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"/>
 				<Format mimetype="application/gml+xml"/>
 				<Format mimetype="application/x-netcdf"/>
 				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/uncertml/uncertml.xsd</Property>
+				<Property name="supportedSchema" active="true">http://uncertml.org/uncertml.xsd</Property>
 				<Property name="supportedSchema" active="true">http://schemas.opengis.net/om/2.0/observation.xsd</Property>
 				<Property name="supportedSchema" active="true">http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Property>
 				<Property name="supportedFormat" active="true">application/x-netcdf</Property>
@@ -76,12 +111,16 @@
 	</Datahandlers>
 	<AlgorithmRepositoryList>
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
+			<Property name="Algorithm" active="true">org.n52.wps.server.algorithm.SimpleBufferAlgorithm</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.u_wps.UPSAustalProcess</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSGenericAustalProcess</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.ups.UncertWebEchoProcess</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSAlbatrossProcess</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSAlbatrossProcessSimple</Property>
+			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSAlbatrossProcessFull</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSGenericAustalProcess</Property>
 			<Property name="FullUTSAddress" active="true">http://giv-uw2.uni-muenster.de:8080/uts/WebProcessingService</Property>
-			<Property name="Temp_Home" active="true">C:\\WebResources\\UPS</Property>
+			<Property name="Temp_Home" active="true">C:\\temp</Property>
 		</Repository>
 		<Repository name="UploadedAlgorithmRepository" className="org.n52.wps.server.UploadedAlgorithmRepository" active="false">
 		</Repository>
