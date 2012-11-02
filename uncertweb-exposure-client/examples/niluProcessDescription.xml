@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:ProcessDescriptions xmlns:ns="http://www.opengis.net/wps/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" xml:lang="en-US" service="WPS" version="1.0.0"><ProcessDescription xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" wps:processVersion="2" storeSupported="true" statusSupported="false">
+	<ows:Identifier>org.uncertweb.wps.AirQualityForecastProcess</ows:Identifier>
+	<ows:Title>AirQualityForecastProcess</ows:Title>
+	<ows:Abstract>AirQualityForecastProcess</ows:Abstract>
+	<ows:Metadata xlink:title="model"/>
+	<ows:Metadata xlink:title="air quality"/>
+	<DataInputs>
+		<Input minOccurs="1" maxOccurs="1">
+			<ows:Identifier>site</ows:Identifier>
+			<ows:Title>Site</ows:Title>
+			<ows:Abstract>Site</ows:Abstract>
+			<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+				<ows:AllowedValues>
+					<ows:Value>oslo</ows:Value>
+					<ows:Value>rotterdam</ows:Value>
+				</ows:AllowedValues>
+			</LiteralData>
+		</Input>
+		<Input minOccurs="1" maxOccurs="1">
+			<ows:Identifier>sdate</ows:Identifier>
+			<ows:Title>start time and date</ows:Title>
+			<ows:Abstract>start time and date. server uses CEST.</ows:Abstract>
+			<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+				<ows:AnyValue/>
+			</LiteralData>
+		</Input>
+		<Input minOccurs="1" maxOccurs="1">
+			<ows:Identifier>edate</ows:Identifier>
+			<ows:Title>end time and date</ows:Title>
+			<ows:Abstract>end time and date. server uses CEST.</ows:Abstract>
+			<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+				<ows:AnyValue/>
+			</LiteralData>
+		</Input>
+		<Input minOccurs="1" maxOccurs="1">
+			<ows:Identifier>cmpd</ows:Identifier>
+			<ows:Title>component</ows:Title>
+			<ows:Abstract>component</ows:Abstract>
+			<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+				<ows:AllowedValues>
+					<ows:Value>no2</ows:Value>
+					<ows:Value>nox</ows:Value>
+					<ows:Value>pm10</ows:Value>
+					<ows:Value>all</ows:Value>
+				</ows:AllowedValues>
+			</LiteralData>
+		</Input>			
+		<Input minOccurs="1" maxOccurs="1">
+			<ows:Identifier>nspd</ows:Identifier>
+			<ows:Title>number of days for spinning</ows:Title>
+			<ows:Abstract>number of days for spinning up the TAPM model</ows:Abstract>
+			<LiteralData>
+				<ows:DataType ows:reference="xs:integer"/>
+				<ows:AllowedValues>
+					<ows:Value>0</ows:Value>
+					<ows:Value>1</ows:Value>
+					<ows:Value>2</ows:Value>
+				</ows:AllowedValues>
+			</LiteralData>
+		</Input>				
+		<Input minOccurs="1" maxOccurs="1">
+			<ows:Identifier>nens</ows:Identifier>
+			<ows:Title>number of realisations</ows:Title>
+			<ows:Abstract>number of realisations</ows:Abstract>
+			<LiteralData>
+				<ows:DataType ows:reference="xs:integer"/>
+				<ows:AllowedValues>
+					<ows:Value>00</ows:Value>
+					<ows:Value>25</ows:Value>
+					<ows:Value>50</ows:Value>
+				</ows:AllowedValues>
+			</LiteralData>
+		</Input>			
+		<Input minOccurs="1" maxOccurs="1">
+			<ows:Identifier>nhrs</ows:Identifier>
+			<ows:Title>number of forecast hours</ows:Title>
+			<ows:Abstract>number of forecast hours</ows:Abstract>
+			<LiteralData>
+				<ows:DataType ows:reference="xs:integer"/>
+				<ows:AllowedValues>
+					<ows:Value>24</ows:Value>
+					<ows:Value>48</ows:Value>
+					<ows:Value>72</ows:Value>
+				</ows:AllowedValues>
+			</LiteralData>
+		</Input>
+		<Input minOccurs="0" maxOccurs="9999">
+			<ows:Identifier>recp</ows:Identifier>
+			<ows:Title>receptor points</ows:Title>
+			<ows:Abstract>receptor points, format: x,y,z</ows:Abstract>
+			<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+				<ows:AnyValue/>
+			</LiteralData>
+		</Input>
+	</DataInputs>
+	<ProcessOutputs>
+		<Output>
+			<ows:Identifier>predicted-concentrations</ows:Identifier>
+			<ows:Title>computed results</ows:Title>
+			<ows:Abstract>results of the computation</ows:Abstract>
+			<ComplexOutput>
+				<Default>	
+					<Format>
+						<MimeType>application/x-netcdf</MimeType>
+					</Format>
+				</Default>
+				<Supported>
+					<Format>
+						<MimeType>application/x-netcdf</MimeType>
+					</Format>
+				</Supported>
+			</ComplexOutput>
+		</Output>
+	</ProcessOutputs>
+</ProcessDescription></ns:ProcessDescriptions>

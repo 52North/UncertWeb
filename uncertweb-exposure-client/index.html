@@ -1,82 +1,79 @@
-<html>
-	
+<!DOCTYPE html>
+<html lang="en">
 	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" type="text/css" href="css/bootstrap-2.1.1.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive-2.1.1.css" />
 		<link rel="stylesheet" type="text/css" href="css/codemirror-2.34.css" />
 		<link rel="stylesheet" type="text/css" href="css/codemirror.custom.css" />
 		<link rel="stylesheet" type="text/css" href="css/prettify.css" />
+		
 		<script type="text/javascript" src="lib/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
 		<script type="text/javascript" src="lib/codemirror-2.34.js"></script>
 		<script type="text/javascript" src="lib/codemirror-2.34-xml.js"></script>
 		<script type="text/javascript" src="lib/prettify.min.js"></script>
-		<script type="text/javascript" src="lib/vkbeauty-0.99.00.beta.js"></script>
+		<script type="text/javascript" src="lib/vkbeautify-0.99.00.beta.js"></script>
 		<script type="text/javascript" src="lib/bootstrap-2.1.1.min.js"></script>
-		<script type="text/javascript" src="lib/bootstrap-response-2.1.1.js"></script>
-		<title>
-			Exposure Client
-		</title>
-		<style type="text/css">
-			html, body { height: 100%; }
-			body { padding-top: 60px; }
-			#wrap {
-				min-height: 100%;
-				height: auto !important;
-				height: 100%;
-				margin: 0 auto -120px;
-			}
-			#push, #footer { height: 120px; margin: 20px;}
-			@media (max-width: 767px) {
-				#footer {
-					margin-left: -20px;
-					margin-right: -20px;
-					padding-left: 20px;
-					padding-right: 20px;
-				}
-			}
-		</style>
-		<script type="text/javascript">
-			$(function() {
-
-			});
-		</script>
+		<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+		<script type="text/javascript" src="lib/jsxml-0.2.2.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/application.css" />
+		<script type="text/javascript" src="js/utils.js"></script>
+		<script type="text/javascript" src="js/xml.js"></script>
+		<script type="text/javascript" src="js/ui.js"></script>
+		<script type="text/javascript" src="js/message.js"></script>
+		<script type="text/javascript" src="js/jquery.query-param.js"></script>
+		<script type="text/javascript" src="js/application.js"></script>
+		<title>Exposure Client</title>
 	</head>
 	<body>
-		<div id="wrap">
-			<div class="navbar navbar-inverse navbar-fixed-top">
-				<div class="navbar-inner">
-					<div class="container-fluid">
-						<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						</a>
-						<a class="brand" href="#">Project name</a>
-						<div class="nav-collapse collapse">
-						<ul class="nav">
-							<li class="active"><a href="#">Home</a></li>
-							<li><a href="#about">About</a></li>
-							<li><a href="#contact">Contact</a></li>
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span11 page-header">
+					<h1>Exposure Client</h1>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span3">
+					<div class="well sidebar-nav">
+						<ul class="nav nav-list">
+							<li class="nav-header">Processes</li>
+							<li class="active"><a data-toggle="nilu">Nilu Process</a></li>
+							<li class="disabled"><a data-toggle="albatross">Albatross Process</a></li>
+							<li class="disabled"><a data-toggle="ems">EMS</a></li>
 						</ul>
-						</div>
 					</div>
 				</div>
-			</div>
-			<div class="contailer-fluid">
-				<div class="span12">
-					<div class="page-header">
-						<h1>Sticky footer</h1>
-					</div>
-					<p class="lead"></p>
+				<div id="content" class="span8" >
+					<form class="well form-horizontal processForm" id="nilu"></form>
+					<form class="well form-horizontal processForm" style="display: none;" id="albatross"></form>
+					<form class="well form-horizontal processForm" style="display: none;" id="ems"></form>
 				</div>
 			</div>
-			<div id="push">
+			<div class="row-fluid">
+				<div class="span8 offset3">
+					<table id="output" class="table table-condensed">
+						<tbody></tbody>
+					</table>
+				</div>
 			</div>
 		</div>
-		<div class="container-fluid" id="footer">	
-			<hr/>
-			<div class="span12">
-				<p class="">&copy;</p>
+		<div class="footer">
+			<div class="container-fluid">
+				<p class="pull-right"><a href="#">Back to top</a></p>
+				<p>The UncertWeb project has received funding from the <a href="http://cordis.europa.eu/fp7/home_en.html">European Community's Seventh Framework Programme</a> under grant agreement n&deg; [248488].</p>
+				<ul class="footer-links">
+					<li>&copy; 2012 <a href="http://ifgi.uni-muenster.de/" >Institute for Geoinformatics</a></li>
+					<li class="muted">&middot;</li>
+					<li><a href="http://www.uncertweb.org/contact">Contact us</a></li>
+					<li class="muted">&middot;</li>
+					<li><a href="http://www.uncertweb.org/advisory-panel">Advisory panel</a></li>
+					<li class="muted">&middot;</li>
+					<li><a href="http://www.uncertweb.org/sponsor">Sponsor</a></li>
+				</ul>
 			</div>
 		</div>
 	</body>
 </html>
+

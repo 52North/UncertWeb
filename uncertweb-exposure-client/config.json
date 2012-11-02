@@ -1,0 +1,201 @@
+{
+	"processes": {
+		"nilu": {
+			"id": "org.uncertweb.wps.AirQualityForecastProcess",
+			"url-bak": "http://v-soknos.uni-muenster.de:8080/nilu-wps/WebProcessingService",
+			"url": "examples/niluProcessExampleResponse.xml",
+			"outputs": {
+				"predicted-concentrations": {
+					"asReference": true,
+					"mimeType": "application/x-netcdf"
+				}
+			},
+			"inputs": {
+				"sections": [
+					{
+						"title": "Nilu-WPS",
+						"options": {
+							"sdate": {
+								"title": "Start time and date",
+								"description": "Start time and date. Server uses CEST.",
+								"required": true,
+								"type": "string",
+								"default": "20120206"
+							},
+							"edate": {
+								"title": "End time and date",
+								"description": "End time and date. Server uses CEST.",
+								"required": true,
+								"type": "string",
+								"default": "20120206"
+							},
+							"nspd": {
+								"title": "Number of days for spinning",
+								"description": "Number of days for spinning up the TAPM model.",
+								"type": "choice",
+								"required": true,
+								"options": {
+									"0": "0 Days",
+									"1": "1 Day",
+									"2": "2 Days"
+								},
+								"default": "0"
+							},
+							"nens": {
+								"title": "Number of realisations",
+								"description": "Number of realisations",
+								"required": true,
+								"type": "choice",
+								"options": {
+									"00": "0",
+									"25": "25",
+									"50": "50"
+								},
+								"default": "25"
+							},
+							"nhrs": {
+								"title": "Number of forecast hours",
+								"description": "Numer of forecast hours",
+								"required": true,
+								"type": "choice",
+								"options": {
+									"24": "1 Day",
+									"48": "2 Days",
+									"72": "3 Days"
+								},
+								"default": "24"
+							},
+							"cmpd": {
+								"title": "Component",
+								"description": "Component description",
+								"type": "choice",
+								"required": true,
+								"options": {
+									"all": "All",
+									"no2": "NO2",
+									"nox": "NOX",
+									"pm10": "PM10"
+								},
+								"default": "nox"
+							},
+							"site": {
+								"title": "Site",
+								"description": "Site Description",
+								"type": "choice",
+								"required": true,
+								"options": {
+									"oslo": "Oslo",
+									"rotterdam": "Rotterdam"
+								},
+								"default": "oslo"
+							}
+						}
+					}
+				]
+			}
+		},
+		"albatross": {
+			"id": "org.uncertweb.ups.UPSAlbatrossProcessFull",
+			"url-bak": "http://128.176.133.106:8080/ups/WebProcessingService",
+			"url": "examples/niluProcessExampleResponse.xml",
+			"outputs": {
+				"om_schedules": {
+					"mimeType": "application/x-uncertml",
+					"asReference": true,
+					"schema": "http://uncertml.org/uncertml.xsd"
+				}
+			},
+			"inputs": {
+				"sections": [
+					{
+						"title": "Albatross Process",
+						"options": {
+							"AlbatrossServiceURL": {
+								"type": "string",
+								"title": "AlbatrossServiceURL",
+								"description": "AlbatrossServiceURL",
+								"required": true,
+								"default": "http://128.176.133.106:8080/albatross-wps/WebProcessingService"
+							},
+							"SynPopServiceURL": {
+								"type": "string",
+								"title": "SynPopServiceURL",
+								"description": "SynPopServiceURL",
+								"required": true,
+								"default": "http://128.176.133.106:8080/albatross-syn-pop-wps/WebProcessingService"
+							},
+							"IdentifierAlbatrossProcess": {
+								"type": "string",
+								"title": "IdentifierAlbatrossProcess",
+								"description": "IdentifierAlbatrossProcess",
+								"required": true,
+								"default": "org.uncertweb.wps.AlbatrossProcess"
+							},
+							"IdentifierSynPopProcess": {
+								"type": "string",
+								"title": "IdentifierSynPopProcess",
+								"description": "IdentifierSynPopProcess",
+								"required": true,
+								"default": "org.uncertweb.wps.SyntheticPopulationProcess"
+							},
+							"genpop-households": {
+								"type": "string",
+								"title": "genpop-households",
+								"description": "genpop-households",
+								"required": true,
+								"default": "357"
+							},
+							"rwdata-households": {
+								"type": "string",
+								"title": "rwdata-households",
+								"description": "rwdata-households",
+								"required": true,
+								"default": "0"
+							},
+							"postcode-areas": {
+								"type": "string",
+								"title": "postcode-areas",
+								"description": "postcode-areas",
+								"required": true,
+								"default": "3987"
+							},
+							"zones": {
+								"title": "zones",
+								"description": "Input data with probabilistic uncertainty.",
+								"type": "string",
+								"required": true,
+								"default": "1308"
+							},
+							"municipalities": {
+								"type": "string",
+								"title": "municipalities",
+								"description": "municipalities",
+								"required": true,
+								"default": "625"
+							},
+							"isBootstrapping": {
+								"title": "isBootstrapping",
+								"description": "isBootstrapping",
+								"type": "boolean",
+								"default": false
+							},
+							"isModelUncertainty": {
+								"title": "isModelUncertainty",
+								"description": "isModelUncertainty",
+								"type": "boolean",
+								"default": false
+							},
+							"NumberOfRealisations": {
+								"type": "integer",
+								"title": "NumberOfRealisations",
+								"description": "NumberOfRealisations",
+								"required": true,
+								"default": 1
+							}
+						}
+					}
+				]
+			}
+		}
+	}
+}

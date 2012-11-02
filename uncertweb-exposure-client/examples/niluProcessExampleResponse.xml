@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:ExecuteResponse
+	xmlns:wps="http://www.opengis.net/wps/1.0.0" 
+	xmlns:ows="http://www.opengis.net/ows/1.1"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" serviceInstance="http://v-soknos.uni-muenster.de:8080/nilu-wps/WebProcessingService?REQUEST=GetCapabilities&amp;SERVICE=WPS" xml:lang="en-US" service="WPS" version="1.0.0">
+	<wps:Process wps:processVersion="2">
+		<ows:Identifier>org.uncertweb.wps.AirQualityForecastProcess</ows:Identifier>
+		<ows:Title>AirQualityForecastProcess</ows:Title>
+	</wps:Process>
+	<wps:Status creationTime="2012-11-01T15:19:22.805+01:00">
+		<wps:ProcessSucceeded>Process has succeeded</wps:ProcessSucceeded>
+	</wps:Status>
+	<wps:ProcessOutputs>
+		<wps:Output>
+			<ows:Identifier >predicted-concentrations</ows:Identifier>
+			<ows:Title >computed results</ows:Title>
+			<wps:Reference mimeType="application/x-netcdf" href="http://v-soknos.uni-muenster.de:8080/nilu-wps/RetrieveResultServlet?id=8f01153c-1047-4efb-94df-be645dded995predicted-concentrations"/>
+		</wps:Output>
+	</wps:ProcessOutputs>
+</wps:ExecuteResponse>
