@@ -27,21 +27,22 @@ function setSetting(id, val, options) {
 function createRequest($form, settings) {
 	var form = $form.serializeArray();
 	var url = settings.url;
-	/* get the false booleans */
-
+	
 	var o = { 
 		id: settings.id, 
 		inputs: {},
 		outputs: settings.outputs
 	};
 	for (var i = 0; i < form.length; ++i) {
-		o.inputs[form[i].name] = form[i].value;
+		if (!o.inputs[form[i].name]) {
+			o.inputs[form[i].name] = [];
+		}
+		o.inputs[form[i].name].push(form[i].value);
 	}
-
 	for (var i = 0; i < settings.inputs.sections.length; ++i) {
 		for (var key in settings.inputs.sections[i].options) {
 			if (settings.inputs.sections[i].options[key].type === "boolean" && !o.inputs[key]) {
-				o.inputs[key] = false;
+				o.inputs[key] =  [ false ];
 			}
 		}
 	}
@@ -50,9 +51,9 @@ function createRequest($form, settings) {
 
 $(function() {
 	$.getJSON("config.json", function(options) {
-		generateOptions(options.processes.nilu.inputs, $("#nilu"), false);
-		generateOptions(options.processes.albatross.inputs, $("#albatross"), false);
-		generateOptions(options.processes.nilu.inputs, $("#ems"), false);
+		generateOptions(options.processes.nilu.inputs, $("#nilu form"), false);
+		generateOptions(options.processes.albatross.inputs, $("#albatross form"), false);
+		generateOptions(options.processes.ems.inputs, $("#ems form"), false);
 
 		$(".processForm")
 			.append($("<div>")
@@ -71,17 +72,17 @@ $(function() {
 			$active.removeClass("active");
 			$this.parents("li").addClass("active");
 			$active.each(function() {
-				$("#" + $(this).find("a").data("toggle")).fadeOut("fast",function() {
-					$("#" + $this.data("toggle")).fadeIn()
+				$($(this).find("a").attr("href")).fadeOut("fast",function() {
+					$($this.attr("href")).fadeIn()
 				});
 			});	
 		});
 
-		$(".required").bind("keyup input change", function() {
+		$(document).on("keyup input change", ".required", function() {
             var valid = true;
             $(this).parents("form").find(".required").each(function(){ 
                 var val = $(this).val();
-                return valid = (val != null && val != undefined && val != "");
+                return valid = (val !== null && val !== undefined && val !== "");
             });
             var $button = $(this).parents("form").find("button.send");
             if (valid) {
@@ -95,7 +96,7 @@ $(function() {
 		
 		$("form button.send").click(function(){
 			var $form = $(this).parents("form");
-			var settings = options.processes[$form.attr("id")];
+			var settings = options.processes[$form.data("process")];
 			var req = createRequest($form, settings);
 			appendMessage(req, "Request", false)
 			$.ajax({
@@ -105,19 +106,37 @@ $(function() {
 				"contentType": "application/xml",
 				"dataType": "xml"
 			}).done(function(e) {
-				if (isException(e)) {
-					showError("Request failed!");
-					appendMessage(e, "Failure response", true)
+				var fail = isException(e);
+				var id = appendMessage(e, (fail) ? "Failure response" : "Sucess response", fail);
+
+				var $a = $("<a>").attr("href", "#logrow"+id).click(function(e) {
+					e.preventDefault();
+					$('html,body').animate({
+						"scrollTop": $($(this).attr("href")).offset().top
+					}, "fast", function() {
+						/* will be triggerd twice ...*/
+						if (this.localName === "html") {
+							$("#logrow" + id + " a").text("hide");
+							$("#coderow" + id).fadeIn("fast");
+						}
+					});
+				}).text("show response");
+				if (fail) {
+					showError($a.before("Request failed! "));
 				} else {
-					appendMessage(e, "Sucess response", false)
-					showSuccess("Request succeeded!");
+					showSuccess($a.before("Request succeeded! "));
 					$(".sidebar-nav li.active")
 						.next().removeClass("disabled")
 						.children("a").trigger("click");
 				}
-			}).fail(function(e) {
-				scrollToTop();
-				showError("Request failed: " + e.statusCode + " " + e.statusText);
+			}).fail(function(e,message,exception) {
+				if (message === "parsererror") {
+					showError("<code>" + this.type + " " + this.url + "</code> failed: response is no valid XML.");	
+				} else {
+					showError("<code>" + this.type + " " + this.url + "</code> failed: <code><b>" 
+						+ e.status + "</b> " + e.statusText + "</code>");	
+				}
+				
 			});
 		});
 	});
@@ -128,37 +147,35 @@ function appendMessage(message, text, failed) {
 	var id = ++logid;
 	var logrowid = "logrow"+ id;
 	var coderowid = "coderow" + id;
-	$("#output > tbody").append(
-		$("<tr>").attr("id", logrowid)
+
+	var $a = $("<a>")
+		.addClass("pull-right")
+		.attr("href","#")
+		.text("show").click(function(e) {
+			e.preventDefault();
+			if ($(this).text() === "show") {
+				$(this).text("hide");
+				$("#"+coderowid).fadeIn("fast");	
+			} else if ($(this).text() === "hide") {
+				$(this).text("show");
+				$("#"+coderowid).fadeOut("fast");
+			}
+		});
+	$("#output > tbody")
+		.append($("<tr>").attr("id", logrowid)
 			.append($("<td>").text(new Date().toLocaleString()))
 			.append($("<td>")
-				.append(text+" ")
-				.append($("<a>")
-					.addClass("pull-right")
-					.attr("href","#")
-					.text("show"))
-	.toggle(function() {
-		$("#"+logrowid+" a").text("hide");
-		var xml = xml2string(message);
-		$("#"+logrowid).after(
-			$("<tr>")
-				.attr("id",coderowid)
-				.append($("<td>")
-					.attr("colspan", 2)
-					.append($("<pre>")
-						.addClass("prettyprint")
-						.addClass("linenums")
-						.text(xml))).hide());
-		prettyPrint();
-		$("#"+coderowid).fadeIn("fast");
-	}, function() {
-		$("#"+logrowid+" a").text("show");
-		$("#"+coderowid).fadeOut("fast", function(){
-			$(this).remove()
-		});
-	})));
+				.append(text)
+				.append($a)))
+		.append($("<tr>").attr("id", coderowid).hide()
+			.append($("<td>").attr("colspan", 2)
+				.append($("<pre>")
+					.addClass("prettyprint")
+					.text(xml2string(message)))));
+	prettyPrint();
 	if (failed) {
 		$("#"+logrowid).addClass("text-error");	
 	}
+	return id;
 }
 

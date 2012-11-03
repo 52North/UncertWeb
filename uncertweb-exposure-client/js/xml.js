@@ -47,5 +47,14 @@ function createExecute(options) {
 };
 
 function isException(e) {
-	return false;
+	if (e.documentElement.namespaceURI === "http://www.opengis.net/wps/1.0.0"
+		&& e.documentElement.localName === "ExecuteResponse") {
+		return false;
+	}
+	if (e.documentElement.namespaceURI === "http://www.opengis.net/ows/1.1"
+		&& e.documentElement.localName === "ExceptionReport") {
+		return true;
+	}
+
+	return true;
 }

@@ -1,14 +1,43 @@
 function generateOptions(options, container, tabbed) {
 	function required() {
-		var valid = $(this).val() === "";
+		var valid = true;
+		$(this).parents(".control-group").find(".required").each(function(){ 
+			var val = $(this).val();
+			return valid = (val !== null && val !== undefined && val !== "");
+		});
 		if (valid) {
-			$(this).parents(".control-group").addClass("error");
-		} else {
 			$(this).parents(".control-group").removeClass("error");
+		} else {
+			$(this).parents(".control-group").addClass("error");
 		}
 	}
 
 	function generateOption(option) {
+		function createInput() {
+			var $input = null;
+			switch (option.type) {
+			case "integer":
+				// TODO slider
+			case "string":
+				$input = $("<input>").attr("type", "text").attr("name", option.id).addClass("span12");
+				break;
+			case "password":
+				$input = $("<input>").attr("type", "password").attr("name", option.id).addClass("span12");
+				break;
+			case "text":
+				$input = $("<textarea>").attr("rows", 5) // TODO make this a option
+				.attr("name", option.id).addClass("span12");
+				break;
+			}
+			if (option["default"]) {
+				$input.val(option["default"]);
+			}
+			if (option.required) {
+				$input.addClass("required").bind("keyup input", required);
+			}
+			return $input;
+		}
+
 		var $option = $("<div>").addClass("control-group");
 		switch (option.type) {
 		case "integer":
@@ -18,29 +47,40 @@ function generateOptions(options, container, tabbed) {
 			var $label = $("<label>").addClass("control-label").attr("for", option.id).html(option.title);
 			var $controls = $("<div>").addClass("controls");
 			var $input = null;
-			switch (option.type) {
-			case "integer":
-				// TODO slider
-			case "string":
-				$input = $("<input>").attr("type", "text").attr("name", option.id).addClass("input-xlarge");
-				break;
-			case "password":
-				$input = $("<input>").attr("type", "password").attr("name", option.id).addClass("input-xlarge");
-				break;
-			case "text":
-				$input = $("<textarea>").attr("rows", 5) // TODO make this a option
-				.attr("name", option.id).addClass("input-xlarge");
-				break;
+			if (option.multiple) {
+				function plus(e) {
+					e.preventDefault();
+					var $newInput = createInput().val(""); 
+
+					var $div = $("<div>").addClass("multiple span12")
+							.append($newInput.removeClass("span12").addClass("span10"))
+							.append($("<div>").addClass("span2")
+								.append($("<a>").attr("href","#").addClass("icon-plus").click(plus))
+								.append($("<a>").attr("href","#").addClass("icon-minus").click(minus)))
+					$div.hide();
+					$(this).parents(".controls div:last").after($div);
+					$newInput.trigger("input");
+					$div.fadeIn();
+				}
+				function minus(e) {
+					e.preventDefault();
+					var $prev = $(this).parent().prev().find("input,textarea");
+					$(this).parents("div.multiple").andSelf().fadeOut("fast",function() { $(this).remove(); });
+					$prev.trigger("input");
+				}
+				$input = $("<div>").addClass("multiple span12")
+					.append(createInput().removeClass("span12").addClass("span10"))
+					.append($("<div>").addClass("span2")
+						.append($("<a>").attr("href","#").addClass("icon-plus")).click(plus));
+			} else {
+				$input = createInput();
 			}
-			if (option["default"]) {
-				$input.val(option["default"]);
-			}
+			
 			var $description = $("<span>").addClass("help-block").html(option.description);
 			if (option.required) {
 				var $required = $("<span>").addClass("label label-warning").text("required");
 				$description.prepend(" ").prepend($required);
-				$input.bind("keyup input", required);
-				$input.addClass("required");
+				
 			} else {
 				var $optional = $("<span>").addClass("label label-info").text("optional");
 				$description.prepend(" ").prepend($optional);
@@ -50,7 +90,7 @@ function generateOptions(options, container, tabbed) {
 		case "choice":
 			var $controls = $("<div>").addClass("controls");
 			var $label = $("<label>").attr("for", option.id).addClass("control-label").text(option.title);
-			var $input = $("<select>").attr("name", option.id).addClass("input-xlarge");
+			var $input = $("<select>").attr("name", option.id).addClass("span12");
 			$.each(option.options, function(val, desc) {
 				$("<option>").attr("value", val).text(desc).appendTo($input);
 			});
@@ -116,10 +156,9 @@ function generateOptions(options, container, tabbed) {
 	}
 
 	function generateSection(section, $container) {
-		if (!section.title) {
-			return;
+		if (section.title) {
+			$("<legend>").text(section.title).appendTo($container);
 		}
-		$("<legend>").text(section.title).appendTo($container);
 		if (section.description) {
 			$("<p>").html(section.description).appendTo($container);
 		}

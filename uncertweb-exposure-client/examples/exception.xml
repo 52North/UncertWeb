@@ -1,0 +1,18 @@
+<ns:ExceptionReport xmlns:ns="http://www.opengis.net/ows/1.1">
+	<ns:Exception exceptionCode="NoApplicableCode">
+		<ns:ExceptionText>
+			Error while executing the embedded process for: org.uncertweb.ups.UPSAlbatrossProcess
+		</ns:ExceptionText>
+	</ns:Exception>
+	<ns:Exception exceptionCode="JAVA_StackTrace">
+		<ns:ExceptionText>
+			org.n52.wps.server.request.ExecuteRequest.call:619 org.n52.wps.server.request.Request.call:1 java.util.concurrent.FutureTask$Sync.innerRun:-1 java.util.concurrent.FutureTask.run:-1 java.util.concurrent.ThreadPoolExecutor$Worker.runTask:-1 java.util.concurrent.ThreadPoolExecutor$Worker.run:-1 java.lang.Thread.run:-1
+		</ns:ExceptionText>
+	</ns:Exception>
+	<ns:Exception exceptionCode="JAVA_RootCause">
+		<ns:ExceptionText xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+		<ns:ExceptionText>
+			org.uncertweb.ups.UPSAlbatrossProcess.handleResponse:296 org.uncertweb.ups.UPSAlbatrossProcess.run:163 org.n52.wps.server.request.ExecuteRequest.call:606 org.n52.wps.server.request.Request.call:1 java.util.concurrent.FutureTask$Sync.innerRun:-1 java.util.concurrent.FutureTask.run:-1 java.util.concurrent.ThreadPoolExecutor$Worker.runTask:-1 java.util.concurrent.ThreadPoolExecutor$Worker.run:-1 java.lang.Thread.run:-1
+		</ns:ExceptionText>
+	</ns:Exception>
+</ns:ExceptionReport>

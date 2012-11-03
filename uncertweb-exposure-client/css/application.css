@@ -1,9 +1,15 @@
-input[type=text] { 
-	height: 30px; 
-}
-
 table#output tbody tr td {
 	font-size: 85%;
+}
+
+form.processForm div.multiple {
+	margin-left: 0px;
+	padding-bottom: 5px
+}
+
+form.processForm a[class^="icon-"], 
+form.processForm a[class*=" icon-"] {
+	margin-top: 7px;
 }
 
 .footer {

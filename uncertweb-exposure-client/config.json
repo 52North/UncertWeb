@@ -1,5 +1,23 @@
 {
 	"processes": {
+		"ems": {
+			"id": "org.uncertweb.wps.ems",
+			"url": "examples/exception.xml",
+			"outputs": {
+				"predicted-concentrations": {
+					"asReference": true,
+					"mimeType": "application/x-netcdf"
+				}
+			},
+			"inputs": {
+				"sections": [
+					{
+						"title": "Parameter",
+						"options": {}
+					}
+				]
+			}
+		},
 		"nilu": {
 			"id": "org.uncertweb.wps.AirQualityForecastProcess",
 			"url-bak": "http://v-soknos.uni-muenster.de:8080/nilu-wps/WebProcessingService",
@@ -13,7 +31,7 @@
 			"inputs": {
 				"sections": [
 					{
-						"title": "Nilu-WPS",
+						"title": "Parameter",
 						"options": {
 							"sdate": {
 								"title": "Start time and date",
@@ -108,7 +126,7 @@
 			"inputs": {
 				"sections": [
 					{
-						"title": "Albatross Process",
+						"title": "Parameter",
 						"options": {
 							"AlbatrossServiceURL": {
 								"type": "string",
@@ -164,6 +182,7 @@
 								"description": "Input data with probabilistic uncertainty.",
 								"type": "string",
 								"required": true,
+								"multiple": true,
 								"default": "1308"
 							},
 							"municipalities": {
