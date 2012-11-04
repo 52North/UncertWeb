@@ -1,14 +1,14 @@
 package org.uncertweb.ems;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
@@ -19,52 +19,39 @@ import org.joda.time.PeriodType;
 import org.n52.wps.PropertyDocument.Property;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.UncertWebDataConstants;
-import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
-import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.io.data.binding.complex.UncertMLBinding;
-import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.n52.wps.io.datahandler.om.OMXmlParser;
 import org.n52.wps.server.AbstractObservableAlgorithm;
 import org.n52.wps.server.LocalAlgorithmRepository;
 //import org.uncertweb.api.netcdf.NetcdfUWFile;
 //import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
 //import org.uncertweb.api.netcdf.exception.NetcdfUWException;
+import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertml.IUncertainty;
+import org.uncertml.sample.AbstractRealisation;
 import org.uncertml.sample.AbstractSample;
 import org.uncertml.sample.ContinuousRealisation;
+import org.uncertml.sample.ISample;
+import org.uncertml.sample.RandomSample;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.io.JSONObservationEncoder;
 import org.uncertweb.api.om.io.StaxObservationEncoder;
-import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.ems.data.profiles.AbstractProfile;
-import org.uncertweb.ems.data.profiles.GeometryProfile;
-import org.uncertweb.ems.data.profiles.Profile;
 import org.uncertweb.ems.exceptions.EMSInputException;
 import org.uncertweb.ems.exposuremodel.OutdoorModel;
-import org.uncertweb.ems.extension.model.IndoorModel;
-import org.uncertweb.ems.extension.profiles.ActivityProfile;
-import org.uncertweb.ems.extension.profiles.MEProfile;
 import org.uncertweb.ems.io.OMProfileGenerator;
 import org.uncertweb.ems.io.OMProfileParser;
 import org.uncertweb.ems.util.ExposureModelConstants;
-import org.uncertweb.ems.util.Utils;
 import org.uncertweb.netcdf.NcUwConstants;
 import org.uncertweb.netcdf.NcUwFile;
-import org.uncertweb.netcdf.NcUwHelper;
 
 
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
 import ucar.nc2.units.DateUnit;
 
@@ -88,6 +75,7 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 	private final String INPUT_IDENTIFIER_RESOLUTION = "minuteResolution";
 	private final String INPUT_IDENTIFIER_OUTPUT_UNCERTAINTY = "outputUncertaintyType";
 	private final String OUTPUT_IDENTIFIER = "result";
+	private boolean uncertml = false;
 	
 	// EMS data structures
 	private List<IObservationCollection> omList;
@@ -107,10 +95,12 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 	}
 	
 	
+	@Override
 	public List<String> getErrors() {
 		return errors;
 	}
 
+	@Override
 	public Class<?> getInputDataType(String id) {
 		return ExposureModelConstants.ProcessInputs.INPUT_DATA_TYPES.get(id);
 //		if(id.equals(INPUT_IDENTIFIER_ACTIVITY_PROFILE)){
@@ -129,19 +119,28 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 //		}
 	}
 
+	@Override
 	public Class<?> getOutputDataType(String arg0) {
 		return ExposureModelConstants.ProcessInputs.INPUT_DATA_TYPES.get(arg0);
 //		return UncertWebIODataBinding.class;
 	}
 
+	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputMap) {				
 		// ********* Get WPS inputs********* 
 		getWPSInputs(inputMap);
 		
-		// ********* Create internal data types *********
-		// output collection
-		UncertaintyObservationCollection exposureProfiles = new UncertaintyObservationCollection();
-
+		File baseDir = new File(System.getProperty("catalina.base") + File.separator + "webapps/public");		
+		if(!baseDir.exists()){
+			try {
+				baseDir.mkdir();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}		
+		String baseDirPath = baseDir.getAbsolutePath();
+		
+		// ********* Create internal data types *********		
 		//  create time list from Netcdf time array
 		ArrayList<DateTime> ncTimeList = null;
 		ncTimeList = this.getTimeArrayFromNcUwFile(ncFile);				
@@ -151,6 +150,10 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 			minuteResolution = new Interval(ncTimeList.get(0),ncTimeList.get(1)).toPeriod(PeriodType.minutes()).getMinutes();
 		}
 		
+		// output collection
+		UncertaintyObservationCollection exposureProfiles = new UncertaintyObservationCollection();
+		ArrayList<ContinuousRealisation> realisations = new ArrayList<ContinuousRealisation>();
+		
 		// TODO
 		// if the activity input is uncertain, we can only make daily averages
 //		if(omList.size()>1)
@@ -158,6 +161,7 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 		
 		// go through the OM files in the list
 		for(IObservationCollection omFile : omList){
+			
 			// create profile list from OM file
 			List<AbstractProfile> profileList = new OMProfileParser().OM2Profiles(omFile, ncTimeList, minuteResolution);
 						
@@ -191,31 +195,67 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 
 			// ********* RESULT COLLECTION *********	
 			//TODO: add handling for different activity realisations -> mapping to one O&M file!
-			// go through each individual profile
-			for (AbstractProfile profile : profileList) {			
-				// get OM file and add to overall observation collection
-				exposureProfiles.addObservationCollection(new OMProfileGenerator()
-						.createExposureProfileObservationCollection(profile,
-								statList));
+			
+			// for a single OM file make an OM Collection as result
+			if(!uncertml){
+				// go through each individual profile
+				for (AbstractProfile profile : profileList) {			
+					// get OM file and add to overall observation collection
+					exposureProfiles.addObservationCollection(new OMProfileGenerator()
+							.createExposureProfileObservationCollection(profile,
+									statList));
+				}
+				
+				// ********* Prepare WPS result ********* 
+				Map<String, IData> result = new HashMap<String, IData>(1);
+				OMBinding uwData = new OMBinding(exposureProfiles);
+				result.put(ExposureModelConstants.ProcessInputs.OUTPUT_IDENTIFIER, uwData);
+				return result;
 			}
+			// for more than one OM file (realisations) make an UncertML file with refs to these realisations
+			else{
+				// get results for the individuals
+				exposureProfiles = new UncertaintyObservationCollection();
+				for (AbstractProfile profile : profileList) {			
+					// get OM file and add to overall observation collection
+					exposureProfiles.addObservationCollection(new OMProfileGenerator()
+							.createExposureProfileObservationCollection(profile,
+									statList));
+				}
+					
+				// write results to one file
+				String uuidString = UUID.randomUUID().toString().substring(0, 5);	
+				File file = new File(baseDirPath + File.separator + uuidString + ".xml");
+				try {
+					new StaxObservationEncoder().encodeObservationCollection(exposureProfiles,
+							file);
+				} catch (OMEncodingException e) {
+					e.printStackTrace();
+				}
+				
+				// make URL from this file path
+				String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
+				String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();			
+				URL url = null;
+				try {
+					url = new URL("http://" + host + ":" + hostPort+ "/" + "public/" + file.getName());
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+				
+				// make realisation and add it to the realisations list
+				ContinuousRealisation cr = new ContinuousRealisation(url);				
+				realisations.add(cr);				
+			}
+						
 		}
 			
 
-		// ********* Prepare WPS result ********* 
-		//TODO: this is for testing purposes and should be removed before final deployment
-		// write output locally
-		try {
-			new StaxObservationEncoder().encodeObservationCollection(exposureProfiles,
-					new File(resourcesPath+"/outputs/exposure_test.xml"));
-			new JSONObservationEncoder().encodeObservationCollection(exposureProfiles,
-					new File(resourcesPath+"/outputs/exposure_test.json"));
-		} catch (OMEncodingException e) {
-			e.printStackTrace();
-		}
-		
-		Map<String, IData> result = new HashMap<String, IData>(1);
-		OMBinding uwData = new OMBinding(exposureProfiles);
-		result.put(ExposureModelConstants.ProcessInputs.OUTPUT_IDENTIFIER, uwData);
+		// ********* Prepare WPS result for more than one realisation ********* 
+		Map<String, IData> result = new HashMap<String, IData>(1);		
+		RandomSample rs = new RandomSample(realisations.toArray(new ContinuousRealisation[] {}));
+		UncertMLBinding ub = new UncertMLBinding(rs);
+		result.put(ExposureModelConstants.ProcessInputs.OUTPUT_IDENTIFIER, ub);
 		return result;
 		
 	}
@@ -233,11 +273,42 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 					//TODO: implement handling of additional uncertainty for Albatross outputs			
 					// if an UncertML file with refs to OM documents is provided
 					else if(tmp instanceof UncertMLBinding){
+						uncertml = true;
 						IUncertainty uncertOMList  = ((UncertMLBinding)tmp).getPayload();
-//						if(uncertOMList instanceof ISample){
-//							AbstractSample sample = (AbstractSample) uncertainty;
-//							ContiuousRealisations realisations = (ContinuousRealisation) sample.getRealisations().get(0);
-//						}
+						if(uncertOMList instanceof ISample){
+							AbstractSample sample = (AbstractSample) uncertOMList;
+							List<AbstractRealisation> realisations = sample.getRealisations();
+							// get values from realisations URL ref
+							if(((ContinuousRealisation)realisations.get(0)).isReferenced()){
+								for(AbstractRealisation absReal : realisations){
+									URL url = ((ContinuousRealisation)absReal).getReferenceURL();
+									try {
+										// parse OM file in this reference
+										
+										try {
+											XBObservationParser omParser = new XBObservationParser();
+											XmlObject xml = XmlObject.Factory.parse(url.openConnection().getInputStream());
+											IObservationCollection obs = (IObservationCollection) omParser.parse(xml.xmlText());
+											omList.add((IObservationCollection)obs);
+										}catch (XmlException e) {
+											e.printStackTrace();
+										}catch (OMParsingException e) {
+											e.printStackTrace();
+										}																				
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
+								}
+							}
+							// TODO: Add handler for non-referenced UncertML file
+							else{
+								
+							}
+								
+						}else{
+							throw new EMSInputException("Activity input has to be of type samples or realisations in UncertML!");
+						}					
+						
 					}else{
 						throw new EMSInputException("Activity input has to be in O&M or UncertML!");
 					}			
