@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ems</groupId>
   <artifactId>ems</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <packaging>war</packaging>
    <description>Project contains WPS Processes for calculating exposure to air pollution.</description>
   
@@ -61,7 +61,7 @@
      	  <dependency>
        		<groupId>org.uncertweb</groupId>
        		<artifactId>52n-wps-io-uncertweb</artifactId>
-   			<version>0.0.8-SNAPSHOT</version>
+   			<version>0.0.9-SNAPSHOT</version>
    		</dependency> 
    		<dependency>
    			<groupId>org.uncertweb</groupId>

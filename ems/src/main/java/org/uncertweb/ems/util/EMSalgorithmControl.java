@@ -20,6 +20,7 @@ import org.uncertweb.ems.extension.model.IndoorModel;
 
 /**
  * Class to test methodology of the service
+ * Uses some old classes (profile and outdoor model) and untested indoor model extension
  * @author Lydia Gerharz
  *
  */
