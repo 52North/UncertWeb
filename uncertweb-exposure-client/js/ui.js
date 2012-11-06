@@ -148,13 +148,8 @@ function generateOptions(options, container, tabbed) {
 			option.id = id;
 			$tabPane.append(generateOption(option));
 		});
-		console.log($tabPane);
-		console.log($tabs);
 		$tabs.append($tabPane);
-		console.log($tabHead);
-		console.log($tabTitles);
 		$tabTitles.append($tabHead);
-
 	}
 
 	function generateSection(section, $container) {

@@ -59,9 +59,19 @@ $(function() {
 			.append($("<div>")
 				.addClass("form-actions")
 				.append($("<button>")
-					.addClass("btn send")
+					.addClass("btn send btn-info")
 					.attr("type","button")
 					.text("Send")));
+
+		$("#start").click(function() {
+			$(".sidebar-nav li.active").next()
+				.next().removeClass("disabled")
+				.find("a").trigger("click");
+			//$(this).attr("disabled", true);
+			$(this).parent().fadeOut(function() {
+				$(this).remove();
+			}) 
+		});
 
 		$(".sidebar-nav a").click(function(e) {
 			var $this = $(this);
@@ -71,11 +81,9 @@ $(function() {
 			var $active = $(".sidebar-nav li.active");
 			$active.removeClass("active");
 			$this.parents("li").addClass("active");
-			$active.each(function() {
-				$($(this).find("a").attr("href")).fadeOut("fast",function() {
-					$($this.attr("href")).fadeIn()
-				});
-			});	
+			$($active.find("a").attr("href")).fadeOut("fast", function() {
+				$($this.attr("href")).fadeIn();
+			});
 		});
 
 		$(document).on("keyup input change", ".required", function() {

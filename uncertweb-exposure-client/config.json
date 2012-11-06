@@ -115,7 +115,7 @@
 		"albatross": {
 			"id": "org.uncertweb.ups.UPSAlbatrossProcessFull",
 			"url-bak": "http://128.176.133.106:8080/ups/WebProcessingService",
-			"url": "examples/niluProcessExampleResponse.xml",
+			"url": "examples/albatrossProcessExampleResponse.xml",
 			"outputs": {
 				"om_schedules": {
 					"mimeType": "application/x-uncertml",
