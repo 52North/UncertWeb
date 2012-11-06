@@ -1,13 +1,29 @@
 package org.uncertweb.ups;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import net.opengis.om.x20.FoiPropertyType;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
@@ -22,15 +38,23 @@ import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.InputDescriptionType;
 import net.opengis.wps.x100.OutputDataType;
 import net.opengis.wps.x100.ProcessDescriptionType;
+import net.opengis.wps.x100.ResponseDocumentType;
+import net.opengis.wps.x100.ResponseFormType;
 
-import org.apache.xmlbeans.XmlException;
+import org.apache.log4j.Logger;
 import org.n52.wps.client.WPSClientException;
 import org.n52.wps.client.WPSClientSession;
+import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.binding.complex.OMBinding;
+import org.n52.wps.io.data.binding.complex.UncertMLBinding;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
+import org.n52.wps.io.data.binding.complex.XMLAnyDataBinding;
+import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
+import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
+import org.uncertml.sample.ContinuousRealisation;
+import org.uncertml.sample.RandomSample;
 import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.observation.Measurement;
@@ -40,6 +64,7 @@ import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.result.TextResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
+import org.w3c.dom.Node;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
@@ -51,7 +76,18 @@ import com.vividsolutions.jts.io.WKTReader;
  *
  */
 public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
+	
+	private static Logger logger = Logger.getLogger(UPSAlbatrossProcessSimple.class);
+	
+	/*
+	 * how often to call the WPS
+	 */	
+	private int numberOfRealisations = -999;	
 
+	/*
+	 * identifier for number of realisations
+	 */
+	private String INPUT_ID_NUMBER_OF_REALISATIONS = "NumberOfRealisations";
 
 	/**
 	 * identifier for model service URL (Albatross)
@@ -124,11 +160,20 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 	 */	
 	private static final String INPUT_ID_IS_BOOTSTRAPPING = "isBootstrapping";  
 	
+	/**
+	 * identifier for the model uncertainty flag
+	 */	
+	private static final String INPUT_ID_IS_MODEL_UNCERTAINTY = "isModelUncertainty";  
+	
 	
 	/**
 	 * identifier for the random number seed
 	 */	
 	private static final String INPUT_ID_RANDOM_NUMBER_SEED = "randomNumberSeed";  
+
+	private final String INPUT_ID_UNCERT_LINK = "uncert-link";
+	
+	private final String INPUT_ID_UNCERT_AREA = "uncert-area";
 	
 	
 	/**
@@ -141,6 +186,8 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 	 * identifier for the second Albatross output
 	 */
 	private static final String OUTPUT_ID_INDICATORS = "indicators";
+	
+	private static final String OUTPUT_ID_SCHEDULES = "om_schedules";
 	
 	
 	/**
@@ -171,18 +218,18 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		
 		HashMap<String, Object> inputs = new HashMap<String, Object>();
 		
-		// Retrieve syn pop model service URL from input. Must exist!
-		IData iData = inputData.get(INPUT_ID_SYN_POP_MODEL_SERVICE_URL).get(0);
-		String popModelServiceURL = (String) iData.getPayload();
+//		// Retrieve syn pop model service URL from input. Must exist!
+//		IData iData = inputData.get(INPUT_ID_SYN_POP_MODEL_SERVICE_URL).get(0);
+//		String popModelServiceURL = (String) iData.getPayload();
 		
 		// Retrieve model service URL from input. Must exist!
-		iData = inputData.get(INPUT_ID_MODEL_SERVICE_URL).get(0);
+		IData iData = inputData.get(INPUT_ID_MODEL_SERVICE_URL).get(0);
 		String modelServiceURL = (String) iData.getPayload();
 		
 		
-		// Retrieve syn pop model process identifier URL from input. Must exist!
-		iData = inputData.get(INPUT_ID_SYN_POP_PROCESS_IDENTIFIER).get(0);
-		String synPopProcessID = iData.getPayload().toString();
+//		// Retrieve syn pop model process identifier URL from input. Must exist!
+//		iData = inputData.get(INPUT_ID_SYN_POP_PROCESS_IDENTIFIER).get(0);
+//		String synPopProcessID = iData.getPayload().toString();
 		
 		// Retrieve model process identifier URL from input. Must exist!
 		iData = inputData.get(INPUT_ID_SIMULATION_PROCESS_IDENTIFIER).get(0);
@@ -209,120 +256,163 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		iData = inputData.get(INPUT_ID_MUNICIPALITIES).get(0);
 		inputs.put(INPUT_ID_MUNICIPALITIES, iData.getPayload());
 		
-		// set 'isBootstrapping' to false (as default)
-		inputs.put(INPUT_ID_IS_BOOTSTRAPPING, new Boolean(false));
+		// Retrieve municipalities from input. Must exist!
+		iData = inputData.get(INPUT_ID_IS_MODEL_UNCERTAINTY).get(0);
+		inputs.put(INPUT_ID_IS_MODEL_UNCERTAINTY, iData.getPayload());
 		
+		iData = inputData.get(INPUT_ID_EXPORT_FILE).get(0);
+		inputs.put(INPUT_ID_EXPORT_FILE, iData.getPayload());
 		
-		/*
-		 * 2: Execute syn pop WPS
-		 */
+		iData = inputData.get(INPUT_ID_EXPORT_FILE_BIN).get(0);
+		inputs.put(INPUT_ID_EXPORT_FILE_BIN, iData.getPayload());
 		
-		//build execute document
-		ExecuteDocument execDoc = this.createExecuteDocument(popModelServiceURL, synPopProcessID, inputs);
+		// Retrieve realisations from input. Must exist!
+		iData = inputData.get(INPUT_ID_NUMBER_OF_REALISATIONS).get(0);
+		numberOfRealisations = (Integer) iData.getPayload();
 		
+		List<IData> zeroToNInputs = null;
 		
-		//execute operation
-		ExecuteResponseDocument response = this.executeRequest(execDoc, popModelServiceURL);
-		
-		
-		
-		/*
-		 * 3: extract results from syn pop model run
-		 */
-		
-		String exportPath = this.extractProperty(response, INPUT_ID_EXPORT_FILE);
-		String exportBinPath = this.extractProperty(response, INPUT_ID_EXPORT_FILE_BIN);
-		
-		if (exportBinPath == null || exportPath == null) {
-			this.errors.add("could not extract results from syn-pop-WPS response");
-			return new HashMap<String, IData>();
+		try{
+			zeroToNInputs = inputData.get(INPUT_ID_UNCERT_LINK);			
+			inputs.put(INPUT_ID_UNCERT_LINK, zeroToNInputs);
+		}catch (Exception e) {
+			logger.info("No uncert links provided");
 		}
 		
-		//adjust inputs map
-		inputs.put(INPUT_ID_EXPORT_FILE, exportPath);
-		inputs.put(INPUT_ID_EXPORT_FILE_BIN, exportBinPath);
+		try {			
+			zeroToNInputs = inputData.get(INPUT_ID_UNCERT_AREA);
+			inputs.put(INPUT_ID_UNCERT_AREA, zeroToNInputs);			
+		} catch (Exception e) {
+			logger.info("No uncert areas provided");
+		}
+		
 		inputs.put(INPUT_ID_RANDOM_NUMBER_SEED, new Integer(1));
-		inputs.remove(INPUT_ID_IS_BOOTSTRAPPING);
+		
+		// set 'isBootstrapping' to false (as default)
+//		inputs.put(INPUT_ID_IS_BOOTSTRAPPING, new Boolean(false));
+		
+		
+//		/*
+//		 * 2: Execute syn pop WPS
+//		 */
+//		
+//		//build execute document
+//		ExecuteDocument execDoc = this.createExecuteDocument(popModelServiceURL, synPopProcessID, inputs);
+//		
+//		
+//		//execute operation
+//		ExecuteResponseDocument response = this.executeRequest(execDoc, popModelServiceURL);
+//				
+//		/*
+//		 * 3: extract results from syn pop model run
+//		 */
+//		
+//		String exportPath = this.extractProperty(response, INPUT_ID_EXPORT_FILE);
+//		String exportBinPath = this.extractProperty(response, INPUT_ID_EXPORT_FILE_BIN);
+//		
+//		if (exportBinPath == null || exportPath == null) {
+//			this.errors.add("could not extract results from syn-pop-WPS response");
+//			return new HashMap<String, IData>();
+//		}
+		
+		//adjust inputs map
+//		inputs.put(INPUT_ID_EXPORT_FILE, exportPath);
+//		inputs.put(INPUT_ID_EXPORT_FILE_BIN, exportBinPath);
+//		inputs.remove(INPUT_ID_IS_BOOTSTRAPPING);
 		
 		
 		/*
 		 * 4: execute Albatross model and return results
+		 * 
 		 */
 		
 		//build execute document
-		execDoc = this.createExecuteDocument(modelServiceURL, modelProcessID, inputs);
+		ExecuteDocument execDoc = this.createExecuteDocument(modelServiceURL, modelProcessID, inputs, new String []{"om_schedules"});
 		
-		
-		//execute request
-		response = this.executeRequest(execDoc, modelServiceURL);
+		List<ContinuousRealisation> realisations = new ArrayList<ContinuousRealisation>(numberOfRealisations);
 		
 		//build result
 		HashMap<String, IData> result = new HashMap<String, IData>();
 		
-		/*
-		 * parse ODMatrix
-		 * 
-		 * make a TextObservationCollection object
-		 * for each observation in the OD Matrix build the Observation object (e.g. TextObservation)
-		 * add all observations to the collection
-		 * make a new OMBinding object with collection as parameter
-		 * put OMBinding in result map
-		 * 
-		 * 
-		 */
-		String odMatrixString = this.extractProperty(response, OUTPUT_ID_OD_MATRIX);
+		for (int i = 0; i < numberOfRealisations; i++) {
+			
+			//execute request
+			ExecuteResponseDocument response = this.executeRequest(execDoc, modelServiceURL);
 		
-		try {
-			//parse result collection
-			OMTextObservationCollectionDocument ocDoc = OMTextObservationCollectionDocument.Factory.parse(odMatrixString);
+			/*
+			 * gather om_schedules
+			 */			
+//			ExecuteResponseDocument response;
+			try {
+//			response = ExecuteResponseDocument.Factory.parse(new File("C:/UncertWeb/Albatross/Neuer Ordner/albatross_response4_schedules3.xml"));
 			
-			TextObservationCollection textObservationCollection = buildTextObservationCollection(ocDoc);
-			
-			//build IData object and add to result map
-			OMBinding odMatrix = new OMBinding(textObservationCollection);
-			result.put(OUTPUT_ID_OD_MATRIX, odMatrix);
-		} 
-		catch (XmlException e) {
-			this.errors.add(e.getMessage());
-		}
-		catch (IndexOutOfBoundsException e) {
-			this.errors.add(e.getMessage());
-		} 
-		catch (URISyntaxException e) {
-			this.errors.add(e.getMessage());
-		}
-		catch (ParseException e) {
-			this.errors.add(e.getMessage());
-		}
+			String schedulesString = this.extractProperty(response, OUTPUT_ID_SCHEDULES);
 		
-		/*
-		 * parse indicators
-		 * 
-		 * same procedure as above
-		 */
-		String indicatorString = this.extractProperty(response, OUTPUT_ID_INDICATORS);
-		
-		try {
-			OMMeasurementCollectionDocument mcDoc = OMMeasurementCollectionDocument.Factory.parse(indicatorString);
+//			String baseDir = WebProcessingService.BASE_DIR + File.separator + "Databases" + File.separator + "FlatFile";
+			File baseDir = new File(System.getProperty("catalina.base") + File.separator + "webapps/public");
 			
-			MeasurementCollection measurementCollection = buildMeasurementCollection(mcDoc);
+			if(!baseDir.exists()){
+				try {
+					baseDir.mkdir();
+				} catch (Exception e) {
+//					LOGGER
+					e.printStackTrace();
+				}
+			}
 			
-			//build IData object and add to result map
-			OMBinding indicators = new OMBinding(measurementCollection);
+			String baseDirPath = baseDir.getAbsolutePath();
+			
+			/*
+			 * Save the realisations in a public folder of tomcat
+			 * use UUID as name
+			 */
+			String uuidString = UUID.randomUUID().toString().substring(0, 5);
+			
+			StringBuffer sb = new StringBuffer(schedulesString);
+			
+			File file = new File(baseDirPath + File.separator + uuidString + ".xml");
+			
+			BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+			
+			bw.write(schedulesString);
+			
+			bw.flush();
+			
+			bw.close();
+			
+			/*
+			 * TODO: save the result somewhere... 
+			 */
+			String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
+			String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
+			
+			String urlString = "http://" + host + ":" + hostPort+ "/" + "public/" + file.getName();
 
-			result.put(OUTPUT_ID_INDICATORS, indicators);
+			URL url = new URL(urlString);
+				
+			ContinuousRealisation cr = new ContinuousRealisation(url);
+			
+			realisations.add(cr);
+			
+			} catch (MalformedURLException e) {
+				logger.error(e.getMessage());
+			}
+			catch (IOException e) {
+				logger.error(e.getMessage());
+			}
 		}
-		catch (XmlException e) {
-			this.errors.add(e.getMessage());
-		}
-		catch (URISyntaxException e) {
-			this.errors.add(e.getMessage());
-		}
-		catch (ParseException e) {
-			this.errors.add(e.getMessage());
-		}
+		
+		/*
+		 * create uncertml doc with schedules as realisation reference
+		 */
+		RandomSample rs = new RandomSample(
+				realisations.toArray(new ContinuousRealisation[] {}));
 
-		//return process outputs
+		UncertMLBinding ub = new UncertMLBinding(rs);
+
+		result.put(OUTPUT_ID_SCHEDULES, ub);
+
+		// return process outputs
 		return result;
 	}
 
@@ -597,6 +687,11 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 				//get complex data
 				String complexData = data.getComplexData().getDomNode().getFirstChild().getNodeValue();
 				
+				if(complexData == null){
+					complexData = nodeToString(data.getComplexData().getDomNode().getFirstChild());
+				}
+					
+				
 				//extract from CDATA caption
 				complexData = this.removeCDATA(complexData);
 				
@@ -690,6 +785,21 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		else if (id.equals(INPUT_ID_MUNICIPALITIES)) {
 			return LiteralStringBinding.class;
 		}
+		else if (id.equals(INPUT_ID_NUMBER_OF_REALISATIONS)) {
+			return LiteralIntBinding.class;
+		}
+		else if (id.equals(INPUT_ID_IS_MODEL_UNCERTAINTY)) {
+			return LiteralBooleanBinding.class;
+		}
+		else if (id.equals(INPUT_ID_EXPORT_FILE)) {
+			return LiteralStringBinding.class;
+		}
+		else if (id.equals(INPUT_ID_EXPORT_FILE_BIN)) {
+			return LiteralStringBinding.class;
+		}
+		if (id.equals(INPUT_ID_UNCERT_AREA) || id.equals(INPUT_ID_UNCERT_LINK)) {
+			return XMLAnyDataBinding.class;
+		}
 		return null;
 	}
 
@@ -699,6 +809,9 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 			return UncertWebIODataBinding.class;
 		}
 		else if (id.equals(OUTPUT_ID_INDICATORS)) {
+			return UncertWebIODataBinding.class;
+		}
+		else if (id.equals(OUTPUT_ID_SCHEDULES)) {
 			return UncertWebIODataBinding.class;
 		}
 		return null;
@@ -737,7 +850,29 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 					continue;
 				}
 				inputValue = inputs.get(inputName);
-				executeBuilder.addLiteralData(inputName,inputValue.toString());
+				
+				if(inputValue instanceof List<?>){
+					
+					String encoding = input.getComplexData().getDefault().getFormat().getEncoding();
+					String mimeType = input.getComplexData().getDefault().getFormat().getMimeType();
+					String schema = input.getComplexData().getDefault().getFormat().getSchema();
+					
+					List<?> inputList = (List<?> )inputValue;
+					
+					for (Object object : inputList) {
+						
+						if(object instanceof IData){
+							try {
+								executeBuilder.addComplexData(inputName,(IData)object, schema, encoding, mimeType);
+							} catch (WPSClientException e) {
+								logger.debug(e);
+							}
+						}
+					}
+					
+				}else{
+					executeBuilder.addLiteralData(inputName,inputValue.toString());
+				}
 			}
 			
 			return executeBuilder.getExecute();
@@ -746,5 +881,91 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 			this.errors.add(e.getMessage());
 			return null;
 		}
+	}
+	
+	/**
+	 * This method creates an <c>ExecuteDocument</c>.
+	 * 
+	 * @param urlString the URL of the WPS that is executed
+	 * @param processID Identifier of the WPS process
+	 * @param inputs a map holding the identifiers of the inputs and the values
+	 * 
+	 * @return an execute document to send to the WPS or <code>null</code> in case of Exceptions
+	 */
+	public ExecuteDocument createExecuteDocument(String urlString, String processID, HashMap<String, Object> inputs, String[] outputIds) {		
+		//get process description from WPS
+		ProcessDescriptionType processDescription;
+		try {
+			processDescription = WPSClientSession.getInstance().getProcessDescription(urlString, processID);
+			
+			//create execute request builder
+			org.n52.wps.client.ExecuteRequestBuilder executeBuilder = new org.n52.wps.client.ExecuteRequestBuilder(
+					processDescription);
+			
+			//add all input data
+			InputDescriptionType input;
+			InputDescriptionType[] inputArray = processDescription.getDataInputs().getInputArray();
+			String inputName;
+			Object inputValue;
+			for (int i = 0; i < inputArray.length; i++) {
+				input = inputArray[i];
+				inputName = input.getIdentifier().getStringValue();
+				if (!inputs.containsKey(inputName)) {
+					//input name not available, OK if optional
+					continue;
+				}
+				inputValue = inputs.get(inputName);
+				
+				if(inputValue instanceof List<?>){
+					
+					String encoding = input.getComplexData().getDefault().getFormat().getEncoding();
+					String mimeType = input.getComplexData().getDefault().getFormat().getMimeType();
+					String schema = input.getComplexData().getDefault().getFormat().getSchema();
+					
+					List<?> inputList = (List<?> )inputValue;
+					
+					for (Object object : inputList) {
+						
+						if(object instanceof IData){
+							try {
+								executeBuilder.addComplexData(inputName,(IData)object, schema, encoding, mimeType);
+							} catch (WPSClientException e) {
+								logger.debug(e);
+							}
+						}
+					}
+					
+				}else{
+					executeBuilder.addLiteralData(inputName,inputValue.toString());
+				}
+			}
+			
+			ResponseFormType responseForm = executeBuilder.getExecute().getExecute().addNewResponseForm();
+			
+			ResponseDocumentType responseDoc = responseForm.addNewResponseDocument();
+			
+			for (String id : outputIds) {
+				responseDoc.addNewOutput().addNewIdentifier().setStringValue(id);
+			}
+			
+			return executeBuilder.getExecute();
+		} 
+		catch (IOException e) {
+			this.errors.add(e.getMessage());
+			return null;
+		}
+	}
+	
+	private String nodeToString(Node node)
+			throws TransformerFactoryConfigurationError, TransformerException {
+		StringWriter stringWriter = new StringWriter();
+		Transformer transformer = TransformerFactory.newInstance()
+				.newTransformer();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		transformer.transform(new DOMSource(node), new StreamResult(
+				stringWriter));
+
+		return stringWriter.toString();
+
 	}
 }

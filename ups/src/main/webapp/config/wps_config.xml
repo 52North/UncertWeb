@@ -22,6 +22,11 @@
 				<Format mimetype="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
 				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
 			</Parser>
+			<Parser name="XMLAnyDataParser" className="org.n52.wps.io.datahandler.XMLAnyDataParser" active="true">
+				<Format mimetype="application/xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd"/>
+				<Format mimetype="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
+			</Parser>
 			<Parser name="GML2BasicParser" className="org.n52.wps.io.datahandler.parser.GML2BasicParser" active="true">
 				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
 				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
@@ -90,6 +95,11 @@
 				<Format mimetype="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
 				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
 			</Generator>
+			<Generator name="XMLAnyDataGenerator" className="org.n52.wps.io.datahandler.XMLAnyDataGenerator" active="true">
+				<Format mimetype="application/xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd"/>
+				<Format mimetype="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
+				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
+			</Generator>
 		
 		
 			<Generator name="UncertWebIODataGenerator" className="org.n52.wps.io.datahandler.UncertWebIODataGenerator" active="true">
@@ -111,14 +121,8 @@
 	</Datahandlers>
 	<AlgorithmRepositoryList>
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
-			<Property name="Algorithm" active="true">org.n52.wps.server.algorithm.SimpleBufferAlgorithm</Property>
-			<Property name="Algorithm" active="true">org.uncertweb.u_wps.UPSAustalProcess</Property>
-			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSGenericAustalProcess</Property>
-			<Property name="Algorithm" active="true">org.uncertweb.ups.UncertWebEchoProcess</Property>
-			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSAlbatrossProcess</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSAlbatrossProcessSimple</Property>
 			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSAlbatrossProcessFull</Property>
-			<Property name="Algorithm" active="true">org.uncertweb.ups.UPSGenericAustalProcess</Property>
 			<Property name="FullUTSAddress" active="true">http://giv-uw2.uni-muenster.de:8080/uts/WebProcessingService</Property>
 			<Property name="Temp_Home" active="true">C:\\temp</Property>
 		</Repository>
