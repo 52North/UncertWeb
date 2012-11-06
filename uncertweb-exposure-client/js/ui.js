@@ -64,9 +64,11 @@ function generateOptions(options, container, tabbed) {
 				}
 				function minus(e) {
 					e.preventDefault();
-					var $prev = $(this).parent().prev().find("input,textarea");
-					$(this).parents("div.multiple").andSelf().fadeOut("fast",function() { $(this).remove(); });
-					$prev.trigger("input");
+					var $prev = $(this).parents("div.multiple").prev().find("input,textarea");
+					$(this).parents("div.multiple").andSelf().fadeOut("fast",function() { 
+						$(this).remove(); 
+						$prev.trigger("input"); 
+					});
 				}
 				$input = $("<div>").addClass("multiple span12")
 					.append(createInput().removeClass("span12").addClass("span10"))
