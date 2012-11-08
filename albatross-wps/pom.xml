@@ -110,6 +110,11 @@
     	<artifactId>albatross-util</artifactId>
     	<version>0.0.1-SNAPSHOT</version>
     </dependency>
+	<dependency>
+		<groupId>com.thetransactioncompany</groupId>
+		<artifactId>cors-filter</artifactId>
+		<version>1.3.2</version>
+	</dependency>
   </dependencies>
   <build>
   		<finalName>albatross-wps</finalName>
