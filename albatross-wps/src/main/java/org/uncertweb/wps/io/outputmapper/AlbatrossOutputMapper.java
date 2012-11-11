@@ -32,10 +32,11 @@ import org.uncertweb.wps.util.AlbatrossOutputParser.Travel;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * @author s_voss13
+ * @author s_voss13, Christoph Stasch, Lydia Gerharz
  * 
  */
 public class AlbatrossOutputMapper {
+	
 
 	/**
 	 * identifier for the Albatross model
@@ -72,87 +73,116 @@ public class AlbatrossOutputMapper {
 		   put("3", "car passenger");
 		  }
 		 };
-
+		 
 	private static Map<String, Geometry> ppcMap = new HashMap<String, Geometry>(
 			140);
 
 	private AlbatrossOutputMapper() {
 	};
 
-	public static IObservationCollection encodeAlbatrossOutput(Set<HouseHold> households) throws IllegalArgumentException, URISyntaxException, IOException{
-		
+	public static IObservationCollection encodeAlbatrossOutput(
+			Set<HouseHold> households, int numberOfSchedules)
+			throws IllegalArgumentException, URISyntaxException, IOException {
+
 		IObservationCollection observationCollection = new ObservationCollection();
-		
-		//over all household
+
+		// over all household
 		Iterator<HouseHold> householdIterator = households.iterator();
+		int numberOfIndividuals=0;
 		
-		boolean individualChanged = false;
-		
-		while(householdIterator.hasNext()){
+		while (householdIterator.hasNext()) {
 			
-		HouseHold currentHouseHold = householdIterator.next();
-		int counterForId = -1;
-		
-		//over all individuals
-		Iterator<Individual> individualIterator =  currentHouseHold.getIndividuals().iterator();
-				
-		while(individualIterator.hasNext()){
-			
-		Individual currentIndividual = individualIterator.next();	
-		individualChanged = true;
-	
-		//add all travels for the current individual
-		Iterator<Travel> travelIterator = currentIndividual.getTravel().iterator();
-		
-		//continue inc OR new household id -> start at zero
-		counterForId = individualChanged ? counterForId+1  : counterForId ;
-		individualChanged = false;
-		
-		String id = currentIndividual.getGender()+"_"+currentIndividual.getAge()+"_"+currentIndividual.getHouseHoldID()+"_"+counterForId;
-		
-		while(travelIterator.hasNext()){
-			
-			Travel currentTravel = travelIterator.next();
-			
-			Identifier identifier = new Identifier(new URI(REGISTER_PROCESS),id);
-			
-			TimeObject phenomenonTime = new TimeObject(currentTravel.getBeginTime()+"/"+currentTravel.getEndTime()); 
-			TimeObject resultTime = new TimeObject(new DateTime());
-			URI procedure = new URI(REGISTER_PROCESS+id);
-			URI observedProperty = new URI(ACTION_NUMBER);
-			SpatialSamplingFeature featureOfInterest = new SpatialSamplingFeature(new Identifier(new URI(ALBATROSS),currentTravel.getPpc()),null, getGeometryFromPPC(currentTravel.getPpc()));
-						
-			CategoryObservation categoryObservation = new CategoryObservation(identifier, null, phenomenonTime, resultTime, null, procedure, observedProperty, featureOfInterest, null, new CategoryResult(currentTravel.getActionnumber(), ALBATROSS));
-							
-			observationCollection.addObservation(categoryObservation);
-			
-			//add activity type variable
-			URI activityTypeObservedProperty = new URI(ACTIVITY_TYPE);
-			String activityType = currentTravel.getActivityType();
-			String activityResult = ALBATROSS_CODE2ACTIVITY.get(activityType);
-			CategoryObservation activityTypeObservation = new CategoryObservation(phenomenonTime, resultTime, procedure, activityTypeObservedProperty, featureOfInterest, new CategoryResult(activityResult,ALBATROSS));
-			observationCollection.addObservation(activityTypeObservation);
-			
-			
-			//add travel mode variable
-			URI travelModeObservedProperty = new URI(TRAVEL_MODE);
-			String travelModeResult = ALBATROSS_TRAVELMODE2ACTIVITY.get(currentTravel.getTravelMode());
-			CategoryObservation travelModeObservation = new CategoryObservation(phenomenonTime, resultTime, procedure, travelModeObservedProperty, featureOfInterest, new CategoryResult(travelModeResult,ALBATROSS));
-			
-			observationCollection.addObservation(travelModeObservation);
-			
-			//add home variable
-			URI isHomeObservedProperty = new URI(IS_HOME);
-			BooleanObservation isHomeObservation = new BooleanObservation(phenomenonTime, resultTime, procedure, isHomeObservedProperty, featureOfInterest, new BooleanResult(Boolean.valueOf(currentTravel.isHome())));
-			
-			observationCollection.addObservation(isHomeObservation);
-			
+			HouseHold currentHouseHold = householdIterator.next();
+			int counterForId = -1;
+
+			// over all individuals
+			Iterator<Individual> individualIterator = currentHouseHold
+					.getIndividuals().iterator();
+
+			while (individualIterator.hasNext()) {
+
+				Individual currentIndividual = individualIterator.next();
+
+				// add all travels for the current individual
+				Iterator<Travel> travelIterator = currentIndividual.getTravel()
+						.iterator();
+
+				// continue inc OR new household id -> start at zero
+				counterForId += 1;
+				numberOfIndividuals+=1;
+				if (numberOfIndividuals>numberOfSchedules){
+					break;
+				}
+
+				String id = currentIndividual.getGender() + "_"
+						+ currentIndividual.getAge() + "_"
+						+ currentIndividual.getHouseHoldID() + "_"
+						+ counterForId;
+
+				while (travelIterator.hasNext()) {
+
+					Travel currentTravel = travelIterator.next();
+
+					Identifier identifier = new Identifier(new URI(
+							REGISTER_PROCESS), id);
+
+					TimeObject phenomenonTime = new TimeObject(
+							currentTravel.getBeginTime() + "/"
+									+ currentTravel.getEndTime());
+					TimeObject resultTime = new TimeObject(new DateTime());
+					URI procedure = new URI(REGISTER_PROCESS + id);
+					URI observedProperty = new URI(ACTION_NUMBER);
+					SpatialSamplingFeature featureOfInterest = new SpatialSamplingFeature(
+							new Identifier(new URI(ALBATROSS),
+									currentTravel.getPpc()), null,
+							getGeometryFromPPC(currentTravel.getPpc()));
+
+					CategoryObservation categoryObservation = new CategoryObservation(
+							identifier, null, phenomenonTime, resultTime, null,
+							procedure, observedProperty, featureOfInterest,
+							null, new CategoryResult(
+									currentTravel.getActionnumber(), ALBATROSS));
+
+					observationCollection.addObservation(categoryObservation);
+
+					// add activity type variable
+					URI activityTypeObservedProperty = new URI(ACTIVITY_TYPE);
+					
+					CategoryObservation activityTypeObservation = new CategoryObservation(
+							phenomenonTime, resultTime, procedure,
+							activityTypeObservedProperty, featureOfInterest,
+							new CategoryResult(ALBATROSS_CODE2ACTIVITY.get(currentTravel.getActivityType()),
+									ALBATROSS));
+
+					observationCollection
+							.addObservation(activityTypeObservation);
+
+					// add travel mode variable
+					URI travelModeObservedProperty = new URI(TRAVEL_MODE);
+					CategoryObservation travelModeObservation = new CategoryObservation(
+							phenomenonTime, resultTime, procedure,
+							travelModeObservedProperty, featureOfInterest,
+							new CategoryResult(ALBATROSS_TRAVELMODE2ACTIVITY.get(currentTravel.getTravelMode()),
+									ALBATROSS));
+
+					observationCollection.addObservation(travelModeObservation);
+
+					// add home variable
+					URI isHomeObservedProperty = new URI(IS_HOME);
+					BooleanObservation isHomeObservation = new BooleanObservation(
+							phenomenonTime, resultTime, procedure,
+							isHomeObservedProperty, featureOfInterest,
+							new BooleanResult(Boolean.valueOf(currentTravel
+									.isHome())));
+
+					observationCollection.addObservation(isHomeObservation);
+
+				}
+
 			}
-		
-		}
 		}
 		return observationCollection;
-		
+
 	}
 
 	private static Geometry getGeometryFromPPC(String ppc) throws IOException {
@@ -161,7 +191,7 @@ public class AlbatrossOutputMapper {
 			return ppcMap.get(ppc);
 
 		URL url = AlbatrossOutputMapper.class
-				.getResource("PCA4digits.shp");
+				.getResource("PCA4_Rotterdam_all.shp");
 
 		FileDataStore store = FileDataStoreFinder.getDataStore(url);
 
@@ -175,26 +205,27 @@ public class AlbatrossOutputMapper {
 
 		Geometry geom = null;
 
-		while (iter.hasNext()){
+		while (iter.hasNext()) {
 			SimpleFeature sf = iter.next();
 			String ppcFromFile = sf.getAttribute("CEN_NUMBER").toString();
-			
-			geom = (Geometry)sf.getDefaultGeometry();
-			geom.setSRID(4326);
-			
-			//and for all member of the collection
+
+			geom = (Geometry) sf.getDefaultGeometry();
+			geom.setSRID(28992);
+
+			// and for all member of the collection
 			int nGeo = geom.getNumGeometries();
-			
-			for(int i = 0; i < nGeo; i++){
-				geom.getGeometryN(i).setSRID(4326);
+
+			for (int i = 0; i < nGeo; i++) {
+
+				geom.getGeometryN(i).setSRID(28992);
 			}
 
-			//if not part of the map -> add
-			if(!ppcMap.containsKey(ppcFromFile))
+			// if not part of the map -> add
+			if (!ppcMap.containsKey(ppcFromFile))
 				ppcMap.put(ppcFromFile, geom);
 		}
-				
-	return geom;
+
+		return geom;
 	}
 
 }

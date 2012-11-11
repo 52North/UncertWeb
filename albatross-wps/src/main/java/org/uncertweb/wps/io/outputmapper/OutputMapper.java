@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.FeatureCollection;
@@ -30,6 +31,7 @@ import org.uncertweb.api.om.observation.collections.TextObservationCollection;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.result.TextResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
+import org.uncertweb.wps.AlbatrossProcess;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -40,6 +42,8 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public class OutputMapper {
+	
+	protected static Logger log = Logger.getLogger(AlbatrossProcess.class);
 	
 	/**
 	 * contains the observed properties
@@ -118,6 +122,9 @@ public class OutputMapper {
 	 */
 	public IObservationCollection encodeIndicators(String absoluteFilePath) throws OMEncodingException{
 		IObservationCollection result = new MeasurementCollection();
+		FileInputStream fstream = null;
+		DataInputStream in = null;
+		BufferedReader br = null;
 		try {
 			
 			//load observation Properties
@@ -128,9 +135,9 @@ public class OutputMapper {
 			URI obsProp = null;
 			MeasureResult obsResult = null;
 			
-			FileInputStream fstream = new FileInputStream(absoluteFilePath);
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			fstream = new FileInputStream(absoluteFilePath);
+			in = new DataInputStream(fstream);
+			br = new BufferedReader(new InputStreamReader(in));
 			String strLine;
 			while ((strLine = br.readLine()) != null)   {
 				String[] lineParts = strLine.split("\t");
@@ -215,9 +222,19 @@ public class OutputMapper {
 	} catch (IllegalArgumentException e) {
 		throw new OMEncodingException("Error while encoding ");
 	} catch (URISyntaxException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		throw new OMEncodingException("Outputfile OUT_indicators.csv cannot be found!");
 	}
+		finally{
+			try {
+				br.close();
+				in.close();
+				fstream.close();
+				
+			} catch (IOException e) {
+				log.info("Error while closing streams from OUT_indicators.csv file during postprocessing.");
+			}
+			
+		}
 		return result;
 	}
 
@@ -305,14 +322,17 @@ public class OutputMapper {
 	 * 			if file cannot be read
 	 */
 	private String readFileAsString(String filePath) throws java.io.IOException{
+		String result = "";
 	    byte[] buffer = new byte[(int) new File(filePath).length()];
 	    BufferedInputStream f = null;
 	    try {
 	        f = new BufferedInputStream(new FileInputStream(filePath));
 	        f.read(buffer);
+	        result = new String(buffer);
 	    } finally {
 	        if (f != null) try { f.close(); } catch (IOException ignored) { }
 	    }
-	    return new String(buffer);
+	    return result;
+	    
 	}
 }
