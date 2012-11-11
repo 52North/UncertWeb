@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
@@ -35,7 +35,6 @@ import org.n52.wps.server.AbstractAlgorithm;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
-import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.wps.albatross.util.Pair;
 import org.uncertweb.wps.albatross.util.ProcessMonitorThread;
@@ -60,11 +59,16 @@ import uw.odmatrix.ODMatrix;
  * Implements a process that invokes the Albatross Model and returns the outputs
  * according to the UncertWeb profiles.
  * 
- * @author Steffan Voss
+ * @author Steffan Voss, Christoph Stasch
  * 
  */
 public class AlbatrossProcess extends AbstractAlgorithm {
+	
+	protected static Logger log = Logger.getLogger(AlbatrossProcess.class);
 
+	
+	//////////////////////////////
+	// input ids
 	private final String inputIDGenpopHouseholds = "genpop-households";
 	private final String inputIDRwdataHouseholds = "rwdata-households";
 	private final String inputIDMunicipalities = "municipalities";
@@ -74,10 +78,14 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 	private final String inputIDExportFile = "export-file";
 	private final String inputIDExportFileBin = "export-file-bin";
-
+	private final String DEFAULT_EXPORT_FILE_URL = "http://giv-uw.uni-muenster.de/data/export.txt";
+	private final String DEFAULT_EXPORT_FILE_BIN_URL = "http://giv-uw.uni-muenster.de/data/exportBin.bin";
+	
 	private final String inputIDUncertLink = "uncert-link";
 	private final String inputIDUncertArea = "uncert-area";
+	private final String inputIDnoSchedules = "number-of-schedules";
 
+	
 	private final String outputIDExportFile = "export-file";
 	private final String outputIDODMatrix = "om_ODmatrix";
 	private final String outputIDindicators = "om_indicators";
@@ -92,6 +100,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private String zones;
 	private String postcodeAreas;
 	private Boolean isModelUncertainty;
+	private int numberOfSchedules = Integer.MAX_VALUE;
 
 	private String indicators;
 	private String odMatrix;
@@ -131,22 +140,22 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		readProperties();
 
 		processMonitorThread.setInterruptTime(processInterruptTime);
-		workspaceCleanerThread.setInterruptTime(folderRemoveCycle);
+		//workspaceCleanerThread.setInterruptTime(folderRemoveCycle);
 
 		// This is ridiculous... no schedule methods for callables, on the other
 		// side this will run forever as the call is inside a try block, this may be important for example if it is impossible to remove a folder and the the thread crashs.
-		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					workspaceCleanerThread.call();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-			}
-		}, 1, 1, TimeUnit.MINUTES);
+//		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				try {
+//					workspaceCleanerThread.call();
+//				} catch (Exception e) {
+//					log.info("An error occurred when cleaning a workspace: "+ e.getLocalizedMessage());
+//				}
+//
+//			}
+//		}, 1, 1, TimeUnit.MINUTES);
 
 		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
 
@@ -155,7 +164,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 				try {
 					processMonitorThread.call();
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.info("An error occurred while monitoring the process "+ e.getLocalizedMessage());
 				}
 
 			}
@@ -198,7 +207,11 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		}
 		if (id.equals(inputIDUncertArea) || id.equals(inputIDUncertLink)) {
 			return AlbatrossUInputBinding.class;
-		} else {
+		}
+		if (id.equals(inputIDnoSchedules)) {
+			return LiteralIntBinding.class;
+		}
+		else {
 			return GenericFileDataBinding.class;
 		}
 	}
@@ -212,7 +225,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		} else if (id.equals(outputIDODMatrix) || id.equals(outputIDindicators) || id.equals(outputIDSchedules)) {
 			return OMBinding.class;
 		}
-		return null;
+		else return null;
 	}
 
 	/**
@@ -276,16 +289,23 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		OMBinding schedules = null;
 		
 		try {
-			IObservationCollection collection = AlbatrossOutputMapper.encodeAlbatrossOutput(AlbatrossOutputParser.parse(ws.getWorkspaceFolder()+File.separator+exportFileNameProp));
+			IObservationCollection collection = AlbatrossOutputMapper.encodeAlbatrossOutput(AlbatrossOutputParser.parse(ws.getWorkspaceFolder()+File.separator+exportFileNameProp),numberOfSchedules);
 			schedules = new OMBinding(collection);
 		} catch (Exception e) {
-			
-			e.printStackTrace();
+			throw new RuntimeException(
+					"Error while encoding observation responses from Albatross Output: "
+							+ e.getMessage()); 
 		} 
 
 		result.put(outputIDODMatrix, odMatrixOutput);
 		result.put(outputIDindicators, indOutput);
 		result.put(outputIDSchedules, schedules);
+		
+		try {
+			FileUtils.deleteDirectory(this.ws.getWorkspaceFolder());
+		} catch (IOException e) {
+			throw new RuntimeException("Error while deleting temporary workspace folder: "+e.getLocalizedMessage());
+		}
 		
 		return result;
 	}
@@ -430,6 +450,13 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 			}
 		}
+		
+		List<IData> noSchedulesList = inputData
+				.get(inputIDnoSchedules);
+		if (noSchedulesList != null){
+			numberOfSchedules = ((LiteralIntBinding) noSchedulesList.get(0)).getPayload();
+		}
+
 
 	}
 
@@ -468,13 +495,17 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private void downloadFiles() {
 
 		try {
-			downloadFile(this.exportFile, ws.getWorkspaceFolder()
+			if (!this.exportFile.equalsIgnoreCase(DEFAULT_EXPORT_FILE_URL)){
+				downloadFile(this.exportFile, ws.getWorkspaceFolder()
 					+ File.separator + AlbatrossProcess.exportFileNameProp);
-			downloadFile(this.exportFileBin, ws.getWorkspaceFolder()
-					+ File.separator + AlbatrossProcess.exportFileBinNameProp);
+			}
+			if (!this.exportFileBin.equalsIgnoreCase(DEFAULT_EXPORT_FILE_BIN_URL)){
+				downloadFile(this.exportFileBin, ws.getWorkspaceFolder()
+						+ File.separator + AlbatrossProcess.exportFileBinNameProp);
+			}
 		} catch (IOException e) {
-
-			e.printStackTrace();
+			log.info("Error while downloading output files of Synthetic Population Service: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while downloading output files of Synthetic Population Service: "+e.getLocalizedMessage());
 		}
 
 	}
@@ -717,24 +748,25 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 			out.write(exportFileNameProp);
 			out.newLine();
 			out.flush();
+			out.close();
 
 		} catch (IOException e1) {
-
-			e1.printStackTrace();
+			log.info("Error while executing rwdata: "+e1.getLocalizedMessage());
+			throw new RuntimeException("Error while executing Albatross Model: "+e1.getLocalizedMessage());
 		}
 
 		try {
 
 			int result = proc.waitFor();
-			System.out.println("Return value: " + result);
+			log.debug("Return value: " + result);
 			if (result != 0) {
 				throw new RuntimeException(
 						"could not run rwdata properly. Try again.");
 			}
 
 		} catch (InterruptedException e) {
-
-			e.printStackTrace();
+			throw new RuntimeException(
+					"could not run rwdata properly. Try again.");
 		}
 
 	}
