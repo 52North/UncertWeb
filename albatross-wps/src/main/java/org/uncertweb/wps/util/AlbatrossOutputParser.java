@@ -43,9 +43,15 @@ public final class AlbatrossOutputParser {
 		Set<Individual> individuals = new HashSet<AlbatrossOutputParser.Individual>();
 		Set<HouseHold> houseHolds = new HashSet<AlbatrossOutputParser.HouseHold>();
 
-		CSVReader reader = new CSVReader(new FileReader(absolutPath), '\t',
+		FileReader fr = null;
+		CSVReader reader = null;
+		try {
+			fr = new FileReader(absolutPath);
+			reader = new CSVReader(fr, '\t',
 				'\'', 1);
+		
 		List<String[]> myEntries = reader.readAll();
+		
 
 		Individual currentIndividual = null;
 		HouseHold currentHouseHold = null;
@@ -85,6 +91,14 @@ public final class AlbatrossOutputParser {
 			houseHolds.add(currentHouseHold);
 
 		}
+		} catch(Exception e){
+			throw new RuntimeException("Error while parsing schedules output of Albatross!");
+		}
+		finally{
+			reader.close();
+			fr.close();
+		}
+		
 
 		return Collections.unmodifiableSet(houseHolds);
 

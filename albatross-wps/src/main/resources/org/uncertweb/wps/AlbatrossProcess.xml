@@ -131,6 +131,15 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					</Supported>
 				</ComplexData>
 			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>number-of-schedules</ows:Identifier>
+				<ows:Title>Number of schedules returned in case the requested output is om_schedules.</ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:integer"></ows:DataType>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
 		</DataInputs>
 		<ProcessOutputs>
 			<Output>
