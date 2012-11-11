@@ -32,7 +32,7 @@ public class OutputMapperTestCase {
 	@Test
 	public void testAlbatrossOutputMapper() throws Exception{
 		
-		IObservationCollection col = AlbatrossOutputMapper.encodeAlbatrossOutput(AlbatrossOutputParser.parse(pathToExamples+"/export.txt"));
+		IObservationCollection col = AlbatrossOutputMapper.encodeAlbatrossOutput(AlbatrossOutputParser.parse(pathToExamples+"/export.txt"),5);
 		
 		XBObservationEncoder encoder = new XBObservationEncoder();
 		

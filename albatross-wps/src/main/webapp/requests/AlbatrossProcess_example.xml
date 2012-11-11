@@ -7,7 +7,7 @@
 	<wps:Input>
 			<ows:Identifier>genpop-households</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>357</wps:LiteralData>
+				<wps:LiteralData>1</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
@@ -56,7 +56,7 @@
 	<wps:ResponseForm>
 		<wps:ResponseDocument>
 			<wps:Output mimeType="application/x-om-u+xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd">
-				<ows:Identifier>om_indicators</ows:Identifier>
+				<ows:Identifier>om_schedules</ows:Identifier>
 			</wps:Output>
 		</wps:ResponseDocument>
 	</wps:ResponseForm>
