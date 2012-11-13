@@ -273,15 +273,19 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		List<IData> zeroToNInputs = null;
 		
 		try{
-			zeroToNInputs = inputData.get(INPUT_ID_UNCERT_LINK);			
-			inputs.put(INPUT_ID_UNCERT_LINK, zeroToNInputs);
+			zeroToNInputs = inputData.get(INPUT_ID_UNCERT_LINK);
+			if(zeroToNInputs != null){
+				inputs.put(INPUT_ID_UNCERT_LINK, zeroToNInputs);
+			}
 		}catch (Exception e) {
 			logger.info("No uncert links provided");
 		}
 		
 		try {			
 			zeroToNInputs = inputData.get(INPUT_ID_UNCERT_AREA);
-			inputs.put(INPUT_ID_UNCERT_AREA, zeroToNInputs);			
+			if(zeroToNInputs != null){
+				inputs.put(INPUT_ID_UNCERT_AREA, zeroToNInputs);
+			}
 		} catch (Exception e) {
 			logger.info("No uncert areas provided");
 		}
