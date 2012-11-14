@@ -37,7 +37,9 @@ import org.uncertweb.ems.util.WeekdayMapping;
  *
  */
 public class OMProfileParser {
-
+	
+	int maxProfileSize = 30;
+	
 	/**
 	 * Constructor
 	 */
@@ -62,9 +64,9 @@ public class OMProfileParser {
 		// split into individuals (by procedure id)
 		// procedure ID encodes the different individuals within a file
 		HashMap<URI, IObservationCollection> obsCollMap = new HashMap<URI, IObservationCollection>();
-		HashMap<URI, HashMap<Interval,  ArrayList<Activity>>> activityMap = new HashMap<URI, HashMap<Interval, ArrayList<Activity>>>();
-		HashMap<URI, HashMap<Interval,  Microenvironment>> meMap = new HashMap<URI, HashMap<Interval, Microenvironment>>();		
-		
+//		HashMap<URI, HashMap<Interval,  ArrayList<Activity>>> activityMap = new HashMap<URI, HashMap<Interval, ArrayList<Activity>>>();
+//		HashMap<URI, HashMap<Interval,  Microenvironment>> meMap = new HashMap<URI, HashMap<Interval, Microenvironment>>();		
+	
 		HashMap<String, String> rawActivities = new  HashMap<String, String>();
 		ArrayList<Interval> newTimeList = new ArrayList<Interval>();
 		URI lastProcedure = null;
@@ -75,8 +77,8 @@ public class OMProfileParser {
 			if(!obsCollMap.containsKey(obs.getProcedure())){
 				obsCollMap.put(obs.getProcedure(), new ObservationCollection());
 				// add new activity and microenvironment list for this individual
-				activityMap.put(obs.getProcedure(), new HashMap<Interval, ArrayList<Activity>>());
-				meMap.put(obs.getProcedure(), new HashMap<Interval, Microenvironment>());
+//				activityMap.put(obs.getProcedure(), new HashMap<Interval, ArrayList<Activity>>());
+//				meMap.put(obs.getProcedure(), new HashMap<Interval, Microenvironment>());
 				lastProcedure = obs.getProcedure();
 			}
 				
@@ -103,40 +105,41 @@ public class OMProfileParser {
 					
 					// 3) activity mapping
 					// use last activity list to determine exposure relevant activities and locations
-					if(rawActivities.size()!=0)
-						handleActivitiesFromOM(rawActivities, activityMap, meMap, newTimeList, lastProcedure);
-					
-					// empty list for next collection of activity observations
-					rawActivities = new  HashMap<String, String>();				
+//					if(rawActivities.size()!=0)
+//						handleActivitiesFromOM(rawActivities, activityMap, meMap, newTimeList, lastProcedure);
+//					
+//					// empty list for next collection of activity observations
+//					rawActivities = new  HashMap<String, String>();				
 				}							
 			}
 						
 			// for each observation: collect activities (observedProperty) 
-			rawActivities.put(obs.getObservedProperty().getPath(), obs.getResult().getValue().toString());
+//			rawActivities.put(obs.getObservedProperty().getPath(), obs.getResult().getValue().toString());
 		}	
 		
 		//  process the last activity list
 		// 3) activity mapping
 		// use last activity list to determine exposure relevant activities and locations
-		if(rawActivities.size()!=0)
-			handleActivitiesFromOM(rawActivities, activityMap, meMap, newTimeList, lastProcedure);
+//		if(rawActivities.size()!=0)
+//			handleActivitiesFromOM(rawActivities, activityMap, meMap, newTimeList, lastProcedure);
 			
 		//  make profiles from the OM collections and activity lists
 		Set<URI> individuals = obsCollMap.keySet();
 		for(URI uri : individuals){
 			// check if there are valid activities an microenvironments
 			//TODO: for the moment we limit the profiles number to 10. This has to be changed afterwards!!!
-			if(profilesList.size()<10){
-				if(!meMap.get(uri).isEmpty()){
-					if(!activityMap.get(uri).isEmpty()){
-						profilesList.add(new ActivityProfile(obsCollMap.get(uri), meMap.get(uri), activityMap.get(uri)));
-					}else{
-						profilesList.add(new MEProfile(obsCollMap.get(uri), meMap.get(uri)));
-					}
-				}else if(!obsCollMap.get(uri).getObservations().isEmpty()){ // only make a profile if observations are available
+//			if(profilesList.size()<maxProfileSize){
+//				if(!meMap.get(uri).isEmpty()){
+//					if(!activityMap.get(uri).isEmpty()){
+//						profilesList.add(new ActivityProfile(obsCollMap.get(uri), meMap.get(uri), activityMap.get(uri)));
+//					}else{
+//						profilesList.add(new MEProfile(obsCollMap.get(uri), meMap.get(uri)));
+//					}
+//				}else 
+				if(!obsCollMap.get(uri).getObservations().isEmpty()){ // only make a profile if observations are available
 					profilesList.add(new GeometryProfile(obsCollMap.get(uri)));
 				}
-			}			
+//			}			
 		}
 		if(!profilesList.isEmpty())
 			return profilesList;

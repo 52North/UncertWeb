@@ -17,6 +17,8 @@ import org.n52.wps.util.r.process.RProcessException;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.Rserve.RserveException;
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.ems.data.profiles.AbstractProfile;
 import org.uncertweb.ems.data.profiles.Profile;
 import org.uncertweb.ems.exceptions.EMSProcessingException;
@@ -74,7 +76,9 @@ public class OutdoorModel{
 		ArrayList<TreeMap<DateTime, double[]>> expoVals = null;				
 		
 		// check geometry of the profile's observation collection to call the correct overlay method
-		Geometry obsGeom = profileList.get(0).getObservationCollection().getObservations().get(0).getFeatureOfInterest().getShape();
+		List<AbstractObservation> obsList = (List<AbstractObservation>) profileList.get(0).getObservationCollection().getObservations();
+		SpatialSamplingFeature foi = obsList.get(0).getFeatureOfInterest();
+		Geometry obsGeom = foi.getShape();
 		try{
 			if(obsGeom instanceof Point || obsGeom instanceof MultiPoint){
 				expoVals = overlayRaster2Points(profileList, ncFilePath);
