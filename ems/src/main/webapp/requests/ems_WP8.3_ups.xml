@@ -4,16 +4,10 @@
     <wps:Input>
       <ows:Identifier>outputUncertaintyType</ows:Identifier>
       <wps:Data>
-        <wps:LiteralData>http://www.uncertml.org/statistics/mean</wps:LiteralData>
+        <wps:LiteralData>http://www.uncertml.org/samples/realisation</wps:LiteralData>
       </wps:Data>
     </wps:Input>  
-    <wps:Input>
-      <ows:Identifier>outputUncertaintyType</ows:Identifier>
-      <wps:Data>
-        <wps:LiteralData>http://www.uncertml.org/statistics/standard-deviation</wps:LiteralData>
-      </wps:Data>
-    </wps:Input>
-    
+  
     <wps:Input>
       <ows:Identifier>airQualityData</ows:Identifier>
        <wps:Reference xlink:href="http://giv-uw.uni-muenster.de/data/netcdf/no2_conc_rotterdam_20110402.nc" mimeType="application/x-netcdf"/>
@@ -21,7 +15,7 @@
 
     <wps:Input>
       <ows:Identifier>activityProfile</ows:Identifier>
-       <wps:Reference xlink:href="http://ifgi.uni-muenster.de/~l_gerh01/vis/albatross_ups_output_local.xml" mimeType="application/x-uncertml+xml"/>
+       <wps:Reference xlink:href="http://giv-uw.uni-muenster.de/data/realisations/albatrossSchedulesSample.xml" mimeType="application/x-uncertml+xml"/>
     </wps:Input>    
       
   </wps:DataInputs>  

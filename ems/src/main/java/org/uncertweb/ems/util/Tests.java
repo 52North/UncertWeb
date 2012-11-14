@@ -87,8 +87,8 @@ public class Tests {
 		// }
 		
 		 try {
-			 xml2json("src/test/resources/albatross_response4_schedules2.xml",
-					 "src/test/resources/albatross_response4_schedules2.json");
+			 //D:\UncertWeb\WP8\D8.3\WP7_data
+			 xml2json("D:/UncertWeb/WP8/D8.3/WP7_data/albatross_output_short_1.xml");
 		 } catch (OMEncodingException e) {
 			 // TODO Auto-generated catch block
 			 e.printStackTrace();
@@ -122,13 +122,15 @@ public class Tests {
 		}
 	}
 	
-	private static void xml2json(String xmlPath, String jsonPath) throws OMEncodingException{
+	private static void xml2json(String xmlPath) throws OMEncodingException{
 		IObservationCollection template = null;
 		try {
 			XmlObject xml = XmlObject.Factory.parse(new FileInputStream(
 					xmlPath));
 			template = (IObservationCollection) new XBObservationParser()
-					.parse(xml.xmlText());
+					.parse(xml.xmlText());	
+			new JSONObservationEncoder().encodeObservationCollection(template,
+					new File(xmlPath.replace("xml", "json")));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (OMParsingException e) {
@@ -139,9 +141,6 @@ public class Tests {
 			e.printStackTrace();
 		}
 
-		
-		new JSONObservationEncoder().encodeObservationCollection(template,
-				new File(jsonPath.replace("xml", "json")));
 	}
 	
 	
