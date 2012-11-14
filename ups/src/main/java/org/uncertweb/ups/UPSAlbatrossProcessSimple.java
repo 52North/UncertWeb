@@ -278,7 +278,7 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 				inputs.put(INPUT_ID_UNCERT_LINK, zeroToNInputs);
 			}
 		}catch (Exception e) {
-			logger.info("No uncert links provided");
+			logger.info("No uncert-links provided");
 		}
 		
 		try {			
@@ -287,7 +287,7 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 				inputs.put(INPUT_ID_UNCERT_AREA, zeroToNInputs);
 			}
 		} catch (Exception e) {
-			logger.info("No uncert areas provided");
+			logger.info("No uncert-areas provided");
 		}
 		
 		inputs.put(INPUT_ID_RANDOM_NUMBER_SEED, new Integer(1));
@@ -335,14 +335,37 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 		
 		List<ContinuousRealisation> realisations = new ArrayList<ContinuousRealisation>(numberOfRealisations);
 		
+		int maxTries = numberOfRealisations * 2;
+		
+		int tries = 0;
+		
 		//build result
 		HashMap<String, IData> result = new HashMap<String, IData>();
 		
-		for (int i = 0; i < numberOfRealisations; i++) {
+		for (int i = 0; i < numberOfRealisations;) {
+			
+			if(tries == maxTries){
+				logger.debug("reached maximum tries of " + maxTries);	
+				logger.debug("breaking loop and continuing returning " + i + " realisations");					
+				break;
+			}
+			
+			logger.debug("Try to create realisation no. " + i);
 			
 			//execute request
 			ExecuteResponseDocument response = this.executeRequest(execDoc, modelServiceURL);
 		
+			/*
+			 * something went wrong with this execution
+			 * increment tries and try again
+			 */
+			if(response == null){
+				logger.debug("something went wrong while creating realisation no. " + i);
+				tries++;
+				logger.debug("setting current tries to " + tries);				
+				continue;				
+			}
+			
 			/*
 			 * gather om_schedules
 			 */			
@@ -359,8 +382,8 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 				try {
 					baseDir.mkdir();
 				} catch (Exception e) {
-//					LOGGER
-					e.printStackTrace();
+					logger.error(e);
+					throw new RuntimeException("Could not create directory " + baseDir.getAbsolutePath() + " to store realisations");
 				}
 			}
 			
@@ -398,11 +421,15 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 			
 			realisations.add(cr);
 			
+			i++;
+			
 			} catch (MalformedURLException e) {
 				logger.error(e.getMessage());
+				logger.error("Realisation " + (i - 1) + " will be ommitted due to previous errors");
 			}
 			catch (IOException e) {
 				logger.error(e.getMessage());
+				logger.error("Realisation " + (i - 1) + " will be ommitted due to previous errors");
 			}
 		}
 		
@@ -703,7 +730,7 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 			}
 		}
 		catch (Throwable t) {
-			this.errors.add(t.getMessage());
+			getErrors().add(t.getMessage());
 			return null;
 		}
 		
@@ -749,7 +776,7 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 			
 			return response;
 		} catch (WPSClientException e) {
-			this.errors.add(e.getMessage());
+			getErrors().add(e.getMessage());
 			return null;
 		}
 	}
@@ -757,6 +784,9 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 	
 	@Override
 	public List<String> getErrors() {
+		if(errors == null){
+			errors = new ArrayList<String>();
+		}
 		return this.errors;
 	}
 
@@ -882,7 +912,7 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 			return executeBuilder.getExecute();
 		} 
 		catch (IOException e) {
-			this.errors.add(e.getMessage());
+			getErrors().add(e.getMessage());
 			return null;
 		}
 	}
@@ -955,7 +985,7 @@ public class UPSAlbatrossProcessSimple extends AbstractAlgorithm {
 			return executeBuilder.getExecute();
 		} 
 		catch (IOException e) {
-			this.errors.add(e.getMessage());
+			getErrors().add(e.getMessage());
 			return null;
 		}
 	}

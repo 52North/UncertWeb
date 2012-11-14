@@ -198,6 +198,8 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 		
+		errors = new ArrayList<String>();
+		
 		/*
 		 * This UPS process will perform the following steps.
 		 * 
@@ -292,7 +294,19 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		
 		List<ContinuousRealisation> realisations = new ArrayList<ContinuousRealisation>(numberOfRealisations);
 		
-		for (int i = 0; i < numberOfRealisations; i++) {
+		int maxTries = numberOfRealisations * 2;
+		
+		int tries = 0;
+		
+		for (int i = 0; i < numberOfRealisations;) {
+			
+			if(tries == maxTries){
+				logger.debug("reached maximum tries of " + maxTries);	
+				logger.debug("breaking loop and continuing returning " + i + " realisations");					
+				break;
+			}
+			
+			logger.debug("Try to create realisation no. " + i);
 			
 			/*
 			 * 2: Execute syn pop WPS
@@ -305,6 +319,14 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			//execute operation
 			ExecuteResponseDocument response = this.executeRequest(execDoc, popModelServiceURL);
 					
+
+			if(response == null){
+				logger.debug("something went wrong while creating realisation no. " + i);
+				tries++;
+				logger.debug("setting current tries to " + tries);				
+				continue;				
+			}
+			
 			/*
 			 * 3: extract results from syn pop model run
 			 */
@@ -334,8 +356,15 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			
 			
 			//execute request
-			response = this.executeRequest(execDoc, modelServiceURL);
-		
+			response = this.executeRequest(execDoc, modelServiceURL);		
+
+			if(response == null){
+				logger.debug("something went wrong while creating realisation no. " + i);
+				tries++;
+				logger.debug("setting current tries to " + tries);				
+				continue;				
+			}
+			
 			/*
 			 * gather om_schedules
 			 */
@@ -389,15 +418,15 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			
 			realisations.add(cr);
 			
+			i++;
+			
 			} catch (MalformedURLException e) {
 				logger.error(e.getMessage());
-			} 
-//				catch (XmlException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} 
+				logger.error("Realisation " + (i - 1) + " will be ommitted due to previous errors");
+			}
 			catch (IOException e) {
 				logger.error(e.getMessage());
+				logger.error("Realisation " + (i - 1) + " will be ommitted due to previous errors");
 			}
 		}
 		
