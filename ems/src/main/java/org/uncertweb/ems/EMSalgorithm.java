@@ -67,7 +67,7 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 	private List<String> errors = new ArrayList<String>();
 	private static Logger log = Logger.getLogger(EMSalgorithm.class);
 	
-	private static String resourcesPath = "C:/WebResources/EMS";
+	private static String resourcesPath = "";
 	
 	// WPS inputs & outputs
 	private final String INPUT_IDENTIFIER_ACTIVITY_PROFILE = "activityProfile";
@@ -173,7 +173,7 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 			// ********* OUTDOOR MODEL *********
 			// get outdoor concentration at profile locations
 			// A) for the moment, do the overlay for GPS tracks in MS with the local version
-			OutdoorModel outdoor = new OutdoorModel();
+			OutdoorModel outdoor = new OutdoorModel(resourcesPath);
 			outdoor.run(profileList, ncFile);
 		
 			// perform averaging of profile observations

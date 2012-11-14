@@ -41,23 +41,18 @@ public class OutdoorModel{
 
 	private static Logger LOGGER = Logger.getLogger(OutdoorModel.class);
 	private final String fileSeparator = System.getProperty("file.separator");
-	private String resPath, parameter;
+	private String resOMPath, resRPath, parameter;
 
 	
-	public OutdoorModel(){
+	public OutdoorModel(String RresourcePath){
 		if(System.getProperty("os.name").contains("Windows")){
-			resPath = System.getenv("TMP");
+			resOMPath = System.getenv("TMP");
 		}else{
-			resPath = System.getenv("CATALINA_TMPDIR");
+			resOMPath = System.getenv("CATALINA_TMPDIR");
 		}
-//		resPath = "C:/WebResources/EMS"+"/outdoorModel";
+		resOMPath = resOMPath.replace("\\","/");
+		resRPath = RresourcePath.replace("\\","/");
 	}
-	
-	public OutdoorModel(String resPath){
-		this.resPath = resPath+"/outdoorModel";
-//		this.resPath = resPath;
-	}
-
 
 	/**
 	 * executes the outdoor model for the provided activity profile and the air quality NetCDF file
@@ -133,7 +128,7 @@ public class OutdoorModel{
 			
 		for (AbstractProfile profile : profileList) {
 			// write geometry of the profile to csv file
-			String omFilePath = resPath + "/om.csv";	
+			String omFilePath = resOMPath + "/om.csv";	
 			profile.writeObsCollGeometry2csv(omFilePath);
 			
 			// set R inputs
@@ -145,7 +140,7 @@ public class OutdoorModel{
 //			URL url = OutdoorModel.class
 //					.getResource("overlay_utils.R");
 //			cmd  = "source(\""+url+"\", echo=TRUE)";			
-			cmd  = "source(\""+resPath+"/overlay_utils.R\", echo=TRUE)";			
+			cmd  = "source(\""+resRPath+"/overlay_utils.R\", echo=TRUE)";			
 			c.voidEval(cmd);
 					
 			// load files
@@ -215,7 +210,7 @@ public class OutdoorModel{
 		
 		for (AbstractProfile profile : profileList) {
 			// write geometry of the profile to csv file
-			String omFilePath = resPath + "/om.csv";	
+			String omFilePath = resOMPath + "/om.csv";	
 			profile.writeObsCollGeometry2csv(omFilePath);
 			
 			// set R inputs
@@ -226,7 +221,7 @@ public class OutdoorModel{
 			parameter = c.tryEval("strsplit(colnames(raster@data)[1],\"_r\")[[1]][1]").asString();
 											
 			// run the prepared script
-			c.voidEval("source(\""+resPath+"/overlay_utils.R\", echo=TRUE)");
+			c.voidEval("source(\""+resRPath+"/overlay_utils.R\", echo=TRUE)");
 			
 			// load files
 			c.voidEval("raster <-readNetCDFU(rasterFile)");
@@ -289,7 +284,7 @@ public class OutdoorModel{
 			c.voidEval("library(rgeos)");
 			c.voidEval("library(maptools)");
 //			cmd = "source(\""+resPath+"/outdoorModel/overlay.R\")";
-			cmd = "load(\""+resPath+"/overlay.RData\")";
+			cmd = "load(\""+resRPath+"/overlay.RData\")";
 			c.voidEval(cmd);
 			
 			// load gps data
@@ -365,7 +360,7 @@ public class OutdoorModel{
 			c.voidEval("library(gstat)");
 			c.voidEval("library(rgeos)");
 			c.voidEval("library(maptools)");
-			cmd = "load(\""+resPath+"/outdoorModel/COSP.RData\")";
+			cmd = "load(\""+resRPath+"/outdoorModel/COSP.RData\")";
 			c.voidEval(cmd);
 						
 			// load gps data

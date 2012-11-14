@@ -94,7 +94,7 @@
 	<AlgorithmRepositoryList>
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
 		 <Property name="Algorithm" active="true">org.uncertweb.ems.EMSalgorithm</Property> 
-		 <Property name="Resources" active="true">C:\\WebResources\\EMS</Property>
+		 <Property name="Resources" active="true">C:\\WebResources</Property>
 		 <Property name="UTSAddress" active="true">http://localhost:8080/uts/WebProcessingService</Property>
 			
 		</Repository>
