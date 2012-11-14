@@ -3,6 +3,7 @@ package org.uncertweb.ems;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,7 +153,8 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 		
 		// output collection
 		UncertaintyObservationCollection exposureProfiles = new UncertaintyObservationCollection();
-		ArrayList<ContinuousRealisation> realisations = new ArrayList<ContinuousRealisation>();
+//		ArrayList<ContinuousRealisation> realisations = new ArrayList<ContinuousRealisation>();
+		HashMap<URI, ArrayList<ContinuousRealisation>> individualList= new HashMap<URI, ArrayList<ContinuousRealisation>>();
 		
 		// TODO
 		// if the activity input is uncertain, we can only make daily averages
@@ -215,45 +217,59 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 			// for more than one OM file (realisations) make an UncertML file with refs to these realisations
 			else{
 				// get results for the individuals
-				exposureProfiles = new UncertaintyObservationCollection();
-				for (AbstractProfile profile : profileList) {			
-					// get OM file and add to overall observation collection
-					exposureProfiles.addObservationCollection(new OMProfileGenerator()
-							.createExposureProfileObservationCollection(profile,
-									statList));
-				}
+				ArrayList<UncertaintyObservationCollection> individualRealisations = new OMProfileGenerator().createIndividualExposureProfileObservationCollections(profileList, statList);
 					
-				// write results to one file
-				String uuidString = UUID.randomUUID().toString().substring(0, 5);	
-				File file = new File(baseDirPath + File.separator + uuidString + ".xml");
-				try {
-					new StaxObservationEncoder().encodeObservationCollection(exposureProfiles,
-							file);
-				} catch (OMEncodingException e) {
-					e.printStackTrace();
-				}
-				
-				// make URL from this file path
-				String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
-				String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();			
-				URL url = null;
-				try {
-					url = new URL("http://" + host + ":" + hostPort+ "/" + "public/" + file.getName());
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				}
-				
-				// make realisation and add it to the realisations list
-				ContinuousRealisation cr = new ContinuousRealisation(url);				
-				realisations.add(cr);				
+				// write results to separate files
+				for(UncertaintyObservationCollection realisation : individualRealisations){
+					String uuidString = UUID.randomUUID().toString().substring(0, 5);	
+					File file = new File(baseDirPath + File.separator + uuidString + ".xml");
+					try {
+						new StaxObservationEncoder().encodeObservationCollection(realisation,
+								file);
+					} catch (OMEncodingException e) {
+						e.printStackTrace();
+					}
+					
+					// make URL from this file path
+					String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
+					String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();			
+					URL url = null;
+					try {
+						url = new URL("http://" + host + ":" + hostPort+ "/" + "public/" + file.getName());
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+					}
+					
+					// make realisation
+					ContinuousRealisation cr = new ContinuousRealisation(url);	
+					
+					// get the current individual URI
+					URI currentURI = realisation.getObservations().get(0).getProcedure();
+					
+					// add it to the individual list
+					if(individualList.get(currentURI)==null)
+						individualList.put(currentURI, new ArrayList<ContinuousRealisation>());
+					individualList.get(currentURI).add(cr);	
+				}	
+							
 			}
 						
 		}
 			
 
 		// ********* Prepare WPS result for more than one realisation ********* 
-		Map<String, IData> result = new HashMap<String, IData>(1);		
-		RandomSample rs = new RandomSample(realisations.toArray(new ContinuousRealisation[] {}));
+		Map<String, IData> result = new HashMap<String, IData>(1);	
+		
+		//TODO: workaround as long as we do not have a sample collection
+		ArrayList<ContinuousRealisation> reals = new ArrayList<ContinuousRealisation>();
+		
+		// add each individual with its realisations as one sample
+		for(ArrayList<ContinuousRealisation> realisations : individualList.values()){
+		//	RandomSample rs = new RandomSample(realisations.toArray(new ContinuousRealisation[] {}));
+			reals.addAll(realisations);
+		}
+		
+		RandomSample rs = new RandomSample(reals.toArray(new ContinuousRealisation[] {}));
 		UncertMLBinding ub = new UncertMLBinding(rs);
 		result.put(ExposureModelConstants.ProcessInputs.OUTPUT_IDENTIFIER, ub);
 		return result;
