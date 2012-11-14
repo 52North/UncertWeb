@@ -180,8 +180,8 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 			// profile.aggregateProfile(minuteResolution);
 
 			// ********* INDOOR MODEL *********
-			String parameter = ncFile.getStringAttribute(NcUwConstants.Attributes.PRIMARY_VARIABLES, true).split(" ")[0];
-			String uom = ncFile.getVariable(parameter).findAttribute("units").getStringValue();
+//			String parameter = ncFile.getStringAttribute(NcUwConstants.Attributes.PRIMARY_VARIABLES, true).split(" ")[0];
+//			String uom = ncFile.getVariable(parameter).findAttribute("units").getStringValue();
 			// if activities are available, create indoor model with parameters
 			// if(profile instanceof MEProfile || profile instanceof
 			// ActivityProfile){

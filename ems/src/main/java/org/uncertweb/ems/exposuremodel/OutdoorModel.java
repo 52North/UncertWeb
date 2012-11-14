@@ -50,7 +50,7 @@ public class OutdoorModel{
 		}else{
 			resPath = System.getenv("CATALINA_TMPDIR");
 		}
-		resPath = "C:/WebResources/EMS"+"/outdoorModel";
+//		resPath = "C:/WebResources/EMS"+"/outdoorModel";
 	}
 	
 	public OutdoorModel(String resPath){
@@ -141,10 +141,11 @@ public class OutdoorModel{
 			c.voidEval("rasterFile <- \""+netcdfFilePath+"\"");
 					
 			// run the prepared script
-			//TODO: set correct path!
-			URL url = OutdoorModel.class
-					.getResource("overlay_utils.R");
-			cmd  = "source(\""+resPath+"/overlay_utils.R\", echo=TRUE)";
+			//TODO: this solution does not work in R, so make sure the path is set correctly!
+//			URL url = OutdoorModel.class
+//					.getResource("overlay_utils.R");
+//			cmd  = "source(\""+url+"\", echo=TRUE)";			
+			cmd  = "source(\""+resPath+"/overlay_utils.R\", echo=TRUE)";			
 			c.voidEval(cmd);
 					
 			// load files
