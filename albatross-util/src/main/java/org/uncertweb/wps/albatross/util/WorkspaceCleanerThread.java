@@ -63,7 +63,7 @@ public class WorkspaceCleanerThread implements Callable<Void> {
 						FileUtils.deleteDirectory(currentPair.getLeft());
 						iterator.remove();
 					} catch (IOException e) {
-						e.printStackTrace();
+						throw new Exception("Error while deleting directory:" +currentPair.getLeft());
 					}
 				}
 				

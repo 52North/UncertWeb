@@ -25,7 +25,6 @@ public class ReadingThread implements Callable<Void> {
         BufferedReader in = new BufferedReader(
             new InputStreamReader(inputStream));
         for (String s = in.readLine(); s != null; s = in.readLine()) {
-         System.out.println(Thread.currentThread().getName()+"  "+ name + ": " + s);
         }
       } catch (Exception e) {
         e.printStackTrace();
