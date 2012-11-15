@@ -121,10 +121,10 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private Workspace ws;
 	private ProjectFile projectFile;
 
-	private static ProcessMonitorThread processMonitorThread = ProcessMonitorThread
-			.getInstance();
-	private static WorkspaceCleanerThread workspaceCleanerThread = WorkspaceCleanerThread
-			.getInstance();
+//	private static ProcessMonitorThread processMonitorThread = ProcessMonitorThread
+//			.getInstance();
+//	private static WorkspaceCleanerThread workspaceCleanerThread = WorkspaceCleanerThread
+//			.getInstance();
 
 	private static int folderRemoveCycle;
 	private static int processInterruptTime;
@@ -139,7 +139,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 		readProperties();
 
-		processMonitorThread.setInterruptTime(processInterruptTime);
+//		processMonitorThread.setInterruptTime(processInterruptTime);
 		//workspaceCleanerThread.setInterruptTime(folderRemoveCycle);
 
 		// This is ridiculous... no schedule methods for callables, on the other
@@ -156,19 +156,19 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 //
 //			}
 //		}, 1, 1, TimeUnit.MINUTES);
-
-		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					processMonitorThread.call();
-				} catch (Exception e) {
-					log.info("An error occurred while monitoring the process "+ e.getLocalizedMessage());
-				}
-
-			}
-		}, 1, 1, TimeUnit.MINUTES);
+//
+//		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				try {
+//					processMonitorThread.call();
+//				} catch (Exception e) {
+//					log.info("An error occurred while monitoring the process "+ e.getLocalizedMessage());
+//				}
+//
+//			}
+//		}, 1, 1, TimeUnit.MINUTES);
 
 	}
 
@@ -483,7 +483,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		fileSet.add(new Pair<File, Long>(ws.getPublicFolder(), System
 				.currentTimeMillis()));
 
-		workspaceCleanerThread.addFileSet(fileSet);
+//		workspaceCleanerThread.addFileSet(fileSet);
 
 	}
 
@@ -612,11 +612,11 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 			proc = pb.start();
 
 			// make sure the new process is supervised
-			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process, Long>>();
-			currentProcess.add(new Pair<Process, Long>(proc, System
-					.currentTimeMillis()));
-
-			processMonitorThread.addProcessSet(currentProcess);
+//			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process, Long>>();
+//			currentProcess.add(new Pair<Process, Long>(proc, System
+//					.currentTimeMillis()));
+//
+//			processMonitorThread.addProcessSet(currentProcess);
 
 			ExecutorService executorService = Executors.newFixedThreadPool(2);
 
@@ -722,12 +722,12 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 			proc = pb.start();
 
-			// make sure the new process is supervised
-			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process, Long>>();
-			currentProcess.add(new Pair<Process, Long>(proc, System
-					.currentTimeMillis()));
+//			// make sure the new process is supervised
+//			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process, Long>>();
+//			currentProcess.add(new Pair<Process, Long>(proc, System
+//					.currentTimeMillis()));
 
-			processMonitorThread.addProcessSet(currentProcess);
+//			processMonitorThread.addProcessSet(currentProcess);
 
 			ExecutorService executorService = Executors.newFixedThreadPool(2);
 

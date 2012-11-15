@@ -29,6 +29,7 @@ import org.uncertweb.wps.util.AlbatrossOutputParser.HouseHold;
 import org.uncertweb.wps.util.AlbatrossOutputParser.Individual;
 import org.uncertweb.wps.util.AlbatrossOutputParser.Travel;
 
+
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -36,7 +37,6 @@ import com.vividsolutions.jts.geom.Geometry;
  * 
  */
 public class AlbatrossOutputMapper {
-	
 
 	/**
 	 * identifier for the Albatross model
@@ -49,33 +49,33 @@ public class AlbatrossOutputMapper {
 	public static final String ACTIVITY_TYPE = "http://www.uncertweb.org/variables/albatross/activityType";
 	public static final String TRAVEL_MODE = "http://www.uncertweb.org/variables/albatross/travelMode";
 	public static final String IS_HOME = "http://www.uncertweb.org/variables/albatross/isHome";
-	
-	public static final Map<String,String> ALBATROSS_CODE2ACTIVITY = new HashMap<String,String>(){
-		  {
-		   put("0", "work");
-		   put("1", "business");
-		   put("2", "bring/Gget goods and persons");
-		   put("3", "shop from one store");
-		   put("4", "shop from multiple store");
-		   put("5", "service");
-		   put("6", "social");
-		   put("7", "leisure");
-		   put("8", "tour");
-		   put("9", "at home");
-		  }
-		 };
-		 
-	public static final Map<String,String> ALBATROSS_TRAVELMODE2ACTIVITY = new HashMap<String,String>(){
-		  {
-		   put("0", "car driver");
-		   put("1", "slow(bike or walk)");
-		   put("2", "public");
-		   put("3", "car passenger");
-		  }
-		 };
-		 
+
+	public static final Map<String, String> ALBATROSS_CODE2ACTIVITY = new HashMap<String, String>() {
+		{
+			put("0", "work");
+			put("1", "business");
+			put("2", "bring/Gget goods and persons");
+			put("3", "shop from one store");
+			put("4", "shop from multiple store");
+			put("5", "service");
+			put("6", "social");
+			put("7", "leisure");
+			put("8", "tour");
+			put("9", "at home");
+		}
+	};
+
+	public static final Map<String, String> ALBATROSS_TRAVELMODE2ACTIVITY = new HashMap<String, String>() {
+		{
+			put("0", "car driver");
+			put("1", "slow(bike or walk)");
+			put("2", "public");
+			put("3", "car passenger");
+		}
+	};
+
 	private static Map<String, Geometry> ppcMap = new HashMap<String, Geometry>(
-			140);
+			4008);
 
 	private AlbatrossOutputMapper() {
 	};
@@ -88,10 +88,10 @@ public class AlbatrossOutputMapper {
 
 		// over all household
 		Iterator<HouseHold> householdIterator = households.iterator();
-		int numberOfIndividuals=0;
-		
+		int numberOfIndividuals = 0;
+
 		while (householdIterator.hasNext()) {
-			
+
 			HouseHold currentHouseHold = householdIterator.next();
 			int counterForId = -1;
 
@@ -109,8 +109,8 @@ public class AlbatrossOutputMapper {
 
 				// continue inc OR new household id -> start at zero
 				counterForId += 1;
-				numberOfIndividuals+=1;
-				if (numberOfIndividuals>numberOfSchedules){
+				numberOfIndividuals += 1;
+				if (numberOfIndividuals > numberOfSchedules) {
 					break;
 				}
 
@@ -147,12 +147,13 @@ public class AlbatrossOutputMapper {
 
 					// add activity type variable
 					URI activityTypeObservedProperty = new URI(ACTIVITY_TYPE);
-					
+
 					CategoryObservation activityTypeObservation = new CategoryObservation(
 							phenomenonTime, resultTime, procedure,
 							activityTypeObservedProperty, featureOfInterest,
-							new CategoryResult(ALBATROSS_CODE2ACTIVITY.get(currentTravel.getActivityType()),
-									ALBATROSS));
+							new CategoryResult(
+									ALBATROSS_CODE2ACTIVITY.get(currentTravel
+											.getActivityType()), ALBATROSS));
 
 					observationCollection
 							.addObservation(activityTypeObservation);
@@ -162,7 +163,8 @@ public class AlbatrossOutputMapper {
 					CategoryObservation travelModeObservation = new CategoryObservation(
 							phenomenonTime, resultTime, procedure,
 							travelModeObservedProperty, featureOfInterest,
-							new CategoryResult(ALBATROSS_TRAVELMODE2ACTIVITY.get(currentTravel.getTravelMode()),
+							new CategoryResult(ALBATROSS_TRAVELMODE2ACTIVITY
+									.get(currentTravel.getTravelMode()),
 									ALBATROSS));
 
 					observationCollection.addObservation(travelModeObservation);
@@ -186,46 +188,54 @@ public class AlbatrossOutputMapper {
 	}
 
 	private static Geometry getGeometryFromPPC(String ppc) throws IOException {
-
-		if (ppcMap.containsKey(ppc))
+		
+		if (ppcMap.containsKey(ppc)) {
 			return ppcMap.get(ppc);
-
-		URL url = AlbatrossOutputMapper.class
-				.getResource("PCA4_Rotterdam_all.shp");
-
-		FileDataStore store = FileDataStoreFinder.getDataStore(url);
-
-		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = store
-				.getFeatureSource();
-
-		FeatureCollection<SimpleFeatureType, SimpleFeature> features = featureSource
-				.getFeatures();
-
-		Iterator<SimpleFeature> iter = features.iterator();
-
-		Geometry geom = null;
-
-		while (iter.hasNext()) {
-			SimpleFeature sf = iter.next();
-			String ppcFromFile = sf.getAttribute("CEN_NUMBER").toString();
-
-			geom = (Geometry) sf.getDefaultGeometry();
-			geom.setSRID(28992);
-
-			// and for all member of the collection
-			int nGeo = geom.getNumGeometries();
-
-			for (int i = 0; i < nGeo; i++) {
-
-				geom.getGeometryN(i).setSRID(28992);
-			}
-
-			// if not part of the map -> add
-			if (!ppcMap.containsKey(ppcFromFile))
-				ppcMap.put(ppcFromFile, geom);
 		}
 
-		return geom;
+		else {
+			URL url = AlbatrossOutputMapper.class
+					.getResource("PCA4digits_projected.shp");
+
+			FileDataStore store = FileDataStoreFinder.getDataStore(url);
+
+			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = store
+					.getFeatureSource();
+
+			FeatureCollection<SimpleFeatureType, SimpleFeature> features = featureSource
+					.getFeatures();
+
+			Iterator<SimpleFeature> iter = features.iterator();
+
+			Geometry geom = null;
+
+			while (iter.hasNext()) {
+				SimpleFeature sf = iter.next();
+				String ppcFromFile = sf.getAttribute("CEN_NUMBER").toString();
+				ppcFromFile = ""+new Double(ppcFromFile).intValue(); //workaround for converting to int string...
+				geom = (Geometry) sf.getDefaultGeometry();
+				geom.setSRID(28992);
+
+				// and for all member of the collection
+				int nGeo = geom.getNumGeometries();
+
+				for (int i = 0; i < nGeo; i++) {
+
+					geom.getGeometryN(i).setSRID(28992);
+				}
+
+				// if not part of the map -> add
+				if (!ppcMap.containsKey(ppcFromFile)){
+					ppcMap.put(ppcFromFile, geom);
+				}
+			}
+			if (ppcMap.containsKey(ppc)) {
+				return ppcMap.get(ppc);
+			}
+			else {
+				throw new RuntimeException("Predicted postal code area with it "+ppc+" is not contained in underlying shp file geometries!");
+			}
+		}
 	}
 
 }
