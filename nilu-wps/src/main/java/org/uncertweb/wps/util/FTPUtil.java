@@ -72,10 +72,29 @@ public class FTPUtil {
 	}
 
 	/**
+	 * list files of results/{id} directory of user ftp connection defined in wps config
+	 */
+	public String[] list(String id) throws IOException {
+		FTPClient ftpClient = new FTPClient();
+		String[] filenameList;
+
+		try {
+			ftpClient.connect(host, port);
+			ftpClient.login(usr, pwd);
+			filenameList = ftpClient.listNames("/" + resultsFolder + "/" + id);
+			ftpClient.logout();
+		} finally {
+			ftpClient.disconnect();
+		}
+
+		return filenameList;
+	}
+	
+	/**
 	 * 
 	 * @return
 	 */
-	public boolean download(String localResultFile, String remoteSourceFile)
+	public boolean download(String localResultFile, String id, String remoteSourceFile)
 			throws IOException {
 		FTPClient ftpClient = new FTPClient();
 		FileOutputStream fos = null;
@@ -89,7 +108,7 @@ public class FTPUtil {
 			logger.debug(ftpClient.getReplyString());
 			
 			fos = new FileOutputStream(localResultFile);
-			resultOk &= ftpClient.retrieveFile(resultsFolder + "/" + remoteSourceFile, fos);
+			resultOk &= ftpClient.retrieveFile(resultsFolder + "/" + id + "/" + remoteSourceFile, fos);
 			logger.debug(ftpClient.getReplyString());
 			
 			resultOk &= ftpClient.logout();

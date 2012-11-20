@@ -52,7 +52,7 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 	
 	public static final String OS_Name = System.getProperty("os.name");
 
-	private boolean finished;
+//	private boolean finished;
 	private boolean abort;
 	private boolean testRun;
 	private String resultFileName;
@@ -182,7 +182,9 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyymmddhhmmss");
 		
-		String parametersFileNameID = parametersFileName.replace("id", sdf.format(new Date()));
+		String id = sdf.format(new Date());
+		
+		String parametersFileNameID = parametersFileName.replace("id", id);
 		
 		String parametersFileFullPath = tmpDir + File.separatorChar + parametersFileNameID;
 		
@@ -217,46 +219,17 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 			logger.error(e1);
 		}	
 		
-		while (true) {
-
-			if (abort) {
-				break;
-			}
-
-			try {
-				String[] files = ftpUtil.list();
-
-				for (String string : files) {
-					logger.info("found file: " + string);
-					if (string.contains(resultFileName)) {
-						logger.info("found result");
-						finished = true;
-						break;
-					}
-				}
-
-			} catch (IOException e) {
-				e.printStackTrace();
-				break;
-			}
-
-			if (finished) {
-				break;
-			}
-
-			try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				break;
-			}
-
-		}
+		/*
+		 * search base results directory
+		 */
+		listFiles(id, true);
+		
+		resultFileName = listFiles(id, false);
 		
 		resultFileFullPath = tmpDir + File.separator + resultFileName;
 		
 		try {
-			ftpUtil.download(resultFileFullPath, resultFileName);
+			ftpUtil.download(resultFileFullPath, id, resultFileName);
 		} catch (IOException e) {
 			logger.error(e);
 		}
@@ -273,7 +246,17 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 			resultFileFullPath = tmpDir + File.separator + resultFileName;
 			
 			try {
-				URL url = new URL("http://v-soknos.uni-muenster.de:8080/data/oslo_mete_20110103.nc");
+				
+				String site = ((LiteralStringBinding) extractData(inputData, inputIDSite))
+						.getPayload().toString();
+				
+				URL url = null;
+				
+				if(site .equals("oslo")){
+					url = new URL("http://v-soknos.uni-muenster.de:8080/data/oslo_mete_20110103.nc");
+				}else{
+					url = new URL("http://v-soknos.uni-muenster.de:8080/data/pm10_conc_rotterdam_20110408.nc");
+				}
 				
 //				InputStream in = url.openStream();
 //				
@@ -325,6 +308,71 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 					"could not find input for " + id);
 		
 		return dataList.get(0);		
+	}
+	
+	private String listFiles(String id, boolean searchResultsBaseDir){
+		
+		String resultName = "";
+		
+		boolean finished = false;
+		
+//		if(id == null){
+//			searchResultsBaseDir = true;
+//		}
+		
+		while (true) {
+
+			if (abort) {
+				break;
+			}
+
+			try {
+				
+				String[] files = new String[]{};
+				if(searchResultsBaseDir){
+					files = ftpUtil.list();
+				}else{
+					files = ftpUtil.list(id);					
+				}
+
+				for (String string : files) {
+					logger.info("found file: " + string);
+					
+					if(searchResultsBaseDir){
+						if(string.contains(id)) {
+							logger.info("found result subdirectory for id " + id);
+							finished = true;
+							break;
+						}
+					}else if(id != null){
+						/*
+						 * result/{id} directory was searched and something was found
+						 * assume it is the resulting netcdf file
+						 */
+						resultName = string.substring(string.lastIndexOf("/") + 1);
+						finished = true;
+						break;
+					}
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+
+			if (finished) {
+				break;
+			}
+
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				break;
+			}
+
+		}
+		return resultName;
 	}
 
 }
