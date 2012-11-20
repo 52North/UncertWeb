@@ -118,7 +118,8 @@ public class OutdoorModel{
 		ArrayList<TreeMap<DateTime, double[]>> expoValsList = new ArrayList<TreeMap<DateTime, double[]>>();
 	//	HashMap<DateTime, double[]> expoVals = new HashMap<DateTime, double[]>();
 		String cmd;
-		ExtendedRConnection c = null;		
+		ExtendedRConnection c = null;	
+		try {
 		// establish connection to Rserve running on localhost
 		c = new ExtendedRConnection("127.0.0.1");
 		if (c.needLogin()) {
@@ -180,9 +181,15 @@ public class OutdoorModel{
 				expoValsList.get(expoValsList.size()-1).put(ISODateTimeFormat.dateTime().parseDateTime(dateList[i]), valueMatrix[i]);
 			}	
 		}
-		
-		// close the R connection
-		c.close();
+		} catch (Exception e){
+			LOGGER.info("Error while executing exposure model: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while executing exposure model: "+e.getLocalizedMessage());
+		}
+		finally{
+			if (c!=null){
+				c.close();
+			}
+		}
 				
 		return expoValsList;
 	}
@@ -200,7 +207,8 @@ public class OutdoorModel{
 		ArrayList<TreeMap<DateTime, double[]>> expoValsList = new ArrayList<TreeMap<DateTime, double[]>>();
 	//	HashMap<DateTime, double[]> expoVals = new HashMap<DateTime, double[]>();
 		
-		ExtendedRConnection c = null;		
+		ExtendedRConnection c = null;	
+		try {
 		// establish connection to Rserve running on localhost
 		c = new ExtendedRConnection("127.0.0.1");
 		if (c.needLogin()) {
@@ -243,12 +251,20 @@ public class OutdoorModel{
 			double[][] valueMatrix = vals.asDoubleMatrix();
 			REXP dates = c.tryEval("format(index(om@time),\"%Y-%m-%dT%H:%M:%OS3+00:00\")");
 			String[] dateList = dates.asStrings();
-			c.close();
 				
 			expoValsList.add(new TreeMap<DateTime, double[]>());
 			for(int i=0; i<dateList.length; i++){
 				expoValsList.get(expoValsList.size()-1).put(ISODateTimeFormat.dateTime().parseDateTime(dateList[i]), valueMatrix[i]);
 			}		
+		}
+		} catch (Exception e){
+			LOGGER.info("Error while running exposure model: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while running exposure model: "+e.getLocalizedMessage());
+		}
+		finally {
+			if (c!=null){
+			c.close();
+			}
 		}
 				
 		return expoValsList;
