@@ -1,18 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>ems</groupId>
-  <artifactId>ems</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
-  <packaging>war</packaging>
-   <description>Project contains WPS Processes for calculating exposure to air pollution.</description>
-  
-<properties>
-<wps.version>2.0-RC8-SNAPSHOT</wps.version>
-  </properties>
-	
-	
-  <dependencies>
-  		<dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ems</groupId>
+	<artifactId>ems</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<description>Project contains WPS Processes for calculating exposure to air pollution.</description>
+
+	<properties>
+		<wps.version>2.0-RC8-SNAPSHOT</wps.version>
+	</properties>
+
+
+	<dependencies>
+		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>
@@ -44,45 +45,45 @@
 			<version>1.6.1</version>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>netcdf</artifactId>
 			<version>4.2.20</version>
 		</dependency>
-		<!-- UncertWeb dependencies --> 
-     	  <dependency>
-       		<groupId>org.uncertweb</groupId>
-       		<artifactId>52n-wps-io-uncertweb</artifactId>
-   			<version>0.0.9-SNAPSHOT</version>
-   		</dependency> 
-   		<dependency>
-   			<groupId>org.uncertweb</groupId>
-  			<artifactId>shape-om-converter</artifactId>
-  			<version>0.0.3-SNAPSHOT</version>
-   		</dependency>
-		
-   		<!-- R dependencies -->
-   		 <dependency>
-    	<groupId>org.nuiton.thirdparty</groupId>
-    	<artifactId>REngine</artifactId>
-    	<version>0.6-1</version>
-    </dependency>
-    <dependency>
-    	<groupId>org.nuiton.thirdparty</groupId>
-    	<artifactId>Rserve</artifactId>
-    	<version>0.6-1</version>
-    </dependency>
-    
-   		
-    <!-- WPS dependencies -->
+		<!-- UncertWeb dependencies -->
+		<dependency>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>52n-wps-io-uncertweb</artifactId>
+			<version>0.0.9-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>shape-om-converter</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+
+		<!-- R dependencies -->
+		<dependency>
+			<groupId>org.nuiton.thirdparty</groupId>
+			<artifactId>REngine</artifactId>
+			<version>0.6-1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nuiton.thirdparty</groupId>
+			<artifactId>Rserve</artifactId>
+			<version>0.6-1</version>
+		</dependency>
+
+
+		<!-- WPS dependencies -->
 
 		<dependency>
 			<groupId>org.n52.wps</groupId>
@@ -99,33 +100,54 @@
 			<artifactId>52n-wps-client-lib</artifactId>
 			<version>${wps.version}</version>
 		</dependency>
-			<dependency> <groupId>org.n52.wps</groupId>
+		<dependency>
+			<groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-webapp</artifactId>
-			<version>${wps.version}</version> <scope>compile</scope>
-			<type>war</type> <exclusions>
-		
-			<!-- we don't need them ... -->
-			<exclusion> <groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-gridgain</artifactId> </exclusion> <exclusion>
-			<groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-unicore</artifactId> </exclusion> <exclusion>
-			<groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-sextante</artifactId> </exclusion> <exclusion>
-			<groupId>org.n52.wps</groupId> <artifactId>52n-wps-ags</artifactId>
-			</exclusion> <exclusion> <groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-webadmin</artifactId> </exclusion> <exclusion>
-			<groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-transactional</artifactId> </exclusion>
-			<exclusion> <groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-install-wizard</artifactId> </exclusion>
-			<exclusion> <groupId>org.n52.wps</groupId>
-			<artifactId>52n-wps-grass</artifactId> </exclusion> </exclusions>
-			</dependency>
-  </dependencies>
-  
-  <!--  Repositories -->
-  
-  <repositories>
+			<version>${wps.version}</version>
+			<scope>compile</scope>
+			<type>war</type>
+			<exclusions>
+
+				<!-- we don't need them ... -->
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-gridgain</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-unicore</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-sextante</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-ags</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-webadmin</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-transactional</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-install-wizard</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.n52.wps</groupId>
+					<artifactId>52n-wps-grass</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+	<!-- Repositories -->
+
+	<repositories>
 		<repository>
 			<id>n52-releases</id>
 			<name>52° North Release Repository</name>
@@ -149,15 +171,24 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+
 	<build>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
 				<includes>
-				<include>**/*</include>
+					<include>**/*</include>
 				</includes>
 			</resource>
 		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 </project>
