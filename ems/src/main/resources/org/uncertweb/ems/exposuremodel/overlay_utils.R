@@ -183,6 +183,7 @@ readNetCDFU <- function(file, variables=NULL, time=NULL, realisation=NULL){
           tmp <- cbind(tmp, df[[1]][(r-1)*length(vdim)+vdim])
         }        
     }
+    var.name <- names(df)[1]
     df <- as.data.frame(tmp)
     names(df) <- paste(var.name, "_r",rdim, sep="")  
   }  
@@ -208,11 +209,11 @@ readNetCDFU <- function(file, variables=NULL, time=NULL, realisation=NULL){
       sp <-SpatialPoints(coords=cbind(rep(xdim,length(ydim)),rep(ydim,each=length(xdim))), proj4string=CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
     }
     gridded(sp) <- TRUE
-    df <- STFDF(sp=sp, time=tdim, data=df)
+    stfdf <- STFDF(sp=sp, time=tdim, data=df)
   }
  
   close.nc(uncdf)
-  return(df)
+  return(stfdf)
 }
 
 # function to read O&M csv file
