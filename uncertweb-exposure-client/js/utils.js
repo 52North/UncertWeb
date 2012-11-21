@@ -10,16 +10,8 @@ if (typeof String.prototype.endsWith != "function") {
 	};
 }
 
-function scrollToTop() {
-	$("body,html").animate({"scrollTop": 0}, "fast");
-}
-
-function xml2string(doc) {
-	if (typeof(doc) == "string") return doc;
-	var xml = doc.xml || new XMLSerializer().serializeToString(doc);
-	return vkbeautify.xml(vkbeautify.xmlmin(xml), 2)
-}
-
-function xml2console(doc) {
-	console.log(vkbeautify.xml(xml2string(doc)));    
+if (typeof Array.prototype.last != "function") {
+	Array.prototype.last = function() {
+		return this[this.length-1];
+	};
 }

@@ -1,4 +1,12 @@
 {
+	"mapCenter": [ 52.0, 7.0],
+	"visUrl": "http://giv-uw.uni-muenster.de/vis/v2",
+	"outputs": {
+		"nilu": null,
+		"albatross": null,
+		"ems": null,
+		"map": null
+	},
 	"processes": {
 		"ems": {
 			"id": "org.uncertweb.wps.ems",
@@ -126,7 +134,6 @@
 			"inputs": {
 				"sections": [
 					{
-						"title": "Parameter",
 						"options": {
 							"AlbatrossServiceURL": {
 								"type": "string",

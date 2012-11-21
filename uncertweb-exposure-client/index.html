@@ -26,6 +26,13 @@
 		<script type="text/javascript" src="js/jquery.query-param.js"></script>
 		<script type="text/javascript" src="js/application.js"></script>
 		<title>Exposure Client</title>
+		<script type="text/javascript">
+			$(function() {
+				$.getJSON("config.json", function(options) {
+					new App(options);
+				});
+			});
+		</script>
 	</head>
 	<body>
 		<div class="container-fluid">
@@ -77,7 +84,7 @@
 
 								<p>Duis suscipit sodales turpis at mollis. Vivamus suscipit, dolor ac laoreet fermentum, elit lectus adipiscing quam, ut consequat nisl lacus ut ante. Aenean sem lectus, feugiat a consequat eu, mattis et elit. Praesent at mi neque. Ut gravida est ut orci dignissim pellentesque. Duis bibendum, quam quis lobortis euismod, magna erat feugiat dui, in dignissim ante augue eget ipsum. Aliquam luctus mollis urna eu ornare. Nunc laoreet, nisi sit amet fermentum aliquet, sem risus accumsan nulla, a consectetur velit massa vitae odio. Duis ante sem, fermentum sit amet blandit non, iaculis eu risus. Quisque quis turpis vitae lectus scelerisque lobortis. Etiam rutrum aliquam tellus, eu posuere ligula molestie at. In eu ligula lacus, eget egestas arcu. Maecenas eget volutpat sapien.</p>
 							</div>
-							<form data-process="nilu" class="span6 form-horizontal processForm well"></form>	
+							<form data-process="nilu" class="span6 form-horizontal processForm well"></form>
 						</div>
 					</div>
 					<div id="albatross" style="display: none;">
@@ -92,7 +99,22 @@
 
 								<p>Duis suscipit sodales turpis at mollis. Vivamus suscipit, dolor ac laoreet fermentum, elit lectus adipiscing quam, ut consequat nisl lacus ut ante. Aenean sem lectus, feugiat a consequat eu, mattis et elit. Praesent at mi neque. Ut gravida est ut orci dignissim pellentesque. Duis bibendum, quam quis lobortis euismod, magna erat feugiat dui, in dignissim ante augue eget ipsum. Aliquam luctus mollis urna eu ornare. Nunc laoreet, nisi sit amet fermentum aliquet, sem risus accumsan nulla, a consectetur velit massa vitae odio. Duis ante sem, fermentum sit amet blandit non, iaculis eu risus. Quisque quis turpis vitae lectus scelerisque lobortis. Etiam rutrum aliquam tellus, eu posuere ligula molestie at. In eu ligula lacus, eget egestas arcu. Maecenas eget volutpat sapien.</p>
 							</div>
-							<form data-process="albatross" class="span6 form-horizontal processForm well"></form>
+							<div class="span6 well">
+								<ul class="nav nav-tabs">
+									<li class="active"><a href="#albatross-form" data-toggle="tab">Albatross WPS</a></li>
+									<li><a href="#map-form" data-toggle="tab">Map</a></li>
+								</ul>
+								<div class="tab-content">
+									<div id="albatross-form" class="tab-pane active">
+										<form data-process="albatross" class="tab-pane form-horizontal processForm"></form>
+									</div>
+									<div id="map-form" class="tab-pane">
+										<div id="map">
+											<p>Bla</p>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div id="ems" style="display: none;">
