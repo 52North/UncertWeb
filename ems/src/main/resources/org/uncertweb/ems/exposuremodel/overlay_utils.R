@@ -239,7 +239,13 @@ readOMcsv <- function(file){
   }  
   
   # get correct time
-  time = matrix(unlist(strsplit(as.character(om.table$PhenomenonTime),".000+")),ncol=2,byrow=T)
+  tmp1 <- strsplit(as.character(om.table$PhenomenonTime),"/")
+  if(length(tmp1[[1]])==2){
+    tmp <- matrix(unlist(strsplit(as.character(om.table$PhenomenonTime),"/")),nrow=2)[1,]
+  }else{
+    tmp <- om.table$PhenomenonTime
+  }
+  time = matrix(unlist(strsplit(as.character(tmp),".000+")),ncol=2,byrow=T)
   om.time = as.POSIXct(strptime(time[,1], "%Y-%m-%dT%H:%M:%S"),tz="GMT")
   
   # add hours from time zone manually
