@@ -18,7 +18,9 @@ import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.distribution.multivariate.MultivariateNormalDistribution;
 import org.uncertml.sample.ContinuousRealisation;
+import org.uncertml.statistic.Probability;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
+import org.uncertweb.api.om.OMConstants.Columns;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.CategoryObservation;
@@ -27,6 +29,7 @@ import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.result.MeasureResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
+import org.uncertweb.api.om.OMConstants;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -45,36 +48,7 @@ import com.vividsolutions.jts.io.WKTWriter;
  */
 public class CSVEncoder implements IObservationEncoder{
 	
-	
-	
-	
-	/**
-	 * inner class holding the column names for uncertainty types
-	 * 
-	 * @author staschc
-	 *
-	 */
-	class Columns{
-		
-		//number of fixed columns (obs properties); number of uncertainty columns are depending on uncertainty type
-		static final int NUMBER_OF_COLUMNS = 7;
-		
-		//column names for observation properties
-		static final String PHEN_TIME="PhenomenonTime";
-		static final String FOI_IDENTIFIER = "Feature_ID";
-		static final String WKT_GEOM="WKTGeometry";
-		static final String SRID="EPSG";
-		static final String OBS_PROP="ObservedProperty";
-		static final String PROCEDURE="Procedure";
-		static final String RESULT="Result";
-		
-		//column names for uncertainty values
-		static final String CN_ND_MEAN="NormalDistribution.Mean";
-		static final String CN_ND_VAR="NormalDistribution.Variance";
-		static final String CN_REALISATION = "Realisation.";
-		//TODO add more columnnames!
-	}
-	
+
 	private boolean isCollection=false;
 	private Map<String,Integer> columnNumber4UncertaintyColName;
 	
@@ -246,6 +220,14 @@ public class CSVEncoder implements IObservationEncoder{
 				this.columnNumber4UncertaintyColName.put(Columns.CN_REALISATION+i, columns.indexOf(Columns.CN_REALISATION+i));				
 			}
 		}
+		else if(uncertainty!=null && uncertainty instanceof Probability){
+			this.columnNumber4UncertaintyColName = new HashMap<String,Integer>();
+			for(int i=0; i<((ContinuousRealisation)uncertainty).getValues().size(); i++){
+				columns.add(Columns.CN_REALISATION+i);
+				this.columnNumber4UncertaintyColName.put(Columns.CN_REALISATION+i, columns.indexOf(Columns.CN_REALISATION+i));				
+			}
+		}
+		
 		else{
 			this.columnNumber4UncertaintyColName = new HashMap<String,Integer>();
 		}
@@ -260,15 +242,15 @@ public class CSVEncoder implements IObservationEncoder{
 		String[] result = new String[totalSize];
 		
 		//set phenomenonTime
-		DateTime time = null;
-		if(obs.getPhenomenonTime().isInterval())
-			time = obs.getPhenomenonTime().getInterval().getStart();
-		else
-			time = obs.getPhenomenonTime().getDateTime();
-		if (time==null){
-			throw new RuntimeException("CSVEncoder currently only supports time instants for phenomenon time!");
+		String timeString = "";
+		if(obs.getPhenomenonTime().isInterval()){
+			timeString = obs.getPhenomenonTime().getInterval().getStart().toString()+"/"+
+					obs.getPhenomenonTime().getInterval().getEnd().toString();
 		}
-		result[0] = time.toString();
+		else{
+			timeString = obs.getPhenomenonTime().getDateTime().toString();
+		}
+		result[0] = timeString;
 		
 		//set geometry
 		SpatialSamplingFeature foi = obs.getFeatureOfInterest();
