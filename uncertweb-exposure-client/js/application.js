@@ -21,7 +21,7 @@ App.prototype.generateInterface = function() {
 				.addClass("btn send btn-info")
 				.attr("type","button")
 				.text("Send")));
-}
+};
 
 App.prototype.addListeners = function() {
 	$("#start").click(function() {
@@ -38,6 +38,7 @@ App.prototype.addListeners = function() {
 	});
 	$(document).on("keyup input change", ".required", this.onRequiredChange);
 	$("form").find(".required:first").trigger("change");
+	
 	$("#albatross form button.send").click(function(e){
 		self.sendRequest(e, this);
 	});
@@ -46,6 +47,7 @@ App.prototype.addListeners = function() {
 	});
 	$("#ems form button.send").click(function(e) {
 		self.sendRequest(e, this);
+		// TODO show Greenland link
 	});
 };
 
@@ -60,7 +62,7 @@ App.prototype.onSidebarClick = function(e, element) {
 	$($active.find("a").attr("href")).fadeOut("fast", function() {
 		$($this.attr("href")).fadeIn();
 	});
-}
+};
 
 App.prototype.onRequiredChange = function(event, element) {
 	var valid = true;
@@ -100,11 +102,10 @@ App.prototype.setSettings = function(id, val, options) {
 			}
 		}
 	}	
-}
+};
 
-App.prototype.createRequest = function($form) {
-	var settings = this.options.processes[$form.data("process")];
-	var form = $form.serializeArray();
+App.prototype.createRequest = function(id, form) {
+	var settings = this.options.processes[id];
 	var url = settings.url;
 	var o = { 
 		id: settings.id, 
@@ -122,10 +123,16 @@ App.prototype.createRequest = function($form) {
 			if (settings.inputs.sections[i].options[key].type === "boolean" && !o.inputs[key]) {
 				o.inputs[key] =  [ false ];
 			}
+			if (!settings.inputs.sections[i].options[key].required 
+				&& (o.inputs[key].length === 1
+					|| o.inputs[key][0] === ""
+					|| o.inputs[key][0] === undefined)) {
+				delete o.inputs[key];
+			}
 		}
 	}
-	return XmlUtils.createExecute(o);
-}
+	return o;
+};
 
 App.prototype.showXML = function(message, text, failed) {
 	var id = this.logid++;
@@ -161,30 +168,31 @@ App.prototype.showXML = function(message, text, failed) {
 		$("#"+logrowid).addClass("text-error");	
 	}
 	return id;
-}
+};
 
 App.prototype.setResponse = function(id, response) {
 	this.options.outputs[id] = response;
-}
+};
+
 App.prototype.getResponse = function(id) {
 	return this.options.outputs[id];
-}
+};
 
 App.prototype.showRequest = function(req) {
 	return this.showXML(req, "Request", false);
-}
+};
 
 App.prototype.showResponse = function(res, fail) {
 	return this.showXML(res, (fail) ? "Failure response" : "Sucess response", fail);
-}
+};
 
 App.prototype.showFailureResponse = function(res) {
 	return this.showResponse(res, true);
-}
+};
 
 App.prototype.showSuccessResponse = function(res) {
 	return this.showResponse(res, false);
-}
+};
 
 App.prototype.showMessage = function(content, type, autoclose) {
 	var $alert = $("<div>");
@@ -208,32 +216,42 @@ App.prototype.showMessage = function(content, type, autoclose) {
 	if (autoclose) {
 		window.setTimeout(closeAlert, 5000);
 	}
-}
+};
 
 App.prototype.showError = function(error) {
 	this.showMessage($("<strong>Error! </strong> ").after(error), "error");
-}
+};
 
 App.prototype.showSuccess = function(message) {
 	this.showMessage($("<strong>Success! </strong> ").after(message), "success", true);
-}
+};
 
 App.prototype.showWarning = function(message) {
 	this.showMessage($("<strong>Warning! </strong> ").after(message), "warning", true);
-}
+};
 
-
-App.prototype.sendRequest = function(event, element) {
+App.prototype.sendRequest = function(e, element) {
 	var $form = $(element).parents("form");
 	var process = $form.data("process");
 	var settings = this.options.processes[process];
-	var req = this.createRequest($form);
-	this.showRequest(req)
+	var req = this.createRequest(process, $form.serializeArray());
+
+	for (var p in this.options.mappings[process]) {
+		for (var o in this.options.mappings[process][p]) {
+			if (!req.inputs[this.options.mappings[process][p][o]] ) {
+				req.inputs[this.options.mappings[process][p][o]] = [];
+			}
+			req.inputs[this.options.mappings[process][p][o]].push(
+				XmlUtils.getOutputReference(this.options.outputs[p], o));
+		}
+	}
+	var reqXml = XmlUtils.createExecute(req);
+	this.showRequest(reqXml)
 	var self = this;
 	$.ajax({
 		"type": "POST",
 		"url": settings.url,
-		"data": XmlUtils.xml2string(req),
+		"data": XmlUtils.xml2string(reqXml),
 		"contentType": "application/xml",
 		"dataType": "xml"
 	}).done(function(e) {
@@ -241,7 +259,7 @@ App.prototype.sendRequest = function(event, element) {
 	}).fail(function(e, message, exception) {
 		self.onRequestFailure(e, message, exception);
 	});
-}
+};
 
 App.prototype.createShowResponseLink = function(id) {
 	var $a = $("<a>").attr("href", "#logrow"+id).click(function(e) {
@@ -257,7 +275,7 @@ App.prototype.createShowResponseLink = function(id) {
 		});
 	}).text("show response");
 	return $a;
-}
+};
 
 App.prototype.onRequestFailure = function(e, message, exception) {
 	if (message === "parsererror") {
@@ -266,7 +284,7 @@ App.prototype.onRequestFailure = function(e, message, exception) {
 		this.showError("<code>" + this.type + " " + this.url + "</code> failed: <code><b>" 
 			+ e.status + "</b> " + e.statusText + "</code>");	
 	}
-}
+};
 
 App.prototype.onRequestSuccess = function(e, process) {
 	var fail = XmlUtils.isException(e);
@@ -282,12 +300,12 @@ App.prototype.onRequestSuccess = function(e, process) {
 			.children("a").trigger("click");
 			this.options.outputs[process] = e;
 	}
-}
+};
 
 App.prototype.toFormattedTime = function(t) {
 	return "D" + Math.floor(t[0]/60) + "h" + (t[0] - 60 * Math.floor(t[0]/60)) + "m" +
 		  "/D" + Math.floor(t[1]/60) + "h" + (t[1] - 60 * Math.floor(t[1]/60)) + "m";
-}
+};
 
 App.prototype.toObservation = function(trackElement) {
 	return {

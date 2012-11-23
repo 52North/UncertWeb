@@ -79,7 +79,7 @@
 	</wps:DataInputs>
 	<wps:ResponseForm>
 		<wps:ResponseDocument>
-			<wps:Output mimeType="application/x-uncertml+xml" schema="http://uncertml.org/uncertml.xsd">
+			<wps:Output asReference="true" mimeType="application/x-uncertml+xml" schema="http://uncertml.org/uncertml.xsd">
 				<ows:Identifier>om_schedules</ows:Identifier>
 			</wps:Output>
 		</wps:ResponseDocument>

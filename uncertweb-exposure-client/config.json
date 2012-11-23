@@ -1,5 +1,5 @@
 {
-	"mapCenter": [ 52.0, 7.0],
+	"mapCenter": [ 52.0, 7.0 ],
 	"visUrl": "http://giv-uw.uni-muenster.de/vis/v2",
 	"outputs": {
 		"nilu": null,
@@ -7,21 +7,60 @@
 		"ems": null,
 		"map": null
 	},
+	"mappings": {
+		"ems": {
+			"nilu": { "predicted-concentrations": "airQualityData" },
+			"albatross": { "om_schedules": "activityProfile" }
+		}
+	},
 	"processes": {
 		"ems": {
-			"id": "org.uncertweb.wps.ems",
+			"id": "org.uncertweb.ems.EMSalgorithm",
 			"url": "examples/exception.xml",
 			"outputs": {
-				"predicted-concentrations": {
+				"result": {
 					"asReference": true,
-					"mimeType": "application/x-netcdf"
+					"mimeType": "application/x-om-u+xml",
+					"schema": "http://schemas.opengis.net/om/2.0/observation.xsd"
 				}
 			},
 			"inputs": {
 				"sections": [
 					{
 						"title": "Parameter",
-						"options": {}
+						"options": {
+							"minuteResolution": {
+								"title": "Temporal resolution",
+								"description": "Temporal resolution of the process output in minutes.",
+								"type": "integer",
+								"min": 1,
+								"max": 525600,
+								"default": 60,
+								"required": false
+							},
+							"outputUncertaintyType": {
+								"title": "outputUncertaintyType",
+								"description": "outputUncertaintyType",
+								"required": true,
+								"type": "choice",
+								"options": {
+									"http://www.uncertml.org/samples/realisation": "Realisations",
+									"http://www.uncertml.org/statistics/mean": "Mean",
+									"http://www.uncertml.org/statistics/standard-deviation": "Standard Deviation",
+									"http://www.uncertml.org/statistics/variance": "Variance"
+								},
+								"default": "http://www.uncertml.org/samples/realisation"
+							},
+							"numberOfSamples": {
+								"title": "Number of Samples for Indoor Model",
+								"description": "Number of samples that should be used for the indoor model.",
+								"type": "integer",
+								"min": 1,
+								"max": 1000,
+								"default": 100,
+								"required": false
+							}
+						}
 					}
 				]
 			}

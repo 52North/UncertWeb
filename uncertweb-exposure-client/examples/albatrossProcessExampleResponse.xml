@@ -10,16 +10,7 @@
 		<ns:Output>
 			<ns1:Identifier xmlns:ns1="http://www.opengis.net/ows/1.1">om_schedules</ns1:Identifier>
 			<ows:Title xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema">schedules</ows:Title>
-			<ns:Data>
-				<ns:ComplexData schema="http://uncertml.org/uncertml.xsd" encoding="UTF-8" mimeType="application/x-uncertml+xml">
-					<un:RandomSample xmlns:un="http://www.uncertml.org/2.0">
-						<un:samplingMethodDescription xsi:nil="true"/>
-						<un:Realisation>
-							<un:values href="http://128.176.133.106:8080/public/45835.xml"/>
-						</un:Realisation>
-					</un:RandomSample>
-				</ns:ComplexData>
-			</ns:Data>
+			<ns:Reference schema="http://uncertml.org/uncertml.xsd" encoding="UTF-8" mimeType="application/x-uncertml+xml" href="http://128.176.133.106:8080/ups/RetrieveResultServlet?id=78dea576-b98a-4e1c-a34d-33be09cb7dccom_schedules"/>
 		</ns:Output>
 	</ns:ProcessOutputs>
 </ns:ExecuteResponse>

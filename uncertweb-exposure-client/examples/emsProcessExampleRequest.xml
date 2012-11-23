@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute
+	xmlns:wps="http://www.opengis.net/wps/1.0.0"
+	xmlns:ows="http://www.opengis.net/ows/1.1"
+	xmlns:xlink="http://www.w3.org/1999/xlink" service="WPS" version="1.0.0">
+	<ows:Identifier>org.uncertweb.ems.EMSalgorithm</ows:Identifier>
+	<wps:DataInputs>
+		<wps:Input>
+			<ows:Identifier>outputUncertaintyType</ows:Identifier>
+			<wps:Data>
+				<wps:LiteralData>http://www.uncertml.org/samples/realisation</wps:LiteralData>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>airQualityData</ows:Identifier>
+			<wps:Data>
+				<wps:Reference mimeType="application/x-netcdf" xlink:href="http://v-soknos.uni-muenster.de:8080/nilu-wps/RetrieveResultServlet?id=8f01153c-1047-4efb-94df-be645dded995predicted-concentrations"/>
+			</wps:Data>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>activityProfile</ows:Identifier>
+			<wps:Data>
+				<wps:Reference mimeType="application/x-uncertml+xml" xlink:href="http://128.176.133.106:8080/ups/RetrieveResultServlet?id=78dea576-b98a-4e1c-a34d-33be09cb7dccom_schedules" encoding="UTF-8" schema="http://uncertml.org/uncertml.xsd"/>
+			</wps:Data>
+		</wps:Input>
+	</wps:DataInputs>
+	<wps:ResponseForm>
+		<wps:ResponseDocument>
+			<wps:Output asReference="true" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd">
+				<ows:Identifier>result</ows:Identifier>
+			</wps:Output>
+		</wps:ResponseDocument>
+	</wps:ResponseForm>
+</wps:Execute>

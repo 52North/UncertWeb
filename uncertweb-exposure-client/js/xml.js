@@ -1,4 +1,9 @@
 XmlUtils = {
+	ns: {
+		wps: "http://www.opengis.net/wps/1.0.0",
+		ows: "http://www.opengis.net/ows/1.1",
+	},
+
 	xml2string: function(doc) {
 		if (typeof(doc) == "string") return doc;
 		var xml = doc.xml || new XMLSerializer().serializeToString(doc);
@@ -24,9 +29,20 @@ XmlUtils = {
 			var inputId = doc.createElement("ows:Identifier");
 			inputId.appendChild(doc.createTextNode(id));
 			var data = doc.createElement("wps:Data");
-			var literalData = doc.createElement("wps:LiteralData");
-			literalData.appendChild(doc.createTextNode(value));
-			data.appendChild(literalData);
+			if (value instanceof Object) {
+				var reference = doc.createElement("wps:Reference");
+				for (var key in value) {
+					if (value[key]) {
+						reference.setAttribute(key, value[key]);	
+					}
+					
+				}
+				data.appendChild(reference);
+			} else {
+				var literalData = doc.createElement("wps:LiteralData");
+				literalData.appendChild(doc.createTextNode(value));
+				data.appendChild(literalData);
+			}
 			input.appendChild(inputId);
 			input.appendChild(data);
 			inputs.appendChild(input);
@@ -56,6 +72,7 @@ XmlUtils = {
 		doc.documentElement.appendChild(respForm);
 		return doc;
 	},
+
 	createObservationCollection: function(obs) {
 		var doc = jsxml.fromString(
 			'<?xml version="1.0" encoding="UTF-8"?>' +
@@ -145,15 +162,31 @@ XmlUtils = {
 		return doc;
 	},
 	isException: function(e) {
-		if (e.documentElement.namespaceURI === "http://www.opengis.net/wps/1.0.0"
-			&& e.documentElement.localName === "ExecuteResponse") {
+		if (e.documentElement.namespaceURI === this.ns.wps 
+		 && e.documentElement.localName === "ExecuteResponse") {
 			return false;
 		}
-		if (e.documentElement.namespaceURI === "http://www.opengis.net/ows/1.1"
-			&& e.documentElement.localName === "ExceptionReport") {
+		if (e.documentElement.namespaceURI === this.ns.ows 
+		 && e.documentElement.localName === "ExceptionReport") {
 			return true;
 		}
-
 		return true;
+	},
+
+	getOutputReference: function(response, name) {
+		if (this.isException(response)) { return; }
+		var outputs = response.getElementsByTagNameNS(this.ns.wps,"Output");
+		for (var i = 0; i < outputs.length; ++i) {
+			var o = outputs.item(i);
+			if (o.getElementsByTagNameNS(this.ns.ows,"Identifier").item().textContent === name) {
+				var ref = o.getElementsByTagNameNS(this.ns.wps, "Reference").item();
+				return {
+					"mimeType": ref.getAttribute("mimeType"),
+					"xlink:href": ref.getAttribute("href"),
+					"encoding": ref.getAttribute("encoding"),
+					"schema": ref.getAttribute("schema")
+				};
+			}
+		}
 	}
 };
