@@ -10,6 +10,8 @@ public final class SosUncConstants {
 	
 	/** Constant for the content type of the response */
     public static final String CONTENT_TYPE_OM2 = "text/xml;subtype=\"om/2.0.0\"";
+    
+    public static final String CONTENT_TYPE_JSON_OM2 = "application/json;subtype=\"om/2.0.0\"";
 	
 	// ////////////////////////////////////////////////////////
     // resultModel constants

@@ -1,19 +1,17 @@
 package org.n52.sos.uncertainty.resp;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import javax.xml.transform.TransformerException;
-
 import org.n52.sos.SosConstants;
-import org.n52.sos.SosXmlUtilities;
 import org.n52.sos.resp.ISosResponse;
-import org.n52.sos.uncertainty.SosUncConstants;
 
 public abstract class AbstractUncertaintyResponse implements ISosResponse {
 
 	/** indicator for compression usage */
 	private boolean applyZipCompression;
+	
+	/** content type for different types than text/xml;subtype="om/2.0.0" */
+	private String contentType;
 
 	/**
 	 * @return Returns the content type of this response. The returned value is
@@ -23,7 +21,15 @@ public abstract class AbstractUncertaintyResponse implements ISosResponse {
 		if (applyZipCompression) {
 			return SosConstants.CONTENT_TYPE_ZIP;
 		}
-		return SosUncConstants.CONTENT_TYPE_OM2;
+		if (contentType != null) {
+			return contentType;
+		}
+		return SosConstants.CONTENT_TYPE_OM_2;
+	}
+	
+	/** Sets a content type */
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 
 	/**

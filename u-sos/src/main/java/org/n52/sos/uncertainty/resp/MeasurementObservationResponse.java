@@ -6,7 +6,6 @@ import java.io.IOException;
 import javax.xml.namespace.QName;
 
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
-import net.opengis.om.x20.OMObservationDocument;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.n52.sos.SosXmlUtilities;

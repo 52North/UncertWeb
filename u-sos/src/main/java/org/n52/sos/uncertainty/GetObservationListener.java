@@ -1,5 +1,7 @@
 package org.n52.sos.uncertainty;
 
+import java.io.ByteArrayOutputStream;
+
 import net.opengis.om.x10.ObservationCollectionDocument;
 import net.opengis.om.x20.OMMeasurementCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
@@ -9,10 +11,10 @@ import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.n52.sos.ISosRequestListener;
 import org.n52.sos.Sos1Constants;
+import org.n52.sos.Sos1Constants.GetObservationParams;
 import org.n52.sos.SosConfigurator;
 import org.n52.sos.SosConstants;
 import org.n52.sos.Util4Listeners;
-import org.n52.sos.Sos1Constants.GetObservationParams;
 import org.n52.sos.ogc.om.SosObservationCollection;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionCode;
@@ -22,11 +24,14 @@ import org.n52.sos.request.SosGetObservationRequest;
 import org.n52.sos.resp.ExceptionResp;
 import org.n52.sos.resp.ISosResponse;
 import org.n52.sos.resp.ObservationResponse;
+import org.n52.sos.uncertainty.decode.impl.OM2Constants;
 import org.n52.sos.uncertainty.ds.pgsql.PGSQLGetObservationDAO;
 import org.n52.sos.uncertainty.resp.MeasurementObservationResponse;
 import org.n52.sos.uncertainty.resp.UncertaintyObservationResponse;
 import org.uncertml.exception.UncertaintyEncoderException;
 import org.uncertml.exception.UnsupportedUncertaintyTypeException;
+import org.uncertweb.api.om.exceptions.OMEncodingException;
+import org.uncertweb.api.om.io.JSONObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 
@@ -76,36 +81,24 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 				boolean zipCompression = checkResponseFormat(sosRequest
 						.getResponseFormat());
 
-				boolean mobileEnabled = sosRequest.isMobileEnabled();
-
 				SosObservationCollection obsCollection;
 
-				if (mobileEnabled) {
-					obsCollection = getDao().getObservationMobile(sosRequest);
-
-				} else {
-					obsCollection = getDao().getObservation(sosRequest);
-				}
+				obsCollection = getDao().getObservation(sosRequest);
 
 				if (sosRequest.getResponseFormat().equals(
-						SosUncConstants.CONTENT_TYPE_OM2)) {
+						SosConstants.CONTENT_TYPE_OM_2)) {
 
-					// response with uncertainties
+					// ////////////////////////////////////////////
+					// XML response with uncertainties
 					IObservationCollection om2obsCol = ((PGSQLGetObservationDAO) getDao())
 							.getUncertainObservationCollection(obsCollection);
 
-					XBObservationEncoder encoder = new XBObservationEncoder();
+					XBObservationEncoder xmlEncoder = new XBObservationEncoder();
 					XmlObject xb_obsCol;
 
 					// encode observation collection
-					// TODO add mobile enabled obsCol encoding
-					if (mobileEnabled) {
-						xb_obsCol = encoder
-								.encodeObservationCollectionDocument(om2obsCol);
-					} else {
-						xb_obsCol = encoder
-								.encodeObservationCollectionDocument(om2obsCol);
-					}
+					xb_obsCol = xmlEncoder
+							.encodeObservationCollectionDocument(om2obsCol);
 
 					// create response
 					if (xb_obsCol instanceof OMMeasurementCollectionDocument) {
@@ -150,21 +143,60 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 						return new ExceptionResp(se.getDocument());
 					}
 
+				} else if (sosRequest.getResponseFormat().equals(
+						SosUncConstants.CONTENT_TYPE_JSON_OM2)) {
+					// ////////////////////////////////////////////
+					// JSON response with uncertainties
+					IObservationCollection om2obsCol = ((PGSQLGetObservationDAO) getDao())
+							.getUncertainObservationCollection(obsCollection);
+
+					JSONObservationEncoder jsonEncoder = new JSONObservationEncoder();
+					ByteArrayOutputStream jsonOutputStream = new ByteArrayOutputStream();
+
+					if (om2obsCol != null) {
+						jsonEncoder.encodeObservationCollection(om2obsCol,
+							jsonOutputStream);
+					} else {
+						return response;
+					}
+
+					// create response
+					if (om2obsCol.getTypeName().equals(OM2Constants.OBS_COL_TYPE_MEASUREMENT)) {
+						
+						response = new MeasurementObservationResponse(
+								jsonOutputStream, zipCompression);
+						((MeasurementObservationResponse) response)
+						.setContentType(SosUncConstants.CONTENT_TYPE_JSON_OM2);
+
+					} else if (om2obsCol.getTypeName().equals(OM2Constants.OBS_COL_TYPE_UNCERTAINTY)) {
+						
+						response = new UncertaintyObservationResponse(
+								jsonOutputStream, zipCompression);
+						((UncertaintyObservationResponse) response)
+								.setContentType(SosUncConstants.CONTENT_TYPE_JSON_OM2);
+
+					} // TODO add further observation types here
+
+					else {
+						OwsExceptionReport se = new OwsExceptionReport(
+								ExceptionLevel.DetailedExceptions);
+						LOGGER.error("Received observation collection is not of a supported observation collection type!");
+						se.addCodedException(
+								ExceptionCode.NoApplicableCode,
+								null,
+								"Received observation collection is not of a supported observation collection type!");
+						return new ExceptionResp(se.getDocument());
+					}
+
 				} else {
+					// ////////////////////////////////////////////
 					// response without uncertainties
 					ObservationCollectionDocument xb_obsCol;
 
-					if (mobileEnabled) {
-						xb_obsCol = (ObservationCollectionDocument) SosConfigurator
-								.getInstance()
-								.getOmEncoder()
-								.createObservationCollectionMobile(
-										obsCollection);
-					} else {
-						xb_obsCol = (ObservationCollectionDocument) SosConfigurator.getInstance()
-								.getOmEncoder()
+					xb_obsCol = (ObservationCollectionDocument) SosConfigurator
+								.getInstance().getOmEncoder()
 								.createObservationCollection(obsCollection);
-					}
+					
 					response = new ObservationResponse(xb_obsCol,
 							zipCompression, Sos1Constants.SERVICEVERSION);
 				}
@@ -180,6 +212,12 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 						new OwsExceptionReport(uute).getDocument());
 			} catch (OwsExceptionReport se) {
 				return new ExceptionResp(se.getDocument());
+			} catch (IllegalArgumentException iae) {
+				return new ExceptionResp(
+						new OwsExceptionReport(iae).getDocument());
+			} catch (OMEncodingException omee) {
+				return new ExceptionResp(
+						new OwsExceptionReport(omee).getDocument());
 			}
 		} else {
 			OwsExceptionReport se = new OwsExceptionReport(
@@ -213,7 +251,9 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 		boolean isZipCompr = false;
 		if (responseFormat.equalsIgnoreCase(SosConstants.CONTENT_TYPE_OM)
 				|| responseFormat
-						.equalsIgnoreCase(SosUncConstants.CONTENT_TYPE_OM2)) {
+						.equalsIgnoreCase(SosConstants.CONTENT_TYPE_OM_2)
+				|| responseFormat
+						.equalsIgnoreCase(SosUncConstants.CONTENT_TYPE_JSON_OM2)) {
 			return isZipCompr;
 		}
 
@@ -230,8 +270,9 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 					"The value of the parameter '"
 							+ GetObservationParams.responseFormat.toString()
 							+ "' must be '" + SosConstants.CONTENT_TYPE_OM
-							+ "', '" + SosUncConstants.CONTENT_TYPE_OM2
-							+ "' or '" + SosConstants.CONTENT_TYPE_ZIP
+							+ "', '" + SosConstants.CONTENT_TYPE_OM_2 + "', '"
+							+ SosUncConstants.CONTENT_TYPE_JSON_OM2 + "' or '"
+							+ SosConstants.CONTENT_TYPE_ZIP
 							+ "'. Delivered value was: " + responseFormat);
 			LOGGER.error("The responseFormat parameter is incorrect!", se);
 			throw se;
