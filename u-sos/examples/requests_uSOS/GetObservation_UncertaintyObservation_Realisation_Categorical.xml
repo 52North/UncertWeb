@@ -13,8 +13,8 @@
   service="SOS" version="1.0.0" srsName="urn:ogc:def:crs:EPSG::4326">
 
 
-  <offering>PARTICULATE_MATTER</offering>
-  <observedProperty>http://www.uncertweb.org/phenomenon/pm10</observedProperty>
+  <offering>VEHICLE_COLOR</offering>
+  <observedProperty>http://www.uncertweb.org/phenomenon/vehicleColor</observedProperty>
   <responseFormat>text/xml;subtype=&quot;om/2.0.0&quot;</responseFormat>
   
   <resultModel>om:OM_UncertaintyObservation</resultModel>
