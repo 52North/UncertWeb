@@ -46,10 +46,71 @@ App.prototype.addListeners = function() {
 		self.sendRequest(e, this);
 	});
 	$("#ems form button.send").click(function(e) {
-		self.sendRequest(e, this);
-		// TODO show Greenland link
+		self.sendRequest(e, this, function() {
+			self.showVisualisationLink("ems", "result");	
+		});
 	});
 };
+
+App.prototype.showVisualisationLink = function(process, output) {
+	var self = this, r = this.getResponse(process);
+	if (!XmlUtils.isException(r)) {
+		var $dialog = $("<div>").addClass("modal hide");
+		var $header = $("<div>").addClass("modal-header").appendTo($dialog);
+		var $body   = $("<div>").addClass("modal-body")  .appendTo($dialog);
+		var $footer = $("<div>").addClass("modal-footer").appendTo($dialog);
+
+		$("<button>")
+			.attr({
+				"type": "button",
+				"aria-hidden": true
+			})
+			.addClass("close")
+			.data("dismiss", "modal")
+			.html("&times;")
+			.appendTo($header);
+
+		$("<h3>")
+			.html("Visualization")
+			.appendTo($header);
+
+		var pid = "<code>" + this.options.processes[process].id + "</code>";
+		$("<p>")
+			.html("Do you want to see the output of the " + pid + " process?")
+			.appendTo($body);
+		
+		$("<button>")
+			.attr("type", "button")
+			.addClass("btn btn-info")
+			.text("Yes")
+			.appendTo($footer).on("click", function() {
+				var ref = XmlUtils.getOutputReference(r, output);
+				window.open(
+					self.options.visualizationUrl 
+						+ "?url="  + encodeURIComponent(ref["xlink:href"])
+						+ "&mime=" + encodeURIComponent(ref["mimeType"]));
+				$dialog.modal("hide");
+			});
+
+		$("<button>")
+			.attr({
+				"type": "button",
+				"aria-hidden": true
+			})
+			.addClass("btn")
+			.data("dismiss", "modal")
+			.text("No")
+			.appendTo($footer)
+			.on("click", function() {
+				$dialog.modal("hide");
+			});
+
+		$dialog.appendTo($("body")).modal({
+	        "keyboard": true,
+	        "show": true
+	    });
+	}
+}
 
 App.prototype.onSidebarClick = function(e, element) {
 	var $this = $(element);
@@ -230,7 +291,7 @@ App.prototype.showWarning = function(message) {
 	this.showMessage($("<strong>Warning! </strong> ").after(message), "warning", true);
 };
 
-App.prototype.sendRequest = function(e, element) {
+App.prototype.sendRequest = function(e, element, callback) {
 	var $form = $(element).parents("form");
 	var process = $form.data("process");
 	var settings = this.options.processes[process];
@@ -242,7 +303,7 @@ App.prototype.sendRequest = function(e, element) {
 				req.inputs[this.options.mappings[process][p][o]] = [];
 			}
 			req.inputs[this.options.mappings[process][p][o]].push(
-				XmlUtils.getOutputReference(this.options.outputs[p], o));
+				XmlUtils.getOutputReference(this.getResponse(p), o));
 		}
 	}
 	var reqXml = XmlUtils.createExecute(req);
@@ -256,6 +317,9 @@ App.prototype.sendRequest = function(e, element) {
 		"dataType": "xml"
 	}).done(function(e) {
 		self.onRequestSuccess(e, process);
+		if (typeof callback === "function") {
+			callback();
+		}
 	}).fail(function(e, message, exception) {
 		self.onRequestFailure(e, message, exception);
 	});
@@ -298,7 +362,7 @@ App.prototype.onRequestSuccess = function(e, process) {
 		$(".sidebar-nav li.active")
 			.next().removeClass("disabled")
 			.children("a").trigger("click");
-			this.options.outputs[process] = e;
+			this.setResponse(process, e);
 	}
 };
 

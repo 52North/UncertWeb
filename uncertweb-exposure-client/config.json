@@ -1,6 +1,6 @@
 {
 	"mapCenter": [ 52.0, 7.0 ],
-	"visUrl": "http://giv-uw.uni-muenster.de/vis/v2",
+	"visualizationUrl": "http://giv-uw.uni-muenster.de/vis/v2",
 	"outputs": {
 		"nilu": null,
 		"albatross": null,
@@ -16,7 +16,7 @@
 	"processes": {
 		"ems": {
 			"id": "org.uncertweb.ems.EMSalgorithm",
-			"url": "examples/exception.xml",
+			"url": "examples/emsProcessExampleResponse.xml",
 			"outputs": {
 				"result": {
 					"asReference": true,
