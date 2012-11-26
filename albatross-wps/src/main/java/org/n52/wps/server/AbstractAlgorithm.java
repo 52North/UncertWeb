@@ -3,9 +3,14 @@ package org.n52.wps.server;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import net.opengis.wps.x100.DocumentOutputDefinitionType;
+import net.opengis.wps.x100.OutputDefinitionType;
 import net.opengis.wps.x100.ProcessDescriptionType;
 import net.opengis.wps.x100.ProcessDescriptionsDocument;
+import net.opengis.wps.x100.ResponseFormType;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
@@ -98,5 +103,21 @@ public abstract class AbstractAlgorithm implements IAlgorithm
 	
 	public void setExecuteRequest(ExecuteRequest executeRequest){
 		this.executeRequest = executeRequest;
+	}
+	
+	public List<String> getOutputIdentifiers(){
+		List<String> outputIdentifiers = new ArrayList<String>();
+		ResponseFormType xb_responseForm = this.executeRequest.getExecute().getResponseForm();
+		OutputDefinitionType xb_rawDataOutput = xb_responseForm.getRawDataOutput();
+		if (xb_rawDataOutput!=null){
+			outputIdentifiers.add(xb_rawDataOutput.getIdentifier().getStringValue());			
+		}
+		else {
+			DocumentOutputDefinitionType[] xb_outputArray = xb_responseForm.getResponseDocument().getOutputArray();
+			for (DocumentOutputDefinitionType xb_output:xb_outputArray){
+				outputIdentifiers.add(xb_output.getIdentifier().getStringValue());
+			}
+		}
+		return outputIdentifiers;
 	}
 }
