@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.n52.wps.commons.WPSConfig;
+import org.n52.wps.io.data.GenericFileData;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
@@ -220,8 +221,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	public Class<?> getOutputDataType(String id) {
 
 		if (id.equalsIgnoreCase(outputIDExportFile)) {
-
-			return LiteralStringBinding.class;
+			return GenericFileDataBinding.class;
 		} else if (id.equals(outputIDODMatrix) || id.equals(outputIDindicators) || id.equals(outputIDSchedules)) {
 			return OMBinding.class;
 		}
@@ -244,6 +244,8 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	 */
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
+		
+		List<String> outputIdentifiers = super.getOutputIdentifiers();
 
 		this.checkAndCopyInput(inputData);
 
@@ -271,36 +273,72 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		this.runPostProcessing();
 
 		// The by the postprocessing process generated files are parsed and send to the user.
-		OutputMapper om = new OutputMapper();
-		IObservationCollection indicatorCol = null;
-		IObservationCollection odMatrixCol = null;
-		try {
-			indicatorCol = om.encodeIndicators(indicators);
-			odMatrixCol = om.encodeODMatrix(odMatrix);
-		} catch (OMEncodingException e) {
-			throw new RuntimeException(
-					"Error while encoding observation responses from Albatross Output: "
-							+ e.getMessage());
-		}
-
 		Map<String, IData> result = new HashMap<String, IData>();
-		OMBinding indOutput = new OMBinding(indicatorCol);
-		OMBinding odMatrixOutput = new OMBinding(odMatrixCol);
-		OMBinding schedules = null;
+		OutputMapper om = new OutputMapper();
 		
-		try {
-			IObservationCollection collection = AlbatrossOutputMapper.encodeAlbatrossOutput(AlbatrossOutputParser.parse(ws.getWorkspaceFolder()+File.separator+exportFileNameProp),numberOfSchedules);
-			schedules = new OMBinding(collection);
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"Error while encoding observation responses from Albatross Output: "
-							+ e.getMessage()); 
-		} 
-
-		result.put(outputIDODMatrix, odMatrixOutput);
-		result.put(outputIDindicators, indOutput);
-		result.put(outputIDSchedules, schedules);
+		//encode indicators
+		if (outputIdentifiers.contains(outputIDindicators)){
+			IObservationCollection indicatorCol = null;
+			try {
+			indicatorCol = om.encodeIndicators(indicators);
+			} catch (OMEncodingException e) {
+				throw new RuntimeException(
+						"Error while encoding observation responses from Albatross Output: "
+								+ e.getMessage());
+			}
+			OMBinding indOutput = new OMBinding(indicatorCol);
+			result.put(outputIDindicators, indOutput);
+		}
 		
+		//encode odMatrix
+		if (outputIdentifiers.contains(outputIDODMatrix)){
+			IObservationCollection odMatrixCol = null;
+			try {
+				odMatrixCol = om.encodeODMatrix(odMatrix);
+			} catch (OMEncodingException e) {
+				throw new RuntimeException(
+						"Error while encoding observation responses from Albatross Output: "
+								+ e.getMessage());
+			}
+			OMBinding odMatrixOutput = new OMBinding(odMatrixCol);
+			result.put(outputIDODMatrix, odMatrixOutput);			
+		}
+		
+		//encode schedules
+		if (outputIdentifiers.contains(outputIDSchedules)){
+			OMBinding schedules = null;
+			try {
+				IObservationCollection collection = AlbatrossOutputMapper.encodeAlbatrossOutput(AlbatrossOutputParser.parse(ws.getWorkspaceFolder()+File.separator+exportFileNameProp),numberOfSchedules);
+				schedules = new OMBinding(collection);
+			} catch (Exception e) {
+				throw new RuntimeException(
+						"Error while encoding observation responses from Albatross Output: "
+								+ e.getMessage()); 
+			} 
+			result.put(outputIDSchedules, schedules);
+		}
+		
+		
+		//encode raw data export file
+		if (outputIdentifiers.contains(outputIDExportFile)){
+			
+			try {
+				GenericFileData data;
+				File srcFile = new File(ws.getWorkspaceFolder()+File.separator+exportFileNameProp);
+				File destFile = new File(System.getProperty("java.io.tmpdir")+File.separator+exportFileNameProp);
+				FileUtils.copyFile(srcFile, destFile);
+				data = new GenericFileData(destFile,"text/plain");
+				GenericFileDataBinding export = new GenericFileDataBinding(data);
+				result.put(outputIDExportFile, export);
+			} catch (IOException e) {
+				throw new RuntimeException(
+						"Error while encoding observation responses from Albatross Output: "
+								+ e.getMessage()); 
+			}
+			
+		}
+		
+		//clean up workspace
 		try {
 			FileUtils.deleteDirectory(this.ws.getWorkspaceFolder());
 		} catch (IOException e) {
