@@ -20,6 +20,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
@@ -81,48 +83,48 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private Workspace ws;
 	private ProjectFile projectFile;
 	
-	private static ProcessMonitorThread processMonitorThread = ProcessMonitorThread.getInstance();
-	private static WorkspaceCleanerThread workspaceCleanerThread = WorkspaceCleanerThread.getInstance();
+	//private static ProcessMonitorThread processMonitorThread = ProcessMonitorThread.getInstance();
+	//private static WorkspaceCleanerThread workspaceCleanerThread = WorkspaceCleanerThread.getInstance();
 	
 	//scheduler valid for all instances of the wps
 	private static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
-	
+	protected static Logger log = Logger.getLogger(SyntheticPopulationProcess.class);
 	
 	//According to the language spec the static initializer block is only loaded once -> when the class is initialized by the JRE
 	static{
 		
 		readProperties();
 		
-		processMonitorThread.setInterruptTime(processInterruptTime);
-		workspaceCleanerThread.setInterruptTime(folderRemoveCycle);
+		//processMonitorThread.setInterruptTime(processInterruptTime);
+		//workspaceCleanerThread.setInterruptTime(folderRemoveCycle);
 
 		//This is ridiculous... no schedule methods for callables, on the other side the will run forever as the call is inside a try block
-		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					workspaceCleanerThread.call();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-			}
-		}, 1,1, TimeUnit.MINUTES);
-		
-		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					processMonitorThread.call();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-			}
-		}, 1,1, TimeUnit.MINUTES);
-		
+//		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				try {
+//					workspaceCleanerThread.call();
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				
+//			}
+//		}, 1,1, TimeUnit.MINUTES);
+//		
+//		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				try {
+//					processMonitorThread.call();
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				
+//			}
+//		}, 1,1, TimeUnit.MINUTES);
+//		
 	}
 
 	@Override
@@ -206,6 +208,12 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		
 		result.put("export-file-bin", new LiteralStringBinding(serverAddressProp + "/" +publicFolderVisiblePartProp+"/"+ ws.getFolderNumber()+"/"+ exportFileBinNameProp));
 
+		try {
+			FileUtils.deleteDirectory(this.ws.getWorkspaceFolder());
+		} catch (IOException e) {
+			throw new RuntimeException("Error while deleting temporary workspace folder: "+e.getLocalizedMessage());
+		}
+		
 		return result;
 	}
 
@@ -230,8 +238,8 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			properties.load(fileInputStream);
 
 		} catch (IOException e) {
-			
-			e.printStackTrace();
+			log.info("error while reading properties file "+e.getLocalizedMessage());
+			throw new RuntimeException("error while reading properties file "+e.getLocalizedMessage());
 		}
 		sourceProp = properties.getProperty("originalData");
 		targetProp = properties.getProperty("targetWorkspace");
@@ -360,19 +368,17 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		fileSet.add(new Pair<File, Long>(ws.getWorkspaceFolder(), System.currentTimeMillis()));
 		fileSet.add(new Pair<File, Long>(ws.getPublicFolder(), System.currentTimeMillis()));
 		
-		workspaceCleanerThread.addFileSet(fileSet);
+		//workspaceCleanerThread.addFileSet(fileSet);
 
 	}
 	
 	private void setupSampleDraw(){
-		
 		ProjectFile.newInputDrawProjectFile("config.txt", ws.getWorkspaceFolder().getPath(), noCases, noCasesNew);
 	}
 	
 	private void runSampleDraw(){
-		
 		Process proc = null;
-
+		BufferedWriter out = null;
 		try {
 
 			List<String> commands = new ArrayList<String>();
@@ -389,7 +395,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process,Long>>();
 			currentProcess.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
 			
-			processMonitorThread.addProcessSet(currentProcess);
+			//processMonitorThread.addProcessSet(currentProcess);
 
 			ExecutorService executorService = Executors.newFixedThreadPool(2);
 			
@@ -398,7 +404,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 			OutputStream stdout = proc.getOutputStream();
 
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+			out = new BufferedWriter(new OutputStreamWriter(
 					stdout));
 
 			//the project file as argument
@@ -412,8 +418,16 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			out.flush();
 
 		} catch (IOException e1) {
-			
-			e1.printStackTrace();
+			log.info("Error while running sample draw: "+e1.getLocalizedMessage());
+			throw new RuntimeException("Error while running sample draw: "+e1.getLocalizedMessage());
+		}
+		finally{
+			try {
+				out.close();
+			} catch (IOException e) {
+				log.info("Error while running sample draw: "+e.getLocalizedMessage());
+				throw new RuntimeException("Error while running sample draw: "+e.getLocalizedMessage());
+			}
 		}
 
 		int result = 0;
@@ -422,11 +436,12 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 			result = proc.waitFor();
 			
-			System.out.println("Return value: " + result);
+			log.info("Return value: " + result);
 			
 		} catch (Exception e) {
-			
-			e.printStackTrace();
+
+			log.info("Error while running sample draw: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while running sample draw: "+e.getLocalizedMessage());
 			
 		}
 		finally{
@@ -449,7 +464,8 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private void runModel() {
 
 		Process proc = null;
-
+		BufferedWriter out =null;
+		
 		try {
 
 			List<String> commands = new ArrayList<String>();
@@ -466,7 +482,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process,Long>>();
 			currentProcess.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
 			
-			processMonitorThread.addProcessSet(currentProcess);
+			//processMonitorThread.addProcessSet(currentProcess);
 
 			ExecutorService executorService = Executors.newFixedThreadPool(2);
 			
@@ -475,7 +491,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 			OutputStream stdout = proc.getOutputStream();
 
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+			out = new BufferedWriter(new OutputStreamWriter(
 					stdout));
 
 			/*
@@ -506,24 +522,26 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			out.write(exportFileNameProp);
 			out.newLine();
 			out.flush();
-
 		} catch (IOException e1) {
-			
-			e1.printStackTrace();
+			log.info("Error while running sample draw: "+e1.getLocalizedMessage());
+			throw new RuntimeException("Error while running sample draw: "+e1.getLocalizedMessage());
+		} finally{
+			try {
+				out.close();
+			} catch (IOException e) {
+				log.info("Error while running sample draw: "+e.getLocalizedMessage());
+				throw new RuntimeException("Error while running sample draw: "+e.getLocalizedMessage());
+			}
 		}
 
 		int result = 0;
 		
 		try {
-
 			result = proc.waitFor();
-			
-			System.out.println("Return value: " + result);
-			
+			log.info("Return value: " + result);
 		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
+			log.info("Error while running sample draw: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while running sample draw: "+e.getLocalizedMessage());
 		}
 		finally{
 			
