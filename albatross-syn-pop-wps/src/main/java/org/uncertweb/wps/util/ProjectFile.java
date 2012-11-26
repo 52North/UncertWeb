@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.log4j.Logger;
+
 /**
  * To run the synthetic population exe a project file is mandatory. This project file contains the parameter and paths to additional files, which contain data like postcode areas.
  * Thus, the order of arguments is important. The file is plain text.
@@ -28,6 +30,8 @@ public class ProjectFile {
 	private String projectFileName;
 	
 	private File projectFile;
+	
+	protected static Logger log = Logger.getLogger(ProjectFile.class);
 	
 	/**
 	 * Creates a new ProjectFile. It can be accessed by {@link ProjectFile#getProjectFile()}
@@ -66,8 +70,8 @@ public class ProjectFile {
 			projectFile.createNewFile();
 			this.fillProjectFile(projectFile);
 		} catch (IOException e) {
-			
-			e.printStackTrace();
+			log.info("Error while creating new project file: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while creating new project file: "+e.getLocalizedMessage());
 		}
 		
 	}
@@ -99,43 +103,50 @@ public class ProjectFile {
 
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f)));  
 
-		/**
-		 * (just model uncertainty first line=0, or just input uncertainty (first line=not 0
-		 */
-		
-		if (modelUncertainty){
-			 out.println("0");
+		try {
+			/**
+			 * (just model uncertainty first line=0, or just input uncertainty (first line=not 0
+			 */
+			
+			if (modelUncertainty){
+				 out.println("0");
+			}
+			else{
+				out.println("1");
+			}
+			
+			out.println(genpopHouseholds);
+			out.println(rwdataHouseholds);
+			out.println(postcodeAreas);
+			out.println(zones);
+			out.println(municipalities);
+			
+			out.println(dataLocation+"locindex+.bin");
+			out.println(dataLocation+"afst-nl-car.bin");
+			out.println(dataLocation+"afst-nl-slow.bin");
+			out.println(dataLocation+"tijd-nl-car.bin");
+			out.println(dataLocation+"reach-alt-nl-car.bin");
+			out.println(dataLocation+"zonedist-ext-Base.bin");
+			out.println(dataLocation+"locs-nl.bin");
+			out.println(dataLocation+"times-nl.bin");
+			out.println(dataLocation+"exportBin.bin");
+			out.println(dataLocation+"test.prd");
+			out.println(dataLocation+"test_syn.txt");
+			out.println(dataLocation+"relmat2004.dat");
+			out.println(dataLocation+"wrkmat2004.dat");
+			out.println(dataLocation+"sampleBa00.dat");
+			out.println(dataLocation+"dtrees-NL.dta");
+			out.println(dataLocation+"Syspars_test.txt");
+			out.println(dataLocation+"PADTdata.bin");
+			
+		}catch(Exception e){
+			log.info("Error while filling project file: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while filling project file: "+e.getLocalizedMessage());
 		}
-		else{
-			out.println("1");
+		finally{
+			out.flush();
+			out.close();
 		}
-		
-		out.println(genpopHouseholds);
-		out.println(rwdataHouseholds);
-		out.println(postcodeAreas);
-		out.println(zones);
-		out.println(municipalities);
-		
-		out.println(dataLocation+"locindex+.bin");
-		out.println(dataLocation+"afst-nl-car.bin");
-		out.println(dataLocation+"afst-nl-slow.bin");
-		out.println(dataLocation+"tijd-nl-car.bin");
-		out.println(dataLocation+"reach-alt-nl-car.bin");
-		out.println(dataLocation+"zonedist-ext-Base.bin");
-		out.println(dataLocation+"locs-nl.bin");
-		out.println(dataLocation+"times-nl.bin");
-		out.println(dataLocation+"exportBin.bin");
-		out.println(dataLocation+"test.prd");
-		out.println(dataLocation+"test_syn.txt");
-		out.println(dataLocation+"relmat2004.dat");
-		out.println(dataLocation+"wrkmat2004.dat");
-		out.println(dataLocation+"sampleBa00.dat");
-		out.println(dataLocation+"dtrees-NL.dta");
-		out.println(dataLocation+"Syspars_test.txt");
-		out.println(dataLocation+"PADTdata.bin");
-		
-		out.flush();
-		out.close();
 	}
 	
 	public static void newInputDrawProjectFile(String projectFileName, String fileLocation, String noCases, String noCasesNew){
@@ -146,15 +157,17 @@ public class ProjectFile {
 		
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(projectFile)));
+			out.println(noCases);
+			out.println(noCasesNew);	
 		} catch (IOException e) {
-			e.printStackTrace();
-		} 
+			log.info("error while creating new InputDraw project file: "+e.getLocalizedMessage());
+			throw new RuntimeException("error while creating new InputDraw project file: "+e.getLocalizedMessage());
+		}
+		finally{
+			out.flush();
+			out.close();
+		}
 		
-		out.println(noCases);
-		out.println(noCasesNew);	
-		
-		out.flush();
-		out.close();	
 		
 	}
 }
