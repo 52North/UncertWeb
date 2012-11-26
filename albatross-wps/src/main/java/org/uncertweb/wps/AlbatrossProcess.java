@@ -518,8 +518,8 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 		fileSet.add(new Pair<File, Long>(ws.getWorkspaceFolder(), System
 				.currentTimeMillis()));
-		fileSet.add(new Pair<File, Long>(ws.getPublicFolder(), System
-				.currentTimeMillis()));
+//		fileSet.add(new Pair<File, Long>(ws.getPublicFolder(), System
+//				.currentTimeMillis()));
 
 //		workspaceCleanerThread.addFileSet(fileSet);
 

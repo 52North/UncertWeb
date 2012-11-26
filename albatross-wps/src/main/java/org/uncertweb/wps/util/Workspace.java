@@ -42,8 +42,8 @@ public class Workspace {
 		this.workspaceFolder = this.createDirectory(workspace + File.separator
 				+ folderNumber);
 		// create public folder
-		this.publicFolder = this.createDirectory(publicFolder + File.separator
-				+ folderNumber);
+//		this.publicFolder = this.createDirectory(publicFolder + File.separator
+//				+ folderNumber);
 
 		// copy data to workspace
 		this.copyDirectory(this.originalDataFolder, workspaceFolder);
@@ -63,14 +63,14 @@ public class Workspace {
 	 * 
 	 * @param files
 	 */
-	public void copyResultIntoPublicFolder(List<String> files) {
-		
-		for(String currentFileName : files){
-			
-			this.copyFile(this.getWorkspaceFolder(), this.getPublicFolder(), currentFileName);
-		}
-
-	}
+//	public void copyResultIntoPublicFolder(List<String> files) {
+//		
+//		for(String currentFileName : files){
+//			
+//			this.copyFile(this.getWorkspaceFolder(), this.getPublicFolder(), currentFileName);
+//		}
+//
+//	}
 
 	/**
 	 * Returns the {@link File} pointing to the original workspace where the initial data is located.
@@ -92,9 +92,9 @@ public class Workspace {
 	 * Returns the {@link File} pointing to the new created public folder.
 	 * @return the file to the new public folder
 	 */
-	public File getPublicFolder() {
-		return publicFolder;
-	}
+//	public File getPublicFolder() {
+//		return publicFolder;
+//	}
 
 	/**
 	 * Copies a file with the help of apaches FileUtilities.
