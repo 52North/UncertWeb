@@ -22,7 +22,6 @@
 		<script type="text/javascript" src="js/utils.js"></script>
 		<script type="text/javascript" src="js/xml.js"></script>
 		<script type="text/javascript" src="js/ui.js"></script>
-		<script type="text/javascript" src="js/message.js"></script>
 		<script type="text/javascript" src="js/jquery.query-param.js"></script>
 		<script type="text/javascript" src="js/application.js"></script>
 		<title>Exposure Client</title>
@@ -31,7 +30,7 @@
 				$.getJSON("config.json", function(options) {
 					new App(options, {
 						"ems": function(app) {
-							app.showVisualisationLink("ems", "result");	
+							app.showVisualizationLink("ems", "result");	
 						}
 					});
 				});
