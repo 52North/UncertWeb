@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Functionality around the workspace generation is encapsulated in this class. By creating a new instance the workspace will be created.
@@ -20,6 +21,8 @@ public class Workspace {
 
 	private File originalDataFolder, workspaceFolder, publicFolder;
 	private String folderNumber;
+	
+	protected static Logger log = Logger.getLogger(Workspace.class);
 
 	/**
 	 * By calling this ctor a new workspace and public folder will be created. Additionally the content of the original data folder is copied into the new workspace. 
@@ -118,8 +121,8 @@ public class Workspace {
 		try {
 			FileUtils.copyFile(inputFile, outputFile);
 		} catch (IOException e) {
-			
-			e.printStackTrace();
+			log.info("error while copying file: " + e.getLocalizedMessage());
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -162,16 +165,22 @@ public class Workspace {
 				InputStream in = new FileInputStream(sourceLocation);
 				OutputStream out = new FileOutputStream(targetLocation);
 
-				byte[] buf = new byte[1024];
-				int len;
-				while ((len = in.read(buf)) > 0) {
-					out.write(buf, 0, len);
+				try {
+					byte[] buf = new byte[1024];
+					int len;
+					while ((len = in.read(buf)) > 0) {
+						out.write(buf, 0, len);
+					}
+				} catch (Exception e){
+					log.info("error while copying directory: "+e.getLocalizedMessage());
+					throw new RuntimeException("error while copying directory: "+e.getLocalizedMessage());
+				}finally{
+					in.close();
+					out.close();
 				}
-				in.close();
-				out.close();
-
 			} catch (Exception e) {
-
+				log.info("error while copying directory: "+e.getLocalizedMessage());
+				throw new RuntimeException("error while copying directory: "+e.getLocalizedMessage());
 			}
 		}
 	}
