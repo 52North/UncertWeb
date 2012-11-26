@@ -261,7 +261,7 @@ public class OutputMapper {
 
 	private Geometry getNLGeometry() throws IOException{
 		Geometry geom = null;
-		URL url = OutputMapper.class.getResource("Netherlands.shp");
+		URL url = OutputMapper.class.getResource("Netherlands_projected.shp");
 		ShapefileDataStore store = new ShapefileDataStore(url);
 		FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource("Netherlands");
 		FeatureCollection<SimpleFeatureType,SimpleFeature> features = source.getFeatures();
@@ -269,14 +269,14 @@ public class OutputMapper {
 		while (iter.hasNext()){
 			SimpleFeature sf = iter.next();
 			geom = (Geometry)sf.getDefaultGeometry();
-			geom.setSRID(4326);
+			geom.setSRID(28992);
 			
 			//and for all member of the collection
 			int nGeo = geom.getNumGeometries();
 			
 			for(int i = 0; i < nGeo; i++){
 				
-				geom.getGeometryN(i).setSRID(4326);
+				geom.getGeometryN(i).setSRID(28992);
 			}
 		}
 		return geom;
@@ -292,7 +292,7 @@ public class OutputMapper {
 	 */
 	private Geometry getRotterdamGeometry() throws IOException{
 		Geometry geom = null;
-		URL url = OutputMapper.class.getResource("Rotterdam.shp");
+		URL url = OutputMapper.class.getResource("Rotterdam_projecte.shp");
 		ShapefileDataStore store = new ShapefileDataStore(url);
 		FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource();
 		FeatureCollection<SimpleFeatureType,SimpleFeature> features = source.getFeatures();
@@ -300,14 +300,14 @@ public class OutputMapper {
 		while (iter.hasNext()){
 			SimpleFeature sf = iter.next();
 			geom = (Geometry)sf.getDefaultGeometry();
-			geom.setSRID(4326);
+			geom.setSRID(28992);
 			
 			//and for all member of the collection
 			int nGeo = geom.getNumGeometries();
 			
 			for(int i = 0; i < nGeo; i++){
 				
-				geom.getGeometryN(i).setSRID(4326);
+				geom.getGeometryN(i).setSRID(28992);
 			}
 		}
 		return geom;
