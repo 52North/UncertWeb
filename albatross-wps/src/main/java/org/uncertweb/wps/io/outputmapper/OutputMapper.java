@@ -128,7 +128,7 @@ public class OutputMapper {
 		try {
 			
 			//load observation Properties
-			SpatialSamplingFeature ssf = new SpatialSamplingFeature(new Identifier(new URI("http://www.uncertweb.org"),"Netherlands"),null, getNLGeometry());
+			SpatialSamplingFeature ssf = new SpatialSamplingFeature(new Identifier(new URI("http://www.uncertweb.org"),"Netherlands_projected"),null, getNLGeometry());
 			URI procedure = new URI(PROC_ID_ALBATROSS);
 			TimeObject phenTime = new TimeObject("h03/h20");
 			TimeObject resultTime = new TimeObject(new DateTime());
@@ -226,9 +226,15 @@ public class OutputMapper {
 	}
 		finally{
 			try {
-				br.close();
-				in.close();
-				fstream.close();
+				if (br!=null){
+					br.close();
+				}
+				if (in!=null){
+					in.close();
+				}
+				if (fstream!=null){
+					fstream.close();
+				}
 				
 			} catch (IOException e) {
 				log.info("Error while closing streams from OUT_indicators.csv file during postprocessing.");
@@ -263,7 +269,7 @@ public class OutputMapper {
 		Geometry geom = null;
 		URL url = OutputMapper.class.getResource("Netherlands_projected.shp");
 		ShapefileDataStore store = new ShapefileDataStore(url);
-		FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource("Netherlands");
+		FeatureSource<SimpleFeatureType, SimpleFeature> source = store.getFeatureSource("Netherlands_projected");
 		FeatureCollection<SimpleFeatureType,SimpleFeature> features = source.getFeatures();
 		Iterator<SimpleFeature> iter = features.iterator();
 		while (iter.hasNext()){
