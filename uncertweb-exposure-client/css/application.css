@@ -39,12 +39,12 @@ form.processForm a[class*=" icon-"] {
 
 .bubble-content {
 	margin: 0 auto;
-	min-width: 260px;
-	padding-top: 10px;
+	min-width: 300px;
 }
 
-.bubble-content .controls {
-	margin: 36px 235px 0px;
+.jslider {
+	margin: 20px 0 20px 0;
+	min-height: 25px;
 }
 
 #map.leaflet-fullscreen {
@@ -62,9 +62,4 @@ form.processForm a[class*=" icon-"] {
 
 #map {
 	height: 650px;
-}
-
-.leaflet-control-fullscreen {
-	background-image: url(http://f.cl.ly/items/0W2V081o1h3p013P2v46/icon-fullscreen.png);
-	margin-bottom: 5px;
 }

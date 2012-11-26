@@ -45,21 +45,36 @@
 			$(function(){
 
 				function generateExampleTrack() {
-					var track = [{
-						location: [51.96, 7.627],
-						begin: 0, end: 6*60
-					}];
-					while (track.last().end < 1439) {
-						var last = track.last();
-						track.push({
-							location: [ 
-								last.location[0] + Math.random() * .05 * ((Math.random() > .5) ? 1 : -1), 
-								last.location[1] + Math.random() * .05 * ((Math.random() > .5) ? 1 : -1)],
-							begin: last.end,
-							end: last.end + Math.floor(Math.random()* 121)
-						});
+					var track = [];
+					
+					
+					for (var i = 0; i < 7; ++i) {
+						var t = [{
+							location: [51.96, 7.627],
+							time: {
+								weekday: i,
+								begin: 0, 
+								length: 6*60
+							}
+						}];
+						while (t.last().time.begin+t.last().time.length < 1439) {
+							var last = t.last();
+							t.push({
+								location: [ 
+									last.location[0] + Math.random() * .05 * ((Math.random() > .5) ? 1 : -1), 
+									last.location[1] + Math.random() * .05 * ((Math.random() > .5) ? 1 : -1)],
+								time: {
+									weekday: i,
+									begin: (last.time.begin + last.time.length) % 1439,
+									length: Math.floor(Math.random()* 300)
+								}
+								
+							});
+						}
+						t.last().time.length = 1439 - t.last().time.begin;
+						track = track.concat(t);
+					
 					}
-					track.last().end = 1439;
 					return track;
 				}
 
@@ -68,7 +83,9 @@
 					div: "map",
 					pos: [51.96, 7.627]
 				});
-				map.loadTrack(generateExampleTrack());
+				var t = generateExampleTrack();
+				console.log(t);
+				map.loadTrack(t);
 				map.zoomToTrack();
 			});
 		</script>

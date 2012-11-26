@@ -21,7 +21,7 @@
 				mimeType="application/x-om-u+xml" 
 				schema="http://schemas.opengis.net/om/2.0/observation.xsd"
 				encoding="UTF-8"
-				href="http://v-soknos.uni-muenster.de:8080/nilu-wps/RetrieveResultServlet?id=8f01153c-1047-4efb-94df-be645dded995predicted-concentrations"/>
+				href="http://128.176.133.106:8080/ups/RetrieveResultServlet?id=78dea576-b98a-4e1c-a34d-33be09cb7dccom_schedules"/>
 		</wps:Output>
 	</wps:ProcessOutputs>
 </wps:ExecuteResponse>
