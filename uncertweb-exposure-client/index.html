@@ -26,7 +26,17 @@
 		<script type="text/javascript" src="js/jquery.query-param.js"></script>
 		<script type="text/javascript" src="js/application.js"></script>
 		<title>Exposure Client</title>
-		<script type="text/javascript">jQuery(document).ready(function($) { $.getJSON("config.json", function(options) { new App(options); }); });</script>
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				$.getJSON("config.json", function(options) {
+					new App(options, {
+						"ems": function(app) {
+							app.showVisualisationLink("ems", "result");	
+						}
+					});
+				});
+			});
+		</script>
 	</head>
 	<body>
 		<div class="container-fluid">
@@ -48,7 +58,7 @@
 					</div>
 				</div>
 				<div id="content" class="span10" >
-					<div  id="welcome">
+					<div id="welcome">
 						<div class="row-fluid">
 							<div class="span12">
 								<h3>Welcome</h3>
@@ -66,7 +76,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="nilu" style="display: none;">
+					<div id="nilu" class="processContainer" style="display: none;">
 						<div class="row-fluid">
 							<div class="span6">
 								<h3>Nilu WPS</h3>
@@ -81,7 +91,7 @@
 							<form data-process="nilu" class="span6 form-horizontal processForm well"></form>
 						</div>
 					</div>
-					<div id="albatross" style="display: none;">
+					<div id="albatross" class="processContainer" style="display: none;">
 						<div class="row-fluid">
 							<div class="span6">
 								<h3>Albatross WPS</h3>
@@ -111,7 +121,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="ems" style="display: none;">
+					<div id="ems" class="processContainer" style="display: none;">
 						<div class="row-fluid">
 							<div class="span6">
 								<h3>EMS</h3>

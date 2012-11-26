@@ -1,6 +1,11 @@
-function App(options) {
+function App(options, sendCallbacks) {
 	this.logid = 1;
 	this.options = options;
+	for (var p in this.options.processes) {
+		sendCallbacks[p] = $.isFunction(sendCallbacks[p]) ? sendCallbacks[p] : $.noop;
+	}
+	this.sendCallbacks = sendCallbacks;
+	/* init */
 	this.generateInterface();
 	this.addListeners();
 }
@@ -11,9 +16,9 @@ App.prototype.scrollToTop = function() {
 
 App.prototype.generateInterface = function() {
 	var uib = new UIBuilder();
-	uib.generateOptions(this.options.processes.nilu.inputs, $("#nilu form"), false);
-	uib.generateOptions(this.options.processes.albatross.inputs, $("#albatross form"), false);
-	uib.generateOptions(this.options.processes.ems.inputs, $("#ems form"), false);
+	for (var process in this.options.processes) {
+		uib.generateOptions(this.options.processes[process].inputs, $("#" + process + " form"), false);
+	}
 	$(".processForm")
 		.append($("<div>")
 			.addClass("form-actions")
@@ -38,78 +43,85 @@ App.prototype.addListeners = function() {
 	});
 	$(document).on("keyup input change", ".required", this.onRequiredChange);
 	$("form").find(".required:first").trigger("change");
-	
-	$("#albatross form button.send").click(function(e){
-		self.sendRequest(e, this);
-	});
-	$("#nilu form button.send").click(function(e) {
-		self.sendRequest(e, this);
-	});
-	$("#ems form button.send").click(function(e) {
+	$(".processForm button.send").click(function(e) {
 		self.sendRequest(e, this, function() {
-			self.showVisualisationLink("ems", "result");	
+			self.sendCallbacks[$(e.target).parents(".processContainer").attr("id")](self);
 		});
-	});
+	})
 };
 
-App.prototype.showVisualisationLink = function(process, output) {
+App.prototype.showVisualizationLink = function(process, output) {
 	var self = this, r = this.getResponse(process);
 	if (!XmlUtils.isException(r)) {
-		var $dialog = $("<div>").addClass("modal hide");
-		var $header = $("<div>").addClass("modal-header").appendTo($dialog);
-		var $body   = $("<div>").addClass("modal-body")  .appendTo($dialog);
-		var $footer = $("<div>").addClass("modal-footer").appendTo($dialog);
-
-		$("<button>")
-			.attr({
-				"type": "button",
-				"aria-hidden": true
-			})
-			.addClass("close")
-			.data("dismiss", "modal")
-			.html("&times;")
-			.appendTo($header);
-
-		$("<h3>")
-			.html("Visualization")
-			.appendTo($header);
-
 		var pid = "<code>" + this.options.processes[process].id + "</code>";
-		$("<p>")
-			.html("Do you want to see the output of the " + pid + " process?")
-			.appendTo($body);
-		
-		$("<button>")
-			.attr("type", "button")
-			.addClass("btn btn-info")
-			.text("Yes")
-			.appendTo($footer).on("click", function() {
-				var ref = XmlUtils.getOutputReference(r, output);
-				window.open(
-					self.options.visualizationUrl 
-						+ "?url="  + encodeURIComponent(ref["xlink:href"])
-						+ "&mime=" + encodeURIComponent(ref["mimeType"]));
-				$dialog.modal("hide");
-			});
-
-		$("<button>")
-			.attr({
-				"type": "button",
-				"aria-hidden": true
-			})
-			.addClass("btn")
-			.data("dismiss", "modal")
-			.text("No")
-			.appendTo($footer)
-			.on("click", function() {
-				$dialog.modal("hide");
-			});
-
-		$dialog.appendTo($("body")).modal({
-	        "keyboard": true,
-	        "show": true
-	    });
+		var text = "Do you want to see the output of the " + pid + " process?";
+		this.buildModalDialog("Visualization", text, function(dialog) {
+			var ref = XmlUtils.getOutputReference(r, output);
+			window.open(
+				self.options.visualizationUrl 
+					+ "?url="  + encodeURIComponent(ref["xlink:href"])
+					+ "&mime=" + encodeURIComponent(ref["mimeType"]));
+			dialog.modal("hide");
+		});
 	}
+};
+
+App.prototype.showDownloadLink = function(process, output) {
+	var self = this, r = this.getResponse(process);
+	if (!XmlUtils.isException(r)) {
+		var pid = "<code>" + this.options.processes[process].id + "</code>";
+		var text = "Do you want to download the output of the " + pid + " process?";
+		this.buildModalDialog("Download", text, function(dialog) {
+			var ref = XmlUtils.getOutputReference(r, output);
+			window.open(ref["xlink:href"]);
+			dialog.modal("hide");
+		});
+	}
+};
+
+App.prototype.buildModalDialog = function(title, text, onclick) {
+	var $dialog = $("<div>").addClass("modal hide");
+	var $header = $("<div>").addClass("modal-header").appendTo($dialog);
+	var $body   = $("<div>").addClass("modal-body")  .appendTo($dialog);
+	var $footer = $("<div>").addClass("modal-footer").appendTo($dialog);
+
+	$("<button>")
+		.attr({
+			"type": "button",
+			"aria-hidden": true
+		})
+		.addClass("close")
+		.data("dismiss", "modal")
+		.html("&times;")
+		.appendTo($header);
+
+	$("<h3>").html(title).appendTo($header);
+	$("<p>").html(text).appendTo($body);
+	$("<button>")
+		.attr("type", "button")
+		.addClass("btn btn-info")
+		.text("Yes")
+		.appendTo($footer).on("click", function() {
+			onclick($dialog);
+		});
+
+	$("<button>")
+		.attr({
+			"type": "button",
+			"aria-hidden": true
+		})
+		.addClass("btn")
+		.data("dismiss", "modal")
+		.text("No")
+		.appendTo($footer)
+		.on("click", function() {
+			$dialog.modal("hide");
+		});
+
+	$dialog.appendTo($("body")).modal({
+        "keyboard": true,
+        "show": true
+    });
 }
 
 App.prototype.onSidebarClick = function(e, element) {
