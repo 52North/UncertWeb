@@ -173,19 +173,29 @@ XmlUtils = {
 		return true;
 	},
 
-	getOutputReference: function(response, name) {
+	getOutput: function(response, name) {
 		if (this.isException(response)) { return; }
 		var outputs = response.getElementsByTagNameNS(this.ns.wps,"Output");
 		for (var i = 0; i < outputs.length; ++i) {
 			var o = outputs.item(i);
 			if (o.getElementsByTagNameNS(this.ns.ows,"Identifier").item().textContent === name) {
 				var ref = o.getElementsByTagNameNS(this.ns.wps, "Reference").item();
-				return {
-					"mimeType": ref.getAttribute("mimeType"),
-					"xlink:href": ref.getAttribute("href"),
-					"encoding": ref.getAttribute("encoding"),
-					"schema": ref.getAttribute("schema")
-				};
+				if (ref) {
+					return {
+						"mimeType": ref.getAttribute("mimeType"),
+						"xlink:href": ref.getAttribute("href"),
+						"encoding": ref.getAttribute("encoding"),
+						"schema": ref.getAttribute("schema")
+					};
+				} else {
+					var data = o.getElementsByTagNameNS(this.ns.wps, "Data").item();
+					if (data) {
+						var literalData = data.getElementsByTagNameNS(this.ns.wps, "LiteralData").item();
+						if (literalData) {
+							return literalData.textContent;
+						}
+					}
+				}
 			}
 		}
 	}

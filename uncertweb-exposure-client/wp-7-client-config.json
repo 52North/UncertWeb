@@ -1,0 +1,165 @@
+{
+	"outputs": {
+		"albatross": null,
+		"syn-pop": null
+	},
+	"mappings": {
+		"albatross": {
+			"syn-pop": { 
+				"export-file": "export-file",
+				"export-file-bin": "export-file-bin"
+			}
+		}
+	},
+	"processes": {
+		"syn-pop": {
+			"url-bak": "http://128.176.133.106:8080/albatross-syn-pop-wps/WebProcessingService",
+			"url": "examples/synPopProcessExampleResponse.xml",
+			"id": "org.uncertweb.wps.SyntheticPopulationProcess",
+			"outputs": {
+				"export-file": {
+					"mimeType": "application/text+xml"
+				},
+				"export-file-bin": {
+					"mimeType": "application/text+xml"
+				}
+			},
+			"inputs": {
+				"sections": [
+					{
+						"title": "Parameter",
+						"options": {
+							"genpop-households": {
+								"type": "string",
+								"title": "Number of Housholds",
+								"description": "Number of households created by Genpop and stored in “test.obs”.",
+								"required": true,
+								"default": "357"
+							},
+							"rwdata-households": {
+								"type": "string",
+								"title": "Household Activity Schedules",
+								"description": "Number of household activity schedules sets created by Rwdata and stored in “test.prd”.",
+								"required": true,
+								"default": "0"
+							},
+							"postcode-areas": {
+								"type": "string",
+								"title": "Postcode Areas",
+								"description": "Number of postcode areas (PC4).",
+								"required": true,
+								"default": "3987"
+							},
+							"zones": {
+								"title": "Zones",
+								"description": "Number of zones (larger areas).",
+								"type": "string",
+								"required": true,
+								"multiple": true,
+								"default": "1308"
+							},
+							"municipalities": {
+								"type": "string",
+								"title": "Municipalities",
+								"description": "Number of municipalities.",
+								"required": true,
+								"default": "625"
+							},
+							"isBootstrapping": {
+								"title": "Bootstrapping",
+								"description": "Indicates if bootstrapping is active.",
+								"type": "boolean",
+								"default": false
+							},
+							"isModelUncertainty": {
+								"title": "Model Uncertainty",
+								"description": "Indicates whether model uncertainty (true) should be used or just input uncertainty (false).",
+								"type": "boolean",
+								"default": false
+							},
+							"noCases": {
+								"title": "Number of Cases",
+								"description": "Number of cases.",
+								"type": "integer"
+							},
+							"noCasesNew": {
+								"title": "New Number of Cases",
+								"description": "Same number of cases in the new version of the file.",
+								"type": "integer"
+							}
+						}
+					}
+				]
+			}
+		},
+		"albatross": {
+			"id": "org.uncertweb.wps.AlbatrossProcess",
+			"url-bak": "http://128.176.133.106:8080/albatross-wps/WebProcessingService",
+			"url": "examples/albatrossProcessExampleResponse.xml",
+			"outputs": {
+				"om_schedules": {
+					"mimeType": "application/x-uncertml",
+					"asReference": true,
+					"schema": "http://uncertml.org/uncertml.xsd"
+				}
+			},
+			"inputs": {
+				"sections": [
+					{
+						"title": "Parameter",
+						"options": {
+							"genpop-households": {
+								"type": "string",
+								"title": "Number of Housholds",
+								"description": "Number of households created by Genpop and stored in “test.obs”.",
+								"required": true,
+								"default": "357"
+							},
+							"rwdata-households": {
+								"type": "string",
+								"title": "Household Activity Schedules",
+								"description": "Number of household activity schedules sets created by Rwdata and stored in “test.prd”.",
+								"required": true,
+								"default": "0"
+							},
+							"postcode-areas": {
+								"type": "string",
+								"title": "Postcode Areas",
+								"description": "Number of postcode areas (PC4).",
+								"required": true,
+								"default": "3987"
+							},
+							"zones": {
+								"title": "Zones",
+								"description": "Number of zones (larger areas).",
+								"type": "string",
+								"required": true,
+								"multiple": true,
+								"default": "1308"
+							},
+							"municipalities": {
+								"type": "string",
+								"title": "Municipalities",
+								"description": "Number of municipalities.",
+								"required": true,
+								"default": "625"
+							},
+							"isModelUncertainty": {
+								"title": "Model Uncertainty",
+								"description": "Indicates whether model uncertainty (true) should be used or just input uncertainty (false).",
+								"type": "boolean",
+								"default": false
+							},
+							"number-of-schedules": {
+								"title": "Number of Schedules",
+								"description": "Number of schedules returned in case the requested output is om_schedules.",
+								"type": "integer",
+								"required": false
+							}
+						}
+					}
+				]
+			}
+		}
+	}
+}

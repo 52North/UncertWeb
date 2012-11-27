@@ -61,6 +61,7 @@ UIBuilder.prototype.generateTabbedSection = function(section, $tabTitles, $tabs)
 
 UIBuilder.prototype.generateOption = function(option) {
 	var $option = $("<div>").addClass("control-group");
+	var self = this;
 	switch (option.type) {
 	case "integer":
 	case "password":
@@ -72,7 +73,7 @@ UIBuilder.prototype.generateOption = function(option) {
 		if (option.multiple) {
 			function plus(e) {
 				e.preventDefault();
-				var $newInput = this.createInput(option).val(""); 
+				var $newInput = self.createInput(option).val(""); 
 
 				var $div = $("<div>").addClass("multiple span12")
 						.append($newInput.removeClass("span12").addClass("span10"))

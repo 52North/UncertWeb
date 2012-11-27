@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap-2.1.1.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive-2.1.1.css" />
+		<link rel="stylesheet" type="text/css" href="css/codemirror-2.34.css" />
+		<link rel="stylesheet" type="text/css" href="css/codemirror.custom.css" />
+		<link rel="stylesheet" type="text/css" href="css/prettify.css" />
+		
+		<script type="text/javascript" src="lib/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+		<script type="text/javascript" src="lib/codemirror-2.34.js"></script>
+		<script type="text/javascript" src="lib/codemirror-2.34-xml.js"></script>
+		<script type="text/javascript" src="lib/prettify.min.js"></script>
+		<script type="text/javascript" src="lib/vkbeautify-0.99.00.beta.js"></script>
+		<script type="text/javascript" src="lib/bootstrap-2.1.1.min.js"></script>
+		<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+		<script type="text/javascript" src="lib/jsxml-0.2.2.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/application.css" />
+		<script type="text/javascript" src="js/utils.js"></script>
+		<script type="text/javascript" src="js/xml.js"></script>
+		<script type="text/javascript" src="js/ui.js"></script>
+		<script type="text/javascript" src="js/jquery.query-param.js"></script>
+		<script type="text/javascript" src="js/application.js"></script>
+		<title>WP 7 Test Client</title>
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				$.getJSON("wp-7-client-config.json", function(options) {
+					new App(options, {
+						"ems": function(app) {
+							app.showDownloadLink("albatross", "result");	
+						}
+					});
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span12 page-header">
+					<h2>WP 7 Test Client</h2>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span2">
+					<div class="well sidebar-nav">
+						<ul class="nav nav-list">
+							<li class="active"><a href="#welcome">Welcome</a></li>
+							<li class="nav-header">Processes</li>
+							<li class="disabled"><a href="#syn-pop">Syn-Pop Process</a></li>
+							<li class="disabled"><a href="#albatross">Albatross Process</a></li>
+						</ul>
+					</div>
+				</div>
+				<div id="content" class="span10" >
+					<div id="welcome">
+						<div class="row-fluid">
+							<div class="span12">
+								<h3>Welcome</h3>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum adipiscing ante eu tempor. Sed sollicitudin tortor ac elit adipiscing quis posuere massa aliquet. Nullam at dui quam. Nunc felis ipsum, commodo et aliquam pharetra, imperdiet quis arcu. Aliquam ornare dignissim placerat. Nulla pulvinar feugiat adipiscing. Duis magna magna, dictum et aliquet in, bibendum a metus. Praesent condimentum lectus velit. Quisque vel elit nec nisl rhoncus luctus eget at lorem. Nullam consectetur, lacus eget ultricies iaculis, nisl est feugiat lorem, sed gravida est eros posuere tellus. Ut rutrum nisl laoreet nisl vulputate gravida. Aliquam volutpat eros sit amet sem convallis sagittis.</p>
+							
+								<div style="max-width: 800px; margin: 20px auto 20px">
+									<img src="http://placehold.it/800x200" class="img-polaroid" />
+								</div>
+							
+								<p>Cras placerat purus at massa convallis a adipiscing est tincidunt. Nam faucibus felis ut dolor imperdiet eu gravida risus pulvinar. Cras malesuada varius elementum. Vivamus aliquam lacus nisi, ut facilisis nisi. Pellentesque accumsan, mi sit amet accumsan scelerisque, massa ligula elementum elit, at luctus nibh elit id odio. Duis eu dui nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla ornare odio neque, eu fringilla est. Duis mattis, odio id commodo condimentum, ligula mauris porta nulla, ut pharetra elit nunc ut orci. Praesent sed metus dolor. Sed tortor lacus, molestie et mollis sed, luctus in ipsum. Vivamus porta pulvinar massa et dignissim. Mauris sagittis mollis nibh, a dapibus eros vulputate id. Phasellus tincidunt ipsum metus, id blandit purus. Nullam a enim id lorem bibendum ornare bibendum et ante. Duis gravida, turpis sit amet laoreet vehicula, elit massa pretium elit, vulputate lobortis lorem mi ac eros.</p>
+
+								<div style="max-width: 400px; margin: 20px auto 20px">
+									<button id="start" class="btn btn-info btn-large btn-block">Start</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="syn-pop" class="processContainer" style="display: none;">
+						<div class="row-fluid">
+							<div class="span6">
+								<h3>Syn-Pop WPS</h3>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum adipiscing ante eu tempor. Sed sollicitudin tortor ac elit adipiscing quis posuere massa aliquet. Nullam at dui quam. Nunc felis ipsum, commodo et aliquam pharetra, imperdiet quis arcu. Aliquam ornare dignissim placerat. Nulla pulvinar feugiat adipiscing. Duis magna magna, dictum et aliquet in, bibendum a metus. Praesent condimentum lectus velit. Quisque vel elit nec nisl rhoncus luctus eget at lorem. Nullam consectetur, lacus eget ultricies iaculis, nisl est feugiat lorem, sed gravida est eros posuere tellus. Ut rutrum nisl laoreet nisl vulputate gravida. Aliquam volutpat eros sit amet sem convallis sagittis.</p>
+								
+								<p><img src="http://placehold.it/800x200" class="img-polaroid" /></p>
+								
+								<p>Cras placerat purus at massa convallis a adipiscing est tincidunt. Nam faucibus felis ut dolor imperdiet eu gravida risus pulvinar. Cras malesuada varius elementum. Vivamus aliquam lacus nisi, ut facilisis nisi. Pellentesque accumsan, mi sit amet accumsan scelerisque, massa ligula elementum elit, at luctus nibh elit id odio. Duis eu dui nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla ornare odio neque, eu fringilla est. Duis mattis, odio id commodo condimentum, ligula mauris porta nulla, ut pharetra elit nunc ut orci. Praesent sed metus dolor. Sed tortor lacus, molestie et mollis sed, luctus in ipsum. Vivamus porta pulvinar massa et dignissim. Mauris sagittis mollis nibh, a dapibus eros vulputate id. Phasellus tincidunt ipsum metus, id blandit purus. Nullam a enim id lorem bibendum ornare bibendum et ante. Duis gravida, turpis sit amet laoreet vehicula, elit massa pretium elit, vulputate lobortis lorem mi ac eros.</p>
+
+								<p>Duis suscipit sodales turpis at mollis. Vivamus suscipit, dolor ac laoreet fermentum, elit lectus adipiscing quam, ut consequat nisl lacus ut ante. Aenean sem lectus, feugiat a consequat eu, mattis et elit. Praesent at mi neque. Ut gravida est ut orci dignissim pellentesque. Duis bibendum, quam quis lobortis euismod, magna erat feugiat dui, in dignissim ante augue eget ipsum. Aliquam luctus mollis urna eu ornare. Nunc laoreet, nisi sit amet fermentum aliquet, sem risus accumsan nulla, a consectetur velit massa vitae odio. Duis ante sem, fermentum sit amet blandit non, iaculis eu risus. Quisque quis turpis vitae lectus scelerisque lobortis. Etiam rutrum aliquam tellus, eu posuere ligula molestie at. In eu ligula lacus, eget egestas arcu. Maecenas eget volutpat sapien.</p>
+							</div>
+							<form data-process="syn-pop" class="span6 form-horizontal processForm well"></form>
+						</div>
+					</div>
+					<div id="albatross" class="processContainer" style="display: none;">
+						<div class="row-fluid">
+							<div class="span6">
+								<h3>Albatross WPS</h3>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum adipiscing ante eu tempor. Sed sollicitudin tortor ac elit adipiscing quis posuere massa aliquet. Nullam at dui quam. Nunc felis ipsum, commodo et aliquam pharetra, imperdiet quis arcu. Aliquam ornare dignissim placerat. Nulla pulvinar feugiat adipiscing. Duis magna magna, dictum et aliquet in, bibendum a metus. Praesent condimentum lectus velit. Quisque vel elit nec nisl rhoncus luctus eget at lorem. Nullam consectetur, lacus eget ultricies iaculis, nisl est feugiat lorem, sed gravida est eros posuere tellus. Ut rutrum nisl laoreet nisl vulputate gravida. Aliquam volutpat eros sit amet sem convallis sagittis.</p>
+								
+								<p>Cras placerat purus at massa convallis a adipiscing est tincidunt. Nam faucibus felis ut dolor imperdiet eu gravida risus pulvinar. Cras malesuada varius elementum. Vivamus aliquam lacus nisi, ut facilisis nisi. Pellentesque accumsan, mi sit amet accumsan scelerisque, massa ligula elementum elit, at luctus nibh elit id odio. Duis eu dui nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla ornare odio neque, eu fringilla est. Duis mattis, odio id commodo condimentum, ligula mauris porta nulla, ut pharetra elit nunc ut orci. Praesent sed metus dolor. Sed tortor lacus, molestie et mollis sed, luctus in ipsum. Vivamus porta pulvinar massa et dignissim. Mauris sagittis mollis nibh, a dapibus eros vulputate id. Phasellus tincidunt ipsum metus, id blandit purus. Nullam a enim id lorem bibendum ornare bibendum et ante. Duis gravida, turpis sit amet laoreet vehicula, elit massa pretium elit, vulputate lobortis lorem mi ac eros.</p>
+
+								<p><img src="http://placehold.it/800x400" class="img-polaroid" /></p>
+
+								<p>Duis suscipit sodales turpis at mollis. Vivamus suscipit, dolor ac laoreet fermentum, elit lectus adipiscing quam, ut consequat nisl lacus ut ante. Aenean sem lectus, feugiat a consequat eu, mattis et elit. Praesent at mi neque. Ut gravida est ut orci dignissim pellentesque. Duis bibendum, quam quis lobortis euismod, magna erat feugiat dui, in dignissim ante augue eget ipsum. Aliquam luctus mollis urna eu ornare. Nunc laoreet, nisi sit amet fermentum aliquet, sem risus accumsan nulla, a consectetur velit massa vitae odio. Duis ante sem, fermentum sit amet blandit non, iaculis eu risus. Quisque quis turpis vitae lectus scelerisque lobortis. Etiam rutrum aliquam tellus, eu posuere ligula molestie at. In eu ligula lacus, eget egestas arcu. Maecenas eget volutpat sapien.</p>
+							</div>
+							<form data-process="albatross" class="tab-pane form-horizontal processForm span6 well"></form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span10 offset2" style="padding-top: 50px;">
+					<table id="output" class="table table-condensed">
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+			<div class="container-fluid">
+				<p class="pull-right"><a href="#">Back to top</a></p>
+				<p>The UncertWeb project has received funding from the <a href="http://cordis.europa.eu/fp7/home_en.html">European Community's Seventh Framework Programme</a> under grant agreement n&deg; [248488].</p>
+				<ul class="footer-links">
+					<li>&copy; 2012 <a href="http://ifgi.uni-muenster.de/" >Institute for Geoinformatics</a></li>
+					<li class="muted">&middot;</li>
+					<li><a href="http://www.uncertweb.org/contact">Contact us</a></li>
+					<li class="muted">&middot;</li>
+					<li><a href="http://www.uncertweb.org/advisory-panel">Advisory panel</a></li>
+					<li class="muted">&middot;</li>
+					<li><a href="http://www.uncertweb.org/sponsor">Sponsor</a></li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>
+

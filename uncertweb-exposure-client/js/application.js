@@ -56,11 +56,13 @@ App.prototype.showVisualizationLink = function(process, output) {
 		var pid = "<code>" + this.options.processes[process].id + "</code>";
 		var text = "Do you want to see the output of the " + pid + " process?";
 		this.buildModalDialog("Visualization", text, function(dialog) {
-			var ref = XmlUtils.getOutputReference(r, output);
-			window.open(
-				self.options.visualizationUrl 
-					+ "?url="  + encodeURIComponent(ref["xlink:href"])
-					+ "&mime=" + encodeURIComponent(ref["mimeType"]));
+			var ref = XmlUtils.getOutput(r, output);
+			if (typeof(ref) === "object") {
+				window.open(
+					self.options.visualizationUrl 
+						+ "?url="  + encodeURIComponent(ref["xlink:href"])
+						+ "&mime=" + encodeURIComponent(ref["mimeType"]));	
+			}
 			dialog.modal("hide");
 		});
 	}
@@ -72,8 +74,12 @@ App.prototype.showDownloadLink = function(process, output) {
 		var pid = "<code>" + this.options.processes[process].id + "</code>";
 		var text = "Do you want to download the output of the " + pid + " process?";
 		this.buildModalDialog("Download", text, function(dialog) {
-			var ref = XmlUtils.getOutputReference(r, output);
-			window.open(ref["xlink:href"]);
+			var ref = XmlUtils.getOutput(r, output);
+			if (typeof(ref) === "object") {
+				window.open(ref["xlink:href"]);	
+			} else if (typeof(ref) === "string") {
+				window.open(ref);	
+			}
 			dialog.modal("hide");
 		});
 	}
@@ -179,7 +185,6 @@ App.prototype.setSettings = function(id, val, options) {
 
 App.prototype.createRequest = function(id, form) {
 	var settings = this.options.processes[id];
-	var url = settings.url;
 	var o = { 
 		id: settings.id, 
 		inputs: {},
@@ -196,10 +201,8 @@ App.prototype.createRequest = function(id, form) {
 			if (settings.inputs.sections[i].options[key].type === "boolean" && !o.inputs[key]) {
 				o.inputs[key] =  [ false ];
 			}
-			if (!settings.inputs.sections[i].options[key].required 
-				&& (o.inputs[key].length === 1
-					|| o.inputs[key][0] === ""
-					|| o.inputs[key][0] === undefined)) {
+			if (!settings.inputs.sections[i].options[key].required  && o.inputs[key].length === 1 
+				&& (o.inputs[key][0] === "" || o.inputs[key][0] === undefined)) {
 				delete o.inputs[key];
 			}
 		}
@@ -315,11 +318,11 @@ App.prototype.sendRequest = function(e, element, callback) {
 				req.inputs[this.options.mappings[process][p][o]] = [];
 			}
 			req.inputs[this.options.mappings[process][p][o]].push(
-				XmlUtils.getOutputReference(this.getResponse(p), o));
+				XmlUtils.getOutput(this.getResponse(p), o));
 		}
 	}
 	var reqXml = XmlUtils.createExecute(req);
-	this.showRequest(reqXml)
+	this.showRequest(reqXml);
 	var self = this;
 	$.ajax({
 		"type": "POST",
