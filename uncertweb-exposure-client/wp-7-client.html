@@ -29,8 +29,8 @@
 			jQuery(document).ready(function($) {
 				$.getJSON("wp-7-client-config.json", function(options) {
 					new App(options, {
-						"ems": function(app) {
-							app.showDownloadLink("albatross", "result");	
+						"albatross": function(app) {
+							app.showDownloadLink("albatross", "export-file");	
 						}
 					});
 				});

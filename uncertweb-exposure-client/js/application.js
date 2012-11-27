@@ -336,7 +336,7 @@ App.prototype.sendRequest = function(e, element, callback) {
 			callback();
 		}
 	}).fail(function(e, message, exception) {
-		self.onRequestFailure(e, message, exception);
+		self.onRequestFailure(this, e, message, exception);
 	});
 };
 
@@ -356,11 +356,11 @@ App.prototype.createShowResponseLink = function(id) {
 	return $a;
 };
 
-App.prototype.onRequestFailure = function(e, message, exception) {
+App.prototype.onRequestFailure = function(request, e, message, exception) {
 	if (message === "parsererror") {
-		this.showError("<code>" + this.type + " " + this.url + "</code> failed: response is no valid XML.");	
+		this.showError("<code>" + request.type + " " + request.url + "</code> failed: response is no valid XML.");	
 	} else {
-		this.showError("<code>" + this.type + " " + this.url + "</code> failed: <code><b>" 
+		this.showError("<code>" + request.type + " " + request.url + "</code> failed: <code><b>" 
 			+ e.status + "</b> " + e.statusText + "</code>");	
 	}
 };
