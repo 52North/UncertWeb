@@ -21,7 +21,7 @@
 
     <wps:Input>
       <ows:Identifier>activityProfile</ows:Identifier>
-       <wps:Reference xlink:href="http://ifgi.uni-muenster.de/~l_gerh01/vis/albatross_response4_schedules2.xml" mimeType="application/x-om-u+xml"/>
+       <wps:Reference xlink:href="http://giv-uw.uni-muenster.de/data/om/albatrossSingleSchedule_om.xml" mimeType="application/x-om-u+xml"/>
     </wps:Input>    
       
   </wps:DataInputs>  
