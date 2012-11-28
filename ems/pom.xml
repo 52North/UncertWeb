@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ems</groupId>
 	<artifactId>ems</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<description>Project contains WPS Processes for calculating exposure to air pollution.</description>
 
@@ -182,13 +182,13 @@
 			</resource>
 		</resources>
 		<plugins>
-			<plugin>
+			<!-- <plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
-			</plugin>
+			</plugin>  -->
 		</plugins>
 	</build>
 </project>
