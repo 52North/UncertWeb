@@ -26,7 +26,7 @@
 	</wps:DataInputs>
 	<wps:ResponseForm>
 		<wps:ResponseDocument>
-			<wps:Output asReference="true" mimeType="application/x-om-u+xml" schema="http://schemas.opengis.net/om/2.0/observation.xsd">
+			<wps:Output asReference="true" mimeType="application/x-om-u+json" schema="http://schemas.opengis.net/om/2.0/observation.xsd">
 				<ows:Identifier>result</ows:Identifier>
 			</wps:Output>
 		</wps:ResponseDocument>
