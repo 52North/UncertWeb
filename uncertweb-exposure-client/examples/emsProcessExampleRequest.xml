@@ -13,7 +13,7 @@
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>airQualityData</ows:Identifier>
-			<wps:Reference mimeType="application/x-netcdf" xlink:href="http://v-soknos.uni-muenster.de:8080/nilu-wps/RetrieveResultServlet?id=8f01153c-1047-4efb-94df-be645dded995predicted-concentrations"/>
+			<wps:Reference mimeType="application/x-netcdf" xlink:href="http://giv-uw.uni-muenster.de/data/netcdf/no2_conc_rotterdam_20110402.nc"/>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>activityProfile</ows:Identifier>
