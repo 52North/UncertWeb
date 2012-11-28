@@ -13,15 +13,11 @@
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>airQualityData</ows:Identifier>
-			<wps:Data>
-				<wps:Reference mimeType="application/x-netcdf" xlink:href="http://v-soknos.uni-muenster.de:8080/nilu-wps/RetrieveResultServlet?id=8f01153c-1047-4efb-94df-be645dded995predicted-concentrations"/>
-			</wps:Data>
+			<wps:Reference mimeType="application/x-netcdf" xlink:href="http://v-soknos.uni-muenster.de:8080/nilu-wps/RetrieveResultServlet?id=8f01153c-1047-4efb-94df-be645dded995predicted-concentrations"/>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>activityProfile</ows:Identifier>
-			<wps:Data>
-				<wps:Reference mimeType="application/x-uncertml+xml" xlink:href="http://128.176.133.106:8080/ups/RetrieveResultServlet?id=78dea576-b98a-4e1c-a34d-33be09cb7dccom_schedules" encoding="UTF-8" schema="http://uncertml.org/uncertml.xsd"/>
-			</wps:Data>
+			<wps:Reference mimeType="application/x-uncertml+xml" xlink:href="http://128.176.133.106:8080/ups/RetrieveResultServlet?id=78dea576-b98a-4e1c-a34d-33be09cb7dccom_schedules" encoding="UTF-8" schema="http://uncertml.org/uncertml.xsd"/>
 		</wps:Input>
 	</wps:DataInputs>
 	<wps:ResponseForm>

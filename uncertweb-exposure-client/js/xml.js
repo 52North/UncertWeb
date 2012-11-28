@@ -28,7 +28,8 @@ XmlUtils = {
 			var input = doc.createElement("wps:Input");
 			var inputId = doc.createElement("ows:Identifier");
 			inputId.appendChild(doc.createTextNode(id));
-			var data = doc.createElement("wps:Data");
+			input.appendChild(inputId);
+
 			if (value instanceof Object) {
 				var reference = doc.createElement("wps:Reference");
 				for (var key in value) {
@@ -37,14 +38,16 @@ XmlUtils = {
 					}
 					
 				}
-				data.appendChild(reference);
+				input.appendChild(reference);
 			} else {
+				var data = doc.createElement("wps:Data");
 				var literalData = doc.createElement("wps:LiteralData");
 				literalData.appendChild(doc.createTextNode(value));
 				data.appendChild(literalData);
+				input.appendChild(data);
 			}
-			input.appendChild(inputId);
-			input.appendChild(data);
+			
+			
 			inputs.appendChild(input);
 		}
 		for (var key in options.inputs) {
