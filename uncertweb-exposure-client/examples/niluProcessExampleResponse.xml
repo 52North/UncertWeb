@@ -15,7 +15,7 @@
 		<wps:Output>
 			<ows:Identifier >predicted-concentrations</ows:Identifier>
 			<ows:Title >computed results</ows:Title>
-			<wps:Reference mimeType="application/x-netcdf" href="http://v-soknos.uni-muenster.de:8080/nilu-wps/RetrieveResultServlet?id=fdd2111b-17e7-4c83-887f-63dd692fedd3predicted-concentrations"/>
+			<wps:Reference mimeType="application/x-netcdf" href="http://giv-uw.uni-muenster.de/data/netcdf/no2_conc_rotterdam_20110402.nc"/>
 		</wps:Output>
 	</wps:ProcessOutputs>
 </wps:ExecuteResponse>
