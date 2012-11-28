@@ -95,7 +95,7 @@
 		<Repository name="LocalAlgorithmRepository" className="org.n52.wps.server.LocalAlgorithmRepository" active="true">
 		 <Property name="Algorithm" active="true">org.uncertweb.ems.EMSalgorithm</Property> 
 		 <Property name="Resources" active="true">C:\\WebResources</Property>
-		 <Property name="UTSAddress" active="true">http://localhost:8080/uts/WebProcessingService</Property>
+		 <Property name="UTSAddress" active="true">[13:43:43] Christoph Stasch: http://giv-uw2.uni-muenster.de:8080/uts/WebProcessingService</Property>
 			
 		</Repository>
 		
@@ -104,7 +104,7 @@
 		
 	</AlgorithmRepositoryList>
 	<!-- hostname="giv-uw2.uni-muenster.de" -->
-	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="aqms">
+	<Server hostname="128.176.133.106" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="ems">
 		<Database/>
 	</Server>
 </WPSConfiguration>
