@@ -21,7 +21,7 @@
 			"outputs": {
 				"result": {
 					"asReference": true,
-					"mimeType": "application/x-om-u+xml",
+					"mimeType": "application/x-om-u+json",
 					"schema": "http://schemas.opengis.net/om/2.0/observation.xsd"
 				}
 			},

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <wps:Execute service="WPS" version="1.0.0"
 	xmlns:wps="http://www.opengis.net/wps/1.0.0" 
 	xmlns:ows="http://www.opengis.net/ows/1.1"
@@ -43,30 +44,22 @@
 		<wps:Input>
 			<ows:Identifier>export-file</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>http://128.176.133.106:8080/public/2122440174/export.txt</wps:LiteralData>
+				<wps:LiteralData>http://128.176.133.106:8080/public/734762681/export.txt</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>export-file-bin</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>http://128.176.133.106:8080/public/2122440174/exportBin.bin</wps:LiteralData>
+				<wps:LiteralData>http://128.176.133.106:8080/public/734762681/exportBin.bin</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 	</wps:DataInputs>
 	<wps:ResponseForm>
 		<wps:ResponseDocument>
-			<wps:Output asReference="true" mimeType="application/x-om-u+xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd">
-				<ows:Identifier>om_ODmatrix</ows:Identifier>
-			</wps:Output>
-			<wps:Output asReference="true" mimeType="application/x-om-u+xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd">
-				<ows:Identifier>om_indicators</ows:Identifier>
-			</wps:Output>
-			<wps:Output asReference="true" mimeType="application/x-om-u+xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd">
-				<ows:Identifier>om_schedules</ows:Identifier>
-			</wps:Output>
 			<wps:Output asReference="true" mimeType="text/plain">
 				<ows:Identifier>export-file</ows:Identifier>
 			</wps:Output>
 		</wps:ResponseDocument>
 	</wps:ResponseForm>
-</wps:Execute>​
+</wps:Execute>
+

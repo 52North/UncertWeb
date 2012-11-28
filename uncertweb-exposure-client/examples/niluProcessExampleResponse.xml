@@ -8,14 +8,14 @@
 		<ows:Identifier>org.uncertweb.wps.AirQualityForecastProcess</ows:Identifier>
 		<ows:Title>AirQualityForecastProcess</ows:Title>
 	</wps:Process>
-	<wps:Status creationTime="2012-11-01T15:19:22.805+01:00">
+	<wps:Status creationTime="2012-11-28T12:17:16.109+01:00">
 		<wps:ProcessSucceeded>Process has succeeded</wps:ProcessSucceeded>
 	</wps:Status>
 	<wps:ProcessOutputs>
 		<wps:Output>
 			<ows:Identifier >predicted-concentrations</ows:Identifier>
 			<ows:Title >computed results</ows:Title>
-			<wps:Reference mimeType="application/x-netcdf" href="http://v-soknos.uni-muenster.de:8080/nilu-wps/RetrieveResultServlet?id=8f01153c-1047-4efb-94df-be645dded995predicted-concentrations"/>
+			<wps:Reference mimeType="application/x-netcdf" href="http://v-soknos.uni-muenster.de:8080/nilu-wps/RetrieveResultServlet?id=fdd2111b-17e7-4c83-887f-63dd692fedd3predicted-concentrations"/>
 		</wps:Output>
 	</wps:ProcessOutputs>
 </wps:ExecuteResponse>

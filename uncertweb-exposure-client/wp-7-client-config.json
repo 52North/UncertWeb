@@ -1,4 +1,5 @@
 {
+	"visualizationUrl": "http://giv-uw.uni-muenster.de/vis/v2",
 	"outputs": {
 		"albatross": null,
 		"syn-pop": null
@@ -98,9 +99,9 @@
 			"url": "examples/albatrossProcessExampleResponse.xml",
 			"outputs": {
 				"om_schedules": {
-					"mimeType": "application/x-uncertml",
+					"mimeType": "application/x-om-u+json",
 					"asReference": true,
-					"schema": "http://uncertml.org/uncertml.xsd"
+					"schema": "http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd"
 				}
 			},
 			"inputs": {

@@ -1,155 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
-        <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link rel="stylesheet" type="text/css" href="css/bootstrap-2.1.1.min.css" />
-                <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive-2.1.1.css" />
-                <link rel="stylesheet" type="text/css" href="css/codemirror-2.34.css" />
-                <link rel="stylesheet" type="text/css" href="css/codemirror.custom.css" />
-                <link rel="stylesheet" type="text/css" href="css/prettify.css" />
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-2.1.1.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive-2.1.1.css" />
+        <link rel="stylesheet" type="text/css" href="css/codemirror-2.34.css" />
+        <link rel="stylesheet" type="text/css" href="css/codemirror.custom.css" />
+        <link rel="stylesheet" type="text/css" href="css/prettify.css" />
 
-                <script type="text/javascript" src="lib/jquery-1.8.2.min.js"></script>
-                <script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
-                <script type="text/javascript" src="lib/codemirror-2.34.js"></script>
-                <script type="text/javascript" src="lib/codemirror-2.34-xml.js"></script>
-                <script type="text/javascript" src="lib/prettify.min.js"></script>
-                <script type="text/javascript" src="lib/vkbeautify-0.99.00.beta.js"></script>
-                <script type="text/javascript" src="lib/bootstrap-2.1.1.min.js"></script>
-                <script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
-                <script type="text/javascript" src="lib/jsxml-0.2.2.js"></script>
-                <link rel="stylesheet" type="text/css" href="css/application.css" />
-                <script type="text/javascript" src="js/utils.js"></script>
-                <script type="text/javascript" src="js/xml.js"></script>
-                <script type="text/javascript" src="js/ui.js"></script>
-                <script type="text/javascript" src="js/jquery.query-param.js"></script>
-                <script type="text/javascript" src="js/application.js"></script>
-                <title>Exposure Client</title>
-                <script type="text/javascript">
-                        jQuery(document).ready(function($) {
-                                $.getJSON("config.json", function(options) {
-                                        new App(options, {
-                                                "ems": function(app) {
-                                                        app.showVisualizationLink("ems", "result");
-                                                }
-                                        });
-                                });
-                        });
-                </script>
-        </head>
-        <body>
-                <div class="container-fluid">
-                        <div class="row-fluid">
-                                <div class="span12 page-header">
-                                        <h2>UncertWeb Exposure Client</h2>
-                                </div>
-                        </div>
-                        <div class="row-fluid">
-                                <div class="span2">
-                                        <div class="well sidebar-nav">
-                                                <ul class="nav nav-list">
-                                                        <li class="active"><a href="#welcome">Welcome</a></li>
-                                                        <li class="nav-header">Processes</li>
-                                                        <li class="disabled"><a href="#nilu">Nilu Process</a></li>
-                                                        <li class="disabled"><a href="#albatross">Albatross Process</a></li>
-                                                        <li class="disabled"><a href="#ems">EMS</a></li>
-                                                </ul>
-                                        </div>
-                                </div>
-                                <div id="content" class="span10" >
-                                        <div id="welcome">
-                                                <div class="row-fluid">
-                                                        <div class="span12">
-                                                                <h3>Welcome</h3>
-                                                                <p>This website allows the execution of a Web-based modeling chain for estimating the exposure of individuals to air pollutants in the city of Rotterdam. Therefore, air quality estimates are overlayed with simulated space-time trajectories of individuals. The air quality estimates are provided by the <a href="http://www.nilu.no/">Norwegian Institute for Air Research (NILU)</a> and consist of a 1km raster that provides 30 realisations of air quality estimates for each hour of a number of days.  The model for simulating the individual activities is provided by the <a href="http://www.tue.nl/">Technical University of Eindhoven (TUE)</a> and the output of the model consists of activity schedules for individuals providing information that a particular individual is within a postal code area for a certain time interval of the day doing some activities. All components are implemented as profiles of the <a href="http://www.opengeospatial.org/standards/wps">Web Processing Service (WPS)</a> defined by the Open Geospatial Consortium.</p>
-
-                                                                <div style="max-width: 800px; margin: 20px auto 20px">
-                                                                        <img src="img/overlay_illustration.png" class="img-polaroid" />
-                                                                </div>
-
-                                                                <p>In the next steps, you will at first run the air quality model (NILU Process), then run the mobility simulation model (Albatross Process) and finally run the Exposure Model Service (EMS) that runs the actual overlay of the air quality estimates with the simulated activity schedules per individual. The results are then visualised using the UncertWeb VisClient. </p>
-
-                                                                <div style="max-width: 400px; margin: 20px auto 20px">
-                                                                        <button id="start" class="btn btn-info btn-large btn-block">Start</button>
-                                                                </div>
-                                                        </div>
-                                                </div>
-                                        </div>
-                                        <div id="nilu" class="processContainer" style="display: none;">
-                                                <div class="row-fluid">
-                                                        <div class="span6">
-                                                                <h3>Nilu WPS</h3>
-                                                                <p>The NILU WPS provides the air quality estimates for the area of Rotterdam (NL) and also allows to retrieve air quality forecasts for Oslo (NOR). A detailed description of the model and the error propagation within the model is available in the <a href="http://www.uncertweb.org/documents/deliverables/prototype-uncertweb-air-quality-forecasting-components/download">UncertWeb deliverable D6.2</a>. We recommend you to leave the default parameters unchanged, if you are not yet familiar with the model in detail.</p>
-                                                        </div>
-                                                        <form data-process="nilu" class="span6 form-horizontal processForm well"></form>
-                                                </div>
-                                        </div>
-                                        <div id="albatross" class="processContainer" style="display: none;">
-                                                <div class="row-fluid">
-                                                        <div class="span6">
-                                                                <h3>Albatross WPS</h3>
-                                                                 <p>The Albatross WPS simulates activity schedules of individuals for the area of Rotterdam (NL). A detailed description of the model and the error propagation within the model is available in the <a href="http://www.uncertweb.org/documents/deliverables/prototype-uncertweb-activity-model-chain/download">UncertWeb deliverable D7.2</a>. We recommend you to leave the default parameters unchanged, if you are not yet familiar with the model in detail.</p>
-                                                        </div>
-                                                        <div class="span6 well">
-                                                                <ul class="nav nav-tabs">
-                                                                        <li class="active"><a href="#albatross-form" data-toggle="tab">Albatross WPS</a></li>
-                                                                        <li><a href="#map-form" data-toggle="tab">Map</a></li>
-                                                                </ul>
-                                                                <div class="tab-content">
-                                                                        <div id="albatross-form" class="tab-pane active">
-                                                                                <form data-process="albatross" class="tab-pane form-horizontal processForm"></form>
-                                                                        </div>
-                                                                        <div id="map-form" class="tab-pane">
-                                                                                <div id="map">
-                                                                                        <p>Bla</p>
-                                                                                </div>
-                                                                        </div>
-                                                                </div>
-                                                        </div>
-                                                </div>
-                                        </div>
-                                        <div id="ems" class="processContainer" style="display: none;">
-                                                <div class="row-fluid">
-                                                        <div class="span6">
-                                                                <h3>Exposure Modeling Service</h3>
-                                                                <p>The Exposure Modeling Service (EMS) is implemented by the Insitute for Geoinformatics of the University of Muenster and runs the actual overlay of the mobility simulations with the air quality data. As the raster data is provided in 1km resolution and the postal code areas overlap between different raster cells, the raster cells are first disagggregated to points and the points are then overlayed with the postal code areas of the activity schedules as shown in the figure below.</p>
-
-                                                                <p><img src="img/exposure-disaggregation.png"/></p>
-
-                                                                <p> The overlay results in a set of points with air quality estimates per postal code area for each hour. These point estimates are then aggregated to means and standard deviations over the postal code areas again as shown in the figure below. This in turn then results in schedules for each individual that now contain additional exposure information for each postal code area at an hour of the day.</p>
-
-                                                                 <p><img src="img/exposure_mean.png"/></p>
-
-                                                                  <p> After executing the client, the final results are visualised in the UncertWeb VisClient.</p>
-
-                                                        </div>
-                                                        <form data-process="ems" class="span6 form-horizontal processForm well"></form>
-                                                </div>
-                                        </div>
-                                </div>
-                        </div>
-                        <div class="row-fluid">
-                                <div class="span10 offset2" style="padding-top: 50px;">
-                                        <table id="output" class="table table-condensed">
-                                                <tbody></tbody>
-                                        </table>
-                                </div>
-                        </div>
+        <script type="text/javascript" src="lib/jquery-1.8.2.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+        <script type="text/javascript" src="lib/codemirror-2.34.js"></script>
+        <script type="text/javascript" src="lib/codemirror-2.34-xml.js"></script>
+        <script type="text/javascript" src="lib/prettify.min.js"></script>
+        <script type="text/javascript" src="lib/vkbeautify-0.99.00.beta.js"></script>
+        <script type="text/javascript" src="lib/bootstrap-2.1.1.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+        <script type="text/javascript" src="lib/jsxml-0.2.2.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/application.css" />
+        <script type="text/javascript" src="js/utils.js"></script>
+        <script type="text/javascript" src="js/xml.js"></script>
+        <script type="text/javascript" src="js/ui.js"></script>
+        <script type="text/javascript" src="js/jquery.query-param.js"></script>
+        <script type="text/javascript" src="js/application.js"></script>
+        <title>Exposure Client</title>
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $.getJSON("config.json", function(options) {
+                new App(options, {
+                    "ems": function(app) {
+                        app.showVisualizationLink("ems", "result");
+                    }
+                });
+            });
+        });
+        </script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span12 page-header">
+                    <h2>UncertWeb Exposure Client</h2>
                 </div>
-                <div class="footer">
-                        <div class="container-fluid">
-                                <p class="pull-right"><a href="#">Back to top</a></p>
-                                <p>The UncertWeb project has received funding from the <a href="http://cordis.europa.eu/fp7/home_en.html">European Community's Seventh Framework Programme</a> under grant agreement n&deg; [248488].</p>
-                                <ul class="footer-links">
-                                        <li>&copy; 2012 <a href="http://ifgi.uni-muenster.de/" >Institute for Geoinformatics</a></li>
-                                        <li class="muted">&middot;</li>
-                                        <li><a href="http://www.uncertweb.org/contact">Contact us</a></li>
-                                        <li class="muted">&middot;</li>
-                                        <li><a href="http://www.uncertweb.org/advisory-panel">Advisory panel</a></li>
-                                        <li class="muted">&middot;</li>
-                                        <li><a href="http://www.uncertweb.org/sponsor">Sponsor</a></li>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li class="active"><a href="#welcome">Welcome</a></li>
+                            <li class="nav-header">Processes</li>
+                            <li class="disabled"><a href="#nilu">Nilu Process</a></li>
+                            <li class="disabled"><a href="#albatross">Albatross Process</a></li>
+                            <li class="disabled"><a href="#ems">EMS</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="content" class="span10" >
+                    <div id="welcome">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <h3>Welcome</h3>
+                                <p>This website allows the execution of a Web-based modeling chain for estimating the exposure of individuals to air pollutants in the city of Rotterdam. Therefore, air quality estimates are overlayed with simulated space-time trajectories of individuals. The air quality estimates are provided by the <a href="http://www.nilu.no/">Norwegian Institute for Air Research (NILU)</a> and consist of a 1km raster that provides 30 realisations of air quality estimates for each hour of a number of days.  The model for simulating the individual activities is provided by the <a href="http://www.tue.nl/">Technical University of Eindhoven (TUE)</a> and the output of the model consists of activity schedules for individuals providing information that a particular individual is within a postal code area for a certain time interval of the day doing some activities. All components are implemented as profiles of the <a href="http://www.opengeospatial.org/standards/wps">Web Processing Service (WPS)</a> defined by the Open Geospatial Consortium.</p>
+
+                                <div style="max-width: 800px; margin: 20px auto 20px">
+                                    <img src="img/overlay_illustration.png" class="img-polaroid" />
+                                </div>
+
+                                <p>In the next steps, you will at first run the air quality model (NILU Process), then run the mobility simulation model (Albatross Process) and finally run the Exposure Model Service (EMS) that runs the actual overlay of the air quality estimates with the simulated activity schedules per individual. The results are then visualised using the UncertWeb VisClient. </p>
+
+                                <div style="max-width: 400px; margin: 20px auto 20px">
+                                    <button id="start" class="btn btn-info btn-large btn-block">Start</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="nilu" class="processContainer" style="display: none;">
+                        <div class="row-fluid">
+                            <div class="span6">
+                                <h3>Nilu WPS</h3>
+                                <p>The NILU WPS provides the air quality estimates for the area of Rotterdam (NL) and also allows to retrieve air quality forecasts for Oslo (NOR). A detailed description of the model and the error propagation within the model is available in the <a href="http://www.uncertweb.org/documents/deliverables/prototype-uncertweb-air-quality-forecasting-components/download">UncertWeb deliverable D6.2</a>. We recommend you to leave the default parameters unchanged, if you are not yet familiar with the model in detail.</p>
+                            </div>
+                            <form data-process="nilu" class="span6 form-horizontal processForm well"></form>
+                        </div>
+                    </div>
+                    <div id="albatross" class="processContainer" style="display: none;">
+                        <div class="row-fluid">
+                            <div class="span6">
+                                <h3>Albatross WPS</h3>
+                                <p>The Albatross WPS simulates activity schedules of individuals for the area of Rotterdam (NL). A detailed description of the model and the error propagation within the model is available in the <a href="http://www.uncertweb.org/documents/deliverables/prototype-uncertweb-activity-model-chain/download">UncertWeb deliverable D7.2</a>. We recommend you to leave the default parameters unchanged, if you are not yet familiar with the model in detail.</p>
+                            </div>
+                            <div class="span6 well">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#albatross-form" data-toggle="tab">Albatross WPS</a></li>
+                                    <li><a href="#map-form" data-toggle="tab">Map</a></li>
                                 </ul>
+                                <div class="tab-content">
+                                    <div id="albatross-form" class="tab-pane active">
+                                        <form data-process="albatross" class="tab-pane form-horizontal processForm"></form>
+                                    </div>
+                                    <div id="map-form" class="tab-pane">
+                                        <div id="map">
+                                            <p>Bla</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                    <div id="ems" class="processContainer" style="display: none;">
+                        <div class="row-fluid">
+                            <div class="span6">
+                                <h3>Exposure Modeling Service</h3>
+                                <p>The Exposure Modeling Service (EMS) is implemented by the Insitute for Geoinformatics of the University of Muenster and runs the actual overlay of the mobility simulations with the air quality data. As the raster data is provided in 1km resolution and the postal code areas overlap between different raster cells, the raster cells are first disagggregated to points and the points are then overlayed with the postal code areas of the activity schedules as shown in the figure below.</p>
+
+                                <p><img src="img/exposure-disaggregation.png"/></p>
+
+                                <p> The overlay results in a set of points with air quality estimates per postal code area for each hour. These point estimates are then aggregated to means and standard deviations over the postal code areas again as shown in the figure below. This in turn then results in schedules for each individual that now contain additional exposure information for each postal code area at an hour of the day.</p>
+
+                                <p><img src="img/exposure_mean.png"/></p>
+
+                                <p> After executing the client, the final results are visualised in the UncertWeb VisClient.</p>
+
+                            </div>
+                            <form data-process="ems" class="span6 form-horizontal processForm well"></form>
+                        </div>
+                    </div>
                 </div>
-        </body>
+            </div>
+            <div class="row-fluid">
+                <div class="span10 offset2" style="padding-top: 50px;">
+                    <table id="output" class="table table-condensed">
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="container-fluid">
+                <p class="pull-right"><a href="#">Back to top</a></p>
+                <p>The UncertWeb project has received funding from the <a href="http://cordis.europa.eu/fp7/home_en.html">European Community's Seventh Framework Programme</a> under grant agreement n&deg; [248488].</p>
+                <ul class="footer-links">
+                    <li>&copy; 2012 <a href="http://ifgi.uni-muenster.de/" >Institute for Geoinformatics</a></li>
+                    <li class="muted">&middot;</li>
+                    <li><a href="http://www.uncertweb.org/contact">Contact us</a></li>
+                    <li class="muted">&middot;</li>
+                    <li><a href="http://www.uncertweb.org/advisory-panel">Advisory panel</a></li>
+                    <li class="muted">&middot;</li>
+                    <li><a href="http://www.uncertweb.org/sponsor">Sponsor</a></li>
+                </ul>
+            </div>
+        </div>
+    </body>
 </html>

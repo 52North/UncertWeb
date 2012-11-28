@@ -10,7 +10,7 @@
 		<ows:Identifier>org.uncertweb.wps.SyntheticPopulationProcess</ows:Identifier>
 		<ows:Title>GeneratePopulation</ows:Title>
 	</wps:Process>
-	<wps:Status creationTime="2012-11-27T19:33:58.058+01:00">
+	<wps:Status creationTime="2012-11-28T12:34:56.449+01:00">
 		<wps:ProcessSucceeded>Process has succeeded</wps:ProcessSucceeded>
 	</wps:Status>
 	<wps:ProcessOutputs>
@@ -18,14 +18,14 @@
 			<ows:Identifier>export-file</ows:Identifier>
 			<ows:Title>export file</ows:Title>
 			<wps:Data>
-				<wps:LiteralData dataType="xs:string">http://128.176.133.106:8080/public/2122440174/export.txt</wps:LiteralData>
+				<wps:LiteralData dataType="xs:string">http://128.176.133.106:8080/public/734762681/export.txt</wps:LiteralData>
 			</wps:Data>
 		</wps:Output>
 		<wps:Output>
 			<ows:Identifier>export-file-bin</ows:Identifier>
 			<ows:Title>export bin</ows:Title>
 			<wps:Data>
-				<wps:LiteralData dataType="xs:string">http://128.176.133.106:8080/public/2122440174/exportBin.bin</wps:LiteralData>
+				<wps:LiteralData dataType="xs:string">http://128.176.133.106:8080/public/734762681/exportBin.bin</wps:LiteralData>
 			</wps:Data>
 		</wps:Output>
 	</wps:ProcessOutputs>
