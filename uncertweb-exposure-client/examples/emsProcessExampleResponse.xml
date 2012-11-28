@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wps:ExecuteResponse
-	xmlns:wps="http://www.opengis.net/wps/1.0.0" 
-	xmlns:ows="http://www.opengis.net/ows/1.1"
-	xmlns:xlink="http://www.w3.org/1999/xlink"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" serviceInstance="http://v-soknos.uni-muenster.de:8080/nilu-wps/WebProcessingService?REQUEST=GetCapabilities&amp;SERVICE=WPS" xml:lang="en-US" service="WPS" version="1.0.0">
-	<wps:Process wps:processVersion="2">
-		<ows:Identifier>org.uncertweb.ems.EMSalgorithm</ows:Identifier>
-		<ows:Title>EMSalgorithm</ows:Title>
-		<ows:Abstract>Provides exposure estimation towards air pollution.</ows:Abstract>
-	</wps:Process>
-	<wps:Status creationTime="2012-11-01T15:19:22.805+01:00">
-		<wps:ProcessSucceeded>Process has succeeded</wps:ProcessSucceeded>
-	</wps:Status>
-	<wps:ProcessOutputs>
-		<wps:Output>
-			<ows:Identifier >result</ows:Identifier>
-			<ows:Title >computed results</ows:Title>
-			<ows:Abstract>results of the computation</ows:Abstract>
-			<wps:Reference 
-				mimeType="application/x-om-u+xml" 
-				schema="http://schemas.opengis.net/om/2.0/observation.xsd"
-				encoding="UTF-8"
-				href="http://128.176.133.106:8080/ups/RetrieveResultServlet?id=78dea576-b98a-4e1c-a34d-33be09cb7dccom_schedules"/>
-		</wps:Output>
-	</wps:ProcessOutputs>
+        xmlns:wps="http://www.opengis.net/wps/1.0.0"
+        xmlns:ows="http://www.opengis.net/ows/1.1"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" serviceInstance="http://v-soknos.uni-muenster.de:8080/nilu-wps/WebProcessingService?REQUEST=GetCapabilities&amp;SERVICE=WPS" xml:lang="en-US" service="WPS" version="1.0.0">
+        <wps:Process wps:processVersion="2">
+                <ows:Identifier>org.uncertweb.ems.EMSalgorithm</ows:Identifier>
+                <ows:Title>EMSalgorithm</ows:Title>
+                <ows:Abstract>Provides exposure estimation towards air pollution.</ows:Abstract>
+        </wps:Process>
+        <wps:Status creationTime="2012-11-30T17:19:22.805+01:00">
+                <wps:ProcessSucceeded>Process has succeeded</wps:ProcessSucceeded>
+        </wps:Status>
+        <wps:ProcessOutputs>
+                <wps:Output>
+                        <ows:Identifier >result</ows:Identifier>
+                        <ows:Title >computed results</ows:Title>
+                        <ows:Abstract>results of the computation</ows:Abstract>
+                        <wps:Reference
+                                mimeType="application/x-om-u+xml"
+                                schema="http://schemas.opengis.net/om/2.0/observation.xsd"
+                                encoding="UTF-8"
+                                href="http://giv-uw.uni-muenster.de/data/realisations/ems_realisation1.xml"/>
+                </wps:Output>
+        </wps:ProcessOutputs>
 </wps:ExecuteResponse>
