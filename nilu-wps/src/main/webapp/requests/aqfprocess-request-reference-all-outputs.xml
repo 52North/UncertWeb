@@ -1,0 +1,65 @@
+
+<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0  http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+
+  <ows:Identifier>org.uncertweb.wps.AirQualityForecastProcess</ows:Identifier>  
+  <wps:DataInputs>  
+    <wps:Input>
+      <ows:Identifier>sdate</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>20120206</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>    
+    <wps:Input>
+      <ows:Identifier>edate</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>20120206</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>nspd</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>0</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>nens</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>25</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>nhrs</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>24</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>cmpd</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>nox</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>     
+    <wps:Input>
+      <ows:Identifier>site</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>oslo</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>    
+  </wps:DataInputs>  
+  <wps:ResponseForm>
+    <wps:ResponseDocument>
+      <wps:Output asReference="true" mimeType="application/x-netcdf">
+        <ows:Identifier>predicted-concentrations</ows:Identifier>
+      </wps:Output>
+      <wps:Output asReference="true" mimeType="application/x-netcdf">
+        <ows:Identifier>predicted-concentrations_06h</ows:Identifier>
+      </wps:Output>
+      <wps:Output asReference="true" mimeType="application/x-netcdf">
+        <ows:Identifier>predicted-concentrations_12h</ows:Identifier>
+      </wps:Output>
+      <wps:Output asReference="true" mimeType="application/x-netcdf">
+        <ows:Identifier>predicted-concentrations_18h</ows:Identifier>
+      </wps:Output>
+    </wps:ResponseDocument>
+  </wps:ResponseForm>  
+</wps:Execute>

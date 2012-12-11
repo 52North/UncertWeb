@@ -49,6 +49,9 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 	private final String inputIDNumberOfForecastHours = "nhrs";
 	private final String inputIDReceptorPoints = "recp";
 	private final String outputIDPredictedConcentrations = "predicted-concentrations";
+	private final String outputIDPredictedConcentrations_06h = "predicted-concentrations_06h";
+	private final String outputIDPredictedConcentrations_12h = "predicted-concentrations_12h";
+	private final String outputIDPredictedConcentrations_18h = "predicted-concentrations_18h";
 	
 	public static final String OS_Name = System.getProperty("os.name");
 
@@ -119,15 +122,16 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 
 	@Override
 	public Class<?> getOutputDataType(String arg0) {
-		if (arg0.equals(outputIDPredictedConcentrations)) {
+//		if (arg0.equals(outputIDPredictedConcentrations)) {
 			return UncertWebIODataBinding.class;
-		}
-		return null;
+//		}
+//		return null;
 	}
 
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 		
+		String[] resultFileNames = new String[]{};		
 		String resultFileFullPath = "";
 		
 		if(!testRun){
@@ -222,17 +226,19 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 		/*
 		 * search base results directory
 		 */
-		listFiles(id, true);
+		listFiles2(id, true);
 		
-		resultFileName = listFiles(id, false);
+		resultFileNames = listFiles2(id, false);
 		
-		resultFileFullPath = tmpDir + File.separator + resultFileName;
+		return createResultMap(resultFileNames, id);
 		
-		try {
-			ftpUtil.download(resultFileFullPath, id, resultFileName);
-		} catch (IOException e) {
-			logger.error(e);
-		}
+//		resultFileFullPath = tmpDir + File.separator + resultFileName;
+//		
+//		try {
+//			ftpUtil.download(resultFileFullPath, id, resultFileName);
+//		} catch (IOException e) {
+//			logger.error(e);
+//		}
 		
 		}else{		
 
@@ -374,5 +380,104 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 		}
 		return resultName;
 	}
+	
+	private String[] listFiles2(String id, boolean searchResultsBaseDir){
+		
+		String[] files = new String[]{};
+		
+		boolean finished = false;
+		
+		while (true) {
 
+			if (abort) {
+				break;
+			}
+
+			try {				
+				if(searchResultsBaseDir){
+					files = ftpUtil.list();
+				}else{
+					files = ftpUtil.list(id);	
+					if(files.length > 0){
+						/*
+						 * result/{id} directory was searched and something was found
+						 * assume it is the resulting netcdf file
+						 */
+						return files;						
+					}					
+				}
+				for (String string : files) {
+					logger.info("found file: " + string);
+					
+					if(searchResultsBaseDir){
+						if(string.contains(id)) {
+							logger.info("found result subdirectory for id " + id);
+							finished = true;
+							break;
+						}
+					}
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+
+			if (finished) {
+				break;
+			}
+
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				break;
+			}
+
+		}
+		return files;
+	}
+
+	private Map<String, IData> createResultMap(String[] resultFileNames, String id){
+
+		Map<String, IData> result = new HashMap<String, IData>();
+		
+		for (String string : resultFileNames) {
+			
+			string = string.substring(string.lastIndexOf("/") + 1);
+			
+			String resultFileFullPath = tmpDir + File.separator + string;
+			
+			try {
+				ftpUtil.download(resultFileFullPath, id, string);
+			} catch (IOException e) {
+				logger.error(e);
+			}
+			
+			NetCDFBinding ndw = null;
+			
+			try {
+				ndw = new NetCDFBinding(new NetcdfUWFile(NetcdfFile.open(resultFileFullPath)));
+				
+			} catch (NetcdfUWException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			if(string.contains("_06h")){
+				result.put(outputIDPredictedConcentrations_06h, ndw);
+			}else if(string.contains("_12h")){
+				result.put(outputIDPredictedConcentrations_12h, ndw);
+			}else if(string.contains("18h")){
+				result.put(outputIDPredictedConcentrations_18h, ndw);
+			}else {
+				result.put(outputIDPredictedConcentrations, ndw);
+			}
+			
+		}
+		
+		return result;
+	}
+	
 }

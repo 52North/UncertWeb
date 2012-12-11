@@ -119,6 +119,58 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					</Supported>
 				</ComplexOutput>
 			</Output>
+			<Output>
+				<ows:Identifier>predicted-concentrations_06h</ows:Identifier>
+				<ows:Title>computed results</ows:Title>
+				<ows:Abstract>results of the computation</ows:Abstract>
+				<ComplexOutput>
+					<Default>	
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
+			<Output>
+				<ows:Identifier>predicted-concentrations_12h</ows:Identifier>
+				<ows:Title>computed results</ows:Title>
+				<ows:Abstract>results of the computation</ows:Abstract>
+				<ComplexOutput>
+					<Default>	
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
+			
+			<Output>
+				<ows:Identifier>predicted-concentrations_18h</ows:Identifier>
+				<ows:Title>computed results</ows:Title>
+				<ows:Abstract>results of the computation</ows:Abstract>
+				<ComplexOutput>
+					<Default>	
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/x-netcdf</MimeType>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
 		</ProcessOutputs>
 	</ProcessDescription>
 </wps:ProcessDescriptions>
