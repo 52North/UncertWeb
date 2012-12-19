@@ -37,6 +37,14 @@
 				</LiteralData>
 			</Input>
 			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>households-fraction</ows:Identifier>
+				<ows:Title></ows:Title>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>genpop-households</ows:Identifier>
 				<ows:Title></ows:Title>
 				<LiteralData>
@@ -71,6 +79,22 @@
 			</Input>
 			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>municipalities</ows:Identifier>
+				<ows:Title></ows:Title>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>noCases</ows:Identifier>
+				<ows:Title></ows:Title>
+				<LiteralData>
+				<ows:DataType ows:reference="xs:string"/>
+					<ows:AnyValue></ows:AnyValue>
+				</LiteralData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>noCasesNew</ows:Identifier>
 				<ows:Title></ows:Title>
 				<LiteralData>
 				<ows:DataType ows:reference="xs:string"/>

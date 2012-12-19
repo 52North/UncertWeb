@@ -25,6 +25,12 @@
 				<wps:LiteralData>org.uncertweb.wps.SyntheticPopulationProcess</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
+    <wps:Input>
+      <ows:Identifier>households-fraction</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>0.1</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>    
 		<wps:Input>
 			<ows:Identifier>genpop-households</ows:Identifier>
 			<wps:Data>
@@ -55,12 +61,18 @@
 				<wps:LiteralData>625</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
-		<wps:Input>
-			<ows:Identifier>isBootstrapping</ows:Identifier>
-			<wps:Data>
-				<wps:LiteralData>false</wps:LiteralData>
-			</wps:Data>
-		</wps:Input>
+    <wps:Input>
+      <ows:Identifier>noCases</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>28764</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>noCasesNew</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>28764</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
 		<wps:Input>
 			<ows:Identifier>isModelUncertainty</ows:Identifier>
 			<wps:Data>

@@ -30,6 +30,9 @@ import net.opengis.om.x20.OMMeasurementCollectionDocument;
 import net.opengis.om.x20.OMTextObservationCollectionDocument;
 import net.opengis.om.x20.UWMeasurementType;
 import net.opengis.om.x20.UWTextObservationType;
+import net.opengis.ows.x11.ExceptionReportDocument.ExceptionReport;
+import net.opengis.ows.x11.impl.ExceptionReportDocumentImpl;
+import net.opengis.ows.x11.impl.ExceptionReportDocumentImpl.ExceptionReportImpl;
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
 import net.opengis.samplingSpatial.x20.ShapeType;
 import net.opengis.wps.x100.DataType;
@@ -117,6 +120,8 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 	 */	
 	private static final String INPUT_ID_GENPOP = "genpop-households"; 
 	
+	private static final String INPUT_ID_HOUSEHOLD_FRACTION = "households-fraction"; 
+	
 	
 	/**
 	 * identifier for static input: Number of household activity sets created by rwdata
@@ -174,6 +179,10 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 	
 	private final String INPUT_ID_UNCERT_AREA = "uncert-area";
 	
+	private final String inputIDNoCases = "noCases";
+	
+	private final String inputIDNoCasesNew = "noCasesNew";
+	
 	
 	/**
 	 * identifier for the first Albatross output
@@ -217,7 +226,8 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		 * 1: Parse input data
 		 */
 		
-		HashMap<String, Object> inputs = new HashMap<String, Object>();
+		HashMap<String, Object> inputsSynPop = new HashMap<String, Object>();
+		HashMap<String, Object> inputsAlbatross = new HashMap<String, Object>();
 		
 		// Retrieve syn pop model service URL from input. Must exist!
 		IData iData = inputData.get(INPUT_ID_SYN_POP_MODEL_SERVICE_URL).get(0);
@@ -239,41 +249,60 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		
 		// Retrieve genpop-households from input. Must exist!
 		iData = inputData.get(INPUT_ID_GENPOP).get(0);
-		inputs.put(INPUT_ID_GENPOP, iData.getPayload());
+		inputsAlbatross.put(INPUT_ID_GENPOP, iData.getPayload());
+		
+		// Retrieve genpop-households from input. Must exist!
+		iData = inputData.get(INPUT_ID_HOUSEHOLD_FRACTION).get(0);
+		inputsSynPop.put(INPUT_ID_HOUSEHOLD_FRACTION, iData.getPayload());
 		
 		// Retrieve rwdata-households from input. Must exist!
 		iData = inputData.get(INPUT_ID_RWDATA).get(0);
-		inputs.put(INPUT_ID_RWDATA, iData.getPayload());
+		inputsAlbatross.put(INPUT_ID_RWDATA, iData.getPayload());
+		inputsSynPop.put(INPUT_ID_RWDATA, iData.getPayload());
 		
 		// Retrieve postcode-areas from input. Must exist!
 		iData = inputData.get(INPUT_ID_POSTAL_CODE_AREAS).get(0);
-		inputs.put(INPUT_ID_POSTAL_CODE_AREAS, iData.getPayload());
+		inputsAlbatross.put(INPUT_ID_POSTAL_CODE_AREAS, iData.getPayload());
+		inputsSynPop.put(INPUT_ID_POSTAL_CODE_AREAS, iData.getPayload());
 		
 		// Retrieve zones from input. Must exist!
 		iData = inputData.get(INPUT_ID_ZONES).get(0);
-		inputs.put(INPUT_ID_ZONES, iData.getPayload());
+		inputsAlbatross.put(INPUT_ID_ZONES, iData.getPayload());
+		inputsSynPop.put(INPUT_ID_ZONES, iData.getPayload());
 		
 		// Retrieve municipalities from input. Must exist!
 		iData = inputData.get(INPUT_ID_MUNICIPALITIES).get(0);
-		inputs.put(INPUT_ID_MUNICIPALITIES, iData.getPayload());
+		inputsAlbatross.put(INPUT_ID_MUNICIPALITIES, iData.getPayload());
+		inputsSynPop.put(INPUT_ID_MUNICIPALITIES, iData.getPayload());
 		
 		// Retrieve municipalities from input. Must exist!
 		iData = inputData.get(INPUT_ID_IS_MODEL_UNCERTAINTY).get(0);
-		inputs.put(INPUT_ID_IS_MODEL_UNCERTAINTY, iData.getPayload());
+		inputsAlbatross.put(INPUT_ID_IS_MODEL_UNCERTAINTY, iData.getPayload());
+		inputsSynPop.put(INPUT_ID_IS_MODEL_UNCERTAINTY, iData.getPayload());
+		
+		// Retrieve municipalities from input. Must exist!
+		iData = inputData.get(inputIDNoCases).get(0);
+		inputsAlbatross.put(inputIDNoCases, iData.getPayload());
+		inputsSynPop.put(inputIDNoCases, iData.getPayload());
+		
+		// Retrieve municipalities from input. Must exist!
+		iData = inputData.get(inputIDNoCasesNew).get(0);
+		inputsAlbatross.put(inputIDNoCasesNew, iData.getPayload());
+		inputsSynPop.put(inputIDNoCasesNew, iData.getPayload());
 		
 		// Retrieve realisations from input. Must exist!
 		iData = inputData.get(INPUT_ID_NUMBER_OF_REALISATIONS).get(0);
 		numberOfRealisations = (Integer) iData.getPayload();
 		
 		// set 'isBootstrapping' to true (as default)
-		inputs.put(INPUT_ID_IS_BOOTSTRAPPING, new Boolean(true));
+		inputsSynPop.put(INPUT_ID_IS_BOOTSTRAPPING, new Boolean(true));
 		
 		List<IData> zeroToNInputs = null;
 		
 		try{
 			zeroToNInputs = inputData.get(INPUT_ID_UNCERT_LINK);
 			if(zeroToNInputs != null){
-				inputs.put(INPUT_ID_UNCERT_LINK, zeroToNInputs);
+				inputsAlbatross.put(INPUT_ID_UNCERT_LINK, zeroToNInputs);
 			}
 		}catch (Exception e) {
 			logger.info("No uncert links provided");
@@ -282,7 +311,7 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		try {			
 			zeroToNInputs = inputData.get(INPUT_ID_UNCERT_AREA);
 			if(zeroToNInputs != null){
-				inputs.put(INPUT_ID_UNCERT_AREA, zeroToNInputs);
+				inputsAlbatross.put(INPUT_ID_UNCERT_AREA, zeroToNInputs);
 			}
 		} catch (Exception e) {
 			logger.info("No uncert areas provided");
@@ -313,7 +342,7 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			 */
 			
 			//build execute document
-			ExecuteDocument execDoc = this.createExecuteDocument(popModelServiceURL, synPopProcessID, inputs);
+			ExecuteDocument execDoc = this.createExecuteDocument(popModelServiceURL, synPopProcessID, inputsSynPop);
 			
 			
 			//execute operation
@@ -340,10 +369,10 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			}
 			
 			//adjust inputs map
-			inputs.put(INPUT_ID_EXPORT_FILE, exportPath);
-			inputs.put(INPUT_ID_EXPORT_FILE_BIN, exportBinPath);
-			inputs.put(INPUT_ID_RANDOM_NUMBER_SEED, new Integer(1));
-			inputs.remove(INPUT_ID_IS_BOOTSTRAPPING);
+			inputsAlbatross.put(INPUT_ID_EXPORT_FILE, exportPath);
+			inputsAlbatross.put(INPUT_ID_EXPORT_FILE_BIN, exportBinPath);
+			inputsAlbatross.put(INPUT_ID_RANDOM_NUMBER_SEED, new Integer(1));
+			inputsAlbatross.remove(INPUT_ID_IS_BOOTSTRAPPING);
 			
 			
 			/*
@@ -352,7 +381,7 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			 */
 			
 			//build execute document
-			execDoc = this.createExecuteDocument(modelServiceURL, modelProcessID, inputs, new String []{"om_schedules"});
+			execDoc = this.createExecuteDocument(modelServiceURL, modelProcessID, inputsAlbatross, new String []{"om_schedules"});
 			
 			
 			//execute request
@@ -769,9 +798,19 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 	 */
 	private ExecuteResponseDocument executeRequest(ExecuteDocument execDoc, String wpsURL) {
 		try {
-			ExecuteResponseDocument response = (ExecuteResponseDocument) WPSClientSession.getInstance().execute(wpsURL, execDoc);
 			
-			return response;
+			Object responseObject = WPSClientSession.getInstance().execute(wpsURL, execDoc);
+			if(responseObject instanceof ExecuteResponseDocument){				
+				return (ExecuteResponseDocument) responseObject;				
+			}else if(responseObject instanceof ExceptionReport){
+				logger.debug(responseObject);
+				logger.debug(((ExceptionReport)responseObject).getExceptionArray(0).toString());
+				this.errors.add(((ExceptionReport)responseObject).getExceptionArray(0).toString());
+			}else if(responseObject instanceof ExceptionReportDocumentImpl){
+				logger.debug(responseObject);
+				logger.debug(((ExceptionReportDocumentImpl)responseObject));
+			}
+			return null;
 		} catch (WPSClientException e) {
 			this.errors.add(e.getMessage());
 			return null;
@@ -801,6 +840,9 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		else if (id.equals(INPUT_ID_GENPOP)) {
 			return LiteralStringBinding.class;
 		}
+		else if (id.equals(INPUT_ID_HOUSEHOLD_FRACTION)) {
+			return LiteralStringBinding.class;
+		}
 		else if (id.equals(INPUT_ID_RWDATA)) {
 			return LiteralStringBinding.class;
 		}
@@ -818,6 +860,12 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		}
 		else if (id.equals(INPUT_ID_UNCERT_AREA) || id.equals(INPUT_ID_UNCERT_LINK)) {
 				return XMLAnyDataBinding.class;
+		}
+		if(id.equals(inputIDNoCases)){
+			return LiteralStringBinding.class;
+		}
+		if(id.equals(inputIDNoCasesNew)){
+			return LiteralStringBinding.class;
 		}
 		return null;
 	}
