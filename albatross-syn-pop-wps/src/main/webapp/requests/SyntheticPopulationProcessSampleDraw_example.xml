@@ -5,9 +5,9 @@
 	<ows:Identifier>org.uncertweb.wps.SyntheticPopulationProcess</ows:Identifier>
 	<wps:DataInputs>
 		<wps:Input>
-			<ows:Identifier>genpop-households</ows:Identifier>
+			<ows:Identifier>households-fraction</ows:Identifier>
 			<wps:Data>
-				<wps:LiteralData>357</wps:LiteralData>
+				<wps:LiteralData>0.1</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>

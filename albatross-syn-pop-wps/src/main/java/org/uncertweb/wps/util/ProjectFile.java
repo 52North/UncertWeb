@@ -131,7 +131,7 @@ public class ProjectFile {
 			out.println(dataLocation+"times-nl.bin");
 			out.println(dataLocation+"exportBin.bin");
 			out.println(dataLocation+"test.prd");
-			out.println(dataLocation+"test_syn.txt");
+			out.println(dataLocation+"Rott-2000_syn1.txt");
 			out.println(dataLocation+"relmat2004.dat");
 			out.println(dataLocation+"wrkmat2004.dat");
 			out.println(dataLocation+"sampleBa00.dat");
@@ -168,6 +168,50 @@ public class ProjectFile {
 			out.close();
 		}
 		
+		
+	}
+	
+	public static void newSysParProjectFile(String projectFileName, String fileLocation, String householdFraction){
+		File projectFile = new File(fileLocation+File.separator+projectFileName);
+		
+		PrintWriter out = null;
+		
+		try {
+			out = new PrintWriter(new BufferedWriter(new FileWriter(projectFile)));
+			out.println("1");
+			out.println("1");
+			out.println("base setting\tscenario label");
+			out.println("100.0\tCar costs - Off peak hours");
+			out.println("100.0\tCar costs - Peak hours");
+			out.println("100.0\train costs - Before 9 am");
+			out.println("100.0\tTrain costs - After 9 am");
+			out.println("100.0\tBTM costs - Younger 65 years");
+			out.println("100.0\tBTM costs - 65 years or older");
+			out.println("100.0\tCar travel time - Off peak hours");
+			out.println("100.0\tCar travel time - Peak hours");
+			out.println("100.0\tPublic transport travel time");
+			out.println(householdFraction);
+			out.println("0.324\tRatio living in females of total");
+			out.println("0.172\tRatio single females of total");
+			out.println("");
+			out.println("1");
+			out.println("1");
+			out.println("base setting\tscenario label");
+			out.println("-0.02310\t-0.00252\tSelect work");
+			out.println("-0.05690\t-0.00411\tSelect fixed act");
+			out.println("-0.06000\t-0.00654\tChain fixed act and work");
+			out.println("-0.00434\t-0.00047\tWork location same as previous");
+			out.println("-0.03170\t-0.00345\tWork location, municipality");
+			out.println("-0.06259\t-0.00453\tSelect flexible activity");
+				
+		} catch (IOException e) {
+			log.info("error while creating new InputDraw project file: "+e.getLocalizedMessage());
+			throw new RuntimeException("error while creating new InputDraw project file: "+e.getLocalizedMessage());
+		}
+		finally{
+			out.flush();
+			out.close();
+		}
 		
 	}
 }

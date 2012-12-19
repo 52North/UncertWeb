@@ -26,6 +26,7 @@ import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralBooleanBinding;
+import org.n52.wps.io.data.binding.literal.LiteralDoubleBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
 import org.n52.wps.server.AbstractAlgorithm;
@@ -56,7 +57,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private static int folderRemoveCycle;
 	private static int processInterruptTime;
 
-	private final String inputIDGenpopHouseholds = "genpop-households";
+	private final String inputIDHouseholdsFraction = "households-fraction";
 	private final String inputIDRwdataHouseholds = "rwdata-households";
 	private final String inputIDMunicipalities = "municipalities";
 	private final String inputIDZones = "zones";
@@ -70,7 +71,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private final String inputIDNoCases = "noCases";
 	private final String inputIDNoCasesNew = "noCasesNew";
 
-	private String genpopHouseholds;
+	private String householdFraction;
 	private String rwdataHouseholds;
 	private String municipalities;
 	private String zones;
@@ -135,8 +136,8 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 	@Override
 	public Class<?> getInputDataType(String id) {
-		if (id.equals(inputIDGenpopHouseholds)) {
-			return LiteralIntBinding.class;
+		if (id.equals(inputIDHouseholdsFraction)) {
+			return LiteralDoubleBinding.class;
 		}
 		if (id.equals(inputIDRwdataHouseholds)) {
 			return LiteralIntBinding.class;
@@ -265,13 +266,13 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			throw new NullPointerException("inputData cannot be null");
 
 		List<IData> genpopHousholdsList = inputData
-				.get(inputIDGenpopHouseholds);
+				.get(inputIDHouseholdsFraction);
 
 		if (genpopHousholdsList == null || genpopHousholdsList.isEmpty())
 			throw new IllegalArgumentException(
 					"number of genpop-households is missing");
 
-		genpopHouseholds = ((LiteralIntBinding) genpopHousholdsList.get(0))
+		householdFraction = ((LiteralDoubleBinding) genpopHousholdsList.get(0))
 				.getPayload().toString();
 
 		List<IData> rwdataHouseholdsList = inputData
@@ -358,8 +359,10 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 		// create projectFile...
 		projectFile = new ProjectFile("ProjectFile.prj", ws.getWorkspaceFolder().getPath(),
-				ws.getWorkspaceFolder().getPath(), genpopHouseholds, rwdataHouseholds,
+				ws.getWorkspaceFolder().getPath(), householdFraction, rwdataHouseholds,
 				municipalities, zones, postcodeAreas,isModelUncertainty);
+		
+		ProjectFile.newSysParProjectFile("SYSpars_test.txt", ws.getWorkspaceFolder().getPath(), householdFraction);
 		
 		
 		//supervise the newly created folder and remove them after a specific time

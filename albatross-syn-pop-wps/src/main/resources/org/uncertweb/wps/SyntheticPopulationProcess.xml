@@ -10,11 +10,11 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 		<ows:Metadata xlink:title="model"/>
 		<DataInputs>
 		<Input minOccurs="1" maxOccurs="1">
-				<ows:Identifier>genpop-households</ows:Identifier>
-				<ows:Title>Number of households created by Genpop and stored in “test.obs”</ows:Title>
+				<ows:Identifier>households-fraction</ows:Identifier>
+				<ows:Title>Fractions of household sample used by Genpop.</ows:Title>
 				<ows:Abstract></ows:Abstract>
 				<LiteralData>
-					<ows:DataType ows:reference="xs:integer"></ows:DataType>
+					<ows:DataType ows:reference="xs:double"></ows:DataType>
 					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
@@ -63,7 +63,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
-			<Input minOccurs="1" maxOccurs="1">
+			<Input minOccurs="0" maxOccurs="1">
 				<ows:Identifier>noCases</ows:Identifier>
 				<ows:Title>number of cases</ows:Title>
 				<ows:Abstract></ows:Abstract>
@@ -72,7 +72,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<ows:AnyValue></ows:AnyValue>
 				</LiteralData>
 			</Input>
-			<Input minOccurs="1" maxOccurs="1">
+			<Input minOccurs="0" maxOccurs="1">
 				<ows:Identifier>noCasesNew</ows:Identifier>
 				<ows:Title>same number of cases in the new version of the file</ows:Title>
 				<ows:Abstract></ows:Abstract>
