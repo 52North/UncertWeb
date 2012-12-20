@@ -6,7 +6,6 @@ import org.n52.sos.ds.IConfigDAO;
 import org.n52.sos.ds.IDAOFactory;
 import org.n52.sos.ds.IInsertObservationOperationDAO;
 import org.n52.sos.ds.IRegisterSensorDAO;
-import org.n52.sos.ds.pgsql.PGConnectionPool;
 import org.n52.sos.ds.pgsql.PGDAOConstants;
 import org.n52.sos.ds.pgsql.PGSQLRegisterSensorDAO;
 import org.n52.sos.ogc.ows.OwsExceptionReport;

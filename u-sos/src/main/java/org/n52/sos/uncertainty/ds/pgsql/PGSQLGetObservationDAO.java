@@ -27,7 +27,6 @@ import org.n52.sos.ds.IGetObservationDAO;
 import org.n52.sos.ds.pgsql.PGConnectionPool;
 import org.n52.sos.ds.pgsql.PGDAOConstants;
 import org.n52.sos.ds.pgsql.ResultSetUtilities;
-import org.n52.sos.ogc.filter.FilterConstants;
 import org.n52.sos.ogc.filter.TemporalFilter;
 import org.n52.sos.ogc.gml.time.TimeInstant;
 import org.n52.sos.ogc.om.AbstractSosObservation;

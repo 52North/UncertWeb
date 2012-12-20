@@ -13,8 +13,6 @@ import org.n52.sos.ogc.om.features.samplingFeatures.SosSamplingSurface;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionCode;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionLevel;
-import org.n52.sos.uncertainty.decode.impl.OM2Constants;
-import org.uncertweb.api.gml.geometry.RectifiedGrid;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
