@@ -78,8 +78,10 @@ CREATE TABLE u_realisation (
   weight NUMERIC,
   continuous_values NUMERIC[],
   categorical_values VARCHAR(50)[],
+  id VARCHAR(100) DEFAULT 'single',
+  sampling_method_description TEXT;
 
-  PRIMARY KEY (realisation_id)
+  PRIMARY KEY (realisation_id, id)
 );
 
 
@@ -117,4 +119,4 @@ ALTER TABLE phenomenon DROP CONSTRAINT phenomenon_valuetype_check;
 ALTER TABLE phenomenon ADD CHECK (valuetype IN ('uncertaintyType', 'booleanType', 'countType', 'textType', 'categoryType', 'numericType', 'isoTimeType', 'spatialType', 'commonType','externalReferenceType'));
 
 -- check uncertainty types
--- ALTER TABLE u_uncertainty ADD CHECK (uncertainty_type IN ('norm_dist', 'mean', 'real'));
+-- ALTER TABLE u_uncertainty ADD CHECK (uncertainty_type IN ('norm_dist', 'mean', 'real', ));

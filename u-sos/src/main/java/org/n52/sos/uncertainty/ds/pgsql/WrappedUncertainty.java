@@ -22,6 +22,7 @@ public final class WrappedUncertainty {
 	 * @param uncertainty the uncertainty itself
 	 */
 	public WrappedUncertainty(String observationID, String gmlID, String valueUnit, IUncertainty uncertainty) {
+		
 		this.obsID = observationID;
 		this.gmlID = gmlID;
 		this.valueUnit = valueUnit;

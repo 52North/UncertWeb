@@ -15,6 +15,9 @@ public final class PGDAOUncertaintyConstants {
 	public static final String u_normalDistType = "norm_dist";
 	public static final String u_meanType = "mean";
 	public static final String u_realType = "real";
+	public static final String u_randomSType = "ran_sam";
+	public static final String u_systematicSType = "sys_sam";
+	public static final String u_unknownSType = "unk_sam";
 	
 	// /////////////////////////////////////////////////////////////////////////////////
 	// table names
@@ -55,5 +58,12 @@ public final class PGDAOUncertaintyConstants {
 	public static final String uRWeightCn = "weight";
 	public static final String uRConValsCn = "continuous_values";
 	public static final String uRCatValsCn = "categorical_values";
+	public static final String uRIdCn = "id";
+	public static final String uRSamMethDescCn = "sampling_method_description";
 	
+	// /////////////////////////////////////////////////////////////////////////////////
+	// other constants
+	
+	// special result filter constant to limit the number of realisations in one sample
+	public static final String u_numOfReals = "numberOfRealisations";
 }

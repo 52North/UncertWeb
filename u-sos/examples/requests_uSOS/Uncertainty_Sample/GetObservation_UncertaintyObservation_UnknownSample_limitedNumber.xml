@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--=============================================================
+  This example requests some observations with or without uncertainty
+  ==============================================================-->
+
+<GetObservation xmlns="http://www.opengis.net/sos/1.0"
+    xmlns:om="http://www.opengis.net/om/2.0"
+    xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/sos/1.0
+  http://www.opengis.net/om/2.0
+  http://v-mars.uni-muenster.de/uncertweb/schema/profiles/om/UncertWeb_OM.xsd
+  http://schemas.opengis.net/sos/1.0.0/sosGetObservation.xsd"
+  service="SOS" version="1.0.0" srsName="urn:ogc:def:crs:EPSG::4326">
+
+
+  <offering>WATER_SPEED</offering>
+  <procedure>urn:ogc:object:feature:Sensor:IFGI:uw-sensor-7</procedure>
+  <observedProperty>urn:ogc:def:phenomenon:OGC:1.0.30:waterspeed</observedProperty>
+  
+  <result>
+    <ogc:PropertyIsEqualTo>
+      	<ogc:PropertyName>numberOfRealisations</ogc:PropertyName>
+      	<ogc:Literal>2</ogc:Literal>
+    </ogc:PropertyIsEqualTo>
+  </result>
+  
+  <responseFormat>text/xml;subtype=&quot;om/2.0.0&quot;</responseFormat>
+  <resultModel>om:OM_UncertaintyObservation</resultModel>
+
+</GetObservation>

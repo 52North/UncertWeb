@@ -8,11 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -20,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.n52.sos.Sos1Constants;
 import org.n52.sos.Sos1Constants.GetObservationParams;
-import org.n52.sos.Sos2Constants;
 import org.n52.sos.SosConfigurator;
 import org.n52.sos.SosConstants;
 import org.n52.sos.SosConstants.FirstLatest;
@@ -30,6 +27,7 @@ import org.n52.sos.ds.IGetObservationDAO;
 import org.n52.sos.ds.pgsql.PGConnectionPool;
 import org.n52.sos.ds.pgsql.PGDAOConstants;
 import org.n52.sos.ds.pgsql.ResultSetUtilities;
+import org.n52.sos.ogc.filter.FilterConstants;
 import org.n52.sos.ogc.filter.TemporalFilter;
 import org.n52.sos.ogc.gml.time.TimeInstant;
 import org.n52.sos.ogc.om.AbstractSosObservation;
@@ -53,8 +51,13 @@ import org.n52.sos.uncertainty.ogc.om.UNCUncertaintyObservation;
 import org.n52.sos.utilities.JTSUtilities;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
+import org.uncertml.sample.AbstractRealisation;
+import org.uncertml.sample.AbstractSample;
 import org.uncertml.sample.CategoricalRealisation;
 import org.uncertml.sample.ContinuousRealisation;
+import org.uncertml.sample.RandomSample;
+import org.uncertml.sample.SystematicSample;
+import org.uncertml.sample.UnknownSample;
 import org.uncertml.statistic.Mean;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
@@ -92,11 +95,12 @@ public class PGSQLGetObservationDAO extends
 	 * 
 	 * @param obsIDs
 	 *            as a list
+	 * @param numberOfRealisations maximum number of realisations per sample
 	 * @return list of observation IDs and attached uncertainties; null, if
 	 *         obsIDs is empty
 	 * @throws OwsExceptionReport
 	 */
-	private List<WrappedUncertainty> getUncertaintyData(List<String> obsIDs)
+	private List<WrappedUncertainty> getUncertaintyData(List<String> obsIDs, int numberOfRealisations)
 			throws OwsExceptionReport {
 
 		if (obsIDs.isEmpty() || obsIDs.size() < 1) {
@@ -121,6 +125,10 @@ public class PGSQLGetObservationDAO extends
 			Double weight;
 			BigDecimal[] realConDecs;
 			double[] realConValues;
+			String singleRealID;
+			String samplingMethodDescription;
+			boolean sampleType;
+			ArrayList<AbstractRealisation> reals;
 
 			IUncertainty unc;
 
@@ -128,6 +136,7 @@ public class PGSQLGetObservationDAO extends
 
 				// reset uncertainty
 				unc = null;
+				sampleType = false;
 
 				// get general data
 				obsID = rs.getString(PGDAOUncertaintyConstants.uOUObsIdCn);
@@ -193,12 +202,94 @@ public class PGSQLGetObservationDAO extends
 						unc = new CategoricalRealisation(
 								(String[]) catAr.getArray(), weight);
 					}
+				} else if (uncType.equals(PGDAOUncertaintyConstants.u_randomSType)
+						|| uncType.equals(PGDAOUncertaintyConstants.u_systematicSType)
+						|| uncType.equals(PGDAOUncertaintyConstants.u_unknownSType)) {
+					// sample (containing realisations)
+
+					weight = rs.getDouble(PGDAOUncertaintyConstants.uRWeightCn);
+
+					java.sql.Array conAr = rs
+							.getArray(PGDAOUncertaintyConstants.uRConValsCn);
+					java.sql.Array catAr = rs
+							.getArray(PGDAOUncertaintyConstants.uRCatValsCn);
+					
+					singleRealID = rs.getString(PGDAOUncertaintyConstants.uRIdCn);
+					samplingMethodDescription = rs.getString(PGDAOUncertaintyConstants.uRSamMethDescCn);
+					sampleType = true;
+
+					if (conAr != null) {
+						// continuous relisation
+
+						// convert BigDecimal[] to double[]
+						realConDecs = (BigDecimal[]) conAr.getArray();
+						realConValues = new double[realConDecs.length];
+
+						for (int i = 0; i < realConDecs.length; i++) {
+							realConValues[i] = realConDecs[i].doubleValue();
+						}
+						
+						reals = new ArrayList<AbstractRealisation>(1);
+						reals.add(new ContinuousRealisation(realConValues, weight, singleRealID));
+						
+						// create sample depending on uncertainty type
+						if (uncType.equals(PGDAOUncertaintyConstants.u_randomSType)) {
+							unc = new RandomSample(reals, samplingMethodDescription);
+						} else if (uncType.equals(PGDAOUncertaintyConstants.u_systematicSType)) {
+							unc = new SystematicSample(reals, samplingMethodDescription);
+						} else if (uncType.equals(PGDAOUncertaintyConstants.u_unknownSType)) {
+							unc = new UnknownSample(reals, samplingMethodDescription);
+						}
+
+					} else if (catAr != null) {
+						// categorical realisation
+						reals = new ArrayList<AbstractRealisation>(1);
+						reals.add(new CategoricalRealisation((String[]) catAr.getArray(), weight, singleRealID));
+						
+						// create sample depending on uncertainty type
+						if (uncType.equals(PGDAOUncertaintyConstants.u_randomSType)) {
+							unc = new RandomSample(reals, samplingMethodDescription);
+						} else if (uncType.equals(PGDAOUncertaintyConstants.u_systematicSType)) {
+							unc = new SystematicSample(reals, samplingMethodDescription);
+						} else if (uncType.equals(PGDAOUncertaintyConstants.u_unknownSType)) {
+							unc = new UnknownSample(reals, samplingMethodDescription);
+						}
+					}
 				}
 				// TODO add further uncertainty types here
 
 				if (unc != null) {
-					uncs.add(new WrappedUncertainty(obsID, gmlID, valueUnit,
-							unc));
+					if (sampleType) {
+						
+						boolean newUnc = true;
+						
+						// add realisation to an already existing sample
+						// check all listed observation's IDs
+						for (WrappedUncertainty wu : uncs) {
+							
+							if (obsID.equals(wu.getObservationID())) {
+								
+								// add realisation only, if maximum number of realisations for this sample has not been reached
+								if (numberOfRealisations == Integer.MIN_VALUE
+										|| ((AbstractSample) wu.getUncertainty()).getRealisations().size() < numberOfRealisations) {
+									((AbstractSample) wu.getUncertainty()).getRealisations().addAll(((AbstractSample) unc).getRealisations());
+								}
+								newUnc = false;
+								
+								// realisation should only be assigned to one observation (ID)
+								break;
+							}
+						}
+						// add realisation as new uncertainty
+						if (newUnc) {
+							uncs.add(new WrappedUncertainty(obsID, gmlID, valueUnit,
+									unc));
+						}
+						
+					} else {
+						uncs.add(new WrappedUncertainty(obsID, gmlID, valueUnit,
+								unc));
+					}
 				}
 			}
 
@@ -253,7 +344,9 @@ public class PGSQLGetObservationDAO extends
 		// append realisation colums
 		query.append(", " + PGDAOUncertaintyConstants.uRWeightCn + ", "
 				+ PGDAOUncertaintyConstants.uRConValsCn + ", "
-				+ PGDAOUncertaintyConstants.uRCatValsCn);
+				+ PGDAOUncertaintyConstants.uRCatValsCn + ", "
+				+ PGDAOUncertaintyConstants.uRIdCn + ", "
+				+ PGDAOUncertaintyConstants.uRSamMethDescCn);
 
 		// TODO add further uncertainty types' table colums here
 
@@ -405,6 +498,21 @@ public class PGSQLGetObservationDAO extends
 	public IObservationCollection getUncertainObservationCollection(
 			SosObservationCollection om1ObsCol) throws OwsExceptionReport {
 
+		return getUncertainObservationCollection(om1ObsCol, Integer.MIN_VALUE);
+	}
+	
+	/**
+	 * returns an O&M 2 observation collection including uncertainties
+	 * 
+	 * @param obsCollection
+	 *            O&M 1 observation collection
+	 * @param numberOfRealisations maximum number of realisations per sample
+	 * @return O&M 2 observation collection
+	 * @throws OwsExceptionReport
+	 */
+	public IObservationCollection getUncertainObservationCollection(
+			SosObservationCollection om1ObsCol, int numberOfRealisations) throws OwsExceptionReport {
+
 		IObservationCollection om2ObsCol = null;
 
 		if (om1ObsCol != null && om1ObsCol.getObservationMembers() != null
@@ -421,7 +529,7 @@ public class PGSQLGetObservationDAO extends
 
 			// get and add uncertainties
 			SosObservationCollection uncOM1ObsCol = null;
-			List<WrappedUncertainty> uncList = getUncertaintyData(obsIDs);
+			List<WrappedUncertainty> uncList = getUncertaintyData(obsIDs, numberOfRealisations);
 			uncOM1ObsCol = addUnc2OM1ObsCol(om1ObsCol, uncList);
 
 			// convert OM1 to OM2 observation collection
@@ -514,8 +622,6 @@ public class PGSQLGetObservationDAO extends
 
 		return om1ObsCol;
 	}
-
-
 
 	/**
 	 * creates a from and join clause 4 non spatial
@@ -932,7 +1038,8 @@ public class PGSQLGetObservationDAO extends
 	}// end getSingleObservationFromResultSet
 
 	public SosObservationCollection getObservation(
-			SosGetObservationRequest request) throws OwsExceptionReport {
+			SosGetObservationRequest request) throws OwsExceptionReport {	
+		
 		// setting a global "now" for this request
 		setNow(new DateTime());
 

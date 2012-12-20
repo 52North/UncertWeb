@@ -15,6 +15,7 @@ import org.n52.sos.Sos1Constants.GetObservationParams;
 import org.n52.sos.SosConfigurator;
 import org.n52.sos.SosConstants;
 import org.n52.sos.Util4Listeners;
+import org.n52.sos.ogc.filter.FilterConstants;
 import org.n52.sos.ogc.om.SosObservationCollection;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionCode;
@@ -25,6 +26,7 @@ import org.n52.sos.resp.ExceptionResp;
 import org.n52.sos.resp.ISosResponse;
 import org.n52.sos.resp.ObservationResponse;
 import org.n52.sos.uncertainty.decode.impl.OM2Constants;
+import org.n52.sos.uncertainty.ds.pgsql.PGDAOUncertaintyConstants;
 import org.n52.sos.uncertainty.ds.pgsql.PGSQLGetObservationDAO;
 import org.n52.sos.uncertainty.resp.MeasurementObservationResponse;
 import org.n52.sos.uncertainty.resp.UncertaintyObservationResponse;
@@ -81,6 +83,30 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 				boolean zipCompression = checkResponseFormat(sosRequest
 						.getResponseFormat());
 
+				// workaround: remove ResultFilter for a limited number of realisations
+				// per sample from request
+				int numOfReals = Integer.MIN_VALUE;
+				if (sosRequest.getResult() != null
+						&& sosRequest.getResult().getOperator().equals(FilterConstants.ComparisonOperator.PropertyIsEqualTo)
+						&& sosRequest.getResult().getPropertyName().equals(PGDAOUncertaintyConstants.u_numOfReals)) {
+					
+					numOfReals = Integer.parseInt(sosRequest.getResult().getValue());
+					
+					if (numOfReals < 0) {
+						OwsExceptionReport se = new OwsExceptionReport(
+								ExceptionLevel.DetailedExceptions);
+						LOGGER.error("A result filter limit to the number of returned realisations per sample has to be a non-negativ value.");
+						se.addCodedException(
+								ExceptionCode.NoApplicableCode,
+								null,
+								"A result filter limit to the number of returned realisations per sample has to be a non-negativ value.");
+						return new ExceptionResp(se.getDocument());
+					}
+					
+					// clear result filter
+					sosRequest.setResult(null);
+				}	
+								
 				SosObservationCollection obsCollection;
 
 				obsCollection = getDao().getObservation(sosRequest);
@@ -91,7 +117,7 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 					// ////////////////////////////////////////////
 					// XML response with uncertainties
 					IObservationCollection om2obsCol = ((PGSQLGetObservationDAO) getDao())
-							.getUncertainObservationCollection(obsCollection);
+							.getUncertainObservationCollection(obsCollection, numOfReals);
 
 					XBObservationEncoder xmlEncoder = new XBObservationEncoder();
 					XmlObject xb_obsCol;
@@ -148,7 +174,7 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 					// ////////////////////////////////////////////
 					// JSON response with uncertainties
 					IObservationCollection om2obsCol = ((PGSQLGetObservationDAO) getDao())
-							.getUncertainObservationCollection(obsCollection);
+							.getUncertainObservationCollection(obsCollection, numOfReals);
 
 					JSONObservationEncoder jsonEncoder = new JSONObservationEncoder();
 					ByteArrayOutputStream jsonOutputStream = new ByteArrayOutputStream();
