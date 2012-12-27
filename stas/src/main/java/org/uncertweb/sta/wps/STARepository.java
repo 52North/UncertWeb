@@ -210,12 +210,10 @@ public class STARepository implements IAlgorithmRepository {
 		}
 		IAlgorithm a = new GenericObservationAggregationProcess(id,
 				id, methods.sg, methods.tg, methods.sam, methods.tam);
-		if (!a.processDescriptionIsValid()) {
-			String msg = "ProcessDescription is not valid for " + id;
-//			ProcessDescriptionsDocument doc = ProcessDescriptionsDocument.Factory.newInstance();
-//			doc.addNewProcessDescriptions().addNewProcessDescription().set(a.getDescription());
-//			log.error(msg + ":\n" + doc.xmlText(UwXmlUtils.defaultOptions()));
-			throw new RuntimeException(msg);
+		try {
+			a.processDescriptionIsValid();
+		}catch (Exception e) {
+			throw new RuntimeException("ProcessDescription is not valid: "+e.getMessage());
 		}
 		return a;
 	}

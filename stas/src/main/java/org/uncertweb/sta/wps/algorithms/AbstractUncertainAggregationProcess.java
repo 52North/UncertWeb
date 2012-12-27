@@ -30,14 +30,14 @@ public abstract class AbstractUncertainAggregationProcess extends
 	/**
 	 * input that indicates the numbers of MonteCarlo runs
 	 */
-	public static final SingleProcessInput<Integer> NUMBER_REAL = new SingleProcessInput<Integer>(
+	public final SingleProcessInput<Integer> NUMBER_REAL = new SingleProcessInput<Integer>(
 			Constants.Process.Inputs.NUMBER_REAL, LiteralIntBinding.class,
 			0, 1, null, 1);
 
 	/**
 	 * Indicates the type of uncertainty that should be returned
 	 */
-	public static final SingleProcessInput<String> OUTPUT_UNCERTAINTY_TYPE = new SingleProcessInput<String>(
+	protected final SingleProcessInput<String> OUTPUT_UNCERTAINTY_TYPE = new SingleProcessInput<String>(
 			Constants.Process.Inputs.OUTPUT_UNCERTAINTY,
 			LiteralStringBinding.class, 0, 100, null,
 			"http://www.uncertml.org/samples/realisation");

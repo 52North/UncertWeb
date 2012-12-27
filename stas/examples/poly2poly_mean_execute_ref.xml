@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!--identifier of aggregation process; in this example, the observations are grouped spatially to polygons and then the maximum temperature for each polygon is computed-->
+  <ows:Identifier>urn:ogc:def:aggregationProcess:sIntersection:sMean:noTG:noTA</ows:Identifier>
+  <!--
+########################
+##Inputs
+########################
+-->
+  <wps:DataInputs>
+    <!--Variable whose values should be aggregated-->
+    <wps:Input>
+      <ows:Identifier>Variable</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:string">urn:ogc:def:phenomenon:OGC:cropYield</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+     <!-- also summary statistics of the realisations for each region may be queried from the STAS -->
+    <wps:Input>
+      <ows:Identifier>OutputUncertaintyType</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:string">http://www.uncertml.org/samples/continuous-realisation</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <!-- number of realisations; has to be lower or equal than number of realisations in input observations -->
+    <wps:Input>
+      <ows:Identifier>NumberOfRealisations</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:integer">100</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <!-- URL to Input O&M file file-->
+    <wps:Input>
+      <ows:Identifier>InputData</ows:Identifier>
+      <wps:Reference xlink:href="http://giv-uw.uni-muenster.de/data/om/yield_om_wheat.xml" mimeType="application/x-om-u+xml"/>
+    </wps:Input>
+	<!-- regions to which data should be aggregated; currently needs to be zipped shape file! -->
+    <wps:Input>
+      <ows:Identifier>InputRegions</ows:Identifier>
+      <wps:Reference xlink:href="http://giv-uw.uni-muenster.de/data/regions_shp.zip" mimeType="application/x-zipped-shp" encoding="base64"/>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:ResponseDocument>
+      <wps:Output asReference="true" mimeType="application/x-om-u+xml">
+        <ows:Identifier>AggregatedData</ows:Identifier>
+      </wps:Output>
+    </wps:ResponseDocument>
+  </wps:ResponseForm>
+</wps:Execute>

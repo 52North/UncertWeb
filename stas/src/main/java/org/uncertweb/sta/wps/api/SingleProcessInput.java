@@ -144,6 +144,22 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 				: handler;
 		this.handler.setNeededInputs(this.getProcessInputs());
 	}
+	
+	public SingleProcessInput(String id, String description, Class<? extends IData> bindingClass,
+			int min, int max, Set<String> allowedValues, T defaultValue,
+			ProcessInputHandler<T> handler) {
+		super(id);
+		this.description = description;
+		this.title = getInputTitle(id);
+		this.allowedValues = allowedValues;
+		this.defaultValue = defaultValue;
+		this.bindingClass = bindingClass;
+		this.minOccurs = new BigInteger(String.valueOf(min));
+		this.maxOccurs = new BigInteger(String.valueOf(max));
+		this.handler = (handler == null) ? new SingleProcessInputHandler()
+				: handler;
+		this.handler.setNeededInputs(this.getProcessInputs());
+	}
 
 
 	private static String getInputDescription(String id) {
@@ -171,6 +187,13 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 			Class<? extends IData> bindingClass, int min, int max,
 			Set<String> allowedValues, T defaultValue) {
 		this(identifier, bindingClass, min, max, allowedValues, defaultValue,
+				null);
+	}
+	
+	public SingleProcessInput(String identifier, String description,
+			Class<? extends IData> bindingClass, int min, int max,
+			Set<String> allowedValues, T defaultValue) {
+		this(identifier, description, bindingClass, min, max, allowedValues, defaultValue,
 				null);
 	}
 
@@ -235,6 +258,23 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 			}
 			return vals;
 		}
+	}
+	
+	/**
+	 * sets the description attribute
+	 * 
+	 * @param description
+	 */
+	public void setDescription(String description){
+		this.description=description;
+	}
+
+	public void setDefaultValue(T defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public void setAllowedValues(Set<String> allowedValues) {
+		this.allowedValues = allowedValues;
 	}
 
 	/**

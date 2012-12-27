@@ -25,12 +25,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -38,9 +42,18 @@ import java.util.Properties;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+import org.opengis.feature.Feature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uncertml.IUncertainty;
+import org.uncertml.sample.AbstractRealisation;
+import org.uncertml.sample.ContinuousRealisation;
+import org.uncertml.sample.RandomSample;
+import org.uncertweb.api.gml.Identifier;
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Utilities class.
@@ -229,4 +242,70 @@ public class Utils {
 		props.put(Constants.Sos.Parameter.OBSERVATION_ID, sb.toString());
 		return Utils.buildGetRequest(url, props);
 	}	
+	
+	/**
+	 * helper method for generating a spatial sampling feature from a vector feature from Geotools
+	 * 
+	 * @param feature
+	 * 			Geotools Feature
+	 * @return	
+	 * 
+	 * @throws URISyntaxException
+	 */
+	public static SpatialSamplingFeature createSF4GTFeature(Feature feature, int srid) throws URISyntaxException{
+		//TODO might need to be fixed; currently per default the name is taken as id not the feature ID (which in general is a number)
+		String id = feature.getIdentifier().toString();
+		Geometry geom = (Geometry)feature.getDefaultGeometryProperty().getValue();
+		geom.setSRID(srid);
+		URI codeSpace = new URI("http://www.uncertweb.org/features");
+		Identifier identifier = new Identifier(codeSpace,id);
+		SpatialSamplingFeature sfs = new SpatialSamplingFeature(identifier,null,geom);
+		return sfs;
+	}
+	
+	/**
+	 * extracts realisations of either ContinuousRealisation or RandomSample with Realisation element for each realisation
+	 * and returns a ContinuousRealisation that contains all realisation values in the values array.
+	 * 
+	 * @param uncertResult
+	 * 				Realisation or RandomSample that should be converted
+	 * @return Returns ContinuousRealisation that contains all realisation values in the values array
+	 */
+	public static ContinuousRealisation getRealisation4uncertResult(IUncertainty uncertResult){
+		if (uncertResult instanceof ContinuousRealisation){
+			return (ContinuousRealisation)uncertResult;
+		}
+		else if (uncertResult instanceof RandomSample){
+			RandomSample rs = (RandomSample)uncertResult;
+			List<AbstractRealisation> absRealList = rs.getRealisations();
+			List<Double> values = new ArrayList<Double>(absRealList.size());
+			for (AbstractRealisation absReal:absRealList){
+				if (absReal instanceof ContinuousRealisation){
+					values.addAll(((ContinuousRealisation) absReal).getValues());
+				}
+			}
+			return new ContinuousRealisation(values);
+		}
+		else {
+			throw new RuntimeException("Uncertainty type " + uncertResult.getClass() + " not supported for aggregation processes!");
+		}
+	}
+
+	/**
+	 * methods creates RandomSample from single ContinuousRealisation that contains more than one value in its values array.
+	 * 
+	 * @param aggResult
+	 * 			ContinuousRealisation that contains more than one value in its values array.
+	 * @return RandomSample that contains a single Realisation element for each realisation value
+	 */
+	public static RandomSample getRandomSample4Real(ContinuousRealisation aggResult) {
+		List<Double> values = aggResult.getValues();
+		List<AbstractRealisation> realisations = new ArrayList<AbstractRealisation>(values.size());
+		for (Double value:values){
+			List<Double> singleVal = new ArrayList<Double>(1);
+			singleVal.add(value);
+			realisations.add(new ContinuousRealisation(singleVal));
+		}
+		return new RandomSample(realisations);
+	}
 }

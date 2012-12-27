@@ -249,6 +249,10 @@
 							<directory>src/main/resources/WEB-INF</directory>
 							<targetPath>WEB-INF</targetPath>
 						</resource>
+						<resource>
+							<directory>examples</directory>
+							<targetPath>requests</targetPath>
+						</resource>
 					</webResources>
 					<overlays>
 						<overlay>
