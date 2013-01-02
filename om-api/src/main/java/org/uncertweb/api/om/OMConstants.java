@@ -1,5 +1,16 @@
 package org.uncertweb.api.om;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.uncertweb.api.om.observation.BooleanObservation;
+import org.uncertweb.api.om.observation.CategoryObservation;
+import org.uncertweb.api.om.observation.DiscreteNumericObservation;
+import org.uncertweb.api.om.observation.Measurement;
+import org.uncertweb.api.om.observation.ReferenceObservation;
+import org.uncertweb.api.om.observation.TextObservation;
+import org.uncertweb.api.om.observation.UncertaintyObservation;
+
 
 /**
  * contains constants like namespace urls
@@ -61,4 +72,49 @@ public class OMConstants {
     public static final String EN_SAMPLINGSURFACE = "SF_SamplingSurface";
     /**sampling feature type sampling grid*/
     public static final String EN_SAMPLINGGRID = "SF_SamplingGrid";
+	public static final String NS_UNCERTML = "http://www.uncertml.org/2.0";
+	public static final String NS_UNCERTML_PREFIX = "un";
+    
+    
+	/**
+	 * inner class holding the column names for CSV encoding
+	 * 
+	 * @author staschc
+	 *
+	 */
+	public class Columns{
+		
+		//number of fixed columns (obs properties); number of uncertainty columns are depending on uncertainty type
+		public static final int NUMBER_OF_COLUMNS = 7;
+		
+		//column names for observation properties
+		public static final String PHEN_TIME="PhenomenonTime";
+		public static final String FOI_IDENTIFIER = "Feature_ID";
+		public static final String WKT_GEOM="WKTGeometry";
+		public static final String SRID="EPSG";
+		public static final String OBS_PROP="ObservedProperty";
+		public static final String PROCEDURE="Procedure";
+		public static final String RESULT="Result";
+		
+		//column names for uncertainty values
+		public static final String CN_ND_MEAN="NormalDistribution.Mean";
+		public static final String CN_ND_VAR="NormalDistribution.Variance";
+		public static final String CN_REALISATION = "Realisation.";
+		public static final String CN_PROBABILITY = "Probability";
+		//TODO add more columnnames!
+	}
+	
+	
+	public static List<String> getObservationNames(){
+		List<String> names = new ArrayList<String>(7);
+		names.add(BooleanObservation.NAME);
+		names.add(CategoryObservation.NAME);
+		names.add(DiscreteNumericObservation.NAME);
+		names.add(Measurement.NAME);
+		names.add(ReferenceObservation.NAME);
+		names.add(TextObservation.NAME);
+		names.add(UncertaintyObservation.NAME);
+		return names;
+		
+	}
 }
