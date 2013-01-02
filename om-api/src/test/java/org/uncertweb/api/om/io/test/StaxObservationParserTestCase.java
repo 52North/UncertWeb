@@ -21,8 +21,8 @@ public class StaxObservationParserTestCase {
 	@Test
 	public void test() {
 		try {
-//			obsCol_Measurement();
-			obsCol_yield();
+			obsCol_Measurement();
+//			obsCol_yield();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
