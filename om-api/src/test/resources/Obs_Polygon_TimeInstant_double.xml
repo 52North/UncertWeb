@@ -6,7 +6,7 @@
 		-result is a discrete numerical value
 		-uncertainty information is encoded as resultQuality.
 	==============================================================-->
-<om:OM_DiscreteNumericObservation gml:id="obsTest1" xmlns:om="http://www.opengis.net/om/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:sf="http://www.opengis.net/sampling/2.0" xmlns:un="http://www.uncertml.org/2.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" xsi:schemaLocation="http://www.opengis.net/om/2.0 http://v-mars.uni-muenster.de/uncertweb/schema/profiles/om/UncertWeb_OM.xsd">
+<om:OM_DiscreteNumericObservation gml:id="obsTest1" xmlns:om="http://www.opengis.net/om/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:sam="http://www.opengis.net/sampling/2.0" xmlns:un="http://www.uncertml.org/2.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" xsi:schemaLocation="http://www.opengis.net/om/2.0 http://52north.org/schema/geostatistics/uncertweb/profiles/om/UncertWeb_OM.xsd">
 	
 	<gml:identifier codeSpace="http://www.uncertweb.org">obsTest1</gml:identifier>
 	<!--=============================================================
@@ -42,17 +42,13 @@
 	==============================================================-->
 	<om:featureOfInterest>
 		<sams:SF_SpatialSamplingFeature gml:id="SamplingTrajectory1">
-			<sf:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface"/>
-			<sf:sampledFeature xsi:nil="true"/>
+			<sam:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingSurface"/>
+			<sam:sampledFeature xsi:nil="true"/>
 			<sams:shape>
 				<gml:Polygon gml:id="polygon1">
 					<gml:exterior>
 						<gml:LinearRing>
-							<gml:pos>52.79 7.87</gml:pos>
-							<gml:pos>52.79 8.87</gml:pos>
-							<gml:pos>53.79 8.87</gml:pos>
-							<gml:pos>53.79 7.87</gml:pos>
-							<gml:pos>52.79 7.87</gml:pos>
+							<gml:posList>52.79 7.87 52.79 8.87 53.79 8.87 53.79 7.87 52.79 7.87</gml:posList>
 						</gml:LinearRing>
 					</gml:exterior>
 				</gml:Polygon>

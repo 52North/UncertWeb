@@ -6,7 +6,7 @@
 		-result is a measure value (double with units of measure information)
 		-no uncertainty information available
 	==============================================================-->
-<om:OM_Measurement gml:id="obsTest1" xmlns:om="http://www.opengis.net/om/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:sf="http://www.opengis.net/sampling/2.0" xmlns:un="http://www.uncertml.org/2.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" xsi:schemaLocation="http://www.opengis.net/om/2.0 http://v-mars.uni-muenster.de/uncertweb/schema/profiles/om/UncertWeb_OM.xsd">
+<om:OM_Measurement gml:id="obsTest1" xmlns:om="http://www.opengis.net/om/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:sam="http://www.opengis.net/sampling/2.0" xmlns:un="http://www.uncertml.org/2.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" xsi:schemaLocation="http://www.opengis.net/om/2.0 http://52north.org/schema/geostatistics/uncertweb/profiles/om/UncertWeb_OM.xsd">
 	
 	<gml:identifier codeSpace="http://www.uncertweb.org">obsTest1</gml:identifier>
 	<!--=============================================================
@@ -38,8 +38,8 @@
 	<om:featureOfInterest>
 		<sams:SF_SpatialSamplingFeature gml:id="SamplingPoint1">
 			<gml:identifier codeSpace="http://www.uncertweb.org/">University of Muenster</gml:identifier>
-			<sf:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
-			<sf:sampledFeature xsi:nil="true"/>
+			<sam:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
+			<sam:sampledFeature xsi:nil="true"/>
 			<sams:shape>
 				<gml:Point gml:id="UOMlocation">
 					<gml:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">52.87 7.78</gml:pos>
