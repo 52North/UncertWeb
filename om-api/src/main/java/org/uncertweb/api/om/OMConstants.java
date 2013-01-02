@@ -33,8 +33,12 @@ public class OMConstants {
 	
 	/**namespace URL for sampling features*/
 	public static final String NS_SA = "http://www.opengis.net/sampling/2.0";
+
 	/**namespace prefix for sampling features*/
-	public static final String NS_SA_PREFIX = "sa";
+	public static final String NS_SA_PREFIX = "sam";
+	
+	/**namespace prefix for sampling features*/
+	public static final String NS_SF_PREFIX = "sf";
 	
 	/**namespace URL for xlinks*/
 	public static final String NS_XLINK = "http://www.w3.org/1999/xlink";

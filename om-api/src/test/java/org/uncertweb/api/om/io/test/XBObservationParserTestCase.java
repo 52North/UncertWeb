@@ -38,9 +38,9 @@ public class XBObservationParserTestCase extends TestCase {
 	
 	public void testObservationParser() throws Exception {
 //		point_TimeInstant_Double();
-//		obsCol_Measurement();
+		obsCol_Measurement();
 //		obsCol_generic();
-		obsCol_yield();
+//		obsCol_yield();
 //		point_TimeInstant_Uncertainty();
 //		point_TimeInstant_FOIref();
 //		testJSON();

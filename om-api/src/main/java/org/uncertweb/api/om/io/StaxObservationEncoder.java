@@ -78,8 +78,7 @@ public class StaxObservationEncoder implements IObservationEncoder {
 		try {
 			bout.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException("Error while closing result stream: " + e.getLocalizedMessage());
 		}
 		return result;
 	}
@@ -132,6 +131,7 @@ public class StaxObservationEncoder implements IObservationEncoder {
 			writer.writeNamespace(OMConstants.NS_OM_PREFIX, OMConstants.NS_OM);
 			writer.writeNamespace(OMConstants.NS_GML_PREFIX, OMConstants.NS_GML);
 			writer.writeNamespace(OMConstants.NS_SA_PREFIX, OMConstants.NS_SA);
+			writer.writeNamespace(OMConstants.NS_SF_PREFIX, OMConstants.NS_SA);
 			writer.writeNamespace(OMConstants.NS_SAMS_PREFIX, OMConstants.NS_SAMS);
 			writer.writeNamespace(OMConstants.NS_XLINK_PREFIX, OMConstants.NS_XLINK);
 			writer.writeNamespace(OMConstants.NS_GMD_PREFIX, OMConstants.NS_GMD);

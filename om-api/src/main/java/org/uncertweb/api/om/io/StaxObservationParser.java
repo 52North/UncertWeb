@@ -124,8 +124,11 @@ public class StaxObservationParser implements IObservationParser{
 		if (!plainElement.contains(OMConstants.NS_SAMS)){
 			fullElement +="  xmlns:"+OMConstants.NS_SAMS_PREFIX+"=\""+OMConstants.NS_SAMS+"\"";
 		}
-		if (!plainElement.contains(OMConstants.NS_SA)){
+		if (!plainElement.contains(OMConstants.NS_SA_PREFIX)){
 			fullElement +="  xmlns:"+OMConstants.NS_SA_PREFIX+"=\""+OMConstants.NS_SA+"\"";
+		}
+		if (!plainElement.contains(OMConstants.NS_SF_PREFIX)){
+			fullElement +="  xmlns:"+OMConstants.NS_SF_PREFIX+"=\""+OMConstants.NS_SA+"\"";
 		}
 		if (!plainElement.contains(OMConstants.NS_XLINK)){
 			fullElement +="  xmlns:"+OMConstants.NS_XLINK_PREFIX+"=\""+OMConstants.NS_XLINK+"\"";
