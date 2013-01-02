@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -66,6 +67,7 @@ import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureDocument;
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
 import net.opengis.samplingSpatial.x20.ShapeType;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.isotc211.x2005.gco.UnitOfMeasurePropertyType;
@@ -1117,4 +1119,18 @@ public class XBObservationParser implements IObservationParser {
 	public HashMap<String, SpatialSamplingFeature> getFeatureCache() {
 		return featureCache;
 	}
+
+	@Override
+	public IObservationCollection parseObservationCollection(InputStream in)
+			throws OMParsingException {
+			StringWriter writer = new StringWriter();
+			try {
+				IOUtils.copy(in, writer,null);
+			} catch (IOException e) {
+				throw new OMParsingException("error while converting input to string!");
+			}
+			String inputString = writer.toString();
+			return this.parseObservationCollection(inputString);
+		}
+	
 }

@@ -1,11 +1,15 @@
 package org.uncertweb.api.om.io;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.xmlbeans.XmlException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -440,6 +444,20 @@ public class JSONObservationParser implements IObservationParser{
 	 */
 	private TimeObject parseTimeInstant(JSONObject jinstant) throws JSONException {
 		return new TimeObject(jinstant.getString("timePosition"));
+	}
+
+
+	@Override
+	public IObservationCollection parseObservationCollection(InputStream in)
+			throws OMParsingException {
+		StringWriter writer = new StringWriter();
+		try {
+			IOUtils.copy(in, writer,null);
+		} catch (IOException e) {
+			throw new OMParsingException("error while converting input to string!");
+		}
+		String inputString = writer.toString();
+		return this.parseObservationCollection(inputString);
 	}
 
 }

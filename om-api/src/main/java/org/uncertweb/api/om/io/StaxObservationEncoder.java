@@ -43,7 +43,7 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
  *
  */
 public class StaxObservationEncoder implements IObservationEncoder {
-	
+
 	
 	/**
 	 * XMLBeans encoder is used to 
@@ -66,6 +66,7 @@ public class StaxObservationEncoder implements IObservationEncoder {
 		this.xbEncoder = new XBObservationEncoder(hooks);
 		this.xbEncoder.setIsCol(true);
 	}
+
 
 	
 	@Override

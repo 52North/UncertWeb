@@ -1,5 +1,6 @@
 package org.uncertweb.api.om.io;
 
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
@@ -54,6 +55,21 @@ public interface IObservationParser {
 	 */
 	public IObservationCollection parseObservationCollection(String xmlObsCol)
 			throws OMParsingException;
+	
+	
+	/**
+	 * 
+	 * parses an Observation Collection from String and resturns a Java representation
+	 * 
+	 * @param xmlObsCol
+	 * 			String containing the XML representation of the observation collection
+	 * @return returns internal representation of observation collection
+	 * @throws OMParsingException
+	 * 			if parsing fails
+	 */
+	public IObservationCollection parseObservationCollection(InputStream in)
+			throws OMParsingException;
+	
 	
 	/**
 	 * parses an Observation and it's SpatialSamplingFeature
