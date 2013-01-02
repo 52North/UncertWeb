@@ -3,22 +3,20 @@ package org.n52.wps.io.datahandler.om;
 import static org.n52.wps.io.data.UncertWebDataConstants.ENCODING_UTF_8;
 import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_OMX_XML;
 import static org.n52.wps.io.data.UncertWebDataConstants.MIME_TYPE_TEXT_XML;
-import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_OM_V2;
-import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_OM_V1;
 import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_OMU;
+import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_OM_V1;
+import static org.n52.wps.io.data.UncertWebDataConstants.SCHEMA_OM_V2;
 import static org.uncertweb.utils.UwCollectionUtils.set;
 
 import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlObject;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.OMBinding;
 import org.n52.wps.io.datahandler.AbstractUwGenerator;
+import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationEncoder;
-import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.utils.UwCollectionUtils;
-import org.uncertweb.utils.UwXmlUtils;
 
 /**
  * Observation generator, producing observations encoded in XML according the
@@ -29,7 +27,7 @@ import org.uncertweb.utils.UwXmlUtils;
  */
 public class OMXmlGenerator extends AbstractUwGenerator {
 	private static final Logger log = Logger.getLogger(OMXmlGenerator.class);
-	private XBObservationEncoder encoder = new XBObservationEncoder();
+	private StaxObservationEncoder encoder = new StaxObservationEncoder();
 
 	public OMXmlGenerator() {
 		super(
@@ -44,19 +42,15 @@ public class OMXmlGenerator extends AbstractUwGenerator {
 	public void writeToStream(IData outputData, OutputStream os) {
 
 		OMBinding omData = (OMBinding) outputData;
-		XmlObject doc = null;
 		try {
 			if (omData.getObservation() != null) {
-				doc = encoder
-						.encodeObservationDocument((AbstractObservation) omData
-								.getObservation());
+				encoder.encodeObservation(omData.getObservation(),os);
 			} else if (omData.getObservationCollection() != null) {
-				doc = encoder.encodeObservationCollectionDocument(omData
-						.getObservationCollection());
+				encoder.encodeObservationCollection(omData
+						.getObservationCollection(),os);
 			} else {
 				throw new RuntimeException("The data contained neither an observation nor an observation collection.");
 			}
-			doc.save(os,UwXmlUtils.defaultOptions());
 		} catch (Exception e) {
 			log.error("Unable to encode observation: " + e.getMessage());
 			throw new RuntimeException(e);
