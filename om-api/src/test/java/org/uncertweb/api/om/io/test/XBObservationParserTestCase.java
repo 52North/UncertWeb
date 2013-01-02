@@ -1,6 +1,7 @@
 package org.uncertweb.api.om.io.test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import junit.framework.TestCase;
@@ -13,6 +14,7 @@ import org.uncertml.statistic.Probability;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.io.JSONObservationEncoder;
 import org.uncertweb.api.om.io.JSONObservationParser;
+import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -37,10 +39,11 @@ public class XBObservationParserTestCase extends TestCase {
 	public void testObservationParser() throws Exception {
 //		point_TimeInstant_Double();
 //		obsCol_Measurement();
-		obsCol_generic();
-		point_TimeInstant_Uncertainty();
+//		obsCol_generic();
+		obsCol_yield();
+//		point_TimeInstant_Uncertainty();
 //		point_TimeInstant_FOIref();
-		testJSON();
+//		testJSON();
 	}
 	
 
@@ -75,6 +78,25 @@ public class XBObservationParserTestCase extends TestCase {
 				}
 			}
 		}
+	}
+	
+	private void obsCol_yield() throws Exception {
+
+		// read XML example file
+		FileInputStream fis = null;
+		try {
+		 fis = new FileInputStream(pathToExamples
+				+ "/yield_om_anglia.xml");
+		}
+		catch (IOException ioe){
+			fis = new FileInputStream(localPath + pathToExamples
+					+ "/yield_om_anglia.xml");
+		}
+		XBObservationParser parser = new XBObservationParser();
+		IObservationCollection oc = parser.parseObservationCollection(fis);
+		fis.close();
+		StaxObservationEncoder encoder = new StaxObservationEncoder();
+		System.out.println(encoder.encodeObservationCollection(oc));
 	}
 
 	private void obsCol_Measurement() throws Exception {
