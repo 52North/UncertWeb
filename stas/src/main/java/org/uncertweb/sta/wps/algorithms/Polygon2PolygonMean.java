@@ -1,7 +1,9 @@
 package org.uncertweb.sta.wps.algorithms;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +37,7 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
 import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.sta.utils.Constants;
+import org.uncertweb.sta.utils.FeatureCache;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.AggregationInputs;
 import org.uncertweb.sta.wps.STASException;
@@ -68,6 +71,9 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 	
 	//default SRS EPSG Code
 	private static final int DEFAULT_SRS = 27700;
+	
+	//used for retrieving FOIS in observations from WFS
+	private FeatureCache featureCache = new FeatureCache();
 	
 	/**
 	 * Input parameter which contains the input regions
@@ -216,6 +222,9 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 				throw new RuntimeException(e.getMessage());
 			}
 		}
+		if (resultObsCol.getObservations().size()==0){
+			throw new RuntimeException("No source observations intersect with the aggregation regions!");
+		}
 		result.put(AGGREGATED_OUTPUT.getId(), new OMBinding(resultObsCol));
 		return result;
 	}
@@ -247,7 +256,22 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 			//TODO add type check!!
 			UncertaintyObservation uncertObs = (UncertaintyObservation) obsIter.next();
 			URI observedProperty = uncertObs.getObservedProperty();
-			Geometry foiGeom = uncertObs.getFeatureOfInterest().getShape();
+			Geometry foiGeom = null;
+			String foiID = null;
+			if (uncertObs.getFeatureOfInterest().getHref()!=null){
+				URL wfsURL = null;
+				try {
+					wfsURL = uncertObs.getFeatureOfInterest().getHref().toURL();
+				} catch (MalformedURLException e) {
+					log.info("Error while getting URL from href attribute in feature of interest: "+e.getMessage());
+				}
+				
+				foiGeom = this.featureCache.getFeatureFromWfs(wfsURL).getShape();
+				foiID =  this.featureCache.getFeatureFromWfs(wfsURL).getIdentifier().getIdentifier();
+			}
+			else {
+				foiGeom = uncertObs.getFeatureOfInterest().getShape();
+			}
 			//iterate over target regions
 			FeatureIterator features = targetRegions.features();
 			
@@ -258,7 +282,7 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 				Geometry regionGeom = (Geometry)targetRegion.getDefaultGeometryProperty().getValue();
 				if (regionGeom.intersects(foiGeom)){
 					
-					String idCombi = targetRegion.getIdentifier().getID() + uncertObs.getFeatureOfInterest().getIdentifier().getIdentifier();
+					String idCombi = targetRegion.getIdentifier().getID() + foiID;
 					if (!isString.contains(idCombi)){
 						isString += " "+ idCombi;
 					}

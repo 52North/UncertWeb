@@ -1,7 +1,12 @@
 package org.uncertweb.sta.wps.algorithms;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,8 +15,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.gml3.v3_2.GMLConfiguration;
+import org.geotools.xml.Parser;
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.GTVectorDataBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
@@ -35,6 +44,7 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
 import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.uncertweb.sta.utils.Constants;
+import org.uncertweb.sta.utils.FeatureCache;
 import org.uncertweb.sta.utils.Utils;
 import org.uncertweb.sta.wps.AggregationInputs;
 import org.uncertweb.sta.wps.STASException;
@@ -43,6 +53,7 @@ import org.uncertweb.sta.wps.api.AbstractProcessInput;
 import org.uncertweb.sta.wps.api.ProcessOutput;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
 import org.uncertweb.sta.wps.method.aggregation.AggregationUncertMLUtils;
+import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -67,6 +78,9 @@ public class Polygon2PolygonWeightedSum extends
 
 	// default SRS EPSG Code
 	private static final int DEFAULT_SRS = 27700;
+	
+	//used for caching features from WFS
+	private FeatureCache featureCache = new FeatureCache();
 
 	/**
 	 * Input parameter which contains the input regions
@@ -273,8 +287,24 @@ public class Polygon2PolygonWeightedSum extends
 			UncertaintyObservation uncertObs = (UncertaintyObservation) obsIter
 					.next();
 			URI observedProperty = uncertObs.getObservedProperty();
-			Geometry foiGeom = uncertObs.getFeatureOfInterest().getShape();
 			
+			Geometry foiGeom = null;
+			String foiID = null;
+			if (uncertObs.getFeatureOfInterest().getHref()!=null){
+				URL wfsURL = null;
+				try {
+					wfsURL = uncertObs.getFeatureOfInterest().getHref().toURL();
+				} catch (MalformedURLException e) {
+					log.info("Error while getting URL from href attribute in feature of interest: "+e.getMessage());
+				}
+				
+				foiGeom = this.featureCache.getFeatureFromWfs(wfsURL).getShape();
+				foiID =  this.featureCache.getFeatureFromWfs(wfsURL).getIdentifier().getIdentifier();
+			}
+			else {
+				foiGeom = uncertObs.getFeatureOfInterest().getShape();
+			}
+
 			// iterate over target regions
 			FeatureIterator features = targetRegions.features();
 			while (features.hasNext()) {
@@ -285,8 +315,7 @@ public class Polygon2PolygonWeightedSum extends
 				if (regionGeom.intersects(foiGeom)) {
 
 					String idCombi = targetRegion.getIdentifier().getID()
-							+ uncertObs.getFeatureOfInterest().getIdentifier()
-									.getIdentifier();
+							+ foiID;
 					if (!isString.contains(idCombi)) {
 						isString += " " + idCombi;
 					}
@@ -296,12 +325,16 @@ public class Polygon2PolygonWeightedSum extends
 
 					// multiply areal weight with scaleFactor
 					double weight = scaleFactor * intersectionArea.getArea();
-					log.info("Weight is: "+ weight);
-				
-					// extract values from either ContinuousRealisation or RandomSample
-					IUncertainty uncertResult = uncertObs.getResult().getUncertaintyValue();
-					ContinuousRealisation weightedReal = new ContinuousRealisation(Utils.getRealisation4uncertResult(uncertResult).getValues(),weight);
-					
+					log.info("Weight is: " + weight);
+
+					// extract values from either ContinuousRealisation or
+					// RandomSample
+					IUncertainty uncertResult = uncertObs.getResult()
+							.getUncertaintyValue();
+					ContinuousRealisation weightedReal = new ContinuousRealisation(
+							Utils.getRealisation4uncertResult(uncertResult)
+									.getValues(), weight);
+
 					if (regionsAggCache.containsKey(targetRegion)) {
 						if (regionsAggCache.get(targetRegion).containsKey(
 								observedProperty)) {
@@ -367,8 +400,10 @@ public class Polygon2PolygonWeightedSum extends
 								observedProperty, foi, obsResult);
 						result.addObservation(obs);
 					}
-					if (uncertaintyTypes != null && uncertaintyTypes.contains(RANDOMSAMPLE_URI)){
-						UncertaintyResult obsResult = new UncertaintyResult(Utils.getRandomSample4Real(aggResult));
+					if (uncertaintyTypes != null
+							&& uncertaintyTypes.contains(RANDOMSAMPLE_URI)) {
+						UncertaintyResult obsResult = new UncertaintyResult(
+								Utils.getRandomSample4Real(aggResult));
 						UncertaintyObservation obs = new UncertaintyObservation(
 								time, time, new URI(IDENTIFIER),
 								observedProperty, foi, obsResult);
@@ -397,6 +432,10 @@ public class Polygon2PolygonWeightedSum extends
 					throw new STASException(e.getLocalizedMessage());
 				}
 			}
+		}
+		
+		if (result.getObservations().size()==0){
+			throw new RuntimeException("No source observations intersect with the aggregation regions!");
 		}
 		return result;
 	}
@@ -469,9 +508,10 @@ public class Polygon2PolygonWeightedSum extends
 				// each set of i-th realisations within a region
 				for (ContinuousRealisation cr : originalObsResults) {
 					if (i < cr.getValues().size()) {
-						double weight = cr.getWeight(); 
-						double value = cr.getValues().get(i); 
-						log.info("Aggregating to sum with weight: "+weight+" and value "+value+".");
+						double weight = cr.getWeight();
+						double value = cr.getValues().get(i);
+						log.info("Aggregating to sum with weight: " + weight
+								+ " and value " + value + ".");
 						sum += weight * value;
 					} else {
 						throw new RuntimeException(
