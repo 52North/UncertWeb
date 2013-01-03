@@ -8,12 +8,12 @@
 		<version>1.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>stas</artifactId>
-	<version>0.0.2</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<name>Spatiotemporal Aggregation Service</name>
 	<url>http://www.uncertweb.org</url>
-	<inceptionYear>2010</inceptionYear>
+	<inceptionYear>2012</inceptionYear>
 	<description>WPS for spatiotemporal aggregation of data in UncertWeb project.</description>
 
 	<organization>
@@ -173,7 +173,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>52n-wps-io-uncertweb</artifactId>
-			<version>0.0.8-SNAPSHOT</version>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
