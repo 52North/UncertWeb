@@ -134,6 +134,13 @@ public class XBObservationParser implements IObservationParser {
 	private HashMap<String, SpatialSamplingFeature> featureCache;
 	private HashMap<String, TimeObject> timeCache;
 	
+	/**
+	 * boolean that indicates whether a collection is currrently parsed or not;
+	 * this flag is used in the encodeObservation operation. This can either be invoked externally for
+	 * encoding just one observation or internally for encoding members of an observation collection.
+	 */
+	private boolean isCol;
+	
 
 	/**
 	 * constructor initializes the caches for time and featureOfInterest elements
@@ -157,6 +164,7 @@ public class XBObservationParser implements IObservationParser {
 
 		featureCache = new HashMap<String, SpatialSamplingFeature>();
 		timeCache = new HashMap<String, TimeObject>();
+		this.isCol=true;
 		IObservationCollection oc = null;
 		XmlObject xb_obsColDoc;
 		try {
@@ -175,7 +183,7 @@ public class XBObservationParser implements IObservationParser {
 					obsList.add(parseObservationDocument(xb_omDoc));
 				}
 				oc = new ObservationCollection(obsList);
-				return oc;
+				
 			}
 			
 			//Measurement collection
@@ -191,7 +199,7 @@ public class XBObservationParser implements IObservationParser {
 				obsList.add(obs);
 			}
 			oc = new MeasurementCollection(obsList);
-			return oc;
+			
 		}
 		//BooleanObservation collection
 		else if (xb_obsColDoc instanceof OMBooleanObservationCollectionDocument){
@@ -206,7 +214,7 @@ public class XBObservationParser implements IObservationParser {
 				obsList.add(obs);
 			}
 			oc = new BooleanObservationCollection(obsList);
-			return oc;
+			
 		}
 		//DiscreteNumericObservation collection
 		else if (xb_obsColDoc instanceof OMDiscreteNumericObservationCollectionDocument){
@@ -221,7 +229,7 @@ public class XBObservationParser implements IObservationParser {
 				obsList.add(obs);
 			}
 			oc = new DiscreteNumericObservationCollection(obsList);
-			return oc;
+			
 		}
 		//UncertaintyObservation collection
 		else if (xb_obsColDoc instanceof OMUncertaintyObservationCollectionDocument){
@@ -236,7 +244,7 @@ public class XBObservationParser implements IObservationParser {
 				obsList.add(obs);
 			}
 			oc = new UncertaintyObservationCollection(obsList);
-			return oc;
+			
 		}
 		//ReferenceObservation collection
 		else if (xb_obsColDoc instanceof OMReferenceObservationCollectionDocument){
@@ -251,7 +259,7 @@ public class XBObservationParser implements IObservationParser {
 				obsList.add(obs);
 			}
 			oc = new ReferenceObservationCollection(obsList);
-			return oc;
+			
 		}
 		//TextObservation collection
 		else if (xb_obsColDoc instanceof OMTextObservationCollectionDocument){
@@ -266,7 +274,7 @@ public class XBObservationParser implements IObservationParser {
 				obsList.add(obs);
 			}
 			oc = new TextObservationCollection(obsList);
-			return oc;
+			
 		}
 		else if (xb_obsColDoc instanceof OMCategoryObservationCollectionDocument){
 			OMCategoryObservationCollection xb_ocType = ((OMCategoryObservationCollectionDocument)xb_obsColDoc).getOMCategoryObservationCollection();
@@ -280,7 +288,7 @@ public class XBObservationParser implements IObservationParser {
 				obsList.add(obs);
 			}
 			oc = new CategoryObservationCollection(obsList);
-			return oc;
+			
 		}
 		
 		
@@ -291,7 +299,11 @@ public class XBObservationParser implements IObservationParser {
 		} catch (XmlException e) {
 			throw new OMParsingException(e);
 		}
+		finally{
+			this.isCol=false;
+		}
 
+		return oc;
 	}
 	
 	
@@ -447,8 +459,6 @@ public class XBObservationParser implements IObservationParser {
 	@Override
 	public synchronized AbstractObservation parseObservation(String xmlObs) throws OMParsingException {
 
-		featureCache = new HashMap<String, SpatialSamplingFeature>();
-		timeCache = new HashMap<String, TimeObject>();
 		
 		XmlObject xb_obsDoc;
 		try {
@@ -472,6 +482,11 @@ public class XBObservationParser implements IObservationParser {
 	public synchronized AbstractObservation parseObservationDocument(
 			OMObservationDocument xb_obsDoc) throws OMParsingException {
 
+		if (!isCol){
+			featureCache = new HashMap<String, SpatialSamplingFeature>();
+			timeCache = new HashMap<String, TimeObject>();
+		}
+		
 		AbstractObservation obs = null;
 
 		try{
@@ -941,23 +956,26 @@ public class XBObservationParser implements IObservationParser {
 				ssf = this.featureCache.get(href);
 			}
 			else {
-				String xmlString = null;
-				try {
-					xmlString = readTextFromStream(hrefUrl.openStream());
-				} catch (IOException e) {
-					throw new IllegalArgumentException("Error while resolving URI to featureOfInterest element" + e.getMessage());
-				}
-				if (xmlString!=null&&!(xmlString.equals(""))){
-					try {
-						XmlObject object = XmlObject.Factory.parse(xmlString);
-						if (object instanceof SFSpatialSamplingFeatureDocument){
-							ssf = parseSamplingFeatureDocument(((SFSpatialSamplingFeatureDocument)object).getSFSpatialSamplingFeature());
-							ssf.setHref(new URI(href));
-							this.featureCache.put(href.toString(), ssf);						}
-					} catch (XmlException e) {
-						throw new IllegalArgumentException("Error while resolving URI to featureOfInterest element" + e.getMessage());
-					}
-				}
+				ssf= new SpatialSamplingFeature(hrefUrl.toURI());
+				this.featureCache.put(href, ssf);
+				
+//				String xmlString = null;
+//				try {
+//					xmlString = readTextFromStream(hrefUrl.openStream());
+//				} catch (IOException e) {
+//					throw new IllegalArgumentException("Error while resolving URI to featureOfInterest element" + e.getMessage());
+//				}
+//				if (xmlString!=null&&!(xmlString.equals(""))){
+//					try {
+//						XmlObject object = XmlObject.Factory.parse(xmlString);
+//						if (object instanceof SFSpatialSamplingFeatureDocument){
+//							ssf = parseSamplingFeatureDocument(((SFSpatialSamplingFeatureDocument)object).getSFSpatialSamplingFeature());
+//							ssf.setHref(new URI(href));
+//							this.featureCache.put(href.toString(), ssf);						}
+//					} catch (XmlException e) {
+//						throw new IllegalArgumentException("Error while resolving URI to featureOfInterest element" + e.getMessage());
+//					}
+//				}
 			}
 		}
 		else {
@@ -1132,5 +1150,14 @@ public class XBObservationParser implements IObservationParser {
 			String inputString = writer.toString();
 			return this.parseObservationCollection(inputString);
 		}
+	
+	public void setIsCollection(boolean isCol){
+		this.isCol = isCol;
+		if (isCol){
+			this.featureCache = new HashMap<String, SpatialSamplingFeature>();
+			this.timeCache = new HashMap<String, TimeObject>();
+		}
+	}
+	
 	
 }

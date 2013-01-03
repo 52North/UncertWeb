@@ -61,6 +61,7 @@ public class StaxObservationParser implements IObservationParser{
 	
 	public IObservationCollection parseObservationCollection(InputStream in) throws OMParsingException{
 		IObservationCollection obsCol = new ObservationCollection();
+		xbParser.setIsCollection(true);
 		List<String> observationNames = OMConstants.getObservationNames();
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		try {
@@ -103,6 +104,10 @@ public class StaxObservationParser implements IObservationParser{
 		} catch (XMLStreamException e) {
 			throw new OMParsingException("Error while reading observation input with STAX parser: "+e.getLocalizedMessage());
 		}
+		finally{
+			xbParser.setIsCollection(false);
+		}
+		
 		return obsCol;
 	}
 	
