@@ -1,5 +1,9 @@
 {
-	"mapCenter": [ 52.0, 7.0 ],
+
+	"mapCenter": {
+		"rotterdam": [ 51.9222, 4.4826 ],
+		"oslo": [59.912, 10.753 ]
+	},
 	"visualizationUrl": "http://giv-uw.uni-muenster.de/vis/v2",
 	"outputs": {
 		"nilu": null,
@@ -10,10 +14,15 @@
 	"mappings": {
 		"ems": {
 			"nilu": { "predicted-concentrations": "airQualityData" },
-			"albatross": { "om_schedules": "activityProfile" }
+			"albatross": { "om_schedules": "activityProfile" },
+			"map": "om_schedules"
 		}
 	},
 	"processes": {
+		"map": {
+			"inputs": { "sections": [] },
+			"outputs": {}
+		},
 		"ems": {
 			"id": "org.uncertweb.ems.EMSalgorithm",
 			"url-bak": "http://128.176.133.106:8080/ems/WebProcessingService",
@@ -165,6 +174,7 @@
 			"inputs": {
 				"sections": [
 					{
+						"title": "Parameter",
 						"options": {
 							"AlbatrossServiceURL": {
 								"type": "string",

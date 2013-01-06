@@ -60,6 +60,12 @@ form.processForm a[class*=" icon-"] {
 	border: 0;
 }
 
+.leaflet-control-fullscreen {
+	background-image: url(http://f.cl.ly/items/0W2V081o1h3p013P2v46/icon-fullscreen.png);
+	margin-bottom: 5px;
+}
+
 #map {
-	height: 650px;
+	height: 450px;
+	position: realtive;
 }

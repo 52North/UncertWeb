@@ -42,3 +42,20 @@ if (!Array.prototype.indexOf) {
 		return -1;
 	};
 }
+window.Utils = window.Utils || {};
+Utils.formArrayToObject = function(array) {
+	var o = {};
+	for (var i = 0; i < array.length; ++i) {
+		var key = array[i].name;
+		var value = array[i].value;
+		if (o[key] !== undefined && o[key] !== null) {
+			if (!$.isArray(o[key])) {
+				o[key] = [ o[key] ];
+			}
+			o[key].push(value);
+		} else {
+			o[key] = value;
+		}
+	}
+	return o;
+};

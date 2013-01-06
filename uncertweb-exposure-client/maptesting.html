@@ -17,7 +17,7 @@
 
 		<script type="text/javascript" src="lib/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
-		<script type="text/javascript" src="https://raw.github.com/seelmann/leaflet-providers/master/leaflet-providers-0.0.1.js"></script>
+		<script type="text/javascript" src="https://raw.github.com/seelmann/leaflet-providers/master/leaflet-providers-0.0.2.js"></script>
 		<script type="text/javascript" src="https://raw.github.com/elidupuis/leaflet.zoomfs/master/leaflet.zoomfs.js"></script>
 		<script type="text/javascript" src="lib/codemirror-2.34.js"></script>
 		<script type="text/javascript" src="lib/codemirror-2.34-xml.js"></script>
@@ -36,18 +36,16 @@
 		<script type="text/javascript" src="js/utils.js"></script>
 		<script type="text/javascript" src="js/xml.js"></script>
 		<script type="text/javascript" src="js/ui.js"></script>
-		<script type="text/javascript" src="js/message.js"></script>
-		<script type="text/javascript" src="js/map.js"></script>
-		<script type="text/javascript" src="js/jquery.query-param.js"></script>
+		<script type="text/javascript" src="js/jquery.additions.js"></script>
 		<script type="text/javascript" src="js/application.js"></script>
 
 		 <script type="text/javascript">
+		 	var map;
+
 			$(function(){
 
 				function generateExampleTrack() {
 					var track = [];
-					
-					
 					for (var i = 0; i < 7; ++i) {
 						var t = [{
 							location: [51.96, 7.627],
@@ -62,7 +60,8 @@
 							t.push({
 								location: [ 
 									last.location[0] + Math.random() * .05 * ((Math.random() > .5) ? 1 : -1), 
-									last.location[1] + Math.random() * .05 * ((Math.random() > .5) ? 1 : -1)],
+									last.location[1] + Math.random() * .05 * ((Math.random() > .5) ? 1 : -1)
+								],
 								time: {
 									weekday: i,
 									begin: (last.time.begin + last.time.length) % 1439,
@@ -79,14 +78,20 @@
 				}
 
 				
-				var map = new Map({ 
+				map = new Map({ 
 					div: "map",
-					pos: [51.96, 7.627]
+					pos: [51.9222, 4.4826]
 				});
-				var t = generateExampleTrack();
-				console.log(t);
-				map.loadTrack(t);
-				map.zoomToTrack();
+
+
+				$("#showtrack").on("click", function() {
+					console.log(map.getTrackAsXml());
+				});
+
+				//var t = generateExampleTrack();
+				//console.log(t);
+				//map.loadTrack(t);
+				//map.zoomToTrack();
 			});
 		</script>
 		<title>Exposure Client</title>
@@ -112,6 +117,12 @@
 				</div>
 				<div id="content" class="span10" >
 					<div id="welcome">
+						<div class="row-fluid">
+							<div id="button" class="well span12">
+								<button type="button" class="btn btn-info btn-block" id="showtrack">Show Track</button>
+							</div>
+
+						</div>
 						<div class="row-fluid">
 							<div id="map" class="well span12" />
 						</div>
