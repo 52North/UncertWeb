@@ -4,7 +4,7 @@ UIBuilder.prototype.createInput = function(option) {
 	var $input = null;
 	switch (option.type) {
 	case "integer":
-		// TODO slider
+	case "number":
 	case "string":
 		$input = $("<input>").attr("type", "text").attr("name", option.id).addClass("span12");
 		break;
@@ -63,7 +63,53 @@ UIBuilder.prototype.generateOption = function(option) {
 	var $option = $("<div>").addClass("control-group");
 	var self = this;
 	switch (option.type) {
+	case "complex": 
+		function create() {
+			var $group = $("<div>").addClass("control-group");
+			$group.append($("<label>").addClass("control-label").text(option.title));
+			var $controls = $("<div>").addClass("controls well").appendTo($group);
+			for (var key in option.properties) {
+				option.properties[key].id = key;
+				$controls.append(self.generateOption(option.properties[key]));
+			}
+			var $help = $("<span>").addClass("help-block");
+			var $label = $("<span>").addClass("label");
+			if (option.required) {
+				$label.addClass("label-warning").append("required");
+			} else {
+				$label.addClass("label-info").append("optional");
+			}
+			$help.append($label).append(" " + option.description).appendTo($controls);
+			var $button = $("<button>").css({
+					"margin-top": "-22px", 
+					"margin-right": "-15px"
+				}).attr("type", "button").addClass("btn")
+				  .append($("<i>").addClass("icon-minus"));
+			$button.on("click", function() {
+				$group.slideUp(function() {
+					$group.remove();
+				});
+			});
+			$controls.append($("<div>").addClass("pull-right").append($button));
+			return $group;
+		}
+
+		var $div = $("<div>").addClass("control-group");
+		$div.append($("<label>").addClass("control-label").text(option.title));
+		var $controls = $("<div>").addClass("controls").appendTo($div);
+		var $add = $("<button>")
+					.attr("type", "button")
+					.addClass("btn")
+					.css("margin-bottom", "6px")
+					.append($("<i>").addClass("icon-plus"))
+					.appendTo($controls).on("click", function() { 
+						var $a = create();
+						$a.find(".required").trigger("input");
+						$a.hide().appendTo($div).slideDown(); 
+					});
+		return $div;
 	case "integer":
+	case "number":
 	case "password":
 	case "text":
 	case "string":
@@ -164,9 +210,9 @@ UIBuilder.prototype.required = function () {
 		return valid = (val !== null && val !== undefined && val !== "");
 	});
 	if (valid) {
-		$(this).parents(".control-group").removeClass("error");
+		$(this).parents(".control-group").find(".control-group").andSelf().removeClass("error");
 	} else {
-		$(this).parents(".control-group").addClass("error");
+		$(this).parents(".control-group").find(".control-group").andSelf().addClass("error");
 	}
 }
 

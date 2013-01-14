@@ -6,6 +6,19 @@ XmlUtils = (function() {
 		om: "http://www.opengis.net/om/2.0"
 	};
 	return {
+
+		uncertainAlbatrossInput: function(id,sector,stddev) {
+			return jsxml.fromString(
+				'<?xml version="1.0" encoding="UTF-8"?>'+
+				'<UncertainAlbatrossInput xmlns="http://www.uncertweb.org">'+
+					'<albatrossID>'+id+'</albatrossID>'+
+					'<parameter name="sector">'+sector+'</parameter>'+
+					'<un:StandardDeviation xmlns:un="http://www.uncertml.org/2.0">'+
+						'<un:values>'+stddev+'</un:values>'+
+					'</un:StandardDeviation>'+
+				'</UncertainAlbatrossInput>');
+		},
+
 		xml2string: function(doc) {
 			if (typeof(doc) == "string") return doc;
 			var xml = doc.xml || new XMLSerializer().serializeToString(doc);

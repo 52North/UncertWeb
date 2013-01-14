@@ -1,16 +1,12 @@
 {
-
+	"mock": true,
 	"mapCenter": {
 		"rotterdam": [ 51.9222, 4.4826 ],
-		"oslo": [59.912, 10.753 ]
+		"oslo": [ 59.912, 10.753 ]
 	},
+	"complexInputTransformers": {},
 	"visualizationUrl": "http://giv-uw.uni-muenster.de/vis/v2",
-	"outputs": {
-		"nilu": null,
-		"albatross": null,
-		"ems": null,
-		"map": null
-	},
+	"outputs": { "nilu": null, "albatross": null, "ems": null, "map": null },
 	"mappings": {
 		"ems": {
 			"nilu": { "predicted-concentrations": "airQualityData" },
@@ -25,8 +21,8 @@
 		},
 		"ems": {
 			"id": "org.uncertweb.ems.EMSalgorithm",
-			"url-bak": "http://128.176.133.106:8080/ems/WebProcessingService",
-			"url": "examples/emsProcessExampleResponse.xml",
+			"url": "http://128.176.133.106:8080/ems/WebProcessingService",
+			"mock-url": "examples/emsProcessExampleResponse.xml",
 			"outputs": {
 				"result": {
 					"asReference": true,
@@ -68,8 +64,8 @@
 		},
 		"nilu": {
 			"id": "org.uncertweb.wps.AirQualityForecastProcess",
-			"url-bak": "http://v-soknos.uni-muenster.de:8080/nilu-wps/WebProcessingService",
-			"url": "examples/niluProcessExampleResponse.xml",
+			"url": "http://v-soknos.uni-muenster.de:8080/nilu-wps/WebProcessingService",
+			"mock-url": "examples/niluProcessExampleResponse.xml",
 			"outputs": {
 				"predicted-concentrations": {
 					"asReference": true,
@@ -162,8 +158,8 @@
 		},
 		"albatross": {
 			"id": "org.uncertweb.ups.UPSAlbatrossProcessSimple",
-			"url-bak": "http://128.176.133.106:8080/ups/WebProcessingService",
-			"url": "examples/upsAlbatrossProcessExampleResponse.xml",
+			"url": "http://128.176.133.106:8080/ups/WebProcessingService",
+			"mock-url": "examples/upsAlbatrossProcessExampleResponse.xml",
 			"outputs": {
 				"om_schedules": {
 					"mimeType": "application/x-uncertml",
@@ -244,6 +240,78 @@
 								"description": "NumberOfRealisations",
 								"required": true,
 								"default": 1
+							},
+							"uncert-link": {
+								"title": "uncert-link",
+								"description": "link or group of links with standard deviation",
+								"multiple": true,
+								"required": false,
+								"type": "complex",
+								"properties": {
+									"uncert-link-aid": {
+										"type": "string",
+										"required": true,
+										"title": "Albatross ID",
+										"description": "Albatross ID"
+									},
+									"uncert-link-sector": {
+										"type": "choice",
+										"title": "Sector", 
+										"description": "the sector",
+										"required": true,
+										"options": {
+											"1": "total across sectors",
+										   	"2": "number of students/pupils in schools",
+											"3": "retailing – daily goods",
+											"4": "retailing non-daily goods",
+											"5": "restaurants and bars",
+											"6": "banks",
+											"7": "population"
+										}
+									},
+									"uncert-link-stddev": {
+										"type": "number",
+										"required": true,
+										"title": "Standard Deviation",
+										"description": "Standard Deviation"
+									}
+								}
+							},
+							"uncert-area": {
+								"title": "uncert-area",
+								"description": "area or group of areas with standard deviation for sector; sector is implemented as parameter with name attribute value 'sector'",
+								"multiple": true,
+								"required": false,
+								"type": "complex",
+								"properties": {
+									"uncert-area-aid": {
+										"type": "string",
+										"required": true,
+										"title": "Albatross ID",
+										"description": "Albatross ID"
+									},
+									"uncert-area-sector": {
+										"type": "choice",
+										"title": "Sector", 
+										"description": "the sector",
+										"required": true,
+										"options": {
+											"1": "total across sectors",
+										   	"2": "number of students/pupils in schools",
+											"3": "retailing – daily goods",
+											"4": "retailing non-daily goods",
+											"5": "restaurants and bars",
+											"6": "banks",
+											"7": "population"
+										}
+									},
+									"uncert-area-stddev": {
+										"type": "number",
+										"required": true,
+										"title": "Standard Deviation",
+										"description": "Standard Deviation"
+									}
+								}
 							}
 						}
 					}

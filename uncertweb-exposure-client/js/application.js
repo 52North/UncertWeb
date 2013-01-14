@@ -201,11 +201,16 @@ $.extend(App.prototype, {
 				if (settings.inputs.sections[i].options[key].type === "boolean" && !o.inputs[key]) {
 					o.inputs[key] =  [ false ];
 				}
-				if (!settings.inputs.sections[i].options[key].required  && o.inputs[key].length === 1 
+				if (!settings.inputs.sections[i].options[key].required 
+					&& o.inputs[key] 
+					&& o.inputs[key].length === 1 
 					&& (o.inputs[key][0] === "" || o.inputs[key][0] === undefined)) {
 					delete o.inputs[key];
 				}
 			}
+		}
+		for (var i = 0; i < this.options.complexInputTransformers.length; ++i) {
+			this.options.complexInputTransformers[i](o);
 		}
 		return o;
 	},
@@ -340,7 +345,7 @@ $.extend(App.prototype, {
 		var self = this;
 		$.ajax({
 			"type": "POST",
-			"url": settings.url,
+			"url": settings[ this.options.mock ? "mock-url" : "url"],
 			"data": XmlUtils.xml2string(reqXml),
 			"contentType": "application/xml",
 			"dataType": "xml"
