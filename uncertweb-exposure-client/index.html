@@ -32,7 +32,7 @@
         <script type="text/javascript" src="lib/jquery.dependClass-0.1.js"></script>
         <script type="text/javascript" src="lib/draggable-0.1.js"></script>
         <script type="text/javascript" src="lib/jquery.slider.js"></script>
-        
+
         <script type="text/javascript" src="js/utils.js"></script>
         <script type="text/javascript" src="js/xml.js"></script>
         <script type="text/javascript" src="js/ui.js"></script>
@@ -40,7 +40,7 @@
         <script type="text/javascript" src="js/application.js"></script>
 
         <title>Exposure Client</title>
-        
+
         <script type="text/javascript">
             jQuery(document).ready(function($) {
                 $.getJSON("config.json", function(options) {
@@ -54,8 +54,8 @@
                             delete options.inputs[name+"-aid"],
                             delete options.inputs[name+"-sector"];
 
-                            if (stddev && aid && sector 
-                                && stddev.length === aid.length 
+                            if (stddev && aid && sector
+                                && stddev.length === aid.length
                                 && stddev.length === sector.length
                                 && stddev.length > 0) {
                                 var l = stddev.length;
@@ -80,21 +80,21 @@
                         transformer("uncert-link")
                     ]
 
-                    var map = new Map({ 
-                        div: "map", onChange: function() { 
-                            $("#mapsave").disabled(!this.hasTrack()); 
+                    var map = new Map({
+                        div: "map", onChange: function() {
+                            $("#mapsave").disabled(!this.hasTrack());
                         }
                     });
 
                     var app = new App(options, {
-                        "ems": function() { 
-                            this.showVisualizationLink("ems", "result"); 
+                        "ems": function() {
+                            this.showVisualizationLink("ems", "result");
                         }
                     });
 
                     $("a[href=#albatross], a[href=#map-form]").on("click", function() {
-                        setTimeout(function() { 
-                            map.getMap().invalidateSize(); /* FIXME ????? */ 
+                        setTimeout(function() {
+                            map.getMap().invalidateSize(); /* FIXME ????? */
                         }, 10);
                     })
                     $("#mapsave").disabled().on("click", function() {
@@ -170,8 +170,8 @@
                                     <div id="albatross-form" class="tab-pane active">
                                         <div class="row-fluid">
                                             <div class="span12">
-                                                <h3>Albatross WPS</h3>
-                                                <p>The Albatross WPS simulates activity schedules of individuals for the area of Rotterdam (NL). A detailed description of the model and the error propagation within the model is available in the <a href="http://www.uncertweb.org/documents/deliverables/prototype-uncertweb-activity-model-chain/download">UncertWeb deliverable D7.2</a>. We recommend you to leave the default parameters unchanged, if you are not yet familiar with the model in detail.</p>
+                                                <h3>Albatross UPS</h3>
+                                                <p>The Albatross UPS simulates activity schedule realisations of individuals for the area of Rotterdam (NL). A detailed description of the model and the error propagation within the model is available in the <a href="http://www.uncertweb.org/documents/deliverables/prototype-uncertweb-activity-model-chain/download">UncertWeb deliverable D7.2</a>. We recommend you to leave the default parameters unchanged, if you are not yet familiar with the model in detail.</p>
                                             </div>
                                         </div>
                                         <div class="row-fluid">
