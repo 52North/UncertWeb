@@ -251,23 +251,15 @@
 									"uncert-link-aid": {
 										"type": "string",
 										"required": true,
-										"title": "Albatross ID",
-										"description": "Albatross ID"
+										"title": "Link ID",
+										"description": "Link ID used in Albatross Model",
+										"multiple":true
 									},
 									"uncert-link-sector": {
-										"type": "choice",
-										"title": "Sector", 
-										"description": "the sector",
-										"required": true,
-										"options": {
-											"1": "total across sectors",
-										   	"2": "number of students/pupils in schools",
-											"3": "retailing – daily goods",
-											"4": "retailing non-daily goods",
-											"5": "restaurants and bars",
-											"6": "banks",
-											"7": "population"
-										}
+										"type": "integer",
+										"title": "Number of links", 
+										"description": "Specifies number of links",
+										"required": true
 									},
 									"uncert-link-stddev": {
 										"type": "number",
@@ -287,8 +279,8 @@
 									"uncert-area-aid": {
 										"type": "string",
 										"required": true,
-										"title": "Albatross ID",
-										"description": "Albatross ID"
+										"title": "Area ID",
+										"description": "Area ID used in Albatross"
 									},
 									"uncert-area-sector": {
 										"type": "choice",
