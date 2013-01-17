@@ -622,6 +622,10 @@ public class XBObservationEncoder extends AbstractHookedObservationEncoder<OMObs
 	
 	public void setIsCol(boolean isCollection){
 		this.isCol=isCollection;
+		this.timeIdCounter=0;
+		this.gmlID4TimeStrings = new HashMap<String, String>();
+		this.sfIdCounter=0;
+		this.gmlID4sfIdentifier = new HashMap<String, String>();
 	}
 
 	/**

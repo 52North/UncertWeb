@@ -950,13 +950,13 @@ public class XBObservationParser implements IObservationParser {
 	private SpatialSamplingFeature getSamplingFeature4Href(String href) throws IllegalArgumentException, URISyntaxException, MalformedURLException {
 		SpatialSamplingFeature ssf = null;
 		if	(!href.startsWith("#")){
-			URL hrefUrl = new URL(href);
+			URI hrefUri = new URI(href);
 			
 			if (this.featureCache.containsKey(href)){
 				ssf = this.featureCache.get(href);
 			}
 			else {
-				ssf= new SpatialSamplingFeature(hrefUrl.toURI());
+				ssf= new SpatialSamplingFeature(hrefUri);
 				this.featureCache.put(href, ssf);
 				
 //				String xmlString = null;
