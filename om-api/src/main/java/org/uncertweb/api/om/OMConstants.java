@@ -35,7 +35,11 @@ public class OMConstants {
 	public static final String NS_SA = "http://www.opengis.net/sampling/2.0";
 
 	/**namespace prefix for sampling features*/
-	public static final String NS_SA_PREFIX = "sam";
+	public static final String NS_SAM_PREFIX = "sam";
+	
+	/**namespace prefix for sampling features*/
+	public static final String NS_SA_PREFIX = "sa";
+	
 	
 	/**namespace prefix for sampling features*/
 	public static final String NS_SF_PREFIX = "sf";
