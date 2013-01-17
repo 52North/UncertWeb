@@ -509,8 +509,13 @@ public class ObservationConverter {
 
 		try {
 			// create feature
-			return new SpatialSamplingFeature(identifier, boundedBy,
+			if (SosConfigurator.getInstance().isFoiEncodedInObservation() == false) {
+
+				return new SpatialSamplingFeature(new URI(identifier.toIdentifierString()));
+			} else {
+				return new SpatialSamplingFeature(identifier, boundedBy,
 					sampledFeature, shape);
+			}
 		} catch (Exception e) {
 			OwsExceptionReport se = new OwsExceptionReport();
 			se.addCodedException(
@@ -536,8 +541,16 @@ public class ObservationConverter {
 		String idName = splitID[splitID.length - 1];
 
 		try {
-			identifier = new Identifier(new URI(id.substring(0, id.length()
-					- idName.length())), idName);
+			
+			if (id.length() == idName.length()) {
+				// identifier without codeSpace
+				identifier = new Identifier(new URI(""), idName);
+				
+			} else {
+				// codeSpace without appended slash
+				identifier = new Identifier(new URI(id.substring(0, id.length()
+					- idName.length() - 1)), idName);
+			}
 			
 		} catch (URISyntaxException e) {
 			OwsExceptionReport se = new OwsExceptionReport();
