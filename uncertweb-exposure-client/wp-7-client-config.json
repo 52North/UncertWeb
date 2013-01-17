@@ -1,4 +1,5 @@
 {
+	"mock": true,
 	"visualizationUrl": "http://giv-uw.uni-muenster.de/vis/v2",
 	"outputs": {
 		"albatross": null,
@@ -14,8 +15,8 @@
 	},
 	"processes": {
 		"syn-pop": {
-			"url-bak": "http://128.176.133.106:8080/albatross-syn-pop-wps/WebProcessingService",
-			"url": "examples/synPopProcessExampleResponse.xml",
+			"url": "http://128.176.133.106:8080/albatross-syn-pop-wps/WebProcessingService",
+			"mock-url": "examples/synPopProcessExampleResponse.xml",
 			"id": "org.uncertweb.wps.SyntheticPopulationProcess",
 			"outputs": {
 				"export-file": {
@@ -95,8 +96,8 @@
 		},
 		"albatross": {
 			"id": "org.uncertweb.wps.AlbatrossProcess",
-			"url-bak": "http://128.176.133.106:8080/albatross-wps/WebProcessingService",
-			"url": "examples/albatrossProcessExampleResponse.xml",
+			"url": "http://128.176.133.106:8080/albatross-wps/WebProcessingService",
+			"mock-url": "examples/albatrossProcessExampleResponse.xml",
 			"outputs": {
 				"om_schedules": {
 					"mimeType": "application/x-om-u+json",
@@ -156,6 +157,70 @@
 								"description": "Number of schedules returned in case the requested output is om_schedules.",
 								"type": "integer",
 								"required": false
+							},
+							"uncert-link": {
+								"title": "uncert-link",
+								"description": "link or group of links with standard deviation",
+								"multiple": true,
+								"required": false,
+								"type": "complex",
+								"properties": {
+									"uncert-link-aid": {
+										"type": "string",
+										"required": true,
+										"title": "Link ID",
+										"description": "Link ID used in Albatross Model",
+										"multiple":true
+									},
+									"uncert-link-sector": {
+										"type": "integer",
+										"title": "Number of links", 
+										"description": "Specifies number of links",
+										"required": true
+									},
+									"uncert-link-stddev": {
+										"type": "number",
+										"required": true,
+										"title": "Standard Deviation",
+										"description": "Standard Deviation"
+									}
+								}
+							},
+							"uncert-area": {
+								"title": "uncert-area",
+								"description": "area or group of areas with standard deviation for sector; sector is implemented as parameter with name attribute value 'sector'",
+								"multiple": true,
+								"required": false,
+								"type": "complex",
+								"properties": {
+									"uncert-area-aid": {
+										"type": "string",
+										"required": true,
+										"title": "Area ID",
+										"description": "Area ID used in Albatross"
+									},
+									"uncert-area-sector": {
+										"type": "choice",
+										"title": "Sector", 
+										"description": "the sector",
+										"required": true,
+										"options": {
+											"1": "total across sectors",
+										   	"2": "number of students/pupils in schools",
+											"3": "retailing – daily goods",
+											"4": "retailing non-daily goods",
+											"5": "restaurants and bars",
+											"6": "banks",
+											"7": "population"
+										}
+									},
+									"uncert-area-stddev": {
+										"type": "number",
+										"required": true,
+										"title": "Standard Deviation",
+										"description": "Standard Deviation"
+									}
+								}
 							}
 						}
 					}

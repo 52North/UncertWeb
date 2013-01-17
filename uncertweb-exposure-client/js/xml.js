@@ -7,16 +7,18 @@ XmlUtils = (function() {
 	};
 	return {
 
-		uncertainAlbatrossInput: function(id,sector,stddev) {
-			return jsxml.fromString(
+		uncertainAlbatrossInput: function(id,sector,stddev,parameterName) {
+			var xml = jsxml.fromString(
 				'<?xml version="1.0" encoding="UTF-8"?>'+
 				'<UncertainAlbatrossInput xmlns="http://www.uncertweb.org">'+
 					'<albatrossID>'+id+'</albatrossID>'+
-					'<parameter name="sector">'+sector+'</parameter>'+
+					'<parameter name="'+parameterName+'">'+sector+'</parameter>'+
 					'<un:StandardDeviation xmlns:un="http://www.uncertml.org/2.0">'+
 						'<un:values>'+stddev+'</un:values>'+
 					'</un:StandardDeviation>'+
 				'</UncertainAlbatrossInput>');
+			xml.schema = "http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd";
+			return xml;
 		},
 
 		xml2string: function(doc) {
@@ -48,10 +50,10 @@ XmlUtils = (function() {
 
 				if (value instanceof Object) {
 					if (value.documentElement) {
-						//XML fragment
-							input.appendChild
+							//XML fragment
 							var complexData = doc.createElement("wps:ComplexData");
 							complexData.appendChild(value.documentElement);
+							complexData.setAttribute("schema", value.schema);
 							input.appendChild(complexData);
 					} else {
 						//REFERENCE
@@ -182,7 +184,7 @@ XmlUtils = (function() {
 				var result = doc.createElement("om:result");
 				result.appendChild(doc.createTextNode(true));
 				observation.appendChild(result);
-
+				doc.schema = "http://schemas.opengis.net/om/2.0/observation.xsd";
 				doc.documentElement.appendChild(observation)	
 			}
 			return doc;

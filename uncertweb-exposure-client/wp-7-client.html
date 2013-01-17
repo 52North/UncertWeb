@@ -1,125 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-        <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link rel="stylesheet" type="text/css" href="css/bootstrap-2.1.1.min.css" />
-                <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive-2.1.1.css" />
-                <link rel="stylesheet" type="text/css" href="css/codemirror-2.34.css" />
-                <link rel="stylesheet" type="text/css" href="css/codemirror.custom.css" />
-                <link rel="stylesheet" type="text/css" href="css/prettify.css" />
+		<head>
+				<meta charset="utf-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<link rel="stylesheet" type="text/css" href="css/bootstrap-2.1.1.min.css" />
+				<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive-2.1.1.css" />
+				<link rel="stylesheet" type="text/css" href="css/codemirror-2.34.css" />
+				<link rel="stylesheet" type="text/css" href="css/codemirror.custom.css" />
+				<link rel="stylesheet" type="text/css" href="css/prettify.css" />
 
-                <script type="text/javascript" src="lib/jquery-1.8.2.min.js"></script>
-                <script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
-                <script type="text/javascript" src="lib/codemirror-2.34.js"></script>
-                <script type="text/javascript" src="lib/codemirror-2.34-xml.js"></script>
-                <script type="text/javascript" src="lib/prettify.min.js"></script>
-                <script type="text/javascript" src="lib/vkbeautify-0.99.00.beta.js"></script>
-                <script type="text/javascript" src="lib/bootstrap-2.1.1.min.js"></script>
-                <script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
-                <script type="text/javascript" src="lib/jsxml-0.2.2.js"></script>
-                <link rel="stylesheet" type="text/css" href="css/application.css" />
-                <script type="text/javascript" src="js/utils.js"></script>
-                <script type="text/javascript" src="js/xml.js"></script>
-                <script type="text/javascript" src="js/ui.js"></script>
-                <script type="text/javascript" src="js/jquery.query-param.js"></script>
-                <script type="text/javascript" src="js/application.js"></script>
-                <title>WP 7 Test Client</title>
-                <script type="text/javascript">
-                        jQuery(document).ready(function($) {
-                                $.getJSON("wp-7-client-config.json", function(options) {
-                                        new App(options, {
-                                                "albatross": function(app) {
-                                                        app.showDownloadLink("albatross", "export-file");
-                                                }
-                                        });
-                                });
-                        });
-                </script>
-        </head>
-        <body>
-                <div class="container-fluid">
-                        <div class="row-fluid">
-                                <div class="span12 page-header">
-                                        <h2>Albatross Workflow Demonstration Client</h2>
-                                </div>
-                        </div>
-                        <div class="row-fluid">
-                                <div class="span2">
-                                        <div class="well sidebar-nav">
-                                                <ul class="nav nav-list">
-                                                        <li class="active"><a href="#welcome">Welcome</a></li>
-                                                        <li class="nav-header">Processes</li>
-                                                        <li class="disabled"><a href="#syn-pop">Syn-Pop Process</a></li>
-                                                        <li class="disabled"><a href="#albatross">Albatross Process</a></li>
-                                                </ul>
-                                        </div>
-                                </div>
-                                <div id="content" class="span10" >
-                                        <div id="welcome">
-                                                <div class="row-fluid">
-                                                        <div class="span12">
-                                                                <h3>Welcome</h3>
-                                                                <p>This demonstration client illustrates how to use the Web services developed by the <a href="http://ifgi.uni-muenster.de">Institute for Geoinformatics</a> that encapsulate the <a href="http://trb.metapress.com/content/a5277w106t555214/">Albatross model</a>, a multi-agent, rule-based model of activity pattern decisions developed by the <a href="http://www.tue.nl/">Technical University of Eindhoven</a>. The Web Service chain allows to generate realisations of activity schedules for individuals. The main components are shown in the figure below.</p>
+				<script type="text/javascript" src="lib/jquery-1.8.2.min.js"></script>
+				<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+				<script type="text/javascript" src="lib/codemirror-2.34.js"></script>
+				<script type="text/javascript" src="lib/codemirror-2.34-xml.js"></script>
+				<script type="text/javascript" src="lib/prettify.min.js"></script>
+				<script type="text/javascript" src="lib/vkbeautify-0.99.00.beta.js"></script>
+				<script type="text/javascript" src="lib/bootstrap-2.1.1.min.js"></script>
+				<script type="text/javascript" src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+				<script type="text/javascript" src="lib/jsxml-0.2.2.js"></script>
+				<link rel="stylesheet" type="text/css" href="css/application.css" />
+				<script type="text/javascript" src="js/utils.js"></script>
+				<script type="text/javascript" src="js/xml.js"></script>
+				<script type="text/javascript" src="js/ui.js"></script>
+				<script type="text/javascript" src="js/jquery.query-param.js"></script>
+				<script type="text/javascript" src="js/application.js"></script>
+				<script type="text/javascript" src="js/wp7.js"></script>
+				<title>WP 7 Test Client</title>
+		</head>
+		<body>
+				<div class="container-fluid">
+						<div class="row-fluid">
+								<div class="span12 page-header">
+										<h2>Albatross Workflow Demonstration Client</h2>
+								</div>
+						</div>
+						<div class="row-fluid">
+								<div class="span2">
+										<div class="well sidebar-nav">
+												<ul class="nav nav-list">
+														<li class="active"><a href="#welcome">Welcome</a></li>
+														<li class="nav-header">Processes</li>
+														<li class="disabled"><a href="#syn-pop">Syn-Pop Process</a></li>
+														<li class="disabled"><a href="#albatross">Albatross Process</a></li>
+												</ul>
+										</div>
+								</div>
+								<div id="content" class="span10" >
+										<div id="welcome">
+												<div class="row-fluid">
+														<div class="span12">
+																<h3>Welcome</h3>
+																<p>
+																		This demonstration client illustrates how to use the Web services developed by the <a href="http://ifgi.uni-muenster.de">Institute for Geoinformatics</a> that encapsulate the <a href="http://trb.metapress.com/content/a5277w106t555214/">Albatross model</a>, a multi-agent, rule-based model of activity pattern decisions developed by the <a href="http://www.tue.nl/">Technical University of Eindhoven</a>. The Web Service chain allows to generate realisations of activity schedules for individuals. The main components are shown in the figure below.
+																	</p>
 
-                                                                <div style="max-width: 800px; margin: 20px auto 20px">
-                                                                        <img src="img/albatross_chain.png" class="img-polaroid" />
-                                                                </div>
+																<div style="max-width: 800px; margin: 20px auto 20px">
+																	<img src="img/albatross_chain.png" class="img-polaroid" />
+																</div>
 
-                                                                <p>The Albatross model is deployed in the Web by means of two<a href="http://www.opengeospatial.org/standards/wps"> OGC Web Processing Services</a> profiles .First, the Synthetic Population Service (shown on the left in the upper figure) is deployed to simulate a synthetic population from the samples taken from 28000 households. Once the synthetic population is created, it can be utilized by the second service, the Albatross Service (shown on the upper right) that allows running the Albatross model and retrieving the mobility predictions. The two services are described in more detail in the <a href="http://www.uncertweb.org/documents/deliverables/prototype-uncertweb-activity-model-chain/download">UncertWeb Deliverable D7.2</a>.</p>
+																<p>
+																		The Albatross model is deployed in the Web by means of two<a href="http://www.opengeospatial.org/standards/wps"> OGC Web Processing Services</a> profiles .First, the Synthetic Population Service (shown on the left in the upper figure) is deployed to simulate a synthetic population from the samples taken from 28000 households. Once the synthetic population is created, it can be utilized by the second service, the Albatross Service (shown on the upper right) that allows running the Albatross model and retrieving the mobility predictions. The two services are described in more detail in the <a href="http://www.uncertweb.org/documents/deliverables/prototype-uncertweb-activity-model-chain/download">UncertWeb Deliverable D7.2</a>.
+																</p>
 
-                                                                <div style="max-width: 400px; margin: 20px auto 20px">
-                                                                        <button id="start" class="btn btn-info btn-large btn-block">Start</button>
-                                                                </div>
-                                                        </div>
-                                                </div>
-                                        </div>
-                                        <div id="syn-pop" class="processContainer" style="display: none;">
-                                                <div class="row-fluid">
-                                                        <div class="span6">
-                                                                <h3>Synthetic Population WPS</h3>
-                                                                <p>A WPS profile has to define the identifiers of the processes provided as well as the input and output parameters of these processes. The Synthetic Population Service creates a synthetic population for all households in the Netherlands from the 28000 households that have been sampled. Thus, only one process is needed that offers this functionality. The process has the identifier org.uncertweb.wps.SyntheticPopulationProcess. </p>
+																<div style="max-width: 400px; margin: 20px auto 20px">
+																		<button id="start" class="btn btn-info btn-large btn-block">Start</button>
+																</div>
+														</div>
+												</div>
+										</div>
+										<div id="syn-pop" class="processContainer" style="display: none;">
+												<div class="row-fluid">
+														<div class="span6">
+																<h3>Synthetic Population WPS</h3>
+																<p>
+																		A WPS profile has to define the identifiers of the processes provided as well as the input and output parameters of these processes. The Synthetic Population Service creates a synthetic population for all households in the Netherlands from the 28000 households that have been sampled. Thus, only one process is needed that offers this functionality. The process has the identifier org.uncertweb.wps.SyntheticPopulationProcess.
+																</p>
 
-                                                                <p>The input parameters of the process can be specified in the form on the right. There are also many other model parameters that are read from a project file by the model, but these parameters are usually not changed for each model run. Thus, only those parameters that are adjusted for each model run are modelled as WPS inputs. The raw data inputs for the synthetic population are read from a static data file that is provided in the model workspace. The path to the workspace can be configured using the project file. However, as the data input is considered to be static and, in addition, the size of the input file is very big, the data inputs are not passed to the service, but directly read from the workspace by the synthetic population process of the model at the backend of the Web service.</p>
-                                                        </div>
-                                                        <form data-process="syn-pop" class="span6 form-horizontal processForm well"></form>
-                                                </div>
-                                        </div>
-                                        <div id="albatross" class="processContainer" style="display: none;">
-                                                <div class="row-fluid">
-                                                        <div class="span6">
-                                                                <h3>Albatross WPS</h3>
-                                                                <p>The Albatross Service provides the interface to run the Albatross model and generate activity schedules for individuals. Therefore, it also provides only one process with the identifier org.uncertweb.wps.AlbatrossProcess.</p>
-<p>
-Similar to the implementation of the Synthetic Population Service, only dynamic parameters of the model configuration are passed to the service. The dynamic input parameters for the Albatross model can be specified again in the form on the right side. The pointer to the synthetic population that has been generated by the Synthetic Population WPS does not need to be added, as this parameter is automatically cached by the client. The other input data is static data contained in data files of the workspace and do not need to be passed via the service interface. For propagating the uncertainties of inputs, two additional service parameters are introduced to pass standard deviations for travel time along certain street links (uncertain-link parameter) and for uncertain land-use data of a postal code area (uncertain-area). Therefore, an additional parameter schema has been created that defines an UncertainAlbatrossInput element.</p>
-                                                        </div>
-                                                        <form data-process="albatross" class="tab-pane form-horizontal processForm span6 well"></form>
-                                                </div>
-                                        </div>
-                                </div>
-                        </div>
-                        <div class="row-fluid">
-                                <div class="span10 offset2" style="padding-top: 50px;">
-                                        <table id="output" class="table table-condensed">
-                                                <tbody></tbody>
-                                        </table>
-                                </div>
-                        </div>
-                </div>
-                <div class="footer">
-                        <div class="container-fluid">
-                                <p class="pull-right"><a href="#">Back to top</a></p>
-                                <p>The UncertWeb project has received funding from the <a href="http://cordis.europa.eu/fp7/home_en.html">European Community's Seventh Framework Programme</a> under grant agreement n&deg; [248488].</p>
-                                <ul class="footer-links">
-                                        <li>&copy; 2012 <a href="http://ifgi.uni-muenster.de/" >Institute for Geoinformatics</a></li>
-                                        <li class="muted">&middot;</li>
-                                        <li><a href="http://www.uncertweb.org/contact">Contact us</a></li>
-                                        <li class="muted">&middot;</li>
-                                        <li><a href="http://www.uncertweb.org/advisory-panel">Advisory panel</a></li>
-                                        <li class="muted">&middot;</li>
-                                        <li><a href="http://www.uncertweb.org/sponsor">Sponsor</a></li>
-                                </ul>
-                        </div>
-                </div>
-        </body>
+																<p>
+																	The input parameters of the process can be specified in the form on the right. There are also many other model parameters that are read from a project file by the model, but these parameters are usually not changed for each model run. Thus, only those parameters that are adjusted for each model run are modelled as WPS inputs. The raw data inputs for the synthetic population are read from a static data file that is provided in the model workspace. The path to the workspace can be configured using the project file. However, as the data input is considered to be static and, in addition, the size of the input file is very big, the data inputs are not passed to the service, but directly read from the workspace by the synthetic population process of the model at the backend of the Web service.
+																</p>
+														</div>
+														<form data-process="syn-pop" class="span6 form-horizontal processForm well"></form>
+												</div>
+										</div>
+										<div id="albatross" class="processContainer" style="display: none;">
+												<div class="row-fluid">
+													<div class="span12">
+														<h3>Albatross WPS</h3>
+														<p>
+															The Albatross Service provides the interface to run the Albatross model and generate activity schedules for individuals. Therefore, it also provides only one process with the identifier org.uncertweb.wps.AlbatrossProcess.
+														</p>
+
+														<p>
+															Similar to the implementation of the Synthetic Population Service, only dynamic parameters of the model configuration are passed to the service. The dynamic input parameters for the Albatross model can be specified again in the form on the right side. The pointer to the synthetic population that has been generated by the Synthetic Population WPS does not need to be added, as this parameter is automatically cached by the client. The other input data is static data contained in data files of the workspace and do not need to be passed via the service interface. For propagating the uncertainties of inputs, two additional service parameters are introduced to pass standard deviations for travel time along certain street links (uncertain-link parameter) and for uncertain land-use data of a postal code area (uncertain-area). Therefore, an additional parameter schema has been created that defines an UncertainAlbatrossInput element.
+														</p>
+													</div>
+												</div>
+												<div class="row-fluid">
+													<div class="span12">
+														<form data-process="albatross" class="tab-pane form-horizontal processForm well"></form>
+													</div>
+												</div>
+										</div>
+								</div>
+						</div>
+						<div class="row-fluid">
+								<div class="span10 offset2" style="padding-top: 50px;">
+										<table id="output" class="table table-condensed">
+												<tbody></tbody>
+										</table>
+								</div>
+						</div>
+				</div>
+				<div class="footer">
+						<div class="container-fluid">
+								<p class="pull-right"><a href="#">Back to top</a></p>
+								<p>The UncertWeb project has received funding from the <a href="http://cordis.europa.eu/fp7/home_en.html">European Community's Seventh Framework Programme</a> under grant agreement n&deg; [248488].</p>
+								<ul class="footer-links">
+										<li>&copy; 2012 <a href="http://ifgi.uni-muenster.de/" >Institute for Geoinformatics</a></li>
+										<li class="muted">&middot;</li>
+										<li><a href="http://www.uncertweb.org/contact">Contact us</a></li>
+										<li class="muted">&middot;</li>
+										<li><a href="http://www.uncertweb.org/advisory-panel">Advisory panel</a></li>
+										<li class="muted">&middot;</li>
+										<li><a href="http://www.uncertweb.org/sponsor">Sponsor</a></li>
+								</ul>
+						</div>
+				</div>
+		</body>
 </html>

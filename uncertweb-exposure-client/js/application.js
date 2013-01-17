@@ -125,9 +125,9 @@ $.extend(App.prototype, {
 			});
 
 		$dialog.appendTo($("body")).modal({
-	        "keyboard": true,
-	        "show": true
-	    });
+			"keyboard": true,
+			"show": true
+		});
 	},
 
 	onSidebarClick: function(e, element) {
@@ -484,7 +484,7 @@ $.extend(TimeValue.prototype, {
 	},
 	conflicts: function(that) {
 	return !((this.getBeginPoint().compareTo(that.getEndPoint()) > 0) ||
-	 		 (that.getBeginPoint().compareTo(this.getEndPoint()) > 0));
+			 (that.getBeginPoint().compareTo(this.getEndPoint()) > 0));
 	},
 	getBeginPoint: function() {
 		return this.begin;
@@ -824,3 +824,34 @@ $.extend(Map.prototype, {
 		return observations;
 	}
 });
+
+
+function transformer(name) {
+	return function(options) {
+		var stddev = options.inputs[name+"-stddev"],
+			aid = options.inputs[name+"-aid"],
+			parameter = options.inputs[name+"-parameter"];
+		delete options.inputs[name+"-stddev"],
+		delete options.inputs[name+"-aid"],
+		delete options.inputs[name+"-parameter"];
+		var parameterName = (name === "uncert-link") ? 
+			"sector" : "link"; /* FIXME real name? */
+		if (stddev && aid && parameter 
+			&& stddev.length === aid.length 
+			&& stddev.length === parameter.length
+			&& stddev.length > 0) {
+			var l = stddev.length;
+			var a = [];
+			for (var i = 0; i < l; ++i) {
+				if (aid[i] !== undefined && aid[i] !== ""
+					&& parameter[i] !== undefined && parameter[i] !== ""
+					&& stddev[i] !== undefined && stddev[i] !== "")
+				a.push(XmlUtils.uncertainAlbatrossInput(
+					aid[i], parameter[i], stddev[i], parameterName));
+			}
+			if (a.length > 0) {
+				options.inputs[name] = a;
+			}
+		}
+	}
+}

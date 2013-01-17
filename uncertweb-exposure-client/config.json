@@ -255,7 +255,7 @@
 										"description": "Link ID used in Albatross Model",
 										"multiple":true
 									},
-									"uncert-link-sector": {
+									"uncert-link-parameter": {
 										"type": "integer",
 										"title": "Number of links", 
 										"description": "Specifies number of links",
@@ -282,7 +282,7 @@
 										"title": "Area ID",
 										"description": "Area ID used in Albatross"
 									},
-									"uncert-area-sector": {
+									"uncert-area-parameter": {
 										"type": "choice",
 										"title": "Sector", 
 										"description": "the sector",
