@@ -58,6 +58,10 @@ public class Identifier {
 	 * returns the codespace concatenated with "/" and the identifier
 	 */
 	public String toIdentifierString(){
-		return this.codeSpace.toString()+"/"+this.identifier;
+		if (this.codeSpace != null && !this.codeSpace.toString().equals("")) {
+			return this.codeSpace.toString()+"/"+this.identifier;
+		} else {
+			return this.identifier;
+		}
 	}
 }
