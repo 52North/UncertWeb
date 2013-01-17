@@ -64,7 +64,6 @@ public class StaxObservationEncoder implements IObservationEncoder {
 	 */
 	public StaxObservationEncoder(Collection<EncoderHook<OMObservationDocument>> hooks) { 
 		this.xbEncoder = new XBObservationEncoder(hooks);
-		this.xbEncoder.setIsCol(true);
 	}
 
 
@@ -100,9 +99,11 @@ public class StaxObservationEncoder implements IObservationEncoder {
 	@Override
 	public void encodeObservationCollection(IObservationCollection obsCol,
 			OutputStream out) throws OMEncodingException {
+		this.xbEncoder.setIsCol(true);
 		try {
 			XMLOutputFactory factory = XMLOutputFactory.newInstance();
 			XMLStreamWriter writer = factory.createXMLStreamWriter(out);
+			
 			
 			//set character escaping on false!
 			((com.sun.xml.internal.stream.writers.XMLStreamWriterImpl)writer).setEscapeCharacters(false);
@@ -149,12 +150,68 @@ public class StaxObservationEncoder implements IObservationEncoder {
 		} catch (XMLStreamException e) {
 			throw new OMEncodingException(e);
 		}
+		finally {
+			this.xbEncoder.setIsCol(false);
+		}
 	}
 
 	@Override
 	public void encodeObservationCollection(IObservationCollection obsCol,
-			Writer writer) throws OMEncodingException {
-		// TODO Auto-generated method stub
+			Writer writerx) throws OMEncodingException {
+		this.xbEncoder.setIsCol(true);
+		try {
+			XMLOutputFactory factory = XMLOutputFactory.newInstance();
+			XMLStreamWriter writer = factory.createXMLStreamWriter(writerx);
+			
+			
+			//set character escaping on false!
+			((com.sun.xml.internal.stream.writers.XMLStreamWriterImpl)writer).setEscapeCharacters(false);
+			writer.writeStartDocument();
+			
+			if (obsCol instanceof UncertaintyObservationCollection){
+				writer.writeStartElement(UncertaintyObservationCollection.NAME);
+			} else if (obsCol instanceof MeasurementCollection){
+				writer.writeStartElement(MeasurementCollection.NAME);
+			}else if (obsCol instanceof BooleanObservationCollection){
+				writer.writeStartElement(BooleanObservationCollection.NAME);
+			}else if (obsCol instanceof TextObservationCollection){
+				writer.writeStartElement(TextObservationCollection.NAME);
+			}else if (obsCol instanceof CategoryObservationCollection){
+				writer.writeStartElement(CategoryObservationCollection.NAME);
+			}else if (obsCol instanceof DiscreteNumericObservationCollection){
+				writer.writeStartElement(DiscreteNumericObservationCollection.NAME);
+			}else if (obsCol instanceof ReferenceObservationCollection){
+				writer.writeStartElement(ReferenceObservationCollection.NAME);
+			}
+			else if (obsCol instanceof ObservationCollection){
+				writer.writeStartElement(ObservationCollection.NAME);
+			}
+			
+			writer.writeDefaultNamespace(OMConstants.NS_OM);
+			writer.writeNamespace(OMConstants.NS_OM_PREFIX, OMConstants.NS_OM);
+			writer.writeNamespace(OMConstants.NS_GML_PREFIX, OMConstants.NS_GML);
+			writer.writeNamespace(OMConstants.NS_SA_PREFIX, OMConstants.NS_SA);
+			writer.writeNamespace(OMConstants.NS_SF_PREFIX, OMConstants.NS_SA);
+			writer.writeNamespace(OMConstants.NS_SAMS_PREFIX, OMConstants.NS_SAMS);
+			writer.writeNamespace(OMConstants.NS_XLINK_PREFIX, OMConstants.NS_XLINK);
+			writer.writeNamespace(OMConstants.NS_GMD_PREFIX, OMConstants.NS_GMD);
+			writer.writeNamespace(OMConstants.NS_XSI_PREFIX, OMConstants.NS_XSI);
+			writer.writeAttribute(OMConstants.NS_XSI_PREFIX,OMConstants.NS_XSI,"schemaLocation",OMConstants.NS_OM+" "+OMConstants.OM_SCHEMA_LOCATION);
+			Iterator<? extends AbstractObservation> iter = obsCol.getObservations().iterator();
+			while (iter.hasNext()){
+				writer.writeCharacters(prepareObservationString(encodeObservation(iter.next())));
+			}
+			writer.writeEndElement();
+			writer.writeEndDocument();
+			writer.flush();
+			writer.close();
+
+		} catch (XMLStreamException e) {
+			throw new OMEncodingException(e);
+		}
+		finally {
+			this.xbEncoder.setIsCol(false);
+		}
 		
 	}
 
