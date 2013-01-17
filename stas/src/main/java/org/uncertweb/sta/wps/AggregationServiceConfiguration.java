@@ -109,13 +109,13 @@ public class AggregationServiceConfiguration {
 					if (child instanceof Element){
 						String name = child.getNodeName();
 						if (name.equals("ProcessIdentifier")){
-							identifier = child.getTextContent();
+							identifier = child.getNodeValue();
 						}
 						else if (name.equals("ClassName")){
-							clazzName = child.getTextContent();
+							clazzName = child.getNodeValue();
 						}
 						else if (name.equals("Semantics")){
-							semantics = child.getTextContent();
+							semantics = child.getNodeValue();
 						}
 					}
 				}

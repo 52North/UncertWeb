@@ -84,7 +84,10 @@
 	</Datahandlers>
 	<AlgorithmRepositoryList>
 		<!-- <Repository name="STARepository" className="org.uncertweb.sta.wps.STARepository" active="true" />  -->
-		<Repository name="AggregationAlgorithmRepository" className="org.uncertweb.sta.wps.AggregationAlgorithmRepository" active="true" /> 
+		<Repository name="AggregationAlgorithmRepository" className="org.uncertweb.sta.wps.AggregationAlgorithmRepository" active="true" >
+			<Property name="WFS_URL" active="true">http://uncertdata.aston.ac.uk:8080/geoserver/UncertWeb/ows</Property>
+			<Property name="WFS_TYPE_NAME" active="true"><Property name="WFS_URL" active="true">UncertWeb:feature_of_interest</Property></Property> 
+		</Repository> 
 	</AlgorithmRepositoryList>
 	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="stas" repoReloadInterval="0">
 		<Database/>

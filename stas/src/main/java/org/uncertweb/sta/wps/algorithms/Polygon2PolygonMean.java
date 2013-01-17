@@ -1,5 +1,7 @@
 package org.uncertweb.sta.wps.algorithms;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.opengis.sos.x10.GetFeatureOfInterestDocument.GetFeatureOfInterest;
 
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -61,6 +65,7 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 	
 	
 	
+	
 	///////////////////////
 	// supported uncertainty types
 	private static final String CREAL_URI = UncertML.getURI(ContinuousRealisation.class);
@@ -69,11 +74,20 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 	private static final String RANDOMSAMPLE_URI = UncertML
 			.getURI(RandomSample.class);
 	
+	//indicates the number of digits for the aggregates
+	private static final int NUMBER_OF_DIGITS=4;
+	
+	
 	//default SRS EPSG Code
 	private static final int DEFAULT_SRS = 27700;
 	
 	//used for retrieving FOIS in observations from WFS
 	private FeatureCache featureCache = new FeatureCache();
+	
+	private String wfsURL = "";
+	private String typeName = "";
+	
+	
 	
 	/**
 	 * Input parameter which contains the input regions
@@ -245,13 +259,12 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 		
 		
 		//Iterator<SpatialSamplingFeature> foiIter = obsCols4Fois.keySet().iterator();
-		Map<Feature,Map<URI,RegionAggregates>> regionsAggCache = new HashMap<Feature,Map<URI,RegionAggregates>>(targetRegions.size());
+		Map<Feature,Map<URI,RegionAggregates>> regionsAggCache = new HashMap<Feature,Map<URI,RegionAggregates>>(1000);
 		
 		/*
 		 * iterate over fois and for each target region, check intersection; if FOI intersects, store obsCol with intersection are 
 		 */
 		Iterator<? extends AbstractObservation> obsIter = originalObs.getObservations().iterator();
-		String isString = " Intersected RegionIDs and FieldIDs ";
 		while (obsIter.hasNext()){
 			//TODO add type check!!
 			UncertaintyObservation uncertObs = (UncertaintyObservation) obsIter.next();
@@ -259,15 +272,13 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 			Geometry foiGeom = null;
 			String foiID = null;
 			if (uncertObs.getFeatureOfInterest().getHref()!=null){
-				URL wfsURL = null;
+				String href = uncertObs.getFeatureOfInterest().getHref().toString();
 				try {
-					wfsURL = uncertObs.getFeatureOfInterest().getHref().toURL();
+					foiGeom = this.featureCache.getFeatureFromWfs(href).getShape();
 				} catch (MalformedURLException e) {
 					log.info("Error while getting URL from href attribute in feature of interest: "+e.getMessage());
+					throw new RuntimeException("Error while getting URL from href attribute in feature of interest: "+e.getMessage());
 				}
-				
-				foiGeom = this.featureCache.getFeatureFromWfs(wfsURL).getShape();
-				foiID =  this.featureCache.getFeatureFromWfs(wfsURL).getIdentifier().getIdentifier();
 			}
 			else {
 				foiGeom = uncertObs.getFeatureOfInterest().getShape();
@@ -282,29 +293,25 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 				Geometry regionGeom = (Geometry)targetRegion.getDefaultGeometryProperty().getValue();
 				if (regionGeom.intersects(foiGeom)){
 					
-					String idCombi = targetRegion.getIdentifier().getID() + foiID;
-					if (!isString.contains(idCombi)){
-						isString += " "+ idCombi;
-					}
-					
 					//TODO add type check
 					IUncertainty uncertResult = uncertObs.getResult().getUncertaintyValue();
 					ContinuousRealisation realisations = Utils.getRealisation4uncertResult(uncertResult);
 					
 					if (regionsAggCache.containsKey(targetRegion)){
-						if (regionsAggCache.get(targetRegion).containsKey(observedProperty)){
-							regionsAggCache.get(targetRegion).get(observedProperty).addRealisation(realisations);
+						Map<URI, RegionAggregates> targetRegionMap = regionsAggCache.get(targetRegion);
+						if (targetRegionMap.containsKey(observedProperty)){
+							targetRegionMap.get(observedProperty).addRealisation(realisations);
 						}
 						else {
 							List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
 							realList.add(realisations);
-							regionsAggCache.get(targetRegion).put(observedProperty, new RegionAggregates(targetRegion,realList,observedProperty));
+							targetRegionMap.put(observedProperty, new RegionAggregates(targetRegion,realList,observedProperty));
 						}
 					}
 					else {
 						List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
 						realList.add(realisations);
-						Map<URI,Polygon2PolygonMean.RegionAggregates> aggs4ObsProps = new HashMap<URI, Polygon2PolygonMean.RegionAggregates>();
+						Map<URI,Polygon2PolygonMean.RegionAggregates> aggs4ObsProps = new HashMap<URI, Polygon2PolygonMean.RegionAggregates>(10000);
 						aggs4ObsProps.put(observedProperty,new RegionAggregates(targetRegion,realList,observedProperty));
 						regionsAggCache.put(targetRegion, aggs4ObsProps);
 					}
@@ -314,7 +321,7 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 			}
 			
 		}
-		log.info(isString);
+		
 		
 		//iterate over regions aggregate cache and run aggregations
 		IObservationCollection result = new UncertaintyObservationCollection();
@@ -421,9 +428,9 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 		
 		public ContinuousRealisation aggregate(int numberOfRealisations){
 			List<Double> aggregatedValues = new ArrayList<Double>(numberOfRealisations);
+			//iterate over each realisation and take i-th element to aggregate on each set of i-th realisations within a region
 			for (int i=0;i<numberOfRealisations;i++){
 				double sum = 0;
-				//iterate over each realisation and take i-th element to aggregate on each set of i-th realisations within a region
 				for (ContinuousRealisation cr:originalObsResults){
 					if (i<cr.getValues().size()){
 						sum+=cr.getValues().get(i);
@@ -433,7 +440,9 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 					}
 				}
 				sum= sum/originalObsResults.size();
-				aggregatedValues.add(sum);
+				//rounding to 
+				BigDecimal bd = new BigDecimal(sum).setScale(NUMBER_OF_DIGITS, RoundingMode.HALF_EVEN);
+				aggregatedValues.add(bd.doubleValue());
 			}
 			return new ContinuousRealisation(aggregatedValues);
 		}

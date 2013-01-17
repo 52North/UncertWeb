@@ -2,6 +2,8 @@ package org.uncertweb.sta.wps.algorithms;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -78,6 +80,10 @@ public class Polygon2PolygonWeightedSum extends
 
 	// default SRS EPSG Code
 	private static final int DEFAULT_SRS = 27700;
+	
+
+	//indicates the number of digits for the aggregates
+	private static final int NUMBER_OF_DIGITS=4;
 	
 	//used for caching features from WFS
 	private FeatureCache featureCache = new FeatureCache();
@@ -291,15 +297,13 @@ public class Polygon2PolygonWeightedSum extends
 			Geometry foiGeom = null;
 			String foiID = null;
 			if (uncertObs.getFeatureOfInterest().getHref()!=null){
-				URL wfsURL = null;
+				String href = uncertObs.getFeatureOfInterest().getHref().toString();
 				try {
-					wfsURL = uncertObs.getFeatureOfInterest().getHref().toURL();
+					foiGeom = this.featureCache.getFeatureFromWfs(href).getShape();
 				} catch (MalformedURLException e) {
 					log.info("Error while getting URL from href attribute in feature of interest: "+e.getMessage());
+					throw new RuntimeException("Error while getting URL from href attribute in feature of interest: "+e.getMessage());
 				}
-				
-				foiGeom = this.featureCache.getFeatureFromWfs(wfsURL).getShape();
-				foiID =  this.featureCache.getFeatureFromWfs(wfsURL).getIdentifier().getIdentifier();
 			}
 			else {
 				foiGeom = uncertObs.getFeatureOfInterest().getShape();
@@ -518,7 +522,8 @@ public class Polygon2PolygonWeightedSum extends
 								"Number of realisations in input data to aggregation has to contain as least as many realisations as are requested for the output. Either reduce the value of the numberOfRealisations parameter or make sure that input data contains enough realisations.");
 					}
 				}
-				aggregatedValues.add(sum);
+				BigDecimal bd = new BigDecimal(sum).setScale(NUMBER_OF_DIGITS, RoundingMode.HALF_EVEN);
+				aggregatedValues.add(bd.doubleValue());
 			}
 			return new ContinuousRealisation(aggregatedValues);
 		}

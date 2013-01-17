@@ -7,8 +7,11 @@ import java.util.Map;
 import net.opengis.wps.x100.ProcessDescriptionType;
 
 import org.apache.log4j.Logger;
+import org.n52.wps.PropertyDocument.Property;
+import org.n52.wps.commons.WPSConfig;
 import org.n52.wps.server.IAlgorithm;
 import org.n52.wps.server.IAlgorithmRepository;
+import org.n52.wps.server.LocalAlgorithmRepository;
 import org.n52.wps.server.request.ExecuteRequest;
 import org.reflections.Reflections;
 import org.uncertweb.sta.wps.algorithms.AbstractAggregationProcess;
@@ -23,6 +26,7 @@ import org.uncertweb.sta.wps.algorithms.AbstractAggregationProcess;
 public class AggregationAlgorithmRepository implements IAlgorithmRepository{
 	
 	protected static Logger log = Logger.getLogger(AggregationAlgorithmRepository.class);
+	
 	
 	/**
 	 * Mapping between process identifier and methods.
