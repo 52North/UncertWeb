@@ -266,7 +266,7 @@ public class PGSQLGetObservationDAO extends
 						// check all listed observation's IDs
 						for (WrappedUncertainty wu : uncs) {
 							
-							if (obsID.equals(wu.getObservationID())) {
+							if (wu.getUncertainty() instanceof AbstractSample && obsID.equals(wu.getObservationID())) {
 								
 								// add realisation only, if maximum number of realisations for this sample has not been reached
 								if (numberOfRealisations == Integer.MIN_VALUE

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--=============================================================
-  This example requests some observations with or without uncertainty
+  This example requests some observations with uncertainty
+  the number of realisations per sample is limited
   ==============================================================-->
 
 <GetObservation xmlns="http://www.opengis.net/sos/1.0"
