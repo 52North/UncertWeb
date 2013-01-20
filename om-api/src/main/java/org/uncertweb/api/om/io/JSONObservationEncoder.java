@@ -228,12 +228,20 @@ public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSO
 			writer.value(foi.getIdentifier().getIdentifier());
 			writer.endObject();
 		}
-		writer.key("type");
-		writer.value(foi.getFeatureType());
-		writer.key("sampledFeature");
-		writer.value(foi.getSampledFeature());
-		writer.key("shape");
-		new JSONGeometryEncoder().encodeGeometry(writer, foi.getShape());
+		if (foi.getHref() != null) {
+			// FOI as a reference as when foi is NOT encoded in the observation
+			writer.key("href");
+			writer.value(foi.getHref());
+			
+		} else {
+			// full FOI
+			writer.key("type");
+			writer.value(foi.getFeatureType());
+			writer.key("sampledFeature");
+			writer.value(foi.getSampledFeature());
+			writer.key("shape");
+			new JSONGeometryEncoder().encodeGeometry(writer, foi.getShape());
+		}
 		writer.endObject();
 		writer.endObject();
 	}
