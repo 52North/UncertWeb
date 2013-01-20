@@ -55,7 +55,7 @@ import org.n52.sos.request.AbstractSosRequest;
 import org.n52.sos.request.SosInsertObservationRequest;
 import org.n52.sos.request.SosRegisterSensorRequest;
 import org.n52.sos.request.SosUpdateSensorRequest;
-import org.uncertweb.api.om.io.XBObservationParser;
+import org.uncertweb.api.om.io.StaxObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
@@ -70,13 +70,13 @@ import com.vividsolutions.jts.geom.Point;
  * documentation and handling of substitution groups is not simple. So it may be
  * easier for foreign developers to implement the DAO implementation classes for
  * other data sources then PGSQL databases.
- * 
+ *
  * !!! Use for each operation a new parser method. Use 'parse' + operation name
  * + 'Request', e.g. parseGetCapabilitiesRequest. In GetCapabilities the SOS can
  * check for GET and POST implementations. !!!
- * 
+ *
  * @author Christoph Stasch, Martin Kiesow
- * 
+ *
  */
 public class HttpPostRequestDecoderMobile extends
 		org.n52.sos.decode.impl.HttpPostRequestDecoderMobile implements
@@ -95,12 +95,12 @@ public class HttpPostRequestDecoderMobile extends
 	/**
 	 * O&M 2 Decoder from UncertWeb O&M 2 API
 	 */
-	private XBObservationParser om2Decoder = new XBObservationParser();
+	private StaxObservationParser om2Decoder = new StaxObservationParser();
 
 	/**
 	 * parses the passes XmlBeans document and creates a SOS InsertObservation
 	 * request
-	 * 
+	 *
 	 * @param xb_insertObsDoc
 	 *            XmlBeans document of InsertObservation request
 	 * @return Returns SOS representation of InsertObservation request
@@ -213,11 +213,11 @@ public class HttpPostRequestDecoderMobile extends
 
 		} else if (om2UncObsColDoc != null) {
 			// handle Uncertainty Observation Collection
-			
+
 			IObservationCollection om2ObsCol = null;
 			try {
 				om2ObsCol = om2Decoder
-						.parseObservationCollection(om2UncObsColDoc);
+						.parseObservationCollection(om2UncObsColDoc.xmlText());
 			} catch (Exception e) {
 				OwsExceptionReport se = new OwsExceptionReport();
 				se.addCodedException(ExceptionCode.InvalidParameterValue, null,
@@ -231,11 +231,11 @@ public class HttpPostRequestDecoderMobile extends
 
 		} else if (om2MeasColDoc != null) {
 			// handle Measurement Observation Collection
-			
+
 			IObservationCollection om2ObsCol = null;
 			try {
 				om2ObsCol = om2Decoder
-						.parseObservationCollection(om2MeasColDoc);
+						.parseObservationCollection(om2MeasColDoc.xmlText());
 			} catch (Exception e) {
 				OwsExceptionReport se = new OwsExceptionReport();
 				se.addCodedException(ExceptionCode.InvalidParameterValue, null,
@@ -267,7 +267,7 @@ public class HttpPostRequestDecoderMobile extends
 
 	/**
 	 * parses a RegisterSensorDocument and returns a SosRegisterSensorRequest
-	 * 
+	 *
 	 * @param xb_regSensDoc
 	 *            the XMLBeans document of the RegisterSensor request
 	 * @return Returns SosRegisterSensorRequest
@@ -303,8 +303,8 @@ public class HttpPostRequestDecoderMobile extends
 
 			} else if (xb_object instanceof OMObservationDocument) {
 
-				FoiPropertyType xb_fpt = null; 
-				
+				FoiPropertyType xb_fpt = null;
+
 				// get OM2 FOI property type
 				if (xb_object instanceof OMBooleanObservationDocument) {
 					xb_fpt = ((OMBooleanObservationDocument) xb_object).getOMBooleanObservation().getFeatureOfInterest();
@@ -327,11 +327,11 @@ public class HttpPostRequestDecoderMobile extends
 				} else if (xb_object instanceof OMUncertaintyObservationDocument) {
 					xb_fpt = ((OMUncertaintyObservationDocument) xb_object).getOMUncertaintyObservation().getFeatureOfInterest();
 				}
-				
+
 				// parse OM2 sampling feature
 				if (xb_fpt.getSFSpatialSamplingFeature() != null
 						|| xb_fpt.getHref() != null) {
-					
+
 					SpatialSamplingFeature om2FOI;
 					try {
 						om2FOI = om2Decoder.parseSamplingFeature(xb_fpt);
@@ -346,36 +346,12 @@ public class HttpPostRequestDecoderMobile extends
 										+ e.getLocalizedMessage());
 						throw se;
 					}
-					
+
 					SosAbstractFeature om1FOI = ObservationConverter
 						.convertOM2FOI(om2FOI);
 					foi_col = new ArrayList<SosAbstractFeature>(1);
 					foi_col.add(om1FOI);
 				}
-
-//				if (xb_fpt.getAbstractFeature() != null
-//						|| xb_fpt.getHref() != null) {
-//					SpatialSamplingFeature om2FOI;
-//					try {
-//						om2FOI = parseSamplingFeature(xb_fpt);
-//					} catch (Exception e) {
-//						OwsExceptionReport se = new OwsExceptionReport();
-//						se.addCodedException(
-//								ExceptionCode.InvalidParameterValue,
-//								null,
-//								"Feature of interest '"
-//										+ xb_fpt.getAbstractFeature()
-//												.getIdentifier()
-//												.getStringValue()
-//										+ "' could not be parsed: "
-//										+ e.getLocalizedMessage());
-//						throw se;
-//					}
-//					SosAbstractFeature om1FOI = ObservationConverter
-//							.convertOM2FOI(om2FOI);
-//					foi_col = new ArrayList<SosAbstractFeature>(1);
-//					foi_col.add(om1FOI);
-//				}
 
 				// workaround to store UncertaintyObservations with phenomenon
 				// value type 'uncertaintyType'
@@ -457,75 +433,10 @@ public class HttpPostRequestDecoderMobile extends
 		return request;
 	}
 
-//	/**
-//	 * parses foi and handles different gml versions
-//	 * 
-//	 * @param xb_featureOfInterest
-//	 *            gml 3.2 feature
-//	 * @return parsed gml 3.1 feature
-//	 * @throws XmlException 
-//	 * @throws URISyntaxException 
-//	 * @throws MalformedURLException 
-//	 * @throws IllegalArgumentException 
-//	 */
-//	private SpatialSamplingFeature parseSamplingFeature(
-//			FoiPropertyType xb_featureOfInterest) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException {
-//		SpatialSamplingFeature ssf = null;
-//
-//		// if reference is set, create SamplingFeature and set reference
-//		if (xb_featureOfInterest.isSetHref()) {
-//			
-//			FoiPropertyType xb_gml31FOI = FoiPropertyType.Factory.newInstance();
-//			xb_gml31FOI.setHref(xb_featureOfInterest.getHref());
-//			
-//			return om2Decoder.parseSamplingFeature(xb_gml31FOI);
-//		}
-//
-//		// FOI is encoded inline, so parse the feature
-//		else {
-//			
-//			String gmlId = xb_featureOfInterest.getAbstractFeature().getId();
-//			// get identifier
-//			//TODO add parsing of code space
-//			Identifier identifier = null;
-//			if (xb_featureOfInterest.getAbstractFeature()
-//					.getIdentifier()!=null){
-//				CodeWithAuthorityType xb_identifier = xb_featureOfInterest.getAbstractFeature().getIdentifier();
-//				String idString = xb_identifier.getStringValue();
-//				URI codeSpace = new URI(xb_identifier.getCodeSpace());
-//				identifier = new Identifier(codeSpace,idString);
-//			}
-//
-//			// TODO add boundedBy, location
-//
-//			// get reference to the sampled feature
-//			String sampledFeature = null;
-//
-//			
-//			if (!(((SFSamplingFeatureType) xb_featureOfInterest.getAbstractFeature()).getSampledFeature().getHref() == null)) {
-//
-//				sampledFeature = ((SFSamplingFeatureType) xb_featureOfInterest.getAbstractFeature()).getSampledFeature().getHref();
-//			}
-//
-//			// get shape geometry
-//			XmlBeansGeometryParser parser = new XmlBeansGeometryParser();
-//			
-//			ShapeType shapeType = ((SFSpatialSamplingFeatureType) xb_featureOfInterest.getAbstractFeature()).getShape();
-//			Geometry shape = parser.parseUwGeometry(shapeType.xmlText());
-//			
-////			ShapeType geomString = xb_featureOfInterest.getSFSpatialSamplingFeature().getShape();
-////			Geometry shape = parser.parseUwGeometry(geomString.toString());
-//
-//			ssf = new SpatialSamplingFeature(identifier, sampledFeature, shape);
-//			om2Decoder.getFeatureCache().put(gmlId, ssf);
-//			return ssf;
-//		}
-//	}
-
 	/**
 	 * parses the XMLBeans representation of the UpdateSensorDocument and
 	 * creates an SosUpdateSensorRequest
-	 * 
+	 *
 	 * @param xb_usDoc
 	 *            XMLBeans representation of the UpdateSensor request
 	 * @return Returns SOSmobile representation of the UpdateSensor request

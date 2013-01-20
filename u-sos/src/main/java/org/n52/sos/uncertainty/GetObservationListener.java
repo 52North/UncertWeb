@@ -8,7 +8,6 @@ import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
 import org.n52.sos.ISosRequestListener;
 import org.n52.sos.Sos1Constants;
 import org.n52.sos.Sos1Constants.GetObservationParams;
@@ -30,12 +29,12 @@ import org.n52.sos.uncertainty.ds.pgsql.PGDAOUncertaintyConstants;
 import org.n52.sos.uncertainty.ds.pgsql.PGSQLGetObservationDAO;
 import org.n52.sos.uncertainty.resp.MeasurementObservationResponse;
 import org.n52.sos.uncertainty.resp.UncertaintyObservationResponse;
-import org.uncertml.exception.UncertaintyEncoderException;
-import org.uncertml.exception.UnsupportedUncertaintyTypeException;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.io.JSONObservationEncoder;
-import org.uncertweb.api.om.io.XBObservationEncoder;
+import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 
 /**
  * class parses and validates the GetObservation requests and forwards them to
@@ -119,46 +118,65 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 					IObservationCollection om2obsCol = ((PGSQLGetObservationDAO) getDao())
 							.getUncertainObservationCollection(obsCollection, numOfReals);
 
-					XBObservationEncoder xmlEncoder = new XBObservationEncoder();
-					XmlObject xb_obsCol;
-
-					// encode observation collection
-					xb_obsCol = xmlEncoder
-							.encodeObservationCollectionDocument(om2obsCol);
-
-					// create response
-					if (xb_obsCol instanceof OMMeasurementCollectionDocument) {
-						response = new MeasurementObservationResponse(
-								(OMMeasurementCollectionDocument) xb_obsCol,
-								zipCompression);
-					} else if (xb_obsCol instanceof OMUncertaintyObservationCollectionDocument) {
+					StaxObservationEncoder xmlEncoder = new StaxObservationEncoder();
+					
+					if (om2obsCol instanceof UncertaintyObservationCollection) {
+						OMUncertaintyObservationCollectionDocument xb_obsCol = OMUncertaintyObservationCollectionDocument.Factory
+								.parse(xmlEncoder
+										.encodeObservationCollection(om2obsCol));
 						response = new UncertaintyObservationResponse(
-								(OMUncertaintyObservationCollectionDocument) xb_obsCol,
-								zipCompression);
-					}
-					// TODO add further observation types here
-					// else if (om2obsCol instanceof BooleanObservation) {
-					// response = new BooleanObservationResponse(xb_obsCol,
-					// zipCompression);
-					// } else if (om2obsCol instanceof
-					// CategoryObservationCollection) {
-					// response = new CategoryObservationResponse(xb_obsCol,
-					// zipCompression);
-					// } else if (om2obsCol instanceof
-					// DiscreteNumericObservationCollection) {
-					// response = new
-					// DiscreteNumericObservationResponse(xb_obsCol,
-					// zipCompression);
-					// } else if (om2obsCol instanceof
-					// ReferenceObservationCollection) {
-					// response = new ReferenceObservationResponse(xb_obsCol,
-					// zipCompression);
-					// } else if (om2obsCol instanceof
-					// TextObservationCollection) {
-					// response = new TextObservationResponse(xb_obsCol,
-					// zipCompression);
-					// }
-					else {
+								xb_obsCol, zipCompression);
+
+					} else if (om2obsCol instanceof MeasurementCollection) {
+						OMMeasurementCollectionDocument xb_obsCol = OMMeasurementCollectionDocument.Factory
+								.parse(xmlEncoder
+										.encodeObservationCollection(om2obsCol));
+						response = new MeasurementObservationResponse(
+								xb_obsCol, zipCompression);
+
+//					} else if (om2obsCol instanceof BooleanObservationCollection) {
+//						OMBooleanObservationCollectionDocument xb_obsCol = OMBooleanObservationCollectionDocument.Factory
+//								.parse(xmlEncoder
+//										.encodeObservationCollection(om2obsCol));
+//						response = new BooleanObservationResponse(xb_obsCol,
+//								zipCompression);
+//
+//					} else if (om2obsCol instanceof TextObservationCollection) {
+//						OMTextObservationCollectionDocument xb_obsCol = OMTextObservationCollectionDocument.Factory
+//								.parse(xmlEncoder
+//										.encodeObservationCollection(om2obsCol));
+//						response = new TextObservationResponse(xb_obsCol,
+//								zipCompression);
+//
+//					} else if (om2obsCol instanceof CategoryObservationCollection) {
+//						OMCategoryObservationCollectionDocument xb_obsCol = OMCategoryObservationCollectionDocument.Factory
+//								.parse(xmlEncoder
+//										.encodeObservationCollection(om2obsCol));
+//						response = new CategoryObservationResponse(xb_obsCol,
+//								zipCompression);
+//
+//					} else if (om2obsCol instanceof DiscreteNumericObservationCollection) {
+//						OMDiscreteNumericObservationCollectionDocument xb_obsCol = OMDiscreteNumericObservationCollectionDocument.Factory
+//								.parse(xmlEncoder
+//										.encodeObservationCollection(om2obsCol));
+//						response = new DiscreteNumericObservationResponse(
+//								xb_obsCol, zipCompression);
+//
+//					} else if (om2obsCol instanceof ReferenceObservationCollection) {
+//						OMReferenceObservationCollectionDocument xb_obsCol = OMReferenceObservationCollectionDocument.Factory
+//								.parse(xmlEncoder
+//										.encodeObservationCollection(om2obsCol));
+//						response = new ReferenceObservationResponse(xb_obsCol,
+//								zipCompression);
+//
+//					} else if (om2obsCol instanceof ObservationCollection) {
+//						OMObservationCollectionDocument xb_obsCol = OMObservationCollectionDocument.Factory
+//								.parse(xmlEncoder
+//										.encodeObservationCollection(om2obsCol));
+//						response = new ObservationResponse(xb_obsCol,
+//								zipCompression);
+						
+					} else {
 						OwsExceptionReport se = new OwsExceptionReport(
 								ExceptionLevel.DetailedExceptions);
 						LOGGER.error("Received observation collection is not of a supported observation collection type!");
@@ -230,12 +248,6 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 			} catch (XmlException xmle) {
 				return new ExceptionResp(
 						new OwsExceptionReport(xmle).getDocument());
-			} catch (UncertaintyEncoderException uee) {
-				return new ExceptionResp(
-						new OwsExceptionReport(uee).getDocument());
-			} catch (UnsupportedUncertaintyTypeException uute) {
-				return new ExceptionResp(
-						new OwsExceptionReport(uute).getDocument());
 			} catch (OwsExceptionReport se) {
 				return new ExceptionResp(se.getDocument());
 			} catch (IllegalArgumentException iae) {
