@@ -2,6 +2,8 @@ package org.uncertweb.api.om.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
@@ -12,11 +14,15 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import net.opengis.om.x20.FoiPropertyType;
+
+import org.apache.xmlbeans.XmlException;
 import org.uncertweb.api.om.OMConstants;
 import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.ObservationCollection;
+import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
 public class StaxObservationParser implements IObservationParser{
 	/**
@@ -109,6 +115,12 @@ public class StaxObservationParser implements IObservationParser{
 		}
 		
 		return obsCol;
+	}
+	
+	public synchronized SpatialSamplingFeature parseSamplingFeature(
+			FoiPropertyType xb_featureOfInterest) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException {
+	
+		return xbParser.parseSamplingFeature(xb_featureOfInterest);
 	}
 	
 	private String appendNamespaces(String eString) {
