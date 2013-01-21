@@ -296,24 +296,25 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 					//TODO add type check
 					IUncertainty uncertResult = uncertObs.getResult().getUncertaintyValue();
 					ContinuousRealisation realisations = Utils.getRealisation4uncertResult(uncertResult);
-					
-					if (regionsAggCache.containsKey(targetRegion)){
-						Map<URI, RegionAggregates> targetRegionMap = regionsAggCache.get(targetRegion);
-						if (targetRegionMap.containsKey(observedProperty)){
-							targetRegionMap.get(observedProperty).addRealisation(realisations);
+					if (realisations.getValues().size()>0){
+						if (regionsAggCache.containsKey(targetRegion)){
+							Map<URI, RegionAggregates> targetRegionMap = regionsAggCache.get(targetRegion);
+							if (targetRegionMap.containsKey(observedProperty)){
+								targetRegionMap.get(observedProperty).addRealisation(realisations);
+							}
+							else {
+								List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
+								realList.add(realisations);
+								targetRegionMap.put(observedProperty, new RegionAggregates(targetRegion,realList,observedProperty));
+							}
 						}
 						else {
 							List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
 							realList.add(realisations);
-							targetRegionMap.put(observedProperty, new RegionAggregates(targetRegion,realList,observedProperty));
+							Map<URI,Polygon2PolygonMean.RegionAggregates> aggs4ObsProps = new HashMap<URI, Polygon2PolygonMean.RegionAggregates>(10000);
+							aggs4ObsProps.put(observedProperty,new RegionAggregates(targetRegion,realList,observedProperty));
+							regionsAggCache.put(targetRegion, aggs4ObsProps);
 						}
-					}
-					else {
-						List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
-						realList.add(realisations);
-						Map<URI,Polygon2PolygonMean.RegionAggregates> aggs4ObsProps = new HashMap<URI, Polygon2PolygonMean.RegionAggregates>(10000);
-						aggs4ObsProps.put(observedProperty,new RegionAggregates(targetRegion,realList,observedProperty));
-						regionsAggCache.put(targetRegion, aggs4ObsProps);
 					}
 				}
 				
