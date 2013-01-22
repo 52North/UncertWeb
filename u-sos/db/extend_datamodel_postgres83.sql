@@ -79,7 +79,7 @@ CREATE TABLE u_realisation (
   continuous_values NUMERIC[],
   categorical_values VARCHAR(50)[],
   id VARCHAR(100) DEFAULT 'single',
-  sampling_method_description TEXT;
+  sampling_method_description TEXT,
 
   PRIMARY KEY (realisation_id, id)
 );
