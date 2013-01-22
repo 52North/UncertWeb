@@ -57,7 +57,7 @@ public class MeasurementObservationResponse extends AbstractUncertaintyResponse
 	}
 
 	/**
-	 * Creates an ObservationResponse from a passed ObservationDoc.
+	 * Creates an ObservationResponse from a ByteArray
 	 * 
 	 * @param obsDoc
 	 *            the response doc

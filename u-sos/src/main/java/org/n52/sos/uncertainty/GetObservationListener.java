@@ -3,11 +3,8 @@ package org.n52.sos.uncertainty;
 import java.io.ByteArrayOutputStream;
 
 import net.opengis.om.x10.ObservationCollectionDocument;
-import net.opengis.om.x20.OMMeasurementCollectionDocument;
-import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlException;
 import org.n52.sos.ISosRequestListener;
 import org.n52.sos.Sos1Constants;
 import org.n52.sos.Sos1Constants.GetObservationParams;
@@ -120,60 +117,41 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 
 					StaxObservationEncoder xmlEncoder = new StaxObservationEncoder();
 					
+					ByteArrayOutputStream staxOutputStream = new ByteArrayOutputStream();
+					xmlEncoder.encodeObservationCollection(om2obsCol, staxOutputStream);
+					
 					if (om2obsCol instanceof UncertaintyObservationCollection) {
-						OMUncertaintyObservationCollectionDocument xb_obsCol = OMUncertaintyObservationCollectionDocument.Factory
-								.parse(xmlEncoder
-										.encodeObservationCollection(om2obsCol));
-						response = new UncertaintyObservationResponse(
-								xb_obsCol, zipCompression);
+						
+						response = new UncertaintyObservationResponse (
+								staxOutputStream, zipCompression);
 
 					} else if (om2obsCol instanceof MeasurementCollection) {
-						OMMeasurementCollectionDocument xb_obsCol = OMMeasurementCollectionDocument.Factory
-								.parse(xmlEncoder
-										.encodeObservationCollection(om2obsCol));
-						response = new MeasurementObservationResponse(
-								xb_obsCol, zipCompression);
+						
+						response = new MeasurementObservationResponse (
+								staxOutputStream, zipCompression);
 
 //					} else if (om2obsCol instanceof BooleanObservationCollection) {
-//						OMBooleanObservationCollectionDocument xb_obsCol = OMBooleanObservationCollectionDocument.Factory
-//								.parse(xmlEncoder
-//										.encodeObservationCollection(om2obsCol));
-//						response = new BooleanObservationResponse(xb_obsCol,
+//						response = new BooleanObservationResponse(staxOutputStream,
 //								zipCompression);
 //
 //					} else if (om2obsCol instanceof TextObservationCollection) {
-//						OMTextObservationCollectionDocument xb_obsCol = OMTextObservationCollectionDocument.Factory
-//								.parse(xmlEncoder
-//										.encodeObservationCollection(om2obsCol));
-//						response = new TextObservationResponse(xb_obsCol,
+//						response = new TextObservationResponse(staxOutputStream,
 //								zipCompression);
 //
 //					} else if (om2obsCol instanceof CategoryObservationCollection) {
-//						OMCategoryObservationCollectionDocument xb_obsCol = OMCategoryObservationCollectionDocument.Factory
-//								.parse(xmlEncoder
-//										.encodeObservationCollection(om2obsCol));
-//						response = new CategoryObservationResponse(xb_obsCol,
+//						response = new CategoryObservationResponse(staxOutputStream,
 //								zipCompression);
 //
 //					} else if (om2obsCol instanceof DiscreteNumericObservationCollection) {
-//						OMDiscreteNumericObservationCollectionDocument xb_obsCol = OMDiscreteNumericObservationCollectionDocument.Factory
-//								.parse(xmlEncoder
-//										.encodeObservationCollection(om2obsCol));
 //						response = new DiscreteNumericObservationResponse(
-//								xb_obsCol, zipCompression);
+//								staxOutputStream, zipCompression);
 //
 //					} else if (om2obsCol instanceof ReferenceObservationCollection) {
-//						OMReferenceObservationCollectionDocument xb_obsCol = OMReferenceObservationCollectionDocument.Factory
-//								.parse(xmlEncoder
-//										.encodeObservationCollection(om2obsCol));
-//						response = new ReferenceObservationResponse(xb_obsCol,
+//						response = new ReferenceObservationResponse(staxOutputStream,
 //								zipCompression);
 //
 //					} else if (om2obsCol instanceof ObservationCollection) {
-//						OMObservationCollectionDocument xb_obsCol = OMObservationCollectionDocument.Factory
-//								.parse(xmlEncoder
-//										.encodeObservationCollection(om2obsCol));
-//						response = new ObservationResponse(xb_obsCol,
+//						response = new ObservationResponse(staxOutputStream,
 //								zipCompression);
 						
 					} else {
@@ -245,9 +223,6 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 							zipCompression, Sos1Constants.SERVICEVERSION);
 				}
 
-			} catch (XmlException xmle) {
-				return new ExceptionResp(
-						new OwsExceptionReport(xmle).getDocument());
 			} catch (OwsExceptionReport se) {
 				return new ExceptionResp(se.getDocument());
 			} catch (IllegalArgumentException iae) {
