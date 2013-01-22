@@ -91,7 +91,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 							<MimeType>application/xml</MimeType>
 							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd
+								http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd
 							</Schema>
 						</Format>
 					</Default>
@@ -100,7 +100,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 							<MimeType>application/xml</MimeType>
 							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd
+								http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd
 							</Schema>
 						</Format>
 					</Supported>
@@ -116,7 +116,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 							<MimeType>application/xml</MimeType>
 							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd
+								http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd
 							</Schema>
 						</Format>
 					</Default>
@@ -125,7 +125,7 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 							<MimeType>application/xml</MimeType>
 							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd
+								http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd
 							</Schema>
 						</Format>
 					</Supported>
@@ -150,13 +150,13 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<Default>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
-							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+							<Schema>http://52north.org/schema/geostatistics/uncertweb/Profiles/OM/UncertWeb_OM.xsd</Schema>
 						</Format>
 					</Default>
 					<Supported>
 						<Format>
 							<MimeType>application/x-om-u+json</MimeType>
-							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+							<Schema>http://52north.org/schema/geostatistics/uncertweb/Profiles/OM/UncertWeb_OM.xsd</Schema>
 						</Format>
 					</Supported>
 				</ComplexOutput>
@@ -169,13 +169,13 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<Default>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
-							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+							<Schema>http://52north.org/schema/geostatistics/uncertweb/Profiles/OM/UncertWeb_OM.xsd</Schema>
 						</Format>
 					</Default>
 					<Supported>
 						<Format>
 							<MimeType>application/x-om-u+json</MimeType>
-							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+							<Schema>http://52north.org/schema/geostatistics/uncertweb/Profiles/OM/UncertWeb_OM.xsd</Schema>
 						</Format>
 					</Supported>
 				</ComplexOutput>
@@ -188,13 +188,13 @@ http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" service="W
 					<Default>
 						<Format>
 							<MimeType>application/x-om-u+xml</MimeType>
-							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+							<Schema>http://52north.org/schema/geostatistics/uncertweb/Profiles/OM/UncertWeb_OM.xsd</Schema>
 						</Format>
 					</Default>
 					<Supported>
 						<Format>
 							<MimeType>application/x-om-u+json</MimeType>
-							<Schema>http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd</Schema>
+							<Schema>http://52north.org/schema/geostatistics/uncertweb/Profiles/OM/UncertWeb_OM.xsd</Schema>
 						</Format>
 					</Supported>
 				</ComplexOutput>
