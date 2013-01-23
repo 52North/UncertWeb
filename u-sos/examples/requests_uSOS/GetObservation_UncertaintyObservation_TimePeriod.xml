@@ -22,7 +22,7 @@
                   <ogc:PropertyName>om:samplingTime</ogc:PropertyName>
       		  <gml:TimePeriod>
 				<gml:beginPosition>2011-01-01T00:00:00+00:00</gml:beginPosition>
-				<gml:endPosition>2011-01-31T23:59:59+00:00</gml:endPosition>
+				<gml:endPosition>2011-12-31T23:59:59+00:00</gml:endPosition>
 		  </gml:TimePeriod>
                   
 		</ogc:TM_During>

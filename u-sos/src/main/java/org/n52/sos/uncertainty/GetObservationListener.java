@@ -113,7 +113,8 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 					// ////////////////////////////////////////////
 					// XML response with uncertainties
 					IObservationCollection om2obsCol = ((PGSQLGetObservationDAO) getDao())
-							.getUncertainObservationCollection(obsCollection, numOfReals);
+							.getUncertainObservationCollection(obsCollection,
+									sosRequest.getResultModel(), numOfReals);
 
 					StaxObservationEncoder xmlEncoder = new StaxObservationEncoder();
 					
@@ -170,7 +171,8 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 					// ////////////////////////////////////////////
 					// JSON response with uncertainties
 					IObservationCollection om2obsCol = ((PGSQLGetObservationDAO) getDao())
-							.getUncertainObservationCollection(obsCollection, numOfReals);
+							.getUncertainObservationCollection(obsCollection,
+									sosRequest.getResultModel(), numOfReals);
 
 					JSONObservationEncoder jsonEncoder = new JSONObservationEncoder();
 					ByteArrayOutputStream jsonOutputStream = new ByteArrayOutputStream();

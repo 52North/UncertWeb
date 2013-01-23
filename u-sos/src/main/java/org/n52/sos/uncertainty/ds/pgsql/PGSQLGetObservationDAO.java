@@ -44,6 +44,7 @@ import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionCode;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionLevel;
 import org.n52.sos.request.SosGetObservationRequest;
 import org.n52.sos.uncertainty.SosUncConstants;
+import org.n52.sos.uncertainty.decode.impl.OM2Constants;
 import org.n52.sos.uncertainty.decode.impl.ObservationConverter;
 import org.n52.sos.uncertainty.ogc.om.UNCMeasurementObservation;
 import org.n52.sos.uncertainty.ogc.om.UNCUncertaintyObservation;
@@ -59,7 +60,13 @@ import org.uncertml.sample.SystematicSample;
 import org.uncertml.sample.UnknownSample;
 import org.uncertml.statistic.Mean;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
+import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
+import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.observation.collections.MeasurementCollection;
+import org.uncertweb.api.om.observation.collections.ReferenceObservationCollection;
+import org.uncertweb.api.om.observation.collections.TextObservationCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
@@ -94,13 +101,14 @@ public class PGSQLGetObservationDAO extends
 	 * 
 	 * @param obsIDs
 	 *            as a list
-	 * @param numberOfRealisations maximum number of realisations per sample
+	 * @param numberOfRealisations
+	 *            maximum number of realisations per sample
 	 * @return list of observation IDs and attached uncertainties; null, if
 	 *         obsIDs is empty
 	 * @throws OwsExceptionReport
 	 */
-	private List<WrappedUncertainty> getUncertaintyData(List<String> obsIDs, int numberOfRealisations)
-			throws OwsExceptionReport {
+	private List<WrappedUncertainty> getUncertaintyData(List<String> obsIDs,
+			int numberOfRealisations) throws OwsExceptionReport {
 
 		if (obsIDs.isEmpty() || obsIDs.size() < 1) {
 			return null;
@@ -201,9 +209,12 @@ public class PGSQLGetObservationDAO extends
 						unc = new CategoricalRealisation(
 								(String[]) catAr.getArray(), weight);
 					}
-				} else if (uncType.equals(PGDAOUncertaintyConstants.u_randomSType)
-						|| uncType.equals(PGDAOUncertaintyConstants.u_systematicSType)
-						|| uncType.equals(PGDAOUncertaintyConstants.u_unknownSType)) {
+				} else if (uncType
+						.equals(PGDAOUncertaintyConstants.u_randomSType)
+						|| uncType
+								.equals(PGDAOUncertaintyConstants.u_systematicSType)
+						|| uncType
+								.equals(PGDAOUncertaintyConstants.u_unknownSType)) {
 					// sample (containing realisations)
 
 					weight = rs.getDouble(PGDAOUncertaintyConstants.uRWeightCn);
@@ -212,9 +223,11 @@ public class PGSQLGetObservationDAO extends
 							.getArray(PGDAOUncertaintyConstants.uRConValsCn);
 					java.sql.Array catAr = rs
 							.getArray(PGDAOUncertaintyConstants.uRCatValsCn);
-					
-					singleRealID = rs.getString(PGDAOUncertaintyConstants.uRIdCn);
-					samplingMethodDescription = rs.getString(PGDAOUncertaintyConstants.uRSamMethDescCn);
+
+					singleRealID = rs
+							.getString(PGDAOUncertaintyConstants.uRIdCn);
+					samplingMethodDescription = rs
+							.getString(PGDAOUncertaintyConstants.uRSamMethDescCn);
 					sampleType = true;
 
 					if (conAr != null) {
@@ -227,31 +240,45 @@ public class PGSQLGetObservationDAO extends
 						for (int i = 0; i < realConDecs.length; i++) {
 							realConValues[i] = realConDecs[i].doubleValue();
 						}
-						
+
 						reals = new ArrayList<AbstractRealisation>(1);
-						reals.add(new ContinuousRealisation(realConValues, weight, singleRealID));
-						
+						reals.add(new ContinuousRealisation(realConValues,
+								weight, singleRealID));
+
 						// create sample depending on uncertainty type
-						if (uncType.equals(PGDAOUncertaintyConstants.u_randomSType)) {
-							unc = new RandomSample(reals, samplingMethodDescription);
-						} else if (uncType.equals(PGDAOUncertaintyConstants.u_systematicSType)) {
-							unc = new SystematicSample(reals, samplingMethodDescription);
-						} else if (uncType.equals(PGDAOUncertaintyConstants.u_unknownSType)) {
-							unc = new UnknownSample(reals, samplingMethodDescription);
+						if (uncType
+								.equals(PGDAOUncertaintyConstants.u_randomSType)) {
+							unc = new RandomSample(reals,
+									samplingMethodDescription);
+						} else if (uncType
+								.equals(PGDAOUncertaintyConstants.u_systematicSType)) {
+							unc = new SystematicSample(reals,
+									samplingMethodDescription);
+						} else if (uncType
+								.equals(PGDAOUncertaintyConstants.u_unknownSType)) {
+							unc = new UnknownSample(reals,
+									samplingMethodDescription);
 						}
 
 					} else if (catAr != null) {
 						// categorical realisation
 						reals = new ArrayList<AbstractRealisation>(1);
-						reals.add(new CategoricalRealisation((String[]) catAr.getArray(), weight, singleRealID));
-						
+						reals.add(new CategoricalRealisation((String[]) catAr
+								.getArray(), weight, singleRealID));
+
 						// create sample depending on uncertainty type
-						if (uncType.equals(PGDAOUncertaintyConstants.u_randomSType)) {
-							unc = new RandomSample(reals, samplingMethodDescription);
-						} else if (uncType.equals(PGDAOUncertaintyConstants.u_systematicSType)) {
-							unc = new SystematicSample(reals, samplingMethodDescription);
-						} else if (uncType.equals(PGDAOUncertaintyConstants.u_unknownSType)) {
-							unc = new UnknownSample(reals, samplingMethodDescription);
+						if (uncType
+								.equals(PGDAOUncertaintyConstants.u_randomSType)) {
+							unc = new RandomSample(reals,
+									samplingMethodDescription);
+						} else if (uncType
+								.equals(PGDAOUncertaintyConstants.u_systematicSType)) {
+							unc = new SystematicSample(reals,
+									samplingMethodDescription);
+						} else if (uncType
+								.equals(PGDAOUncertaintyConstants.u_unknownSType)) {
+							unc = new UnknownSample(reals,
+									samplingMethodDescription);
 						}
 					}
 				}
@@ -259,35 +286,44 @@ public class PGSQLGetObservationDAO extends
 
 				if (unc != null) {
 					if (sampleType) {
-						
+
 						boolean newUnc = true;
-						
+
 						// add realisation to an already existing sample
 						// check all listed observation's IDs
 						for (WrappedUncertainty wu : uncs) {
-							
-							if (wu.getUncertainty() instanceof AbstractSample && obsID.equals(wu.getObservationID())) {
-								
-								// add realisation only, if maximum number of realisations for this sample has not been reached
+
+							if (wu.getUncertainty() instanceof AbstractSample
+									&& obsID.equals(wu.getObservationID())) {
+
+								// add realisation only, if maximum number of
+								// realisations for this sample has not been
+								// reached
 								if (numberOfRealisations == Integer.MIN_VALUE
-										|| ((AbstractSample) wu.getUncertainty()).getRealisations().size() < numberOfRealisations) {
-									((AbstractSample) wu.getUncertainty()).getRealisations().addAll(((AbstractSample) unc).getRealisations());
+										|| ((AbstractSample) wu
+												.getUncertainty())
+												.getRealisations().size() < numberOfRealisations) {
+									((AbstractSample) wu.getUncertainty())
+											.getRealisations().addAll(
+													((AbstractSample) unc)
+															.getRealisations());
 								}
 								newUnc = false;
-								
-								// realisation should only be assigned to one observation (ID)
+
+								// realisation should only be assigned to one
+								// observation (ID)
 								break;
 							}
 						}
 						// add realisation as new uncertainty
 						if (newUnc) {
-							uncs.add(new WrappedUncertainty(obsID, gmlID, valueUnit,
-									unc));
+							uncs.add(new WrappedUncertainty(obsID, gmlID,
+									valueUnit, unc));
 						}
-						
+
 					} else {
-						uncs.add(new WrappedUncertainty(obsID, gmlID, valueUnit,
-								unc));
+						uncs.add(new WrappedUncertainty(obsID, gmlID,
+								valueUnit, unc));
 					}
 				}
 			}
@@ -497,20 +533,25 @@ public class PGSQLGetObservationDAO extends
 	public IObservationCollection getUncertainObservationCollection(
 			SosObservationCollection om1ObsCol) throws OwsExceptionReport {
 
-		return getUncertainObservationCollection(om1ObsCol, Integer.MIN_VALUE);
+		return getUncertainObservationCollection(om1ObsCol, null,
+				Integer.MIN_VALUE);
 	}
-	
+
 	/**
 	 * returns an O&M 2 observation collection including uncertainties
 	 * 
 	 * @param obsCollection
 	 *            O&M 1 observation collection
-	 * @param numberOfRealisations maximum number of realisations per sample
+	 * @param resultModel
+	 *            demanded observation type
+	 * @param numberOfRealisations
+	 *            maximum number of realisations per sample
 	 * @return O&M 2 observation collection
 	 * @throws OwsExceptionReport
 	 */
 	public IObservationCollection getUncertainObservationCollection(
-			SosObservationCollection om1ObsCol, int numberOfRealisations) throws OwsExceptionReport {
+			SosObservationCollection om1ObsCol, QName resultModel,
+			int numberOfRealisations) throws OwsExceptionReport {
 
 		IObservationCollection om2ObsCol = null;
 
@@ -528,13 +569,51 @@ public class PGSQLGetObservationDAO extends
 
 			// get and add uncertainties
 			SosObservationCollection uncOM1ObsCol = null;
-			List<WrappedUncertainty> uncList = getUncertaintyData(obsIDs, numberOfRealisations);
+			List<WrappedUncertainty> uncList = getUncertaintyData(obsIDs,
+					numberOfRealisations);
 			uncOM1ObsCol = addUnc2OM1ObsCol(om1ObsCol, uncList);
 
 			// convert OM1 to OM2 observation collection
 			om2ObsCol = ObservationConverter.getOM2ObsCol(uncOM1ObsCol);
-		}
+		} else {
 
+			// empty obsCol (create an empty collection of the demanded type)
+			if (resultModel.equals(new QName(OM2Constants.NS_OM2,
+					OM2Constants.OBS_TYPE_BOOLEAN))) {
+				return new BooleanObservationCollection();
+
+			} else if (resultModel.equals(new QName(OM2Constants.NS_OM2,
+					OM2Constants.OBS_TYPE_DISCNUM))) {
+				return new DiscreteNumericObservationCollection();
+
+			} else if (resultModel.equals(new QName(OM2Constants.NS_OM2,
+					OM2Constants.OBS_TYPE_MEASUREMENT))) {
+				return new MeasurementCollection();
+
+			} else if (resultModel.equals(new QName(OM2Constants.NS_OM2,
+					OM2Constants.OBS_TYPE_REFERENCE))) {
+				return new ReferenceObservationCollection();
+
+			} else if (resultModel.equals(new QName(OM2Constants.NS_OM2,
+					OM2Constants.OBS_TYPE_TEXT))) {
+				return new TextObservationCollection();
+
+			} else if (resultModel.equals(new QName(OM2Constants.NS_OM2,
+					OM2Constants.OBS_TYPE_UNCERTAINTY))) {
+				return new UncertaintyObservationCollection();
+
+			} else {
+				OwsExceptionReport se = new OwsExceptionReport();
+				se.addCodedException(
+						OwsExceptionReport.ExceptionCode.NoDataAvailable,
+						null,
+						"No data available and resultModel '" + resultModel + "' not supported.");
+				LOGGER.error(
+						"No data available and resultModel '" + resultModel + "' not supported.",
+						se);
+				throw se;
+			}
+		}
 		return om2ObsCol;
 	}
 
@@ -1037,8 +1116,8 @@ public class PGSQLGetObservationDAO extends
 	}// end getSingleObservationFromResultSet
 
 	public SosObservationCollection getObservation(
-			SosGetObservationRequest request) throws OwsExceptionReport {	
-		
+			SosGetObservationRequest request) throws OwsExceptionReport {
+
 		// setting a global "now" for this request
 		setNow(new DateTime());
 
