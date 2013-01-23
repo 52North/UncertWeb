@@ -135,7 +135,7 @@
 							<MimeType>application/xml</MimeType>
 							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd</Schema>
+								http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd</Schema>
 						</Format>
 					</Default>
 					<Supported>
@@ -143,7 +143,7 @@
 							<MimeType>application/xml</MimeType>
 							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd</Schema>
+								http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd</Schema>
 						</Format>
 					</Supported>
 				</ComplexData>
@@ -158,7 +158,7 @@
 							<MimeType>application/xml</MimeType>
 							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd</Schema>
+								http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd</Schema>
 						</Format>
 					</Default>
 					<Supported>
@@ -166,7 +166,7 @@
 							<MimeType>application/xml</MimeType>
 							<Encoding>UTF-8</Encoding>
 							<Schema>
-								http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd</Schema>
+								http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd</Schema>
 						</Format>
 					</Supported>
 				</ComplexData>
