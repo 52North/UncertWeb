@@ -43,7 +43,7 @@ public class AlbatrossOutputMapper {
 	 */
 	public static final String PROC_ID_ALBATROSS = "http://www.uncertweb.org/models/albatross";
 	public static final String ALBATROSS = "http://www.uncertweb.org/";
-	public static final String REGISTER_PROCESS = "http://www.example.org/register/process/";
+	public static final String REGISTER_PROCESS = "http://www.uncertweb.org/models/albatrossprocess/";
 
 	public static final String ACTION_NUMBER = "http://www.uncertweb.org/variables/albatross/actionNumber/";
 	public static final String ACTIVITY_TYPE = "http://www.uncertweb.org/variables/albatross/activityType";

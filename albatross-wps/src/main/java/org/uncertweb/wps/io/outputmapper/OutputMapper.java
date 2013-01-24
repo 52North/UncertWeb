@@ -238,6 +238,7 @@ public class OutputMapper {
 				
 			} catch (IOException e) {
 				log.info("Error while closing streams from OUT_indicators.csv file during postprocessing.");
+				throw new RuntimeException("Error while closing streams from OUT_indicators.csv file during postprocessing.");
 			}
 			
 		}

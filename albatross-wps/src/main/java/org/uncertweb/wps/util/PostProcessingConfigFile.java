@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.log4j.Logger;
+
 /**
  * The postprocessing requires a configuration file that includes several paths. It is basically a xml document. However, the document has to be adjusted for every 
  * specific workspace. This class is intended to build this file from  the given parameters.
@@ -15,6 +17,7 @@ import java.io.PrintWriter;
  */
 public class PostProcessingConfigFile {
 	
+	protected static Logger log = Logger.getLogger(PostProcessingConfigFile.class);
 	private File postProcessingConfigFile;
 	private String exportFilePath, areaFilePath,odmFilePath,indicatorsFilePath,postProcessingPath;
 	
@@ -44,8 +47,8 @@ public class PostProcessingConfigFile {
 			postProcessingConfigFile.createNewFile();
 			fillPostProcessingConfigFile(postProcessingConfigFile);
 		} catch (IOException e) {
-			
-			e.printStackTrace();
+			log.info("Error while creating config file for post processing: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while creating config file for post processing: "+e.getLocalizedMessage());
 		}
 	}
 	
@@ -66,7 +69,9 @@ public class PostProcessingConfigFile {
 	
 	private void fillPostProcessingConfigFile(File f) throws IOException{
 
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f)));  
+		PrintWriter out = null;
+		try {
+		out = new PrintWriter(new BufferedWriter(new FileWriter(f)));  
 
 		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
 				"<beans xmlns=\"http://www.springframework.org/schema/beans\"\r\n" + 
@@ -88,9 +93,16 @@ public class PostProcessingConfigFile {
 		out.println(" </bean> \r\n" + 
 				"   \r\n" + 
 				"</beans>");
-		
-		out.flush();
-		out.close();
+		} catch (Exception e){
+			log.info("Error while creating config file for post processing: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while creating config file for post processing: "+e.getLocalizedMessage());
+		}
+		finally {
+			if (out!=null){
+				out.flush();
+				out.close();
+			}
+		}
 	}
 
 }

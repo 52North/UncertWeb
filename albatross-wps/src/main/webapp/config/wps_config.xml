@@ -7,7 +7,7 @@
 		<ParserList>
 			<Parser name="UncertWebParser" className="org.n52.wps.io.datahandler.UncertWebIODataParser" active="true" />
 			<Parser name="AlbatrossUInputParser" className="org.uncertweb.wps.io.datahandler.AlbatrossUInputParser" active="true" >
-			<Format mimetype="application/xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd"/>
+			<Format mimetype="application/xml" schema="http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd"/>
 			</Parser> 
 			<Parser name="GenericFileParser" className="org.n52.wps.io.datahandler.parser.GenericFileParser" active="true">
 				<Format mimetype="application/x-zipped-shp"/>
@@ -89,8 +89,8 @@
 	
 	</RemoteRepositoryList>
 
-	<Server hostname="128.176.133.106" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="albatross-wps" repoReloadInterval="0"> 
-<!-- <Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="albatross-wps" repoReloadInterval="0">--> 
+<!-- 	<Server hostname="128.176.133.106" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="albatross-wps" repoReloadInterval="0">--> 
+    <Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="albatross-wps" repoReloadInterval="0"> 
 		<Database/>
 	</Server>
 </WPSConfiguration>

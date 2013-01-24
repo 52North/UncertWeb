@@ -6,11 +6,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author s_voss13
  *
  */
 public class ProjectFile {
+	
+	protected static Logger log = Logger.getLogger(ProjectFile.class);
+	
 	
 	private String genpopHouseholds;
 	private String rwdataHouseholds;
@@ -64,8 +69,8 @@ public class ProjectFile {
 			projectFile.createNewFile();
 			this.fillProjectFile(projectFile);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("Error while writing project file: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while writing project file: "+e.getLocalizedMessage());
 		}
 		
 		
@@ -86,8 +91,9 @@ public class ProjectFile {
 	}
 	
 	private void fillProjectFile(File f) throws IOException{
-
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f))); 
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter(new BufferedWriter(new FileWriter(f))); 
 		
 		/**
 		 * (just model uncertainty first line=0, or just input uncertainty (first line=not 0
@@ -116,16 +122,22 @@ public class ProjectFile {
 		out.println(dataLocation+"times-nl.bin");
 		out.println(dataLocation+"exportBin.bin");
 		out.println(dataLocation+"test.prd");
-		out.println(dataLocation+"test_syn.txt");
+		out.println(dataLocation+"Rott-2000_syn1.txt");
 		out.println(dataLocation+"relmat2004.dat");
 		out.println(dataLocation+"wrkmat2004.dat");
 		out.println(dataLocation+"sampleBa00.dat");
 		out.println(dataLocation+"dtrees-NL.dta");
 		out.println(dataLocation+"Syspars_test.txt");
 		out.println(dataLocation+"PADTdata.bin");
-		
-		out.flush();
-		out.close();
+		} catch (Exception e){
+			
+		}
+		finally{
+			if (out!=null){
+				out.flush();
+				out.close();
+			}
+		}
 	}
 	
 	public static void newInputDrawProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas, Boolean isModelUncertainty){
@@ -136,9 +148,7 @@ public class ProjectFile {
 		
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(projectFile)));
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
+		
 		
 		
 		dataLocation += File.separator;
@@ -184,8 +194,16 @@ public class ProjectFile {
 		out.println(dataLocation+"Syspars_test.txt");
 		out.println(dataLocation+"PADTdata.bin");
 		
-		out.flush();
-		out.close();
+		} catch (IOException e) {
+			log.info("Error while writing InputDraw project file: "+e.getLocalizedMessage());
+			throw new RuntimeException("Error while writing InputDraw project file: "+e.getLocalizedMessage());
+		} 
+		finally {
+			if (out!=null){
+				out.flush();
+				out.close();
+			}
+		}
 		
 		
 	}

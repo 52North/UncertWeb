@@ -1,14 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>org.uncertweb</groupId>
-		<artifactId>UncertWeb</artifactId>
-		<version>0.1</version>
+		<artifactId>uncertweb-parent</artifactId>
+		<version>1.2-SNAPSHOT</version>
 	</parent>
-  <groupId>org.uncertweb</groupId>
-  <artifactId>albatross-wps</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+	<artifactId>albatross-wps</artifactId>
+  	<version>1.0.0-SNAPSHOT</version>
+
+	<repositories>
+		<repository>
+			<id>UncertWebMavenRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+		</repository>
+	</repositories>
+  
   <packaging>war</packaging>
 
   <name>albatross-wps</name>
@@ -24,19 +33,7 @@
 			<url>scp://giv-uw.uni-muenster.de:/var/www/m2/repo</url>
 		</repository>
 	</distributionManagement>
-	<repositories>		
-    <repository>
-      <id>n52-releases</id>
-      <name>52n Releases</name>
-      <url>http://52north.org/maven/repo/releases</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-	</repositories>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -73,7 +70,7 @@
     <dependency>
     	<groupId>org.uncertweb</groupId>
     	<artifactId>52n-wps-io-uncertweb</artifactId>
-		<version>0.0.8-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
     	<groupId>org.apache.commons</groupId>
