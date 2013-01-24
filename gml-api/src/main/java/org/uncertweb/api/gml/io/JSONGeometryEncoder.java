@@ -6,6 +6,7 @@ import org.json.JSONStringer;
 import org.uncertweb.api.gml.UwAbstractFeature;
 import org.uncertweb.api.gml.UwGMLUtil;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
+import org.uncertweb.utils.UwMathUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -27,6 +28,25 @@ import com.vividsolutions.jts.geom.Polygon;
  *
  */
 public class JSONGeometryEncoder implements IGeometryEncoder{
+	
+	/** default accuracy (number of digits) for coordinates*/
+	private int accuracy=5;
+	
+	/**
+	 * default constructor; accuracy is set to 5 digits for coordinates
+	 */
+	public JSONGeometryEncoder(){		
+	}
+
+	/**
+	 * constructor
+	 * 
+	 * @param accuracy
+	 * 			number of digits for coordinates
+	 */
+	public JSONGeometryEncoder(int accuracy){	
+		this.accuracy=accuracy;
+	}
 
 	/**
 	 * 
@@ -231,8 +251,8 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 	 */
 	private void encodeCoordinate(JSONStringer writer,Coordinate coord) throws JSONException{
 		writer.array();
-		writer.value(coord.x);
-		writer.value(coord.y);
+		writer.value(UwMathUtils.roundDouble(coord.x,accuracy));
+		writer.value(UwMathUtils.roundDouble(coord.y,accuracy));
 		writer.endArray();
 	}
 	

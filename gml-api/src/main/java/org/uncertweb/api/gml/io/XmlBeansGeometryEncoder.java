@@ -37,6 +37,7 @@ import org.apache.xmlbeans.XmlOptions;
 import org.uncertweb.api.gml.UwAbstractFeature;
 import org.uncertweb.api.gml.UwGMLUtil;
 import org.uncertweb.api.gml.geometry.RectifiedGrid;
+import org.uncertweb.utils.UwMathUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -57,6 +58,9 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	
 	/**counter used for generation of gml IDs*/
 	private int gmlIDcounter=0;
+	
+	/** default accuracy (number of digits) for coordinates*/
+	private int accuracy=5;
 
 	@Override
 	public String encodeGeometry(Geometry geom) throws XmlException {
@@ -80,6 +84,23 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		}
 
 		return result;
+	}
+	
+	/**
+	 * default constructor; accuracy is set to 5 digits for coordinates
+	 */
+	public XmlBeansGeometryEncoder(){
+	}
+	
+	
+	/**
+	 * constructor
+	 * 
+	 * @param accuracy
+	 * 			number of digits for coordinates
+	 */
+	public XmlBeansGeometryEncoder(int accuracy){
+		
 	}
 	
 	
@@ -146,8 +167,8 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		// encode origin
 		PointType xb_origin = xb_rg.addNewOrigin().addNewPoint();
 		xb_origin.addNewPos().setStringValue(
-				geom.getOrigin().getCoordinate().x + " "
-						+ geom.getOrigin().getCoordinate().y);
+				UwMathUtils.roundDouble(geom.getOrigin().getCoordinate().x,accuracy) + " "
+						+ UwMathUtils.roundDouble(geom.getOrigin().getCoordinate().y,accuracy));
 		if (geom.getOrigin().getSRID() != 0) {
 			xb_origin.setSrsName(UwGMLUtil.EPSG_URL
 					+ geom.getOrigin().getSRID());
@@ -160,8 +181,8 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 			if (p.getSRID() != 0) {
 				xb_ov.setSrsName(UwGMLUtil.EPSG_URL + p.getSRID());
 			}
-			xb_ov.setStringValue(p.getCoordinate().x + " "
-					+ p.getCoordinate().y);
+			xb_ov.setStringValue(UwMathUtils.roundDouble(p.getCoordinate().x,accuracy) + " "
+					+ UwMathUtils.roundDouble(p.getCoordinate().y,accuracy));
 		}
 
 		return xb_rgDoc;
@@ -200,7 +221,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		Coordinate[] coords = geom.getCoordinates();
 		for (int i = 0; i < coords.length; i++) {
 			DirectPositionType xb_pos = xb_ls.addNewPos();
-			xb_pos.setStringValue(coords[i].x + " " + coords[i].y);
+			xb_pos.setStringValue(UwMathUtils.roundDouble(coords[i].x,accuracy) + " " + UwMathUtils.roundDouble(coords[i].y,accuracy));
 		}
 		return xb_lsDoc;
 	}
@@ -276,8 +297,8 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		xb_pt.setId(generateGmlId());
 		DirectPositionType xb_pos = xb_pt.addNewPos();
 		xb_pos.setSrsName(UwGMLUtil.EPSG_URL + geom.getSRID());
-		xb_pos.setStringValue(geom.getCoordinate().x + " "
-				+ geom.getCoordinate().y);
+		xb_pos.setStringValue(UwMathUtils.roundDouble(geom.getCoordinate().x,accuracy) + " "
+				+ UwMathUtils.roundDouble(geom.getCoordinate().y,accuracy));
 		return xb_pd;
 	}
 
@@ -308,7 +329,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		DirectPositionListType xb_posList = xb_lrType.addNewPosList();
 		String posString = "";
 		for (int i = 0; i < coords.length; i++) {
-			posString = posString + coords[i].x + " "+ coords[i].y;
+			posString = posString + UwMathUtils.roundDouble(coords[i].x,accuracy) + " "+ UwMathUtils.roundDouble(coords[i].y,accuracy);
 			//append space, if it is not the last coordinate
 			if (i!=coords.length-1){
 				posString = posString + " ";
