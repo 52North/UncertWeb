@@ -811,7 +811,7 @@ $.extend(Map.prototype, {
 
 	toObservationCollection: function(track) {
 		var observations = [], base = {
-			resultTime: "2012-01-01T00:00:00Z",
+			resultTime: new Date().toISOString(),
 			procedure: location.href,
 			observedProperty: location.href,
 		};
