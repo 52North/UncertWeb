@@ -23,6 +23,7 @@
 				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
 			</Parser>
 			<Parser name="XMLAnyDataParser" className="org.n52.wps.io.datahandler.XMLAnyDataParser" active="true">
+				<Format mimetype="application/xml" schema="http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd"/>
 				<Format mimetype="application/xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd"/>
 				<Format mimetype="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
 				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
@@ -96,6 +97,7 @@
 				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
 			</Generator>
 			<Generator name="XMLAnyDataGenerator" className="org.n52.wps.io.datahandler.XMLAnyDataGenerator" active="true">
+				<Format mimetype="application/xml" schema="http://52north.org/schema/geostatistics/uncertweb/Profiles/Albatross/albatross_uInput.xsd"/>
 				<Format mimetype="application/xml" schema="http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd"/>
 				<Format mimetype="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
 				<Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>

@@ -2,11 +2,7 @@ package org.n52.wps.io.datahandler;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 
-import org.apache.axis.utils.XMLUtils;
-import org.apache.commons.io.input.XmlStreamReader;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.n52.wps.io.data.IData;

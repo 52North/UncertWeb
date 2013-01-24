@@ -7,7 +7,7 @@
     <wps:Input>
       <ows:Identifier>AlbatrossServiceURL</ows:Identifier>
       <wps:Data>
-        <wps:LiteralData>http://localhost:8080/albatross-wps/WebProcessingService</wps:LiteralData>
+        <wps:LiteralData>http://128.176.133.106:8080/albatross-wps/WebProcessingService</wps:LiteralData>
       </wps:Data>
     </wps:Input>
     <wps:Input>

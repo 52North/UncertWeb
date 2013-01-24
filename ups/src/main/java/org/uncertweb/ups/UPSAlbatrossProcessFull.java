@@ -32,7 +32,6 @@ import net.opengis.om.x20.UWMeasurementType;
 import net.opengis.om.x20.UWTextObservationType;
 import net.opengis.ows.x11.ExceptionReportDocument.ExceptionReport;
 import net.opengis.ows.x11.impl.ExceptionReportDocumentImpl;
-import net.opengis.ows.x11.impl.ExceptionReportDocumentImpl.ExceptionReportImpl;
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
 import net.opengis.samplingSpatial.x20.ShapeType;
 import net.opengis.wps.x100.DataType;
