@@ -1,0 +1,161 @@
+<wps:Execute service="WPS" version="1.0.0"
+  xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wps/1.0.0  http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+  <ows:Identifier>org.uncertweb.ups.UPSAlbatrossProcessSimple</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>AlbatrossServiceURL</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>http://localhost:8080/albatross-wps/WebProcessingService</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>IdentifierAlbatrossProcess</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>org.uncertweb.wps.AlbatrossProcess</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>genpop-households</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>1</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>rwdata-households</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>0</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>postcode-areas</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>3987</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>zones</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>1308</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>municipalities</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>625</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>isModelUncertainty</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>false</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>NumberOfRealisations</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>1</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>uncert-link</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData>
+          <UncertainAlbatrossInput
+            xsi:schemaLocation="http://www.uncertweb.org http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd"
+            xmlns="http://www.uncertweb.org" xmlns:un="http://www.uncertml.org/2.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <albatrossID>1</albatrossID>
+            <un:StandardDeviation>
+              <un:values>1</un:values>
+            </un:StandardDeviation>
+          </UncertainAlbatrossInput>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>uncert-link</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData>
+          <UncertainAlbatrossInput
+            xsi:schemaLocation="http://www.uncertweb.org http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd"
+            xmlns="http://www.uncertweb.org" xmlns:un="http://www.uncertml.org/2.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <albatrossID>3</albatrossID>
+            <un:StandardDeviation>
+              <un:values>1</un:values>
+            </un:StandardDeviation>
+          </UncertainAlbatrossInput>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>uncert-link</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData>
+          <UncertainAlbatrossInput
+            xsi:schemaLocation="http://www.uncertweb.org http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd"
+            xmlns="http://www.uncertweb.org" xmlns:un="http://www.uncertml.org/2.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <albatrossID>5</albatrossID>
+            <un:StandardDeviation>
+              <un:values>1.5</un:values>
+            </un:StandardDeviation>
+          </UncertainAlbatrossInput>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>uncert-area</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData>
+          <UncertainAlbatrossInput xmlns="http://www.uncertweb.org"
+            xmlns:un="http://www.uncertml.org/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.uncertweb.org http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd">
+            <albatrossID>1</albatrossID>
+            <parameter name="sector">3</parameter>
+            <un:StandardDeviation>
+              <un:values>20</un:values>
+            </un:StandardDeviation>
+          </UncertainAlbatrossInput>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>uncert-area</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData>
+          <UncertainAlbatrossInput xmlns="http://www.uncertweb.org"
+            xmlns:un="http://www.uncertml.org/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.uncertweb.org http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd">
+            <albatrossID>2</albatrossID>
+            <parameter name="sector">3</parameter>
+            <un:StandardDeviation>
+              <un:values>12</un:values>
+            </un:StandardDeviation>
+          </UncertainAlbatrossInput>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>export-file</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>http://giv-uw.uni-muenster.de/data/export.txt</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>export-file-bin</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>http://giv-uw.uni-muenster.de/data/exportBin.bin</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:ResponseDocument>
+      <wps:Output mimeType="application/x-uncertml+xml" schema="http://uncertml.org/uncertml.xsd">
+        <ows:Identifier>om_schedules</ows:Identifier>
+      </wps:Output>
+    </wps:ResponseDocument>
+  </wps:ResponseForm>
+</wps:Execute>
