@@ -7,11 +7,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author s_voss13
  *
  */
 class UncertainOutputWriter {
+	
+	protected static Logger log = Logger.getLogger(UncertainOutputWriter.class);
 	
 	private UncertainOutputWriter() {}
 	
@@ -29,27 +33,27 @@ class UncertainOutputWriter {
 			try {
 				f.createNewFile();
 			} catch (IOException e) {
-				
-				e.printStackTrace();
+				log.info ("Error while creating config file for uncertain input executable "+e.getLocalizedMessage());
+				throw new RuntimeException(e);
 			}
 		}
 		PrintWriter out = null;
 		
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(f)));
+				for(String currentLine : lines){
+					out.println(currentLine);
+				}
 		} catch (IOException e) {
-			
-			e.printStackTrace();
+			log.info ("Error while creating config file for uncertain input executable "+e.getLocalizedMessage());
+			throw new RuntimeException(e);
 		} 
-		
-		for(String currentLine : lines){
-			
-			out.println(currentLine);
-			
+		finally {
+			if (out!=null){
+				out.flush();
+				out.close();
+			}
 		}
-		
-		out.flush();
-		out.close();
 		
 	}
 

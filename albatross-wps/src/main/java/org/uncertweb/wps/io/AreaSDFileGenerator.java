@@ -73,7 +73,7 @@ public class AreaSDFileGenerator {
 			
 			List<String> albatrossIds = albatrossUInput.get(0).getAlbatrossIDs();
 			
-			lines.add(sd+"\t"+loc+"\t"+StringUtils.join(albatrossIds, ','));
+			lines.add(StringUtils.join(albatrossIds, ',')+"\t"+loc+"\t"+sd);
 		}
 		
 		UncertainOutputWriter.toFile(targetFile, lines);

@@ -65,10 +65,11 @@ public class LinkSDFileGenerator {
 		for(int i = 0; i < albatrossUInput.size(); i++){
 			
 			//immer der erste (und hoffentlich einzige) Wert
-			Double sd = albatrossUInput.get(i).getStandardDeviation().getValues().get(0);
-			List<String> albatrossIds = albatrossUInput.get(i).getAlbatrossIDs();
+			 AlbatrossUInput current = albatrossUInput.get(i);
+			Double sd = current.getStandardDeviation().getValues().get(0);
+			List<String> albatrossIds = current.getAlbatrossIDs();
 			
-			lines.add(sd+"\t"+"1"+"\t"+StringUtils.join(albatrossIds, ','));
+			lines.add(sd+"\t"+albatrossIds.size()+"\t"+StringUtils.join(albatrossIds, ','));
 		}
 		
 		UncertainOutputWriter.toFile(targetFile, lines);
