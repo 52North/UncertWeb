@@ -21,11 +21,19 @@
  */
 package org.uncertweb.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Random;
 
 public class UwMathUtils {
 	/** RNG. */
 	private static final Random random = new Random();
+	
+	
+	public static double roundDouble(double number, int digits){
+		BigDecimal bd = new BigDecimal(number).setScale(digits, RoundingMode.HALF_EVEN);
+		return bd.doubleValue();
+	}
 
 	/**
 	 * Generates a random {@code double} between {@code min} and {@code max}.
