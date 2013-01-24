@@ -30,10 +30,11 @@ public class UncertWebDataConstants {
 	
 	
 	public static final String SCHEMA_OMU= "http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd";
+	public static final String SCHEMA_OMU_52N= "http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/OM/UncertWeb_OM.xsd";
 	public static final String SCHEMA_OM_V2 = "http://schemas.opengis.net/om/2.0/observation.xsd";
 	public static final String SCHEMA_OM_V1 = "http://schemas.opengis.net/om/1.0.0/om.xsd";
 	public static final String SCHEMA_UNCERTML = "http://uncertml.org/uncertml.xsd";
-	public static final String SCHEMA_NETCDF_U = ""; //TODO
+	public static final String SCHEMA_NETCDF_U = "http://52north.org/schema/geostatistics/uncertweb/Profiles/OM/UncertWeb_OM.xsd"; //TODO
 	
 	public static boolean isMimeTypeNetCDF(String mimeType){
 		if (mimeType.equals(MIME_TYPE_NETCDF)||mimeType.equals(MIME_TYPE_NETCDFX)){
