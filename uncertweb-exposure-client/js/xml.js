@@ -3,7 +3,12 @@ XmlUtils = (function() {
 		wps: "http://www.opengis.net/wps/1.0.0",
 		ows: "http://www.opengis.net/ows/1.1",
 		xlink: "http://www.w3.org/1999/xlink",
-		om: "http://www.opengis.net/om/2.0"
+		om: "http://www.opengis.net/om/2.0",
+		gml: "http://www.opengis.net/gml/3.2",
+		xsi: "http://www.w3.org/2001/XMLSchema-instance",
+		sams: "http://www.opengis.net/samplingSpatial/2.0",
+		sf: "http://www.opengis.net/sampling/2.0",
+		xlink: "http://www.w3.org/1999/xlink"	
 	};
 	return {
 
@@ -103,15 +108,17 @@ XmlUtils = (function() {
 			return doc;
 		},
 
+
 		createObservationCollection: function(obs) {
 			var doc = jsxml.fromString(
 				'<?xml version="1.0" encoding="UTF-8"?>' +
 				'<om:OM_ObservationCollection '
 					+ 'xmlns:om="' + ns.om + '" '
-					+ 'xmlns:gml="http://www.opengis.net/gml/3.2" '
-					+ 'xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" '
-					+ 'xmlns:sf="http://www.opengis.net/sampling/2.0" '
-					+ 'xmlns:xlink="http://www.w3.org/1999/xlink" />');
+					+ 'xmlns:xsi="' + ns.xsi + '" '
+					+ 'xmlns:gml="' + ns.gml + '" '
+					+ 'xmlns:sams="' + ns.sams + '" '
+					+ 'xmlns:sf="' + ns.sf + '" '
+					+ 'xmlns:xlink="' + ns.xlink + '" />');
 
 			for (var i = 0; i < obs.length; ++i) {
 				var observation = doc.createElement("om:OM_BooleanObservation");
