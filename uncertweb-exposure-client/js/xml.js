@@ -8,7 +8,8 @@ XmlUtils = (function() {
 		xsi: "http://www.w3.org/2001/XMLSchema-instance",
 		sams: "http://www.opengis.net/samplingSpatial/2.0",
 		sf: "http://www.opengis.net/sampling/2.0",
-		xlink: "http://www.w3.org/1999/xlink"	
+		xlink: "http://www.w3.org/1999/xlink",
+		un: "http://www.uncertml.org/2.0"
 	};
 	return {
 
@@ -47,7 +48,7 @@ XmlUtils = (function() {
 			var identifier = doc.createElement("ows:Identifier");
 			identifier.appendChild(doc.createTextNode(options.id));
 			var inputs = doc.createElement("wps:DataInputs");
-			
+
 			function createInput(id, value) {
 				var input = doc.createElement("wps:Input");
 				var inputId = doc.createElement("ows:Identifier");
@@ -240,6 +241,21 @@ XmlUtils = (function() {
 					}
 				}
 			}
+		},
+
+		getOCsFromRandomSample: function(randomSample) {
+			var i, a = [], v = randomSample.getElementsByTagNameNS(ns.un, "values"), l = v.length;
+			for (i = 0; i < l; ++i) {
+				a.push(v.getAttribute("href"));
+			}
+			return a.map(function(h) {
+				return {
+					"xlink:href": h,
+					"mimeType": "application/x-om-u+xml",
+					"encoding": "UTF-8",
+					"schema": "http://schemas.opengis.net/om/2.0/observation.xsd"	
+				};
+			});
 		}
 	}
 })();
