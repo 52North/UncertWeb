@@ -583,7 +583,7 @@ $.extend(Map.prototype, {
 			.html("<h5>Day of the Week</h5>").appendTo($fieldset);
 		var $select = $("<select>").attr("name", "day").addClass("span12");
 		$.each(this.WEEKDAYS, function(i, e){
-			$select.append($("<option>").attr("value", i).text(e));
+			$select.append($("<option>").attr("value", i+1).text(e));
 		});
 		$select.appendTo($fieldset);
 
