@@ -132,7 +132,7 @@
 		</Repository>
 	</AlgorithmRepositoryList>
 	<RemoteRepositoryList/>
-	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="ups" repoReloadInterval="0">
+	<Server hostname="128.176.133.106" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="ups" repoReloadInterval="0">
 		<Database/>
 	</Server>
 </WPSConfiguration>

@@ -63,8 +63,6 @@ import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.exceptions.OMParsingException;
-import org.uncertweb.api.om.io.JSONObservationEncoder;
-import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
