@@ -17,9 +17,9 @@ XmlUtils = (function() {
 				'<?xml version="1.0" encoding="UTF-8"?>'+
 				'<UncertainAlbatrossInput xmlns="http://www.uncertweb.org">'+
 					'<albatrossID>'+id+'</albatrossID>'+
-					'<parameter name="'+parameterName+'">'+sector+'</parameter>'+
+					'<parameter name="'+parameterName+'">' + sector + '</parameter>'+
 					'<un:StandardDeviation xmlns:un="http://www.uncertml.org/2.0">'+
-						'<un:values>'+stddev+'</un:values>'+
+						'<un:values>' + stddev + '</un:values>'+
 					'</un:StandardDeviation>'+
 				'</UncertainAlbatrossInput>');
 			xml.schema = "http://v-mars.uni-muenster.de/uncertweb/schema/Profiles/Albatross/albatross_uInput.xsd";
@@ -39,7 +39,7 @@ XmlUtils = (function() {
 		createExecute: function(options) {
 			var doc = jsxml.fromString(
 				'<?xml version="1.0" encoding="UTF-8"?>' +
-				'<wps:Execute service="WPS" version="1.0.0 />" '
+				'<wps:Execute service="WPS" version="1.0.0" '
 					+ 'xmlns:wps="' + ns.wps  + '" '
 					+ 'xmlns:ows="' + ns.ows + '" '
 					+ 'xmlns:xlink="' + ns.xlink + '" />');
@@ -181,7 +181,7 @@ XmlUtils = (function() {
 				point.setAttribute("gml:id", "point" + i);
 				var pos = doc.createElement("gml:pos");
 				pos.setAttribute("srsName", "http://www.opengis.net/def/crs/EPSG/0/4326");
-				pos.appendChild(doc.createTextNode(obs[i].featureOfInterest[0] + " " + obs[i].featureOfInterest[1]))
+				pos.appendChild(doc.createTextNode(obs[i].featureOfInterest[1] + " " + obs[i].featureOfInterest[0]))
 				point.appendChild(pos);
 				shape.appendChild(point);
 				ssf.appendChild(shape);
