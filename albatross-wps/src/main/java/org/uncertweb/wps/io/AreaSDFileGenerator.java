@@ -71,7 +71,7 @@ public class AreaSDFileGenerator {
 			
 			String loc = albatrossUInput.get(i).getParameters().get("sector");
 			
-			List<String> albatrossIds = albatrossUInput.get(0).getAlbatrossIDs();
+			List<String> albatrossIds = albatrossUInput.get(i).getAlbatrossIDs();
 			
 			lines.add(StringUtils.join(albatrossIds, ',')+"\t"+loc+"\t"+sd);
 		}

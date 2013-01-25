@@ -88,9 +88,8 @@
 	<RemoteRepositoryList>
 	
 	</RemoteRepositoryList>
-
-<!-- 	<Server hostname="128.176.133.106" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="albatross-wps" repoReloadInterval="0">--> 
-    <Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="albatross-wps" repoReloadInterval="0"> 
+		<Server hostname="128.176.133.106" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="albatross-wps" repoReloadInterval="0">
+    <!-- <Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="albatross-wps" repoReloadInterval="0"> --> 
 		<Database/>
 	</Server>
 </WPSConfiguration>
