@@ -31,12 +31,12 @@
 					{
 						"title": "Parameter",
 						"options": {
-							"genpop-households": {
-								"type": "string",
-								"title": "Number of Housholds",
+							"households-fraction": {
+								"type": "number",
+								"title": "Fraction of Housholds",
 								"description": "Number of households created by Genpop and stored in “test.obs”.",
 								"required": true,
-								"default": "357"
+								"default": "0.01"
 							},
 							"rwdata-households": {
 								"type": "string",
@@ -115,7 +115,7 @@
 								"title": "Number of Housholds",
 								"description": "Number of households created by Genpop and stored in “test.obs”.",
 								"required": true,
-								"default": "357"
+								"default": "2"
 							},
 							"rwdata-households": {
 								"type": "string",
