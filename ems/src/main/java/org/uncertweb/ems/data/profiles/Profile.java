@@ -10,33 +10,26 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.joda.time.Seconds;
-import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
+import org.uncertml.distribution.continuous.LogNormalDistribution;
+import org.uncertml.distribution.continuous.NormalDistribution;
+import org.uncertml.sample.ContinuousRealisation;
 import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.io.CSVEncoder;
 import org.uncertweb.api.om.observation.AbstractObservation;
-import org.uncertweb.api.om.observation.CategoryObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.CategoryObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.UncertaintyResult;
-import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
-import org.uncertml.distribution.continuous.LogNormalDistribution;
-import org.uncertml.distribution.continuous.NormalDistribution;
-import org.uncertml.sample.ContinuousRealisation;
 
 import au.com.bytecode.opencsv.CSVWriter;
-
-import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * Stores information on ST positions, ME location and activity of individuals
@@ -54,7 +47,7 @@ public class Profile {
 	private Map<String, Map<String, String>> attributesList;
 	private ArrayList<String> dateList;
 	
-	// variables for modelled concentration realisations
+	// variables for modelled concentration realisations; keys are timestrings
 	private HashMap<String, double[]> outConc, inConc, cospUncert;//, outinConc, inSourcConc;
 		
 	public Profile(IObservationCollection profileObservationCollection){

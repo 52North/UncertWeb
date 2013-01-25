@@ -225,16 +225,16 @@ public class OutdoorModel{
 			c.voidEval("omFile <- \""+omFilePath+"\"");
 			c.voidEval("rasterFile <- \""+netcdfFilePath+"\"");
 			
-			// get pollutant
-			parameter = c.tryEval("strsplit(colnames(raster@data)[1],\"_r\")[[1]][1]").asString();
-											
+									
 			// run the prepared script
 			c.voidEval("source(\""+resRPath+"/overlay_utils.R\", echo=TRUE)");
 			
 			// load files
 			c.voidEval("raster <-readNetCDFU(rasterFile)");
 			c.voidEval("om <- readOMcsv(omFile)");
-			
+			// get pollutant
+			parameter = c.tryEval("strsplit(colnames(raster@data)[1],\"_r\")[[1]][1]").asString();
+				
 			// transform OM data to NetCDF-U projection
 			c.voidEval("om.sp <- spTransform(om@sp, CRS=CRS(proj4string(raster)))");
 			c.voidEval("om.st <- STI(om.sp, om@time)");

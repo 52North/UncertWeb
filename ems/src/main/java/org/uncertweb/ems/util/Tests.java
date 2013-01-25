@@ -95,8 +95,8 @@ public class Tests {
 		 }
 		
 //		try {
-//			 createDummyOMColl("D:/UncertWeb/meetings/12-09 Workshop Münster/AQMS_2010-01.xml",
-//					 "D:/UncertWeb/meetings/12-09 Workshop Münster/MS_points_PM10.xml");
+//			 createDummyOMColl("D:/UncertWeb/meetings/12-09 Workshop Muenster/AQMS_2010-01.xml",
+//					 "D:/UncertWeb/meetings/12-09 Workshop Muenster/MS_points_PM10.xml");
 //		 } catch (OMEncodingException e) {
 //			 // TODO Auto-generated catch block
 //			 e.printStackTrace();

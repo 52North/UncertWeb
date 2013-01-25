@@ -208,17 +208,38 @@ public class OMProfileParser {
 		
 		ArrayList<Interval> newTimeList = new ArrayList<Interval>();
 		if(time!=null){
-			// if the interval is too long, create additional timesteps according to the minuteResolution				
-			int minuteDuration = time.toPeriod(PeriodType.minutes()).getMinutes();
-			if(minuteDuration>minuteResolution){	
-				int rep = 0;
-				while(minuteDuration>=minuteResolution){
-					newTimeList.add(new Interval(time.getStart().plusMinutes(minuteResolution*rep),time.getStart().plusMinutes(minuteResolution*(rep+1))));
-					minuteDuration -= minuteResolution;
-					rep++;
+			//changed to match hourly forecasts of NetCDF file
+			DateTime start = time.getStart();
+			DateTime end = time.getEnd();
+			DateTime newTime = start;
+			DateTime oldTime=null;
+			while (newTime.isBefore(end)){
+				oldTime=newTime;
+				newTime = newTime.plusHours(1);
+				newTime = newTime.minusMinutes(newTime.getMinuteOfHour());
+				newTime = newTime.minusSeconds(newTime.getSecondOfMinute());
+				if (newTime.isBefore(end)){
+					newTimeList.add(new Interval(oldTime,newTime));
 				}
-			}else
-				newTimeList.add(time);
+			}
+			if (oldTime!=null){
+				newTimeList.add(new Interval(oldTime,end));
+			}
+			else {
+				newTimeList.add(new Interval(start,end));
+			}
+			
+//			// if the interval is too long, create additional timesteps according to the minuteResolution				
+//			int minuteDuration = time.toPeriod(PeriodType.minutes()).getMinutes();
+//			if(minuteDuration>minuteResolution){	
+//				int rep = 0;
+//				while(minuteDuration>=minuteResolution){
+//					newTimeList.add(new Interval(time.getStart().plusMinutes(minuteResolution*rep),time.getStart().plusMinutes(minuteResolution*(rep+1))));
+//					minuteDuration -= minuteResolution;
+//					rep++;
+//				}
+//			}else
+//				newTimeList.add(time);
 		}
 			
 		return newTimeList;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TimeZone;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,7 +26,10 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
+import org.joda.time.PeriodType;
 import org.joda.time.format.ISODateTimeFormat;
+import org.uncertml.sample.ContinuousRealisation;
+import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.api.om.exceptions.OMEncodingException;
 import org.uncertweb.api.om.exceptions.OMParsingException;
 import org.uncertweb.api.om.io.JSONObservationEncoder;
@@ -33,7 +37,9 @@ import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.UncertaintyObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.ems.data.profiles.AbstractProfile;
 
 import au.com.bytecode.opencsv.CSVWriter;
@@ -53,6 +59,34 @@ public class Utils {
 		sosFormat.setTimeZone(TimeZone.getTimeZone("GMT+01"));		
 		
 		return sosDate;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @return
+	 */
+	public double[] aggregateExposureObs4Day(UncertaintyObservationCollection obsCol){
+		List<UncertaintyObservation> obsList = (List<UncertaintyObservation>)obsCol.getObservations();
+		int numbOfReal = ((ContinuousRealisation)obsList.get(0).getResult().getUncertaintyValue()).getValues().size();
+		double[] aggregates = new double[numbOfReal];
+		for (UncertaintyObservation uncertObs : obsList){
+			TimeObject time = uncertObs.getPhenomenonTime();
+			double weight = 1;
+			if (time.isInterval()){
+				weight = time.getInterval().toPeriod(PeriodType.minutes()).getMinutes();
+			}
+			ContinuousRealisation real = (ContinuousRealisation)uncertObs.getResult().getUncertaintyValue();
+			Double[] array = (Double[])real.getValues().toArray();
+			for (int i=0;i<numbOfReal;i++){
+				aggregates[i]+=array[i]*weight;
+			}
+		}
+		int n = obsList.size();
+		for (int i=0;i<aggregates.length;++i){
+			aggregates[i]=aggregates[i]/n;
+		}
+		return aggregates;
 	}
 	
 //	public static void writeObsCollXMLStax(IObservationCollection obs, String filepath){		   
@@ -222,5 +256,25 @@ public class Utils {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
+	}
+	
+	
+	public static DateTime getNextHourDateTime(DateTime input){
+		DateTime result = input;
+		
+		//input time is exactly on the beginning of and hour, e.g. 03:00:00
+		//--> return unchanged input
+		if (input.getMinuteOfHour()==0&&input.getSecondOfMinute()==0){
+			return result;
+		}
+		
+		//input time is somewhat between
+		else {
+			//add one hour
+			result = result.plusHours(1);
+			result = result.minusMinutes(input.getMinuteOfHour());
+			result = result.minusSeconds(input.getSecondOfMinute());
+			return result;
+		}
 	}
 }

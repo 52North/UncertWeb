@@ -175,7 +175,7 @@ public class IndoorModel{
 							if((activity.equals("getting up")||activity.equals("making bed")||activity.contains("cleaning")||
 									activity.equals("laundry")||activity.equals("sports")||activity.equals("dressing")||activity.contains("walk")||
 									(!lastME.equals(me2))&&i>0)&&params.getParameters().contains("s_human")){
-								// person emissions are in µg/(person*min)!
+								// person emissions are in microg/(person*min)!
 								s_hum = sampling(params.getParameterValue("s_human"), numberOfIterations, c, 2);
 							}else{
 								s_hum = new double[numberOfIterations];
@@ -184,7 +184,7 @@ public class IndoorModel{
 							// COOKING
 							// add cooking emissions if they occurred
 							if(activity.equals("cooking")&&params.getParameters().contains("s_cook")){
-								// cooking emissions are in µg/min!
+								// cooking emissions are in microg/min!
 								s_cook = sampling(params.getParameterValue("s_cook"), numberOfIterations, c, minInterval);
 							}else{
 								s_cook = new double[numberOfIterations];
@@ -200,7 +200,7 @@ public class IndoorModel{
 						try{
 							int nSmoker = Integer.parseInt(smoker);
 							if(nSmoker>0){
-								// smoking emissions are in µg/cig!
+								// smoking emissions are in microg/cig!
 								s_cig = sampling(params.getParameterValue("s_cig"), numberOfIterations, c, nSmoker*minInterval/10d);
 							//	double[] n_cig = lognormalSampling((LogNormalDistribution)params.getParameterValue("n_cig"), numberOfIterations, c);
 							}else{

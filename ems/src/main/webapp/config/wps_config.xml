@@ -104,7 +104,7 @@
 		
 	</AlgorithmRepositoryList>
 	<!-- hostname="giv-uw2.uni-muenster.de" -->
-	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="aqms">
+	<Server hostname="localhost" hostport="8080" includeDataInputsInResponse="false" computationTimeoutMilliSeconds="5" cacheCapabilites="false" webappPath="ems">
 		<Database/>
 	</Server>
 </WPSConfiguration>

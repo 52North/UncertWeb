@@ -12,12 +12,13 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
+
+import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlObject;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.Seconds;
@@ -29,16 +30,9 @@ import org.uncertweb.api.om.io.StaxObservationEncoder;
 import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.CategoryObservation;
-import org.uncertweb.api.om.observation.TextObservation;
 import org.uncertweb.api.om.observation.collections.CategoryObservationCollection;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
-import org.uncertweb.api.om.observation.collections.TextObservationCollection;
-import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
 import org.uncertweb.api.om.result.CategoryResult;
-import org.uncertweb.api.om.result.TextResult;
-import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
-import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlObject;
 
 import au.com.bytecode.opencsv.CSVReader;
 
