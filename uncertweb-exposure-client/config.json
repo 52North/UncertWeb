@@ -11,7 +11,7 @@
 		"ems": {
 			"nilu": { "predicted-concentrations": "airQualityData" },
 			"albatross": { "om_schedules": "activityProfile" },
-			"map": "om_schedules"
+			"map": "activityProfile"
 		}
 	},
 	"processes": {
@@ -26,7 +26,7 @@
 			"outputs": {
 				"result": {
 					"asReference": true,
-					"mimeType": "application/x-om-u+json",
+					"mimeType": "application/x-om-u+xml",
 					"schema": "http://schemas.opengis.net/om/2.0/observation.xsd"
 				}
 			},
@@ -162,7 +162,7 @@
 			"mock-url": "examples/upsAlbatrossProcessExampleResponse.xml",
 			"outputs": {
 				"om_schedules": {
-					"mimeType": "application/x-uncertml",
+					"mimeType": "application/x-uncertml+xml",
 					"asReference": true,
 					"schema": "http://uncertml.org/uncertml.xsd"
 				}
@@ -191,7 +191,21 @@
 								"title": "genpop-households",
 								"description": "genpop-households",
 								"required": true,
-								"default": "357"
+								"default": "2"
+							},
+							"export-file-bin": {
+								"type": "string",
+								"title": "Export File Bin",
+								"description": "Export File Bin",
+								"required": true,
+								"default": "http://giv-uw.uni-muenster.de/data/exportBin.bin"
+							},
+							"export-file": {
+								"type": "string",
+								"title": "Export File",
+								"description": "Export File",
+								"required": true,
+								"default": "http://giv-uw.uni-muenster.de/data/export.txt"
 							},
 							"rwdata-households": {
 								"type": "string",
@@ -221,12 +235,6 @@
 								"description": "municipalities",
 								"required": true,
 								"default": "625"
-							},
-							"isBootstrapping": {
-								"title": "isBootstrapping",
-								"description": "isBootstrapping",
-								"type": "boolean",
-								"default": false
 							},
 							"isModelUncertainty": {
 								"title": "isModelUncertainty",
