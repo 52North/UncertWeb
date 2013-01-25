@@ -407,14 +407,14 @@ TimePoint = function(day, time) {
 	this.h = parseInt(Math.floor(time/60), 10);
 	this.m = parseInt(time - this.h * 60, 10);
 
-	if (isNaN(this.d) || this.d < 0 || this.d >= 7) {
-		throw new Error("day out of range");
+	if (isNaN(this.d) || this.d < 1 || this.d > 7) {
+		throw new Error("Day is out of range!");
 	}
 	if (isNaN(this.h) || this.h < 0 || this.h >= 24) {
-		throw new Error("hours out of range");
+		throw new Error("Hours are out of range!");
 	}
 	if (isNaN(this.m) || this.m < 0 || this.m >= 60) {
-		throw new Error("minutes out of range");
+		throw new Error("Minutes are out of range!");
 	}
 };
 
@@ -460,15 +460,14 @@ TimeValue = function() {
 	this.begin = new TimePoint(this.d, this.b);
 	this.end   = new TimePoint((this.d + Math.floor((this.b + this.l) / 1440)) % 6, 
 							   (this.b + this.l) % 1440);
-	
-	if (isNaN(this.l) || this.l <= 0 || this.l >= 7 * 24 * 60) {
-		throw new Error("length out of range");
+	if (isNaN(this.b) || this.b < 0 || this.b >= (24 * 60 - 1)) {
+		throw new Error("Begin time has to be below 23:59!");
 	}
-	if (isNaN(this.b) || this.b < 0 || this.b >=     24 * 60) {
-		throw new Error("begin out of range");
+	if (isNaN(this.d) || this.d < 0 || this.d > 7          ) {
+		throw new Error("Day out of range!");
 	}
-	if (isNaN(this.d) || this.d < 0 || this.d >= 7          ) {
-		throw new Error("day out of range");
+	if ((this.b + this.l) >= 24 * 60) {
+		throw new Error("Times are restricted to one day!");
 	}
 };
 
@@ -575,9 +574,7 @@ $.extend(Map.prototype, {
 		var $form = $("<form>").attr("id", "trajectory" + marker.formid).appendTo($bubble);
 		var $fieldset = $("<fieldset>").appendTo($form);
 		$fieldset.append($("<legend>").html("Trajectory").hide());
-		$fieldset.append($("<div>").addClass("alert alert-error")
-			.text("There is a trajectory conflicting with this one.")
-			.prepend($("<strong>").text("Conflict! ")).hide());
+		$fieldset.append($("<div>").addClass("alert alert-error").hide());
 
 		$("<label>").attr("for", "day")
 			.html("<h5>Day of the Week</h5>").appendTo($fieldset);
@@ -677,21 +674,37 @@ $.extend(Map.prototype, {
 			$error      = $form.find("div.alert").hide();
 		
 		function validate() {
-			var time, error = false;
-			try {
-				time = new TimeValue(Utils.formArrayToObject($form.serializeArray()));
-			} catch (e) {
-				error = true;
+			var time, values = Utils.formArrayToObject($form.serializeArray());
+			values.begin = parseInt(values.begin);
+			values.length = parseInt(values.length);
+			values.day = parseInt(values.day);
+			if (!!values.begin && !!values.length) {
+				try {
+					time = new TimeValue(values);
+				} catch (e) {
+					$save.disabled();
+					$error.text("There is a error with the selected time: " +  e.message)
+								.prepend($("<strong>").text("Ooops! "));
+					$error.slideDown(function() {
+						marker._popup._adjustPan();	
+					});
+					return;
+				}
+			} else {
+				$error.slideUp(function() {
+					marker._popup._adjustPan();
+				});
+				$save.disabled();
+				return;
 			}
-
-			$save.disabled(error);
-			if (error) { return; }
 			
 			for (var i = 0; i < self.markers.length; ++i) {
 				if (self.markers[i] === marker) { continue; }
 				if (self.markers[i].time) {
 					if (self.markers[i].time.conflicts(time)) {
 						$save.disabled();
+						$error.text("There is a trajectory conflicting with this one.")
+							.prepend($("<strong>").text("Conflict! "))
 						$error.slideDown(function() {
 							marker._popup._adjustPan();	
 						});
