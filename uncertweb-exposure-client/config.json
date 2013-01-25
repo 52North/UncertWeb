@@ -1,5 +1,5 @@
 {
-	"mock": true,
+	"mock": false,
 	"mapCenter": {
 		"rotterdam": [ 51.9222, 4.4826 ],
 		"oslo": [ 59.912, 10.753 ]

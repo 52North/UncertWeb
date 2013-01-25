@@ -343,9 +343,34 @@ $.extend(App.prototype, {
 		var reqXml = XmlUtils.createExecute(req);
 		this.showRequest(reqXml);
 		var self = this;
+
+
+		var changed = false;
+		for (var input in req.inputs) {
+			if (req.inputs.hasOwnProperty(input)) {
+				if (req.inputs[input].length == 1) {
+					// single value
+					for (var s = 0; s < settings.inputs.sections.length; ++s) {
+						if (settings.inputs.sections[s].options.hasOwnProperty(input)) {
+							if (settings.inputs.sections[s].options[input].hasOwnProperty("default")) {
+								if (req.inputs[input][0] != settings.inputs.sections[s].options[input]["default"]) {
+									changed = true;
+								}
+							} else {
+								changed = true;
+							}
+						}
+					}	
+				} else {
+					// multiple values
+					changed = true;
+				}
+			}
+		}
+
 		$.ajax({
 			"type": "POST",
-			"url": settings[ this.options.mock ? "mock-url" : "url"],
+			"url": settings[ (this.options.mock || !changed) ? "mock-url" : "url"],
 			"data": XmlUtils.xml2string(reqXml),
 			"contentType": "application/xml",
 			"dataType": "xml"
@@ -838,7 +863,6 @@ $.extend(Map.prototype, {
 	}
 });
 
-
 function transformer(name) {
 	return function(options) {
 		var stddev = options.inputs[name+"-stddev"],
@@ -868,3 +892,4 @@ function transformer(name) {
 		}
 	}
 }
+
