@@ -47,19 +47,21 @@ XmlUtils = (function() {
 			var identifier = doc.createElement("ows:Identifier");
 			identifier.appendChild(doc.createTextNode(options.id));
 			var inputs = doc.createElement("wps:DataInputs");
+			
 			function createInput(id, value) {
 				var input = doc.createElement("wps:Input");
 				var inputId = doc.createElement("ows:Identifier");
 				inputId.appendChild(doc.createTextNode(id));
 				input.appendChild(inputId);
-
 				if (value instanceof Object) {
 					if (value.documentElement) {
 							//XML fragment
+							var data = doc.createElement("wps:Data");
 							var complexData = doc.createElement("wps:ComplexData");
 							complexData.appendChild(value.documentElement);
 							complexData.setAttribute("schema", value.schema);
-							input.appendChild(complexData);
+							data.appendChild(complexData);
+							input.appendChild(data);
 					} else {
 						//REFERENCE
 						var reference = doc.createElement("wps:Reference");
