@@ -3,14 +3,21 @@
   <modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.uncertweb</groupId>
-		<artifactId>UncertWeb</artifactId>
-		<version>0.1</version>
+		<artifactId>uncertWeb-parent</artifactId>
+		<version>1.2-SNAPSHOT</version>
 	</parent>
   <groupId>org.uncertweb</groupId>
   <artifactId>albatross-syn-pop-wps</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
+  
+  	<repositories>
+		<repository>
+			<id>UncertWebMavenRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+		</repository>
+	</repositories>
   <packaging>war</packaging>
-
   <name>albatross-syn-pop-wps</name>
 
 <properties>
@@ -26,6 +33,12 @@
 	</distributionManagement>
 	
   <dependencies>
+  <dependency>
+      <groupId>com.thetransactioncompany</groupId>
+      <artifactId>cors-filter</artifactId>
+      <version>1.3.2</version>
+      <scope>runtime</scope>
+   </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -56,7 +69,7 @@
     <dependency>
     	<groupId>org.uncertweb</groupId>
     	<artifactId>52n-wps-io-uncertweb</artifactId>
-		<version>0.0.4-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
     	<groupId>org.apache.commons</groupId>
@@ -69,6 +82,9 @@
     	<version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  
+
+    
   <build>
   		<finalName>albatross-syn-pop-wps</finalName>
 		<resources>
