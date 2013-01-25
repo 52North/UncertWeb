@@ -122,6 +122,26 @@
         <filter-name>authn</filter-name>
         <url-pattern>/webAdmin/*</url-pattern>
     </filter-mapping>
+    
+    <filter>
+        <filter-name>CORS</filter-name>
+        <filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
+
+        <init-param>
+                <param-name>cors.allowOrigin</param-name>
+                <param-value>*</param-value>
+        </init-param>
+	</filter>
+
+    <filter-mapping>
+        <filter-name>CORS</filter-name>
+        <servlet-name>wpsServlet</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>CORS</filter-name>
+        <servlet-name>retrieveResultServlet</servlet-name>
+    </filter-mapping>
 
     <listener>
         <listener-class>org.n52.security.service.config.support.SecurityConfigContextListener</listener-class>
