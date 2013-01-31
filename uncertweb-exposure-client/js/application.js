@@ -44,27 +44,61 @@ $.extend(App.prototype, {
 		$(document).on("keyup input change", ".required", this.onRequiredChange);
 		$("form").find(".required:first").trigger("change");
 		$(".processForm button.send").click(function(e) {
+			var $this = $(this);
+			$this.disabled();
 			self.sendRequest(e, this, function() {
 				self.sendCallbacks[$(e.target).parents(".processContainer").attr("id")].call(self);
+				$this.disabled(false);
 			});
 		})
 	},
-
+	
 	showVisualizationLink: function(process, output) {
-		var self = this, r = this.getResponse(process);
+		var self = this, ref, pid, text,
+			r = this.getResponse(process);
+
 		if (!XmlUtils.isException(r)) {
-			var pid = "<code>" + this.options.processes[process].id + "</code>";
-			var text = "Do you want to see the output of the " + pid + " process?";
-			this.buildModalDialog("Visualization", text, function(dialog) {
-				var ref = XmlUtils.getOutput(r, output);
-				if (typeof(ref) === "object") {
-					window.open(
-						self.options.visualizationUrl 
-							+ "?url="  + encodeURIComponent(ref["xlink:href"])
-							+ "&mime=" + encodeURIComponent(ref["mimeType"]));	
+			ref = XmlUtils.getOutput(r, output);
+			if (typeof(ref) === "object") {
+				if (ref.mimeType === "application/x-uncertml+xml") {
+					// get the UncertML collection
+					$.ajax({ type: "GET", url: ref["xlink:href"], dataType: "xml" })
+					 .done(function(e) {
+					 	var i, $a, $text = $("<ul>"),
+					 		refs = XmlUtils.getOCsFromRandomSample(e), 
+					 		s = refs.length, text;
+					 	
+					 	$text = $("<ul>")
+					 	for (i = 0; i < s; ++i) {
+					 		$a = $("<a>").attr({
+					 			href: self.options.visualizationUrl 
+									+ "?url="  + encodeURIComponent(refs[i]["xlink:href"])
+									+ "&mime=" + encodeURIComponent(refs[i]["mimeType"]),
+								target: "_blank"
+					 		}).text(refs[i]["xlink:href"]);
+
+					 		$("<li>").append($a).appendTo($text);
+					 	}
+						self.buildModalDialog("Visualization", $text.get(0).outerHTML, function(dialog) {
+							dialog.modal("hide");
+						}, true);
+
+					}).fail(function(e, message, exception) {
+						self.onRequestFailure(this, e, message, exception);
+					});
+				} else {
+					pid = "<code>" + this.options.processes[process].id + "</code>";
+					text = "Do you want to see the output of the " + pid + " process?";
+					this.buildModalDialog("Visualization", text, function(dialog) {
+						window.open(
+							self.options.visualizationUrl 
+								+ "?url="  + encodeURIComponent(ref["xlink:href"])
+								+ "&mime=" + encodeURIComponent(ref["mimeType"]));	
+						dialog.modal("hide");
+					});
 				}
-				dialog.modal("hide");
-			});
+
+			}
 		}
 	},
 
@@ -85,11 +119,11 @@ $.extend(App.prototype, {
 		}
 	},
 
-	buildModalDialog: function(title, text, onclick) {
-		var $dialog = $("<div>").addClass("modal hide");
-		var $header = $("<div>").addClass("modal-header").appendTo($dialog);
-		var $body   = $("<div>").addClass("modal-body")  .appendTo($dialog);
-		var $footer = $("<div>").addClass("modal-footer").appendTo($dialog);
+	buildModalDialog: function(title, text, onclick, singleButton) {
+		var $dialog = $("<div>").addClass("modal hide"),
+			$header = $("<div>").addClass("modal-header").appendTo($dialog),
+			$body   = $("<div>").addClass("modal-body")  .appendTo($dialog),
+			$footer = $("<div>").addClass("modal-footer").appendTo($dialog);
 
 		$("<button>")
 			.attr({
@@ -103,26 +137,37 @@ $.extend(App.prototype, {
 
 		$("<h3>").html(title).appendTo($header);
 		$("<p>").html(text).appendTo($body);
-		$("<button>")
-			.attr("type", "button")
-			.addClass("btn btn-info")
-			.text("Yes")
-			.appendTo($footer).on("click", function() {
-				onclick($dialog);
-			});
 
-		$("<button>")
-			.attr({
-				"type": "button",
-				"aria-hidden": true
-			})
-			.addClass("btn")
-			.data("dismiss", "modal")
-			.text("No")
-			.appendTo($footer)
-			.on("click", function() {
-				$dialog.modal("hide");
-			});
+		if (singleButton) {
+			$("<button>")
+				.attr("type", "button")
+				.addClass("btn btn-info")
+				.text("Close")
+				.appendTo($footer).on("click", function() {
+					onclick($dialog);
+				});
+		} else {
+			$("<button>")
+				.attr("type", "button")
+				.addClass("btn btn-info")
+				.text("Yes")
+				.appendTo($footer).on("click", function() {
+					onclick($dialog);
+				});
+			$("<button>")
+				.attr({
+					"type": "button",
+					"aria-hidden": true
+				})
+				.addClass("btn")
+				.data("dismiss", "modal")
+				.text("No")
+				.appendTo($footer)
+				.on("click", function() {
+					$dialog.modal("hide");
+				});	
+		}
+		
 
 		$dialog.appendTo($("body")).modal({
 			"keyboard": true,
@@ -202,8 +247,7 @@ $.extend(App.prototype, {
 					o.inputs[key] =  [ false ];
 				}
 				if (!settings.inputs.sections[i].options[key].required 
-					&& o.inputs[key] 
-					&& o.inputs[key].length === 1 
+					&& o.inputs[key] && o.inputs[key].length === 1 
 					&& (o.inputs[key][0] === "" || o.inputs[key][0] === undefined)) {
 					delete o.inputs[key];
 				}
@@ -216,21 +260,20 @@ $.extend(App.prototype, {
 	},
 
 	showXML: function(message, text, failed) {
-		var id = this.logid++;
-		var logrowid = "logrow"+ id;
-		var coderowid = "coderow" + id;
-
-		var $a = $("<a>")
+		var id = this.logid++,
+			logrowid = "logrow"+ id,
+			coderowid = "coderow" + id,
+			$a = $("<a>")
 			.addClass("pull-right")
 			.attr("href","#")
 			.text("show").click(function(e) {
 				e.preventDefault();
 				if ($(this).text() === "show") {
 					$(this).text("hide");
-					$("#"+coderowid).fadeIn("fast");	
+					$("#" + coderowid).fadeIn("fast");	
 				} else if ($(this).text() === "hide") {
 					$(this).text("show");
-					$("#"+coderowid).fadeOut("fast");
+					$("#" + coderowid).fadeOut("fast");
 				}
 			});
 		$("#output > tbody")
@@ -264,7 +307,7 @@ $.extend(App.prototype, {
 	},
 
 	showResponse: function(res, fail) {
-		return this.showXML(res, (fail) ? "Failure response" : "Sucess response", fail);
+		return this.showXML(res, (fail) ? "Failure response" : "Success response", fail);
 	},
 
 	showFailureResponse: function(res) {
@@ -276,12 +319,10 @@ $.extend(App.prototype, {
 	},
 
 	showMessage: function(content, type, autoclose) {
-		var $alert = $("<div>");
-		function closeAlert() {
-			$alert.fadeTo(500, 0).slideUp(500, function() {
-				$alert.remove();
-			});
-		}
+		var $alert = $("<div>"),
+			closeAlert = function() {
+				$alert.fadeTo(500, 0).slideUp(500, function() { $alert.remove(); });
+			};
 		$alert.addClass("alert alert-" + type)
 			  .append($("<button>")
 				  .attr("type", "button")
@@ -312,45 +353,62 @@ $.extend(App.prototype, {
 	},
 
 	sendRequest: function(e, element, callback) {
-		var $form = $(element).parents("form");
-		var process = $form.data("process");
-		var settings = this.options.processes[process];
-		var req = this.createRequest(process, $form.serializeArray());
+		var req, s, previousProcess, output, input, 
+			response, reqXml, changed, previousOutput,
+			usedMap = !!this.options.outputs.map,
+			self = this,
+			$form = $(element).parents("form"),
+			process = $form.data("process"),
+			settings = this.options.processes[process],
+			mappings = this.options.mappings[process];
+		if (self.options.processes.ems) {
+			self.options.processes.ems.outputs.result = usedMap ?
+			 	{ asReference: true, mimeType: "application/x-om-u+xml", schema: "http://schemas.opengis.net/om/2.0/observation.xsd" } :
+				{ asReference: true, mimeType: "application/x-uncertml+xml", schema: "http://uncertml.org/uncertml.xsd" };	
+		}
 
-		for (var p in this.options.mappings[process]) {
-			if (typeof this.options.mappings[process][p] === "string") {
+		req = this.createRequest(process, $form.serializeArray());
+
+		for (previousProcess in mappings) {
+			if (usedMap && previousProcess === "albatross") {
+				/* skip albatross if the schedules 
+				   were entered on the map*/
+				continue; 
+			}
+			previousOutput = mappings[previousProcess];
+			if (typeof previousOutput === "string") {
+				input = previousOutput;
 				// response is a single input
-				if (!req.inputs[this.options.mappings[process][p]]) {
-					 req.inputs[this.options.mappings[process][p]] = [];
+				if (!req.inputs[input]) {
+					 req.inputs[input] = [];
 				}
-				var response = this.getResponse(p);
+				response = this.getResponse(previousProcess);
 				if (response) {
-					req.inputs[this.options.mappings[process][p]].push(response);
+					req.inputs[input].push(response);
 				}
 			} else {
-				for (var o in this.options.mappings[process][p]) {
-					if (!req.inputs[this.options.mappings[process][p][o]] ) {
-						req.inputs[this.options.mappings[process][p][o]] = [];
+				for (output in previousOutput) {
+					input = previousOutput[output];
+					if (!req.inputs[input] ) {
+						req.inputs[input] = [];
 					}
-					var response = this.getResponse(p);
+					response = this.getResponse(previousProcess);
 					if (response) {
-						req.inputs[this.options.mappings[process][p][o]].push(
-							XmlUtils.getOutput(response, o));
+						req.inputs[input].push(XmlUtils.getOutput(response, output));
 					}
 				}
 			}
 		}
-		var reqXml = XmlUtils.createExecute(req);
+		reqXml = XmlUtils.createExecute(req);
 		this.showRequest(reqXml);
-		var self = this;
 
 
-		var changed = false;
-		for (var input in req.inputs) {
+		changed = false;
+		for (input in req.inputs) {
 			if (req.inputs.hasOwnProperty(input)) {
 				if (req.inputs[input].length == 1) {
 					// single value
-					for (var s = 0; s < settings.inputs.sections.length; ++s) {
+					for (s = 0; s < settings.inputs.sections.length; ++s) {
 						if (settings.inputs.sections[s].options.hasOwnProperty(input)) {
 							if (settings.inputs.sections[s].options[input].hasOwnProperty("default")) {
 								if (req.inputs[input][0] != settings.inputs.sections[s].options[input]["default"]) {
@@ -369,11 +427,11 @@ $.extend(App.prototype, {
 		}
 
 		$.ajax({
-			"type": "POST",
-			"url": settings[ (this.options.mock || !changed) ? "mock-url" : "url"],
-			"data": XmlUtils.xml2string(reqXml),
-			"contentType": "application/xml",
-			"dataType": "xml"
+			type: "POST",
+			url: settings[ (this.options.mock || !changed) ? "mock-url" : "url"],
+			data: XmlUtils.xml2string(reqXml),
+			contentType: "application/xml",
+			dataType: "xml"
 		}).done(function(e) {
 			self.onRequestSuccess(e, process);
 			if (typeof callback === "function") {

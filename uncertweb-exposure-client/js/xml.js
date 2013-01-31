@@ -246,7 +246,7 @@ XmlUtils = (function() {
 		getOCsFromRandomSample: function(randomSample) {
 			var i, a = [], v = randomSample.getElementsByTagNameNS(ns.un, "values"), l = v.length;
 			for (i = 0; i < l; ++i) {
-				a.push(v.getAttribute("href"));
+				a.push(v[i].getAttribute("href"));
 			}
 			return a.map(function(h) {
 				return {

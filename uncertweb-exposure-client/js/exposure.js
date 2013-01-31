@@ -1,10 +1,5 @@
 jQuery(document).ready(function($) {
     $.getJSON("config.json", function(options) {
-        var map = new Map({ 
-            div: "map", onChange: function() { 
-                $("#mapsave").disabled(!this.hasTrack()); 
-            }
-        });
 
         options.complexInputTransformers = [
             transformer("uncert-area"),
@@ -14,6 +9,12 @@ jQuery(document).ready(function($) {
         var app = new App(options, {
             "ems": function() { 
                 this.showVisualizationLink("ems", "result"); 
+            }
+        });
+
+        var map = new Map({ 
+            div: "map", onChange: function() { 
+                $("#mapsave").disabled(!this.hasTrack()); 
             }
         });
 
