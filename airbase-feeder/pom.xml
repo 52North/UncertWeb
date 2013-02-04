@@ -8,6 +8,13 @@
 	<description>
 		A simple application which parses the EEA AirBase datasets and inserts them into a SOS.
 	</description>
+    <inceptionYear>2011</inceptionYear>
+    <organization>
+        <name>52&deg;North</name>
+    </organization>
+    <properties>
+        <n52.common.xml.version>1.1.3</n52.common.xml.version>
+    </properties>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
@@ -35,11 +42,75 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.n52.swe.sos</groupId>
-			<artifactId>52n-sos-xml-sos</artifactId>
-			<version>1.0.0</version>
-			<scope>compile</scope>
-		</dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-gml-v311</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-gml-v321</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-filter-v20</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sweCommon-v20</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sweCommon-v101</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sensorML-v101</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-om-v100</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-om-v20</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sampling-v100</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sampling-v20</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-ows-v110</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sos-v20</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sos-v100</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-soap-v12</artifactId>
+            <version>${n52.common.xml.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.uncertweb</groupId>
 			<artifactId>om-api</artifactId>
@@ -47,6 +118,11 @@
 		</dependency>
 	</dependencies>
 	<repositories>
+        <repository>
+			<id>UncertWebMavenRepository</id>
+			<name>UncertWeb Maven Repository</name>
+			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+		</repository>
 		<repository>
 			<id>n52</id>
 			<name>52° North Release Repository</name>
@@ -109,5 +185,4 @@
 			<url>scp://giv-uw.uni-muenster.de:/var/www/m2/repo</url>
 		</repository>
 	</distributionManagement>
-
 </project>

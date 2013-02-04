@@ -16,9 +16,9 @@ import org.apache.xmlbeans.XmlObject;
 import de.ifgi.airbase.feeder.io.filter.CompositeFileFilter;
 import de.ifgi.airbase.feeder.io.filter.FileExtensionFilter;
 import de.ifgi.airbase.feeder.io.filter.PrefixFileFilter;
-import de.ifgi.airbase.feeder.io.sos.http.HttpUrlConnectionSosClient;
+import de.ifgi.airbase.feeder.io.sos.http.TransactionalSosClient;
 
-public class StaticFileFeeder extends HttpUrlConnectionSosClient implements Runnable {
+public class StaticFileFeeder extends TransactionalSosClient implements Runnable {
 	
 	private List<File> files = null;
 	
@@ -38,9 +38,12 @@ public class StaticFileFeeder extends HttpUrlConnectionSosClient implements Runn
 					log.info("Posting InsertObservationDocument: {}", f.getName());
 				}
 				InputStream in;
-				while ((in = post(req)) == null)
-					log.warn("Connection failed. Trying again.");
-				if (processResponse(in)) f.delete();
+				while ((in = post(req)) == null) {
+                    log.warn("Connection failed. Trying again.");
+                }
+				if (processResponse(in)) {
+                    f.delete();
+                }
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (XmlException e) {

@@ -16,7 +16,9 @@ public class Counter extends SosClient {
 	public void insertObservations(EEARawDataFile file) {
 		TimeRangeFilter trf = Utils.getTimeRangeFilter();
 		for (EEAMeasurement m : file.getMeasurements()) {
-			if (m.isValid() && (trf == null || trf.accept(m))) count++;
+			if (m.isValid() && (trf == null || trf.accept(m))) {
+                count++;
+            }
 		}
 		log.info("Values: {}", count);
 	}

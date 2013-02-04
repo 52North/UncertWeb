@@ -29,7 +29,7 @@ import de.ifgi.airbase.feeder.data.EEAMeasurement;
 import de.ifgi.airbase.feeder.data.EEARawDataFile;
 import de.ifgi.airbase.feeder.data.EEAStation;
 import de.ifgi.airbase.feeder.io.filter.TimeRangeFilter;
-import de.ifgi.airbase.feeder.io.sos.http.SOSRequestBuilder;
+import de.ifgi.airbase.feeder.io.sos.http.xml.AbstractXmlBuilder;
 import de.ifgi.airbase.feeder.util.Utils;
 
 /**
@@ -38,7 +38,7 @@ import de.ifgi.airbase.feeder.util.Utils;
  * @author staschc
  * 
  */
-public class OMFileWriter extends SOSRequestBuilder {
+public class OMFileWriter {
 
 	/**
 	 * writes the Observations to an output file
@@ -117,8 +117,8 @@ public class OMFileWriter extends SOSRequestBuilder {
 					
 					TimeObject resultTime = new TimeObject(
 							Utils.ISO8601_DATETIME_FORMAT.print(e.getTime()));
-					String procedureID = getStationId(file.getStation());
-					String obsProp = getPhenomenonId(file.getConfiguration()
+					String procedureID = AbstractXmlBuilder.getStationId(file.getStation());
+					String obsProp = AbstractXmlBuilder.getPhenomenonId(file.getConfiguration()
 							.getComponentCode());
 					IUncertainty[] uncertainty = {createRandomNormalDistribution(0,1,0)};
 					String uom = file.getConfiguration().getMeasurementUnit();

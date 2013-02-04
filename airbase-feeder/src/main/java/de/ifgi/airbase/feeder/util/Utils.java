@@ -229,34 +229,42 @@ public class Utils {
 	}
     
 	private static final String AIRBASE_TEMP_FOLDER = "AirBase_Feeder_TEMP";
+    private static final String EEA_TEMP_DIR_KEY = "eea.download.directory";
     private static String tempDir = null;
     private static File failedRequest = null;
 
     public static String createTempDir() throws IOException {
-	        File temp = new File(System.getProperty("java.io.tmpdir") + File.separator + AIRBASE_TEMP_FOLDER);
+        String dir = get(EEA_TEMP_DIR_KEY);
 
-	        if (temp.exists()) {
-	            log.info("Temp dir already exists, reusing " + temp.getAbsolutePath());
-	        }
-	        else {
-	            temp.mkdir();
-	            log.info("Created temp directory " + temp.getAbsolutePath());
-	        }
+        if (dir == null) {
+            dir = System.getProperty("java.io.tmpdir") + File.separator + AIRBASE_TEMP_FOLDER;
+        }
+        File temp = new File(dir);
 
-	        return tempDir = temp.getAbsolutePath();
-	    }
-	public static String getFailedRequestPrintPath() {
-		if (failedRequest == null) {
-			if (tempDir == null) {
-				try {
-					createTempDir();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-			failedRequest = new File(tempDir + File.separator + "FailedRequests");
-			if (!failedRequest.exists()) failedRequest.mkdir();
-		}
-		return failedRequest.getAbsolutePath();
-	}
+        if (temp.exists()) {
+            log.info("Temp dir already exists, reusing " + temp.getAbsolutePath());
+        } else {
+            temp.mkdir();
+            log.info("Created temp directory " + temp.getAbsolutePath());
+        }
+
+        return tempDir = temp.getAbsolutePath();
+    }
+
+    public static String getFailedRequestPrintPath() {
+        if (failedRequest == null) {
+            if (tempDir == null) {
+                try {
+                    createTempDir();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            failedRequest = new File(tempDir + File.separator + "FailedRequests");
+            if (!failedRequest.exists()) {
+                failedRequest.mkdir();
+            }
+        }
+        return failedRequest.getAbsolutePath();
+    }
 }

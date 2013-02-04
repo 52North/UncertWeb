@@ -13,8 +13,10 @@ import de.ifgi.airbase.feeder.data.EEAStation;
 import de.ifgi.airbase.feeder.io.csv.EEAParser;
 import de.ifgi.airbase.feeder.io.filter.FileExtensionFilter;
 import de.ifgi.airbase.feeder.io.sos.SosClient;
+import de.ifgi.airbase.feeder.io.sos.http.RequestFailedException;
 import de.ifgi.airbase.feeder.io.zip.Unzipper;
 import de.ifgi.airbase.feeder.util.Utils;
+import java.util.logging.Level;
 
 /**
  * 
@@ -27,6 +29,8 @@ public class Feeder {
 	private static final boolean REGISTER_STATIONS = Boolean.parseBoolean(Utils.get(REGISTER_STATIONS_PROPERTY));
 	private static final String REGISTER_OBSERVATIONS_PROPERTY = "eea.registerObservations";
 	private static final boolean REGISTER_OBSERVATIONS = Boolean.parseBoolean(Utils.get(REGISTER_OBSERVATIONS_PROPERTY));
+    
+    private static final boolean EXIT_ON_FAILURE = true;
 //	private static final String IS_FILE_WRITER_PROPERTY = "eea.writeToFile";
 //	private static final boolean IS_FILE_WRITER = Boolean.parseBoolean(Utils.get(IS_FILE_WRITER_PROPERTY));
 //	private static final String OUTPUT_FILE_PATH_PROPERTY = "eea.outputFilePath";
@@ -65,7 +69,7 @@ public class Feeder {
 		}
 	}
 
-	protected void processFile(File f) {
+	protected void processFile(File f) throws RequestFailedException {
 		long fileStartTime = System.currentTimeMillis();
 		try {
 //			//write to file
@@ -103,13 +107,22 @@ public class Feeder {
 											uz.getConfigurationFile());
 				for (EEAStation station : p.getStations()) {
 					if (REGISTER_STATIONS) {
-						sos.registerStation(station);
+                        try {
+                            sos.registerStation(station);
+                            if (REGISTER_OBSERVATIONS) {
+                                for (EEARawDataFile file : p.getDataByStation(station)) {
+                                    try {
+                                        sos.insertObservations(file);
+                                    } catch (RequestFailedException ex) {
+                                        if (EXIT_ON_FAILURE) { throw ex; }
+                                    }
+                                }
+                            }
+                        } catch (RequestFailedException ex) {
+                            if (EXIT_ON_FAILURE) { throw ex; }
+                        }
 					}
-					if (REGISTER_OBSERVATIONS) {
-						for (EEARawDataFile file : p.getDataByStation(station)) {
-							sos.insertObservations(file);
-						}
-					}
+					
 				}
 				sos = null;
 				uz = null;

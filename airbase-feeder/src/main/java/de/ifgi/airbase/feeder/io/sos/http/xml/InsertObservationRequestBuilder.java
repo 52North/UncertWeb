@@ -1,10 +1,7 @@
-package de.ifgi.airbase.feeder.io.sos.http;
+package de.ifgi.airbase.feeder.io.sos.http.xml;
 
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 import net.opengis.gml.AbstractFeatureType;
@@ -32,6 +29,7 @@ import de.ifgi.airbase.feeder.data.EEARawDataFile;
 import de.ifgi.airbase.feeder.util.SOSNamespaceUtils;
 import de.ifgi.airbase.feeder.util.Tuple;
 import de.ifgi.airbase.feeder.util.Utils;
+import java.util.Collections;
 
 /**
  * Class to build a {@link InsertObservationDocument} for an
@@ -40,100 +38,98 @@ import de.ifgi.airbase.feeder.util.Utils;
  * @author Christian Autermann
  * 
  */
-public class InsertObservationRequestBuilder extends SOSRequestBuilder {
+public class InsertObservationRequestBuilder extends AbstractXmlBuilder<InsertObservationDocument> {
 
+    private EEARawDataFile file;
+    private Collection<EEAMeasurement> values;
+
+    public InsertObservationRequestBuilder setFile(EEARawDataFile file) {
+        this.file = file;
+        return this;
+    }
+
+    protected EEARawDataFile getFile() {
+        return file;
+    }
+    
+    public InsertObservationRequestBuilder setValues(Collection<EEAMeasurement> values) {
+        this.values = values;
+        return this;
+    }
+    
+    protected Collection<EEAMeasurement> getValues() {
+        return Collections.unmodifiableCollection(values);
+    }
+    
 	/**
 	 * Creates a {@code InsertObservationDocument} that inserts a
 	 * {@code EEARawDataFile} into a SOS.
 	 * 
-	 * @param file
-	 *            the {@code EEARawDataFile} that should be inserted.
-	 * @param line
-	 *            the line
 	 * @return the InsertObservation request
 	 */
-	public static InsertObservationDocument buildInsertObservationRequest(
-			EEARawDataFile file, Collection<EEAMeasurement> eeams) {
-		InsertObservationDocument insObDoc = InsertObservationDocument.Factory
-				.newInstance();
-		List<EEAMeasurement> sortedMeasurements = new LinkedList<EEAMeasurement>(
-				eeams);
-		Collections.sort(sortedMeasurements, new Comparator<EEAMeasurement>() {
-			@Override
-            public int compare(EEAMeasurement o1, EEAMeasurement o2) {
-				return o1.getTime().compareTo(o2.getTime());
-			}
-		});
-
+    @Override
+	public InsertObservationDocument build() {
+		InsertObservationDocument insObDoc = InsertObservationDocument.Factory.newInstance();
+		List<EEAMeasurement> sortedMeasurements = sortMeasurements(getValues());
 		InsertObservation insert = insObDoc.addNewInsertObservation();
-		SOSNamespaceUtils.nameSpaceOptions(insert);
-		insert.setVersion(SOS_SERVICE_VERSION);
+		insert.setVersion(SOS_V1_SERVICE_VERSION);
 		insert.setService(SOS_SERVICE_NAME);
-		insert.setAssignedSensorId(getStationId(file.getStation()));
+		insert.setAssignedSensorId(getStationId(getFile().getStation()));
 		ObservationType observation = insert.addNewObservation();
-		buildSamplingTime(file, observation, sortedMeasurements);
-		buildObservedProperty(file, observation);
-		buildProcedure(file, observation);
-		buildFeatureOfInterest(file, observation);
-		buildResult(file, observation, sortedMeasurements);
-		SOSNamespaceUtils.schemaLocations(insObDoc);
+		buildSamplingTime(observation, sortedMeasurements);
+		buildObservedProperty(observation);
+		buildProcedure(observation);
+		buildFeatureOfInterest(observation);
+		buildResult(observation, sortedMeasurements);
+		SOSNamespaceUtils.insertSchemaLocations(insObDoc);
 		return insObDoc;
 	}
-
-	private static void buildObservedProperty(EEARawDataFile file,
-			ObservationType observation) {
-		observation.addNewObservedProperty().setHref(
-				getPhenomenonId(file.getConfiguration().getComponentCode()));
+    
+	protected void buildObservedProperty(ObservationType observation) {
+		observation.addNewObservedProperty().setHref(getPhenomenonId(getFile().getConfiguration().getComponentCode()));
+	}
+    
+	protected void buildProcedure(ObservationType observation) {
+		observation.addNewProcedure().setHref(getStationId(getFile().getStation()));
 	}
 
-	private static void buildProcedure(EEARawDataFile file,
-			ObservationType observation) {
-		observation.addNewProcedure().setHref(getStationId(file.getStation()));
-	}
-
-	private static void buildSamplingTime(EEARawDataFile file,
-			ObservationType observationType, List<EEAMeasurement> eeams) {
-		String startString = Utils.ISO8601_DATETIME_FORMAT.print(eeams
-				.get(0).getTime());
-		String endString = Utils.ISO8601_DATETIME_FORMAT.print(eeams
-				.get(eeams.size() - 1).getTime());
+	protected void buildSamplingTime(ObservationType observationType, List<EEAMeasurement> eeams) {
+		String startString = Utils.ISO8601_DATETIME_FORMAT.print(eeams.get(0).getTime());
+		String endString = Utils.ISO8601_DATETIME_FORMAT.print(eeams.get(eeams.size() - 1).getTime());
 		TimePeriodType tpt = (TimePeriodType) observationType
 				.addNewSamplingTime()
 				.addNewTimeObject()
-				.substitute(SOSNamespaceUtils.gml("TimePeriod"),
+				.substitute(SOSNamespaceUtils.QN_GML_TIME_PERIOD,
 						TimePeriodType.type);
 		tpt.addNewBeginPosition().setStringValue(startString);
 		tpt.addNewEndPosition().setStringValue(endString);
 	}
 
-	private static void buildFeatureOfInterest(EEARawDataFile file,
-			ObservationType observation) {
+	protected void buildFeatureOfInterest(ObservationType observation) {
 		FeaturePropertyType fpt = observation.addNewFeatureOfInterest();
 		AbstractFeatureType aft = fpt.addNewFeature();
 		FeatureCollectionType fct = (FeatureCollectionType) aft.substitute(
-				SOSNamespaceUtils.gml("FeatureCollection"),
+				SOSNamespaceUtils.QN_GML_FEATURE_COLLECTION,
 				FeatureCollectionType.type);
 		FeaturePropertyType member = fct.addNewFeatureMember();
 		AbstractFeatureType feature = member.addNewFeature();
 		SamplingPointType spt = SamplingPointType.Factory.newInstance();
 		spt.addNewName().setStringValue(
-				getFeatureOfInterestId(file.getStation()));
-		spt.setId(getFeatureOfInterestId(file.getStation()));
+				getFeatureOfInterestId(getFile().getStation()));
+		spt.setId(getFeatureOfInterestId(getFile().getStation()));
 		spt.addNewSampledFeature().setHref("");
 		DirectPositionType pos = spt.addNewPosition().addNewPoint().addNewPos();
 		pos.setSrsName(EPSG_4326_REFERENCE_SYSTEM_DEFINITION);
-		pos.setStringValue(buildPosString(file.getStation()));
+		pos.setStringValue(buildPosString(getFile().getStation()));
 		feature.set(spt);
 		XmlCursor c = member.newCursor();
-		c.toChild(SOSNamespaceUtils.gml("_Feature"));
-		c.setName(SOSNamespaceUtils.sa("SamplingPoint"));
+		c.toChild(SOSNamespaceUtils.QN_GML_ABSTRACT_FEATURE);
+		c.setName(SOSNamespaceUtils.QN_SA_SAMPLING_POINT);
 		c.dispose();
 	}
 
-	private static void buildResult(EEARawDataFile file,
-			ObservationType observation, List<EEAMeasurement> eeams) {
-		Tuple<Integer, String> dataArrayValues = buildSweDataArrayContent(file,
-				eeams);
+	protected void buildResult(ObservationType observation, List<EEAMeasurement> eeams) {
+		Tuple<Integer, String> dataArrayValues = buildSweDataArrayContent(eeams);
 		DataArrayDocument dataArrayDoc = DataArrayDocument.Factory
 				.newInstance();
 		DataArrayType dataArray = dataArrayDoc.addNewDataArray1();
@@ -142,17 +138,17 @@ public class InsertObservationRequestBuilder extends SOSRequestBuilder {
 		DataComponentPropertyType dcpt = dataArray.addNewElementType();
 		dcpt.setName("Components");
 		DataRecordType sdrt = (DataRecordType) dcpt.addNewAbstractDataRecord()
-				.substitute(SOSNamespaceUtils.swe("DataRecord"),
+				.substitute(SOSNamespaceUtils.QN_SWE_1_0_1_DATA_RECORD,
 						DataRecordType.type);
 		DataComponentPropertyType timeField = sdrt.addNewField();
 		timeField.setName("time");
 		timeField.addNewTime().setDefinition(ISO8601_TIME_FORMAT_DEFINITION);
 		DataComponentPropertyType componentField = sdrt.addNewField();
 		Quantity q = componentField.addNewQuantity();
-		q.setDefinition(getPhenomenonId(file.getConfiguration()
+		q.setDefinition(getPhenomenonId(getFile().getConfiguration()
 				.getComponentCode()));
 		q.addNewUom().setCode(
-				file.getConfiguration().getMeasurementUnit().replace(' ', '_'));
+				getFile().getConfiguration().getMeasurementUnit().replace(' ', '_'));
 		DataComponentPropertyType featureField = sdrt.addNewField();
 		featureField.setName("feature");
 		featureField.addNewText().setDefinition(FOI_DEFINITION);
@@ -169,30 +165,28 @@ public class InsertObservationRequestBuilder extends SOSRequestBuilder {
 		observation.addNewResult().set(dataArrayDoc);
 	}
 
-	private static Tuple<Integer, String> buildSweDataArrayContent(
-			EEARawDataFile file, List<EEAMeasurement> eeams) {
-		String foi = getFeatureOfInterestId(file.getStation());
-		switch (file.getType()) {
+	protected Tuple<Integer, String> buildSweDataArrayContent(List<EEAMeasurement> eeams) {
+		String foi = getFeatureOfInterestId(getFile().getStation());
+		switch (getFile().getType()) {
 		case VAR:
-			throw new Error("Unknown Format: " + file.getType());
+			throw new Error("Unknown Format: " + getFile().getType());
 		default:
 			return buildSweDataArrayContent(eeams, foi);
 		}
 	}
 
-	private static Tuple<Integer, String> buildSweDataArrayContent(
-			List<EEAMeasurement> eeams, String foi) {
-		StringBuffer sb = new StringBuffer();
+	protected Tuple<Integer, String> buildSweDataArrayContent(List<EEAMeasurement> eeams, String foi) {
+		StringBuilder sb = new StringBuilder();
 		int count = 0;
 		for (EEAMeasurement eeam : eeams) {
 			if (eeam.isValid()) {
 				count++;
-				sb.append(
-						Utils.ISO8601_DATETIME_FORMAT.print(eeam
-								.getTime()))
-						.append(",")
-						.append(MEASUREMENT_VALUE_FORMAT.format(eeam.getValue()))
-						.append(",").append(foi).append(";");
+				sb.append(Utils.ISO8601_DATETIME_FORMAT.print(eeam.getTime()))
+                  .append(SWE_DATA_ARRAY_TOKEN_SEPERATOR)
+                  .append(MEASUREMENT_VALUE_FORMAT.format(eeam.getValue()))
+                  .append(SWE_DATA_ARRAY_TOKEN_SEPERATOR)
+                  .append(foi)
+                  .append(SWE_DATA_ARRAY_BLOCK_SEPERATOR);
 			}
 		}
 		return new Tuple<Integer, String>(count, sb.toString());
