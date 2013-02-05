@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,6 +88,8 @@ public class Polygon2PolygonWeightedSum extends
 	
 	//used for caching features from WFS
 	private FeatureCache featureCache = new FeatureCache();
+	
+	private HashMap<String,Double> weightsForIntersection = new HashMap<String,Double>(10000);
 
 	/**
 	 * Input parameter which contains the input regions
@@ -246,7 +249,7 @@ public class Polygon2PolygonWeightedSum extends
 			try {
 				resultObsCol
 						.addObservationCollection(runAggregation4TimeObject(
-								time, originalObs, targetRegions,
+								time, obs4time.get(time), targetRegions,
 								uncertInputs.getNumberOfRealisations(),
 								uncertInputs.getOutputUncertaintyTypes(),
 								scaleFactor));
@@ -278,7 +281,7 @@ public class Polygon2PolygonWeightedSum extends
 
 		// Iterator<SpatialSamplingFeature> foiIter =
 		// obsCols4Fois.keySet().iterator();
-		Map<Feature, Map<URI, RegionAggregates>> regionsAggCache = new HashMap<Feature, Map<URI, RegionAggregates>>(
+		Map<String, Map<URI, RegionAggregates>> regionsAggCache = new HashMap<String, Map<URI, RegionAggregates>>(
 				targetRegions.size());
 
 		/*
@@ -299,37 +302,46 @@ public class Polygon2PolygonWeightedSum extends
 			if (uncertObs.getFeatureOfInterest().getHref()!=null){
 				String href = uncertObs.getFeatureOfInterest().getHref().toString();
 				try {
-					foiGeom = this.featureCache.getFeatureFromWfs(href).getShape();
+					SpatialSamplingFeature foi = this.featureCache.getFeatureFromWfs(href);
+					foiGeom = foi.getShape();
+					foiID = foi.getIdentifier().toIdentifierString();
 				} catch (MalformedURLException e) {
 					log.info("Error while getting URL from href attribute in feature of interest: "+e.getMessage());
 					throw new RuntimeException("Error while getting URL from href attribute in feature of interest: "+e.getMessage());
 				}
 			}
 			else {
+				foiID = uncertObs.getFeatureOfInterest().getIdentifier().toIdentifierString();
 				foiGeom = uncertObs.getFeatureOfInterest().getShape();
 			}
 
 			// iterate over target regions
 			FeatureIterator features = targetRegions.features();
 			while (features.hasNext()) {
+				
 				Feature targetRegion = features.next();
+				String targetID = targetRegion.getIdentifier().getID();
 
-				Geometry regionGeom = (Geometry) targetRegion
+				String idCombi = targetID
+						+ foiID;
+				
+				double weight = Double.NaN;
+				if (!this.weightsForIntersection.containsKey(idCombi)){
+					Geometry regionGeom = (Geometry) targetRegion
 						.getDefaultGeometryProperty().getValue();
-				if (regionGeom.intersects(foiGeom)) {
-
-					String idCombi = targetRegion.getIdentifier().getID()
-							+ foiID;
-					if (!isString.contains(idCombi)) {
-						isString += " " + idCombi;
-					}
-
-					Geometry intersectionArea = regionGeom
+					if (regionGeom.intersects(foiGeom)) {
+						Geometry intersectionArea = regionGeom
 							.intersection(foiGeom);
-
-					// multiply areal weight with scaleFactor
-					double weight = scaleFactor * intersectionArea.getArea();
-					log.info("Weight is: " + weight);
+					
+						// multiply areal weight with scaleFactor
+						weight = scaleFactor * intersectionArea.getArea();
+						this.weightsForIntersection.put(idCombi,weight);
+					}
+				}else{
+					weight=this.weightsForIntersection.get(idCombi);
+				}
+					
+				if (weight!=Double.NaN){
 
 					// extract values from either ContinuousRealisation or
 					// RandomSample
@@ -339,14 +351,14 @@ public class Polygon2PolygonWeightedSum extends
 							Utils.getRealisation4uncertResult(uncertResult)
 									.getValues(), weight);
 					if (weightedReal.getValues().size()>0){
-						if (regionsAggCache.containsKey(targetRegion)) {
-							if (regionsAggCache.get(targetRegion).containsKey(
+						if (regionsAggCache.containsKey(targetID)) {
+							if (regionsAggCache.get(targetID).containsKey(
 									observedProperty)) {
-								regionsAggCache.get(targetRegion)
+								regionsAggCache.get(targetID)
 										.get(observedProperty)
 										.addRealisation(weightedReal);
 							} else {
-								List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
+								List<ContinuousRealisation> realList = new LinkedList<ContinuousRealisation>();
 								realList.add(weightedReal);
 								regionsAggCache.get(targetRegion).put(
 										observedProperty,
@@ -354,13 +366,13 @@ public class Polygon2PolygonWeightedSum extends
 												realList, observedProperty));
 							}
 						} else {
-							List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
+							List<ContinuousRealisation> realList = new LinkedList<ContinuousRealisation>();
 							realList.add(weightedReal);
 							Map<URI, Polygon2PolygonWeightedSum.RegionAggregates> aggs4ObsProps = new HashMap<URI, Polygon2PolygonWeightedSum.RegionAggregates>();
 							aggs4ObsProps.put(observedProperty,
 									new RegionAggregates(targetRegion, realList,
 											observedProperty));
-							regionsAggCache.put(targetRegion, aggs4ObsProps);
+							regionsAggCache.put(targetID, aggs4ObsProps);
 						}
 					}
 				}
@@ -368,7 +380,6 @@ public class Polygon2PolygonWeightedSum extends
 			}
 
 		}
-		log.info(isString);
 
 		// iterate over regions aggregate cache and run aggregations
 		IObservationCollection result = new UncertaintyObservationCollection();
@@ -515,7 +526,7 @@ public class Polygon2PolygonWeightedSum extends
 					if (i < cr.getValues().size()) {
 						double weight = cr.getWeight();
 						double value = cr.getValues().get(i);
-						log.info("Aggregating to sum with weight: " + weight
+						log.debug("Aggregating to sum with weight: " + weight
 								+ " and value " + value + ".");
 						sum += weight * value;
 					} else {

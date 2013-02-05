@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,7 +87,7 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 	
 	private String wfsURL = "";
 	private String typeName = "";
-	
+	private LinkedList<String> intersections = new LinkedList<String>();	
 	
 	
 	/**
@@ -230,7 +231,7 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 		while (timeIter.hasNext()){
 			TimeObject time = timeIter.next();
 			try {
-				resultObsCol.addObservationCollection(runAggregation4TimeObject(time,originalObs,targetRegions,uncertInputs.getNumberOfRealisations(),uncertInputs.getOutputUncertaintyTypes(),scaleFactor));
+				resultObsCol.addObservationCollection(runAggregation4TimeObject(time,obs4time.get(time),targetRegions,uncertInputs.getNumberOfRealisations(),uncertInputs.getOutputUncertaintyTypes(),scaleFactor));
 			} catch (STASException e) {
 				log.info("Error while execution of aggregation process "+IDENTIFIER+" :"+e.getMessage());
 				throw new RuntimeException(e.getMessage());
@@ -259,7 +260,7 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 		
 		
 		//Iterator<SpatialSamplingFeature> foiIter = obsCols4Fois.keySet().iterator();
-		Map<Feature,Map<URI,RegionAggregates>> regionsAggCache = new HashMap<Feature,Map<URI,RegionAggregates>>(1000);
+		Map<String,Map<URI,RegionAggregates>> regionsAggCache = new HashMap<String,Map<URI,RegionAggregates>>(1000);
 		
 		/*
 		 * iterate over fois and for each target region, check intersection; if FOI intersects, store obsCol with intersection are 
@@ -274,13 +275,16 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 			if (uncertObs.getFeatureOfInterest().getHref()!=null){
 				String href = uncertObs.getFeatureOfInterest().getHref().toString();
 				try {
-					foiGeom = this.featureCache.getFeatureFromWfs(href).getShape();
+					SpatialSamplingFeature foi = this.featureCache.getFeatureFromWfs(href);
+					foiGeom = foi.getShape();
+					foiID =foi.getIdentifier().toIdentifierString();
 				} catch (MalformedURLException e) {
 					log.info("Error while getting URL from href attribute in feature of interest: "+e.getMessage());
 					throw new RuntimeException("Error while getting URL from href attribute in feature of interest: "+e.getMessage());
 				}
 			}
 			else {
+				foiID = uncertObs.getFeatureOfInterest().getIdentifier().toIdentifierString();
 				foiGeom = uncertObs.getFeatureOfInterest().getShape();
 			}
 			//iterate over target regions
@@ -288,32 +292,44 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 			
 			while (features.hasNext()){
 				Feature targetRegion = features.next();
+				String targetID = targetRegion.getIdentifier().getID();
+				String idCombi = targetRegion.getIdentifier().getID() + foiID;
+				
+				boolean intersects = false;
+				if (!this.intersections.contains(idCombi)){
+					Geometry regionGeom = (Geometry)targetRegion.getDefaultGeometryProperty().getValue();
+					intersects = regionGeom.intersects(foiGeom);
+					if (intersects){
+						this.intersections.add(idCombi);
+					}
+				} else {
+					intersects = true;
+				}
 				
 				
-				Geometry regionGeom = (Geometry)targetRegion.getDefaultGeometryProperty().getValue();
-				if (regionGeom.intersects(foiGeom)){
+				if (intersects){
 					
 					//TODO add type check
 					IUncertainty uncertResult = uncertObs.getResult().getUncertaintyValue();
 					ContinuousRealisation realisations = Utils.getRealisation4uncertResult(uncertResult);
 					if (realisations.getValues().size()>0){
-						if (regionsAggCache.containsKey(targetRegion)){
-							Map<URI, RegionAggregates> targetRegionMap = regionsAggCache.get(targetRegion);
+						if (regionsAggCache.containsKey(targetID)){
+							Map<URI, RegionAggregates> targetRegionMap = regionsAggCache.get(targetID);
 							if (targetRegionMap.containsKey(observedProperty)){
 								targetRegionMap.get(observedProperty).addRealisation(realisations);
 							}
 							else {
-								List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
+								List<ContinuousRealisation> realList = new LinkedList<ContinuousRealisation>();
 								realList.add(realisations);
 								targetRegionMap.put(observedProperty, new RegionAggregates(targetRegion,realList,observedProperty));
 							}
 						}
 						else {
-							List<ContinuousRealisation> realList = new ArrayList<ContinuousRealisation>();
+							List<ContinuousRealisation> realList = new LinkedList<ContinuousRealisation>();
 							realList.add(realisations);
 							Map<URI,Polygon2PolygonMean.RegionAggregates> aggs4ObsProps = new HashMap<URI, Polygon2PolygonMean.RegionAggregates>(10000);
 							aggs4ObsProps.put(observedProperty,new RegionAggregates(targetRegion,realList,observedProperty));
-							regionsAggCache.put(targetRegion, aggs4ObsProps);
+							regionsAggCache.put(targetID, aggs4ObsProps);
 						}
 					}
 				}
