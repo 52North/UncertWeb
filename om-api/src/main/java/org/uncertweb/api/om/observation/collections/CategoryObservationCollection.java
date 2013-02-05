@@ -1,6 +1,7 @@
 package org.uncertweb.api.om.observation.collections;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -28,7 +29,7 @@ public class CategoryObservationCollection implements IObservationCollection{
 	 * 
 	 */
 	public CategoryObservationCollection(){
-		this.members = new ArrayList<CategoryObservation>();
+		this.members = new LinkedList<CategoryObservation>();
 	}
 	
 	/**

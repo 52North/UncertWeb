@@ -1,6 +1,7 @@
 package org.uncertweb.api.om.observation.collections;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -29,7 +30,7 @@ public class BooleanObservationCollection implements IObservationCollection{
 	 * 
 	 */
 	public BooleanObservationCollection(){
-		this.members = new ArrayList<BooleanObservation>();
+		this.members = new LinkedList<BooleanObservation>();
 	}
 	
 	/**

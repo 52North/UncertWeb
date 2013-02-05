@@ -127,7 +127,9 @@ public class StaxObservationEncoder implements IObservationEncoder {
 			else if (obsCol instanceof ObservationCollection){
 				writer.writeStartElement(ObservationCollection.NAME);
 			}
-			
+			else {
+				throw new RuntimeException("No matching observation collection type found. Observation Collection type is " + obsCol.getClass().getCanonicalName());
+			}
 			writer.writeDefaultNamespace(OMConstants.NS_OM);
 			writer.writeNamespace(OMConstants.NS_OM_PREFIX, OMConstants.NS_OM);
 			writer.writeNamespace(OMConstants.NS_GML_PREFIX, OMConstants.NS_GML);
@@ -138,6 +140,7 @@ public class StaxObservationEncoder implements IObservationEncoder {
 			writer.writeNamespace(OMConstants.NS_GMD_PREFIX, OMConstants.NS_GMD);
 			writer.writeNamespace(OMConstants.NS_XSI_PREFIX, OMConstants.NS_XSI);
 			writer.writeAttribute(OMConstants.NS_XSI_PREFIX,OMConstants.NS_XSI,"schemaLocation",OMConstants.NS_OM+" "+OMConstants.OM_SCHEMA_LOCATION);
+			
 			Iterator<? extends AbstractObservation> iter = obsCol.getObservations().iterator();
 			while (iter.hasNext()){
 				writer.writeCharacters(prepareObservationString(encodeObservation(iter.next())));

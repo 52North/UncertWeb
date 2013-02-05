@@ -117,6 +117,16 @@ public class StaxObservationParser implements IObservationParser{
 		return obsCol;
 	}
 	
+	/**
+	 * TODO might be removed later on; added due to former implementations using this method in the XBObservationParser
+	 * 
+	 * @param xb_featureOfInterest
+	 * @return
+	 * @throws IllegalArgumentException
+	 * @throws MalformedURLException
+	 * @throws URISyntaxException
+	 * @throws XmlException
+	 */
 	public synchronized SpatialSamplingFeature parseSamplingFeature(
 			FoiPropertyType xb_featureOfInterest) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException {
 	

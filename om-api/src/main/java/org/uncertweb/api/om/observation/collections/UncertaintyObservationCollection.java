@@ -2,6 +2,7 @@ package org.uncertweb.api.om.observation.collections;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.uncertweb.api.om.observation.AbstractObservation;
@@ -40,7 +41,7 @@ public class UncertaintyObservationCollection implements IObservationCollection 
 	 * 
 	 */
 	public UncertaintyObservationCollection() {
-		this.members = new ArrayList<UncertaintyObservation>();
+		this.members = new LinkedList<UncertaintyObservation>();
 	}
 
 	/**
