@@ -430,20 +430,6 @@ public class ObservationConverter {
 		if (om1ObsCol != null && om1ObsCol.getObservationMembers() != null
 				&& !om1ObsCol.getObservationMembers().isEmpty()) {
 
-			// om1ObsCol.getBoundedBy();
-			// om1ObsCol.getDomainFeatureIDs();
-			// om1ObsCol.getElementName();
-			// om1ObsCol.getExpiresDate();
-			// om1ObsCol.getFeatureOfInterest();
-			// om1ObsCol.getFeatureOfInterestID();
-			// om1ObsCol.getObservationID();
-			// om1ObsCol.getOfferingID();
-			// om1ObsCol.getPhenomenonID();
-			// om1ObsCol.getProcedureID();
-			// om1ObsCol.getSamplingTime();
-			// om1ObsCol.getSRID();
-			// om1ObsCol.getStringValue();
-
 			String typeName = null;
 
 			for (AbstractSosObservation om1Obs : om1ObsCol

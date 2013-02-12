@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.n52.sos.SosConfigurator;
 import org.n52.sos.SosConstants;
 import org.n52.sos.ds.pgsql.PGConnectionPool;
+import org.n52.sos.ds.pgsql.PGDAOConstants;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionCode;
 import org.n52.sos.ogc.ows.OwsExceptionReport.ExceptionLevel;
@@ -26,7 +27,10 @@ import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.sample.RandomSample;
 import org.uncertml.sample.SystematicSample;
 import org.uncertml.sample.UnknownSample;
+import org.uncertml.statistic.ConstraintType;
 import org.uncertml.statistic.Mean;
+import org.uncertml.statistic.Probability;
+import org.uncertml.statistic.ProbabilityConstraint;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 
 /**
@@ -120,7 +124,7 @@ public class InsertUncertaintyDAO {
 				capsCache = (CapabilitiesCacheController) SosConfigurator
 						.getInstance().getCapsCacheController();
 			} else {
-				String message = "Uncertainty cannot be inserted into database: You have to name a uncertainty enabled CapabilitiesCacheController in build.properties file.";
+				String message = "Uncertainty cannot be inserted into database: You have to name an uncertainty enabled CapabilitiesCacheController in build.properties file.";
 				OwsExceptionReport se = new OwsExceptionReport(
 						ExceptionLevel.PlainExceptions);
 				LOGGER.error(message);
@@ -139,6 +143,8 @@ public class InsertUncertaintyDAO {
 				if (!capsCache.getValueUnits().contains(
 						obs.getUnitsOfMeasurement())
 						&& !valueUnits.contains(valueUnit)) {
+					
+					// insert value_unit
 					insertStmt = new String(" INSERT INTO "
 							+ PGDAOUncertaintyConstants.uValUnitTn + " ("
 							+ PGDAOUncertaintyConstants.uVUValUnitCn
@@ -223,19 +229,24 @@ public class InsertUncertaintyDAO {
 						con);
 			} else if (unc instanceof Mean) {
 
-				// insert mean and mean values table
+				// insert mean table
 				insertMean((Mean) unc, uncValID, con);
 
 			} else if (unc instanceof AbstractRealisation) {
 
-				// insert realisation and realisation values table
+				// insert realisation table
 				insertRealisation((AbstractRealisation) unc, uncValID, con);
 
 			} else if (unc instanceof AbstractSample) {
 
-				// insert realisation and realisation values table
+				// insert samples into realisation table
 				insertSample((AbstractSample) unc, uncValID, con);
-
+				
+			} else if (unc instanceof Probability) {
+				
+				// insert probability table
+				insertProbability((Probability) unc, uncValID, con);	
+			
 				// TODO add further uncertainty types here
 				// } else if (unc instanceof ???) {
 				// }
@@ -469,7 +480,7 @@ public class InsertUncertaintyDAO {
 		}
 		arrayInput.append("}'");
 
-		// insert realisation
+		// insert mean array
 		insertStmt.append(" INSERT INTO " + PGDAOUncertaintyConstants.uMeanTn
 				+ " (" + PGDAOUncertaintyConstants.uMMeanIdCn + ", "
 				+ PGDAOUncertaintyConstants.uMMeanValsCn + ") VALUES ("
@@ -478,7 +489,7 @@ public class InsertUncertaintyDAO {
 		Statement stmt = con.createStatement();
 		stmt.execute(insertStmt.toString());
 	}
-
+	
 	private void insertRealisation(AbstractRealisation unc, int uncValID,
 			Connection con) throws SQLException {
 
@@ -633,6 +644,68 @@ public class InsertUncertaintyDAO {
 		stmt.execute(insertStmt.toString());
 
 	}
+	
+	private void insertProbability(Probability unc, int uncValID, Connection con)
+	throws SQLException {
+
+		StringBuilder insertStmt = new StringBuilder();
+		List<Double> probVals;
+		StringBuilder arrayInput;
+		double gt = 0.0;
+		double lt = 0.0;
+		double ge = 0.0;
+		double le = 0.0;
+	
+		// create array of values as a String
+		probVals = unc.getValues();
+		arrayInput = new StringBuilder("'{");
+	
+		if (probVals.size() > 0) {
+	
+			arrayInput.append(probVals.get(0));
+		}
+		if (probVals.size() > 1) {
+	
+			for (int i = 1; i < probVals.size(); i++) {
+				arrayInput.append(", " + probVals.get(i) + "");
+			}
+		}
+		arrayInput.append("}'");
+		
+		// there may be only one upper limit (lt/le) and one lower limit (gt/ge)
+		if (unc.getConstraints() != null && !unc.getConstraints().isEmpty()) {
+			
+			for (ProbabilityConstraint pc : unc.getConstraints()) {
+				if (pc.getType().equals(ConstraintType.GREATER_OR_EQUAL)) {
+					ge = pc.getValue();
+					
+				} else if (pc.getType().equals(ConstraintType.GREATER_THAN)) {
+					gt = pc.getValue();
+					
+				} else if (pc.getType().equals(ConstraintType.LESS_OR_EQUAL)) {
+					le = pc.getValue();
+			
+				} else if (pc.getType().equals(ConstraintType.LESS_THAN)) {
+					lt = pc.getValue();					
+				}
+			}
+		}
+		
+		// insert mean array
+		insertStmt.append(" INSERT INTO " + PGDAOUncertaintyConstants.uProbTn
+				+ " (" + PGDAOUncertaintyConstants.uPProbIdCn + ", "
+				+ PGDAOUncertaintyConstants.uPGtCn + ", "
+				+ PGDAOUncertaintyConstants.uPLtCn + ", "
+				+ PGDAOUncertaintyConstants.uPGeCn + ", "
+				+ PGDAOUncertaintyConstants.uPLeCn + ", "
+				+ PGDAOUncertaintyConstants.uPProbValsCn + ") VALUES ("
+				+ uncValID + ", " 
+				+ gt + ", " + lt + ", " + ge + ", " + le + ", "  
+				+ arrayInput + ");");
+		
+		Statement stmt = con.createStatement();
+		stmt.execute(insertStmt.toString());
+	}
 
 	/**
 	 * returns a constant key word for every uncertainty type
@@ -656,6 +729,8 @@ public class InsertUncertaintyDAO {
 			uncType = PGDAOUncertaintyConstants.u_systematicSType;
 		} else if (unc instanceof UnknownSample) {
 			uncType = PGDAOUncertaintyConstants.u_unknownSType;
+		} else if (unc instanceof Probability) {
+			uncType = PGDAOUncertaintyConstants.u_probType;
 		}
 		// TODO add further uncertainty types here
 		// } else if (unc instanceof ???) {

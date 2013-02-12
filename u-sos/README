@@ -9,6 +9,8 @@ WARNING: As long as uSOS isn't adjusted to the latest changes, please
 use Revision 11617 of 52N SOS.
 
 
+Documentation: https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/USos
+
 ######################################################################
 ## Folder structure:
 
@@ -48,28 +50,18 @@ version 3.5.0-M1 (Revision 11617).
 /main/uncertweb/u-sos/trunk ).
 
 Go on, assuming your SOS project's name is '52n-sos' and your
-uncertainty module is named '52n-sos-uncertainty'.
+uncertainty module is named '52n-sos-uncertainty'. Follow the
+instructions in 52n-sos\doc\howto\how2install_SOS.pdf to set up your
+sensor observation service.
 
 #4 Extend the datamodel of your SOS by the request given in
 52n-sos-uncertainty\db\extend_datamodel_postgres83.sql .
 
-#5 Copy the properties file at 52n-sos-uncertainty\conf\build.properties
-to your SOS configuration directory (52n-sos\conf). Re-adjust it as
-described in SOS documentation (52n-sos\doc\howto\how2install_SOS.pdf
-chap. 3.5.2).
-
-Alternatively you might just change the following properties in your
-already configured properties file:
-
-conf.sos.ds.daofactory=org.n52.sos.uncertainty.ds.pgsql.PGSQLDAOFactory
-conf.sos.capabilitiesCacheController=org.n52.sos.uncertainty.cache.CapabilitiesCacheController
-conf.sos.listeners=org.n52.sos.GetCapabilitiesListener,org.n52.sos.uncertainty.GetObservationListener,org.n52.sos.DescribeSensorListener,org.n52.sos.GetResultListener,org.n52.sos.GetFeatureOfInterestListener,org.n52.sos.GetFeatureOfInterestTimeListener,org.n52.sos.GetDomainFeatureListener,org.n52.sos.UpdateSensorListener,org.n52.sos.InsertObservationListener,org.n52.sos.RegisterSensorListener,org.n52.sos.DescribeFeatureTypeListener,org.n52.sos.GetObservationByIdListener
-conf.sos.10.postRequestDecoder=org.n52.sos.uncertainty.decode.impl.HttpPostRequestDecoderMobile
-
-#6 Add this project's profile to your SOS POM (52n-sos\pom.xml). Don't
+#5 Add this project's profile to your SOS POM (52n-sos\pom.xml). Don't
 forget to use the correct relative path from SOS project to u-SOS
-project (under modules). You chose your project's name during checkout.
-Add...
+project (under modules). Remember, you chose your project's name during
+checkout.
+Add the following profile to your POM's profiles section: 
 
 		<!-- ######################################################################## 
 			## Uncertainty enabled SOS Profile (based on full profile)
@@ -89,12 +81,11 @@ Add...
 				<conf.sos.supported.versions>BOTH</conf.sos.supported.versions>
 			</properties>
 		</profile>
-		
-...to <profiles></profiles>.
 
-#7 Add this project's profile as a dependency to your SOS service
-module's POM (52n-sos\52n-sos-service\pom.xml).
-Add...
+
+#6 Add this project's profile as a dependency to your SOS service
+module's POM (52n-sos\52n-sos-service\pom.xml) by adding the following
+profile: 
 
 		<!-- ######################################################################## 
 			 ## Uncertainty enabled SOS Profile
@@ -115,7 +106,24 @@ Add...
 			</dependencies>
 		</profile>
 
-...to <profiles></profiles>.
+#7 Copy the properties file at 52n-sos-uncertainty\conf\build.properties
+to your SOS configuration directory (52n-sos\conf). Re-adjust it as
+described in SOS documentation (52n-sos\doc\howto\how2install_SOS.pdf
+chap. 3.5.2).
+
+The following properties have to be changed:
+
+conf.sos.ds.connectionstring=jdbc:postgresql://localhost:5432/SosDatabase	connection string to the DB including your database name
+conf.sos.ds.user=postgres		your DB-username
+conf.sos.ds.password=*****		your DB-password
+
+Alternatively you might just change the following properties in your
+already configured properties file:
+
+conf.sos.ds.daofactory=org.n52.sos.uncertainty.ds.pgsql.PGSQLDAOFactory
+conf.sos.capabilitiesCacheController=org.n52.sos.uncertainty.cache.CapabilitiesCacheController
+conf.sos.listeners=org.n52.sos.GetCapabilitiesListener,org.n52.sos.uncertainty.GetObservationListener,org.n52.sos.DescribeSensorListener,org.n52.sos.GetResultListener,org.n52.sos.GetFeatureOfInterestListener,org.n52.sos.GetFeatureOfInterestTimeListener,org.n52.sos.GetDomainFeatureListener,org.n52.sos.UpdateSensorListener,org.n52.sos.InsertObservationListener,org.n52.sos.RegisterSensorListener,org.n52.sos.DescribeFeatureTypeListener,org.n52.sos.GetObservationByIdListener
+conf.sos.10.postRequestDecoder=org.n52.sos.uncertainty.decode.impl.HttpPostRequestDecoderMobile
 
 #8 Build and deploy u-SOS: Make sure that your Tomcat and your Postgres
 are started. Open a command line and go to your SOS project folder.

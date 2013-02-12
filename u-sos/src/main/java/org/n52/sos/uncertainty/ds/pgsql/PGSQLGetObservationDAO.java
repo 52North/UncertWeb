@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.n52.sos.Sos1Constants;
@@ -58,7 +59,10 @@ import org.uncertml.sample.ContinuousRealisation;
 import org.uncertml.sample.RandomSample;
 import org.uncertml.sample.SystematicSample;
 import org.uncertml.sample.UnknownSample;
+import org.uncertml.statistic.ConstraintType;
 import org.uncertml.statistic.Mean;
+import org.uncertml.statistic.Probability;
+import org.uncertml.statistic.ProbabilityConstraint;
 import org.uncertweb.api.om.DQ_UncertaintyResult;
 import org.uncertweb.api.om.observation.collections.BooleanObservationCollection;
 import org.uncertweb.api.om.observation.collections.DiscreteNumericObservationCollection;
@@ -136,6 +140,8 @@ public class PGSQLGetObservationDAO extends
 			String samplingMethodDescription;
 			boolean sampleType;
 			ArrayList<AbstractRealisation> reals;
+			double[] probValues;
+			Double gt, lt, ge, le;
 
 			IUncertainty unc;
 
@@ -281,7 +287,34 @@ public class PGSQLGetObservationDAO extends
 									samplingMethodDescription);
 						}
 					}
+				} else if (uncType.equals(PGDAOUncertaintyConstants.u_probType)) {
+					// probability
+					
+					// convert BigDecimal[] to double[]
+					BigDecimal[] bigDecs = (BigDecimal[]) rs.getArray(
+							PGDAOUncertaintyConstants.uPProbValsCn).getArray();
+					probValues = new double[bigDecs.length];
+				
+					for (int i = 0; i < bigDecs.length; i++) {
+						probValues[i] = bigDecs[i].doubleValue();
+					}
+					
+					// create probability constraints
+					List<ProbabilityConstraint> probConst = new ArrayList<ProbabilityConstraint>(2);
+					
+					gt = rs.getDouble(PGDAOUncertaintyConstants.uPGtCn);
+					lt = rs.getDouble(PGDAOUncertaintyConstants.uPLtCn);
+					ge = rs.getDouble(PGDAOUncertaintyConstants.uPGeCn);
+					le = rs.getDouble(PGDAOUncertaintyConstants.uPLeCn);
+					
+					if (gt != 0) probConst.add(new ProbabilityConstraint(ConstraintType.GREATER_THAN, gt));
+					if (lt != 0) probConst.add(new ProbabilityConstraint(ConstraintType.LESS_THAN, lt));
+					if (ge != 0) probConst.add(new ProbabilityConstraint(ConstraintType.GREATER_OR_EQUAL, ge));
+					if (le != 0) probConst.add(new ProbabilityConstraint(ConstraintType.GREATER_OR_EQUAL, le));
+				
+					unc = new Probability(probConst, Arrays.asList(ArrayUtils.toObject(probValues)));
 				}
+					
 				// TODO add further uncertainty types here
 
 				if (unc != null) {
@@ -382,6 +415,13 @@ public class PGSQLGetObservationDAO extends
 				+ PGDAOUncertaintyConstants.uRCatValsCn + ", "
 				+ PGDAOUncertaintyConstants.uRIdCn + ", "
 				+ PGDAOUncertaintyConstants.uRSamMethDescCn);
+		
+		// append probability columns
+		query.append(", " + PGDAOUncertaintyConstants.uPGtCn + ", " 
+				+ PGDAOUncertaintyConstants.uPLtCn + ", " 
+				+ PGDAOUncertaintyConstants.uPGeCn + ", " 
+				+ PGDAOUncertaintyConstants.uPLeCn + ", " 
+				+ PGDAOUncertaintyConstants.uPProbValsCn);
 
 		// TODO add further uncertainty types' table colums here
 
@@ -416,6 +456,13 @@ public class PGSQLGetObservationDAO extends
 		query.append(" LEFT OUTER JOIN " + PGDAOUncertaintyConstants.uRealTn
 				+ " ON " + PGDAOUncertaintyConstants.uRealTn + "."
 				+ PGDAOUncertaintyConstants.uRRealIdCn + " = "
+				+ PGDAOUncertaintyConstants.uUncertTn + "."
+				+ PGDAOUncertaintyConstants.uUUncValIdCn);
+		
+		// append probability table
+		query.append(" LEFT OUTER JOIN " + PGDAOUncertaintyConstants.uProbTn
+				+ " ON " + PGDAOUncertaintyConstants.uProbTn + "."
+				+ PGDAOUncertaintyConstants.uPProbIdCn + " = "
 				+ PGDAOUncertaintyConstants.uUncertTn + "."
 				+ PGDAOUncertaintyConstants.uUUncValIdCn);
 

@@ -18,6 +18,7 @@ public final class PGDAOUncertaintyConstants {
 	public static final String u_randomSType = "ran_sam";
 	public static final String u_systematicSType = "sys_sam";
 	public static final String u_unknownSType = "unk_sam";
+	public static final String u_probType = "prob";
 	
 	// /////////////////////////////////////////////////////////////////////////////////
 	// table names
@@ -27,6 +28,7 @@ public final class PGDAOUncertaintyConstants {
 	public static final String uNormTn = "u_normal";
 	public static final String uMeanTn = "u_mean";
 	public static final String uRealTn = "u_realisation";
+	public static final String uProbTn = "u_probability";
 
 	// /////////////////////////////////////////////////////////////////////////////////
 	// column names
@@ -60,6 +62,14 @@ public final class PGDAOUncertaintyConstants {
 	public static final String uRCatValsCn = "categorical_values";
 	public static final String uRIdCn = "id";
 	public static final String uRSamMethDescCn = "sampling_method_description";
+	
+	// column names of probability table
+	public static final String uPProbIdCn = "prob_id";
+	public static final String uPGtCn = "gt";
+	public static final String uPLtCn = "lt";
+	public static final String uPGeCn = "ge";
+	public static final String uPLeCn = "le";
+	public static final String uPProbValsCn = "prob_values";
 	
 	// /////////////////////////////////////////////////////////////////////////////////
 	// other constants

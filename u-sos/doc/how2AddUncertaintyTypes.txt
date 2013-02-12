@@ -1,0 +1,187 @@
+######################################################################
+## How to add new uncertainty types
+######################################################################
+
+This manual shows how add new types of uncertainties to u-SOS extension.
+As an example we will use Mean as described here:
+http://www.uncertml.org/statistics/mean
+
+
+######################################################################
+## Uncertainty Type
+
+Mean values are single or multiple real numbers. The UncertML class
+representation (org.uncertml.statistic.Mean) uses a list of double
+values to store these values.
+
+######################################################################
+## Database
+
+# Database model
+Use the following SQL script to add a mean table to your database. To
+alter your uncertainty type check (last two statements), look up the
+list of all existing uncertainty type keywords and add 'mean'.
+
+-- table: u_mean
+-- represents the mean uncertainty type
+-- mean_id maps u_uncertainty uncertainty_values_id
+CREATE TABLE u_mean (
+  mean_id INTEGER NOT NULL,
+  mean_values NUMERIC[],
+
+  PRIMARY KEY (mean_id)
+);
+
+-- foreign keys for u_mean
+ALTER TABLE u_mean ADD FOREIGN KEY (mean_id) REFERENCES u_uncertainty (uncertainty_values_id) ON UPDATE CASCADE;
+
+-- check uncertainty types
+ALTER TABLE u_uncertainty DROP CONSTRAINT u_uncertainty_uncertainty_type_check;
+ALTER TABLE u_uncertainty ADD CHECK (uncertainty_type IN ('norm_dist', 'mean'));
+
+
+# Constants
+Add table and column names to PGDAOUncertaintyConstants class:
+
+	// /////////////////////////////////////////////////////////////////////////////////
+	// uncertainty type constants
+	public static final String u_meanType = "mean";
+
+	// /////////////////////////////////////////////////////////////////////////////////
+	// table names
+	public static final String uMeanTn = "u_mean";
+
+	// /////////////////////////////////////////////////////////////////////////////////
+	// column names
+
+	// column names of mean type table
+	public static final String uMMeanIdCn = "mean_id";
+	public static final String uMMeanValsCn = "mean_values";
+
+
+######################################################################
+## Decoding
+
+Positions to edit or fill in code for new uncertainties are marked by
+comments:
+// TODO add further uncertainty types here
+
+
+# InsertUncertaintyDAO.getUncertaintyType(IUncertainty)
+Add your database key word to this method's list:
+
+	} else if (unc instanceof Mean) {
+		uncType = PGDAOUncertaintyConstants.u_meanType;
+
+# InsertUncertaintyDAO
+Add a new method to insert mean type uncertainties. As you cannot
+convert java array into the correct database string directly, you have
+to do it value by value.
+
+	private void insertMean(Mean unc, int uncValID, Connection con)
+			throws SQLException {
+
+		StringBuilder insertStmt = new StringBuilder();
+		List<Double> meanVals;
+		StringBuilder arrayInput;
+
+		// create array of values as a String
+		meanVals = unc.getValues();
+		arrayInput = new StringBuilder("'{");
+
+		if (meanVals.size() > 0) {
+
+			arrayInput.append(meanVals.get(0));
+		}
+		if (meanVals.size() > 1) {
+
+			for (int i = 1; i < meanVals.size(); i++) {
+				arrayInput.append(", " + meanVals.get(i) + "");
+			}
+		}
+		arrayInput.append("}'");
+
+		// insert mean array
+		insertStmt.append(" INSERT INTO " + PGDAOUncertaintyConstants.uMeanTn
+				+ " (" + PGDAOUncertaintyConstants.uMMeanIdCn + ", "
+				+ PGDAOUncertaintyConstants.uMMeanValsCn + ") VALUES ("
+				+ uncValID + ", " + arrayInput + ");");
+
+		Statement stmt = con.createStatement();
+		stmt.execute(insertStmt.toString());
+	}
+
+# InsertUncertaintyDAO.insertUncertainty(IUncertainObservation, IUncertainty, List<String>, String, Connection)
+Insert a method call:
+
+	} else if (unc instanceof Mean) {
+
+		// insert mean table
+		insertMean((Mean) unc, uncValID, con);
+	
+				
+######################################################################
+## Encoding
+
+Positions to edit or fill in code for new uncertainties are marked by
+comments:
+// TODO add further uncertainty types here
+
+
+# PGSQLGetObservationDAO.queryUncertainty(List<String>, Connection)
+Add new colums to your SELECT clause
+
+	// append mean columns
+	query.append(", " + PGDAOUncertaintyConstants.uMMeanValsCn);
+
+and add your mean table to the statement's FROM clause:
+
+	// append mean table
+	query.append(" LEFT OUTER JOIN " + PGDAOUncertaintyConstants.uMeanTn
+		+ " ON " + PGDAOUncertaintyConstants.uMeanTn + "."
+		+ PGDAOUncertaintyConstants.uMMeanIdCn + " = "
+		+ PGDAOUncertaintyConstants.uUncertTn + "."
+		+ PGDAOUncertaintyConstants.uUUncValIdCn);
+
+# PGSQLGetObservationDAO.getUncertaintyData(List<String>, int)
+Get uncertainty classes from your database result. Again, a database
+array has to be converted into a java array one value at a time.
+
+	} else if (uncType.equals(PGDAOUncertaintyConstants.u_meanType)) {
+		// mean
+	
+		// convert BigDecimal[] to double[]
+		BigDecimal[] bigDecs = (BigDecimal[]) rs.getArray(
+				PGDAOUncertaintyConstants.uMMeanValsCn).getArray();
+		meanValues = new double[bigDecs.length];
+	
+		for (int i = 0; i < bigDecs.length; i++) {
+			meanValues[i] = bigDecs[i].doubleValue();
+		}
+	
+		unc = new Mean(meanValues);
+
+Add variables needed by this uncertainty above (out of) the while loop:
+	double[] meanValues;
+
+
+######################################################################
+## Notes
+
+You don't have to change the following classes/methods to add
+uncertainty types. These are only needed to add new observation types.
+
+ObservationConverter.getOM1Obs(AbstractObservation)
+ObservationConverter.getOM2Obs(AbstractSosObservation)
+
+
+######################################################################
+## Build and test
+
+Build and deploy your U-SOS.
+
+To check whether it is working correctly, you might use the TestClient
+(HOST/YOUR-SOS-NAME/testClient-SOSv1.html). Requests can be created
+from the given request examples and the code snippets in the UncertML
+Dictionary (http://www.uncertml.org/dictionary).
+

@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
 -- SQL script for extending the datamodel to accept observations with uncertainties
 -- author:       Martin Kiesow
--- last changes: 2011-10-31
+-- last changes: 2013-01-31
 ----------------------------------------------------------------------------------------------------
 
 --------------------------------------------------
@@ -103,10 +103,10 @@ ALTER TABLE u_uncertainty ADD FOREIGN KEY (value_unit_id) REFERENCES u_value_uni
 -- foreign keys for u_normal table
 ALTER TABLE u_normal ADD FOREIGN KEY (normal_id) REFERENCES u_uncertainty (uncertainty_values_id) ON UPDATE CASCADE;
 
--- foreign keys for u_mean and u_mean_values table
+-- foreign keys for u_mean
 ALTER TABLE u_mean ADD FOREIGN KEY (mean_id) REFERENCES u_uncertainty (uncertainty_values_id) ON UPDATE CASCADE;
 
--- foreign keys for u_realisation and dependend tables
+-- foreign keys for u_realisation
 ALTER TABLE u_realisation ADD FOREIGN KEY (realisation_id) REFERENCES u_uncertainty (uncertainty_values_id) ON UPDATE CASCADE;
 
 
@@ -119,4 +119,4 @@ ALTER TABLE phenomenon DROP CONSTRAINT phenomenon_valuetype_check;
 ALTER TABLE phenomenon ADD CHECK (valuetype IN ('uncertaintyType', 'booleanType', 'countType', 'textType', 'categoryType', 'numericType', 'isoTimeType', 'spatialType', 'commonType','externalReferenceType'));
 
 -- check uncertainty types
--- ALTER TABLE u_uncertainty ADD CHECK (uncertainty_type IN ('norm_dist', 'mean', 'real', ));
+ALTER TABLE u_uncertainty ADD CHECK (uncertainty_type IN ('norm_dist', 'mean', 'real', 'ran_sam', 'sys_sam', 'unk_sam'));

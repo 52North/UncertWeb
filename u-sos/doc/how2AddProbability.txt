@@ -1,0 +1,225 @@
+######################################################################
+## How to add new uncertainty types
+######################################################################
+
+This manual shows how add new types of uncertainties to u-SOS extension.
+As an example we will use Probability as described here:
+http://www.uncertml.org/statistics/probability
+
+
+######################################################################
+## Uncertainty Type
+
+The probability type uses the following parameters:
+
+gt (exclusive lower limit)	a real number
+lt (exclusive upper limit)	"
+ge (inclusive lower limit)	"
+le (inclusive upper limit)	"
+
+all constraints may be NULL, gt/ge and lt/le are mutually exclusive
+
+probability values are real numbers in the range [0 - 1] (inclusive)
+
+######################################################################
+## Database
+
+# Database model
+Use the following SQL script to add probability tables to your database.
+
+-- table: u_probability
+-- represents the probability uncertainty type
+-- prob_id maps u_uncertainty uncertainty_values_id
+CREATE TABLE u_probability (
+  prob_id INTEGER NOT NULL,
+  gt NUMERIC,
+  lt NUMERIC,
+  ge NUMERIC,
+  le NUMERIC,
+  prob_values  NUMERIC[] NOT NULL,
+  PRIMARY KEY (prob_id)
+);
+
+-- foreign keys for u_probability table
+ALTER TABLE u_probability ADD FOREIGN KEY (prob_id) REFERENCES u_uncertainty (uncertainty_values_id) ON UPDATE CASCADE;
+
+-- check uncertainty types
+ALTER TABLE u_uncertainty DROP CONSTRAINT u_uncertainty_uncertainty_type_check;
+ALTER TABLE u_uncertainty ADD CHECK (uncertainty_type IN ('norm_dist', 'mean', 'real', 'ran_sam', 'sys_sam', 'unk_sam', 'prob'));
+
+
+# Constants
+Add table and column names to PGDAOUncertaintyConstants class:
+
+	// /////////////////////////////////////////////////////////////////////////////////
+	// uncertainty type constants
+	public static final String u_probType = "prob";
+
+	// /////////////////////////////////////////////////////////////////////////////////
+	// table names
+	public static final String uProbTn = "u_probability";
+
+	// /////////////////////////////////////////////////////////////////////////////////
+	// column names
+
+	// column names of probability table
+	public static final String uPProbIdCn = "prob_id";
+	public static final String uPGtCn = "gt";
+	public static final String uPLtCn = "lt";
+	public static final String uPGeCn = "ge";
+	public static final String uPLeCn = "le";
+	public static final String uPProbValsCn = "prob_values";
+
+
+######################################################################
+## Decoding
+
+Positions to edit or fill in code for new uncertainties are marked by
+comments:
+// TODO add further uncertainty types here
+
+
+# InsertUncertaintyDAO.getUncertaintyType(IUncertainty)
+Add your database key word to this method's list:
+
+	} else if (unc instanceof Probability) {
+		uncType = PGDAOUncertaintyConstants.u_probType;
+
+# InsertUncertaintyDAO
+add a new method to incert probability type uncertainties:
+
+	private void insertProbability(Probability unc, int uncValID, Connection con)
+	throws SQLException {
+
+		StringBuilder insertStmt = new StringBuilder();
+		List<Double> probVals;
+		StringBuilder arrayInput;
+		double gt = 0.0;
+		double lt = 0.0;
+		double ge = 0.0;
+		double le = 0.0;
+	
+		// create array of values as a String
+		probVals = unc.getValues();
+		arrayInput = new StringBuilder("'{");
+	
+		if (probVals.size() > 0) {
+	
+			arrayInput.append(probVals.get(0));
+		}
+		if (probVals.size() > 1) {
+	
+			for (int i = 1; i < probVals.size(); i++) {
+				arrayInput.append(", " + probVals.get(i) + "");
+			}
+		}
+		arrayInput.append("}'");
+		
+		// there may be only one upper limit (lt/le) and one lower limit (gt/ge)
+		if (unc.getConstraints() != null && !unc.getConstraints().isEmpty()) {
+			
+			for (ProbabilityConstraint pc : unc.getConstraints()) {
+				if (pc.getType().equals(ConstraintType.GREATER_OR_EQUAL)) {
+					ge = pc.getValue();
+					
+				} else if (pc.getType().equals(ConstraintType.GREATER_THAN)) {
+					gt = pc.getValue();
+					
+				} else if (pc.getType().equals(ConstraintType.LESS_OR_EQUAL)) {
+					le = pc.getValue();
+			
+				} else if (pc.getType().equals(ConstraintType.LESS_THAN)) {
+					lt = pc.getValue();					
+				}
+			}
+		}
+		
+		// insert mean array
+		insertStmt.append(" INSERT INTO " + PGDAOUncertaintyConstants.uProbTn
+				+ " (" + PGDAOUncertaintyConstants.uPProbIdCn + ", "
+				+ PGDAOUncertaintyConstants.uPGtCn + ", "
+				+ PGDAOUncertaintyConstants.uPLtCn + ", "
+				+ PGDAOUncertaintyConstants.uPGeCn + ", "
+				+ PGDAOUncertaintyConstants.uPLeCn + ", "
+				+ PGDAOUncertaintyConstants.uPProbValsCn + ") VALUES ("
+				+ uncValID + ", " 
+				+ gt + ", " + lt + ", " + ge + ", " + le + ", "  
+				+ arrayInput + ");");
+		
+		Statement stmt = con.createStatement();
+		stmt.execute(insertStmt.toString());
+	}
+
+
+# InsertUncertaintyDAO.insertUncertainty(IUncertainObservation, IUncertainty, List<String>, String, Connection)
+insert method call:
+
+	} else if (unc instanceof Probability) {
+				
+		// insert probability table
+		insertProbability((Probability) unc, uncValID, con);
+	
+
+######################################################################
+## Encoding
+
+Positions to edit or fill in code for new uncertainties are marked by
+comments:
+// TODO add further uncertainty types here
+
+
+# PGSQLGetObservationDAO.queryUncertainty(List<String>, Connection)
+Add new colums to your SELECT clause
+
+	// append probability columns
+	query.append(", " + PGDAOUncertaintyConstants.uPGtCn + ", " 
+		+ PGDAOUncertaintyConstants.uPLtCn + ", " 
+		+ PGDAOUncertaintyConstants.uPGeCn + ", " 
+		+ PGDAOUncertaintyConstants.uPLeCn + ", " 
+		+ PGDAOUncertaintyConstants.uPProbValsCn);
+
+and add your mean table to the statement's FROM clause:
+
+	// append probability table
+	query.append(" LEFT OUTER JOIN " + PGDAOUncertaintyConstants.uProbTn
+		+ " ON " + PGDAOUncertaintyConstants.uProbTn + "."
+		+ PGDAOUncertaintyConstants.uPProbIdCn + " = "
+		+ PGDAOUncertaintyConstants.uUncertTn + "."
+		+ PGDAOUncertaintyConstants.uUUncValIdCn);
+
+# PGSQLGetObservationDAO.getUncertaintyData(List<String>, int)
+Get uncertainty classes from your database result. Again, a database
+array has to be converted into a java array one value at a time.
+
+	} else if (uncType.equals(PGDAOUncertaintyConstants.u_probType)) {
+		// probability
+		
+		// convert BigDecimal[] to double[]
+		BigDecimal[] bigDecs = (BigDecimal[]) rs.getArray(
+				PGDAOUncertaintyConstants.uPProbValsCn).getArray();
+		probValues = new double[bigDecs.length];
+	
+		for (int i = 0; i < bigDecs.length; i++) {
+			probValues[i] = bigDecs[i].doubleValue();
+		}
+		
+		// create probability constraints
+		List<ProbabilityConstraint> probConst = new ArrayList<ProbabilityConstraint>(2);
+		
+		gt = rs.getDouble(PGDAOUncertaintyConstants.uPGtCn);
+		lt = rs.getDouble(PGDAOUncertaintyConstants.uPLtCn);
+		ge = rs.getDouble(PGDAOUncertaintyConstants.uPGeCn);
+		le = rs.getDouble(PGDAOUncertaintyConstants.uPLeCn);
+		
+		if (gt != 0) probConst.add(new ProbabilityConstraint(ConstraintType.GREATER_THAN, gt));
+		if (lt != 0) probConst.add(new ProbabilityConstraint(ConstraintType.LESS_THAN, lt));
+		if (ge != 0) probConst.add(new ProbabilityConstraint(ConstraintType.GREATER_OR_EQUAL, ge));
+		if (le != 0) probConst.add(new ProbabilityConstraint(ConstraintType.GREATER_OR_EQUAL, le));
+	
+		unc = new Probability(probConst, Arrays.asList(ArrayUtils.toObject(probValues)));
+	}
+
+Add variables needed by this uncertainty above (out of) the while loop:
+
+	double[] probValues;
+	Double gt, lt, ge, le;
