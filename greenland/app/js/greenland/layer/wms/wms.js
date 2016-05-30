@@ -19,95 +19,95 @@
  */
 OpenLayers.Layer.VIS.WMS = OpenLayers.Class(OpenLayers.Layer.WMS, {
 
-	initialize : function(name, visualization, options) {
-		OpenLayers.Layer.WMS.prototype.initialize.apply(this, arguments);
+    initialize : function(name, visualization, options) {
+    	OpenLayers.Layer.WMS.prototype.initialize.apply(this, arguments);
 
-		this.visualization = {
-			layer : this,
-			opacityStyler : new OpenLayers.VIS.Styler.Opacity(),
-			events : new OpenLayers.Events(this, null, null, false),
-			isValid : function() {
-				return true;
-			},
-			getLegend : function() {
-				return new Ext.Panel({
-					border : false
-				});
-			},
-			createParameters : function() {
-				var parameters = [ this.opacityStyler.createParameters() ];
-				var serviceVersion = this.layer.capabilities.version || '1.1.1';
-				var capUrl = OpenLayers.Util.urlAppend(this.layer.url, OpenLayers.Util.getParameterString({
-					'REQUEST' : 'GetCapabilities',
-					'SERVICE' : 'WMS',
-					'VERSION' : serviceVersion
-				}));
-				parameters.push({
-					service : {
-						comp : new Ext.form.FieldSet({
-							title : 'Service',
-							items : [ {
-								xtype : 'label',
-								text : 'WMS',
-								fieldLabel : 'Service Type'
-							}, {
-								xtype : 'label',
-								text : serviceVersion,
-								fieldLabel : 'Version'
-							}, {
-								xtype : 'label',
-								text : this.layer.url,
-								fieldLabel : 'URL'
-							}, {
-								xtype : 'displayfield',
-								value : '<a href="' + capUrl + '" target="_blank">' + capUrl + '</a>',
-								fieldLabel : 'GetCapabilities URL' 
-							} ]
-						}),
-						label : false
-					},
-					group : 'Source'
-				});
-				parameters.push({
-					service : {
-						comp : OpenLayers.Layer.VIS.WMSQ.prototype.createServiceMetadataPanel.call(this.layer),
-						label : false
-					},
-					group : 'Source'
-				});
-				return parameters;
-			}
-		};
+    	this.visualization = {
+    		layer : this,
+    		opacityStyler : new OpenLayers.VIS.Styler.Opacity(),
+    		events : new OpenLayers.Events(this, null, null, false),
+    		isValid : function() {
+    			return true;
+    		},
+    		getLegend : function() {
+    			return new Ext.Panel({
+    				border : false
+    			});
+    		},
+    		createParameters : function() {
+    			var parameters = [ this.opacityStyler.createParameters() ];
+    			var serviceVersion = this.layer.capabilities.version || '1.1.1';
+    			var capUrl = OpenLayers.Util.urlAppend(this.layer.url, OpenLayers.Util.getParameterString({
+    				'REQUEST' : 'GetCapabilities',
+    				'SERVICE' : 'WMS',
+    				'VERSION' : serviceVersion
+    			}));
+    			parameters.push({
+    				service : {
+    					comp : new Ext.form.FieldSet({
+    						title : 'Service',
+    						items : [ {
+    							xtype : 'label',
+    							text : 'WMS',
+    							fieldLabel : 'Service Type'
+    						}, {
+    							xtype : 'label',
+    							text : serviceVersion,
+    							fieldLabel : 'Version'
+    						}, {
+    							xtype : 'label',
+    							text : this.layer.url,
+    							fieldLabel : 'URL'
+    						}, {
+    							xtype : 'displayfield',
+    							value : '<a href="' + capUrl + '" target="_blank">' + capUrl + '</a>',
+    							fieldLabel : 'GetCapabilities URL'
+    						} ]
+    					}),
+    					label : false
+    				},
+    				group : 'Source'
+    			});
+    			parameters.push({
+    				service : {
+    					comp : OpenLayers.Layer.VIS.WMSQ.prototype.createServiceMetadataPanel.call(this.layer),
+    					label : false
+    				},
+    				group : 'Source'
+    			});
+    			return parameters;
+    		}
+    	};
 
-		this.visualization.opacityStyler.setSymbology(this.visualization);
-	},
+    	this.visualization.opacityStyler.setSymbology(this.visualization);
+    },
 
-	getParameterOptions : function() {
-		return {};
-	},
+    getParameterOptions : function() {
+    	return {};
+    },
 
-	getTitle : function() {
-		return this.wmsLayer.title || this.wmsLayer.name;
-	},
+    getTitle : function() {
+    	return this.wmsLayer.title || this.wmsLayer.name;
+    },
 
-	handleChangeBase : function() {
-		if (this.map.projection != null) {
-			this.projection = this.map.projection;
-			this.redraw();
-		}
-	},
+    handleChangeBase : function() {
+    	if (this.map.projection != null) {
+    		this.projection = this.map.projection;
+    		this.redraw();
+    	}
+    },
 
-	setMap : function(map) {
-		if (map.projection != null) {
-			this.projection = map.projection;
-		}
-		OpenLayers.Layer.WMS.prototype.setMap.apply(this, arguments);
-		this.map.events.register('changebaselayer', this, this.handleChangeBase);
+    setMap : function(map) {
+    	if (map.projection != null) {
+    		this.projection = map.projection;
+    	}
+    	OpenLayers.Layer.WMS.prototype.setMap.apply(this, arguments);
+    	this.map.events.register('changebaselayer', this, this.handleChangeBase);
 
-	},
+    },
 
-	removeMap : function(map) {
-		this.map.events.unregister('changebaselayer', this, this.handleChangeBase);
-		OpenLayers.Layer.WMS.prototype.removeMap.apply(this, arguments);
-	}
+    removeMap : function(map) {
+    	this.map.events.unregister('changebaselayer', this, this.handleChangeBase);
+    	OpenLayers.Layer.WMS.prototype.removeMap.apply(this, arguments);
+    }
 });

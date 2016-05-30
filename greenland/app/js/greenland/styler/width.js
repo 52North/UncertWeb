@@ -21,43 +21,43 @@ OpenLayers.VIS.Styler = OpenLayers.VIS.Styler || {};
  */
 OpenLayers.VIS.Styler.StrokeWidth = OpenLayers.Class(OpenLayers.VIS.Styler.Base, {
 
-	strokeWidth : null,
+    strokeWidth : null,
 
-	initialize : function(options) {
-		this.strokeWidth = 1;
-		OpenLayers.VIS.Styler.Base.prototype.initialize.apply(this, arguments);
-	},
+    initialize : function(options) {
+    	this.strokeWidth = 1;
+    	OpenLayers.VIS.Styler.Base.prototype.initialize.apply(this, arguments);
+    },
 
-	getValue : function() {
-		return this.strokeWidth;
-	},
+    getValue : function() {
+    	return this.strokeWidth;
+    },
 
-	createParameters : function() {
-		var options = {
-			width : {
-				fieldLabel : 'Width',
-				value : this.strokeWidth,
-				minimum : 1,
-				maximum : 25,
-				type : 'integer',
-				description : 'Stroke width',
-				action : function(value) {
-					this.strokeWidth = value;
-					this.triggerChangeEvent('symbology');
-				},
-				scope : this,
-				required : true
-			}
-		};
+    createParameters : function() {
+    	var options = {
+    		width : {
+    			fieldLabel : 'Width',
+    			value : this.strokeWidth,
+    			minimum : 1,
+    			maximum : 25,
+    			type : 'integer',
+    			description : 'Stroke width',
+    			action : function(value) {
+    				this.strokeWidth = value;
+    				this.triggerChangeEvent('symbology');
+    			},
+    			scope : this,
+    			required : true
+    		}
+    	};
 
-		return options;
-	},
+    	return options;
+    },
 
-	restore : function(parcel) {
-		this.strokeWidth = parcel.readInt();
-	},
+    restore : function(parcel) {
+    	this.strokeWidth = parcel.readInt();
+    },
 
-	store : function(parcel) {
-		return parcel.writeInt(this.strokeWidth);
-	}
+    store : function(parcel) {
+    	return parcel.writeInt(this.strokeWidth);
+    }
 });

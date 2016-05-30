@@ -430,15 +430,15 @@ jstat.dopois_raw = function(x, lambda, give_log) {
 //return(R_D_fexp( , -stirlerr(x)-bd0(x,lambda) ));
 }
 
-/**	Evaluates the "deviance part"
- *	bd0(x,M) :=  M * D0(x/M) = M*[ x/M * log(x/M) + 1 - (x/M) ] =
- *		  =  x * log(x/M) + M - x
- *	where M = E[X] = n*p (or = lambda), for	  x, M > 0
+/**    Evaluates the "deviance part"
+ *    bd0(x,M) :=  M * D0(x/M) = M*[ x/M * log(x/M) + 1 - (x/M) ] =
+ *    	  =  x * log(x/M) + M - x
+ *    where M = E[X] = n*p (or = lambda), for	  x, M > 0
  *
- *	in a manner that should be stable (with small relative error)
- *	for all x and M=np. In particular for x/np close to 1, direct
- *	evaluation fails, and evaluation is based on the Taylor series
- *	of log((1+v)/(1-v)) with v = (x-np)/(x+np).
+ *    in a manner that should be stable (with small relative error)
+ *    for all x and M=np. In particular for x/np close to 1, direct
+ *    evaluation fails, and evaluation is based on the Taylor series
+ *    of log((1+v)/(1-v)) with v = (x-np)/(x+np).
  */
 jstat.bd0 = function(x, np) {
     var ej, s, s1, v, j;
@@ -537,7 +537,7 @@ jstat.lgamma = function(x) {
         var dxrel = 1.490116119384765696e-8;
 
         // if (xmax == 0) {/* initialize machine dependent constants _ONCE_ */
-        //     xmax = jstat.DBL_MAX/Math.log(jstat.DBL_MAX);/* = 2.533 e305	 for IEEE double */
+        //     xmax = jstat.DBL_MAX/Math.log(jstat.DBL_MAX);/* = 2.533 e305     for IEEE double */
         //     dxrel = Math.sqrt(jstat.DBL_EPSILON);/* sqrt(Eps) ~ 1.49 e-8  for IEEE double */
         // }
 
@@ -625,8 +625,8 @@ jstat.gamma = function(x) {
     y=x;
     if(y <= 0.0) {
         /* -------------------------------------------------------------
-	   Argument is negative
-	   ------------------------------------------------------------- */
+       Argument is negative
+       ------------------------------------------------------------- */
         y = -x;
         yi = jstat.trunc(y);
         res = y - yi;
@@ -644,8 +644,8 @@ jstat.gamma = function(x) {
        -----------------------------------------------------------------*/
     if (y < jstat.DBL_EPSILON) {
         /* --------------------------------------------------------------
-	   Argument < EPS
-	   -------------------------------------------------------------- */
+       Argument < EPS
+       -------------------------------------------------------------- */
         if (y >= jstat.DBL_MIN) {
             res = 1.0 / y;
         } else {
@@ -655,21 +655,21 @@ jstat.gamma = function(x) {
         yi = y;
         if (y < 1.0) {
             /* ---------------------------------------------------------
-	       EPS < argument < 1
-	       --------------------------------------------------------- */
+           EPS < argument < 1
+           --------------------------------------------------------- */
             z = y;
             y += 1.0;
         } else {
             /* -----------------------------------------------------------
-	       1 <= argument < 12, reduce argument if necessary
-	       ----------------------------------------------------------- */
+           1 <= argument < 12, reduce argument if necessary
+           ----------------------------------------------------------- */
             n = parseInt(y) - 1;
             y -= parseFloat(n);
             z = y - 1.0;
         }
         /* ---------------------------------------------------------
-	   Evaluate approximation for 1. < argument < 2.
-	   ---------------------------------------------------------*/
+       Evaluate approximation for 1. < argument < 2.
+       ---------------------------------------------------------*/
         xnum = 0.0;
         xden = 1.0;
         for (i = 0; i < 8; ++i) {
@@ -679,13 +679,13 @@ jstat.gamma = function(x) {
         res = xnum / xden + 1.0;
         if (yi < y) {
             /* --------------------------------------------------------
-	       Adjust result for case  0. < argument < 1.
-	       -------------------------------------------------------- */
+           Adjust result for case  0. < argument < 1.
+           -------------------------------------------------------- */
             res /= yi;
         } else if (yi > y) {
             /* ----------------------------------------------------------
-	       Adjust result for case  2. < argument < 12.
-	       ---------------------------------------------------------- */
+           Adjust result for case  2. < argument < 12.
+           ---------------------------------------------------------- */
             for (i = 0; i < n; ++i) {
                 res *= y;
                 y += 1.0;
@@ -693,8 +693,8 @@ jstat.gamma = function(x) {
         }
     } else {
         /* -------------------------------------------------------------
-	   Evaluate for argument >= 12.,
-	   ------------------------------------------------------------- */
+       Evaluate for argument >= 12.,
+       ------------------------------------------------------------- */
         if (y <= xbig) {
             ysq = y * y;
             sum = c[6];
@@ -722,7 +722,7 @@ jstat.gamma = function(x) {
  *
  *    log(gamma(x)) = .5*log(2*pi) + (x-.5)*log(x) -x + lgammacor(x)
  *
- *    [ lgammacor(x) is called	Del(x)	in other contexts (e.g. dcdflib)]
+ *    [ lgammacor(x) is called    Del(x)	in other contexts (e.g. dcdflib)]
  */
 jstat.lgammacor = function(x) {
     var algmcs = [
@@ -1321,9 +1321,9 @@ var NormalDistribution = ContinuousDistribution.extend({
             /* end swap_tail */
 
             }
-            /* else	  |x| > sqrt(32) = 5.657 :
+            /* else      |x| > sqrt(32) = 5.657 :
              * the next two case differentiations were really for lower=T, log=F
-             * Particularly	 *not*	for  log_p !
+             * Particularly     *not*	for  log_p !
 
              * Cody had (-37.5193 < x  &&  x < 8.2924) ; R originally had y < 50
              *
@@ -1558,10 +1558,10 @@ var GammaDistribution = ContinuousDistribution.extend({
 
     },
     /**
-     *	This function computes the distribution function for the
-     *	gamma distribution with shape parameter alph and scale parameter
-     *	scale.	This is also known as the incomplete gamma function.
-     *	See Abramowitz and Stegun (6.5.1) for example.
+     *    This function computes the distribution function for the
+     *    gamma distribution with shape parameter alph and scale parameter
+     *    scale.	This is also known as the incomplete gamma function.
+     *    See Abramowitz and Stegun (6.5.1) for example.
      */
     _cdf: function(x, lower_tail, log_p) {
         /* define USE_PNORM */
@@ -1673,7 +1673,7 @@ var GammaDistribution = ContinuousDistribution.extend({
         if (log_p && lower_tail)
             return(arg);
         /* else */
-        /* sum = exp(arg); and return   if(lower_tail) sum	else 1-sum : */
+        /* sum = exp(arg); and return   if(lower_tail) sum    else 1-sum : */
 
         if(lower_tail) {
             return Math.exp(arg);
@@ -1903,7 +1903,7 @@ var StudentTDistribution = ContinuousDistribution.extend({
         /* Consider two cases: x ~= 0 or not */
         if (Math.abs(x) > Math.sqrt(df * jstat.DBL_EPSILON)) {
             var newT = new StudentTDistribution(df+2, ncp);
-            u = Math.log(df) - Math.log(Math.abs(x)) +
+            u = Math.log(df) - Math.log(Math.abs(x))
             Math.log(Math.abs(newT._pnt(x*Math.sqrt((df+2)/df), true, false) -
                 this._pnt(x, true, false)));
         /* FIXME: the above still suffers from cancellation (but not horribly) */
@@ -1955,7 +1955,7 @@ var StudentTDistribution = ContinuousDistribution.extend({
         }
 
         if (n > 4e5) { /*-- Fixme(?): test should depend on `n' AND `x' ! */
-            /* Approx. from	 Abramowitz & Stegun 26.7.8 (p.949) */
+            /* Approx. from     Abramowitz & Stegun 26.7.8 (p.949) */
             val = 1./(4.*n);
             return norm._cdf(x*(1. - val)/sqrt(1. + x*x*2.*val), lower_tail, log_p);
         }
@@ -1966,8 +1966,8 @@ var StudentTDistribution = ContinuousDistribution.extend({
          * Note however that a version of this test *is* needed for x*x > D_MAX */
         if(nx > 1e100) { /* <==>  x*x > 1e100 * n  */
             /* Danger of underflow. So use Abramowitz & Stegun 26.5.4
-	   pbeta(z, a, b) ~ z^a(1-z)^b / aB(a,b) ~ z^a / aB(a,b),
-	   with z = 1/nx,  a = n/2,  b= 1/2 :
+       pbeta(z, a, b) ~ z^a(1-z)^b / aB(a,b) ~ z^a / aB(a,b),
+       with z = 1/nx,  a = n/2,  b= 1/2 :
              */
             var lval;
             lval = -0.5*n*(2*Math.log(Math.abs(x)) - Math.log(n))
@@ -1990,7 +1990,7 @@ var StudentTDistribution = ContinuousDistribution.extend({
 
         }
 
-        /* Use "1 - v"  if	lower_tail  and	 x > 0 (but not both):*/
+        /* Use "1 - v"  if    lower_tail  and	 x > 0 (but not both):*/
         if(x <= 0.)
             lower_tail = !lower_tail;
 
@@ -2056,7 +2056,7 @@ var StudentTDistribution = ContinuousDistribution.extend({
             del = ncp;
         } else {
             /* We deal quickly with left tail if extreme,
-	   since pt(q, df, ncp) <= pt(0, df, ncp) = \Phi(-ncp) */
+       since pt(q, df, ncp) <= pt(0, df, ncp) = \Phi(-ncp) */
             if(ncp >= 40 && (!log_p || !lower_tail)) {
                 return DT_0;
             }
@@ -2067,8 +2067,8 @@ var StudentTDistribution = ContinuousDistribution.extend({
 
         if(dof > 4e5 || del*del > 2* Math.LN2 * (-(jstat.DBL_MIN_EXP))) {
             /*-- 2nd part: if del > 37.62, then p=0 below
-	    FIXME: test should depend on `df', `tt' AND `del' ! */
-            /* Approx. from	 Abramowitz & Stegun 26.7.10 (p.949) */
+        FIXME: test should depend on `df', `tt' AND `del' ! */
+            /* Approx. from     Abramowitz & Stegun 26.7.10 (p.949) */
             s=1./(4.*dof);
             var norm = new NormalDistribution(del, Math.sqrt(1. + tt*tt*2.*s));
             var result = norm._cdf(tt*(1.-s), lower_tail != negdel, log_p);

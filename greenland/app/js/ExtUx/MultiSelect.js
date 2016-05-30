@@ -110,7 +110,7 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
      * {@link #valueField value}, while the value at index 1 is assumed to be the combo {@link #displayField text}.
      * </div></li></ul></div></li></ul></div>
      */
-    
+
     cls: 'ux-form-multiselect',
 
     // private

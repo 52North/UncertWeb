@@ -27,99 +27,99 @@ OpenLayers.VIS.Styler = OpenLayers.VIS.Styler || {};
  */
 OpenLayers.VIS.Styler.Continuous = OpenLayers.Class(OpenLayers.VIS.Styler.Base, {
 
-	minValue : null,
-	maxValue : null,
-	fixedMinValue : null,
-	fixedMaxValue : null,
-	title : 'Continuous',
+    minValue : null,
+    maxValue : null,
+    fixedMinValue : null,
+    fixedMaxValue : null,
+    title : 'Continuous',
 
-	initialize : function(options) {
-		options = options || {};
-		options.isFeatureStyler = false;
-		OpenLayers.VIS.Styler.Base.prototype.initialize.apply(this, arguments);
-	},
+    initialize : function(options) {
+    	options = options || {};
+    	options.isFeatureStyler = false;
+    	OpenLayers.VIS.Styler.Base.prototype.initialize.apply(this, arguments);
+    },
 
-	getMinValue : function() {
-		if (this.minValue === null)
-			return this.symbology.getMinValue ? this.symbology.getMinValue() : this.fixedMinValue;
-		else
-			return this.minValue;
-	},
+    getMinValue : function() {
+    	if (this.minValue === null)
+    		return this.symbology.getMinValue ? this.symbology.getMinValue() : this.fixedMinValue;
+    	else
+    		return this.minValue;
+    },
 
-	getMaxValue : function() {
-		if (this.maxValue === null)
-			return this.symbology.getMaxValue ? this.symbology.getMaxValue() : this.fixedMaxValue;
-		else
-			return this.maxValue;
-	},
+    getMaxValue : function() {
+    	if (this.maxValue === null)
+    		return this.symbology.getMaxValue ? this.symbology.getMaxValue() : this.fixedMaxValue;
+    	else
+    		return this.maxValue;
+    },
 
-	getInts : function() {
-		return null;
-	},
+    getInts : function() {
+    	return null;
+    },
 
-	getIntervals : function() {
-		return null;
-	},
+    getIntervals : function() {
+    	return null;
+    },
 
-	/**
-	 * Maps value to interval array
-	 *
-	 * @param val
-	 * @returns
-	 */
-	getInterval : function(val) {
-		if (val >= this.getMinValue() && val <= this.getMaxValue()) {
-			return [ val, val ];
-		} else {
-			return null;
-		}
-	},
+    /**
+     * Maps value to interval array
+     *
+     * @param val
+     * @returns
+     */
+    getInterval : function(val) {
+    	if (val >= this.getMinValue() && val <= this.getMaxValue()) {
+    		return [ val, val ];
+    	} else {
+    		return null;
+    	}
+    },
 
-	createParameters : function() {
-		var options = {
-			minValue : {
-				fieldLabel: 'Minimum Value',
-				value : this.minValue,
-				minimum : this.symbology.getMinValue ? this.symbology.getMinValue() : this.fixedMinValue,
-				maximum : this.symbology.getMaxValue ? this.symbology.getMaxValue() : this.fixedMaxValue,
-				type : 'number',
-				action : function(value) {
-					this.minValue = value;
-					this.triggerChangeEvent('valueExtent');
-				},
-				scope : this,
-				required : false
-			},
-			maxValue : {
-				fieldLabel: 'Maximum Value',
-				value : this.maxValue,
-				minimum : this.symbology.getMinValue ? this.symbology.getMinValue() : this.fixedMinValue,
-				maximum : this.symbology.getMaxValue ? this.symbology.getMaxValue() : this.fixedMaxValue,
-				defaultValue : this.symbology.getMaxValue ? this.symbology.getMaxValue()
-						: this.fixedMaxValue,
-				type : 'number',
-				action : function(value) {
-					this.maxValue = value;
-					this.triggerChangeEvent('valueExtent');
-				},
-				scope : this,
-				required : false
-			}
-		};
-		return options;
-	},
+    createParameters : function() {
+    	var options = {
+    		minValue : {
+    			fieldLabel: 'Minimum Value',
+    			value : this.minValue,
+    			minimum : this.symbology.getMinValue ? this.symbology.getMinValue() : this.fixedMinValue,
+    			maximum : this.symbology.getMaxValue ? this.symbology.getMaxValue() : this.fixedMaxValue,
+    			type : 'number',
+    			action : function(value) {
+    				this.minValue = value;
+    				this.triggerChangeEvent('valueExtent');
+    			},
+    			scope : this,
+    			required : false
+    		},
+    		maxValue : {
+    			fieldLabel: 'Maximum Value',
+    			value : this.maxValue,
+    			minimum : this.symbology.getMinValue ? this.symbology.getMinValue() : this.fixedMinValue,
+    			maximum : this.symbology.getMaxValue ? this.symbology.getMaxValue() : this.fixedMaxValue,
+    			defaultValue : this.symbology.getMaxValue ? this.symbology.getMaxValue()
+    					: this.fixedMaxValue,
+    			type : 'number',
+    			action : function(value) {
+    				this.maxValue = value;
+    				this.triggerChangeEvent('valueExtent');
+    			},
+    			scope : this,
+    			required : false
+    		}
+    	};
+    	return options;
+    },
 
-	restore : function(parcel) {
-		this.minValue = parcel.readFloat();
-		this.maxValue = parcel.readFloat();
-		this.fixedMinValue = parcel.readFloat();
-		this.fixedMaxValue = parcel.readFloat();
-	},
+    restore : function(parcel) {
+    	this.minValue = parcel.readFloat();
+    	this.maxValue = parcel.readFloat();
+    	this.fixedMinValue = parcel.readFloat();
+    	this.fixedMaxValue = parcel.readFloat();
+    },
 
-	store : function(parcel) {
-		parcel.writeFloat(this.minValue);
-		parcel.writeFloat(this.maxValue);
-		parcel.writeFloat(this.fixedMinValue);
-		parcel.writeFloat(this.fixedMaxValue);
-	}
+    store : function(parcel) {
+    	parcel.writeFloat(this.minValue);
+    	parcel.writeFloat(this.maxValue);
+    	parcel.writeFloat(this.fixedMinValue);
+    	parcel.writeFloat(this.fixedMaxValue);
+    }
 });

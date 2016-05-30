@@ -26,118 +26,118 @@ Ext.namespace('Ext.ux.VIS');
  * mechanisms; plotclick, plothover and plotselected. The resulting plots are
  * resizable, restore their axis settings on redraw and behave generally like an
  * Ext.Panel.
- * 
+ *
  * To create a plot with this class, one has to override the getPlotParams
  * method which has to return an object with a series and options attribute.
  * These are passed to the flot plot function:
- * 
+ *
  * $.plot(..., plotParams.series, plotParams.options);
  */
 Ext.ux.VIS.FlotPanel = Ext.extend(Ext.Panel, {
 
-	plotParams : null,
+    plotParams : null,
 
-	plot : null,
+    plot : null,
 
-	eventsBound : null, // flag to ensure that flot events are bound only once
+    eventsBound : null, // flag to ensure that flot events are bound only once
 
-	updateTask : null,
+    updateTask : null,
 
-	initComponent : function() {
-		Ext.ux.VIS.FlotPanel.superclass.initComponent.call(this);
+    initComponent : function() {
+    	Ext.ux.VIS.FlotPanel.superclass.initComponent.call(this);
 
-		// delayed task to reset plotparams and initiate redraw
-		this.updateTask = new Ext.util.DelayedTask(function(reset) {
-			this.plotParams = null;
-			this.renderPlot(reset);
-		}, this);
+    	// delayed task to reset plotparams and initiate redraw
+    	this.updateTask = new Ext.util.DelayedTask(function(reset) {
+    		this.plotParams = null;
+    		this.renderPlot(reset);
+    	}, this);
 
-		this.eventsBound = false;
-		this.addEvents('plotclick');
-		this.addEvents('plothover');
-		this.addEvents('plotselected');
-	},
+    	this.eventsBound = false;
+    	this.addEvents('plotclick');
+    	this.addEvents('plothover');
+    	this.addEvents('plotselected');
+    },
 
-	onResize : function(adjWidth, adjHeight, rawWidth, rawHeight) {
-		Ext.ux.VIS.FlotPanel.superclass.onResize.call(this, adjWidth, adjHeight, rawWidth, rawHeight);
+    onResize : function(adjWidth, adjHeight, rawWidth, rawHeight) {
+    	Ext.ux.VIS.FlotPanel.superclass.onResize.call(this, adjWidth, adjHeight, rawWidth, rawHeight);
 
-		// Render plot on resize
-		this.renderPlot();
-	},
+    	// Render plot on resize
+    	this.renderPlot();
+    },
 
-	renderPlot : function(reset) {
-		if (this.rendered) {
-			if (this.plotParams == null) {
-				try {
-					this.plotParams = this.getPlotParams();
-				} catch (e) {
-					Ext.MessageBox.alert('Error', 'Error generating plot data:\n' + e);
-				}
-			}
+    renderPlot : function(reset) {
+    	if (this.rendered) {
+    		if (this.plotParams == null) {
+    			try {
+    				this.plotParams = this.getPlotParams();
+    			} catch (e) {
+    				Ext.MessageBox.alert('Error', 'Error generating plot data:\n' + e);
+    			}
+    		}
 
-			var element = this.el.child('.x-panel-body');
-			try {
-				if (this.plot && !reset) {
-					// Set current axis ranges in new plotting options to restore pan/zoom
-					// settings
-					var axes = this.plot.getAxes();
-					for ( var key in axes) {
-						Ext.apply(this.plotParams.options[key], {
-							min : axes[key].min,
-							max : axes[key].max
-						});
-					}
-				}
-				// Always create a new flot plot, as updating plotting options is not
-				// supported
-				jQueryFlot = jQueryFlot || $;
-				this.plot = jQueryFlot.plot(element.dom, this.plotParams.series, this.plotParams.options);
+    		var element = this.el.child('.x-panel-body');
+    		try {
+    			if (this.plot && !reset) {
+    				// Set current axis ranges in new plotting options to restore pan/zoom
+    				// settings
+    				var axes = this.plot.getAxes();
+    				for ( var key in axes) {
+    					Ext.apply(this.plotParams.options[key], {
+    						min : axes[key].min,
+    						max : axes[key].max
+    					});
+    				}
+    			}
+    			// Always create a new flot plot, as updating plotting options is not
+    			// supported
+    			jQueryFlot = jQueryFlot || $;
+    			this.plot = jQueryFlot.plot(element.dom, this.plotParams.series, this.plotParams.options);
 
-				if (!this.eventsBound) {
-					// bind events only once
-					jQueryFlot(element.dom).bind('plotclick', this.plotClick.createDelegate(this));
-					jQueryFlot(element.dom).bind('plothover', this.plotHover.createDelegate(this));
-					jQueryFlot(element.dom).bind('plotselected', this.plotSelected.createDelegate(this));
-					this.eventsBound = true;
-				}
-			} catch (e) {
-			}
-		}
-	},
+    			if (!this.eventsBound) {
+    				// bind events only once
+    				jQueryFlot(element.dom).bind('plotclick', this.plotClick.createDelegate(this));
+    				jQueryFlot(element.dom).bind('plothover', this.plotHover.createDelegate(this));
+    				jQueryFlot(element.dom).bind('plotselected', this.plotSelected.createDelegate(this));
+    				this.eventsBound = true;
+    			}
+    		} catch (e) {
+    		}
+    	}
+    },
 
-	plotClick : function(event, pos, item) {
-		this.fireEvent('plotclick', event, pos, item, this.plot);
-	},
+    plotClick : function(event, pos, item) {
+    	this.fireEvent('plotclick', event, pos, item, this.plot);
+    },
 
-	plotHover : function(event, pos, item) {
-		this.fireEvent('plothover', event, pos, item, this.plot);
-	},
+    plotHover : function(event, pos, item) {
+    	this.fireEvent('plothover', event, pos, item, this.plot);
+    },
 
-	plotSelected : function(event, ranges) {
-		this.fireEvent('plotselected', event, ranges, this.plot);
-	},
+    plotSelected : function(event, ranges) {
+    	this.fireEvent('plotselected', event, ranges, this.plot);
+    },
 
-	/**
-	 * Function which has to provide the plot parameters series and options in the
-	 * returned object.
-	 * 
-	 * $.plot(..., result.series, result.options);
-	 */
-	getPlotParams : function() {
+    /**
+     * Function which has to provide the plot parameters series and options in the
+     * returned object.
+     *
+     * $.plot(..., result.series, result.options);
+     */
+    getPlotParams : function() {
 
-	},
+    },
 
-	/**
-	 * Forces to request plot params using the getPlotParams method and redraws
-	 * itself. Multiple calls to this method are delayed since generating plot
-	 * params might block the UI.
-	 * 
-	 * @param reset
-	 *          if true, the panel wont restore the axis state
-	 */
-	replot : function(reset) {
-		// this.plotParams = null;
-		// this.renderPlot(reset);
-		this.updateTask.delay(100, null, null, [ reset == true ]);
-	}
+    /**
+     * Forces to request plot params using the getPlotParams method and redraws
+     * itself. Multiple calls to this method are delayed since generating plot
+     * params might block the UI.
+     *
+     * @param reset
+     *          if true, the panel wont restore the axis state
+     */
+    replot : function(reset) {
+    	// this.plotParams = null;
+    	// this.renderPlot(reset);
+    	this.updateTask.delay(100, null, null, [ reset == true ]);
+    }
 });

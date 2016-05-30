@@ -19,101 +19,101 @@
  * OpenLayers.Layer.Vector layer and styles to show and cache vector features.
  */
 OpenLayers.Layer.VIS.WMSQ.Vector = OpenLayers.Class(OpenLayers.Layer.VIS.WMSQ.Visualization, {
-	vectorLayer : null,
+    vectorLayer : null,
 
-	handleVisibilityChanged : function(evt) {
-		this.vectorLayer && this.vectorLayer.setVisibility(this.layer.getVisibility());
-	},
+    handleVisibilityChanged : function(evt) {
+    	this.vectorLayer && this.vectorLayer.setVisibility(this.layer.getVisibility());
+    },
 
-	setLayer : function(layer) {
-		OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.setLayer.call(this, layer);
-		this.layer.events.register('visibilitychanged', this, this.handleVisibilityChanged);
-	},
+    setLayer : function(layer) {
+    	OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.setLayer.call(this, layer);
+    	this.layer.events.register('visibilitychanged', this, this.handleVisibilityChanged);
+    },
 
-	removeLayer : function(layer) {
-		OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.removeLayer.call(this, layer);
-		this.layer.events.unregister('visibilitychanged', this, this.handleVisibilityChanged);
-	},
+    removeLayer : function(layer) {
+    	OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.removeLayer.call(this, layer);
+    	this.layer.events.unregister('visibilitychanged', this, this.handleVisibilityChanged);
+    },
 
-	handleChangeTime : function() {
-		if (this.vectorLayer && this.layer.getVisibility()) {
-			this.vectorLayer.setVisibility(this.layer.calculateInRange());
-		}
-	},
+    handleChangeTime : function() {
+    	if (this.vectorLayer && this.layer.getVisibility()) {
+    		this.vectorLayer.setVisibility(this.layer.calculateInRange());
+    	}
+    },
 
-	setMap : function(map) {
-		// Initialization of vector layer and style to make use of stylers
-		var style = {};
-		var context = {};
-		var styler;
-		for ( var key in this.styler) {
-			styler = this.styler[key];
-			if (typeof styler == 'string') {
-				style[key] = '${' + styler + '}';
-			} else if (styler.isFeatureStyler !== false) {
-				style[key] = '${get' + key + '}';
-				context['get' + key] = function(feature) {
-					return this.getValue.call(this, feature.attributes[this.attribute || 'resultValue']);
-				}.createDelegate(styler);
-			}
-		}
+    setMap : function(map) {
+    	// Initialization of vector layer and style to make use of stylers
+    	var style = {};
+    	var context = {};
+    	var styler;
+    	for ( var key in this.styler) {
+    		styler = this.styler[key];
+    		if (typeof styler == 'string') {
+    			style[key] = '${' + styler + '}';
+    		} else if (styler.isFeatureStyler !== false) {
+    			style[key] = '${get' + key + '}';
+    			context['get' + key] = function(feature) {
+    				return this.getValue.call(this, feature.attributes[this.attribute || 'resultValue']);
+    			}.createDelegate(styler);
+    		}
+    	}
 
-		this.featureCache = {};
-		this.vectorLayer = new OpenLayers.Layer.Vector('Test', {
-			styleMap : new OpenLayers.StyleMap(new OpenLayers.Style(style, {
-				context : context
-			})),
-			visualization : this
-		});
-		map.addLayer(this.vectorLayer);
+    	this.featureCache = {};
+    	this.vectorLayer = new OpenLayers.Layer.Vector('Test', {
+    		styleMap : new OpenLayers.StyleMap(new OpenLayers.Style(style, {
+    			context : context
+    		})),
+    		visualization : this
+    	});
+    	map.addLayer(this.vectorLayer);
 
-		OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.setMap.call(this, map);
+    	OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.setMap.call(this, map);
 
-		map.events.register('changetime', this, this.handleChangeTime);
-	},
+    	map.events.register('changetime', this, this.handleChangeTime);
+    },
 
-	removeMap : function(map) {
-		map.events.unregister('changetime', this, this.handleChangeTime);
+    removeMap : function(map) {
+    	map.events.unregister('changetime', this, this.handleChangeTime);
 
-		OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.removeMap.call(this, map);
-		if (!this.vectorLayer)
-			return;
+    	OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.removeMap.call(this, map);
+    	if (!this.vectorLayer)
+    		return;
 
-		// Remove vector layer
-		map.removeLayer(this.vectorLayer);
-		this.vectorLayer.destroy();
-	},
+    	// Remove vector layer
+    	map.removeLayer(this.vectorLayer);
+    	this.vectorLayer.destroy();
+    },
 
-	/**
-	 * Adds features to the vector layer and caches them for the specified
-	 * bounding box. Existing features for these bounds get removed first.
-	 * 
-	 * @param features
-	 * @param bounds
-	 */
-	addFeatures : function(features, bounds) {
-		if (!this.vectorLayer)
-			return;
+    /**
+     * Adds features to the vector layer and caches them for the specified
+     * bounding box. Existing features for these bounds get removed first.
+     *
+     * @param features
+     * @param bounds
+     */
+    addFeatures : function(features, bounds) {
+    	if (!this.vectorLayer)
+    		return;
 
-		var compBounds = bounds.clone();
-		compBounds.right -= 5;
-		compBounds.bottom += 5;
-		compBounds.top -= 5;
-		compBounds.left += 5;
-		var featuresToRemove = [];
-		for ( var key in this.featureCache) {
-			if (compBounds.intersectsBounds(this.featureCache[key].bounds, false)) {
-				featuresToRemove = featuresToRemove.concat(this.featureCache[key].features);
-				delete this.featureCache[key];
-			}
-		}
-		this.vectorLayer.removeFeatures(featuresToRemove);
+    	var compBounds = bounds.clone();
+    	compBounds.right -= 5;
+    	compBounds.bottom += 5;
+    	compBounds.top -= 5;
+    	compBounds.left += 5;
+    	var featuresToRemove = [];
+    	for ( var key in this.featureCache) {
+    		if (compBounds.intersectsBounds(this.featureCache[key].bounds, false)) {
+    			featuresToRemove = featuresToRemove.concat(this.featureCache[key].features);
+    			delete this.featureCache[key];
+    		}
+    	}
+    	this.vectorLayer.removeFeatures(featuresToRemove);
 
-		this.vectorLayer.addFeatures(features);
-		this.featureCache[bounds.toBBOX()] = {
-			bounds : bounds.clone(),
-			features : features
-		};
+    	this.vectorLayer.addFeatures(features);
+    	this.featureCache[bounds.toBBOX()] = {
+    		bounds : bounds.clone(),
+    		features : features
+    	};
 
-	}
+    }
 });

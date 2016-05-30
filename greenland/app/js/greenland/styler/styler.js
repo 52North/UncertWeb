@@ -23,49 +23,49 @@ OpenLayers.VIS.Styler = OpenLayers.VIS.Styler || {};
  */
 OpenLayers.VIS.Styler.Base = OpenLayers.Class({
 
-	isFeatureStyler : null,
+    isFeatureStyler : null,
 
-	symbology : null,
+    symbology : null,
 
-	initialize : function(options) {
-		this.isFeatureStyler = true;
-		OpenLayers.Util.extend(this, options);
-	},
+    initialize : function(options) {
+    	this.isFeatureStyler = true;
+    	OpenLayers.Util.extend(this, options);
+    },
 
-	getValue : function(value) {
+    getValue : function(value) {
 
-	},
+    },
 
-	/**
-	 * Called during the initialization of a symbology
-	 * 
-	 * @param symbology
-	 */
-	setSymbology : function(symbology) {
-		this.symbology = symbology;
-	},
+    /**
+     * Called during the initialization of a symbology
+     *
+     * @param symbology
+     */
+    setSymbology : function(symbology) {
+    	this.symbology = symbology;
+    },
 
-	/**
-	 * Returns the customizable parameters.
-	 * 
-	 * @returns {Array}
-	 */
-	createParameters : function() {
-		return [];
-	},
+    /**
+     * Returns the customizable parameters.
+     *
+     * @returns {Array}
+     */
+    createParameters : function() {
+    	return [];
+    },
 
-	triggerChangeEvent : function(property) {
-		this.symbology.events.triggerEvent('change', {
-			property : property
-		});
-	},
+    triggerChangeEvent : function(property) {
+    	this.symbology.events.triggerEvent('change', {
+    		property : property
+    	});
+    },
 
-	restore : function(parcel) {
+    restore : function(parcel) {
 
-	},
+    },
 
-	store : function(parcel) {
+    store : function(parcel) {
 
-	}
+    }
 });
 

@@ -21,44 +21,44 @@ OpenLayers.VIS.Styler = OpenLayers.VIS.Styler || {};
  */
 OpenLayers.VIS.Styler.Size = OpenLayers.Class(OpenLayers.VIS.Styler.Base, {
 
-	pointRadius : null,
+    pointRadius : null,
 
-	initialize : function(options) {
-		this.pointRadius = 8;
-		OpenLayers.VIS.Styler.Base.prototype.initialize.apply(this, arguments);
-	},
+    initialize : function(options) {
+    	this.pointRadius = 8;
+    	OpenLayers.VIS.Styler.Base.prototype.initialize.apply(this, arguments);
+    },
 
-	getValue : function() {
-		return this.pointRadius;
-	},
+    getValue : function() {
+    	return this.pointRadius;
+    },
 
-	createParameters : function() {
-		var options = {
-			size : {
-				fieldLabel : 'Size',
-				value : this.pointRadius,
-				minimum : 1,
-				maximum : 25,
-				type : 'integer',
-				description : 'Marker size',
-				action : function(value) {
-					this.pointRadius = value;
-					this.triggerChangeEvent('symbology');
-					this.symbology.layer.redraw();
-				},
-				scope : this,
-				required : true
-			}
-		};
+    createParameters : function() {
+    	var options = {
+    		size : {
+    			fieldLabel : 'Size',
+    			value : this.pointRadius,
+    			minimum : 1,
+    			maximum : 25,
+    			type : 'integer',
+    			description : 'Marker size',
+    			action : function(value) {
+    				this.pointRadius = value;
+    				this.triggerChangeEvent('symbology');
+    				this.symbology.layer.redraw();
+    			},
+    			scope : this,
+    			required : true
+    		}
+    	};
 
-		return options;
-	},
+    	return options;
+    },
 
-	restore : function(parcel) {
-		this.pointRadius = parcel.readInt();
-	},
+    restore : function(parcel) {
+    	this.pointRadius = parcel.readInt();
+    },
 
-	store : function(parcel) {
-		return parcel.writeInt(this.pointRadius);
-	}
+    store : function(parcel) {
+    	return parcel.writeInt(this.pointRadius);
+    }
 });

@@ -22,48 +22,48 @@ OpenLayers.VIS.Styler = OpenLayers.VIS.Styler || {};
  */
 OpenLayers.VIS.Styler.IrregularIntervals = OpenLayers.Class(OpenLayers.VIS.Styler.EqualIntervals, {
 
-	bounds : null,
-	boundsString : null,
-	title : 'Irregular Intervals',
+    bounds : null,
+    boundsString : null,
+    title : 'Irregular Intervals',
 
-	initialize : function(options) {
-		this.boundsString = "0";
-		OpenLayers.VIS.Styler.EqualIntervals.prototype.initialize.apply(this, arguments);
-	},
+    initialize : function(options) {
+    	this.boundsString = "0";
+    	OpenLayers.VIS.Styler.EqualIntervals.prototype.initialize.apply(this, arguments);
+    },
 
-	updateInts : function() {
-		var i;
-		if (this.bounds === null) {
-			this.bounds = this.boundsString.split(/,/);
-			this.intCount = this.bounds.length+1;
-			for (i = 0; i < this.bounds.length; ++i) {
-				this.bounds[i] = parseFloat(this.bounds[i]);
-			}
-		}
-		this.ints = [];
-		this.ints.push([this.getMinValue(), this.bounds[0]]);
-		for (i = 0; i < this.bounds.length-1; ++i) {
-			this.ints.push([this.bounds[i], this.bounds[i+1]]);
-		}
-		this.ints.push([this.bounds[this.bounds.length-1], this.getMaxValue()]);
-	},
+    updateInts : function() {
+    	var i;
+    	if (this.bounds === null) {
+    		this.bounds = this.boundsString.split(/,/);
+    		this.intCount = this.bounds.length+1;
+    		for (i = 0; i < this.bounds.length; ++i) {
+    			this.bounds[i] = parseFloat(this.bounds[i]);
+    		}
+    	}
+    	this.ints = [];
+    	this.ints.push([this.getMinValue(), this.bounds[0]]);
+    	for (i = 0; i < this.bounds.length-1; ++i) {
+    		this.ints.push([this.bounds[i], this.bounds[i+1]]);
+    	}
+    	this.ints.push([this.bounds[this.bounds.length-1], this.getMaxValue()]);
+    },
 
-	createParameters : function() {
-		var options = OpenLayers.VIS.Styler.Continuous.prototype.createParameters.apply(this);
-		options.ints = {
-			value : this.boundsString,
-			minimum : 1,
-			maximum : 20,
-			type : 'string',
-			description : 'Comma seperated list of interval bounds.',
-			action : function(value) {
-				this.boundsString = value;
-				this.bounds = null;
-				this.triggerChangeEvent('valueExtent');
-			},
-			scope : this,
-			required : true
-		};
-		return options;
-	}
+    createParameters : function() {
+    	var options = OpenLayers.VIS.Styler.Continuous.prototype.createParameters.apply(this);
+    	options.ints = {
+    		value : this.boundsString,
+    		minimum : 1,
+    		maximum : 20,
+    		type : 'string',
+    		description : 'Comma seperated list of interval bounds.',
+    		action : function(value) {
+    			this.boundsString = value;
+    			this.bounds = null;
+    			this.triggerChangeEvent('valueExtent');
+    		},
+    		scope : this,
+    		required : true
+    	};
+    	return options;
+    }
 });

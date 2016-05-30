@@ -26,63 +26,63 @@ Ext.namespace('Ext.ux.VIS');
  */
 Ext.ux.VIS.FeatureArrow = Ext.extend(GeoExt.FeatureRenderer, {
 
-	startPos : null,
+    startPos : null,
 
-	endPos : null,
+    endPos : null,
 
-	startWidth : null,
+    startWidth : null,
 
-	orientation : 'vertical',
+    orientation : 'vertical',
 
-	initComponent : function() {
-		Ext.ux.VIS.FeatureArrow.superclass.initComponent.apply(this, arguments);
+    initComponent : function() {
+    	Ext.ux.VIS.FeatureArrow.superclass.initComponent.apply(this, arguments);
 
-		this.feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Polygon(
-				[ new OpenLayers.Geometry.LinearRing([ new OpenLayers.Geometry.Point(0, 0),
-						new OpenLayers.Geometry.Point(0, 50), new OpenLayers.Geometry.Point(-50, 25),
-						new OpenLayers.Geometry.Point(0, 0) ]) ]));
-		this.startPos = [ 0, 0 ];
-		this.endPos = [ 0, 0 ];
-		this.startWidth = 100;
-	},
+    	this.feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Polygon(
+    			[ new OpenLayers.Geometry.LinearRing([ new OpenLayers.Geometry.Point(0, 0),
+    					new OpenLayers.Geometry.Point(0, 50), new OpenLayers.Geometry.Point(-50, 25),
+    					new OpenLayers.Geometry.Point(0, 0) ]) ]));
+    	this.startPos = [ 0, 0 ];
+    	this.endPos = [ 0, 0 ];
+    	this.startWidth = 100;
+    },
 
-	setStartPosition : function(x, y) {
-		this.startPos = [ x, y ];
-	},
+    setStartPosition : function(x, y) {
+    	this.startPos = [ x, y ];
+    },
 
-	setStartWidth : function(w) {
-		this.startWidth = w;
-	},
+    setStartWidth : function(w) {
+    	this.startWidth = w;
+    },
 
-	setEndPosition : function(x, y) {
-		this.endPos = [ x, y ];
-	},
+    setEndPosition : function(x, y) {
+    	this.endPos = [ x, y ];
+    },
 
-	setOrientation : function(orientation) {
-		this.orientation = orientation;
-	},
+    setOrientation : function(orientation) {
+    	this.orientation = orientation;
+    },
 
-	updateFeature : function() {
-		var startOffsetX, startOffsetY;
-		switch (this.orientation) {
-		case 'vertical':
-			startOffsetX = 0;
-			startOffsetY = this.startWidth;
-			break;
-		case 'horizontal':
-			startOffsetX = this.startWidth;
-			startOffsetY = 0;
-			break;
-		}
+    updateFeature : function() {
+    	var startOffsetX, startOffsetY;
+    	switch (this.orientation) {
+    	case 'vertical':
+    		startOffsetX = 0;
+    		startOffsetY = this.startWidth;
+    		break;
+    	case 'horizontal':
+    		startOffsetX = this.startWidth;
+    		startOffsetY = 0;
+    		break;
+    	}
 
-		var height = this.endPos[1] - this.startPos[1];
-		this.setFeature(new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Polygon(
-				[ new OpenLayers.Geometry.LinearRing([
-						new OpenLayers.Geometry.Point(this.startPos[0], height - this.startPos[1]),
-						new OpenLayers.Geometry.Point(this.startPos[0] + startOffsetX, height
-								- this.startPos[1] - startOffsetY),
-						new OpenLayers.Geometry.Point(this.endPos[0], height - this.endPos[1]),
-						new OpenLayers.Geometry.Point(this.startPos[0], height - this.startPos[1]) ]) ])));
-	}
+    	var height = this.endPos[1] - this.startPos[1];
+    	this.setFeature(new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Polygon(
+    			[ new OpenLayers.Geometry.LinearRing([
+    					new OpenLayers.Geometry.Point(this.startPos[0], height - this.startPos[1]),
+    					new OpenLayers.Geometry.Point(this.startPos[0] + startOffsetX, height
+    							- this.startPos[1] - startOffsetY),
+    					new OpenLayers.Geometry.Point(this.endPos[0], height - this.endPos[1]),
+    					new OpenLayers.Geometry.Point(this.startPos[0], height - this.startPos[1]) ]) ])));
+    }
 
 });

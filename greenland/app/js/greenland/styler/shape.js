@@ -22,59 +22,59 @@ OpenLayers.VIS.Styler = OpenLayers.VIS.Styler || {};
  * select from several predefined shapes.
  */
 OpenLayers.VIS.Styler.Shape = OpenLayers.Class(OpenLayers.VIS.Styler.Base, {
-	graphicName : null,
-	shapes : [ [ 'Circle', 'circle' ], [ 'Star', 'star' ], [ 'Cross', 'cross' ], [ 'X', 'x' ],
-			[ 'Square', 'square' ], [ 'Triangle', 'triangle' ] ],
+    graphicName : null,
+    shapes : [ [ 'Circle', 'circle' ], [ 'Star', 'star' ], [ 'Cross', 'cross' ], [ 'X', 'x' ],
+    		[ 'Square', 'square' ], [ 'Triangle', 'triangle' ] ],
 
-	initialize : function(options) {
-		OpenLayers.VIS.Styler.Base.prototype.initialize.apply(this, arguments);
-		this.graphicName = this.graphicName || this.shapes[0][1];
-	},
+    initialize : function(options) {
+    	OpenLayers.VIS.Styler.Base.prototype.initialize.apply(this, arguments);
+    	this.graphicName = this.graphicName || this.shapes[0][1];
+    },
 
-	getValue : function() {
-		return this.graphicName;
-	},
+    getValue : function() {
+    	return this.graphicName;
+    },
 
-	createParameters : function() {
-		var comboBoxShape = new Ext.form.ComboBox({
-			triggerAction : 'all',
-			lazyRender : true,
-			mode : 'local',
-			store : new Ext.data.ArrayStore({
-				id : 0,
-				fields : [ 'name', 'value' ],
-				data : this.shapes
-			}),
-			valueField : 'value',
-			displayField : 'name',
-			editable : false,
-			value : this.graphicName,
-			listeners : {
-				select : function(combo, record, index) {
-					this.graphicName = record.data.value;
-					this.triggerChangeEvent('symbology');
-					this.symbology.layer.redraw();
-				},
-				scope : this
-			}
-		});
+    createParameters : function() {
+    	var comboBoxShape = new Ext.form.ComboBox({
+    		triggerAction : 'all',
+    		lazyRender : true,
+    		mode : 'local',
+    		store : new Ext.data.ArrayStore({
+    			id : 0,
+    			fields : [ 'name', 'value' ],
+    			data : this.shapes
+    		}),
+    		valueField : 'value',
+    		displayField : 'name',
+    		editable : false,
+    		value : this.graphicName,
+    		listeners : {
+    			select : function(combo, record, index) {
+    				this.graphicName = record.data.value;
+    				this.triggerChangeEvent('symbology');
+    				this.symbology.layer.redraw();
+    			},
+    			scope : this
+    		}
+    	});
 
-		var options = {
-			shape : {
-				fieldLabel: 'Shape',
-				comp : comboBoxShape,
-				required : true
-			}
-		};
+    	var options = {
+    		shape : {
+    			fieldLabel: 'Shape',
+    			comp : comboBoxShape,
+    			required : true
+    		}
+    	};
 
-		return options;
-	},
+    	return options;
+    },
 
-	restore : function(parcel) {
-		this.graphicName = parcel.readString();
-	},
+    restore : function(parcel) {
+    	this.graphicName = parcel.readString();
+    },
 
-	store : function(parcel) {
-		return parcel.writeString(this.graphicName);
-	}
+    store : function(parcel) {
+    	return parcel.writeString(this.graphicName);
+    }
 });

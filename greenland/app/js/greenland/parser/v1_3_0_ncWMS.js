@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 OpenLayers.Format.WMSCapabilities.v1_3_0_ncWMS = OpenLayers.Class(
-		OpenLayers.Format.WMSCapabilities.v1_3, {
-			version : '1.3.0',
-			profile : 'ncWMS',
+    	OpenLayers.Format.WMSCapabilities.v1_3, {
+    		version : '1.3.0',
+    		profile : 'ncWMS',
 
-			CLASS_NAME : 'OpenLayers.Format.WMSCapabilities.v1_3_0_ncWMS',
+    		CLASS_NAME : 'OpenLayers.Format.WMSCapabilities.v1_3_0_ncWMS',
 
-			readers : {
-				wms : OpenLayers.Util.applyDefaults({
-					GetMetadata : function(node, obj) {
-						obj.getmetadata = {
-							formats : []
-						};
-						this.readChildNodes(node, obj.getmetadata);
-					}
-				}, OpenLayers.Format.WMSCapabilities.v1_3_0.prototype.readers["wms"])
-			}
+    		readers : {
+    			wms : OpenLayers.Util.applyDefaults({
+    				GetMetadata : function(node, obj) {
+    					obj.getmetadata = {
+    						formats : []
+    					};
+    					this.readChildNodes(node, obj.getmetadata);
+    				}
+    			}, OpenLayers.Format.WMSCapabilities.v1_3_0.prototype.readers["wms"])
+    		}
 
-		});
+    	});

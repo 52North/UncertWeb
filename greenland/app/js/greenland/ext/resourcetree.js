@@ -27,43 +27,43 @@ Ext.namespace('Ext.ux.VIS');
  */
 Ext.ux.VIS.ResourceNodesContainer = Ext.extend(Ext.tree.AsyncTreeNode, {
 
-	constructor : function(options) {
-		if (!options) {
-			options = {};
-		}
-		this.loader = new Ext.ux.VIS.ResourceLoader();
-		options.text = 'Resources';
-		options.loader = this.loader;
-		Ext.ux.VIS.ResourceNodesContainer.superclass.constructor.apply(this, arguments);
-	},
+    constructor : function(options) {
+    	if (!options) {
+    		options = {};
+    	}
+    	this.loader = new Ext.ux.VIS.ResourceLoader();
+    	options.text = 'Resources';
+    	options.loader = this.loader;
+    	Ext.ux.VIS.ResourceNodesContainer.superclass.constructor.apply(this, arguments);
+    },
 
-	/**
-	 * Adds a new resource to show as child node. Requires a resource options
-	 * definition object with at least mime and url as attributes
-	 */
-	addResource : function(options) {
-		VIS.ResourceLoader.loadResourceOptions(options, function(resourceOptions) {
-			this.appendChild(this.loader.createNode(resourceOptions));
-		}.createDelegate(this));
-	},
+    /**
+     * Adds a new resource to show as child node. Requires a resource options
+     * definition object with at least mime and url as attributes
+     */
+    addResource : function(options) {
+    	VIS.ResourceLoader.loadResourceOptions(options, function(resourceOptions) {
+    		this.appendChild(this.loader.createNode(resourceOptions));
+    	}.createDelegate(this));
+    },
 
-	removeResource : function(resourceId) {
-		var child = this.findChild('resourceId', resourceId);
-		if (child !== null) {
-			this.removeChild(child);
-		}
-	},
+    removeResource : function(resourceId) {
+    	var child = this.findChild('resourceId', resourceId);
+    	if (child !== null) {
+    		this.removeChild(child);
+    	}
+    },
 
-	/**
-	 * Adds multiple resources to show.
-	 *
-	 * @param options
-	 */
-	addResources : function(options) {
-		for ( var i = 0, len = options.length; i < len; i++) {
-			this.addResource(options[i]);
-		}
-	}
+    /**
+     * Adds multiple resources to show.
+     *
+     * @param options
+     */
+    addResources : function(options) {
+    	for ( var i = 0, len = options.length; i < len; i++) {
+    		this.addResource(options[i]);
+    	}
+    }
 
 });
 
@@ -75,45 +75,45 @@ Ext.ux.VIS.ResourceNodesContainer = Ext.extend(Ext.tree.AsyncTreeNode, {
  * the attributes of each node
  */
 Ext.ux.VIS.ResourceLoader = Ext.extend(Ext.tree.TreeLoader, {
-	load : function(node, callback, scope) {
-		// every level of resource loading process gets wrapped into a node
-		if (this.fireEvent('beforeload', this, node, callback) !== false && node.leaf !== true && !node.isRoot) {
+    load : function(node, callback, scope) {
+    	// every level of resource loading process gets wrapped into a node
+    	if (this.fireEvent('beforeload', this, node, callback) !== false && node.leaf !== true && !node.isRoot) {
 
-			var attributes = OpenLayers.Util.extend({}, node.attributes);
-			delete attributes.id;
-			delete attributes.loader;
+    		var attributes = OpenLayers.Util.extend({}, node.attributes);
+    		delete attributes.id;
+    		delete attributes.loader;
 
-			VIS.ResourceLoader.loadResourceOptions(attributes, function(resourceOptions) {
+    		VIS.ResourceLoader.loadResourceOptions(attributes, function(resourceOptions) {
 
-				if (resourceOptions instanceof Error) {
-					// Error handling
-					this.addErrorNode(node, resourceOptions);
-				} else {
-					// Append child node for each resourceOption element
-					resourceOptions = resourceOptions.length ? resourceOptions : [ resourceOptions ];
-					for ( var i = 0; i < resourceOptions.length; i++) {
-						node.appendChild(this.createNode(resourceOptions[i]));
-					}
-					this.fireEvent('load', this, node);
-				}
-				callback.call(node, scope);
-			}.createDelegate(this));
-		}
-	},
+    			if (resourceOptions instanceof Error) {
+    				// Error handling
+    				this.addErrorNode(node, resourceOptions);
+    			} else {
+    				// Append child node for each resourceOption element
+    				resourceOptions = resourceOptions.length ? resourceOptions : [ resourceOptions ];
+    				for ( var i = 0; i < resourceOptions.length; i++) {
+    					node.appendChild(this.createNode(resourceOptions[i]));
+    				}
+    				this.fireEvent('load', this, node);
+    			}
+    			callback.call(node, scope);
+    		}.createDelegate(this));
+    	}
+    },
 
-	addErrorNode : function(node, error) {
-		node.appendChild(this.createNode({
-			text : 'Error - double click to show details',
-			iconCls : 'x-form-invalid-icon',
-			leaf : true,
-			listeners : {
-				dblClick : function() {
-					Ext.Msg.alert('Error', Ext.util.Format.htmlEncode(error.message));
-				}
-			}
-		}));
+    addErrorNode : function(node, error) {
+    	node.appendChild(this.createNode({
+    		text : 'Error - double click to show details',
+    		iconCls : 'x-form-invalid-icon',
+    		leaf : true,
+    		listeners : {
+    			dblClick : function() {
+    				Ext.Msg.alert('Error', Ext.util.Format.htmlEncode(error.message));
+    			}
+    		}
+    	}));
 
-		this.fireEvent('loadexception', this, node);
-	}
+    	this.fireEvent('loadexception', this, node);
+    }
 
 });

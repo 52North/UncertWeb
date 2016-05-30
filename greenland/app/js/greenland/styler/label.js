@@ -23,32 +23,32 @@ OpenLayers.VIS.Styler = OpenLayers.VIS.Styler || {};
  */
 OpenLayers.VIS.Styler.Label = OpenLayers.Class(OpenLayers.VIS.Styler.Base, {
 
-	initialize : function(options) {
-		options = options || {};
-		options.isFeatureStyler = true;
-		OpenLayers.VIS.Styler.Base.prototype.initialize.apply(this, arguments);
-	},
+    initialize : function(options) {
+    	options = options || {};
+    	options.isFeatureStyler = true;
+    	OpenLayers.VIS.Styler.Base.prototype.initialize.apply(this, arguments);
+    },
 
-	setSymbology : function(symbology) {
-		OpenLayers.VIS.Styler.Base.prototype.setSymbology.apply(this, arguments);
-	},
+    setSymbology : function(symbology) {
+    	OpenLayers.VIS.Styler.Base.prototype.setSymbology.apply(this, arguments);
+    },
 
-	getValue : function(value) {
-		// if (value != null)
-		// return '' + value.toFixed(3);
-		// else
-		return '';
-	},
+    getValue : function(value) {
+    	// if (value != null)
+    	// return '' + value.toFixed(3);
+    	// else
+    	return '';
+    },
 
-	createParameters : function() {
-		return {};
-	},
+    createParameters : function() {
+    	return {};
+    },
 
-	restore : function(parcel) {
-		// TODO
-	},
+    restore : function(parcel) {
+    	// TODO
+    },
 
-	store : function() {
-		// TODO
-	}
+    store : function() {
+    	// TODO
+    }
 });

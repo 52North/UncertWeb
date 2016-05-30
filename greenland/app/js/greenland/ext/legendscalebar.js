@@ -29,46 +29,46 @@ Ext.ux.VIS.LegendScaleBar = Ext.extend(
 
 Ext.Panel, {
 
-	visualization : null,
-	legendCmp : null,
-	// autoHeight : true,
-	layout : 'fit',
-	border : false,
-	baseCls : 'x-plain',
+    visualization : null,
+    legendCmp : null,
+    // autoHeight : true,
+    layout : 'fit',
+    border : false,
+    baseCls : 'x-plain',
 
-	initComponent : function() {
-		Ext.ux.VIS.LegendScaleBar.superclass.initComponent.call(this);
+    initComponent : function() {
+    	Ext.ux.VIS.LegendScaleBar.superclass.initComponent.call(this);
 
-		// register event handler to refresh the legend if it gets changed
-		this.visualization.events.register('change', this, this.handleVisualizationChange);
-		this.refresh();
-	},
+    	// register event handler to refresh the legend if it gets changed
+    	this.visualization.events.register('change', this, this.handleVisualizationChange);
+    	this.refresh();
+    },
 
-	refresh : function() {
-		if (!this.visualization.isValid()) {
-			return;
-		}
+    refresh : function() {
+    	if (!this.visualization.isValid()) {
+    		return;
+    	}
 
-		// gets new component from the visualization object and replaces current
-		if (this.legendCmp) {
-			this.remove(this.legendCmp);
-		}
-		this.legendCmp = this.visualization.getLegend();
-		if (this.legendCmp) {
-			this.add(this.legendCmp);
-		}
-		this.doLayout();
-	},
+    	// gets new component from the visualization object and replaces current
+    	if (this.legendCmp) {
+    		this.remove(this.legendCmp);
+    	}
+    	this.legendCmp = this.visualization.getLegend();
+    	if (this.legendCmp) {
+    		this.add(this.legendCmp);
+    	}
+    	this.doLayout();
+    },
 
-	handleVisualizationChange : function(evt) {
-		if (evt.property == 'legend') {
-			this.refresh();
-		}
-	},
+    handleVisualizationChange : function(evt) {
+    	if (evt.property == 'legend') {
+    		this.refresh();
+    	}
+    },
 
-	beforeDestroy : function() {
-		this.visualization.events.unregister('change', this, this.handleVisualizationChange);
+    beforeDestroy : function() {
+    	this.visualization.events.unregister('change', this, this.handleVisualizationChange);
 
-		Ext.ux.VIS.LegendScaleBar.superclass.beforeDestroy.call(this);
-	}
+    	Ext.ux.VIS.LegendScaleBar.superclass.beforeDestroy.call(this);
+    }
 });

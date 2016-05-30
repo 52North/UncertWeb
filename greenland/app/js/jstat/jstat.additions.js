@@ -1,6 +1,6 @@
 var LinearInterpolatedQuantilesDistribution = ContinuousDistribution.extend({
     init: function(quantiles) {
-    	//[{level: 0.5, value: 0.2}]
+        //[{level: 0.5, value: 0.2}]
         this._super('LinearInterpolatedQuantiles');
         this._mean = parseFloat(mean);
         this._sigma = parseFloat(sigma);
@@ -15,7 +15,7 @@ var LinearInterpolatedQuantilesDistribution = ContinuousDistribution.extend({
 
 var SingleValuePseudoDistribution = ContinuousDistribution.extend({
     init: function(val) {
-    	//[{level: 0.5, value: 0.2}]
+        //[{level: 0.5, value: 0.2}]
         this._super('SingleValuePseudo');
         this._mean = parseFloat(val);
         this._sigma = 0.0;
@@ -30,19 +30,19 @@ var SingleValuePseudoDistribution = ContinuousDistribution.extend({
 
 
 ContinuousDistribution.prototype.getExceedanceProbability = function(t) {
-	return Math.random();
+    return Math.random();
 };
 
 ContinuousDistribution.prototype.getConfidenceInterval = function(p) {
-	return [this.getQuantile(p), this.getQuantile(1 - p)];
+    return [this.getQuantile(p), this.getQuantile(1 - p)];
 };
 
 
 DistributionFactory._build = DistributionFactory.build;
 DistributionFactory.build = function(json) {
-	if (json.LinearInterpolatedQuantiles) {
-		/* TODO */
-	} else {
-		return DistributionFactory._build(json);
-	}
+    if (json.LinearInterpolatedQuantiles) {
+    	/* TODO */
+    } else {
+    	return DistributionFactory._build(json);
+    }
 };

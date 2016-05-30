@@ -20,291 +20,291 @@
  * regression-kriging".
  */
 OpenLayers.Layer.VIS.WMSQ.Whitening = OpenLayers.Class(OpenLayers.Layer.VIS.WMSQ.Visualization, {
-	requiredLayers : {
-		'default' : {
-			title : 'Custom Selection',
-			layers : {
-				valueLayer : {
-					title : 'Value Layer',
-					description : 'Variable to analyze'
-				},
-				errorLayer : {
-					title : 'Error Layer',
-					description : 'Error Variable'
-				}
-			}
-		},
+    requiredLayers : {
+    	'default' : {
+    		title : 'Custom Selection',
+    		layers : {
+    			valueLayer : {
+    				title : 'Value Layer',
+    				description : 'Variable to analyze'
+    			},
+    			errorLayer : {
+    				title : 'Error Layer',
+    				description : 'Error Variable'
+    			}
+    		}
+    	},
 
-		normal : {
-			title : 'Normal Distribution',
-			layers : {
-				valueLayer : {
-					title : 'Value Layer',
-					description : 'Mean',
-					uncertainty : {
-						'normal#mean' : true
-					}
-				},
-				errorLayer : {
-					title : 'Error Layer',
-					description : 'Standard Deviation',
-					uncertainty : {
-						'normal#variance' : true
-					}
-				}
-			}
-		}
-	},
+    	normal : {
+    		title : 'Normal Distribution',
+    		layers : {
+    			valueLayer : {
+    				title : 'Value Layer',
+    				description : 'Mean',
+    				uncertainty : {
+    					'normal#mean' : true
+    				}
+    			},
+    			errorLayer : {
+    				title : 'Error Layer',
+    				description : 'Standard Deviation',
+    				uncertainty : {
+    					'normal#variance' : true
+    				}
+    			}
+    		}
+    	}
+    },
 
-	valueLayer : null,
-	errorLayer : null,
+    valueLayer : null,
+    errorLayer : null,
 
-	mergerLegend : null,
-	mergerLegendTile : null,
+    mergerLegend : null,
+    mergerLegendTile : null,
 
-	initialize : function(options) {
-		this.mergerLegend = new OpenLayers.Tile.Image.MultiImage.CanvasMerger();
+    initialize : function(options) {
+    	this.mergerLegend = new OpenLayers.Tile.Image.MultiImage.CanvasMerger();
 
-		options.valueLayer.styler = {
+    	options.valueLayer.styler = {
 
-			fillColor : new OpenLayers.VIS.Styler.Color({
-				predefinedColors : [ // 
-				[ [ 120, 100, 100 ], [ 0, 100, 100 ] ], // Green-Red
-				[ [ 30, 20, 100 ], [ 0, 100, 100 ] ], // Orange-Red
-				[ [ 60, 20, 100 ], [ 120, 100, 80 ] ], // Yellow-Green
-				[ [ 0, 100, 100 ], [ 359, 100, 100 ] ] // All
-				]
-			}),
-			bounds : VIS.createPropertyArray([ new OpenLayers.VIS.Styler.Continuous(),
-					new OpenLayers.VIS.Styler.EqualIntervals() ], {
-				fieldLabel : 'Value Bounds'
-			}),
-			opacity : new OpenLayers.VIS.Styler.Opacity()
-		};
+    		fillColor : new OpenLayers.VIS.Styler.Color({
+    			predefinedColors : [ //
+    			[ [ 120, 100, 100 ], [ 0, 100, 100 ] ], // Green-Red
+    			[ [ 30, 20, 100 ], [ 0, 100, 100 ] ], // Orange-Red
+    			[ [ 60, 20, 100 ], [ 120, 100, 80 ] ], // Yellow-Green
+    			[ [ 0, 100, 100 ], [ 359, 100, 100 ] ] // All
+    			]
+    		}),
+    		bounds : VIS.createPropertyArray([ new OpenLayers.VIS.Styler.Continuous(),
+    				new OpenLayers.VIS.Styler.EqualIntervals() ], {
+    			fieldLabel : 'Value Bounds'
+    		}),
+    		opacity : new OpenLayers.VIS.Styler.Opacity()
+    	};
 
-		options.errorLayer.styler = {
-			bounds : VIS.createPropertyArray([ new OpenLayers.VIS.Styler.Continuous(),
-					new OpenLayers.VIS.Styler.EqualIntervals() ], {
-				fieldLabel : 'Value Bounds'
-			})
-		};
+    	options.errorLayer.styler = {
+    		bounds : VIS.createPropertyArray([ new OpenLayers.VIS.Styler.Continuous(),
+    				new OpenLayers.VIS.Styler.EqualIntervals() ], {
+    			fieldLabel : 'Value Bounds'
+    		})
+    	};
 
-		options.layerOptions = [ options.valueLayer, options.errorLayer ];
+    	options.layerOptions = [ options.valueLayer, options.errorLayer ];
 
-		OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.initialize.apply(this, arguments);
+    	OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.initialize.apply(this, arguments);
 
-	},
+    },
 
-	update : function() {
-		OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.update.call(this);
-		this.events.triggerEvent('change', {
-			property : 'legend'
-		});
-	},
+    update : function() {
+    	OpenLayers.Layer.VIS.WMSQ.Visualization.prototype.update.call(this);
+    	this.events.triggerEvent('change', {
+    		property : 'legend'
+    	});
+    },
 
-	/**
-	 * Fills canvas pixel array with color values calculated according to
-	 * whitening procedure by Hengl et al.
-	 * 
-	 * @param imageData
-	 * @param merger
-	 */
-	fillPixelArray : function(imageData, merger) {
-		var cpa = imageData.data;
-		var w = imageData.width;
-		var maxErrorValue = this.errorLayer.styler.bounds.getMaxValue();
+    /**
+     * Fills canvas pixel array with color values calculated according to
+     * whitening procedure by Hengl et al.
+     *
+     * @param imageData
+     * @param merger
+     */
+    fillPixelArray : function(imageData, merger) {
+    	var cpa = imageData.data;
+    	var w = imageData.width;
+    	var maxErrorValue = this.errorLayer.styler.bounds.getMaxValue();
 
-		for ( var y = 0; y < imageData.height; y++)
-			for ( var x = 0; x < w; x++) {
-				// Whitening Hengl et al
-				value = this.valueLayer.getValue(merger, x, y);
-				if (!value) {
-					// no value -> transparent
-					cpa[y * w * 4 + x * 4 + 3] = 0;
-					continue;
-				}
+    	for ( var y = 0; y < imageData.height; y++)
+    		for ( var x = 0; x < w; x++) {
+    			// Whitening Hengl et al
+    			value = this.valueLayer.getValue(merger, x, y);
+    			if (!value) {
+    				// no value -> transparent
+    				cpa[y * w * 4 + x * 4 + 3] = 0;
+    				continue;
+    			}
 
-				hue = this.valueLayer.styler.fillColor.getValueObject(value).h;
+    			hue = this.valueLayer.styler.fillColor.getValueObject(value).h;
 
-				error = this.errorLayer.getValue(merger, x, y) || 0;
-				error = this.errorLayer.styler.bounds.getInterval(error)[0];
-				error = error / maxErrorValue; // normalized
+    			error = this.errorLayer.getValue(merger, x, y) || 0;
+    			error = this.errorLayer.styler.bounds.getInterval(error)[0];
+    			error = error / maxErrorValue; // normalized
 
-				// rgb = this.hsiToRgb((phi + 360) * (240 / 360), (1 - v2),
-				// (1 + v2) * 120);
-				// rgb = this.hsiToRgb(color.h, (1 - v2), (1 + v2) * 120);
-				rgb = new OpenLayers.VIS.Color.HSI(hue, (1 - error), (1 + error) * 120).toRGB();
-				cpa[y * w * 4 + x * 4] = rgb.r;
-				cpa[y * w * 4 + x * 4 + 1] = rgb.g;
-				cpa[y * w * 4 + x * 4 + 2] = rgb.b;
-				cpa[y * w * 4 + x * 4 + 3] = 255;
-			}
-		
-		// Assumes data got changed
-		this.mergerLegendTile = null;
-	},
+    			// rgb = this.hsiToRgb((phi + 360) * (240 / 360), (1 - v2),
+    			// (1 + v2) * 120);
+    			// rgb = this.hsiToRgb(color.h, (1 - v2), (1 + v2) * 120);
+    			rgb = new OpenLayers.VIS.Color.HSI(hue, (1 - error), (1 + error) * 120).toRGB();
+    			cpa[y * w * 4 + x * 4] = rgb.r;
+    			cpa[y * w * 4 + x * 4 + 1] = rgb.g;
+    			cpa[y * w * 4 + x * 4 + 2] = rgb.b;
+    			cpa[y * w * 4 + x * 4 + 3] = 255;
+    		}
 
-	getTitle : function() {
-		return 'Whitening Test, ' + this.valueLayer.name + ', ' + this.errorLayer.name;
-	},
+    	// Assumes data got changed
+    	this.mergerLegendTile = null;
+    },
 
-	/**
-	 * Override to create custom legend
-	 * 
-	 * @returns {Ext.Panel}
-	 */
-	getLegend : function() {
-		var self = this;
-		var leftMargin = 80;
-		var bottomMargin = 20;
+    getTitle : function() {
+    	return 'Whitening Test, ' + this.valueLayer.name + ', ' + this.errorLayer.name;
+    },
 
-		var panel = new Ext.Panel({
-			border : false,
-			cursor : null,
-			listeners : {
-				render : function(comp) {
-					var el = comp.el.child('.x-panel-body');
-					comp.cursor = el.createChild({
-						tag : 'div',
-						style : {
-							position : 'absolute',
-							width : '3px',
-							height : '3px',
-							border : 'solid 2px gray'
-						}
-					});
+    /**
+     * Override to create custom legend
+     *
+     * @returns {Ext.Panel}
+     */
+    getLegend : function() {
+    	var self = this;
+    	var leftMargin = 80;
+    	var bottomMargin = 20;
 
-					var canvas = document.createElement("canvas");
-					var width = 250, height = 100;
+    	var panel = new Ext.Panel({
+    		border : false,
+    		cursor : null,
+    		listeners : {
+    			render : function(comp) {
+    				var el = comp.el.child('.x-panel-body');
+    				comp.cursor = el.createChild({
+    					tag : 'div',
+    					style : {
+    						position : 'absolute',
+    						width : '3px',
+    						height : '3px',
+    						border : 'solid 2px gray'
+    					}
+    				});
 
-					var legendWidth = width - leftMargin, legendHeight = height - bottomMargin;
+    				var canvas = document.createElement("canvas");
+    				var width = 250, height = 100;
 
-					canvas.width = width;
-					canvas.height = height;
-					var ctx = canvas.getContext("2d");
+    				var legendWidth = width - leftMargin, legendHeight = height - bottomMargin;
 
-					// Get bounds
-					comp.valueMin = self.valueLayer.styler.bounds.getMinValue();
-					var valueMax = self.valueLayer.styler.bounds.getMaxValue();
-					comp.valueRangeRatio = (valueMax - comp.valueMin) / legendWidth;
+    				canvas.width = width;
+    				canvas.height = height;
+    				var ctx = canvas.getContext("2d");
 
-					comp.errorMin = self.errorLayer.styler.bounds.getMinValue();
-					var errorMax = self.errorLayer.styler.bounds.getMaxValue();
+    				// Get bounds
+    				comp.valueMin = self.valueLayer.styler.bounds.getMinValue();
+    				var valueMax = self.valueLayer.styler.bounds.getMaxValue();
+    				comp.valueRangeRatio = (valueMax - comp.valueMin) / legendWidth;
 
-					comp.errorRangeRatio = (errorMax - comp.errorMin) / legendHeight;
+    				comp.errorMin = self.errorLayer.styler.bounds.getMinValue();
+    				var errorMax = self.errorLayer.styler.bounds.getMaxValue();
 
-					var imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
-					var cpa = imgdata.data;
+    				comp.errorRangeRatio = (errorMax - comp.errorMin) / legendHeight;
 
-					var opacity = 255 * self.layer.opacity;
-					// Fill canvas with color values derived from value (x) and error
-					// (y)
-					for ( var i = 0; i < legendHeight; i++) {
-						for ( var j = 0; j < legendWidth; j++) {
+    				var imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    				var cpa = imgdata.data;
 
-							value = comp.valueMin + comp.valueRangeRatio * j;
-							error = comp.errorMin + comp.errorRangeRatio * i;
-							hue = self.valueLayer.styler.fillColor.getValueObject(value).h;
+    				var opacity = 255 * self.layer.opacity;
+    				// Fill canvas with color values derived from value (x) and error
+    				// (y)
+    				for ( var i = 0; i < legendHeight; i++) {
+    					for ( var j = 0; j < legendWidth; j++) {
 
-							error = self.errorLayer.styler.bounds.getInterval(error)[0];
-							error = error / errorMax; // normalized
+    						value = comp.valueMin + comp.valueRangeRatio * j;
+    						error = comp.errorMin + comp.errorRangeRatio * i;
+    						hue = self.valueLayer.styler.fillColor.getValueObject(value).h;
 
-							// rgb = this.hsiToRgb((phi + 360) * (240 / 360), (1 - v2),
-							// (1 + v2) * 120);
-							// rgb = this.hsiToRgb(color.h, (1 - v2), (1 + v2) * 120);
-							rgb = new OpenLayers.VIS.Color.HSI(hue, (1 - error), (1 + error) * 120).toRGB();
-							cpa[i * width * 4 + j * 4] = rgb.r;
-							cpa[i * width * 4 + j * 4 + 1] = rgb.g;
-							cpa[i * width * 4 + j * 4 + 2] = rgb.b;
-							cpa[i * width * 4 + j * 4 + 3] = opacity;
+    						error = self.errorLayer.styler.bounds.getInterval(error)[0];
+    						error = error / errorMax; // normalized
 
-						}
-					}
-					ctx.putImageData(imgdata, leftMargin, 0);
+    						// rgb = this.hsiToRgb((phi + 360) * (240 / 360), (1 - v2),
+    						// (1 + v2) * 120);
+    						// rgb = this.hsiToRgb(color.h, (1 - v2), (1 + v2) * 120);
+    						rgb = new OpenLayers.VIS.Color.HSI(hue, (1 - error), (1 + error) * 120).toRGB();
+    						cpa[i * width * 4 + j * 4] = rgb.r;
+    						cpa[i * width * 4 + j * 4 + 1] = rgb.g;
+    						cpa[i * width * 4 + j * 4 + 2] = rgb.b;
+    						cpa[i * width * 4 + j * 4 + 3] = opacity;
 
-					// Text
-					ctx.textBaseline = 'hanging';
-					ctx.fillText('Value', 0, legendHeight - 5);
-					if (self.valueLayer.uom && self.valueLayer.uom.length != 0) {
-						ctx.fillText('(' + self.valueLayer.uom + ')', 0, legendHeight + 5);
-					}
-					for ( var i = 0; i < legendWidth; i += legendWidth / 5) {
-						ctx.beginPath();
-						ctx.moveTo(i + leftMargin, legendHeight);
-						ctx.lineTo(i + leftMargin, legendHeight + 5);
-						ctx.stroke();
-						ctx.fillText((comp.valueMin + (comp.valueRangeRatio) * i).toFixed(2), i + leftMargin, legendHeight + 5);
-					}
+    					}
+    				}
+    				ctx.putImageData(imgdata, leftMargin, 0);
 
-					ctx.fillText('Error', 0, 0);
-					if (self.errorLayer.uom && self.errorLayer.uom.length != 0) {
-						ctx.fillText('(' + self.errorLayer.uom + ')', 0, 10);
-					}
-					ctx.textAlign = 'right';
-					for ( var i = 0; i < legendHeight; i += legendHeight / 5) {
-						ctx.beginPath();
-						ctx.moveTo(leftMargin, i);
-						ctx.lineTo(leftMargin - 5, i);
-						ctx.stroke();
-						ctx.fillText((comp.errorMin + (comp.errorRangeRatio) * i).toFixed(2), leftMargin, i);
-					}
-					el.appendChild(canvas);
-				}
-			},
+    				// Text
+    				ctx.textBaseline = 'hanging';
+    				ctx.fillText('Value', 0, legendHeight - 5);
+    				if (self.valueLayer.uom && self.valueLayer.uom.length != 0) {
+    					ctx.fillText('(' + self.valueLayer.uom + ')', 0, legendHeight + 5);
+    				}
+    				for ( var i = 0; i < legendWidth; i += legendWidth / 5) {
+    					ctx.beginPath();
+    					ctx.moveTo(i + leftMargin, legendHeight);
+    					ctx.lineTo(i + leftMargin, legendHeight + 5);
+    					ctx.stroke();
+    					ctx.fillText((comp.valueMin + (comp.valueRangeRatio) * i).toFixed(2), i + leftMargin, legendHeight + 5);
+    				}
 
-			setCursorPosition : function(v, e) {
-				if (this.cursor) {
-					this.cursor.setLeft(leftMargin + ((v - this.valueMin) / this.valueRangeRatio));
-					this.cursor.setTop((e - this.errorMin) / this.errorRangeRatio);
-				}
-			},
+    				ctx.fillText('Error', 0, 0);
+    				if (self.errorLayer.uom && self.errorLayer.uom.length != 0) {
+    					ctx.fillText('(' + self.errorLayer.uom + ')', 0, 10);
+    				}
+    				ctx.textAlign = 'right';
+    				for ( var i = 0; i < legendHeight; i += legendHeight / 5) {
+    					ctx.beginPath();
+    					ctx.moveTo(leftMargin, i);
+    					ctx.lineTo(leftMargin - 5, i);
+    					ctx.stroke();
+    					ctx.fillText((comp.errorMin + (comp.errorRangeRatio) * i).toFixed(2), leftMargin, i);
+    				}
+    				el.appendChild(canvas);
+    			}
+    		},
 
-			setCursorVisible : function(visible) {
-				if (this.cursor && this.cursor.visible != visible) {
-					this.cursor.setVisible(visible);
-					this.cursor.visible = visible;
-				}
-			}
-		});
+    		setCursorPosition : function(v, e) {
+    			if (this.cursor) {
+    				this.cursor.setLeft(leftMargin + ((v - this.valueMin) / this.valueRangeRatio));
+    				this.cursor.setTop((e - this.errorMin) / this.errorRangeRatio);
+    			}
+    		},
 
-		var map = this.layer.map;
+    		setCursorVisible : function(visible) {
+    			if (this.cursor && this.cursor.visible != visible) {
+    				this.cursor.setVisible(visible);
+    				this.cursor.visible = visible;
+    			}
+    		}
+    	});
 
-		var cursorUpdateFunction = function(e) {
-			if (!this.layer.getVisibility()) {
-				return;
-			}
-			var lonLat = map.getLonLatFromViewPortPx(e.xy);
+    	var map = this.layer.map;
 
-			var data = this.layer.getTileData(lonLat);
-			if (!data || !data.tile || data.tile.loadingMask != 0 || !data.tile.layerImages
-					|| data.tile.layerImages.length == 0) {
-				panel.setCursorVisible(false);
-				return;
-			}
+    	var cursorUpdateFunction = function(e) {
+    		if (!this.layer.getVisibility()) {
+    			return;
+    		}
+    		var lonLat = map.getLonLatFromViewPortPx(e.xy);
 
-			if (this.mergerLegendTile == null || this.mergerLegendTile.tile != data.tile) {
-				this.mergerLegendTile = this.mergerLegend.getMerger(data.tile.layerImages, data.tile);
-				this.mergerLegendTile.tile = data.tile;
-			}
+    		var data = this.layer.getTileData(lonLat);
+    		if (!data || !data.tile || data.tile.loadingMask != 0 || !data.tile.layerImages
+    				|| data.tile.layerImages.length == 0) {
+    			panel.setCursorVisible(false);
+    			return;
+    		}
 
-			var v = this.valueLayer.getValue(this.mergerLegendTile, Math.floor(data.i), Math.floor(data.j));
-			var e = this.errorLayer.getValue(this.mergerLegendTile, Math.floor(data.i), Math.floor(data.j));
-			if (v == null || e == null) {
-				panel.setCursorVisible(false);
-				return;
-			}
-			panel.setCursorPosition(v, e);
-			panel.setCursorVisible(true);
-		};
+    		if (this.mergerLegendTile == null || this.mergerLegendTile.tile != data.tile) {
+    			this.mergerLegendTile = this.mergerLegend.getMerger(data.tile.layerImages, data.tile);
+    			this.mergerLegendTile.tile = data.tile;
+    		}
 
-		map.events.register('mousemove', this, cursorUpdateFunction);
-		map.events.register('mousemarkermove', this, cursorUpdateFunction);
-		panel.on('destroy', function() {
-			map.events.unregister('mousemove', this, cursorUpdateFunction);
-			map.events.unregister('mousemarkermove', this, cursorUpdateFunction);
-		}, this);
+    		var v = this.valueLayer.getValue(this.mergerLegendTile, Math.floor(data.i), Math.floor(data.j));
+    		var e = this.errorLayer.getValue(this.mergerLegendTile, Math.floor(data.i), Math.floor(data.j));
+    		if (v == null || e == null) {
+    			panel.setCursorVisible(false);
+    			return;
+    		}
+    		panel.setCursorPosition(v, e);
+    		panel.setCursorVisible(true);
+    	};
 
-		return panel;
-	}
+    	map.events.register('mousemove', this, cursorUpdateFunction);
+    	map.events.register('mousemarkermove', this, cursorUpdateFunction);
+    	panel.on('destroy', function() {
+    		map.events.unregister('mousemove', this, cursorUpdateFunction);
+    		map.events.unregister('mousemarkermove', this, cursorUpdateFunction);
+    	}, this);
+
+    	return panel;
+    }
 
 });
