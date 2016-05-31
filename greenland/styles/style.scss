@@ -1,0 +1,61 @@
+/* http://projects.opengeo.org/geosilk */
+
+.icon-zoomin { background: url('../images/zoom_in.png') no-repeat !important; }
+.icon-zoomout { background: url('../images/zoom_out.png') no-repeat !important; }
+.icon-zoombox { background: url('../images/zoom.png') no-repeat !important; }
+.icon-maxextent { background: url('../images/arrow_out.png') no-repeat !important; }
+.icon-graticule { background: url('../images/graticule.png') no-repeat !important; }
+.icon-vector { background: url('../images/vector.png') no-repeat !important; }
+.icon-raster { background: url('../images/raster.png') no-repeat !important; }
+.icon-raster-visualization { background: url('../images/raster_vis.png') no-repeat !important; }
+.icon-serverraster { background: url('../images/server_raster.png') no-repeat !important; }
+.icon-servermap { background: url('../images/server_map.png') no-repeat !important; }
+.icon-barchart { background: url('../images/chart_bar.png') no-repeat !important; }
+.icon-piechart { background: url('../images/chart_pie.png') no-repeat !important; }
+.icon-sort { background: url('../images/sort.png') no-repeat !important; }
+.icon-refresh { background: url('../images/arrow_refresh.png') no-repeat !important; }
+.icon-timeforward { background: url('../images/time_forward.png') no-repeat !important; }
+.icon-timebackward { background: url('../images/time_backward.png') no-repeat !important; }
+.icon-selectbox { background: url('../images/select_box.png') no-repeat !important; }
+.icon-database { background: url('../images/database.png') no-repeat !important; }
+.icon-addmap { background: url('../images/map_add.png') no-repeat !important; }
+.icon-deletemap { background: url('../images/map_delete.png') no-repeat !important; }
+
+.legend-loading {
+    background-image:url('../images/default/tree/loading.gif');
+    width: 15px;
+ 	height: 15px;
+ 	right: 5px;
+ 	position: absolute;
+ 	background-color: white;
+}
+.x-tab-strip {
+	ol,	ul,	dl,	blockquote {
+		margin: 0;
+	}
+}
+
+ul {
+	.x-tree-node-ct,
+	.x-tree-root-ct,
+	.x-menu-list {
+		margin: 0;
+	}
+}
+
+li .x-tree-node {
+	list-style-type: none;
+}
+
+ul .x-tree-root-ct {
+	list-style: none;
+}
+
+input .x-form-field {
+	padding : 0 !important;
+}
+
+div .x-panel {
+	color: black;
+	font-weight : normal;
+}
