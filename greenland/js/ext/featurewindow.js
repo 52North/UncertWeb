@@ -118,8 +118,9 @@ Ext.ux.VIS.FeatureWindow = Ext.extend(Ext.Window, {
     					clickInfos.push(series[i].clickInfos[j]);
     				}
     			}
-    			if (clickInfos.length == 0)
+    			if (!clickInfos.length) {
     				continue;
+                }
 
     			var itemId = minX + '-' + maxX + '_' + i;
     			tabPanel.add(resultValue.createSubPlotPanel(clickInfos, {

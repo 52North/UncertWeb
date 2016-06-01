@@ -37,17 +37,27 @@ Ext.ux.VIS.FeatureArrow = Ext.extend(GeoExt.FeatureRenderer, {
     initComponent : function() {
     	Ext.ux.VIS.FeatureArrow.superclass.initComponent.apply(this, arguments);
 
-    	this.feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Polygon(
-    			[ new OpenLayers.Geometry.LinearRing([ new OpenLayers.Geometry.Point(0, 0),
-    					new OpenLayers.Geometry.Point(0, 50), new OpenLayers.Geometry.Point(-50, 25),
-    					new OpenLayers.Geometry.Point(0, 0) ]) ]));
+        this.feature = this._createTriangle([[0,0],[0,50],[-50,25]]);
+
     	this.startPos = [ 0, 0 ];
     	this.endPos = [ 0, 0 ];
     	this.startWidth = 100;
     },
 
+    _createTriangle: function(x) {
+        var points = [
+            new OpenLayers.Geometry.Point(x[0][0], x[0][1]),
+            new OpenLayers.Geometry.Point(x[1][0], x[1][1]),
+            new OpenLayers.Geometry.Point(x[2][0], x[2][1]),
+            new OpenLayers.Geometry.Point(x[0][0], x[0][1])
+        ];
+        var ring = new OpenLayers.Geometry.LinearRing(coordinates);
+        var polygon = new OpenLayers.Geometry.Polygon([ring]);
+        return new OpenLayers.Feature.Vector(polygon);
+    },
+
     setStartPosition : function(x, y) {
-    	this.startPos = [ x, y ];
+    	this.startPos = [x, y];
     },
 
     setStartWidth : function(w) {
@@ -55,34 +65,30 @@ Ext.ux.VIS.FeatureArrow = Ext.extend(GeoExt.FeatureRenderer, {
     },
 
     setEndPosition : function(x, y) {
-    	this.endPos = [ x, y ];
+    	this.endPos = [x, y];
     },
 
     setOrientation : function(orientation) {
     	this.orientation = orientation;
     },
 
-    updateFeature : function() {
-    	var startOffsetX, startOffsetY;
-    	switch (this.orientation) {
-    	case 'vertical':
-    		startOffsetX = 0;
-    		startOffsetY = this.startWidth;
-    		break;
-    	case 'horizontal':
-    		startOffsetX = this.startWidth;
-    		startOffsetY = 0;
-    		break;
-    	}
+    _getOffsetForOrientation: function() {
+        switch (this.orientation) {
+            case 'vertical':
+                return [0, this.startWidth];
+            case 'horizontal':
+                return [this.startWidth, 0];
+        }
+    },
 
+    updateFeature : function() {
+        var offset = this._getOffsetForOrientation();
     	var height = this.endPos[1] - this.startPos[1];
-    	this.setFeature(new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Polygon(
-    			[ new OpenLayers.Geometry.LinearRing([
-    					new OpenLayers.Geometry.Point(this.startPos[0], height - this.startPos[1]),
-    					new OpenLayers.Geometry.Point(this.startPos[0] + startOffsetX, height
-    							- this.startPos[1] - startOffsetY),
-    					new OpenLayers.Geometry.Point(this.endPos[0], height - this.endPos[1]),
-    					new OpenLayers.Geometry.Point(this.startPos[0], height - this.startPos[1]) ]) ])));
+        this.setFeature(this._createTriangle([
+            [this.startPos[0], height - this.startPos[1]],
+            [this.startPos[0] + offset[0], height - this.startPos[1] - offset[1]],
+            [this.endPos[0], height - this.endPos[1]]
+        ]));
     }
 
 });

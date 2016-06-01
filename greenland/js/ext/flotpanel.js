@@ -58,22 +58,20 @@ Ext.ux.VIS.FlotPanel = Ext.extend(Ext.Panel, {
     	this.addEvents('plotselected');
     },
 
-    onResize : function(adjWidth, adjHeight, rawWidth, rawHeight) {
-    	Ext.ux.VIS.FlotPanel.superclass.onResize.call(this, adjWidth, adjHeight, rawWidth, rawHeight);
-
+    onResize: function() {
+    	Ext.ux.VIS.FlotPanel.superclass.onResize.apply(this, arguments);
     	// Render plot on resize
     	this.renderPlot();
     },
 
     renderPlot : function(reset) {
     	if (this.rendered) {
-    		if (this.plotParams == null) {
-    			try {
-    				this.plotParams = this.getPlotParams();
-    			} catch (e) {
-    				Ext.MessageBox.alert('Error', 'Error generating plot data:\n' + e);
-    			}
-    		}
+
+			try {
+				this.plotParams = this.plotParams || this.getPlotParams();
+			} catch (e) {
+				Ext.MessageBox.alert('Error', 'Error generating plot data:\n' + e);
+			}
 
     		var element = this.el.child('.x-panel-body');
     		try {
@@ -138,6 +136,6 @@ Ext.ux.VIS.FlotPanel = Ext.extend(Ext.Panel, {
     replot : function(reset) {
     	// this.plotParams = null;
     	// this.renderPlot(reset);
-    	this.updateTask.delay(100, null, null, [ reset == true ]);
+    	this.updateTask.delay(100, null, null, [ reset === true ]);
     }
 });
