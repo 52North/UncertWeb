@@ -491,7 +491,7 @@ The members of the geometric aggregate are specified using the gml:pointMember e
 							<!--CHANGE in UNCERTWEB: only gml:Pos is allowed for two positions<element ref="gml:pointProperty"/>
 							<element ref="gml:pointRep"/>-->
 						</choice>
-						<!--<element ref="gml:posList"/>-->
+						<element ref="gml:posList"/>
 						<!--CHANGE in UNCERTWEB: only gml:PosList is allowed for a list of positions<element ref="gml:coordinates"/>-->
 					</choice>
 				</sequence>
@@ -725,7 +725,7 @@ The AbstractRing element is the abstract head of the substituition group for all
 							<!--CHANGE in UNCERTWEB: only gml:pos is allowed for position definition in linear rings <element ref="gml:pointProperty"/>
 							<element ref="gml:pointRep"/>-->
 						</choice>
-						<!--<element ref="gml:posList"/>-->
+						<element ref="gml:posList"/>
 						<!--CHANGE in UNCERTWEB:  only gml:posList is allowed for encoding list of positions in linear ring<element ref="gml:coordinates"/>-->
 					</choice>
 				</sequence>

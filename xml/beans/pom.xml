@@ -19,7 +19,6 @@
         <module>om</module>
         <module>gml</module>
         <module>gmd</module>
-        <module>xlinks</module>
     </modules>
 
     <dependencies>

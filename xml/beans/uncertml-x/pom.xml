@@ -8,12 +8,6 @@
     </parent>
     <artifactId>xmlbeans-uncertml-x</artifactId>
     <name>UncertWeb UncertML-X Beans</name>
-    <dependencies>
-        <dependency>
-            <groupId>org.uncertweb</groupId>
-            <artifactId>xmlbeans-xlinks</artifactId>
-        </dependency>
-    </dependencies>
     <build>
         <plugins>
             <plugin>

@@ -13,10 +13,6 @@
             <groupId>org.uncertweb</groupId>
             <artifactId>xmlbeans-uncertml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.uncertweb</groupId>
-            <artifactId>xmlbeans-xlinks</artifactId>
-        </dependency>
     </dependencies>
     <build>
         <plugins>

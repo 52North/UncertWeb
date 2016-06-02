@@ -153,6 +153,16 @@
 	<!-- ===== Generic Observation result ======= -->
 	<!-- ===== global element in order to support restriction across namespace boundaries ======= -->
 	<!-- ====================================================================== -->
+    
+    <element name="OM_ObservationCollection">
+		<complexType>
+			<sequence>
+				<element ref="om:OM_Observation" maxOccurs="unbounded"/>
+			</sequence>
+			<attribute ref="gml:id"/>
+		</complexType>        
+    </element>
+    
 	<element name="OM_MeasurementCollection">
 		<complexType>
 			<sequence>
@@ -197,6 +207,14 @@
 		<complexType>
 			<sequence>
 				<element ref="om:OM_ReferenceObservation" maxOccurs="unbounded"/>
+			</sequence>
+			<attribute ref="gml:id"/>
+		</complexType>
+	</element>
+    <element name="OM_CategoryObservationCollection">
+		<complexType>
+			<sequence>
+				<element ref="om:OM_CategoryObservation" maxOccurs="unbounded"/>
 			</sequence>
 			<attribute ref="gml:id"/>
 		</complexType>
