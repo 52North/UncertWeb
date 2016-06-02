@@ -8,28 +8,28 @@ import java.util.List;
 import java.util.Map;
 
 import net.opengis.gml.x32.AbstractRingPropertyType;
-import net.opengis.gml.x32.CurvePropertyType;
 import net.opengis.gml.x32.DirectPositionListType;
 import net.opengis.gml.x32.DirectPositionType;
 import net.opengis.gml.x32.GridEnvelopeType;
 import net.opengis.gml.x32.LineStringDocument;
+import net.opengis.gml.x32.LineStringPropertyType;
 import net.opengis.gml.x32.LineStringType;
 import net.opengis.gml.x32.LinearRingDocument;
 import net.opengis.gml.x32.LinearRingType;
-import net.opengis.gml.x32.MultiCurveDocument;
-import net.opengis.gml.x32.MultiCurveType;
+import net.opengis.gml.x32.MultiLineStringDocument;
+import net.opengis.gml.x32.MultiLineStringType;
 import net.opengis.gml.x32.MultiPointDocument;
 import net.opengis.gml.x32.MultiPointType;
-import net.opengis.gml.x32.MultiSurfaceDocument;
-import net.opengis.gml.x32.MultiSurfaceType;
+import net.opengis.gml.x32.MultiPolygonDocument;
+import net.opengis.gml.x32.MultiPolygonType;
 import net.opengis.gml.x32.PointDocument;
 import net.opengis.gml.x32.PointPropertyType;
 import net.opengis.gml.x32.PointType;
 import net.opengis.gml.x32.PolygonDocument;
+import net.opengis.gml.x32.PolygonPropertyType;
 import net.opengis.gml.x32.PolygonType;
 import net.opengis.gml.x32.RectifiedGridDocument;
 import net.opengis.gml.x32.RectifiedGridType;
-import net.opengis.gml.x32.SurfacePropertyType;
 import net.opengis.gml.x32.VectorType;
 
 import org.apache.xmlbeans.XmlException;
@@ -210,13 +210,15 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		if (geom.getSRID() != 0) {
 			xb_ls.setSrsName(UwGMLUtil.EPSG_URL + geom.getSRID());
 		}
+
+        DirectPositionListType posList = xb_ls.addNewPosList();
+        List<Double> list = new ArrayList<Double>(geom.getNumPoints()*2);
 		Coordinate[] coords = geom.getCoordinates();
         for (Coordinate coord : coords) {
-            DirectPositionType xb_pos = xb_ls.addNewPos();
-            xb_pos.setStringValue(UwMathUtils.roundDouble(coord.x, accuracy) +
-                                  " " +
-                                  UwMathUtils.roundDouble(coord.y, accuracy));
+            list.add(UwMathUtils.roundDouble(coord.x, accuracy));
+            list.add(UwMathUtils.roundDouble(coord.y, accuracy));
         }
+        posList.setListValue(list);
 		return xb_lsDoc;
 	}
 
@@ -321,15 +323,12 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 //		xb_lrType.setPosArray(xb_posList);
 
 		DirectPositionListType xb_posList = xb_lrType.addNewPosList();
-		String posString = "";
-		for (int i = 0; i < coords.length; i++) {
-			posString = posString + UwMathUtils.roundDouble(coords[i].x,accuracy) + " "+ UwMathUtils.roundDouble(coords[i].y,accuracy);
-			//append space, if it is not the last coordinate
-			if (i!=coords.length-1){
-				posString += " ";
-			}
-		}
-		xb_posList.setStringValue(posString);
+        List<Double> list = new ArrayList<Double>(coords.length * 2);
+        for (Coordinate coord : coords) {
+            list.add(UwMathUtils.roundDouble(coord.x, accuracy));
+            list.add(UwMathUtils.roundDouble(coord.y, accuracy));
+        }
+		xb_posList.setListValue(list);
 		return xb_lrDoc;
 	}
 
@@ -353,15 +352,15 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 * @return
 	 *			XMLBeans representation of MultiLineString
 	 */
-	public MultiCurveDocument encodeMultiLineString2Doc(MultiLineString gmlMls){
-        MultiCurveDocument xb_mlsDoc = MultiCurveDocument.Factory.newInstance();
-        MultiCurveType xb_mls = xb_mlsDoc.addNewMultiCurve();
+	public MultiLineStringDocument encodeMultiLineString2Doc(MultiLineString gmlMls){
+        MultiLineStringDocument xb_mlsDoc = MultiLineStringDocument.Factory.newInstance();
+        MultiLineStringType xb_mls = xb_mlsDoc.addNewMultiLineString();
 		//set gml ID
 		xb_mls.setId(generateGmlId());
 		xb_mls.setSrsName(UwGMLUtil.EPSG_URL+gmlMls.getSRID());
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
-            CurvePropertyType xb_ls = xb_mls.addNewCurveMember();
+            LineStringPropertyType xb_ls = xb_mls.addNewLineStringMember();
 			LineString gmlLs = (LineString)gmlMls.getGeometryN(i);
 			gmlLs.setSRID(gmlMls.getSRID());
 			LineStringDocument xb_lsDoc = encodeLineString2Doc(gmlLs);
@@ -430,15 +429,15 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 *			XMLBeans representation of MultiPolygon
 	 */
 	//public MultiSurfaceDocument encodeMultiPolygon2Doc(MultiPolygon gmlMls){
-	public MultiSurfaceDocument encodeMultiPolygon2MultiSurfaceDoc(MultiPolygon gmlMls){
-		MultiSurfaceDocument xb_mlsDoc = MultiSurfaceDocument.Factory.newInstance();
-		MultiSurfaceType xb_mls = xb_mlsDoc.addNewMultiSurface();
+	public MultiPolygonDocument encodeMultiPolygon2MultiSurfaceDoc(MultiPolygon gmlMls){
+		MultiPolygonDocument xb_mlsDoc = MultiPolygonDocument.Factory.newInstance();
+		MultiPolygonType xb_mls = xb_mlsDoc.addNewMultiPolygon();
 		//set gml ID
 		xb_mls.setId(generateGmlId());
 		xb_mls.setSrsName(UwGMLUtil.EPSG_URL+gmlMls.getSRID());
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
-			SurfacePropertyType xb_ls = xb_mls.addNewSurfaceMember();
+			PolygonPropertyType xb_ls = xb_mls.addNewPolygonMember();
 			Polygon poly = (Polygon)gmlMls.getGeometryN(i);
 			poly.setSRID(gmlMls.getSRID());
 			PolygonDocument xb_lsDoc = encodePolygon2Doc(poly);
@@ -458,7 +457,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	 */
 	private XmlOptions getGMLOptions() {
 		XmlOptions xmlOptions = new XmlOptions();
-		Map<String, String> lPrefixMap = new HashMap<String, String>();
+		Map<String, String> lPrefixMap = new HashMap<String, String>(1);
 		lPrefixMap.put("http://www.opengis.net/gml/3.2", "gml");
 		xmlOptions.setSaveSuggestedPrefixes(lPrefixMap);
 		xmlOptions.setSaveAggressiveNamespaces();

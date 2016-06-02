@@ -9,10 +9,10 @@
 		attribute in the root element.
 		==============================================================================
 	-->
-<gml:MultiSurface gml:id="col1"
+<gml:MultiPolygon gml:id="col1"
 	xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.opengis.net/gml/3.2 UncertWeb_GML.xsd">
-	<gml:surfaceMember>
+	<gml:polygonMember>
 		<gml:Polygon gml:id="UOMlocation">
 			<gml:exterior>
 				<gml:LinearRing>
@@ -24,8 +24,8 @@
 				</gml:LinearRing>
 			</gml:exterior>
 		</gml:Polygon>
-	</gml:surfaceMember>
-	<gml:surfaceMember>
+	</gml:polygonMember>
+	<gml:polygonMember>
 		<gml:Polygon gml:id="g0" srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
 			<gml:exterior>
 				<gml:LinearRing>
@@ -33,5 +33,5 @@
 				</gml:LinearRing>
 			</gml:exterior>
 		</gml:Polygon>
-	</gml:surfaceMember>
-</gml:MultiSurface>
+	</gml:polygonMember>
+</gml:MultiPolygon>

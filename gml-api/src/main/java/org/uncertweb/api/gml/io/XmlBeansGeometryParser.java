@@ -6,24 +6,24 @@ import java.util.Collection;
 import java.util.List;
 
 import net.opengis.gml.x32.AbstractRingPropertyType;
-import net.opengis.gml.x32.CurvePropertyType;
 import net.opengis.gml.x32.DirectPositionListType;
 import net.opengis.gml.x32.DirectPositionType;
 import net.opengis.gml.x32.GridEnvelopeType;
 import net.opengis.gml.x32.LineStringDocument;
+import net.opengis.gml.x32.LineStringPropertyType;
 import net.opengis.gml.x32.LineStringType;
 import net.opengis.gml.x32.LinearRingType;
-import net.opengis.gml.x32.MultiCurveDocument;
+import net.opengis.gml.x32.MultiLineStringDocument;
 import net.opengis.gml.x32.MultiPointDocument;
-import net.opengis.gml.x32.MultiSurfaceDocument;
+import net.opengis.gml.x32.MultiPolygonDocument;
 import net.opengis.gml.x32.PointDocument;
 import net.opengis.gml.x32.PointPropertyType;
 import net.opengis.gml.x32.PointType;
 import net.opengis.gml.x32.PolygonDocument;
+import net.opengis.gml.x32.PolygonPropertyType;
 import net.opengis.gml.x32.PolygonType;
 import net.opengis.gml.x32.RectifiedGridDocument;
 import net.opengis.gml.x32.RectifiedGridType;
-import net.opengis.gml.x32.SurfacePropertyType;
 import net.opengis.gml.x32.VectorType;
 
 import org.apache.xmlbeans.XmlException;
@@ -81,10 +81,10 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 			return parseRectifiedGrid(((RectifiedGridDocument) xb_geomObj).getRectifiedGrid());
 		} else if (xb_geomObj instanceof MultiPointDocument) {
 			return parseMultiPoint((MultiPointDocument) xb_geomObj);
-		} else if (xb_geomObj instanceof MultiCurveDocument) {
-			return parseMultiLineString((MultiCurveDocument) xb_geomObj);
-		} else if (xb_geomObj instanceof MultiSurfaceDocument) {
-			return parseMultiPolygon((MultiSurfaceDocument) xb_geomObj);
+		} else if (xb_geomObj instanceof MultiLineStringDocument) {
+			return parseMultiLineString((MultiLineStringDocument) xb_geomObj);
+		} else if (xb_geomObj instanceof MultiPolygonDocument) {
+			return parseMultiPolygon((MultiPolygonDocument) xb_geomObj);
 		} else {
             throw new IllegalArgumentException(
                     String.format("Geometry type (%s) is not supported by UncertWeb GML profile!", xb_geomObj));
@@ -239,12 +239,12 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @throws IllegalArgumentException
 	 * 				if parsing fails
 	 */
-	private Geometry parseMultiLineString(MultiCurveDocument xb_mlsDoc) throws IllegalArgumentException{
-		int srid = parseSrs(xb_mlsDoc.getMultiCurve().getSrsName());
-		      CurvePropertyType[] xb_lsArray = xb_mlsDoc.getMultiCurve().getCurveMemberArray();
+	private Geometry parseMultiLineString(MultiLineStringDocument xb_mlsDoc) throws IllegalArgumentException{
+		int srid = parseSrs(xb_mlsDoc.getMultiLineString().getSrsName());
+        LineStringPropertyType[] xb_lsArray = xb_mlsDoc.getMultiLineString().getLineStringMemberArray();
 		LineString[] ls = new LineString[xb_lsArray.length];
 		for (int i=0; i<xb_lsArray.length;i++){
-			ls[i]=parseLineString((LineStringType) xb_lsArray[i].getAbstractCurve());
+			ls[i]=parseLineString(xb_lsArray[i].getLineString());
 		}
 		return factory.createMultiLineString(ls, srid);
 	}
@@ -279,12 +279,12 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @throws IllegalArgumentException
 	 * 			if parsing fails
 	 */
-	private Geometry parseMultiPolygon(MultiSurfaceDocument xb_mlsDoc) throws IllegalArgumentException{
-		int srid = parseSrs(xb_mlsDoc.getMultiSurface().getSrsName());
-		SurfacePropertyType[] xb_lsArray = xb_mlsDoc.getMultiSurface().getSurfaceMemberArray();
+	private Geometry parseMultiPolygon(MultiPolygonDocument xb_mlsDoc) throws IllegalArgumentException{
+		int srid = parseSrs(xb_mlsDoc.getMultiPolygon().getSrsName());
+		PolygonPropertyType[] xb_lsArray = xb_mlsDoc.getMultiPolygon().getPolygonMemberArray();
 		Polygon[] ls = new Polygon[xb_lsArray.length];
 		for (int i=0; i<xb_lsArray.length;i++){
-			ls[i]=parsePolygon((PolygonType) xb_lsArray[i].getAbstractSurface());
+            ls[i] = parsePolygon(xb_lsArray[i].getPolygon());
 		}
 		return factory.createMultiPolygon(ls, srid);
 	}
@@ -345,20 +345,18 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * @throws IllegalArgumentException
 	 * 			if parsing of linear ring fails
 	 */
-	private LinearRing parseLinearRing(LinearRingType xb_lrType)
-			throws IllegalArgumentException {
-		DirectPositionType[] xb_posArray = xb_lrType.getPosArray();
+    private LinearRing parseLinearRing(LinearRingType xb_lrType)
+            throws IllegalArgumentException {
+        DirectPositionType[] xb_posArray = xb_lrType.getPosArray();
 
-		//linear ring contains array of pos elements
+        //linear ring contains array of pos elements
 		if (xb_posArray!=null&&xb_posArray.length!=0){
-			Coordinate[] coords = new Coordinate[xb_posArray.length];
-			for (int i = 0; i < xb_posArray.length; i++) {
-				Coordinate coord = parsePositionString(xb_posArray[i]
-						.getStringValue());
-				coords[i] = coord;
-			}
-			return geomFac.createLinearRing(coords);
-		}
+            Coordinate[] coords = new Coordinate[xb_posArray.length];
+            for (int i = 0; i < xb_posArray.length; i++) {
+                coords[i] = parsePositionString(xb_posArray[i].getStringValue());
+            }
+            return geomFac.createLinearRing(coords);
+        }
 
 		//linear ring contains posList element
 		else {
@@ -368,7 +366,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
             ArrayList<Coordinate> jtsCoords = new ArrayList<Coordinate>(coords.length);
             for (int i = 0; i < coords.length; i += 2) {
                 jtsCoords.add(new Coordinate(Double.parseDouble(coords[i]), Double.parseDouble(coords[i + 1])));
-            }
+}
 			Coordinate[] coordArray = new Coordinate[jtsCoords.size()];
 			jtsCoords.toArray(coordArray);
 			return geomFac.createLinearRing(coordArray);
