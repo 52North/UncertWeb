@@ -7,13 +7,13 @@ import java.io.FileReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
+import org.junit.Assert;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.io.JSONEncoder;
 import org.uncertml.io.JSONParser;
+
+import junit.framework.TestCase;
 
 public class JSONIOTestCase extends TestCase {
 

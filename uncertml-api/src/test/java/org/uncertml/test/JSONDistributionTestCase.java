@@ -2,9 +2,7 @@ package org.uncertml.test;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
+import org.junit.Assert;
 import org.uncertml.IUncertainty;
 import org.uncertml.distribution.categorical.CategoricalUniformDistribution;
 import org.uncertml.distribution.continuous.BetaDistribution;
@@ -13,11 +11,11 @@ import org.uncertml.distribution.continuous.ChiSquareDistribution;
 import org.uncertml.distribution.continuous.ExponentialDistribution;
 import org.uncertml.distribution.continuous.FDistribution;
 import org.uncertml.distribution.continuous.GammaDistribution;
-import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.distribution.continuous.InverseGammaDistribution;
 import org.uncertml.distribution.continuous.LaplaceDistribution;
 import org.uncertml.distribution.continuous.LogNormalDistribution;
 import org.uncertml.distribution.continuous.LogisticDistribution;
+import org.uncertml.distribution.continuous.NormalDistribution;
 import org.uncertml.distribution.continuous.NormalInverseGammaDistribution;
 import org.uncertml.distribution.continuous.PoissonDistribution;
 import org.uncertml.distribution.continuous.StudentTDistribution;
@@ -34,6 +32,8 @@ import org.uncertml.exception.UncertaintyParserException;
 import org.uncertml.io.JSONEncoder;
 import org.uncertml.io.JSONParser;
 import org.uncertml.statistic.CovarianceMatrix;
+
+import junit.framework.TestCase;
 
 public class JSONDistributionTestCase extends TestCase {
 
