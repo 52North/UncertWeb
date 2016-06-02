@@ -39,7 +39,7 @@ import org.uncertweb.utils.MultivaluedHashMap;
 import org.uncertweb.utils.MultivaluedMap;
 import org.uncertweb.utils.UwCollectionUtils;
 
-import com.google.code.morphia.annotations.Transient;
+import com.github.jmkgreen.morphia.annotations.Transient;
 
 public class UncertaintyReference {
 

@@ -49,9 +49,9 @@ import org.uncertweb.viss.core.util.Utils;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.mongo.MongoDB;
 
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.dao.BasicDAO;
-import com.google.code.morphia.mapping.Mapper;
+import com.github.jmkgreen.morphia.Datastore;
+import com.github.jmkgreen.morphia.dao.BasicDAO;
+import com.github.jmkgreen.morphia.mapping.Mapper;
 
 public class MongoResourceStore implements IResourceStore {
 
@@ -71,7 +71,7 @@ public class MongoResourceStore implements IResourceStore {
 			super(MongoDB.getInstance().getDatastore());
 		}
 	}
-	
+
 	private ResourceDAO rDao = new ResourceDAO();
 	private DatasetDao dsDao = new DatasetDao();
 	private File resourceDir;
@@ -79,7 +79,7 @@ public class MongoResourceStore implements IResourceStore {
 	protected ResourceDAO getResourceDao() {
 		return this.rDao;
 	}
-	
+
 	protected DatasetDao getDatasetDao() {
 		return this.dsDao;
 	}
@@ -101,7 +101,7 @@ public class MongoResourceStore implements IResourceStore {
 		// getDao().delete((AbstractMongoResource) resource);
 		Datastore ds = getResourceDao().getDatastore();
 		ObjectId id = resource.getId();
-		
+
 		UwIOUtils.deleteRecursively(getResourceDir(id));
 		ds.delete(ds.createQuery(AbstractMongoDataSet.class)
 				.field("resource").equal(resource));
@@ -131,7 +131,7 @@ public class MongoResourceStore implements IResourceStore {
 			throw VissError.internal(e);
 		}
 	}
-	
+
 	public AbstractMongoResource<?> getResourceForMediaType(MediaType mt, File f, ObjectId oid, long checksum)
 			throws IOException {
 		if (mt.equals(GEOTIFF_TYPE)) {

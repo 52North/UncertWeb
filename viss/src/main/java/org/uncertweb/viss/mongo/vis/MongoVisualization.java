@@ -32,9 +32,10 @@ import org.uncertweb.viss.core.vis.IVisualizationReference;
 import org.uncertweb.viss.core.vis.IVisualizer;
 import org.uncertweb.viss.core.vis.VisualizationStyle;
 
-import com.google.code.morphia.annotations.PostLoad;
-import com.google.code.morphia.annotations.Reference;
-import com.google.code.morphia.annotations.Transient;
+import com.github.jmkgreen.morphia.annotations.PostLoad;
+import com.github.jmkgreen.morphia.annotations.Reference;
+import com.github.jmkgreen.morphia.annotations.Transient;
+
 
 public class MongoVisualization implements IVisualization {
 
@@ -52,7 +53,7 @@ public class MongoVisualization implements IVisualization {
 
 	@Transient
 	private Set<GridCoverage> coverages = UwCollectionUtils.set();
-	
+
 	@PostLoad
 	public void postLoad() {
 		for (VisualizationStyle s : getStyles()) {

@@ -23,7 +23,7 @@ package org.uncertweb.viss.mongo.resource;
 
 import java.io.File;
 
-import com.google.code.morphia.annotations.Embedded;
+import com.github.jmkgreen.morphia.annotations.Embedded;
 
 // can't use href as key in mongo db as points are not allowed....
 @Embedded

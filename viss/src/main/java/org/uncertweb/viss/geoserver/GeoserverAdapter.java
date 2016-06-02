@@ -62,9 +62,9 @@ import org.uncertweb.viss.core.web.filter.BaseUriProvider;
 import org.uncertweb.viss.core.wms.WMSAdapter;
 
 public class GeoserverAdapter implements WMSAdapter {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(GeoserverAdapter.class);
-	
+
 	private static final URI DEFAULT_GEOSERVER_URI = URI.create("http://localhost:8080/geoserver");
 
 	private static final String PROPERTIES_FILE = "/geoserver.properties";
@@ -77,10 +77,10 @@ public class GeoserverAdapter implements WMSAdapter {
 	private static final String URL_PORT_PROPERTY = "url.port";
 	private static final String URL_SECURE_PROPERTY = "url.secure";
 	private static final String URL_PATH_PROPERTY = "url.path";
-	
+
 	private static Properties p;
 	private Geoserver wms;
-	
+
 	protected static String getProp(String key) {
 		if (p == null) {
 			InputStream is = GeoserverAdapter.class.getResourceAsStream(PROPERTIES_FILE);
@@ -119,25 +119,25 @@ public class GeoserverAdapter implements WMSAdapter {
 
 	private static URI getBaseURI(URI rq) throws URISyntaxException {
 		rq = (rq == null) ? DEFAULT_GEOSERVER_URI : rq;
-		
+
 		String hostS = getProp(URL_HOST_PROPERTY);
 		String portS = getProp(URL_PORT_PROPERTY);
 		String secureS = getProp(URL_SECURE_PROPERTY);
 		String pathS = getProp(URL_PATH_PROPERTY);
-		
+
 		String scheme = ((secureS == null || secureS.isEmpty()) ? (rq.getScheme() == null ? false : rq.getScheme().equals("https")) : Boolean.valueOf(secureS)) ? "https" : "http";
 		String host = (hostS == null || hostS.isEmpty()) ? (rq.getHost() == null ? "localhost" : rq.getHost()) : hostS.trim();
 		int port = (portS == null || portS.isEmpty()) ? (rq.getPort() < 0 ? 8080 : rq.getPort()) : Integer.valueOf(portS);
 		String path = "/" + (pathS == null ? "geoserver" : pathS);
 		return new URI(scheme, null, host, port, path, null, null);
 	}
-	
-	
+
+
 	public static void main(String[] args) throws URISyntaxException {
 		URI rq = URI.create("http://giv-uw.uni-muenster.de:9090/viss/resources/0/datasets/1?asdf=2#asdf");
 		System.out.println(getBaseURI(rq));
 	}
-	
+
 	@Override
 	public IVisualizationReference addVisualization(IVisualization vis) {
 		try {
@@ -161,21 +161,21 @@ public class GeoserverAdapter implements WMSAdapter {
 				layerNames = new String[] { layerName };
 			} else {
 				ArrayList<String> layers = new ArrayList<String>(vis.getCoverages().size());
-				
+
 				int i = 0;
-				
+
 				for (GridCoverage c : vis.getCoverages()) {
 					insertCoverage(workSpace, UwStringUtils.join("-", coverageStore, i), toInputStream(c));
 					layers.add(UwStringUtils.join("-", layerName, i));
 					++i;
 				}
-				
+
 				layerNames = layers.toArray(new String[layers.size()]);
 			}
-			
+
 			return new DefaultVisualizationReference(
 					getGeoserver().getUrl(), UwCollectionUtils.set(layerNames));
-			
+
 		} catch (Exception e) {
 			throw VissError.internal(e);
 		}
@@ -211,16 +211,14 @@ public class GeoserverAdapter implements WMSAdapter {
 				.setValue(wp);
 		JAI.getDefaultInstance().getTileCache()
 				.setMemoryCapacity(256 * 1024 * 1024);
-		w.write(c,
-				(GeneralParameterValue[]) paramWrite.values().toArray(
-						new GeneralParameterValue[1]));
+		w.write(c, paramWrite.values().toArray(new GeneralParameterValue[1]));
 		return new ByteArrayInputStream(out.toByteArray());
 	}
 
 	@Override
 	public boolean deleteResource(IResource resource) {
 		try {
-			
+
 			for (IDataSet ds : resource.getDataSets()) {
 				for (IVisualization v : ds.getVisualizations()) {
 					for (VisualizationStyle s : v.getStyles()) {
@@ -228,7 +226,7 @@ public class GeoserverAdapter implements WMSAdapter {
 					}
 				}
 			}
-			
+
 			return getGeoserver().deleteWorkspace(resource.getId().toString());
 		} catch (Exception e) {
 			throw VissError.internal(e);
@@ -251,15 +249,15 @@ public class GeoserverAdapter implements WMSAdapter {
 	private String getWorkspaceName(IVisualization vis) {
 		return vis.getDataSet().getResource().getId().toString();
 	}
-	
+
 	private String getCoverageStoreName(IVisualization vis) {
 		return vis.getDataSet().getId() + ":" + vis.getId();
 	}
-	
+
 	private String getLayerName(IVisualization vis) {
 		return getWorkspaceName(vis) + ":" + getCoverageStoreName(vis);
 	}
-	
+
 	@Override
 	public StyledLayerDescriptorDocument getStyle(VisualizationStyle vis) {
 		StyledLayerDescriptorDocument sld;
@@ -281,7 +279,7 @@ public class GeoserverAdapter implements WMSAdapter {
 		} catch (IOException e) {
 			throw VissError.internal(e);
 		}
-		
+
 	}
 
 	@Override
@@ -295,5 +293,5 @@ public class GeoserverAdapter implements WMSAdapter {
 			throw VissError.internal(e);
 		}
 	}
-	
+
 }

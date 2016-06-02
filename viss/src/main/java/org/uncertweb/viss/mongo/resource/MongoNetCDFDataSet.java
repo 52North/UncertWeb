@@ -36,9 +36,9 @@ import org.uncertweb.netcdf.NcUwObservation;
 import org.uncertweb.netcdf.NcUwUncertaintyType;
 import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent;
 
-import com.google.code.morphia.annotations.Polymorphic;
-import com.google.code.morphia.annotations.PrePersist;
-import com.google.code.morphia.annotations.Property;
+import com.github.jmkgreen.morphia.annotations.Polymorphic;
+import com.github.jmkgreen.morphia.annotations.PrePersist;
+import com.github.jmkgreen.morphia.annotations.Property;
 import com.vividsolutions.jts.geom.Point;
 
 @Polymorphic
@@ -54,7 +54,7 @@ public class MongoNetCDFDataSet extends AbstractMongoDataSet<INcUwVariable> {
 		super(resource);
 		setContent(v);
 	}
-	
+
 	@Override
 	public String getPhenomenon() {
 		return getContent().getName();

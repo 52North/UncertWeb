@@ -34,15 +34,15 @@ import org.uncertweb.utils.UwIOUtils;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.resource.IResource;
 
-import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
-import com.google.code.morphia.annotations.Indexed;
-import com.google.code.morphia.annotations.Polymorphic;
-import com.google.code.morphia.annotations.PostLoad;
-import com.google.code.morphia.annotations.PrePersist;
-import com.google.code.morphia.annotations.Property;
-import com.google.code.morphia.annotations.Reference;
-import com.google.code.morphia.annotations.Transient;
+import com.github.jmkgreen.morphia.annotations.Entity;
+import com.github.jmkgreen.morphia.annotations.Id;
+import com.github.jmkgreen.morphia.annotations.Indexed;
+import com.github.jmkgreen.morphia.annotations.Polymorphic;
+import com.github.jmkgreen.morphia.annotations.PostLoad;
+import com.github.jmkgreen.morphia.annotations.PrePersist;
+import com.github.jmkgreen.morphia.annotations.Property;
+import com.github.jmkgreen.morphia.annotations.Reference;
+import com.github.jmkgreen.morphia.annotations.Transient;
 
 @Polymorphic
 @Entity("resources")
@@ -56,19 +56,19 @@ public abstract class AbstractMongoResource<T> implements IResource {
 
 	@Id
 	private ObjectId oid;
-	
+
 	@Property(MEDIA_TYPE_PROPERTY)
 	private MediaType mediaType;
-	
+
 	@Indexed
 	@Property(TIME_PROPERTY)
 	private DateTime lastUsage;
 	private File file;
-	
+
 	@Indexed(unique = true)
 	@Property(CHECKSUM_PROPERTY)
 	private long checksum;
-	
+
 	@Reference
 	private Set<IDataSet> dataSets;
 
@@ -81,14 +81,14 @@ public abstract class AbstractMongoResource<T> implements IResource {
 		setId(oid);
 		setChecksum(checksum);
 	}
-	
+
 	public AbstractMongoResource(MediaType mt) {
 		setMediaType(mt);
 	}
-	
+
 	public AbstractMongoResource() {
 	}
-	
+
 	@Override
 	public void setMediaType(MediaType mt) {
 		this.mediaType = mt;
@@ -134,7 +134,7 @@ public abstract class AbstractMongoResource<T> implements IResource {
 			content = loadContent();
 		return content;
 	}
-	
+
 	protected T getNullContent() {
 		return content;
 	}
@@ -155,12 +155,12 @@ public abstract class AbstractMongoResource<T> implements IResource {
 	public void prePersist() {
 		setLastUsage(new DateTime());
 	}
-	
+
 	@PostLoad
 	public void postLoad() {
 		setLastUsage(new DateTime());
 	}
-	
+
 
 	@Override
 	public Set<IDataSet> getDataSets() {
@@ -169,16 +169,16 @@ public abstract class AbstractMongoResource<T> implements IResource {
 		}
 		return dataSets;
 	}
-	
+
 	protected abstract T loadContent();
 	protected abstract Set<IDataSet> createDataSets();
-	
+
 	public void setDataSets(Set<IDataSet> dataSets) {
 		this.dataSets = dataSets;
 	}
-	
+
 	protected void finalize() {
 		UwIOUtils.closeQuietly(this);
 	}
-	
+
 }

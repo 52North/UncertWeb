@@ -23,10 +23,10 @@ package org.uncertweb.viss.mongo;
 
 import java.util.UUID;
 
-import com.google.code.morphia.converters.SimpleValueConverter;
-import com.google.code.morphia.converters.TypeConverter;
-import com.google.code.morphia.mapping.MappedField;
-import com.google.code.morphia.mapping.MappingException;
+import com.github.jmkgreen.morphia.converters.SimpleValueConverter;
+import com.github.jmkgreen.morphia.converters.TypeConverter;
+import com.github.jmkgreen.morphia.mapping.MappedField;
+import com.github.jmkgreen.morphia.mapping.MappingException;
 
 @SuppressWarnings("rawtypes")
 public class UUIDConverter extends TypeConverter implements

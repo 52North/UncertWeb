@@ -52,12 +52,12 @@ import org.uncertweb.viss.core.resource.UncertaintyReference;
 import org.uncertweb.viss.core.resource.time.AbstractTemporalExtent;
 import org.uncertweb.viss.core.util.MediaTypes;
 
-import com.google.code.morphia.annotations.Embedded;
+import com.github.jmkgreen.morphia.annotations.Embedded;
 import com.vividsolutions.jts.geom.Point;
 
 public class MongoUncertaintyCollectionDataSet extends
 		AbstractMongoDataSet<UncertaintyReference> {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(MongoUncertaintyCollectionDataSet.class);
 
 
@@ -83,7 +83,7 @@ public class MongoUncertaintyCollectionDataSet extends
 
 	@Override
 	public NcUwUncertaintyType getType() {
-		if (type == null) { 
+		if (type == null) {
 			type = getContent().getType();
 		}
 		return type;
@@ -118,16 +118,16 @@ public class MongoUncertaintyCollectionDataSet extends
 		}
 		return ref;
 	}
-	
+
 	private File downloadReference() throws IOException {
-		MongoResourceStore store = (MongoResourceStore) 
+		MongoResourceStore store = (MongoResourceStore)
 				VissConfig.getInstance().getResourceStore();
 		File f = store.createResourceFile(getResource().getId(), ref.getMime());
 		log.debug("Saving {} to {}.", ref.getRef(), f.getAbsolutePath());
 		UwIOUtils.saveToFile(f, ref.getRef().toURL());
 		return f;
 	}
-	
+
 	@Override
 	protected AbstractTemporalExtent loadTemporalExtent() {
 		return AbstractTemporalExtent.NO_TEMPORAL_EXTENT;
@@ -160,7 +160,7 @@ public class MongoUncertaintyCollectionDataSet extends
 		col.addObservation(new NcUwObservation(null, null, null, p, null, u));
 		return col;
 	}
-	
+
 	@Override
 	public Envelope2D getSpatialExtent() {
 		if (getContent().getContent() instanceof GridCoverage) {

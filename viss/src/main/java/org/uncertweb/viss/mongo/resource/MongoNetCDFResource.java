@@ -33,7 +33,7 @@ import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.MediaTypes;
 
-import com.google.code.morphia.annotations.Polymorphic;
+import com.github.jmkgreen.morphia.annotations.Polymorphic;
 
 @Polymorphic
 public class MongoNetCDFResource extends AbstractMongoResource<NcUwFile> {

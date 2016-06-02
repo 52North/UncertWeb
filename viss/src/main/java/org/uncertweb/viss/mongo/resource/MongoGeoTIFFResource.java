@@ -33,7 +33,7 @@ import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.MediaTypes;
 
-import com.google.code.morphia.annotations.Polymorphic;
+import com.github.jmkgreen.morphia.annotations.Polymorphic;
 
 @Polymorphic
 public class MongoGeoTIFFResource extends AbstractMongoResource<GridCoverage2D> {
@@ -41,11 +41,11 @@ public class MongoGeoTIFFResource extends AbstractMongoResource<GridCoverage2D> 
 	public MongoGeoTIFFResource() {
 		super(MediaTypes.GEOTIFF_TYPE);
 	}
-	
+
 	public MongoGeoTIFFResource(File f, ObjectId oid, long checksum) {
 		super(MediaTypes.GEOTIFF_TYPE, f, oid, checksum);
 	}
-	
+
 	@Override
 	protected Set<IDataSet> createDataSets() {
 		return null;
@@ -65,7 +65,7 @@ public class MongoGeoTIFFResource extends AbstractMongoResource<GridCoverage2D> 
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -29,10 +29,10 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.Morphia;
-import com.google.code.morphia.converters.DefaultConverters;
-import com.google.code.morphia.converters.TypeConverter;
+import com.github.jmkgreen.morphia.Datastore;
+import com.github.jmkgreen.morphia.Morphia;
+import com.github.jmkgreen.morphia.converters.DefaultConverters;
+import com.github.jmkgreen.morphia.converters.TypeConverter;
 import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
 
@@ -78,7 +78,7 @@ public class MongoDB {
 			String port = p.getProperty(PORT_PROPERTY);
 			port = (port == null || port.trim().isEmpty()) ? "27017" : port;
 
-			this.mongo = new Mongo(new ServerAddress(host, Integer.valueOf(port)));
+            this.mongo = new Mongo(new ServerAddress(host, Integer.valueOf(port)));
 
 			this.morphia = new Morphia();
 			String pkg = getClass().getPackage().getName();

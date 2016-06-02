@@ -64,9 +64,9 @@ import org.uncertweb.viss.core.VissError;
 import org.uncertweb.viss.core.resource.IDataSet;
 import org.uncertweb.viss.core.util.MediaTypes;
 
-import com.google.code.morphia.annotations.NotSaved;
-import com.google.code.morphia.annotations.Polymorphic;
-import com.google.code.morphia.annotations.PrePersist;
+import com.github.jmkgreen.morphia.annotations.NotSaved;
+import com.github.jmkgreen.morphia.annotations.Polymorphic;
+import com.github.jmkgreen.morphia.annotations.PrePersist;
 
 @Polymorphic
 public class MongoOMResource extends
