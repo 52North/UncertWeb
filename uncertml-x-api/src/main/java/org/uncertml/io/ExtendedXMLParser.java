@@ -20,6 +20,7 @@ import org.uncertml.distribution.randomvariable.VariogramFunction;
 import org.uncertml.distribution.randomvariable.VariogramFunction.Model;
 import org.uncertml.distribution.randomvariable.util.RandomVariablesUtil;
 import org.uncertml.exception.UncertaintyParserException;
+import org.uncertml.x20.CovarianceMatrixDocument.CovarianceMatrix;
 import org.uncertml.x20.CovarianceParameterType;
 import org.uncertml.x20.NormalSpatialFieldDocument;
 import org.uncertml.x20.NormalSpatialFieldType;
@@ -30,21 +31,20 @@ import org.uncertml.x20.NormalTimeSeriesType;
 import org.uncertml.x20.ReferenceType;
 import org.uncertml.x20.VariogramFunctionDocument;
 import org.uncertml.x20.VariogramFunctionType;
-import org.uncertml.x20.CovarianceMatrixDocument.CovarianceMatrix;
 import org.uncertml.x20.VariogramFunctionType.Anisotropy;
 
 /**
  * Extended UncertML XML parser that supports generation of usual UncertML plus
  * Random Variables
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class ExtendedXMLParser implements IUncertaintyParser {
 
 	/**
 	 * common uncertml parser from UncertML API
-	 * 
+	 *
 	 */
 	@Override
 	public IUncertainty parse(String uncertml)
@@ -112,7 +112,7 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 	 * helper method for parsing and XML Object and returning the Uncertainty
 	 * object; method first try to parse the extended elements and, if none is
 	 * matched, passes the object to the usual XmlParser of the UncertML API
-	 * 
+	 *
 	 * @param xb_object
 	 *            XMLBeans representation of uncertainty
 	 * @return Java representation of uncertainty
@@ -139,7 +139,7 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 
 	/**
 	 * helper method for parsing a spatio-temporal field
-	 * 
+	 *
 	 * @param xbObject
 	 * @return
 	 * @throws UncertaintyParserException
@@ -187,12 +187,12 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 				throw new UncertaintyParserException(
 						"Error while parsing sample Reference of NormalSpatialField!");
 			}
-			
+
 			if (spTrendString==null&&tTrendString==null){
 				return new NormalSpatioTemporalField(ref, gp);
 			}
 		}
-		
+
 		else {
 			if (spTrendString==null&&tTrendString==null){
 				throw new UncertaintyParserException("Either trend parameters or samples or both have to be set in Normal spatio-temporal field");
@@ -216,8 +216,8 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 	}
 
 	/**
-	 * parses a normal timeseries 
-	 * 
+	 * parses a normal timeseries
+	 *
 	 * @param xbObject
 	 * 			XMLBeans representation of NormalTimeSeries
 	 * @return NormalTimeSeries object
@@ -230,7 +230,7 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 				.getNormalTimeSeries();
 		INormalCovarianceParameter gp = parseCovarianceParameter(xb_nsftype
 				.getCovarianceParameter());
-		
+
 		ReferenceType xb_samples = xb_nsftype.getSamples();
 		String temporalTrendString = xb_nsftype.getTemporalTrend();
 		if (xb_samples!=null){
@@ -254,13 +254,13 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 				throw new UncertaintyParserException("Either temporal trend or samples or both have to be set in normal time series!!");
 			}
 		}
-		
-			
+
+
 	}
 
 	/**
 	 * parses a spatial normal field
-	 * 
+	 *
 	 * @param xbObject
 	 * @return
 	 * @throws UncertaintyParserException
@@ -299,11 +299,11 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 		}
 	}
 
-	
+
 
 	/**
 	 * helper method for parsing the sample reference
-	 * 
+	 *
 	 * @param samples
 	 *            XMLBeans representation of sample reference
 	 * @return returns parsed sample reference
@@ -324,7 +324,7 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 
 	/**
 	 * helper method for parsing a covariance parameters
-	 * 
+	 *
 	 * @param covarianceParameter
 	 *            XMLBeans representation of covariance parameter
 	 * @return Returns parsed parameter
@@ -361,7 +361,7 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 
 	/**
 	 * helper method for parsing a variogram
-	 * 
+	 *
 	 * @param xbObject
 	 *            XMLBeans representation of variogram
 	 * @return variogram

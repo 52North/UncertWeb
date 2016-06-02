@@ -36,9 +36,9 @@
 	</repositories>
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>xb-uncertml-rv</artifactId>
-			<version>0.0.5</version>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>2.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -52,4 +52,26 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xmlbeans-maven-plugin</artifactId>
+				<version>2.3.3</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>xmlbeans</goal>
+						</goals>
+					</execution>
+				</executions>
+                <configuration>
+                    <sourceSchemas>
+                        <sourceSchema>uncertml-x.xsd</sourceSchema>
+                    </sourceSchemas>
+                </configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
