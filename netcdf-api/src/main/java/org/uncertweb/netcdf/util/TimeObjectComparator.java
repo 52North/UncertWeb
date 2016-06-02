@@ -68,22 +68,23 @@ public class TimeObjectComparator implements Comparator<TimeObject> {
 		}
 		if (o1.isInterval() && o2.isInterval()) {
 			Set<IntervalRelation> rels = getRelations(o1.getInterval(), o2.getInterval());
-			if (rels.contains(EQUALS))
-				return 0;
-			if (rels.contains(PRECEDES) || rels.contains(MEETS))
-				return -1;
-			if (rels.contains(PRECEDES_BY) || rels.contains(MET_BY))
-				return 1;
-			if (rels.contains(STARTS) || rels.contains(FINISHED_BY))
-				return -1;
-			if (rels.contains(FINISHES) || rels.contains(STARTED_BY))
-				return 1;
-			if (rels.contains(OVERLAPS))
-				return -1;
-			if (rels.contains(OVERLAPPED_BY))
-				return 1;
-			if (rels.contains(CONTAINS) || rels.contains(DURING))
-				return 0;
+			if (rels.contains(EQUALS)) {
+                return 0;
+            } else if (rels.contains(PRECEDES) || rels.contains(MEETS)) {
+                return -1;
+            } else if (rels.contains(PRECEDES_BY) || rels.contains(MET_BY)) {
+                return 1;
+            } else if (rels.contains(STARTS) || rels.contains(FINISHED_BY)) {
+                return -1;
+            } else if (rels.contains(FINISHES) || rels.contains(STARTED_BY)) {
+                return 1;
+            } else if (rels.contains(OVERLAPS)) {
+                return -1;
+            } else if (rels.contains(OVERLAPPED_BY)) {
+                return 1;
+            } else if (rels.contains(CONTAINS) || rels.contains(DURING)) {
+                return 0;
+            }
 		}
 		return 0;
 	}

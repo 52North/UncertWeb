@@ -3,38 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.uncertweb</groupId>
-		<artifactId>uncertweb-parent</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<artifactId>uncertweb</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>netcdf-api</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<scm>
-		<tag>HEAD</tag>
-		<url>http://svn.52north.org/svn/geostatistics/main/uncertweb/netcdf-api/trunk</url>
-		<connection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/netcdf-api/trunk</connection>
-		<developerConnection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/netcdf-api/trunk</developerConnection>
-	</scm>
-	<licenses>
-		<license>
-			<name>GNU GPLv2</name>
-			<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
-		</license>
-	</licenses>
-	<organization>
-		<name>Institute for Geoinformatics</name>
-		<url>http://ifgi.uni-muenster.de</url>
-	</organization>
-	<developers>
-		<developer>
-			<name>Christian Autermann</name>
-			<email>autermann@uni-muenster.de</email>
-			<url>http://autermann.org</url>
-			<organization>${project.organization.name}</organization>
-			<organizationUrl>${project.organization.url}</organizationUrl>
-			<timezone>GMT+1</timezone>
-			<id>ChristianAutermann</id>
-		</developer>
-	</developers>
 	<properties>
 		<geotools.version>8.0-RC1</geotools.version>
 	</properties>
@@ -43,23 +16,14 @@
 		<dependency>
 			<groupId>org.uncertml</groupId>
 			<artifactId>uncertml</artifactId>
-			<version>[2.0.6-SNAPSHOT,)</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.uncertweb</groupId>
 			<artifactId>om-api</artifactId>
-			<version>[1.0.2-SNAPSHOT,)</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.uncertml</groupId>
-					<artifactId>uncertml</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>uncertweb-utils</artifactId>
-			<version>[1.0.1-SNAPSHOT,)</version>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>utils</artifactId>
 		</dependency>
 		<!-- Geotools ###################################################### -->
 		<dependency>
@@ -97,6 +61,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.21</version>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
@@ -118,25 +83,14 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>[4.10,)</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
-			<id>UncertWebMavenRepository</id>
-			<name>UncertWeb Maven Repository</name>
-			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
-		</repository>
-		<repository>
 			<id>geotools</id>
 			<name>GeoTools Maven Repository</name>
 			<url>http://download.osgeo.org/webdav/geotools/</url>
-		</repository>
-		<repository>
-			<id>java.net</id>
-			<name>Java.NET Maven Repository</name>
-			<url>http://download.java.net/maven/2/</url>
 		</repository>
 		<repository>
 			<id>reflections</id>
@@ -178,23 +132,6 @@
 			</testResource>
 		</testResources>
 		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.0</version>
-				<executions>
-					<execution>
-						<phase>validate</phase>
-						<goals>
-							<goal>create</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<!-- <doCheck>true</doCheck> -->
-					<doUpdate>false</doUpdate>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -247,33 +184,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>com.mycila.maven-license-plugin</groupId>
-										<artifactId>maven-license-plugin</artifactId>
-										<versionRange>[1.9.0,)</versionRange>
-										<goals>
-											<goal>format</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 </project>

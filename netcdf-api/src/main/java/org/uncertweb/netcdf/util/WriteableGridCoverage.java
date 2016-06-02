@@ -25,9 +25,11 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.media.jai.TiledImage;
 import javax.media.jai.iterator.RandomIterFactory;
 import javax.media.jai.iterator.WritableRandomIter;
+
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.ViewType;
 import org.opengis.referencing.operation.MathTransform2D;
@@ -68,7 +70,7 @@ public class WriteableGridCoverage {
 		    .getY()), value));
 		flushCache(false);
 	}
-	
+
 	public void setValueAtGridPos(int x, int y, Number value) {
 		pendingGridValues.add(new PendingValue(new Point(x,y), value));
 		flushCache(false);
