@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by Institut für Geoinformatik (Institut für Geoinformatik) -->
+<!-- ============================================================= -->
+<!-- === Schema defining an extension of UncertML for random variables=== -->
+<!-- ============================================================= -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:un="http://www.uncertml.org/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" targetNamespace="http://www.uncertml.org/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.0.1">
+    <!-- =========================================================== -->
+    <!-- == Imports of UncertML 2.0 and XLink======= -->
+    <!-- =========================================================== -->
+    <include schemaLocation="uncertml.xsd"/>
+    <import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlinks.xsd"/>
+    <!-- =========================================================== -->
+    <!-- == Definition of Normal (Gaussian) Spatial Field======= -->
+    <!-- =========================================================== -->
+    <element name="NormalSpatialField" type="un:NormalSpatialFieldType"/>
+    <complexType name="NormalSpatialFieldType">
+        <complexContent>
+            <extension base="un:AbstractDistributionType">
+                <sequence>
+                    <element name="samples" type="un:ReferenceType"/>
+                    <element name="covarianceParameter" type="un:CovarianceParameterType"/>
+                    <element name="spatialTrend" type="xs:string"/>
+                    <element name="temporalTrend" type="xs:string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+    <!-- == Definition of Normal (Gaussian) Time Series ======= -->
+    <!-- =========================================================== -->
+    <element name="NormalTimeSeries" type="un:NormalTimeSeriesType"/>
+    <complexType name="NormalTimeSeriesType">
+        <complexContent>
+            <extension base="un:AbstractDistributionType">
+                <sequence>
+                    <element name="samples" type="un:ReferenceType"/>
+                    <element name="covarianceParameter" type="un:CovarianceParameterType"/>
+                    <element name="spatialTrend" type="xs:string"/>
+                    <element name="temporalTrend" type="xs:string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+    <!-- == Definition of Normal (Gaussian) Spatio-temporal Field ======= -->
+    <!-- =========================================================== -->
+    <element name="NormalSpatioTemporalField" type="un:NormalSpatioTemporalFieldType"/>
+    <complexType name="NormalSpatioTemporalFieldType">
+        <complexContent>
+            <extension base="un:AbstractDistributionType">
+                <sequence>
+                    <element name="samples" type="un:ReferenceType"/>
+                    <element name="covarianceParameter" type="un:CovarianceParameterType"/>
+                    <element name="spatialTrend" type="xs:string"/>
+                    <element name="temporalTrend" type="xs:string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    
+    <complexType name="CovarianceParameterType">
+        <choice>
+            <element ref="un:VariogramFunction"/>
+            <element ref="un:CovarianceMatrix"/>
+        </choice>
+    </complexType>
+    <!-- =========================================================== -->
+    <!-- == Definition of Variogram Function======= -->
+    <!-- =========================================================== -->
+    <complexType name="VariogramFunctionType">
+        <sequence>
+            <element name="sill" type="double"/>
+            <element name="range" type="double"/>
+            <element name="nugget" type="double"/>
+            <element name="kappa" type="double" minOccurs="0"/>
+            <element name="model">
+                <simpleType>
+                    <restriction base="string">
+                        <enumeration value="Mat"/>
+                        <enumeration value="Lin"/>
+                        <enumeration value="Exp"/>
+                        <enumeration value="Sph"/>
+                        <enumeration value="Gau"/>
+                    </restriction>
+                </simpleType>
+            </element>
+            <element name="anisotropy" minOccurs="0">
+                <complexType>
+                    <sequence>
+                        <element name="principalDirection" type="double"/>
+                        <element name="ratio" type="double"/>
+                    </sequence>
+                </complexType>
+            </element>
+        </sequence>
+    </complexType>
+    <element name="VariogramFunction" type="un:VariogramFunctionType"/>
+    <complexType name="ReferenceType">
+        <attribute name="mimeType" type="xs:string" use="required"/>
+        <attributeGroup ref="xlink:simpleLink"/>
+    </complexType>
+    <complexType name="VariogramPropertyType">
+        <sequence>
+            <element name="VariogramFunction" type="un:VariogramFunctionType"/>
+        </sequence>
+    </complexType>
+</schema>
