@@ -5,22 +5,22 @@ import org.uncertml.IUncertainty;
 /**
  * Result representing an uncertainty value including unit of measurement
  * (optional)
- * 
+ *
  * @author Kiesow, staschc
- * 
+ *
  */
 public class UncertaintyResult implements IResult {
 
 	/**uncertainty value of the observation*/
 	private IUncertainty value;
-	
+
 	/** UCUM code of the unit of measure (optional)*/
 	private String uom;
 
-	
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param v
 	 *            value of this result
 	 * @param u
@@ -33,7 +33,7 @@ public class UncertaintyResult implements IResult {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param v
 	 *            value of this result
 	 */
@@ -44,7 +44,7 @@ public class UncertaintyResult implements IResult {
 	// specific getter and setter
 
 	public IUncertainty getUncertaintyValue() {
-		return (IUncertainty)value;
+		return value;
 	}
 
 	public void setUncertaintyValue(IUncertainty v) {

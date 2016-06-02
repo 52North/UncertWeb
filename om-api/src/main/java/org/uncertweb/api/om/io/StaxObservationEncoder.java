@@ -32,42 +32,40 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
 
 
 /**
- * Hack for stax based encoding to support encoding of large datafiles; 
+ * Hack for stax based encoding to support encoding of large datafiles;
  * currently a file size of about 80 MBs is supported; might be re-written to a full STAX
  * implementation in case there is a need for large XML documents.
- * 
+ *
  * Currently, the single observations are still parsed using XMLbeans, only the Collection root elements
  * are encoded using STAX. The large Streams still cause OutofMemory Heap Errors for very large (>100MB) datafiles.
- * 
+ *
  * @author staschc
  *
  */
 public class StaxObservationEncoder implements IObservationEncoder {
 
-	
+
 	/**
-	 * XMLBeans encoder is used to 
+	 * XMLBeans encoder is used to
 	 */
 	private XBObservationEncoder xbEncoder;
-	
+
 	/**
 	 * constructor; initializes XmlBeans encoder
-	 * 
+	 *
 	 */
-	public StaxObservationEncoder() { 
+	public StaxObservationEncoder() {
 		this(null);
 	}
 
 	/**
 	 * constructor; initializes XmlBeans encoder
-	 * 
+	 *
 	 */
-	public StaxObservationEncoder(Collection<EncoderHook<OMObservationDocument>> hooks) { 
+	public StaxObservationEncoder(Collection<EncoderHook<OMObservationDocument>> hooks) {
 		this.xbEncoder = new XBObservationEncoder(hooks);
 	}
 
-
-	
 	@Override
 	public String encodeObservationCollection(IObservationCollection obsCol)
 			throws OMEncodingException {
@@ -103,12 +101,12 @@ public class StaxObservationEncoder implements IObservationEncoder {
 		try {
 			XMLOutputFactory factory = XMLOutputFactory.newInstance();
 			XMLStreamWriter writer = factory.createXMLStreamWriter(out);
-			
-			
+
+
 			//set character escaping on false!
 			((com.sun.xml.internal.stream.writers.XMLStreamWriterImpl)writer).setEscapeCharacters(false);
 			writer.writeStartDocument();
-			
+
 			if (obsCol instanceof UncertaintyObservationCollection){
 				writer.writeStartElement(UncertaintyObservationCollection.NAME);
 			} else if (obsCol instanceof MeasurementCollection){
@@ -140,7 +138,7 @@ public class StaxObservationEncoder implements IObservationEncoder {
 			writer.writeNamespace(OMConstants.NS_GMD_PREFIX, OMConstants.NS_GMD);
 			writer.writeNamespace(OMConstants.NS_XSI_PREFIX, OMConstants.NS_XSI);
 			writer.writeAttribute(OMConstants.NS_XSI_PREFIX,OMConstants.NS_XSI,"schemaLocation",OMConstants.NS_OM+" "+OMConstants.OM_SCHEMA_LOCATION);
-			
+
 			Iterator<? extends AbstractObservation> iter = obsCol.getObservations().iterator();
 			while (iter.hasNext()){
 				writer.writeCharacters(prepareObservationString(encodeObservation(iter.next())));
@@ -165,12 +163,12 @@ public class StaxObservationEncoder implements IObservationEncoder {
 		try {
 			XMLOutputFactory factory = XMLOutputFactory.newInstance();
 			XMLStreamWriter writer = factory.createXMLStreamWriter(writerx);
-			
-			
+
+
 			//set character escaping on false!
 			((com.sun.xml.internal.stream.writers.XMLStreamWriterImpl)writer).setEscapeCharacters(false);
 			writer.writeStartDocument();
-			
+
 			if (obsCol instanceof UncertaintyObservationCollection){
 				writer.writeStartElement(UncertaintyObservationCollection.NAME);
 			} else if (obsCol instanceof MeasurementCollection){
@@ -189,7 +187,7 @@ public class StaxObservationEncoder implements IObservationEncoder {
 			else if (obsCol instanceof ObservationCollection){
 				writer.writeStartElement(ObservationCollection.NAME);
 			}
-			
+
 			writer.writeDefaultNamespace(OMConstants.NS_OM);
 			writer.writeNamespace(OMConstants.NS_OM_PREFIX, OMConstants.NS_OM);
 			writer.writeNamespace(OMConstants.NS_GML_PREFIX, OMConstants.NS_GML);
@@ -215,13 +213,13 @@ public class StaxObservationEncoder implements IObservationEncoder {
 		finally {
 			this.xbEncoder.setIsCol(false);
 		}
-		
+
 	}
 
 	@Override
 	public String encodeObservation(AbstractObservation obs)
 			throws OMEncodingException {
-		
+
 		return this.xbEncoder.encodeObservation(obs);
 	}
 
@@ -242,10 +240,10 @@ public class StaxObservationEncoder implements IObservationEncoder {
 			throws OMEncodingException {
 		this.xbEncoder.encodeObservation(obs,writer);
 	}
-	
+
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param obsString
 	 * @return
 	 */
@@ -259,7 +257,7 @@ public class StaxObservationEncoder implements IObservationEncoder {
 		result = result.replace(createXMLNSAttribute(OMConstants.NS_XSI_PREFIX, OMConstants.NS_XSI), "");
 		return result;
 	}
-	
+
 	private String createXMLNSAttribute(String prefix, String nsUrl){
 		return "xmlns:"+prefix+"=\""+nsUrl+"\"";
 	}

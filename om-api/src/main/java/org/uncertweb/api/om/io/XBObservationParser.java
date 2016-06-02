@@ -9,7 +9,6 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +32,9 @@ import net.opengis.om.x20.FoiPropertyType;
 import net.opengis.om.x20.OMAbstractObservationType;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument;
 import net.opengis.om.x20.OMBooleanObservationCollectionDocument.OMBooleanObservationCollection;
-import net.opengis.om.x20.OMCategoryObservationCollectionDocument.OMCategoryObservationCollection;
 import net.opengis.om.x20.OMBooleanObservationDocument;
+import net.opengis.om.x20.OMCategoryObservationCollectionDocument;
+import net.opengis.om.x20.OMCategoryObservationCollectionDocument.OMCategoryObservationCollection;
 import net.opengis.om.x20.OMCategoryObservationDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument;
 import net.opengis.om.x20.OMDiscreteNumericObservationCollectionDocument.OMDiscreteNumericObservationCollection;
@@ -54,7 +54,6 @@ import net.opengis.om.x20.OMTextObservationCollectionDocument.OMTextObservationC
 import net.opengis.om.x20.OMTextObservationDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationCollectionDocument.OMUncertaintyObservationCollection;
-import net.opengis.om.x20.OMCategoryObservationCollectionDocument;
 import net.opengis.om.x20.OMUncertaintyObservationDocument;
 import net.opengis.om.x20.UWBooleanObservationType;
 import net.opengis.om.x20.UWCategoryObservationType;
@@ -63,7 +62,6 @@ import net.opengis.om.x20.UWMeasurementType;
 import net.opengis.om.x20.UWReferenceObservationType;
 import net.opengis.om.x20.UWTextObservationType;
 import net.opengis.om.x20.UWUncertaintyObservationType;
-import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureDocument;
 import net.opengis.samplingSpatial.x20.SFSpatialSamplingFeatureType;
 import net.opengis.samplingSpatial.x20.ShapeType;
 
@@ -111,11 +109,8 @@ import org.uncertweb.api.om.result.ReferenceResult;
 import org.uncertweb.api.om.result.TextResult;
 import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
-import org.w3.x1999.xlink.ActuateAttribute.Actuate;
 import org.w3.x1999.xlink.ActuateType;
-import org.w3.x1999.xlink.ShowAttribute.Show;
 import org.w3.x1999.xlink.ShowType;
-import org.w3.x1999.xlink.ShowType.Enum;
 import org.w3.x1999.xlink.TypeType;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -125,39 +120,39 @@ import com.vividsolutions.jts.geom.Geometry;
 /**
  * implementation of Observation parser with XmlBeans; can be used to encode and parse observations
  * encoded in XML according the UncertWeb O&M profile
- * 
+ *
  * @author Kiesow, staschc
- * 
+ *
  */
 public class XBObservationParser implements IObservationParser {
-	
+
 	private HashMap<String, SpatialSamplingFeature> featureCache;
 	private HashMap<String, TimeObject> timeCache;
-	
+
 	/**
 	 * boolean that indicates whether a collection is currrently parsed or not;
 	 * this flag is used in the encodeObservation operation. This can either be invoked externally for
 	 * encoding just one observation or internally for encoding members of an observation collection.
 	 */
 	private boolean isCol;
-	
+
 
 	/**
 	 * constructor initializes the caches for time and featureOfInterest elements
-	 * 
+	 *
 	 */
 	public XBObservationParser(){
 		featureCache = new HashMap<String, SpatialSamplingFeature>();
 		timeCache = new HashMap<String, TimeObject>();
 	}
-	
+
 	/**
 	 * parses an observation collection
-	 * 
+	 *
 	 * @param xmlObsCol
 	 *            String containing an XML encoded observation collection
 	 * @return POJO observation collection
-	 * @throws OMParsingException 
+	 * @throws OMParsingException
 	 */
 	@Override
 	public synchronized IObservationCollection parseObservationCollection(String xmlObsCol) throws OMParsingException {
@@ -169,7 +164,7 @@ public class XBObservationParser implements IObservationParser {
 		XmlObject xb_obsColDoc;
 		try {
 			xb_obsColDoc = XmlObject.Factory.parse(xmlObsCol);
-		
+
 
 			//common observation collection
 			//TODO parsing of common observation collection needs to be tested!!
@@ -183,9 +178,9 @@ public class XBObservationParser implements IObservationParser {
 					obsList.add(parseObservationDocument(xb_omDoc));
 				}
 				oc = new ObservationCollection(obsList);
-				
+
 			}
-			
+
 			//Measurement collection
 			else if (xb_obsColDoc instanceof OMMeasurementCollectionDocument) {
 			OMMeasurementCollection xb_ocType = ((OMMeasurementCollectionDocument)xb_obsColDoc).getOMMeasurementCollection();
@@ -194,12 +189,12 @@ public class XBObservationParser implements IObservationParser {
 			for (UWMeasurementType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				Measurement obs = (Measurement)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
 			oc = new MeasurementCollection(obsList);
-			
+
 		}
 		//BooleanObservation collection
 		else if (xb_obsColDoc instanceof OMBooleanObservationCollectionDocument){
@@ -209,12 +204,12 @@ public class XBObservationParser implements IObservationParser {
 			for (UWBooleanObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				BooleanObservation obs = (BooleanObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
 			oc = new BooleanObservationCollection(obsList);
-			
+
 		}
 		//DiscreteNumericObservation collection
 		else if (xb_obsColDoc instanceof OMDiscreteNumericObservationCollectionDocument){
@@ -224,12 +219,12 @@ public class XBObservationParser implements IObservationParser {
 			for (UWDiscreteNumericObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				DiscreteNumericObservation obs = (DiscreteNumericObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
 			oc = new DiscreteNumericObservationCollection(obsList);
-			
+
 		}
 		//UncertaintyObservation collection
 		else if (xb_obsColDoc instanceof OMUncertaintyObservationCollectionDocument){
@@ -239,12 +234,12 @@ public class XBObservationParser implements IObservationParser {
 			for (UWUncertaintyObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				UncertaintyObservation obs = (UncertaintyObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
 			oc = new UncertaintyObservationCollection(obsList);
-			
+
 		}
 		//ReferenceObservation collection
 		else if (xb_obsColDoc instanceof OMReferenceObservationCollectionDocument){
@@ -254,12 +249,12 @@ public class XBObservationParser implements IObservationParser {
 			for (UWReferenceObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				ReferenceObservation obs = (ReferenceObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
 			oc = new ReferenceObservationCollection(obsList);
-			
+
 		}
 		//TextObservation collection
 		else if (xb_obsColDoc instanceof OMTextObservationCollectionDocument){
@@ -269,12 +264,12 @@ public class XBObservationParser implements IObservationParser {
 			for (UWTextObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				TextObservation obs = (TextObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
 			oc = new TextObservationCollection(obsList);
-			
+
 		}
 		else if (xb_obsColDoc instanceof OMCategoryObservationCollectionDocument){
 			OMCategoryObservationCollection xb_ocType = ((OMCategoryObservationCollectionDocument)xb_obsColDoc).getOMCategoryObservationCollection();
@@ -283,19 +278,19 @@ public class XBObservationParser implements IObservationParser {
 			for (UWCategoryObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				CategoryObservation obs = (CategoryObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
 			oc = new CategoryObservationCollection(obsList);
-			
+
 		}
-		
-		
+
+
 		else {
 			throw new OMParsingException("ObservationCollection type" + xb_obsColDoc.getClass() + "is not supported by this parser!");
 		}
-		
+
 		} catch (XmlException e) {
 			throw new OMParsingException(e);
 		}
@@ -305,15 +300,15 @@ public class XBObservationParser implements IObservationParser {
 
 		return oc;
 	}
-	
-	
+
+
 	/**
 	 * parses an observation collection
-	 * 
+	 *
 	 * @param xmlObsCol
 	 *            XmlBeans XmlObject containing an XML encoded observation collection
 	 * @return POJO observation collection
-	 * @throws OMParsingException 
+	 * @throws OMParsingException
 	 */
 	public synchronized IObservationCollection parseObservationCollection(XmlObject xb_obsColDoc) throws OMParsingException {
 
@@ -327,7 +322,7 @@ public class XBObservationParser implements IObservationParser {
 			for (OMAbstractObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				obsList.add(parseObservationDocument(xb_omDoc));
 			}
 			oc = new ObservationCollection(obsList);
@@ -341,7 +336,7 @@ public class XBObservationParser implements IObservationParser {
 			for (UWMeasurementType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				Measurement obs = (Measurement)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
@@ -356,7 +351,7 @@ public class XBObservationParser implements IObservationParser {
 			for (UWBooleanObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				BooleanObservation obs = (BooleanObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
@@ -371,7 +366,7 @@ public class XBObservationParser implements IObservationParser {
 			for (UWDiscreteNumericObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				DiscreteNumericObservation obs = (DiscreteNumericObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
@@ -386,7 +381,7 @@ public class XBObservationParser implements IObservationParser {
 			for (UWUncertaintyObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				UncertaintyObservation obs = (UncertaintyObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
@@ -401,7 +396,7 @@ public class XBObservationParser implements IObservationParser {
 			for (UWReferenceObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				ReferenceObservation obs = (ReferenceObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
@@ -416,7 +411,7 @@ public class XBObservationParser implements IObservationParser {
 			for (UWTextObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				TextObservation obs = (TextObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
@@ -431,35 +426,35 @@ public class XBObservationParser implements IObservationParser {
 			for (UWCategoryObservationType xb_obs:xb_obsArray){
 				OMObservationDocument xb_omDoc = OMObservationDocument.Factory.newInstance();
 				xb_omDoc.setOMObservation(xb_obs);
-				
+
 				CategoryObservation obs = (CategoryObservation)parseObservationDocument(xb_omDoc);
 				obsList.add(obs);
 			}
 			oc = new CategoryObservationCollection(obsList);
 			return oc;
 		}
-		
+
 		else {
 			throw new OMParsingException("ObservationCollection type" + xb_obsColDoc.getClass() + "is not supported by this parser!");
 		}
-		
-		
+
+
 
 	}
 
 	/**
 	 * parses an Observation and it's SpatialSamplingFeature
-	 * 
+	 *
 	 * @param xmlObs
 	 *            xml observation document's string
 	 * @return POJO observation
-	 * @throws OMParsingException 
+	 * @throws OMParsingException
 	 * 			if parsing failed
 	 */
 	@Override
 	public synchronized AbstractObservation parseObservation(String xmlObs) throws OMParsingException {
 
-		
+
 		XmlObject xb_obsDoc;
 		try {
 			xb_obsDoc = XmlObject.Factory.parse(xmlObs);
@@ -472,7 +467,7 @@ public class XBObservationParser implements IObservationParser {
 
 	/**
 	 * parses an Observation and it's SpatialSamplingFeature
-	 * 
+	 *
 	 * @param xb_obsDoc
 	 *            XMLBeans observation document
 	 * @return POJO observation
@@ -486,15 +481,15 @@ public class XBObservationParser implements IObservationParser {
 			featureCache = new HashMap<String, SpatialSamplingFeature>();
 			timeCache = new HashMap<String, TimeObject>();
 		}
-		
+
 		AbstractObservation obs = null;
 
 		try{
 		if (xb_obsDoc instanceof OMObservationDocument) {
 
 			OMAbstractObservationType xb_obsType = null;
-			
-			// observation is instance of a specific uncertweb observation type 
+
+			// observation is instance of a specific uncertweb observation type
 			if (xb_obsDoc instanceof OMBooleanObservationDocument) {
 				xb_obsType = ((OMBooleanObservationDocument) xb_obsDoc).getOMBooleanObservation();
 			} else if (xb_obsDoc instanceof OMCategoryObservationDocument) {
@@ -509,12 +504,13 @@ public class XBObservationParser implements IObservationParser {
 				xb_obsType = ((OMTextObservationDocument) xb_obsDoc).getOMTextObservation();
 			} else if (xb_obsDoc instanceof OMUncertaintyObservationDocument) {
 				xb_obsType = ((OMUncertaintyObservationDocument) xb_obsDoc).getOMUncertaintyObservation();
-
 			} else if (xb_obsDoc.getOMObservation() instanceof OMAbstractObservationType) {
 				// observation is instance of general O&M 2 observation type
-				xb_obsType = ((OMObservationDocument) xb_obsDoc).getOMObservation();
-			}
-			
+				xb_obsType = xb_obsDoc.getOMObservation();
+			} else {
+                throw new OMParsingException("Unknown observation type");
+            }
+
 			CodeWithAuthorityType xb_identifier = xb_obsType.getIdentifier();
 			Identifier identifier = null;
 			if (xb_identifier!=null){
@@ -589,7 +585,7 @@ public class XBObservationParser implements IObservationParser {
 						resultTime, validTime, procedure, observedProperty,
 						featureOfInterest, resultQuality, result);
 
-			} 
+			}
 			else if (xb_obsType instanceof UWCategoryObservationType) {
 
 				CodeType value = ((UWCategoryObservationType)xb_obsType).getResult();
@@ -608,17 +604,17 @@ public class XBObservationParser implements IObservationParser {
 				String uncertaintyText = xb_uncPropType.toString();
 				String uom = null;
 				if (uncertaintyText.startsWith("<xml-fragment")){
-					
+
 					//preserve uom
 					if (uncertaintyText.contains("uom=") || uncertaintyText.contains("uom =")) {
 						uom = XmlObject.Factory.parse(uncertaintyText).selectAttribute(new QName("uom")).getDomNode().getNodeValue();
 					}
-					
+
 					//removing xml fragments
 					int start = uncertaintyText.indexOf("<un:");
 					int end = uncertaintyText.indexOf("</xml-fragment");
 					uncertaintyText = uncertaintyText.substring(start,end);
-					
+
 					//add namespace uncertml
 					if (!uncertaintyText.contains("xmlns:un=\"http://www.uncertml.org/2.0")){
 						uncertaintyText = uncertaintyText.replaceFirst(">", " xmlns:un=\"http://www.uncertml.org/2.0\">");
@@ -672,8 +668,8 @@ public class XBObservationParser implements IObservationParser {
 			}
 		}
 		} catch (Exception e) {
-			throw new OMParsingException(e);		
-		} 
+			throw new OMParsingException(e);
+		}
 		return obs;
 	}
 
@@ -682,7 +678,7 @@ public class XBObservationParser implements IObservationParser {
 	 * only uncertainty results as defined in the UncertWeb profile are parsed;
 	 * has to be extended, if further data quality types as defined in ISO 19139
 	 * have to be supported.
-	 * 
+	 *
 	 * @param xb_resultQualityArray
 	 *            XmlBeans representation of resultQualities
 	 * @return Array with POJO objects representing uncertainty results
@@ -703,7 +699,7 @@ public class XBObservationParser implements IObservationParser {
 					.getAbstractDQElement().getResultArray();
 
 			for (DQResultPropertyType xb_r : xb_resultArray) {
-				
+
 				if (!xb_r.isNil() && xb_r.getAbstractDQResult() != null
 						&& !xb_r.getAbstractDQResult().isNil()
 						&& xb_r.getAbstractDQResult() instanceof DQUncertaintyResultType) {
@@ -712,12 +708,12 @@ public class XBObservationParser implements IObservationParser {
 							.getAbstractDQResult().changeType(
 									DQUncertaintyResultType.type);
 
-					
+
 					UnitOfMeasurePropertyType valueUnit = uncResult
 							.getValueUnit();
 					String identifier = valueUnit.getUnitDefinition()
 							.getIdentifier().getStringValue();
-					
+
 					Value[] value = uncResult.getValueArray();
 					IUncertainty[] values = new IUncertainty[value.length];
 					for (int i = 0; i < value.length; ++i) {
@@ -736,7 +732,7 @@ public class XBObservationParser implements IObservationParser {
 
 	/**
 	 * helper method for parsing observedProperty
-	 * 
+	 *
 	 * @param xb_observedProperty
 	 *            XmlBeans representation of observed property
 	 * @return the property's URI
@@ -751,7 +747,7 @@ public class XBObservationParser implements IObservationParser {
 
 	/**
 	 * helper method for parsing procedure
-	 * 
+	 *
 	 * @param xb_procedure
 	 *            XmlBeans representation of procedure
 	 * @return the procedure's URI
@@ -766,11 +762,11 @@ public class XBObservationParser implements IObservationParser {
 
 	/**
 	 * helper method for parsing time properteis
-	 * 
+	 *
 	 * @param xb_absTimeObj
 	 *            XmlBeans XmlObject representing the time property
 	 * @return Returns Java representation of temporal property
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	private TimeObject parseTimeProperty(XmlObject xb_absTimeObj) throws URISyntaxException {
 
@@ -831,7 +827,7 @@ public class XBObservationParser implements IObservationParser {
 
 	/**
 	 * helper method for parsing timePosition to DateTime
-	 * 
+	 *
 	 * @param timePosition
 	 *            time as a string e.g. 1970-01-01T00:00:00Z
 	 * @return time as an Object
@@ -848,7 +844,7 @@ public class XBObservationParser implements IObservationParser {
 	/**
 	 * helper method for parsing a gml Envelope XmlBeans object to a jts
 	 * envelope
-	 * 
+	 *
 	 * @param env
 	 *            XmlBeans representation of Envelope
 	 * @return Returns JTS envelope
@@ -873,17 +869,17 @@ public class XBObservationParser implements IObservationParser {
 
 	/**
 	 * parses a SpatialSamlingFeature from a feature of interest
-	 * 
+	 *
 	 * @param xb_featureOfInterest
 	 *            XmlBeans representation of SamplingFeature
 	 * @return Returns POJO representation of sampling feature
 	 * @throws URISyntaxException
-	 * 			if xlinks cannot be resolved or are malformed 
-	 * @throws MalformedURLException 
 	 * 			if xlinks cannot be resolved or are malformed
-	 * @throws IllegalArgumentException 
+	 * @throws MalformedURLException
+	 * 			if xlinks cannot be resolved or are malformed
+	 * @throws IllegalArgumentException
 	 *             if parsing of the feature fails
-	 * @throws XmlException 
+	 * @throws XmlException
 	 * 			if parsing of the geometry fails
 	 */
 	public synchronized SpatialSamplingFeature parseSamplingFeature(
@@ -899,7 +895,7 @@ public class XBObservationParser implements IObservationParser {
 
 		// FOI is encoded inline, so parse the feature
 		else {
-			
+
 			String gmlId = xb_featureOfInterest.getSFSpatialSamplingFeature().getId();
 			// get identifier
 			//TODO add parsing of code space
@@ -917,7 +913,7 @@ public class XBObservationParser implements IObservationParser {
 			// get reference to the sampled feature
 			String sampledFeature = null;
 
-			
+
 			if (!(xb_featureOfInterest.getSFSpatialSamplingFeature().getSampledFeature().getHref() == null)) {
 
 				sampledFeature = xb_featureOfInterest.getSFSpatialSamplingFeature().getSampledFeature().getHref();
@@ -934,31 +930,31 @@ public class XBObservationParser implements IObservationParser {
 			return ssf;
 		}
 	}
-	
+
 	/**
 	 * helper method which returns a spatialSamplingFeature for a reference contained in the xlink:href attribute of the featureOfInterest
 	 *
-	 * 
+	 *
 	 * @param href
 	 * 			value of the xlink:href attribute
 	 * @return Returns spatial sampling feature which is referenced
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 * 			if xlinks cannot be resolved or are malformed
 	 * @throws MalformedURLException
-	 * 			if xlinks cannot be resolved or are malformed 
+	 * 			if xlinks cannot be resolved or are malformed
 	 */
 	private SpatialSamplingFeature getSamplingFeature4Href(String href) throws IllegalArgumentException, URISyntaxException, MalformedURLException {
 		SpatialSamplingFeature ssf = null;
 		if	(!href.startsWith("#")){
 			URI hrefUri = new URI(href);
-			
+
 			if (this.featureCache.containsKey(href)){
 				ssf = this.featureCache.get(href);
 			}
 			else {
 				ssf= new SpatialSamplingFeature(hrefUri);
 				this.featureCache.put(href, ssf);
-				
+
 //				String xmlString = null;
 //				try {
 //					xmlString = readTextFromStream(hrefUrl.openStream());
@@ -984,22 +980,22 @@ public class XBObservationParser implements IObservationParser {
 			if (ssf==null){
 				throw new IllegalArgumentException("Feature of interest with reference " + gmlId + " could not be resolved in document!");
 			}
-			
+
 		}
 		return ssf;
 	}
 
 	/**
 	 * helper method for parsing XmlBeans representation of SamplingFeature to internal representation
-	 * 
+	 *
 	 * @param xb_sfType
-	 * 			XmlBeans representation of SamplingFeature		
+	 * 			XmlBeans representation of SamplingFeature
 	 * @return Returns internal representation of SamplingFeature
-	 * @throws XmlException 
+	 * @throws XmlException
 	 * 			if geometry of feature cannot be parsed
-	 * @throws IllegalArgumentException 
+	 * @throws IllegalArgumentException
 	 * 			if geometry of feature cannot be parsed
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	private SpatialSamplingFeature parseSamplingFeatureDocument(
 			SFSpatialSamplingFeatureType xb_sfType) throws IllegalArgumentException, XmlException, URISyntaxException  {
@@ -1030,18 +1026,18 @@ public class XBObservationParser implements IObservationParser {
 		Geometry shape = parser.parseUwGeometry(geomString.toString());
 
 		return new SpatialSamplingFeature(identifier, sampledFeature, shape);
-		
+
 	}
 
 	/**
 	 * helper method which returns a TimeObject from the cache
-	 * 
+	 *
 	 * @param href
 	 * 			value of xlink:href attribute carrying the reference to the time object
 	 * @return Returns the timeObject
 	 * @throws IllegalArgumentException
 	 * 			if the reference could not be resolved in the document or if the reference is pointing to an external
-	 * 			document which is currently not supported 
+	 * 			document which is currently not supported
 	 */
 	private TimeObject getTimeObject4Href(String href) throws IllegalArgumentException{
 		if	(!href.startsWith("#")){
@@ -1054,10 +1050,10 @@ public class XBObservationParser implements IObservationParser {
 		}
 		return timeObject;
 	}
-	
+
 	/**
 	 * helper method for reading strings from inputstream
-	 * 
+	 *
 	 * @param in
 	 * 			input stream from which text should be read
 	 * @return Returns string that is read from stream
@@ -1069,12 +1065,12 @@ public class XBObservationParser implements IObservationParser {
 	        String line;
 	        StringBuffer sb = new StringBuffer();
 	        for (int i=0; (line = br.readLine()) != null; i++) {
-	            
+
 	            // if not first line --> append "\n"
 	            if (i > 0) {
 	                sb.append("\n");
 	            }
-	            
+
 	            sb.append(line);
 	        }
 	        br.close();
@@ -1085,11 +1081,11 @@ public class XBObservationParser implements IObservationParser {
 	 /**
 		 * generic method for parsing a single observation or an observation collection; in case of a
 		 * single observation, a collection containing one element is returned.
-		 * 
+		 *
 		 * @param xmlString
 		 *			string containing the O&M encoded as XML
 		 * @return returns internal representation of observation or observation collection
-		 * @throws OMParsingException 
+		 * @throws OMParsingException
 		 * 			if parsing fails
 		 */
 	public IObservationCollection parse(String xmlString) throws OMParsingException {
@@ -1101,7 +1097,7 @@ public class XBObservationParser implements IObservationParser {
 		}
 		IObservationCollection col = null;
 		if (xb_object instanceof OMObservationDocument){
-			
+
 			AbstractObservation obs = parseObservation(xmlString);
 			if (obs instanceof Measurement){
 				col = new MeasurementCollection();
@@ -1133,7 +1129,7 @@ public class XBObservationParser implements IObservationParser {
 			return parseObservationCollection(xmlString);
 		}
 	}
-	
+
 	public HashMap<String, SpatialSamplingFeature> getFeatureCache() {
 		return featureCache;
 	}
@@ -1150,7 +1146,7 @@ public class XBObservationParser implements IObservationParser {
 			String inputString = writer.toString();
 			return this.parseObservationCollection(inputString);
 		}
-	
+
 	public void setIsCollection(boolean isCol){
 		this.isCol = isCol;
 		if (isCol){
@@ -1158,6 +1154,6 @@ public class XBObservationParser implements IObservationParser {
 			this.timeCache = new HashMap<String, TimeObject>();
 		}
 	}
-	
-	
+
+
 }
