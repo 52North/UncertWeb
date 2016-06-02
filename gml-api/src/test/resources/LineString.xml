@@ -9,7 +9,7 @@
 		information about SRS
 		==============================================================================-->
 		<gml:pos>52.79 7.87</gml:pos>
-					<gml:pos>52.79 8.87</gml:pos>
-					<gml:pos>53.79 8.87</gml:pos>
-					<gml:pos>53.79 7.87</gml:pos>
+        <gml:pos>52.79 8.87</gml:pos>
+        <gml:pos>53.79 8.87</gml:pos>
+        <gml:pos>53.79 7.87</gml:pos>
 </gml:LineString>

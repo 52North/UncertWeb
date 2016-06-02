@@ -3,21 +3,21 @@ package org.uncertweb.api.gml.io;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.opengis.gml.x32.AbstractRingPropertyType;
+import net.opengis.gml.x32.CurvePropertyType;
 import net.opengis.gml.x32.DirectPositionListType;
 import net.opengis.gml.x32.DirectPositionType;
 import net.opengis.gml.x32.GridEnvelopeType;
 import net.opengis.gml.x32.LineStringDocument;
-import net.opengis.gml.x32.LineStringPropertyType;
 import net.opengis.gml.x32.LineStringType;
 import net.opengis.gml.x32.LinearRingDocument;
 import net.opengis.gml.x32.LinearRingType;
-import net.opengis.gml.x32.MultiLineStringDocument;
-import net.opengis.gml.x32.MultiLineStringType;
+import net.opengis.gml.x32.MultiCurveDocument;
+import net.opengis.gml.x32.MultiCurveType;
 import net.opengis.gml.x32.MultiPointDocument;
 import net.opengis.gml.x32.MultiPointType;
 import net.opengis.gml.x32.MultiSurfaceDocument;
@@ -26,10 +26,10 @@ import net.opengis.gml.x32.PointDocument;
 import net.opengis.gml.x32.PointPropertyType;
 import net.opengis.gml.x32.PointType;
 import net.opengis.gml.x32.PolygonDocument;
-import net.opengis.gml.x32.PolygonPropertyType;
 import net.opengis.gml.x32.PolygonType;
 import net.opengis.gml.x32.RectifiedGridDocument;
 import net.opengis.gml.x32.RectifiedGridType;
+import net.opengis.gml.x32.SurfacePropertyType;
 import net.opengis.gml.x32.VectorType;
 
 import org.apache.xmlbeans.XmlException;
@@ -50,17 +50,34 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Interface for encoding GML geometries and features in XMLBeans
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class XmlBeansGeometryEncoder implements IGeometryEncoder {
-	
+
 	/**counter used for generation of gml IDs*/
 	private int gmlIDcounter=0;
-	
+
 	/** default accuracy (number of digits) for coordinates*/
-	private int accuracy=5;
+	private final int accuracy = 5;
+
+    /**
+	 * default constructor; accuracy is set to 5 digits for coordinates
+	 */
+	public XmlBeansGeometryEncoder(){
+	}
+
+
+	/**
+	 * constructor
+	 *
+	 * @param accuracy
+	 * 			number of digits for coordinates
+	 */
+	public XmlBeansGeometryEncoder(int accuracy){
+
+	}
 
 	@Override
 	public String encodeGeometry(Geometry geom) throws XmlException {
@@ -85,25 +102,6 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 		return result;
 	}
-	
-	/**
-	 * default constructor; accuracy is set to 5 digits for coordinates
-	 */
-	public XmlBeansGeometryEncoder(){
-	}
-	
-	
-	/**
-	 * constructor
-	 * 
-	 * @param accuracy
-	 * 			number of digits for coordinates
-	 */
-	public XmlBeansGeometryEncoder(int accuracy){
-		
-	}
-	
-	
 
 	@Override
 	public String encodeFeature(UwAbstractFeature feature) {
@@ -112,29 +110,29 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	}
 
 
-	
+
 	/**
 	 * helper method for encoding rectified grid
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of rectified grid
 	 * @return
 	 * 		Returns GML string representing the rectified grid
-	 * 
+	 *
 	 */
 	private String encodeRectifiedGrid(RectifiedGrid geom) {
-	
+
 		return encodeRectifiedGrid2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for encoding rectified grid
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of rectified grid
 	 * @return
 	 * 		Returns GML document representing the rectified grid
-	 * 
+	 *
 	 */
 	public RectifiedGridDocument encodeRectifiedGrid2Doc(RectifiedGrid geom) {
 		RectifiedGridDocument xb_rgDoc = RectifiedGridDocument.Factory
@@ -146,18 +144,12 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 		// create GridEnvelope
 		GridEnvelopeType xb_limits = xb_rg.addNewLimits().addNewGridEnvelope();
-		List<BigInteger> high = new ArrayList<BigInteger>();
-		high.add(BigInteger
-				.valueOf(new Double(geom.getGridEnvelope().getMaxX())
-						.longValue()));
-		high.add(BigInteger
-				.valueOf(new Double(geom.getGridEnvelope().getMaxY())
-						.longValue()));
-		List<BigInteger> low = new ArrayList<BigInteger>();
-		low.add(BigInteger.valueOf(new Double(geom.getGridEnvelope().getMinX())
-				.longValue()));
-		low.add(BigInteger.valueOf(new Double(geom.getGridEnvelope().getMinY())
-				.longValue()));
+		List<BigInteger> high = new ArrayList<BigInteger>(2);
+		high.add(BigInteger.valueOf(new Double(geom.getGridEnvelope().getMaxX()).longValue()));
+		high.add(BigInteger.valueOf(new Double(geom.getGridEnvelope().getMaxY()).longValue()));
+		List<BigInteger> low = new ArrayList<BigInteger>(2);
+		low.add(BigInteger.valueOf(new Double(geom.getGridEnvelope().getMinX()).longValue()));
+		low.add(BigInteger.valueOf(new Double(geom.getGridEnvelope().getMinY()).longValue()));
 		xb_limits.setHigh(high);
 		xb_limits.setLow(low);
 
@@ -190,26 +182,26 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 	/**
 	 * helper method for encoding line string
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of line string
 	 * @return
 	 * 		Returns GML string representing the line string
-	 * 
+	 *
 	 */
 	private String encodeLineString(LineString geom) {
 
 		return encodeLineString2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for encoding line string
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of line string
 	 * @return
 	 * 		Returns GML document representing the line string
-	 * 
+	 *
 	 */
 	public LineStringDocument encodeLineString2Doc(LineString geom) {
 		LineStringDocument xb_lsDoc = LineStringDocument.Factory.newInstance();
@@ -219,35 +211,37 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 			xb_ls.setSrsName(UwGMLUtil.EPSG_URL + geom.getSRID());
 		}
 		Coordinate[] coords = geom.getCoordinates();
-		for (int i = 0; i < coords.length; i++) {
-			DirectPositionType xb_pos = xb_ls.addNewPos();
-			xb_pos.setStringValue(UwMathUtils.roundDouble(coords[i].x,accuracy) + " " + UwMathUtils.roundDouble(coords[i].y,accuracy));
-		}
+        for (Coordinate coord : coords) {
+            DirectPositionType xb_pos = xb_ls.addNewPos();
+            xb_pos.setStringValue(UwMathUtils.roundDouble(coord.x, accuracy) +
+                                  " " +
+                                  UwMathUtils.roundDouble(coord.y, accuracy));
+        }
 		return xb_lsDoc;
 	}
 
 	/**
 	 * helper method for encoding polygon
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of polygon
 	 * @return
 	 * 		Returns GML string representing the polygon
-	 * 
+	 *
 	 */
 	private String encodePolygon(Polygon geom) {
 
 		return encodePolygon2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for encoding polygon
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of polygon
 	 * @return
 	 * 		Returns GML document representing the polygon
-	 * 
+	 *
 	 */
 	public PolygonDocument encodePolygon2Doc(Polygon geom) {
 		PolygonDocument xb_pd = PolygonDocument.Factory.newInstance();
@@ -270,26 +264,26 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 	/**
 	 * helper method for point
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of point
 	 * @return
 	 * 		Returns GML string representing the point
-	 * 
+	 *
 	 */
 	private String encodePoint(Point geom) {
 
 		return encodePoint2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for point
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of point
 	 * @return
 	 * 		Returns GML document representing the point
-	 * 
+	 *
 	 */
 	public PointDocument encodePoint2Doc(Point geom) {
 		PointDocument xb_pd = PointDocument.Factory.newInstance();
@@ -304,18 +298,18 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 	/**
 	 * helper method for linear ring encoding
-	 * 
-	 * @param geom
+	 *
+	 * @param lr
 	 * 		JTS representatioin of linear ring
 	 * @return
 	 * 		Returns GML string representing the linear ring
-	 * 
+	 *
 	 */
 	private LinearRingDocument encodeLinearRing(LineString lr) {
 		Coordinate[] coords = lr.getCoordinates();
 		LinearRingDocument xb_lrDoc = LinearRingDocument.Factory.newInstance();
 		LinearRingType xb_lrType = xb_lrDoc.addNewLinearRing();// LinearRingType.Factory.newInstance();
-		
+
 		//TODO maybe change to posList!!
 //		DirectPositionType[] xb_posList = new DirectPositionType[coords.length];
 //		for (int i = 0; i < coords.length; i++) {
@@ -325,23 +319,23 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 //			xb_posList[i] = xb_pos;
 //		}
 //		xb_lrType.setPosArray(xb_posList);
-		
+
 		DirectPositionListType xb_posList = xb_lrType.addNewPosList();
 		String posString = "";
 		for (int i = 0; i < coords.length; i++) {
 			posString = posString + UwMathUtils.roundDouble(coords[i].x,accuracy) + " "+ UwMathUtils.roundDouble(coords[i].y,accuracy);
 			//append space, if it is not the last coordinate
 			if (i!=coords.length-1){
-				posString = posString + " ";
+				posString += " ";
 			}
 		}
 		xb_posList.setStringValue(posString);
 		return xb_lrDoc;
 	}
-	
+
 	/**
 	 * helper mehtod for encoding MultiLineString
-	 * 
+	 *
 	 * @param gmlMls
 	 * 			JTS representation of MultiLineString
 	 * @return
@@ -350,24 +344,24 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	private String encodeMultiLineString(MultiLineString gmlMls){
 		return encodeMultiLineString2Doc(gmlMls).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper mehtod for encoding MultiLineString
-	 * 
+	 *
 	 * @param gmlMls
 	 * 			JTS representation of MultiLineString
 	 * @return
 	 *			XMLBeans representation of MultiLineString
 	 */
-	public MultiLineStringDocument encodeMultiLineString2Doc(MultiLineString gmlMls){
-		MultiLineStringDocument xb_mlsDoc = MultiLineStringDocument.Factory.newInstance();
-		MultiLineStringType xb_mls = xb_mlsDoc.addNewMultiLineString();
+	public MultiCurveDocument encodeMultiLineString2Doc(MultiLineString gmlMls){
+        MultiCurveDocument xb_mlsDoc = MultiCurveDocument.Factory.newInstance();
+        MultiCurveType xb_mls = xb_mlsDoc.addNewMultiCurve();
 		//set gml ID
 		xb_mls.setId(generateGmlId());
 		xb_mls.setSrsName(UwGMLUtil.EPSG_URL+gmlMls.getSRID());
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
-			LineStringPropertyType xb_ls = xb_mls.addNewLineStringMember();
+            CurvePropertyType xb_ls = xb_mls.addNewCurveMember();
 			LineString gmlLs = (LineString)gmlMls.getGeometryN(i);
 			gmlLs.setSRID(gmlMls.getSRID());
 			LineStringDocument xb_lsDoc = encodeLineString2Doc(gmlLs);
@@ -378,8 +372,8 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 	/**
 	 * helper method for encoding MultiPoint
-	 * 
-	 * @param gmlMls
+	 *
+	 * @param geom
 	 * 			JTS representation of MultiPoint
 	 * @return
 	 *			XML String of MultiPoint
@@ -387,10 +381,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	private String encodeMultiPoint(MultiPoint geom) {
 		return encodeMultiPoint2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for encoding MultiPoint
-	 * 
+	 *
 	 * @param gmlMls
 	 * 			JTS representation of MultiPoint
 	 * @return
@@ -402,7 +396,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		//set gml ID
 		xb_mls.setId(generateGmlId());
 		xb_mls.setSrsName(UwGMLUtil.EPSG_URL+gmlMls.getSRID());
-		
+
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
 			PointPropertyType xb_ls = xb_mls.addNewPointMember();
@@ -413,11 +407,11 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		}
 		return xb_mlsDoc;
 	}
-	
+
 	/**
 	 * helper method for encoding MultiPolygon
-	 * 
-	 * @param gmlMls
+	 *
+	 * @param geom
 	 * 			JTS representation of MultiPolygon
 	 * @return
 	 *			XML String of MultiPolygon
@@ -426,10 +420,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 //		return encodeMultiPolygon2Doc(geom).xmlText(getGMLOptions());
 		return encodeMultiPolygon2MultiSurfaceDoc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for encoding MultiPolygon
-	 * 
+	 *
 	 * @param gmlMls
 	 * 			JTS representation of MultiPolygon
 	 * @return
@@ -444,7 +438,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		xb_mls.setSrsName(UwGMLUtil.EPSG_URL+gmlMls.getSRID());
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
-			PolygonPropertyType xb_ls = xb_mls.addNewSurfaceMember();
+			SurfacePropertyType xb_ls = xb_mls.addNewSurfaceMember();
 			Polygon poly = (Polygon)gmlMls.getGeometryN(i);
 			poly.setSRID(gmlMls.getSRID());
 			PolygonDocument xb_lsDoc = encodePolygon2Doc(poly);
@@ -452,29 +446,29 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		}
 		return xb_mlsDoc;
 	}
-	
+
 	//TODO add further encoding methods for MultiPoint and MultiPolygon
-	
+
 	/**
 	 * method returns XmlOptions which are used by XmlBeans for a proper encoding
-	 * 
+	 *
 	 * @return
 	 * 		Returns GML string representing the point
-	 * 
+	 *
 	 */
 	private XmlOptions getGMLOptions() {
 		XmlOptions xmlOptions = new XmlOptions();
-		Map<String, String> lPrefixMap = new Hashtable<String, String>();
+		Map<String, String> lPrefixMap = new HashMap<String, String>();
 		lPrefixMap.put("http://www.opengis.net/gml/3.2", "gml");
 		xmlOptions.setSaveSuggestedPrefixes(lPrefixMap);
 		xmlOptions.setSaveAggressiveNamespaces();
 		xmlOptions.setSavePrettyPrint();
 		return xmlOptions;
 	}
-	
+
 	/**
 	 * helper methods which generates GML ID using the counter
-	 * 
+	 *
 	 * @return Returns GML ID
 	 */
 	private String generateGmlId(){

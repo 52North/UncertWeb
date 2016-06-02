@@ -2,21 +2,21 @@
 <!--============================================================================
 	LineString example; Taken from GML 3.2.1. specification (OGC07-036): "A LineString is a special curve that consists of a single segment with linear interpolation (see D.3.5). It is defined by two or more coordinate tuples, with linear interpolation between them." Note that the spatial reference identifer is contained in the "srsName" attribute in the root element.
 	==============================================================================-->
-<gml:MultiLineString gml:id="col1" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml/3.2 ../UncertWeb_GML.xsd">
-	<gml:lineStringMember>
+<gml:MultiCurve gml:id="col1" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml/3.2 UncertWeb_GML.xsd">
+	<gml:curveMember>
 		<gml:LineString gml:id="UOMlocation" srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
 			<gml:pos>52.79 7.87</gml:pos>
 			<gml:pos>52.79 8.87</gml:pos>
 			<gml:pos>53.79 8.87</gml:pos>
 			<gml:pos>53.79 7.87</gml:pos>
 		</gml:LineString>
-	</gml:lineStringMember>
-	<gml:lineStringMember>
+	</gml:curveMember>
+	<gml:curveMember>
 		<gml:LineString gml:id="ASTlocation" srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
 			<gml:pos>52.79 7.87</gml:pos>
 			<gml:pos>52.79 8.87</gml:pos>
 			<gml:pos>53.79 8.87</gml:pos>
 			<gml:pos>53.79 7.87</gml:pos>
 		</gml:LineString>
-	</gml:lineStringMember>
-</gml:MultiLineString>
+	</gml:curveMember>
+</gml:MultiCurve>
