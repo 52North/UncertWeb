@@ -3,75 +3,30 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.uncertweb</groupId>
-		<artifactId>uncertweb-parent</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<artifactId>uncertweb</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>uncertml-x-api</artifactId>
 	<version>0.0.4-SNAPSHOT</version>
-	<name>Extended UncertML API</name>
+	<name>UncertML-X API</name>
 	<description>Provides parsers and encoders for extended UncertML</description>
-	<organization>
-		<name>Institute for Geoinformatics</name>
-		<url>http://ifgi.uni-muenster.de</url>
-	</organization>
-	<developers>
-		<developer>
-			<name>Christoph Stasch</name>
-			<email>staschc@uni-muenster.de</email>
-			<organization>${project.organization.name}</organization>
-			<organizationUrl>${project.organization.url}</organizationUrl>
-			<timezone>GMT+1</timezone>
-			<id>staschc</id>
-		</developer>
-	</developers>
-	<scm>
-		<connection>scm:svn:https://svn.52north.org/svn/geostatistics/main/uncertweb/uncertweb-utils/trunk</connection>
-	</scm>
-	<repositories>
-		<repository>
-			<id>UncertWebMavenRepository</id>
-			<name>UncertWeb Maven Repository</name>
-			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
-			<version>2.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>uncertweb-utils</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<artifactId>utils</artifactId>
+		</dependency>
+        <dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>xmlbeans-uncertml-x</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>xmlbeans-maven-plugin</artifactId>
-				<version>2.3.3</version>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>xmlbeans</goal>
-						</goals>
-					</execution>
-				</executions>
-                <configuration>
-                    <sourceSchemas>
-                        <sourceSchema>uncertml-x.xsd</sourceSchema>
-                    </sourceSchemas>
-                </configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

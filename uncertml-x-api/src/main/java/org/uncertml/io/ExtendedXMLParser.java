@@ -221,13 +221,12 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 	 * @param xbObject
 	 * 			XMLBeans representation of NormalTimeSeries
 	 * @return NormalTimeSeries object
-	 * @throws UncertaintyParserException#
+	 * @throws UncertaintyParserException
 	 * 			if parsing fails
 	 */
 	private IUncertainty parseNormalTimeSeries(NormalTimeSeriesDocument xbObject)
 			throws UncertaintyParserException {
-		NormalTimeSeriesType xb_nsftype = ((NormalTimeSeriesDocument) xbObject)
-				.getNormalTimeSeries();
+		NormalTimeSeriesType xb_nsftype = xbObject.getNormalTimeSeries();
 		INormalCovarianceParameter gp = parseCovarianceParameter(xb_nsftype
 				.getCovarianceParameter());
 
@@ -235,7 +234,7 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 		String temporalTrendString = xb_nsftype.getTemporalTrend();
 		if (xb_samples!=null){
 			SampleReference ref = parseSampleReference(xb_samples);
-			if (temporalTrendString!=null&&!temporalTrendString.equals("")){
+			if (temporalTrendString!=null&&!temporalTrendString.isEmpty()){
 				double[] temporalTrend = RandomVariablesUtil
 						.parseTrendCoefficients(temporalTrendString);
 				return new NormalTimeSeries(ref, gp, temporalTrend);
@@ -245,14 +244,12 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 			}
 		}
 		else {
-			if (temporalTrendString!=null&&!temporalTrendString.equals("")){
-				double[] temporalTrend = RandomVariablesUtil
-						.parseTrendCoefficients(temporalTrendString);
-				return new NormalTimeSeries(gp, temporalTrend);
-			}
-			else {
-				throw new UncertaintyParserException("Either temporal trend or samples or both have to be set in normal time series!!");
-			}
+			if (temporalTrendString==null||temporalTrendString.isEmpty()){
+                throw new UncertaintyParserException("Either temporal trend or samples or both have to be set in normal time series!!");
+            } else {
+                double[] temporalTrend = RandomVariablesUtil.parseTrendCoefficients(temporalTrendString);
+                return new NormalTimeSeries(gp, temporalTrend);
+            }
 		}
 
 
@@ -268,7 +265,7 @@ public class ExtendedXMLParser implements IUncertaintyParser {
 	private IUncertainty parseNormalSpatialField(
 			NormalSpatialFieldDocument xbObject)
 			throws UncertaintyParserException {
-		NormalSpatialFieldType xb_nsftype = ((NormalSpatialFieldDocument) xbObject)
+		NormalSpatialFieldType xb_nsftype = xbObject
 				.getNormalSpatialField();
 		INormalCovarianceParameter gp = parseCovarianceParameter(xb_nsftype
 				.getCovarianceParameter());
