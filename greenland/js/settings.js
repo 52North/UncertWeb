@@ -18,10 +18,10 @@
 if (typeof VIS == 'undefined')
     VIS = {};
 
-VIS.omConversionServiceUrl = "http://giv-uw.uni-muenster.de:8080/omcs";
+VIS.omConversionServiceUrl = "https://jamaika.esri-de.com:8443/omcs";
 
 // url of visualization service to use
-VIS.vissUrl = "http://giv-uw.uni-muenster.de:8080/viss";
+VIS.vissUrl = "https://jamaika.esri-de.com:8443/viss";
 
 VIS.wmsCapabilitiesProxy = "wmsproxy";
 VIS.threddsProxy = "threddsproxy";
