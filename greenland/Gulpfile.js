@@ -169,7 +169,7 @@ gulp.task('clean', function() {
 gulp.task('serve', ['build'], function() {
   	connect.server({
   		root: 'dist',
-  		port: 8080,
+  		port: 3000,
   		host: 'localhost',
   		https: false,
   		livereload: true
