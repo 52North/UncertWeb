@@ -29,7 +29,7 @@ OpenLayers.Format.WMSCapabilities.v1_3_0_ncWMS = OpenLayers.Class(
     					};
     					this.readChildNodes(node, obj.getmetadata);
     				}
-    			}, OpenLayers.Format.WMSCapabilities.v1_3_0.prototype.readers["wms"])
+    			}, OpenLayers.Format.WMSCapabilities.v1_3_0.prototype.readers.wms)
     		}
 
     	});

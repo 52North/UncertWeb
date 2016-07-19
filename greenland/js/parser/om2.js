@@ -78,8 +78,7 @@ OpenLayers.SOS.Format.ExceptionReport = OpenLayers.Class(OpenLayers.Format.XML, 
     		}
     	}
     },
-    write : function() {/* we don't need to write any xml */
-    },
+    write : function() {/* we don't need to write any xml */},
     writers : {/* we don't need to write any xml */}
 });
 
