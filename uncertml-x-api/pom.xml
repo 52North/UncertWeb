@@ -16,12 +16,16 @@
 			<artifactId>xmlbeans</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.uncertweb</groupId>
 			<artifactId>utils</artifactId>
 		</dependency>
         <dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.uncertweb</groupId>
 			<artifactId>xmlbeans-uncertml-x</artifactId>
+		</dependency>
+         <dependency>
+			<groupId>org.uncertml</groupId>
+			<artifactId>uncertml</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
