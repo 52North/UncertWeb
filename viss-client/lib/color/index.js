@@ -14,8 +14,8 @@ function Color() {}
 
 Color.prototype.toHex = function() {
     return '#' + this.toRGB().toArray().map(function(x) {
-    		var s = x.toString(16).toUpperCase();
-    		return s.length < 2 ? '0' + s : s;
+        var s = x.toString(16).toUpperCase();
+        return s.length < 2 ? '0' + s : s;
         }).join('');
 };
 

@@ -1,4 +1,4 @@
 module.exports = {
-	html: require('./html'),
-	svg: require('./svg')
+  html: require('./html'),
+  svg: require('./svg')
 };

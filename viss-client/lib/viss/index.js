@@ -1,7 +1,7 @@
 var Client = require('./client');
 
 module.exports = function(url) {
-	return new Client(url);
+  return new Client(url);
 };
 
 module.exports.Client        = Client;
