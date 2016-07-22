@@ -9,18 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.n52.wps.io.data.IData;
-import org.n52.wps.io.data.binding.complex.NetCDFBinding;
-import org.n52.wps.io.data.binding.complex.OMBinding;
-import org.n52.wps.io.data.binding.complex.UncertMLBinding;
-import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
-import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
-import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
-import org.n52.wps.server.AbstractAlgorithm;
-import org.n52.wps.util.r.process.ExtendedRConnection;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPDouble;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uncertml.IUncertainty;
 import org.uncertml.UncertML;
 import org.uncertml.sample.AbstractSample;
@@ -36,8 +28,6 @@ import org.uncertml.statistic.Range;
 import org.uncertml.statistic.StandardDeviation;
 import org.uncertml.statistic.StatisticCollection;
 import org.uncertml.statistic.Variance;
-import org.uncertml.x20.StatisticsCollectionDocument.StatisticsCollection;
-import org.uncertweb.api.netcdf.NetcdfUWFile;
 import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
 import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.UncertaintyObservation;
@@ -46,6 +36,16 @@ import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.netcdf.INcUwVariable;
 import org.uncertweb.netcdf.NcUwFile;
 import org.uncertweb.netcdf.NcUwVariableWithDimensions;
+
+import org.n52.wps.io.data.IData;
+import org.n52.wps.io.data.binding.complex.NetCDFBinding;
+import org.n52.wps.io.data.binding.complex.OMBinding;
+import org.n52.wps.io.data.binding.complex.UncertMLBinding;
+import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
+import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
+import org.n52.wps.io.data.binding.literal.LiteralStringBinding;
+import org.n52.wps.server.AbstractAlgorithm;
+import org.n52.wps.util.r.process.ExtendedRConnection;
 
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
@@ -58,13 +58,13 @@ import ucar.nc2.Variable;
 
 /**
  * Process for calculating simple statistics from Realisations
- * 
+ *
  * @author staschc, Benjamin Pross, Lydia Gerharz
- * 
+ *
  */
 public class Samples2Statistics extends AbstractAlgorithm {
 
-	private static Logger LOGGER = Logger.getLogger(Samples2Statistics.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(Samples2Statistics.class);
 
 	// //////////////////////////////////////////////////////
 	// constants for input/output identifiers
@@ -77,7 +77,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 	private final static String MV_ATTR_NAME = "missing_value";
 	private final static String REF_ATTR_NAME = "ref";
 	private static final String REAL_VAR_NAME = "realisation";
-	
+
 	public Samples2Statistics(){
 		super();
 	}
@@ -88,7 +88,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 		// WPS specific stuff; initialize result set
 		Map<String, IData> result = new HashMap<String, IData>(1);
 		try {
-			
+
 			//extract statistics parameters
 			List<IData> statistics = inputData.get(INPUT_IDENTIFIER_STAT);
 			if (statistics == null || statistics.size()==0){
@@ -96,16 +96,16 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				LOGGER.error(errorMsg);
 				throw new IOException(errorMsg);
 			}
-			
+
 			List<String> statParams = extractStatisticsFromRequest(statistics);
-			
+
 			// get input file containing the Gaussian Distributions
 			IData dataInput = inputData.get(INPUT_IDENTIFIER_SAMPLES).get(0);
-					
+
 			// support for NetCDF
 			if (dataInput instanceof NetCDFBinding){
 				// get netCDF file containing the Gaussian Distributions
-				NcUwFile uwNcdfFile = ((NetCDFBinding) dataInput).getPayload();			
+				NcUwFile uwNcdfFile = ((NetCDFBinding) dataInput).getPayload();
 				NcUwFile resultFile = getStatistics4SamplesNCFile(uwNcdfFile,
 					statParams);
 
@@ -118,17 +118,17 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				UncertaintyObservationCollection uwColl = (UncertaintyObservationCollection)dataInput.getPayload();
 				UncertaintyObservationCollection resultFile = getStatistics4SamplesOMFile(uwColl,
 						statParams);
-				
+
 				OMBinding uwData = new OMBinding(resultFile);
-				result.put(OUTPUT_IDENTIFIER_STAT, uwData);			
+				result.put(OUTPUT_IDENTIFIER_STAT, uwData);
 			}
 			// support for plain UncertML
 			else if(dataInput instanceof UncertMLBinding){
 				IUncertainty uncertainty = (IUncertainty)dataInput.getPayload();
 				IUncertainty results = getStatistics4UncertML(uncertainty, statParams);
-				
+
 				UncertMLBinding uwData = new UncertMLBinding(results);
-				result.put(OUTPUT_IDENTIFIER_STAT, uwData);			
+				result.put(OUTPUT_IDENTIFIER_STAT, uwData);
 			}
 			else{
 				LOGGER.error("Input data format is not supported!");
@@ -141,14 +141,14 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			throw new RuntimeException(
 					"Error while getting random samples for Gaussian distribution: "
 							+ e.getMessage(), e);
-		} 
+		}
 
 		return result;
 	}
 
 	private IUncertainty getStatistics4UncertML(IUncertainty uncertainty, List<String> statParams){
 		IUncertainty resultUncertainty = null;
-		
+
 		ExtendedRConnection c = null;
 		try {
 			// Perform R computations
@@ -158,11 +158,11 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				c.login("rserve", "aI2)Jad$%");
 			}
 			ContinuousRealisation realisations = null;
-			
+
 			// get samples for this distribution
 			if(uncertainty instanceof ISample){
 				AbstractSample sample = (AbstractSample) uncertainty;
-				realisations = (ContinuousRealisation) sample.getRealisations().get(0);		
+				realisations = (ContinuousRealisation) sample.getRealisations().get(0);
 			}
 			else if(uncertainty instanceof ContinuousRealisation){
 					realisations = (ContinuousRealisation) uncertainty;
@@ -172,11 +172,11 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				for(int i=0; i<values.length; i++){
 					values[i] = realisations.getValues().get(i).doubleValue();
 				}
-				
-				// define parameters in R				
+
+				// define parameters in R
 				REXPDouble d = new REXPDouble(values);
 				c.assign("samples", d);
-				
+
 				// calculate statistics and add them to collection
 				StatisticCollection statColl = new StatisticCollection();
 				//IteratorystatParams.iterator()
@@ -208,14 +208,14 @@ public class Samples2Statistics extends AbstractAlgorithm {
 						double upper = c.tryEval("quantile(samples,0.975)").asDouble();
 						statColl.add(new ConfidenceInterval(new Quantile(0.025, lower), new Quantile(0.975, upper)));
 					}
-				}			
-				resultUncertainty = statColl;					
+				}
+				resultUncertainty = statColl;
 			}else{
 				throw new RuntimeException(
 					"Input with ID distribution must be a sample or realisation!");
-			}	
+			}
 				return resultUncertainty;
-						
+
 			} catch (Exception e) {
 				LOGGER
 				.debug("Error while getting random samples for Gaussian distribution: "
@@ -223,15 +223,15 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				throw new RuntimeException(
 				"Error while getting random samples for Gaussian distribution: "
 						+ e.getMessage(), e);	}
-				
+
 			finally {
 				if (c != null) {
 					c.close();
 				}
-			}		
-		
+			}
+
 	}
-	
+
 	/**
 	 * Method to calculate statistics for OM input
 	 * @param inputColl
@@ -240,30 +240,30 @@ public class Samples2Statistics extends AbstractAlgorithm {
 	 */
 	private UncertaintyObservationCollection getStatistics4SamplesOMFile(UncertaintyObservationCollection inputColl,
 			List<String> statParams){
-		UncertaintyObservationCollection resultColl = new UncertaintyObservationCollection();		
-		ExtendedRConnection c = null;	
-		try {		
+		UncertaintyObservationCollection resultColl = new UncertaintyObservationCollection();
+		ExtendedRConnection c = null;
+		try {
 			// establish connection to Rserve running on localhost
 			c = new ExtendedRConnection("127.0.0.1");
 			if (c.needLogin()) {
 				// if server requires authentication, send one
 				c.login("rserve", "aI2)Jad$%");
 			}
-			
+
 			// loop through observation collection
-			for (AbstractObservation obs : inputColl.getObservations()) {  		
+			for (AbstractObservation obs : inputColl.getObservations()) {
 				if(obs instanceof UncertaintyObservation){
 					// get UncertML distribution
 					UncertaintyResult uResult = (UncertaintyResult) obs.getResult();
 					IUncertainty uncertainty = uResult.getUncertaintyValue();
 					ContinuousRealisation realisations = null;
-					
+
 					// get samples for this distribution
 //					if(uncertainty instanceof ISample){
 //						AbstractSample sample = (AbstractSample) uncertainty;
-//						realisations = (ContinuousRealisation) sample.getRealisations().get(0);		
+//						realisations = (ContinuousRealisation) sample.getRealisations().get(0);
 //					}
-//					else 
+//					else
 					if(uncertainty instanceof ContinuousRealisation){
 							realisations = (ContinuousRealisation) uncertainty;
 					}
@@ -272,11 +272,11 @@ public class Samples2Statistics extends AbstractAlgorithm {
 						for(int i=0; i<values.length; i++){
 							values[i] = realisations.getValues().get(i).doubleValue();
 						}
-						
-						// define parameters in R				
+
+						// define parameters in R
 						REXPDouble d = new REXPDouble(values);
 						c.assign("samples", d);
-						
+
 						// calculate statistics and add them to collection
 						StatisticCollection statColl = new StatisticCollection();
 						//IteratorystatParams.iterator()
@@ -309,31 +309,31 @@ public class Samples2Statistics extends AbstractAlgorithm {
 								statColl.add(new ConfidenceInterval(new Quantile(0.025, lower), new Quantile(0.975, upper)));
 							}
 						}
-							
+
 						// make new observation
 						UncertaintyResult newResult = new UncertaintyResult(statColl, "ug/m3");
 						newResult.setUnitOfMeasurement(uResult.getUnitOfMeasurement());
-						
+
 						UncertaintyObservation newObs = new UncertaintyObservation(
-								obs.getIdentifier(), obs.getBoundedBy(), obs.getPhenomenonTime(), 
-								obs.getResultTime(), obs.getValidTime(), obs.getProcedure(), 
-								obs.getObservedProperty(), obs.getFeatureOfInterest(), 
+								obs.getIdentifier(), obs.getBoundedBy(), obs.getPhenomenonTime(),
+								obs.getResultTime(), obs.getValidTime(), obs.getProcedure(),
+								obs.getObservedProperty(), obs.getFeatureOfInterest(),
 								obs.getResultQuality(), newResult);
-						
+
 						// add observation to new collection
 						resultColl.addObservation(newObs);
 					}else{
 						throw new RuntimeException(
 							"Input with ID distribution must be a sample or realisation!");
-					}			
+					}
 				}else{
 					throw new RuntimeException(
 							"Input with ID distribution must contain uncertainty observations!");
-					}						
-			}		
-			
+					}
+			}
+
 			return resultColl;
-			
+
 		}catch (Exception e) {
 			LOGGER
 			.debug("Error while getting random samples for Gaussian distribution: "
@@ -341,14 +341,14 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			throw new RuntimeException(
 			"Error while getting random samples for Gaussian distribution: "
 					+ e.getMessage(), e);
-		} 
+		}
 		finally {
 			if (c != null) {
 				c.close();
 			}
 		}
 	}
-	
+
 	/**
 	 * Method for NetCDF samples
 	 * @param inputFile
@@ -361,7 +361,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 		NetcdfUWFileWriteable resultNCFile = null;
 		ExtendedRConnection c = null;
 		try {
-			
+
 			Set<INcUwVariable> primaryVariables = inputFile
 					.getPrimaryVariables();
 			if (primaryVariables.size() != 1) {
@@ -369,21 +369,21 @@ public class Samples2Statistics extends AbstractAlgorithm {
 						"Statistics operation only supported for NetCDF-U files with only one variable!");
 			}
 			NcUwVariableWithDimensions primVar = (NcUwVariableWithDimensions) primaryVariables.toArray()[0];
-			
+
 			//check whether primaryVariable is random or unknown sample
 			Attribute ref = primVar.getVariable().findAttribute(REF_ATTR_NAME);
 			//TODO remove second URI provided in example!
 			if (ref==null||!(ref.getStringValue().equals(UncertML.getURI(RandomSample.class))|| ref.getStringValue().equals("http://www.uncertml.org/samples/random")||ref.getStringValue().equals("http://www.uncertml.org/samples/unknown")||ref.getStringValue().equals(UncertML.getURI(UnknownSample.class)))){
 				throw new IOException("Primary variable in Input NetCDF file for samples2statistics process has to be a random sample.");
 			}
-			
+
 			//get missing value
 			Attribute mvAttr = primVar.getVariable().findAttribute(MV_ATTR_NAME);
 			double missingVal = Double.NaN;
 			if (mvAttr!=null){
 				missingVal = mvAttr.getNumericValue().doubleValue();
 			}
-			
+
 			// establish connection to Rserve running on localhost
 			 c = new ExtendedRConnection("127.0.0.1");
 //			c = new ExtendedRConnection("localhost");
@@ -405,7 +405,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			NetcdfFileWriteable resultFile = NetcdfUWFileWriteable.createNew(
 					absoluteResultFilePath, true);
 			resultNCFile = new NetcdfUWFileWriteable(resultFile);
-			
+
 			// adding lat long dimensions and variables to output file
 			Iterator<Dimension> dimensions = inputFile.getFile()
 					.getDimensions().iterator();
@@ -427,7 +427,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 					resultFile.setRedefineMode(false);
 					resultFile.write(LAT_VAR_NAME, inputFile.getFile()
 							.findVariable(LAT_VAR_NAME).read());
-					
+
 				} else if (dim.getName().equals(LON_VAR_NAME)) {
 					if (!resultFile.isDefineMode()) {
 						resultFile.setRedefineMode(true);
@@ -455,7 +455,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			if (!resultFile.isDefineMode()) {
 				resultFile.setRedefineMode(true);
 			}
-			
+
 			HashMap<String,Variable> statVars4statName = new HashMap<String,Variable>(statParams.size());
 			Iterator<String> statParamIterator = statParams.iterator();
 			String primaryVarName = primVar.getName();
@@ -467,27 +467,29 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				if (statistic.equalsIgnoreCase("mean")){
 					Variable statisticVar = resultNCFile.addStatisticVariable(varName, DataType.DOUBLE, dims, org.uncertml.statistic.Mean.class);
 					statVars4statName.put(statistic, statisticVar);
-					if (ancillaryVariablesValue.equals("")){
+					if (ancillaryVariablesValue.isEmpty()){
 						ancillaryVariablesValue+=primaryVarName+"_mean";
-					}
-					else ancillaryVariablesValue+=" "+primaryVarName+"_mean";
+					} else {
+                        ancillaryVariablesValue+=" "+primaryVarName+"_mean";
+                    }
 					//resultNCFile.setPrimaryVariable(statisticVar);
 				}
 				else if (statistic.equals("standard-deviation")){
 					Variable statisticVar = resultNCFile.addStatisticVariable(varName, DataType.DOUBLE, dims, org.uncertml.statistic.StandardDeviation.class);
 					statVars4statName.put(statistic, statisticVar);
-					if (ancillaryVariablesValue.equals("")){
+					if (ancillaryVariablesValue.isEmpty()){
 						ancillaryVariablesValue+=primaryVarName+"_standard-deviation";
-					}
-					else ancillaryVariablesValue+=" "+primaryVarName+"_standard-deviation";
+					} else {
+                        ancillaryVariablesValue+=" "+primaryVarName+"_standard-deviation";
+                    }
 					//resultNCFile.setPrimaryVariable(statisticVar);
 				}
 			}
-			
+
 			resultNCFile.getNetcdfFileWritable().addVariableAttribute(primaryVarName, new Attribute("ancillary_variables",ancillaryVariablesValue));
 			resultNCFile.getNetcdfFileWritable().addVariableAttribute(primaryVarName, new Attribute("ref","http://www.uncertml.org/statistics/statistics-collection"));
 			resultNCFile.setPrimaryVariable(primVariable);
-			
+
 			// running sample generation in R and adding values to output file
 			Array samplesArray = primVar.getArray();
 			ArrayDouble meanArray = new ArrayDouble.D2(latDim.getLength(), longDim.getLength());
@@ -512,14 +514,14 @@ public class Samples2Statistics extends AbstractAlgorithm {
 					}
 					REXPDouble d = new REXPDouble(values);
 					c.assign("samples", d);
-					
+
 					if (statVars4statName.containsKey("mean")){
 						REXP mean =  c.tryEval("mean(samples)");
 						double meanD = mean.asDouble();
 						meanIndex.set(i,j);
 						meanArray.setDouble(meanIndex, meanD);
 					}
-					
+
 					if (statVars4statName.containsKey("standard-deviation")){
 						REXP sdR = c.tryEval("sd(samples)");
 						double sd = sdR.asDouble();
@@ -530,7 +532,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				}
 			}
 			//write result array to NetCDF file
-			
+
 			resultNCFile.getNetcdfFileWritable().setRedefineMode(false);
 			if (statVars4statName.containsKey("mean")){
 				resultNCFile.getNetcdfFileWritable().write(primaryVarName+"_mean",meanArray);
@@ -538,11 +540,11 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			if (statVars4statName.containsKey("standard-deviation")){
 				resultNCFile.getNetcdfFileWritable().write(primaryVarName+"_standard-deviation",sdArray);
 			}
-			
+
 			resultNCFile.getNetcdfFile().close();
 			return new NcUwFile(absoluteResultFilePath);
 		} catch (Exception e) {
-			LOGGER.error(e);
+			LOGGER.error("Error while getting random samples from gaussian distribution", e);
 			throw new RuntimeException(
 					"Error while getting random samples from gaussian distribution: "
 							+ e.getMessage(), e);
@@ -552,7 +554,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 				c.close();
 			}
 		}
-		
+
 
 	}
 
@@ -580,8 +582,8 @@ public class Samples2Statistics extends AbstractAlgorithm {
 		return null;
 	}
 
-	
-	
+
+
 	private List<String> extractStatisticsFromRequest(List<IData> statParams){
 		List<String> params = new ArrayList<String>(statParams.size());
 		Iterator<IData> statParamsIter = statParams.iterator();
@@ -591,7 +593,7 @@ public class Samples2Statistics extends AbstractAlgorithm {
 			.getPayload();
 			params.add(statistics);
 		}
-		
+
 		return params;
 	}
 

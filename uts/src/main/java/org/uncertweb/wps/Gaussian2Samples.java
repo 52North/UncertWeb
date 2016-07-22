@@ -9,7 +9,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.rosuda.REngine.REXP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.uncertml.IUncertainty;
+import org.uncertml.UncertML;
+import org.uncertml.distribution.continuous.NormalDistribution;
+import org.uncertml.sample.ContinuousRealisation;
+import org.uncertml.sample.RandomSample;
+import org.uncertweb.api.om.observation.AbstractObservation;
+import org.uncertweb.api.om.observation.UncertaintyObservation;
+import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
+import org.uncertweb.api.om.result.UncertaintyResult;
+import org.uncertweb.netcdf.INcUwVariable;
+import org.uncertweb.netcdf.NcUwConstants;
+import org.uncertweb.netcdf.NcUwFile;
+import org.uncertweb.netcdf.NcUwVariableWithDimensions;
+
 import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.NetCDFBinding;
 import org.n52.wps.io.data.binding.complex.OMBinding;
@@ -18,23 +34,6 @@ import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 import org.n52.wps.io.data.binding.literal.LiteralIntBinding;
 import org.n52.wps.server.AbstractAlgorithm;
 import org.n52.wps.util.r.process.ExtendedRConnection;
-import org.rosuda.REngine.REXP;
-import org.uncertml.IUncertainty;
-import org.uncertml.UncertML;
-import org.uncertml.distribution.continuous.NormalDistribution;
-import org.uncertml.sample.ContinuousRealisation;
-import org.uncertml.sample.RandomSample;
-
-import org.uncertweb.api.netcdf.NetcdfUWFileWriteable;
-import org.uncertweb.api.om.observation.AbstractObservation;
-import org.uncertweb.api.om.observation.UncertaintyObservation;
-import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollection;
-import org.uncertweb.api.om.result.UncertaintyResult;
-import org.uncertweb.netcdf.INcUwVariable;
-import org.uncertweb.netcdf.NcUwConstants;
-import org.uncertweb.netcdf.NcUwFile;
-import org.uncertweb.netcdf.NcUwObservation;
-import org.uncertweb.netcdf.NcUwVariableWithDimensions;
 
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
@@ -47,13 +46,13 @@ import ucar.nc2.Variable;
 
 /**
  * Process for taking random samples from a Gaussian distribution
- * 
+ *
  * @author staschc, Benjamin Pross, Lydia Gerharz
- * 
+ *
  */
 public class Gaussian2Samples extends AbstractAlgorithm {
 
-	private static Logger LOGGER = Logger.getLogger(Gaussian2Samples.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(Gaussian2Samples.class);
 
 	// //////////////////////////////////////////////////////
 	// constants for input/output identifiers
@@ -156,7 +155,7 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 
 	/**
 	 * Method for UncertML sampling
-	 * 
+	 *
 	 * @param distribution
 	 * @param intNRealisations
 	 * @return
@@ -221,7 +220,7 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 
 	/**
 	 * Method for OM sampling
-	 * 
+	 *
 	 * @param inputColl
 	 * @param intNRealisations
 	 * @return
@@ -314,7 +313,7 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 
 	/**
 	 * Method for NetCDF sampling
-	 * 
+	 *
 	 * @param inputFile
 	 * @param intNRealisations
 	 * @return
@@ -414,7 +413,7 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 			NetcdfFileWriteable resultFile = NetcdfUWFileWriteable.createNew(
 					absoluteResultFilePath, true);
 			resultNCFile = new NetcdfUWFileWriteable(resultFile);
-			
+
 			// adding lat long dimensions and variables to output file
 			Iterator<Dimension> dimensions = inputFile.getFile()
 					.getDimensions().iterator();
@@ -453,8 +452,8 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 							.findVariable(lonVarName).read());
 				}
 			}
-			
-			
+
+
 
 			ArrayList<Dimension> dims = new ArrayList<Dimension>(2);
 			dims.add(latDim);
@@ -504,7 +503,7 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 			resultNCFile.getNetcdfFile().close();
 			return new NcUwFile(absoluteResultFilePath);
 		} catch (Exception e) {
-			LOGGER.error(e);
+			LOGGER.error("Error while getting random samples from gaussian distribution", e);
 			throw new RuntimeException(
 					"Error while getting random samples from gaussian distribution: "
 							+ e.getMessage(), e);
@@ -513,6 +512,6 @@ public class Gaussian2Samples extends AbstractAlgorithm {
 				c.close();
 			}
 		}
-		
+
 	}
 }
