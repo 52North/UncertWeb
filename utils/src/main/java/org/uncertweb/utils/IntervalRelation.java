@@ -143,17 +143,20 @@ public enum IntervalRelation {
 		return EQUALS.is(i1, i2);
 	}
 
-	public static final int inverse(int rel) {
+	public static int inverse(int rel) {
 		return rel ^ 0x7FF;
 	}
 
 	public static Set<IntervalRelation> getRelations(int rel) {
 		Set<IntervalRelation> rels = UwCollectionUtils.set();
-		for (IntervalRelation r : values())
-			if (r.is(rel)) rels.add(r);
+		for (IntervalRelation r : values()) {
+            if (r.is(rel)) {
+                rels.add(r);
+            }
+        }
 		return rels;
 	}
-	
+
 	public static Set<IntervalRelation> getRelations(ReadableInterval i1, ReadableInterval i2) {
 		return getRelations(getMod(i1, i2));
 	}
@@ -161,7 +164,7 @@ public enum IntervalRelation {
 	public static int getMod(ReadableInterval i1, ReadableInterval i2) {
 		return getMod(i1.getStartMillis(), i1.getEndMillis(), i2.getStartMillis(), i2.getEndMillis());
 	}
-	
+
 	public static int getMod(long s1, long e1, long s2, long e2) {
 		int mod = 0;
 		for (IntervalRelation r : values()) {
@@ -175,7 +178,9 @@ public enum IntervalRelation {
 	}
 
 	public boolean is(long s1, long e1, long s2, long e2) {
-		if (s1 > e1 || s2 > e2) return false;
+		if (s1 > e1 || s2 > e2) {
+            return false;
+        }
 		switch (this) {
 		case EQUALS: return s1 == s2 && e1 == e2;
 		case PRECEDES: return e1 < s2;

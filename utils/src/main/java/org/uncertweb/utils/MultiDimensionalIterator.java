@@ -42,9 +42,11 @@ public abstract class MultiDimensionalIterator<T> implements Iterator<T> {
 
 	@Override
 	public final boolean hasNext() {
-		for (int i = 0; i < dim; ++i)
-			if (index[i] >= size[i])
-				return false;
+		for (int i = 0; i < dim; ++i) {
+            if (index[i] >= size[i]) {
+                return false;
+            }
+        }
 		return true;
 	}
 
@@ -60,10 +62,11 @@ public abstract class MultiDimensionalIterator<T> implements Iterator<T> {
 			if (index[i] < size[i] - 1) {
 				++index[i];
 				break;
-			} else if (i == 0) // don't start from the beginning
-				index = size;
-			else
-				index[i] = 0;
+			} else if (i == 0) { // don't start from the beginning
+                index = size;
+            } else {
+                index[i] = 0;
+            }
 		}
 	}
 
