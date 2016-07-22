@@ -172,6 +172,7 @@ gulp.task('serve', ['build'], function() {
   		port: 3000,
   		host: 'localhost',
   		https: false,
+  		debug: true,
   		livereload: true
   	});
 });

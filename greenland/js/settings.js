@@ -42,10 +42,7 @@ VIS.defaultResources = [
 
 // VISS
 {
-    url : 'http://giv-uw.uni-muenster.de/data/netcdf/biotemp-t.nc',
-    mime : 'application/netcdf'
-}, {
-    url : 'http://giv-uw.uni-muenster.de/data/netcdf/biotemp.nc',
+	url : 'http://localhost:3000/data/netCDF/no2_conc_rotterdam_20110418.nc',
     mime : 'application/netcdf'
 },
 
