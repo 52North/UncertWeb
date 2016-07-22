@@ -47,11 +47,7 @@ public class NcUwFile implements Closeable, Iterable<INcUwVariable> {
 			throw new NullPointerException();
 		}
 		this.file = file;
-		if (path != null) {
-			this.f = new File(path);
-		} else {
-			this.f = null;
-		}
+        this.f = (path != null) ? new File(path) : null;
 		checkForConventions();
 	}
 
@@ -63,8 +59,8 @@ public class NcUwFile implements Closeable, Iterable<INcUwVariable> {
 		this(file.getAbsolutePath());
 	}
 
-	protected boolean checkForConventions() {
-		final String attr = getStringAttribute(	NcUwConstants.Attributes.CONVENTIONS, false);
+	protected final boolean checkForConventions() {
+		final String attr = getStringAttribute(NcUwConstants.Attributes.CONVENTIONS, false);
 		if (attr == null) { return false; }
 		for (final String s : attr.split(" ")) {
 			if (s.equalsIgnoreCase(NcUwConstants.UW_CONVENTION)) {
@@ -90,7 +86,7 @@ public class NcUwFile implements Closeable, Iterable<INcUwVariable> {
 			return v;
 		}
 	}
-	
+
 	private Map<String, INcUwVariable> _getPrimaryVariables() {
 		if (this.primaryVariables == null) {
 			this.primaryVariables = UwCollectionUtils.map();
@@ -104,7 +100,7 @@ public class NcUwFile implements Closeable, Iterable<INcUwVariable> {
 		}
 		return this.primaryVariables;
 	}
-	
+
 	public Variable getVariable(final String name,
 			final boolean failIfNotExisting) {
 		return NcUwHelper.findVariable(getFile(), name, failIfNotExisting);
@@ -140,8 +136,6 @@ public class NcUwFile implements Closeable, Iterable<INcUwVariable> {
 		return this.file;
 	}
 
-	
-	
 	@Override
 	public void finalize() {
 		try {

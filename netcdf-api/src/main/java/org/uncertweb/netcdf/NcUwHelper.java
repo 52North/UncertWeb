@@ -57,26 +57,27 @@ import org.uncertweb.utils.UwCollectionUtils;
 import org.uncertweb.utils.UwIOUtils;
 import org.uncertweb.utils.UwStringUtils;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.units.DateUnit;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-
 public class NcUwHelper {
 	private static final Pattern EPSG_INIT_PARAMETER = Pattern.compile("\\+init=[eE][pP][sS][gG]:[0-9]+");
 	private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 	private static final Logger log = LoggerFactory.getLogger(NcUwHelper.class);
 	private static final String PYTHON_SCRIPT;
-	
+
 	public static final CoordinateReferenceSystem EPSG4326;
-	
+
 	static {
 		try {
 			EPSG4326 = NcUwHelper.decodeEpsgCode(4326);
@@ -107,7 +108,7 @@ public class NcUwHelper {
 			UwIOUtils.closeQuietly(is);
 			UwIOUtils.closeQuietly(os);
 		}
-		
+
 		if (f == null || !f.exists() || !f.isFile() || !f.canRead()) {
 			throw new NcUwException("Can not access pyton script:" + f);
 		}
@@ -117,14 +118,14 @@ public class NcUwHelper {
 	@SuppressWarnings("unchecked")
 	public static CoordinateReferenceSystem decodeProj4(String p4s)
 			throws IOException, FactoryException {
-		
+
 		Matcher m = EPSG_INIT_PARAMETER.matcher(p4s);
 		if (m.find()) {
 			return decodeEpsgCode(m.group().substring("+init=".length()));
 		}
-		
+
 		final String[] exec = new String[] { "python", PYTHON_SCRIPT, p4s };
-		log.info("executing: {} {} '{}'", exec);
+		log.info("executing: {} {} '{}'", (Object[]) exec);
 		final Process p = Runtime.getRuntime().exec(exec);
 		int status = 0;
 		try {
@@ -152,7 +153,7 @@ public class NcUwHelper {
 			throws FactoryException {
 		return CRS.decode("EPSG:" + code);
 	}
-	
+
 	public static CoordinateReferenceSystem decodeEpsgCode(String code)
 			throws FactoryException {
 		if (code.matches("\\d+")) {
@@ -260,14 +261,14 @@ public class NcUwHelper {
 		}
 		try {
 			final int last = v.getShape()[0] - 1;
-			final Number d0 = (Number) v.read(
-					UwCollectionUtils.list(new Range(0, 0))).getObject(0);
-			final Number dn = (Number) v.read(
-					UwCollectionUtils.list(new Range(last, last))).getObject(0);
+			final Number d0 = (Number) v.read(UwCollectionUtils.list(new Range(0, 0))).getObject(0);
+			final Number dn = (Number) v.read(UwCollectionUtils.list(new Range(last, last))).getObject(0);
 			return new Number[] { d0, dn };
-		} catch (final Exception e) {
+		} catch (InvalidRangeException e) {
 			throw new NcUwException(e);
-		}
+		} catch (IOException e) {
+            throw new NcUwException(e);
+        }
 	}
 
 	public static Number min(Number n1, Number n2) {
@@ -286,9 +287,9 @@ public class NcUwHelper {
 		if (ns.length < 0) {
 			return null;
 		}
-		final Number min = new Double(Double.POSITIVE_INFINITY);
+		Number min = Double.POSITIVE_INFINITY;
 		for (Number n : ns) {
-			n = min(min, n);
+			min = min(min, n);
 		}
 		return min;
 	}
@@ -297,9 +298,9 @@ public class NcUwHelper {
 		if (ns.length < 0) {
 			return null;
 		}
-		final Number max = new Double(Double.NEGATIVE_INFINITY);
+		Number max = Double.NEGATIVE_INFINITY;
 		for (Number n : ns) {
-			n = max(max, n);
+			max = max(max, n);
 		}
 		return max;
 	}
@@ -354,9 +355,9 @@ public class NcUwHelper {
 	public static Polygon envelopeToPolygon(Envelope e, Integer srs) {
 		try {
 			ReferencedEnvelope re = new ReferencedEnvelope(e);
-			
+
 			// no explicit espg code
-			if (srs == null || srs.intValue() < 0) {
+			if (srs == null || srs < 0) {
 				// try to find the code of the envelope
 				for (ReferenceIdentifier id : re.getCoordinateReferenceSystem().getIdentifiers()) {
 					if (id.getCodeSpace().equalsIgnoreCase("EPSG")) {
@@ -365,12 +366,12 @@ public class NcUwHelper {
 					}
 				}
 				// if no code found, transform to EPSG4326
-				if (srs == null || srs.intValue() < 0) {
-					srs = new Integer(4326);
+				if (srs == null || srs < 0) {
+					srs = 4326;
 				}
 			}
-			Polygon p = JTS.toGeometry(re.transform(decodeEpsgCode(srs.intValue()), true, 12));
-			p.setSRID(srs.intValue());
+			Polygon p = JTS.toGeometry(re.transform(decodeEpsgCode(srs), true, 12));
+			p.setSRID(srs);
 			return p;
 		} catch (final MismatchedDimensionException ex) {
 			throw new NcUwException(ex);
@@ -380,7 +381,7 @@ public class NcUwHelper {
 			throw new NcUwException(ex);
 		}
 	}
-	
+
 	public static DirectPosition toDirectPosition(Point p, CoordinateReferenceSystem targetCRS) {
 		CoordinateReferenceSystem crs = null;
 		if (p.getSRID() > 0) {
@@ -392,22 +393,26 @@ public class NcUwHelper {
 		} else {
 			crs = EPSG4326;
 		}
-		
+
 		if (crs == null) {
 			throw new NullPointerException();
 		}
-		
+
 		DirectPosition dp = JTS.toDirectPosition(p.getCoordinate(), crs);
 		if (targetCRS != null) {
 			try {
 				dp = CRS.findMathTransform(crs, targetCRS).transform(dp, new GeneralDirectPosition(targetCRS));
-			} catch (Exception e) {
+			} catch (FactoryException e) {
 				throw new NcUwException(e);
-			}
+			} catch (MismatchedDimensionException e) {
+                throw new NcUwException(e);
+            } catch (TransformException e) {
+                throw new NcUwException(e);
+            }
 		}
 		return dp;
 	}
-	
+
 	private static void test(CoordinateReferenceSystem crs, boolean epsgAvailableTest) {
 		if (crs == null) {
 			throw new NullPointerException();
@@ -419,11 +424,11 @@ public class NcUwHelper {
 				throw new NullPointerException();
 			}
 		}
-		
+
 		System.out.println(epsg);
 	}
-	
-	
+
+
 	public static void main(String[] args) throws FactoryException, IOException {
 		final String p4s1 = "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs";
 		final String p4s2 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
@@ -444,7 +449,7 @@ public class NcUwHelper {
 		test(decodeEpsgCode("4326"), true);
 		test(decodeEpsgCode("EPSG:4326"), true);
 	}
-	
+
 	public static int getEpsgCodeForCrs(CoordinateReferenceSystem crs) {
 		for (ReferenceIdentifier id : crs.getIdentifiers()) {
 			if (id.getAuthority() == Citations.EPSG) {

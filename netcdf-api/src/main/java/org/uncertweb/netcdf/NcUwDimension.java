@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.Variable;
 
 public enum NcUwDimension {
-	
+
 	/** the x dimension */ X {
 		@Override
 		public boolean is(Variable v) {
@@ -62,7 +62,7 @@ public enum NcUwDimension {
 			}
 			return false;
 		}
-	}, 
+	},
 	/** the y dimension */ Y {
 		@Override
 		public boolean is(Variable v) {
@@ -95,7 +95,7 @@ public enum NcUwDimension {
 
 			return false;
 		}
-	}, 
+	},
 	/** the height dimension */ Z {
 		@Override
 		public boolean is(Variable v) {
@@ -114,7 +114,7 @@ public enum NcUwDimension {
 			}
 			return false;
 		}
-	}, 
+	},
 	/** the time dimension */ T {
 		@Override
 		public boolean is(Variable v) {
@@ -126,7 +126,7 @@ public enum NcUwDimension {
 			}
 			return false;
 		}
-	}, 
+	},
 	/** the sample dimension */ S {
 		@Override
 		public boolean is(Variable v) {
@@ -149,7 +149,7 @@ public enum NcUwDimension {
 						return true;
 					}
 				} catch (URISyntaxException e) {
-					new NcUwException(e);
+					throw new NcUwException(e);
 				}
 			}
 			return false;
@@ -169,11 +169,11 @@ public enum NcUwDimension {
 			return false;
 		}
 	};
-	
+
 	private static final Logger log = LoggerFactory.getLogger(NcUwDimension.class);
-	
+
 	public abstract boolean is(Variable v);
-	
+
 	public static NcUwDimension fromVariable(Variable v) {
 		if (v.isCoordinateVariable()) {
 			for (NcUwDimension d : values()) {
@@ -184,7 +184,7 @@ public enum NcUwDimension {
 		}
 		return null;
 	}
-	
+
 	protected static String getLongName(Variable v) {
 		return NcUwHelper.getStringAttribute(v, NcUwConstants.Attributes.LONG_NAME);
 	}

@@ -82,7 +82,7 @@ public class NcUwUriParser {
 //	private final JSONEncoder enc = new JSONEncoder();
 	private final NcUwUncertaintyType type;
 	private final MultivaluedMap<URI, Object> values;
-	
+
 	public NcUwUriParser(final NcUwUncertaintyType type, final MultivaluedMap<URI, Object> v) {
 		this.type = type;
 		this.values = v;
@@ -95,7 +95,7 @@ public class NcUwUriParser {
 	public NcUwUncertaintyType getType() {
 		return this.type;
 	}
-	
+
 	public IUncertainty parse() {
 		if (getValues() == null || getValues().isEmpty()) {
 			return null;
@@ -112,13 +112,13 @@ public class NcUwUriParser {
 //						line = new StringBuilder("\t");
 //					}
 //				}
-//				if (line.length() > 1) 
+//				if (line.length() > 1)
 //					sb.append(line);
 //				sb.append("\n");
 //			}
 //			log.debug("Parsing map:\n{}", sb);
 //		}
-		
+
 		IUncertainty u = _parse();
 //		if (log.isDebugEnabled()) {
 //			log.debug("Parsed Uncertainty: {}", enc.encode(u));
@@ -367,24 +367,24 @@ public class NcUwUriParser {
 		final List<ProbabilityConstraint> constraints = UwCollectionUtils.list();
 
 		final List<Object> gt = getValues().get(NcUwUncertaintyType.getURIforConstraint(ConstraintType.GREATER_THAN));
-		if (gt != null && gt.size() != 0) {
+		if (gt != null && !gt.isEmpty()) {
 			constraints.add(new ProbabilityConstraint(
 					ConstraintType.GREATER_THAN, ((Number) gt.get(0))
 					.doubleValue()));
 		}
 		final List<Object> lt = getValues().get(NcUwUncertaintyType.getURIforConstraint(ConstraintType.LESS_THAN));
-		if (lt != null && lt.size() != 0) {
+		if (lt != null && !lt.isEmpty()) {
 			constraints.add(new ProbabilityConstraint(ConstraintType.LESS_THAN,
 					((Number) lt.get(0)).doubleValue()));
 		}
 		final List<Object> ge = getValues().get(NcUwUncertaintyType.getURIforConstraint(ConstraintType.GREATER_OR_EQUAL));
-		if (ge != null && ge.size() != 0) {
+		if (ge != null && !ge.isEmpty()) {
 			constraints.add(new ProbabilityConstraint(
 					ConstraintType.GREATER_OR_EQUAL, ((Number) ge.get(0))
 					.doubleValue()));
 		}
 		final List<Object> le = getValues().get(NcUwUncertaintyType.getURIforConstraint(ConstraintType.LESS_OR_EQUAL));
-		if (le != null && le.size() != 0) {
+		if (le != null && !le.isEmpty()) {
 			constraints.add(new ProbabilityConstraint(
 					ConstraintType.LESS_OR_EQUAL, ((Number) le.get(0))
 					.doubleValue()));
@@ -396,7 +396,7 @@ public class NcUwUriParser {
 
 		return new Probability(constraints, getDouble());
 	}
-	
+
 	public StatisticCollection parseStatisticCollection() {
 		StatisticCollection col = new StatisticCollection();
 		for (URI uri : getValues().keySet()) {
@@ -422,7 +422,7 @@ public class NcUwUriParser {
 	protected  final Number[] getNumberArray() {
 		return getNumberArray(getType().getUri());
 	}
-	
+
 	protected  final Number[] getNumberArray(URI uri) {
 		return getValues(uri).toArray(new Number[0]);
 	}
@@ -434,11 +434,12 @@ public class NcUwUriParser {
 	protected final Number getNumber(final String n) {
 		return (Number) getValues(getType().getParamURI(n)).get(0);
 	}
-	
+
 	protected List<Object> getValues(URI uri) {
 		List<Object> values = getValues().get(uri);
-		if (values == null)
-			throw new NullPointerException();
+		if (values == null) {
+            throw new NullPointerException();
+        }
 		return values;
 	}
 

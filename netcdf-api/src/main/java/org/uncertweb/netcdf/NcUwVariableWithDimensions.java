@@ -57,15 +57,15 @@ import org.uncertweb.utils.MultivaluedHashMap;
 import org.uncertweb.utils.MultivaluedMap;
 import org.uncertweb.utils.UwCollectionUtils;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
+
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.units.DateUnit;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
 /*
  * X = LON
  * Y = LAT
@@ -76,7 +76,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 	private static final double OFFSET = 0.0D;
 	private static final int NODATA_VALUE = -999999;// TODO do this dynamically
 	private static final String NODATA_VALUE_NAME = "UNKNOWN";
-	
+
 	private final Map<NcUwDimension, Integer> index = enumMap(NcUwDimension.class);
 	private final Map<NcUwDimension, Index> arrayindex = enumMap(NcUwDimension.class);
 	private final Map<NcUwDimension, Order> orders = enumMap(NcUwDimension.class);
@@ -96,7 +96,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		super(file, variable, cache, parent);
 		findDimensions();
 	}
-	
+
 	@Override
 	public List<TimeObject> getTimes() {
 		if (!hasDimension(NcUwDimension.T)) {
@@ -136,7 +136,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public NcUwCoordinate getIndex(final Point p) {
 		log.debug("Getting Index of {}", p);
@@ -147,7 +147,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 
 	@Override
 	public NcUwCoordinate getIndex(DirectPosition p) {
-		CoordinateReferenceSystem crs = getCRS(); 
+		CoordinateReferenceSystem crs = getCRS();
 		CoordinateReferenceSystem pcrs = p.getCoordinateReferenceSystem();
 		if (pcrs == null) {
 			throw new NullPointerException("Point CRS should not be null");
@@ -159,7 +159,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 			try {
 				final GeodeticCalculator calc = new GeodeticCalculator(crs);
 				p = CRS.findMathTransform(pcrs, crs).transform(p, new GeneralDirectPosition(crs));
-				
+
 				calc.setStartingPosition(p);
 				double mindist = Double.POSITIVE_INFINITY;
 				int minx = -1, miny = -1;
@@ -177,9 +177,9 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 				NcUwCoordinate c = new NcUwCoordinate()
 					.set(NcUwDimension.X, minx)
 					.set(NcUwDimension.Y, miny);
-				
+
 				log.debug("Found Coordinate: {}", c);
-				
+
 				return c;
 			} catch (final FactoryException e) {
 				throw new NcUwException(e);
@@ -190,18 +190,16 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 			}
 		} else {
 			log.warn("DirectPosition {} is not in Envelope {}", p, getEnvelope());
-			
+
 			throw new IndexOutOfBoundsException();
 		}
 	}
 
 	@Override
 	public boolean contains(DirectPosition p) {
-		return ((Envelope2D) getEnvelope()).contains(p);
+		return getEnvelope().contains(p);
 	}
-	
-	
-	
+
 	@Override
 	public boolean contains(Point p) {
 		return contains(NcUwHelper.toDirectPosition(p, getCRS()));
@@ -249,7 +247,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		}
 		return true;
 	}
-	
+
 	private void checkExistingDimension(NcUwDimension... ds) {
 		for (final NcUwDimension d : ds) {
 			if (!hasDimension(d)) {
@@ -315,7 +313,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 			final Number[] n = NcUwHelper.getRangeOfOrderedVariable(getVariable(d));
 			return new TimeObject[] {
 					new TimeObject(new DateTime(getDateUnit().makeDate(	n[0].doubleValue()))),
-					new TimeObject(new DateTime(getDateUnit().makeDate(	n[1].doubleValue()))) 
+					new TimeObject(new DateTime(getDateUnit().makeDate(	n[1].doubleValue())))
 			};
 		case S:
 			return new Integer[] { 1, getSize(d) };
@@ -354,12 +352,12 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		getEnvelope();
 		return xDiff;
 	}
-	
+
 	protected double getCellHeight() {
 		getEnvelope();
 		return yDiff;
 	}
-	
+
 	@Override
 	public Envelope2D getEnvelope() {
 		if (this.envelope == null) {
@@ -397,7 +395,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 			xMax += xDiff/2;
 			yMax += yDiff/2;
 
-			this.envelope = new Envelope2D(getCRS(), 
+			this.envelope = new Envelope2D(getCRS(),
 					xMin, yMin, xMax - xMin, yMax - yMin);
 			log.debug("Envelope CRS: {}", this.envelope.getCoordinateReferenceSystem());
 		}
@@ -459,7 +457,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		for (int i = 0; i < existingDimensions; ++i) {
 			final Variable v = getFile().getVariable(getVariable().getDimension(i).getName(), true);
 			if (v == null) {
-				new NcUwException("Can not find dimension variable %s", 
+				throw new NcUwException("Can not find dimension variable %s",
 						getVariable().getDimension(i).getName());
 			}
 			final NcUwDimension d = NcUwDimension.fromVariable(v);
@@ -468,17 +466,13 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 			}
 		}
 		if (getDimensions().size() != existingDimensions) {
-			throw new NcUwException(
-					"could not recognize all dimensions (%d of %d)",
-					getDimensions().size(), existingDimensions);
+			throw new NcUwException("could not recognize all dimensions (%d of %d)", getDimensions().size(), existingDimensions);
 		}
 		if (hasDimension(NcUwDimension.X) && getSize(NcUwDimension.X) < 2) {
-			throw new NcUwException("can not process NetCDF with %d %s-cells",
-					getSize(NcUwDimension.X), NcUwDimension.X);
+			throw new NcUwException("can not process NetCDF with %d %s-cells", getSize(NcUwDimension.X), NcUwDimension.X);
 		}
 		if (hasDimension(NcUwDimension.Y) && getSize(NcUwDimension.Y) < 2) {
-			throw new NcUwException("can not process NetCDF with %d %s-cells",
-					getSize(NcUwDimension.Y), NcUwDimension.Y);
+			throw new NcUwException("can not process NetCDF with %d %s-cells", getSize(NcUwDimension.Y), NcUwDimension.Y);
 		}
 	}
 
@@ -503,7 +497,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 			case UPPER_RIGHT:return new GridCoordinates2D(size_x - x - 1, y             );
 			case LOWER_LEFT: return new GridCoordinates2D(x             , size_y - y - 1);
 			case LOWER_RIGHT:return new GridCoordinates2D(size_x - x - 1, size_y - y - 1);
-			default: 
+			default:
 				return null;
 		}
 	}
@@ -513,15 +507,15 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		INcUwVariable v = getGriddedVariable();
 		if (v == null) {
 			return null;
-		} else { 
+		} else {
 			return ((NcUwVariableWithDimensions)v).getGridCoordinates(d.get(NcUwDimension.X), d.get(NcUwDimension.Y));
 		}
 	}
-	
+
 	public INcUwVariable getGriddedVariable() {
 		return NcUwHelper.findGriddedVariable(this);
 	}
-	
+
 	protected double getCoordinateValue(NcUwDimension d, NcUwCoordinate c) {
 		if (!hasDimension(d) || !c.hasDimension(d)) {
 			throw new IllegalArgumentException("Dimension " + d
@@ -533,19 +527,19 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 	protected MultivaluedMap<URI, Object> getValueMap(NcUwCoordinate c) {
 //		log.debug("Getting value: {}", c);
 		final MultivaluedMap<URI, Object> map = MultivaluedHashMap.create();
-		
+
 		for (final NcUwDimension d : getDimensions()) {
 			if (d != NcUwDimension.S && !c.hasDimension(d)) {
 				throw new NcUwException("Dimension %s is missing.", d);
 			}
 		}
-		
+
 		if (hasDimension(NcUwDimension.S) && !c.hasDimension(NcUwDimension.S)) {
 			for (int i = 0; i < getSize(NcUwDimension.S); ++i) {
 				map.addAll(getValueMap(c.set(NcUwDimension.S, i)));
 			}
-		} 
-		
+		}
+
 		else {
 			final Object o = getArray().getObject(getArray().getIndex().set(translateIndex(c)));
 			if (o == null || o.equals(getMissingValue())) {
@@ -553,8 +547,8 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 			}
 			map.add(getRef(), o);
 		}
-		
-		
+
+
 		for (final INcUwVariable v : getAncillaryVariables()) {
 			final MultivaluedMap<URI, Object> submap = ((AbstractNcUwVariable) v).getValueMap(c);
 			if (submap == null) { return null; }
@@ -562,14 +556,14 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		}
 		return map;
 	}
-	
+
 	public int getEpsgCode() {
 		if (epsgCode == null) {
 			epsgCode = Integer.valueOf(NcUwHelper.getEpsgCodeForCrs(getCRS()));
 		}
 		return epsgCode.intValue();
 	}
-	
+
 	protected Envelope positionToEnvelope(DirectPosition dp) {
 		final double[] coordinate = dp.getCoordinate();
 		final double x = coordinate[0];
@@ -579,7 +573,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		return new Envelope2D(dp.getCoordinateReferenceSystem(),
 				x - width/2, y - height/2, width, height);
 	}
-	
+
 
 	@Override
 	public SpatialSamplingFeature getFeature(NcUwCoordinate c) {
@@ -588,7 +582,7 @@ public class NcUwVariableWithDimensions extends AbstractNcUwVariable {
 		Geometry g = NcUwHelper.envelopeToPolygon(e, getEpsgCode());
 		return new SpatialSamplingFeature(NcUwConstants.DEFAULT_SAMPLING_FEATURE, g);
 	}
-	
+
 	public SpatialSamplingFeature getFeature() {
 		return getFeature(null);
 	}

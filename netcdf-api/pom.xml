@@ -8,14 +8,16 @@
 	</parent>
 	<artifactId>netcdf-api</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<properties>
-		<geotools.version>8.0-RC1</geotools.version>
-	</properties>
-	<dependencies>
+	
+    <dependencies>
 		<!-- UncertWeb #################################################### -->
 		<dependency>
 			<groupId>org.uncertml</groupId>
 			<artifactId>uncertml</artifactId>
+		</dependency>
+        <dependency>
+			<groupId>org.uncertweb</groupId>
+			<artifactId>uncertml-x-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.uncertweb</groupId>
@@ -29,46 +31,38 @@
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-main</artifactId>
-			<version>${geotools.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-epsg-wkt</artifactId>
-			<version>${geotools.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-geotiff</artifactId>
-			<version>${geotools.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>netcdf</artifactId>
-			<version>4.2.20</version>
 		</dependency>
 		<!-- Utils ######################################################### -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.21</version>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
-			<version>0.9.8</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -85,32 +79,11 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>geotools</id>
-			<name>GeoTools Maven Repository</name>
-			<url>http://download.osgeo.org/webdav/geotools/</url>
-		</repository>
-		<repository>
-			<id>reflections</id>
-			<name>Reflections Maven Repository</name>
-			<url>http://reflections.googlecode.com/svn/repo</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>mc-release</id>
-			<name>Local Maven repository of releases</name>
-			<url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<resources>
