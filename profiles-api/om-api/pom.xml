@@ -5,14 +5,12 @@
 		<groupId>org.uncertweb</groupId>
 		<version>0.0.4-SNAPSHOT</version>
 	</parent>
-	<groupId>org.uncertweb</groupId>
 	<artifactId>om-api</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.uncertweb</groupId>
 			<artifactId>gml-api</artifactId>
-			<version>0.0.4-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>
