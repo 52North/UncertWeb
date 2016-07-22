@@ -1,115 +1,120 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>52n-sos</artifactId>
-		<groupId>org.n52.sensorweb.sos</groupId>
-		<version>3.5.0-M1</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.n52.sensorweb.sos</groupId>
-	<artifactId>52n-sos-uncertainty</artifactId>
-	<packaging>jar</packaging>
-	<name>52North SOS Uncertainty Enablement</name>
-	<description>52North Sensor Observation Service with the enhanced ability to process data uncertainty</description>
-	<version>${parent.version}</version>
-	<url>http://maven.apache.org</url>
-	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>52n-sos-coding</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>52n-sos-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>52n-sos-dao-postgis</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>52n-sos-ogc</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>52n-sos</artifactId>
+        <groupId>org.n52.sensorweb.sos</groupId>
+        <version>3.5.0-M1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.n52.sensorweb.sos</groupId>
+    <artifactId>52n-sos-uncertainty</artifactId>
+    <packaging>jar</packaging>
+    <name>52North SOS Uncertainty Enablement</name>
+    <description>52North Sensor Observation Service with the enhanced ability to process data uncertainty</description>
+    <url>http://maven.apache.org</url>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>52n-sos-coding</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>52n-sos-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>52n-sos-dao-postgis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>52n-sos-ogc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 		
-		<!-- SOS v2 dependencies -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.n52.sensorweb</groupId>
-		    <artifactId>52n-xml-sos-v20</artifactId>
-		    <version>1.0.0-SNAPSHOT</version>
-		    <exclusions>
-		    	<exclusion>
-		    		<groupId>org.n52.sensorweb</groupId>
-		    		<artifactId>52n-xml-om-v20</artifactId>
-		    	</exclusion>
-		    	<exclusion>
-		    		<groupId>org.n52.sensorweb</groupId>
-		    		<artifactId>52n-xml-gml-v321</artifactId>
-		    	</exclusion>
-		    </exclusions>
-		</dependency>
+        <!-- SOS v2 dependencies -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sos-v20</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.n52.sensorweb</groupId>
+                    <artifactId>52n-xml-om-v20</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.n52.sensorweb</groupId>
+                    <artifactId>52n-xml-gml-v321</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-		<!-- Uncertainty dependencies -->
-		<dependency>
-			<groupId>org.uncertweb</groupId>
-			<artifactId>om-api</artifactId>
-			<version>1.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.uncertml</groupId>
-			<artifactId>uncertml</artifactId>
-			<version>2.0.7-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
+        <!-- Uncertainty dependencies -->
+        <dependency>
+            <groupId>org.uncertweb</groupId>
+            <artifactId>om-api</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.uncertml</groupId>
+            <artifactId>uncertml</artifactId>
+            <version>2.0.7-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.4.2</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>
-								${project.parent.basedir}/52n-sos-service/src/main/webapp/WEB-INF/conf
-							</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.parent.basedir}/conf</directory>
-								</resource>
-							</resources>
-							<overwrite>true</overwrite>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.parent.basedir}/52n-sos-service/src/main/webapp/WEB-INF/conf</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.parent.basedir}/conf</directory>
+                                </resource>
+                            </resources>
+                            <overwrite>true</overwrite>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
-	<repositories>
+    <repositories>
+        <repository>
+            <id>refractions</id>
+            <name>Refractions Research Maven 2 Repository</name>
+            <url>http://lists.refractions.net/m2</url>
+        </repository>
 		<repository>
-			<id>refractions</id>
-			<name>Refractions Research Maven 2 Repository</name>
-			<url>http://lists.refractions.net/m2</url>
+			<id>52NorthReleaseRepo</id>
+			<name>52° North Release Repository</name>
+			<url>http://52north.org/maven/repo/releases</url>
 		</repository>
 		<repository>
-			<id>UncertWebMavenRepository</id>
-			<name>UncertWeb Maven Repository</name>
-			<url>http://giv-uw.uni-muenster.de/m2/repo</url>
+			<id>52NorthSnapshotRepository</id>
+			<name>52° North Snapshot Repository</name>
+			<url>http://52north.org/maven/repo/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
