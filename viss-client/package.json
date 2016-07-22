@@ -1,0 +1,16 @@
+{
+  "name": "viss-client",
+  "version": "1.0.0",
+  "description": "VISS client library",
+  "main": "lib/viss.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Christian Autermann <c.autermann@52north.org>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "es6-promise": "^3.2.1",
+    "popsicle": "^8.0.0",
+    "xmldom": "^0.1.22"
+  }
+}
