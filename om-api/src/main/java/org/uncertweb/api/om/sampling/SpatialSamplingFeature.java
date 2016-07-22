@@ -18,40 +18,40 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Class representing a spatial sampling feature primarily used for features of
- * interest; feature might be either be provided as reference (href member variable is set) 
- * or provided with complete content (href isn't set, but rest of attributes are set (boundedBy is optional) 
- * 
+ * interest; feature might be either be provided as reference (href member variable is set)
+ * or provided with complete content (href isn't set, but rest of attributes are set (boundedBy is optional)
+ *
  * @author Kiesow, staschc
- * 
+ *
  */
 public class SpatialSamplingFeature {
 
 	/**reference to sampling feature*/
 	private URI href;
-	
+
 	/**identifier of feature (optional)*/
 	private Identifier identifer;
-	
+
 	/**envelope of the sampling feature*/
 	private Envelope boundedBy;
-	
+
 	/** reference to the sampled feature (might be a lake for example)*/
 	private String sampledFeature;
-	
+
 	/**indicates the type of the sampling feature*/
 	private String featureType;
-	
+
 	/**geometry of the sampling feature*/
 	private Geometry shape;
-	
+
 	/**
 	 * Constructor with mandatory attributes
-	 * 
+	 *
 	 * @param sampledFeature
 	 *            sampled feature
 	 * @param shape
 	 *            the feature's geometry
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public SpatialSamplingFeature(String sampledFeature,
 			Geometry shape) throws IllegalArgumentException {
@@ -61,14 +61,14 @@ public class SpatialSamplingFeature {
 
 	/**
 	 * Constructor with mandatory attributes plus identifier
-	 * 
+	 *
 	 * @param identifier
 	 *            identifier of the feature
 	 * @param sampledFeature
 	 *            sampled feature
 	 * @param shape
 	 *            the feature's geometry
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public SpatialSamplingFeature(Identifier identifier, String sampledFeature,
 			Geometry shape) throws IllegalArgumentException {
@@ -89,10 +89,10 @@ public class SpatialSamplingFeature {
 		this.setSampledFeature(sampledFeature);
 		this.setShape(shape);
 	}
-	
+
 	/**
 	 * constructor for sampling features which are referenced
-	 * 
+	 *
 	 * @param href
 	 * 			reference to the SamplingFeature
 	 */
@@ -102,7 +102,7 @@ public class SpatialSamplingFeature {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param gmlId
 	 *            gml id
 	 * @param boundedBy
@@ -111,7 +111,7 @@ public class SpatialSamplingFeature {
 	 *            sampled feature
 	 * @param shape
 	 *            shape
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public SpatialSamplingFeature(Identifier identifier, Envelope boundedBy,
 			String sampledFeature, Geometry shape) throws Exception {
@@ -122,7 +122,7 @@ public class SpatialSamplingFeature {
 
 	// getters and setters
 	/**
-	 * 
+	 *
 	 * @return Returns identifier of the feature
 	 */
 	public Identifier getIdentifier() {
@@ -130,8 +130,8 @@ public class SpatialSamplingFeature {
 	}
 
 	/**
-	 *	sets the identifier of the sampling feature 
-	 * 
+	 *	sets the identifier of the sampling feature
+	 *
 	 * @param identifier
 	 */
 	public void setIdentifier(Identifier identifier) {

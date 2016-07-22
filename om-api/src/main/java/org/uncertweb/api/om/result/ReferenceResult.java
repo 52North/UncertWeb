@@ -1,20 +1,18 @@
 package org.uncertweb.api.om.result;
 
+import org.apache.xmlbeans.SchemaType;
 import org.w3.x1999.xlink.ActuateType;
 import org.w3.x1999.xlink.ShowType;
-import org.w3.x1999.xlink.TypeType;
-
-
 
 /**
  * Result representing an reference with optional attributes
- * 
+ *
  * @author Kiesow
- * 
+ *
  */
 public class ReferenceResult implements IResult {
 
-	private TypeType.Enum type;
+	private SchemaType type;
 	private String href;
 	private String role;
 	private String arcrole;
@@ -27,10 +25,10 @@ public class ReferenceResult implements IResult {
 	 * Generic constructor
 	 */
 	public ReferenceResult() { }
-	
+
 	/**
 	 * constructor with reference and role attribute
-	 * 
+	 *
 	 * @param href
 	 * 			reference
 	 * @param role
@@ -40,7 +38,7 @@ public class ReferenceResult implements IResult {
 		this.href=href;
 		this.role=role;
 	}
-	
+
 	/**
 	 * Constructor with all possible attributes
 	 * @param type2
@@ -52,7 +50,7 @@ public class ReferenceResult implements IResult {
 	 * @param show2
 	 * @param actuate2
 	 */
-	public ReferenceResult(TypeType.Enum type2, String href, String role, String arcrole, String title, ShowType.Enum show2, ActuateType.Enum actuate2) {
+	public ReferenceResult(SchemaType type2, String href, String role, String arcrole, String title, ShowType.Enum show2, ActuateType.Enum actuate2) {
 		this.type = type2;
 		this.href = href;
 		this.role = role;
@@ -63,11 +61,11 @@ public class ReferenceResult implements IResult {
 	}
 
 	// specific getters and setters
-	public TypeType.Enum getType() {
+	public SchemaType getType() {
 		return type;
 	}
 
-	public void setType(TypeType.Enum type) {
+	public void setType(SchemaType type) {
 		this.type = type;
 	}
 

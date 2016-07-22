@@ -111,7 +111,7 @@ import org.uncertweb.api.om.result.UncertaintyResult;
 import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import org.w3.x1999.xlink.ActuateType;
 import org.w3.x1999.xlink.ShowType;
-import org.w3.x1999.xlink.TypeType;
+import org.w3c.dom.DOMException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -651,7 +651,7 @@ public class XBObservationParser implements IObservationParser {
 			} else if (xb_obsType instanceof UWReferenceObservationType) {
 
 				ReferenceType xb_referenceType = ((UWReferenceObservationType)xb_obsType).getResult();
-				TypeType.Enum type = xb_referenceType.getType();
+//				TypeType.Enum type = xb_referenceType.getType();
 				String href = xb_referenceType.getHref();
 				String role = xb_referenceType.getRole();
 				String arcrole = xb_referenceType.getArcrole();
@@ -659,17 +659,28 @@ public class XBObservationParser implements IObservationParser {
 				ShowType.Enum show = xb_referenceType.getShow();
 				ActuateType.Enum actuate = xb_referenceType.getActuate();
 
-				ReferenceResult result = new ReferenceResult(type, href, role,
-						arcrole, title, show, actuate);
+				ReferenceResult result = new ReferenceResult(OMObservationDocument.type, href, role, arcrole, title, show, actuate);
 				obs = new ReferenceObservation(identifier, boundedBy,
 						phenomenonTime, resultTime, validTime, procedure,
 						observedProperty, featureOfInterest, resultQuality,
 						result);
 			}
 		}
-		} catch (Exception e) {
+		} catch (OMParsingException e) {
 			throw new OMParsingException(e);
-		}
+		} catch (URISyntaxException e) {
+            throw new OMParsingException(e);
+        } catch (IllegalArgumentException e) {
+            throw new OMParsingException(e);
+        } catch (MalformedURLException e) {
+            throw new OMParsingException(e);
+        } catch (XmlException e) {
+            throw new OMParsingException(e);
+        } catch (UncertaintyParserException e) {
+            throw new OMParsingException(e);
+        } catch (DOMException e) {
+            throw new OMParsingException(e);
+        }
 		return obs;
 	}
 
@@ -1139,9 +1150,9 @@ public class XBObservationParser implements IObservationParser {
 			throws OMParsingException {
 			StringWriter writer = new StringWriter();
 			try {
-				IOUtils.copy(in, writer,null);
+				IOUtils.copy(in, writer);
 			} catch (IOException e) {
-				throw new OMParsingException("error while converting input to string!");
+				throw new OMParsingException("error while converting input to string!", e);
 			}
 			String inputString = writer.toString();
 			return this.parseObservationCollection(inputString);

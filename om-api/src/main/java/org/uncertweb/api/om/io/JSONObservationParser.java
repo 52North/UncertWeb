@@ -51,7 +51,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * parser for parsing observations according to the UncertWeb observation profile encoded in JSON
- * 
+ *
  * @author staschc
  *
  */
@@ -63,10 +63,10 @@ public class JSONObservationParser implements IObservationParser{
 		JSONObject obs;
 		try {
 			obs = new JSONObject(jsonObs);
-		
+
 		JSONObject jobs =null;
 		String typeName =null;
-		
+
 		////////////////////////
 		//check type and retrieve observation JSON object
 		//obs is measurement
@@ -98,13 +98,13 @@ public class JSONObservationParser implements IObservationParser{
 			typeName=UncertaintyObservation.NAME;
 			jobs=obs.getJSONObject(UncertaintyObservation.NAME);
 		}
-		
-		
-		
+
+
+
 		else{
 			throw new OMParsingException("Observation type is not supported by JSON parser!");
 		}
-		
+
 		/////////////////////////////
 		//parse common properties
 		Identifier identifier =null;
@@ -125,7 +125,7 @@ public class JSONObservationParser implements IObservationParser{
 		if (jobs.has("resultQuality")){
 			resultQuality = parseResultQuality(jobs.getJSONArray("resultQuality"));
 		}
-		
+
 		//parse results
 		if (typeName.equals(Measurement.NAME)){
 			JSONObject jresult = jobs.getJSONObject("result");
@@ -145,7 +145,7 @@ public class JSONObservationParser implements IObservationParser{
 			CategoryResult cresult = new CategoryResult(value,codeSpace);
 			result = new CategoryObservation(identifier,null,phenomenonTime,resultTime,validTime,procedureURI,obsPropURI,foi,resultQuality,cresult);
 		}
-		
+
 		else if (typeName.equals(ReferenceObservation.NAME)){
 			JSONObject jresult = jobs.getJSONObject("result");
 			String href = jresult.getString("href");
@@ -153,7 +153,7 @@ public class JSONObservationParser implements IObservationParser{
 			ReferenceResult rresult = new ReferenceResult(href,role);
 			result = new ReferenceObservation(identifier,null,phenomenonTime,resultTime,validTime,procedureURI,obsPropURI,foi,resultQuality,rresult);
 		}
-		
+
 		else if (typeName.equals(DiscreteNumericObservation.NAME)){
 			IntegerResult iresult = new IntegerResult(new BigInteger(jobs.getString("result")));
 			result = new DiscreteNumericObservation(identifier,null,phenomenonTime,resultTime,validTime,procedureURI,obsPropURI,foi,resultQuality,iresult);
@@ -168,7 +168,7 @@ public class JSONObservationParser implements IObservationParser{
 			UncertaintyResult uresult = new UncertaintyResult(uncertainty);
 			result = new UncertaintyObservation(identifier,null,phenomenonTime,resultTime,validTime,procedureURI,obsPropURI,foi,resultQuality,uresult);
 		}
-		
+
 		} catch (JSONException e) {
 			throw new OMParsingException(e);
 		} catch (UncertaintyParserException e) {
@@ -176,9 +176,9 @@ public class JSONObservationParser implements IObservationParser{
 		} catch (URISyntaxException e) {
 			throw new OMParsingException(e);
 		}
-		
+
 		return result;
-		
+
 	}
 
 
@@ -187,7 +187,7 @@ public class JSONObservationParser implements IObservationParser{
 		JSONObject job = null;
 		try {
 			job = new JSONObject(jsonObsCol);
-		
+
 		//BooleanObservationCollection
 		if (job.has(BooleanObservationCollection.NAME)){
 			JSONArray obsArray = job.getJSONArray(BooleanObservationCollection.NAME);
@@ -205,7 +205,7 @@ public class JSONObservationParser implements IObservationParser{
 				resultArray.add((CategoryObservation)parseObservation(obsArray.getJSONObject(i).toString()));
 			}
 			return new CategoryObservationCollection(resultArray);
-		} 
+		}
 		//DiscreteNumericObservation
 		else if (job.has(DiscreteNumericObservationCollection.NAME)){
 			JSONArray obsArray = job.getJSONArray(DiscreteNumericObservationCollection.NAME);
@@ -214,7 +214,7 @@ public class JSONObservationParser implements IObservationParser{
 				resultArray.add((DiscreteNumericObservation)parseObservation(obsArray.getJSONObject(i).toString()));
 			}
 			return new DiscreteNumericObservationCollection(resultArray);
-		} 
+		}
 		//MeasurementCollection
 		else if (job.has(MeasurementCollection.NAME)){
 			JSONArray obsArray = job.getJSONArray(MeasurementCollection.NAME);
@@ -232,7 +232,7 @@ public class JSONObservationParser implements IObservationParser{
 				resultArray.add((ReferenceObservation)parseObservation(obsArray.getJSONObject(i).toString()));
 			}
 			return new ReferenceObservationCollection(resultArray);
-		} 
+		}
 		//TextObservationCollection
 		else if (job.has(TextObservationCollection.NAME)){
 			JSONArray obsArray = job.getJSONArray(TextObservationCollection.NAME);
@@ -241,7 +241,7 @@ public class JSONObservationParser implements IObservationParser{
 				resultArray.add((TextObservation)parseObservation(obsArray.getJSONObject(i).toString()));
 			}
 			return new TextObservationCollection(resultArray);
-		} 
+		}
 		//UncertaintyObservationCollection
 		else if (job.has(UncertaintyObservationCollection.NAME)){
 			JSONArray obsArray = job.getJSONArray(UncertaintyObservationCollection.NAME);
@@ -251,15 +251,15 @@ public class JSONObservationParser implements IObservationParser{
 			}
 			return new UncertaintyObservationCollection(resultArray);
 		}
-		
+
 		//type of collection not supported
 		else {
 			throw new OMParsingException("ObservationCollection Type is not supported by JSONParser!");
 		}
-		
+
 		} catch (Exception e) {
 			throw new OMParsingException(e);
-		} 
+		}
 	}
 
 	@Override
@@ -268,8 +268,8 @@ public class JSONObservationParser implements IObservationParser{
 		IObservationCollection result = null;
 		try {
 			job = new JSONObject(jsonString);
-		
-		
+
+
 		//if string is an collection, invoke method for parsing observations
 		if (job.has(BooleanObservationCollection.NAME)||
 				job.has(CategoryObservationCollection.NAME)||
@@ -316,17 +316,17 @@ public class JSONObservationParser implements IObservationParser{
 			members.add((UncertaintyObservation)parseObservation(jsonString));
 			result = new UncertaintyObservationCollection(members);
 		}
-		
+
 		} catch (Exception e) {
 			throw new OMParsingException("Error while creating JSONObject from input string!",e);
-		} 
-		
+		}
+
 		return result;
 	}
 
 	/**
 	 * parses a JSON representation of an resultQuality array
-	 * 
+	 *
 	 * @param jsonArray
 	 * 			array containing the resultQuality elements
 	 * @return Returns internal representation of resultQuality (currently ONLY containinig uncertainties!)
@@ -359,7 +359,7 @@ public class JSONObservationParser implements IObservationParser{
 
 	/**
 	 * helper method for identifier in JSON representation
-	 * 
+	 *
 	 * @param jsonObject
 	 * 			identifier encoded in JSON
 	 * @return Returns internal representation of identifier
@@ -377,7 +377,7 @@ public class JSONObservationParser implements IObservationParser{
 
 	/**
 	 * helper method for parsing a spatial sampling feature in JSON representation
-	 * 
+	 *
 	 * @param jfoi
 	 * 			spatial sampling feature encoded in JSON
 	 * @return Returns internal representation of spatial sampling feature
@@ -385,7 +385,7 @@ public class JSONObservationParser implements IObservationParser{
 	 * 			if parsing fails
 	 * @throws JSONException
 	 * 			if parsing fails
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	private SpatialSamplingFeature parseSamplingFeature(JSONObject jfoi) throws IllegalArgumentException, JSONException, URISyntaxException {
 		Geometry geom;
@@ -407,7 +407,7 @@ public class JSONObservationParser implements IObservationParser{
 
 	/**
 	 * helper method for parsing a time object encoded in JSON
-	 * 
+	 *
 	 * @param jsonObject
 	 * 			time object encoded in JSON
 	 * @return Returns internal representation of timeobject
@@ -415,7 +415,7 @@ public class JSONObservationParser implements IObservationParser{
 	 * 			if parsing fails
 	 */
 	public TimeObject parseTime(JSONObject jsonObject) throws JSONException {
-		
+
 		//time is TimePeriod, has to be checked first, as it also contains TimeInstants.
 		if (jsonObject.has("TimePeriod")) {
 			JSONObject jtimePeriod = jsonObject.getJSONObject("TimePeriod");
@@ -425,7 +425,7 @@ public class JSONObservationParser implements IObservationParser{
 			TimeObject toEnd = parseTimeInstant(jend);
 			return new TimeObject(toBegin.getDateTime(),toEnd.getDateTime());
 		}
-		
+
 		//time is TimeInstant
 		else {
 			JSONObject jti = jsonObject.getJSONObject("TimeInstant");
@@ -435,7 +435,7 @@ public class JSONObservationParser implements IObservationParser{
 
 	/**
 	 * helper method for parsing a time instant encoded in JSON
-	 * 
+	 *
 	 * @param jinstant
 	 * 			time instant encoded in JSON
 	 * @return Returns internal representation of time instant
@@ -452,7 +452,7 @@ public class JSONObservationParser implements IObservationParser{
 			throws OMParsingException {
 		StringWriter writer = new StringWriter();
 		try {
-			IOUtils.copy(in, writer,null);
+			IOUtils.copy(in, writer);
 		} catch (IOException e) {
 			throw new OMParsingException("error while converting input to string!");
 		}
