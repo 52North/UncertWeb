@@ -21,35 +21,35 @@ import com.vividsolutions.jts.geom.Polygon;
 /**
  * JSON encoder for encoding geometries as defined in the
  * UncertWeb GML Profile
- * 
+ *
  * follows the GeoJSON specification of http://www.geojson.org/geojson-spec.html
- * 
+ *
  * @author staschc
  *
  */
-public class JSONGeometryEncoder implements IGeometryEncoder{
-	
+public class JSONGeometryEncoder implements IGeometryEncoder {
+
 	/** default accuracy (number of digits) for coordinates*/
 	private int accuracy=5;
-	
+
 	/**
 	 * default constructor; accuracy is set to 5 digits for coordinates
 	 */
-	public JSONGeometryEncoder(){		
+	public JSONGeometryEncoder(){
 	}
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param accuracy
 	 * 			number of digits for coordinates
 	 */
-	public JSONGeometryEncoder(int accuracy){	
+	public JSONGeometryEncoder(int accuracy){
 		this.accuracy=accuracy;
 	}
 
 	/**
-	 * 
+	 *
 	 * not yet implemented, as no feature types are defined in UncertWeb yet
 	 */
 	//TODO implement
@@ -58,17 +58,17 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	/**
 	 * method for encoding geometries to JSON objects by passing an already used writer,
 	 * this method can be used, if the geometry is part of another JSON object like an O&M
 	 * observation
-	 * 
+	 *
 	 * @param writer
 	 * 			writer to which the geometry should be written
 	 * @param geom
 	 * 		geometry which should be written
-	 * @throws JSONException 
+	 * @throws JSONException
 	 */
 	public void encodeGeometry(JSONStringer writer, Geometry geom) throws JSONException{
 		if (geom instanceof Point) {
@@ -98,7 +98,7 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 
 	/**
 	 * encodes a MultiPolygon to JSON
-	 * 
+	 *
 	 * @param writer
 	 * 			writer to which MultiPolygon should be written
 	 * @param geom
@@ -129,7 +129,7 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 
 	/**
 	 * encodes a MultiLineString to JSON
-	 * 
+	 *
 	 * @param writer
 	 * 			writer to which MultiLineString should be written
 	 * @param geom
@@ -153,7 +153,7 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 
 	/**
 	 * encodes a MultiPoint to JSON
-	 * 
+	 *
 	 * @param writer
 	 * 			writer to which MultiPoint should be written
 	 * @param geom
@@ -178,7 +178,7 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 
 	/**
 	 * encodes a LineString to JSON
-	 * 
+	 *
 	 * @param writer
 	 * 			writer to which LineString should be written
 	 * @param geom
@@ -197,12 +197,12 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 
 	/**
 	 * encodes Polygons into GeoJSON
-	 * 
+	 *
 	 * @param writer
 	 * 			writer to which polygon should be written
 	 * @param geom
 	 * 			Polygon which should be encoded
-	 * @throws JSONException 
+	 * @throws JSONException
 	 * 			if encoding fails
 	 */
 	private void encodePolygon(JSONStringer writer,Polygon geom) throws JSONException {
@@ -222,7 +222,7 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 
 	/**
 	 * encodes Points into GeoJSON
-	 * 
+	 *
 	 * @param writer
 	 * 			writer to which point should be written
 	 * @param geom
@@ -238,10 +238,10 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 		encodeCRS(writer, geom.getSRID());
 		writer.endObject();
 	}
-	
+
 	/**
 	 * encodes Coordinate to GeoJSON
-	 * 
+	 *
 	 * @param writer
 	 * 			writer to which coordinate should be written
 	 * @param coord
@@ -255,10 +255,10 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 		writer.value(UwMathUtils.roundDouble(coord.y,accuracy));
 		writer.endArray();
 	}
-	
+
 	/**
 	 * encodes an array of Coordinates to GeoJSON
-	 * 
+	 *
 	 * @param writer
 	 * 			writer to which coordinates should be written
 	 * @param coord
@@ -276,7 +276,7 @@ public class JSONGeometryEncoder implements IGeometryEncoder{
 
 	/**
 	 * encodes a SRID representing the EPSG code of geometry to a GeoJSON crs property
-	 * 
+	 *
 	 * @param writer
 	 * 			writer to which crs should be written
 	 * @param srid
