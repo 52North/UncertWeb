@@ -46,9 +46,9 @@ import org.joda.time.DateTime;
 
 /**
  * Class to build a {@code RegisterSensorDocument} for an {@code EEAStation}.
- * 
+ *
  * @author Christian Autermann, Daniel Nüst
- * 
+ *
  */
 public class SensorDescriptionBuilder extends AbstractXmlBuilder<SensorMLDocument> {
     //private static final String COORD_NAME_LAT = "latitude";
@@ -77,20 +77,20 @@ public class SensorDescriptionBuilder extends AbstractXmlBuilder<SensorMLDocumen
     private static final String FIELD_NAME_LAU1_CODE = "lau_level1_code";
     private static final String FIELD_NAME_LAU2_CODE = "lau_level2_code";
     private static final String FIELD_NAME_LAU2_NAME = "lau_level2_name";
-    
+
     private static String[] ADDITIONAL_KEYWORDS = Utils.get("eea.keywords").split(";");
 
     private EEAStation station;
-    
+
     protected EEAStation getStation() {
         return station;
     }
-    
+
     public SensorDescriptionBuilder setStation(EEAStation station) {
         this.station = station;
         return this;
     }
-    
+
     @Override
     public SensorMLDocument build() throws NoValidInputsOrOutputsException {
         SensorMLDocument smlDocument = SensorMLDocument.Factory.newInstance();
@@ -108,7 +108,7 @@ public class SensorDescriptionBuilder extends AbstractXmlBuilder<SensorMLDocumen
         buildLatLonPosition(systemType);
         buildInputOutputLists(systemType);
         buildComponents(systemType);
-  
+
         LinkedList<XmlError> errors = new LinkedList<XmlError>();
         if (!smlDocument.validate(new XmlOptions().setErrorListener(errors))) {
 //            log.warn("Created invalid document for station " + station);
@@ -138,7 +138,7 @@ public class SensorDescriptionBuilder extends AbstractXmlBuilder<SensorMLDocumen
         term = ident.addNewTerm();
         term.setDefinition(SHORT_NAME_DEFINITION);
         term.setValue(getStation().getName());
-        
+
         ident = idenList.addNewIdentifier();
         term = ident.addNewTerm();
         term.setDefinition(OFFERING_DEFINITION);
@@ -193,7 +193,7 @@ public class SensorDescriptionBuilder extends AbstractXmlBuilder<SensorMLDocumen
         Term termTS = classifierTS.addNewTerm();
         termTS.setDefinition(Utils.get("eea.urn.classifier.typeOfSensor"));
         termTS.setValue(getStation().getType());
-        
+
         // ozone classification
         if ( !getStation().getOzoneClassification().trim().isEmpty()) {
             Classifier classifierOzone = classifierList.addNewClassifier();
@@ -251,11 +251,11 @@ public class SensorDescriptionBuilder extends AbstractXmlBuilder<SensorMLDocumen
     protected void buildInputOutputLists(SystemType system) throws NoValidInputsOrOutputsException {
         InputList inputList = system.addNewInputs().addNewInputList();
         OutputList outputList = system.addNewOutputs().addNewOutputList();
-        
+
         Collection<EEAConfiguration> uniqueConfigs = getUniqueConfigurations(getStation());
-        
+
         for (EEAConfiguration configuration : uniqueConfigs) {
-        	
+
             String name = getOfferingName(configuration.getComponentCode());//configuration.getComponentName().replace(' ', '_').toUpperCase();
 
             /* inputs */
@@ -332,7 +332,7 @@ public class SensorDescriptionBuilder extends AbstractXmlBuilder<SensorMLDocumen
         }
         keywordList.addKeyword(getStation().getCountryName());
         keywordList.addKeyword(getStation().getCountryIsoCode());
-        
+
         for (String s : ADDITIONAL_KEYWORDS) {
         	keywordList.addKeyword(escapeCharacters(s));
         }
@@ -408,34 +408,34 @@ public class SensorDescriptionBuilder extends AbstractXmlBuilder<SensorMLDocumen
         EnvelopeType envelope = EnvelopeType.Factory.newInstance();
         envelope.setDefinition(Utils.get("eea.urn.definition.bbox"));
         envelope.setReferenceFrame(EPSG_4326_REFERENCE_SYSTEM_DEFINITION);
-       
+
         VectorPropertyType lowerCorner = envelope.addNewLowerCorner();
         VectorType lCVector = lowerCorner.addNewVector();
-        
+
         Coordinate lCLat = lCVector.addNewCoordinate();
         lCLat.setName(COORD_NAME_LAT);
         Quantity lCLatQuantity = lCLat.addNewQuantity();
         lCLatQuantity.setAxisID(QUANTITY_AXIS_ID_LAT);
         lCLatQuantity.addNewUom().setCode(UOM_CODE_LATLON);
         lCLatQuantity.setValue(lowerCornerPoint[0]);
-        
+
         Coordinate lCLon = lCVector.addNewCoordinate();
         lCLon.setName(COORD_NAME_LON);
         Quantity lCLonQuantity = lCLon.addNewQuantity();
         lCLonQuantity.setAxisID(QUANTITY_AXIS_ID_LON);
         lCLonQuantity.addNewUom().setCode(UOM_CODE_LATLON);
         lCLonQuantity.setValue(lowerCornerPoint[1]);
-        
+
         VectorPropertyType upperCorner = envelope.addNewUpperCorner();
         VectorType uCVector = upperCorner.addNewVector();
-        
+
         Coordinate uCLat = uCVector.addNewCoordinate();
         uCLat.setName(COORD_NAME_LAT);
         Quantity uCLatQuantity = uCLat.addNewQuantity();
         uCLatQuantity.setAxisID(QUANTITY_AXIS_ID_LAT);
         uCLatQuantity.addNewUom().setCode(UOM_CODE_LATLON);
         uCLatQuantity.setValue(upperCornerPoint[0]);
-        
+
         Coordinate uCLon = uCVector.addNewCoordinate();
         uCLon.setName(COORD_NAME_LON);
         Quantity uCLonQuantity = uCLon.addNewQuantity();

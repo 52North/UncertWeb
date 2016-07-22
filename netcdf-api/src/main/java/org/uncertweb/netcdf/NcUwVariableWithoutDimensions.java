@@ -47,7 +47,7 @@ class NcUwVariableWithoutDimensions extends AbstractNcUwVariable {
 		super(file, variable, cache, parent);
 		this.variableWithDimensions = findVariableWithDimensions(this);
 	}
-	
+
 	private NcUwVariableWithDimensions findVariableWithDimensions(INcUwVariable v) {
 		if (v instanceof NcUwVariableWithDimensions) {
 			return (NcUwVariableWithDimensions) v;
@@ -143,5 +143,5 @@ class NcUwVariableWithoutDimensions extends AbstractNcUwVariable {
 		}
 		return map;
 	}
-	
+
 }

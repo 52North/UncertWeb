@@ -15,12 +15,12 @@ import org.uncertml.distribution.continuous.LogNormalDistribution;
 import org.uncertml.sample.ContinuousRealisation;
 
 public class LognormalDist2Realisations extends AbstractAlgorithm {
-	
+
 
 	public LognormalDist2Realisations(){
 		super();
 	}
-	
+
 	@Override
 	public List<String> getErrors() {
 		// TODO Auto-generated method stub
@@ -28,33 +28,33 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 	}
 
 	@Override
-	public Class<?> getInputDataType(String arg0) {		
+	public Class<?> getInputDataType(String arg0) {
 		return UncertWebIODataBinding.class;
 	}
 
 	@Override
-	public Class<?> getOutputDataType(String arg0) {		
+	public Class<?> getOutputDataType(String arg0) {
 		return UncertWebIODataBinding.class;
 	}
 
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> directInput) {
-		
+
 		HashMap<String, IData> result = new HashMap<String, IData>();
 		// Get "number of realisations" input
 		List<IData> iDataList1 = directInput.get("numbReal");
 		IData iData1 = iDataList1.get(0);
 		Integer intNumberOfRealisations = (Integer)iData1.getPayload();
 		String numberOfRealisations = intNumberOfRealisations.toString();
-		
+
 		// Get "uncertML" input, convert it to IUncertainty
 		IData distInput = directInput.get("distribution").get(0);
 		if(!(distInput instanceof UncertMLBinding)){
 			throw new RuntimeException("Input with ID distribution must be a univariate lognormal distribution!");
 		}
 		IUncertainty dist = ((UncertMLBinding) distInput).getPayload();
-		
-		
+
+
 		// Get parameters etc out of it
 		LogNormalDistribution mg = null;
 		if (dist instanceof LogNormalDistribution){
@@ -62,18 +62,18 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 		}else{
 			throw new RuntimeException("Input with ID distribution must be a univariate lognormal distribution!");
 		}
-		
+
 		List<Double> shapelist = mg.getShape();
 		Double shape = shapelist.get(0);
 		String shapeString = shape.toString();
 		List<Double> logscalelist = mg.getLogScale();
 		Double logScale = logscalelist.get(0);
 		String logScaleString = logScale.toString();
-		
+
 		ExtendedRConnection c = null;
-		
+
 		try {
-			
+
 			// establish connection to Rserve
 			//c = new ExtendedRConnection("giv-uw.uni-muenster.de");
 			c = new ExtendedRConnection("127.0.0.1");
@@ -91,26 +91,26 @@ public class LognormalDist2Realisations extends AbstractAlgorithm {
 			c.tryVoidEval("var.lognormal <- " + shapeString);
 			c.tryVoidEval("sd.lognormal <- sqrt(var.lognormal)");
 			REXP samples =  c.tryEval("rlnorm(i, m.lognormal, sd.lognormal)");
-			
+
 			double[] sampleDoubleArray = samples.asDoubles();
-			
+
 			ContinuousRealisation r = new ContinuousRealisation(sampleDoubleArray, -999999.999, "bla");
-			
+
 			// Make and return result
 			UncertMLBinding uwdb = new UncertMLBinding(r);
 			result.put("realisations", uwdb);
-			
-		
+
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		finally {
 			if (c != null) {
 				c.close();
 			}
 		}
-		
+
 		return result;
 	}
 }

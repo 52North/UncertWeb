@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software), you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation), either version 2 of the License, or (at your option) any later 
+ * Foundation), either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY), without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program), if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -37,7 +37,7 @@ public class UwConstants {
 		ISO8601_DEFINITION("urn:ogc:data:time:iso8601"),
 		FOI_DEFINITION("urn:ogc:data:feature"),
 		CAPABILITIES_DEFINITION("urn:ogc:def:property:capabilities");
-		
+
 		public final URI uri;
 		public final String value;
 		private URN(String urn) { this.uri = URI.create(this.value = urn); }
@@ -49,10 +49,10 @@ public class UwConstants {
 		SAMPLING_TIME("http://www.opengis.net/def/property/OGC/0/SamplingTime"),
 		FEATURE_OF_INTEREST("http://www.opengis.net/def/property/OGC/0/FeatureOfInterest"),
 		EPSG_SRS_PREFIX("http://www.opengis.net/def/crs/EPSG/0/");
-		
+
 		public final URI uri;
 		public final String value;
 		private URL(String urn) { this.uri = URI.create(this.value = urn); }
 	}
-	
+
 }

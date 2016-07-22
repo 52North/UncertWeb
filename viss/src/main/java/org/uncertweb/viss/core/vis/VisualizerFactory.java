@@ -139,13 +139,13 @@ public class VisualizerFactory {
 	}
 
 	public static Set<IVisualizer> getVisualizersForDataSet(IDataSet dataSet) {//TODO
-		
-		Set<Class<? extends IVisualizer>> visualizerForMediaType = 
+
+		Set<Class<? extends IVisualizer>> visualizerForMediaType =
 				getVisualizerForMediaType(dataSet.getResource().getMediaType());
-		
+
 		log.debug("Found {} Visualizers for MediaType {}.",
 		    visualizerForMediaType.size(), dataSet.getResource().getMediaType());
-		
+
 		Set<IVisualizer> set = UwCollectionUtils.set();
 		for (Class<? extends IVisualizer> v : visualizerForMediaType) {
 			log.debug("Testing {} for compatibility", shortNamesByCreator.get(v));

@@ -34,7 +34,7 @@ public final class NcUwTemporalIterable implements Iterable<NcUwObservation> {
 		this.i = index;
 		this.v = v;
 	}
-	
+
 	@Override
 	public Iterator<NcUwObservation> iterator() {
 		return new NcUwTemporalIterator(this.v, this.i);

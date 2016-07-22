@@ -50,7 +50,7 @@ public class MongoUncertaintyCollectionResource extends AbstractMongoResource<Un
 	public MongoUncertaintyCollectionResource() {
 		super(MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE);
 	}
-	
+
 	@Override
 	public void close() {}
 
@@ -83,7 +83,7 @@ public class MongoUncertaintyCollectionResource extends AbstractMongoResource<Un
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
-		
+
 	}
 
 	@Override

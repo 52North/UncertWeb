@@ -35,7 +35,7 @@ import org.uncertweb.api.om.DQ_UncertaintyResult;
 
 /**
  * class provides methods for inserting uncertainties into the SOSD
- * 
+ *
  * @author Martin Kiesow
  */
 public class InsertUncertaintyDAO {
@@ -49,7 +49,7 @@ public class InsertUncertaintyDAO {
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param cpoolp
 	 *            PGConnectionPool which offers a pool of open connections to
 	 *            the db
@@ -60,7 +60,7 @@ public class InsertUncertaintyDAO {
 
 	/**
 	 * inserts a single uncertainty into database
-	 * 
+	 *
 	 * @param obs
 	 *            associated observation
 	 * @param unc
@@ -81,7 +81,7 @@ public class InsertUncertaintyDAO {
 
 	/**
 	 * inserts a single uncertainty into database
-	 * 
+	 *
 	 * @param obs
 	 *            associated observation
 	 * @param unc
@@ -143,7 +143,7 @@ public class InsertUncertaintyDAO {
 				if (!capsCache.getValueUnits().contains(
 						obs.getUnitsOfMeasurement())
 						&& !valueUnits.contains(valueUnit)) {
-					
+
 					// insert value_unit
 					insertStmt = new String(" INSERT INTO "
 							+ PGDAOUncertaintyConstants.uValUnitTn + " ("
@@ -241,12 +241,12 @@ public class InsertUncertaintyDAO {
 
 				// insert samples into realisation table
 				insertSample((AbstractSample) unc, uncValID, con);
-				
+
 			} else if (unc instanceof Probability) {
-				
+
 				// insert probability table
-				insertProbability((Probability) unc, uncValID, con);	
-			
+				insertProbability((Probability) unc, uncValID, con);
+
 				// TODO add further uncertainty types here
 				// } else if (unc instanceof ???) {
 				// }
@@ -273,7 +273,7 @@ public class InsertUncertaintyDAO {
 	/**
 	 * inserts uncertainties from result quality into database; temporarily only
 	 * single uncertainties of single result qualities are supported
-	 * 
+	 *
 	 * @param obs
 	 *            associated observation
 	 * @param trCon
@@ -337,7 +337,7 @@ public class InsertUncertaintyDAO {
 
 	/**
 	 * insert an observation-uncertainty relationship
-	 * 
+	 *
 	 * @param obsID
 	 *            observation ID
 	 * @param uncID
@@ -385,7 +385,7 @@ public class InsertUncertaintyDAO {
 	 * insert a list of observation-uncertainty relationships; this method
 	 * provides the same functionallity as insertObsUncRelationship(...) but
 	 * creates only a single insert statement
-	 * 
+	 *
 	 * @param obsID
 	 *            a single observation ID
 	 * @param uncIDs
@@ -489,7 +489,7 @@ public class InsertUncertaintyDAO {
 		Statement stmt = con.createStatement();
 		stmt.execute(insertStmt.toString());
 	}
-	
+
 	private void insertRealisation(AbstractRealisation unc, int uncValID,
 			Connection con) throws SQLException {
 
@@ -560,12 +560,12 @@ public class InsertUncertaintyDAO {
 			throws SQLException {
 
 		StringBuilder insertStmt = new StringBuilder();
-		
-		String samMethDesc = unc.getSamplingMethodDescription();		
+
+		String samMethDesc = unc.getSamplingMethodDescription();
 		if (samMethDesc == null) {
 			samMethDesc = SosConstants.PARAMETER_NOT_SET;
 		}
-		
+
 		String id;
 		Double weight;
 		List<Double> conVals;
@@ -573,10 +573,10 @@ public class InsertUncertaintyDAO {
 		StringBuilder arrayInput;
 
 		for (AbstractRealisation real : unc.getRealisations()) {
-			
+
 			// every sample realisation should have an (unique) ID
 			id = real.getId();
-			
+
 			weight = real.getWeight();
 
 			if (real instanceof ContinuousRealisation) {
@@ -606,7 +606,7 @@ public class InsertUncertaintyDAO {
 						+ PGDAOUncertaintyConstants.uRIdCn + ", "
 						+ PGDAOUncertaintyConstants.uRSamMethDescCn + ") VALUES ("
 						+ uncValID + ", " + weight + ", " + arrayInput + ", '"
-						+ id + "', '" + samMethDesc 
+						+ id + "', '" + samMethDesc
 						+ "');");
 
 			} else if (real instanceof CategoricalRealisation) {
@@ -644,7 +644,7 @@ public class InsertUncertaintyDAO {
 		stmt.execute(insertStmt.toString());
 
 	}
-	
+
 	private void insertProbability(Probability unc, int uncValID, Connection con)
 	throws SQLException {
 
@@ -655,42 +655,42 @@ public class InsertUncertaintyDAO {
 		double lt = 0.0;
 		double ge = 0.0;
 		double le = 0.0;
-	
+
 		// create array of values as a String
 		probVals = unc.getValues();
 		arrayInput = new StringBuilder("'{");
-	
+
 		if (probVals.size() > 0) {
-	
+
 			arrayInput.append(probVals.get(0));
 		}
 		if (probVals.size() > 1) {
-	
+
 			for (int i = 1; i < probVals.size(); i++) {
 				arrayInput.append(", " + probVals.get(i) + "");
 			}
 		}
 		arrayInput.append("}'");
-		
+
 		// there may be only one upper limit (lt/le) and one lower limit (gt/ge)
 		if (unc.getConstraints() != null && !unc.getConstraints().isEmpty()) {
-			
+
 			for (ProbabilityConstraint pc : unc.getConstraints()) {
 				if (pc.getType().equals(ConstraintType.GREATER_OR_EQUAL)) {
 					ge = pc.getValue();
-					
+
 				} else if (pc.getType().equals(ConstraintType.GREATER_THAN)) {
 					gt = pc.getValue();
-					
+
 				} else if (pc.getType().equals(ConstraintType.LESS_OR_EQUAL)) {
 					le = pc.getValue();
-			
+
 				} else if (pc.getType().equals(ConstraintType.LESS_THAN)) {
-					lt = pc.getValue();					
+					lt = pc.getValue();
 				}
 			}
 		}
-		
+
 		// insert mean array
 		insertStmt.append(" INSERT INTO " + PGDAOUncertaintyConstants.uProbTn
 				+ " (" + PGDAOUncertaintyConstants.uPProbIdCn + ", "
@@ -699,17 +699,17 @@ public class InsertUncertaintyDAO {
 				+ PGDAOUncertaintyConstants.uPGeCn + ", "
 				+ PGDAOUncertaintyConstants.uPLeCn + ", "
 				+ PGDAOUncertaintyConstants.uPProbValsCn + ") VALUES ("
-				+ uncValID + ", " 
-				+ gt + ", " + lt + ", " + ge + ", " + le + ", "  
+				+ uncValID + ", "
+				+ gt + ", " + lt + ", " + ge + ", " + le + ", "
 				+ arrayInput + ");");
-		
+
 		Statement stmt = con.createStatement();
 		stmt.execute(insertStmt.toString());
 	}
 
 	/**
 	 * returns a constant key word for every uncertainty type
-	 * 
+	 *
 	 * @param unc
 	 *            given uncertainty
 	 * @return string constant

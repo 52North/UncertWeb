@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class to handle {@link AbstractProcessInput}.
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public abstract class ProcessInputHandler<T> {
@@ -71,7 +71,7 @@ public abstract class ProcessInputHandler<T> {
 	 * Processes a WPS input collection. The cardinality of every needed input
 	 * will be checked and the actual processing will be delegated to
 	 * {@link #processInputs(Map)}.
-	 * 
+	 *
 	 * @param inputs the process inputs (can't be <code>null</code>)
 	 * @return the processed final input
 	 */
@@ -113,7 +113,7 @@ public abstract class ProcessInputHandler<T> {
 	 * Checks if this handler consists only of one input. If there is more than
 	 * one input an {@link RuntimeException} will be thrown and
 	 * <code>null</code> will be returned if there is no input.
-	 * 
+	 *
 	 * @return the single input or <code>null</code>
 	 */
 	@SuppressWarnings("unchecked")
@@ -140,7 +140,7 @@ public abstract class ProcessInputHandler<T> {
 
 	/**
 	 * Processes the inputs and generates the final input.
-	 * 
+	 *
 	 * @param inputs the process inputs (can't be <code>null</code>)
 	 * @return the processed final input
 	 */

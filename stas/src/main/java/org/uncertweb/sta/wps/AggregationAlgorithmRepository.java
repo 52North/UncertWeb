@@ -17,23 +17,23 @@ import org.reflections.Reflections;
 import org.uncertweb.sta.wps.algorithms.AbstractAggregationProcess;
 
 /**
- * 
+ *
  * repository that loads the aggregation algorithms as defined in the config file
- * 
+ *
  * @author staschc
  *
  */
 public class AggregationAlgorithmRepository implements IAlgorithmRepository{
-	
+
 	protected static Logger log = Logger.getLogger(AggregationAlgorithmRepository.class);
-	
-	
+
+
 	/**
 	 * Mapping between process identifier and methods.
 	 */
 	private Map<String, IAlgorithm> algorithms;
-	
-	
+
+
 	public AggregationAlgorithmRepository(){
 		this.algorithms=loadComplexProcesses();
 	}
@@ -64,17 +64,17 @@ public class AggregationAlgorithmRepository implements IAlgorithmRepository{
 		// TODO check whether this hack is correct!
 		return algorithms.get(processID).getDescription();
 	}
-	
+
 	/**
 	 * helper method; loads the algorithms as defined in the aggregationProcessConfig.xml file
-	 * 
+	 *
 	 * @return
 	 */
 	private static Map<String, IAlgorithm> loadComplexProcesses() {
 		Map<String, IAlgorithm> result = new HashMap<String,IAlgorithm>();
-		
+
 		Reflections r = new Reflections("org.uncertweb.sta.wps.algorithms");
-		
+
 		for (Class<? extends AbstractAggregationProcess> c : r
 				.getSubTypesOf(AbstractAggregationProcess.class)) {
 			try {
@@ -87,11 +87,11 @@ public class AggregationAlgorithmRepository implements IAlgorithmRepository{
 			} catch (Exception e) {
 				String errorMsg = "Error while loading aggregation algorithms:"+e.getLocalizedMessage();
 				throw new RuntimeException(errorMsg);
-			}	
+			}
 		}
 		return result;
 
 	}
-	
-	
+
+
 }

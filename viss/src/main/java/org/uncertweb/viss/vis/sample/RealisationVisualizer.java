@@ -47,7 +47,7 @@ public class RealisationVisualizer extends
 
 	public static final String REALISATION_PARAMETER = "realisation";
 	public static final String REALISATION_PARAMETER_DESCRIPTION = "The Realisation to visualize";
-	
+
 	@Override
 	protected double evaluate(IUncertainty u) {
 		return ((ContinuousRealisation) u).getValues().get(getIndex());
@@ -67,7 +67,7 @@ public class RealisationVisualizer extends
 			throw VissError.internal(e);
 		}
 	}
-	
+
 	@Override
 	public Map<String, JSONObject> getOptionsForDataSet(IDataSet r) {
 		try {
@@ -95,7 +95,7 @@ public class RealisationVisualizer extends
 		} catch (JSONException e) {
 			throw VissError.internal(e);
 		}
-		
+
 	}
 
 	protected int getIndex() {

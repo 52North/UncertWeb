@@ -27,7 +27,7 @@ import com.google.gson.JsonPrimitive;
 
 /**
  * JSON implementation of an UncertML encoder.
- * 
+ *
  * @author Richard Jones
  * @version 2.0
  */
@@ -48,13 +48,13 @@ public class JSONEncoder implements IUncertaintyEncoder {
 
     /**
      * Encodes the <code>IUncertainty</code> object into a <code>JsonObject</code>
-     * 
+     *
      * @param element the UncertML object to encode as JSON.
      * @return a JSON representation of the UncertML object.
      */
     private JsonObject encodeAsJSONObject(IUncertainty element) {
         // let gson do all the serializing work!
-        // problems here are that any IUncertainty objects within the root one will be serialized 
+        // problems here are that any IUncertainty objects within the root one will be serialized
         // in a standard way.
     	String name = element.getClass().getSimpleName();
         JsonElement uncertainty;
@@ -85,14 +85,14 @@ public class JSONEncoder implements IUncertaintyEncoder {
         	name = "Realisation";
         	uncertainty = new JsonObject();
         	AbstractRealisation r = (AbstractRealisation)element;
-        	
+
         	// add values/categories
         	if (r instanceof CategoricalRealisation) {
         		uncertainty.getAsJsonObject().add("categories", gson.toJsonTree(((CategoricalRealisation)r).getCategories()));
         	} else {
         		uncertainty.getAsJsonObject().add("values", gson.toJsonTree(((ContinuousRealisation)r).getValues()));
         	}
-        	
+
         	// add additional properties
         	if (r.getId() != null) {
         		uncertainty.getAsJsonObject().addProperty("id", r.getId());

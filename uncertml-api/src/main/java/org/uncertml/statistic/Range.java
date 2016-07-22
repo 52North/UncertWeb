@@ -8,9 +8,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a range statistic.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Range}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -21,7 +21,7 @@ public class Range implements IStatistic {
 
     /**
      * Constructs a range statistic from a single lower and upper bound.
-     * 
+     *
      * @param lower the lower bound of the range statistic.
      * @param upper the upper bound of the range statistic.
      */
@@ -34,7 +34,7 @@ public class Range implements IStatistic {
      * lower and upper pair represents a single range statistic. This is in line
      * with the UncertML syntax whereby a collection of types can be represented
      * by a single entity. The arrays must be of equal length.
-     * 
+     *
      * @param lower the lower bound of n range statistics.
      * @param upper the upper bound of n range statistics.
      */
@@ -47,7 +47,7 @@ public class Range implements IStatistic {
      * lower and upper pair represents a single range statistic. This is in line
      * with the UncertML syntax whereby a collection of types can be represented
      * by a single entity. The arrays must be of equal length.
-     * 
+     *
      * @param lower the lower bound of n range statistics.
      * @param upper the upper bound of n range statistics.
      */
@@ -71,7 +71,7 @@ public class Range implements IStatistic {
     }
 
     /**
-     * 
+     *
      * @return the lower bound for all range statistics represented by this object.
      */
     public List<Double> getLower() {
@@ -79,7 +79,7 @@ public class Range implements IStatistic {
     }
 
     /**
-     * 
+     *
      * @return the upper bound for all range statistics represented by this object.
      */
     public List<Double> getUpper() {

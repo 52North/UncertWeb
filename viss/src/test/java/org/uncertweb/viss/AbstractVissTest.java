@@ -112,7 +112,7 @@ public abstract class AbstractVissTest extends JerseyTest {
 	protected InputStream getOMStream() {
 		return getClass().getResourceAsStream("/data/om/reference-observation.xml");
 	}
-	
+
 	protected InputStream getUncertaintyCollectionStream() {
 		return getClass().getResourceAsStream("/data/json/input.json");
 	}

@@ -13,19 +13,19 @@ public abstract class DelegatingHandler implements IOHandler {
 	protected final String[] supportedEncodings;
 
 	public DelegatingHandler(IOHandler... handler) {
-		
+
 		Set<String> formats = UwCollectionUtils.set();
 		Set<String> schemas = UwCollectionUtils.set();
 		Set<String> encodings = UwCollectionUtils.set();
 		Set<Class<?>> bindings = UwCollectionUtils.set();
-		
+
 		for (IOHandler g : handler) {
 			UwCollectionUtils.addAll(formats, g.getSupportedFormats());
 			UwCollectionUtils.addAll(schemas, g.getSupportedSchemas());
 			UwCollectionUtils.addAll(encodings, g.getSupportedEncodings());
 			UwCollectionUtils.addAll(bindings, g.getSupportedDataBindings());
 		}
-		
+
 		this.supportedFormats = formats.toArray(new String[formats.size()]);
 		this.supportedSchemas = schemas.toArray(new String[schemas.size()]);
 		this.supportedEncodings = encodings.toArray(new String[encodings.size()]);

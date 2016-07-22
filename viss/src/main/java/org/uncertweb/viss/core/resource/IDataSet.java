@@ -41,17 +41,17 @@ public interface IDataSet {
 	public String getPhenomenon();
 
 	public Envelope getSpatialExtent();
-	
+
 	public AbstractTemporalExtent getTemporalExtent();
 
 	public NcUwUncertaintyType getType();
-	
+
 	public boolean hasTime(TimeObject t);
-	
+
 	public boolean hasPoint(Point p);
 
 	public IResource getResource();
-	
+
 	public IObservationCollection getValue(Point p, TimeObject t);
 
 	public Set<IVisualization> getVisualizations();
@@ -63,7 +63,7 @@ public interface IDataSet {
 	public void setResource(IResource r);
 
 	public Object getContent();
-	
+
 	public String getUom();
 
 	public void setContent(Object c);

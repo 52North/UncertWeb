@@ -12,22 +12,22 @@ public class Point {
 		this.fid = id;
 		values = new ArrayList<Value>();
 	}
-	
+
 	public Point(double x_coord, String id){
 		this.x = x_coord;
 		this.fid = id;
 		values = new ArrayList<Value>();
-		
+
 	}
-	
+
 	public Point(double x_coord, double y_coord, String id){
 		this.x = x_coord;
 		this.y = y_coord;
 		this.fid = id;
 		values = new ArrayList<Value>();
-		
+
 	}
-	
+
 	public void set_xCoordinate(double x){
 		this.x = x;
 	}
@@ -38,16 +38,16 @@ public class Point {
 	public void addValue(String time, double val){
 		values.add(new Value(time,val));
 	}
-	
+
 	public String get_fid(){
 		return fid;
 	}
-	
+
 	public double[] coordinates(){
 		double[] coords = new double[]{x,y};
 		return coords;
 	}
-	
+
 	public ArrayList<Value> values(){
 		return values;
 	}

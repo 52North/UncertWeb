@@ -17,17 +17,17 @@ public class StaxObservationEncoderTestCase extends TestCase {
 
 	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/om-api/";
 	private String pathToExamples = "src/test/resources";
-	
-	
+
+
 	public void testObservationEncoder() throws Exception {
 
 		obsCol_Point_TimeInstant_Double();
 		obsColCatObs();
 	}
-	
+
 	/**
 	 * gests encoding of observation collection containing measurements
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void obsCol_Point_TimeInstant_Double() throws Exception {
@@ -53,23 +53,23 @@ public class StaxObservationEncoderTestCase extends TestCase {
 
 		AbstractObservation obs1 = (AbstractObservation) obsCol.getObservations()
 				.toArray()[0];
-		
+
 
 		// encode XML example file
 		StaxObservationEncoder encoder = new StaxObservationEncoder();
 		String obsColString = encoder
 				.encodeObservationCollection(obsCol);
 		System.out.println(obsColString);
-		
+
 		IObservationCollection obsCol2 = parser.parseObservationCollection(obsColString);
 		AbstractObservation obs2 = (AbstractObservation) obsCol2.getObservations()
 		.toArray()[0];
-		
+
 		System.out.println(encoder.encodeObservation(obs1));
 		System.out.println(new JSONObservationEncoder().encodeObservation(obs1));
 		String jsonObsColString = new JSONObservationEncoder().encodeObservationCollection(obsCol2);
 		System.out.println(jsonObsColString);
-		
+
 
 		// test collection
 		// test id
@@ -78,7 +78,7 @@ public class StaxObservationEncoderTestCase extends TestCase {
 		// test boundedBy (optional parameter)
 
 		// test phenomenonTime
-		
+
 		assertEquals(obs1.getPhenomenonTime().getDateTime().toString(),
 				obs2.getPhenomenonTime().getDateTime().toString());
 
@@ -110,7 +110,7 @@ public class StaxObservationEncoderTestCase extends TestCase {
 				obs2.getResultQuality()[0].getUom());
 
 	}
-	
+
 	private void obsColCatObs() throws Exception{
 		// read XML example file
 		// read XML example file
@@ -123,18 +123,18 @@ public class StaxObservationEncoderTestCase extends TestCase {
 			xmlString = Utils.readXmlFile(localPath + pathToExamples
 					+ "/ObsCol_Categories.xml");
 		}
-		
+
 		XBObservationParser parser = new XBObservationParser();
 		IObservationCollection obsCol = parser
 				.parseObservationCollection(xmlString);
 
-		
+
 
 		// encode XML example file
 		StaxObservationEncoder encoder = new StaxObservationEncoder();
 		String obsColString = encoder.encodeObservationCollection(obsCol);
 		System.out.println(obsColString);
 	}
-	
-	
+
+
 }

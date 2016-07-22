@@ -11,12 +11,12 @@ import org.uncertweb.api.om.exceptions.OMEncodingException;
 
 /**
  * contains helper methods for writing and reading strings from/to streams, files, etc.
- * 
+ *
  * @author staschc
  *
  */
 public class IOUtil {
-	
+
 	public static boolean writeString2File(String s, File f) throws OMEncodingException{
 		FileWriter fw;
 		try {
@@ -29,7 +29,7 @@ public class IOUtil {
 		}
         return true;
 	}
-	
+
 	public static boolean writeString2OutputStream(String s, OutputStream os) throws OMEncodingException{
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
         try {

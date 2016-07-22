@@ -12,12 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class XMLAnyDataParser extends AbstractParser {
-	
+
 	private static final Logger log = LoggerFactory
 			.getLogger(XMLAnyDataParser.class);
 	@Override
 	public IData parse(InputStream input, String mimeType, String schema) {
-		
+
 		XmlObject inputObject = null;
 		try {
 			inputObject = XmlObject.Factory.parse(input);
@@ -28,7 +28,7 @@ public class XMLAnyDataParser extends AbstractParser {
 			log.error(e1.getMessage());
 			throw new RuntimeException(e1.getMessage());
 		}
-		
+
 		return new XMLAnyDataBinding(inputObject);
 	}
 

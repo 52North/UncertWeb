@@ -1,6 +1,6 @@
 /**
  * draggable - Class allows to make any element draggable
- * 
+ *
  * Written by
  * Egor Khmelev (hmelyoff@gmail.com)
  *
@@ -8,7 +8,7 @@
  *
  * @author Egor Khmelev
  * @version 0.1.0-BETA ($Id$)
- * 
+ *
  **/
 
 (function( $ ){
@@ -18,23 +18,23 @@
   };
 
 	Draggable.prototype.oninit = function(){
-	  
+
 	};
-	
+
 	Draggable.prototype.events = function(){
-	  
+
 	};
-	
+
 	Draggable.prototype.onmousedown = function(){
 		this.ptr.css({ position: "absolute" });
 	};
-	
+
 	Draggable.prototype.onmousemove = function( evt, x, y ){
 		this.ptr.css({ left: x, top: y });
 	};
-	
+
 	Draggable.prototype.onmouseup = function(){
-	  
+
 	};
 
 	Draggable.prototype.isDefault = {
@@ -65,24 +65,24 @@
 			this._events();
 		}
 	};
-	
+
 	Draggable.prototype._getPageCoords = function( event ){
 	  if( event.targetTouches && event.targetTouches[0] ){
 	    return { x: event.targetTouches[0].pageX, y: event.targetTouches[0].pageY };
 	  } else
 	    return { x: event.pageX, y: event.pageY };
 	};
-	
+
 	Draggable.prototype._bindEvent = function( ptr, eventType, handler ){
 	  var self = this;
 
 	  if( this.supportTouches_ )
       ptr.get(0).addEventListener( this.events_[ eventType ], handler, false );
-	  
+
 	  else
 	    ptr.bind( this.events_[ eventType ], handler );
 	};
-	
+
 	Draggable.prototype._events = function(){
 		var self = this;
 
@@ -110,7 +110,7 @@
     this._bindEvent( $( document ), "up", function( event ){
 			self._mouseup( event );
 		});
-		
+
     this._bindEvent( this.ptr, "down", function( event ){
 			self._mousedown( event );
 			return false;
@@ -118,7 +118,7 @@
     this._bindEvent( this.ptr, "up", function( event ){
 			self._mouseup( event );
 		});
-		
+
 		this.ptr.find("a")
 			.click(function(){
 				self.is.clicked = true;
@@ -135,7 +135,7 @@
 
 		this.events();
 	};
-	
+
 	Draggable.prototype._mousedown = function( evt ){
 		this.is.drag = true;
 		this.is.clicked = false;
@@ -159,13 +159,13 @@
 
 		this.onmousedown( evt );
 	};
-	
+
 	Draggable.prototype._mousemove = function( evt ){
 		this.is.toclick = false;
 		var coords = this._getPageCoords( evt );
 		this.onmousemove( evt, coords.x - this.cx, coords.y - this.cy );
 	};
-	
+
 	Draggable.prototype._mouseup = function( evt ){
 		var oThis = this;
 
@@ -184,13 +184,13 @@
          this.outer.css({ height: "100%" });
         } else {
          this.outer.css({ height: "auto" });
-        }  
+        }
 			}
 
 			this.onmouseup( evt );
 		}
 	};
-	
+
 	window.Draggable = Draggable;
 
 })( jQuery );

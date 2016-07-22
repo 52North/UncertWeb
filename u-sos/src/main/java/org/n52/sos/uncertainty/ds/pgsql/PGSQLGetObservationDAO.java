@@ -81,9 +81,9 @@ import com.vividsolutions.jts.io.WKTWriter;
  * XmlBean. The method is abstract, This class is abstract, because the
  * different PostGIS versions for the different PGSQL versions return the
  * geometries of the FOIs in different ways.
- * 
+ *
  * @author Martin Kiesow
- * 
+ *
  */
 public class PGSQLGetObservationDAO extends
 		org.n52.sos.ds.pgsql.PGSQLGetObservationDAO implements
@@ -102,7 +102,7 @@ public class PGSQLGetObservationDAO extends
 
 	/**
 	 * get uncertainties to a list of observation IDs
-	 * 
+	 *
 	 * @param obsIDs
 	 *            as a list
 	 * @param numberOfRealisations
@@ -289,32 +289,32 @@ public class PGSQLGetObservationDAO extends
 					}
 				} else if (uncType.equals(PGDAOUncertaintyConstants.u_probType)) {
 					// probability
-					
+
 					// convert BigDecimal[] to double[]
 					BigDecimal[] bigDecs = (BigDecimal[]) rs.getArray(
 							PGDAOUncertaintyConstants.uPProbValsCn).getArray();
 					probValues = new double[bigDecs.length];
-				
+
 					for (int i = 0; i < bigDecs.length; i++) {
 						probValues[i] = bigDecs[i].doubleValue();
 					}
-					
+
 					// create probability constraints
 					List<ProbabilityConstraint> probConst = new ArrayList<ProbabilityConstraint>(2);
-					
+
 					gt = rs.getDouble(PGDAOUncertaintyConstants.uPGtCn);
 					lt = rs.getDouble(PGDAOUncertaintyConstants.uPLtCn);
 					ge = rs.getDouble(PGDAOUncertaintyConstants.uPGeCn);
 					le = rs.getDouble(PGDAOUncertaintyConstants.uPLeCn);
-					
+
 					if (gt != 0) probConst.add(new ProbabilityConstraint(ConstraintType.GREATER_THAN, gt));
 					if (lt != 0) probConst.add(new ProbabilityConstraint(ConstraintType.LESS_THAN, lt));
 					if (ge != 0) probConst.add(new ProbabilityConstraint(ConstraintType.GREATER_OR_EQUAL, ge));
 					if (le != 0) probConst.add(new ProbabilityConstraint(ConstraintType.GREATER_OR_EQUAL, le));
-				
+
 					unc = new Probability(probConst, Arrays.asList(ArrayUtils.toObject(probValues)));
 				}
-					
+
 				// TODO add further uncertainty types here
 
 				if (unc != null) {
@@ -379,7 +379,7 @@ public class PGSQLGetObservationDAO extends
 
 	/**
 	 * querries uncertainties to a list of observation IDs
-	 * 
+	 *
 	 * @param obsIDs
 	 *            as a list
 	 * @return corresponding uncertainties
@@ -415,12 +415,12 @@ public class PGSQLGetObservationDAO extends
 				+ PGDAOUncertaintyConstants.uRCatValsCn + ", "
 				+ PGDAOUncertaintyConstants.uRIdCn + ", "
 				+ PGDAOUncertaintyConstants.uRSamMethDescCn);
-		
+
 		// append probability columns
-		query.append(", " + PGDAOUncertaintyConstants.uPGtCn + ", " 
-				+ PGDAOUncertaintyConstants.uPLtCn + ", " 
-				+ PGDAOUncertaintyConstants.uPGeCn + ", " 
-				+ PGDAOUncertaintyConstants.uPLeCn + ", " 
+		query.append(", " + PGDAOUncertaintyConstants.uPGtCn + ", "
+				+ PGDAOUncertaintyConstants.uPLtCn + ", "
+				+ PGDAOUncertaintyConstants.uPGeCn + ", "
+				+ PGDAOUncertaintyConstants.uPLeCn + ", "
 				+ PGDAOUncertaintyConstants.uPProbValsCn);
 
 		// TODO add further uncertainty types' table colums here
@@ -458,7 +458,7 @@ public class PGSQLGetObservationDAO extends
 				+ PGDAOUncertaintyConstants.uRRealIdCn + " = "
 				+ PGDAOUncertaintyConstants.uUncertTn + "."
 				+ PGDAOUncertaintyConstants.uUUncValIdCn);
-		
+
 		// append probability table
 		query.append(" LEFT OUTER JOIN " + PGDAOUncertaintyConstants.uProbTn
 				+ " ON " + PGDAOUncertaintyConstants.uProbTn + "."
@@ -494,7 +494,7 @@ public class PGSQLGetObservationDAO extends
 	 * exception is thrown!<br>
 	 * if no fitting O&M2 resultModel is found the super class' method checks
 	 * for O&M1 result Models
-	 * 
+	 *
 	 * @param resultModel
 	 *            resultModel parameter which should be checked
 	 * @param observedProperties
@@ -571,7 +571,7 @@ public class PGSQLGetObservationDAO extends
 
 	/**
 	 * returns an O&M 2 observation collection including uncertainties
-	 * 
+	 *
 	 * @param obsCollection
 	 *            O&M 1 observation collection
 	 * @return O&M 2 observation collection
@@ -586,7 +586,7 @@ public class PGSQLGetObservationDAO extends
 
 	/**
 	 * returns an O&M 2 observation collection including uncertainties
-	 * 
+	 *
 	 * @param obsCollection
 	 *            O&M 1 observation collection
 	 * @param resultModel
@@ -668,7 +668,7 @@ public class PGSQLGetObservationDAO extends
 	 * converts multiple O&M 1 observations plus uncertainties into uncertainty
 	 * enabled O&M 2 observations; observations without uncertainty are sorted
 	 * out
-	 * 
+	 *
 	 * @param om1ObsCol
 	 *            O&M 1 observation collection
 	 * @param uncList
@@ -750,7 +750,7 @@ public class PGSQLGetObservationDAO extends
 
 	/**
 	 * creates a from and join clause 4 non spatial
-	 * 
+	 *
 	 * @param uncertainties
 	 *            get only observations with uncertainties
 	 * @return String containing the from clause
@@ -790,7 +790,7 @@ public class PGSQLGetObservationDAO extends
 
 	/**
 	 * creates an ObservationCollection from the db ResultSet.
-	 * 
+	 *
 	 * @param resultSet
 	 *            ResultSet with the queried information
 	 * @param resultSetSize

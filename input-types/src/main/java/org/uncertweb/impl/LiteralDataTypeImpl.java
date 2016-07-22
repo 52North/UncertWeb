@@ -14,23 +14,23 @@ package org.uncertweb.impl;
 public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStringHolderEx implements org.uncertweb.LiteralDataType
 {
     private static final long serialVersionUID = 1L;
-    
+
     public LiteralDataTypeImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType, true);
     }
-    
+
     protected LiteralDataTypeImpl(org.apache.xmlbeans.SchemaType sType, boolean b)
     {
         super(sType, b);
     }
-    
-    private static final javax.xml.namespace.QName DATATYPE$0 = 
+
+    private static final javax.xml.namespace.QName DATATYPE$0 =
         new javax.xml.namespace.QName("", "dataType");
-    private static final javax.xml.namespace.QName UOM$2 = 
+    private static final javax.xml.namespace.QName UOM$2 =
         new javax.xml.namespace.QName("", "uom");
-    
-    
+
+
     /**
      * Gets the "dataType" attribute
      */
@@ -48,7 +48,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             return target.getStringValue();
         }
     }
-    
+
     /**
      * Gets (as xml) the "dataType" attribute
      */
@@ -62,7 +62,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             return target;
         }
     }
-    
+
     /**
      * True if has "dataType" attribute
      */
@@ -74,7 +74,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             return get_store().find_attribute_user(DATATYPE$0) != null;
         }
     }
-    
+
     /**
      * Sets the "dataType" attribute
      */
@@ -92,7 +92,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             target.setStringValue(dataType);
         }
     }
-    
+
     /**
      * Sets (as xml) the "dataType" attribute
      */
@@ -110,7 +110,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             target.set(dataType);
         }
     }
-    
+
     /**
      * Unsets the "dataType" attribute
      */
@@ -122,7 +122,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             get_store().remove_attribute(DATATYPE$0);
         }
     }
-    
+
     /**
      * Gets the "uom" attribute
      */
@@ -140,7 +140,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             return target.getStringValue();
         }
     }
-    
+
     /**
      * Gets (as xml) the "uom" attribute
      */
@@ -154,7 +154,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             return target;
         }
     }
-    
+
     /**
      * True if has "uom" attribute
      */
@@ -166,7 +166,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             return get_store().find_attribute_user(UOM$2) != null;
         }
     }
-    
+
     /**
      * Sets the "uom" attribute
      */
@@ -184,7 +184,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             target.setStringValue(uom);
         }
     }
-    
+
     /**
      * Sets (as xml) the "uom" attribute
      */
@@ -202,7 +202,7 @@ public class LiteralDataTypeImpl extends org.apache.xmlbeans.impl.values.JavaStr
             target.set(uom);
         }
     }
-    
+
     /**
      * Unsets the "uom" attribute
      */

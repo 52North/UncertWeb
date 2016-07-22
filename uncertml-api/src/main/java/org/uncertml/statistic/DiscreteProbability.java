@@ -10,9 +10,9 @@ import org.uncertml.util.Validate;
 /**
  * Class that represents a discrete probability. I.e., the probability that a discrete
  * event will occur.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/DiscreteProbability}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -24,7 +24,7 @@ public class DiscreteProbability extends DiscreteStatistic {
     /**
      * Constructor that takes a single category and a probability that event will
      * occur.
-     * 
+     *
      * @param category the category or event.
      * @param probability the probability the category or event occurs.
      */
@@ -37,7 +37,7 @@ public class DiscreteProbability extends DiscreteStatistic {
      * array of doubles for the probabilities. Each category and probability pair
      * represents a unique discrete probability. This is in line with the UncertML
      * syntax whereby a collection of types can be represented by a single entity.
-     * 
+     *
      * @param categories an array of Strings representing the category of n discrete
      * probabilities.
      * @param probabilities an array of doubles representing the probability of an
@@ -52,7 +52,7 @@ public class DiscreteProbability extends DiscreteStatistic {
      * array of doubles for the probabilities. Each category and probability pair
      * represents a unique discrete probability. This is in line with the UncertML
      * syntax whereby a collection of types can be represented by a single entity.
-     * 
+     *
      * @param categories a <code>List</code> of Strings representing the category of n discrete
      * probabilities.
      * @param probabilities a <code>List</code> of doubles representing the probability of an
@@ -73,7 +73,7 @@ public class DiscreteProbability extends DiscreteStatistic {
     }
 
     /**
-     * 
+     *
      * @return a <code>List</code> of Strings representing the category of each
      * discrete probability represented by this object.
      */
@@ -82,7 +82,7 @@ public class DiscreteProbability extends DiscreteStatistic {
     }
 
     /**
-     * 
+     *
      * @return a <code>List</code> of doubles representing the probability of an
      * event occurring for each discrete probability represented by this object.
      */

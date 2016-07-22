@@ -34,7 +34,7 @@ public class UriTestCase extends TestCase {
 		assertEquals(UncertML.getURI(String.class), null);
 		assertEquals(UncertML.getURI(IUncertainty.class), "http://www.uncertml.org");
 	}
-	
+
 	public void testStatistics() {
 		assertEquals(UncertML.getURI(IStatistic.class), "http://www.uncertml.org/statistics");
 		assertEquals(UncertML.getURI(StatisticCollection.class), "http://www.uncertml.org/statistics/statistic-collection");
@@ -45,7 +45,7 @@ public class UriTestCase extends TestCase {
 		assertEquals(UncertML.getURI(DiscreteStatistic.class), "http://www.uncertml.org/statistics/discrete");
 		assertEquals(UncertML.getURI(DiscreteProbability.class), "http://www.uncertml.org/statistics/discrete-probability");
 	}
-	
+
 	public void testDistributions() {
 		assertEquals(UncertML.getURI(IDistribution.class), "http://www.uncertml.org/distributions");
 		assertEquals(UncertML.getURI(IContinuousDistribution.class), "http://www.uncertml.org/distributions/continuous");
@@ -59,12 +59,12 @@ public class UriTestCase extends TestCase {
 		assertEquals(UncertML.getURI(MultivariateStudentTDistribution.class), "http://www.uncertml.org/distributions/multivariate-student-t");
 		assertEquals(UncertML.getURI(WishartDistribution.class), "http://www.uncertml.org/distributions/wishart");
 	}
-	
+
 	public void testSamples() {
 		assertEquals(UncertML.getURI(ISample.class), "http://www.uncertml.org/samples");
 		assertEquals(UncertML.getURI(UnknownSample.class), "http://www.uncertml.org/samples/unknown");
 		assertEquals(UncertML.getURI(ContinuousRealisation.class), "http://www.uncertml.org/samples/continuous-realisation");
 		assertEquals(UncertML.getURI(CategoricalRealisation.class), "http://www.uncertml.org/samples/categorical-realisation");
 	}
-	
+
 }

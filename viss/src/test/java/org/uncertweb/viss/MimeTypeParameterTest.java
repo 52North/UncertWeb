@@ -36,10 +36,10 @@ import org.uncertweb.viss.vis.sample.RealisationVisualizer;
 import org.uncertweb.viss.vis.statistic.SimpleStatisticVisualizer;
 
 public class MimeTypeParameterTest extends AbstractVissTest {
-	@Test 
+	@Test
 	public void testMimeTypeParameterForNetCDF() throws JSONException {
-		MediaType mt = new MediaType(MediaTypes.NETCDF_TYPE.getType(), 
-									 MediaTypes.NETCDF_TYPE.getSubtype(), 
+		MediaType mt = new MediaType(MediaTypes.NETCDF_TYPE.getType(),
+									 MediaTypes.NETCDF_TYPE.getSubtype(),
 									 UwCollectionUtils.map("encoding","utf-8"));
 		ObjectId r = addResource(mt, AGGREGATION_RESULT);
 		ObjectId ds = getDataSetsForResource(r)[0];
@@ -47,21 +47,21 @@ public class MimeTypeParameterTest extends AbstractVissTest {
 		JSONObject res = getVisualization(r, ds, vis);
 		System.err.println(res.toString(4));
 	}
-	
+
 	@Test
 	public void testMimeTypeParameterForOM() throws JSONException {
-		MediaType mt = new MediaType(MediaTypes.OM_2_TYPE.getType(), 
-									 MediaTypes.OM_2_TYPE.getSubtype(), 
+		MediaType mt = new MediaType(MediaTypes.OM_2_TYPE.getType(),
+									 MediaTypes.OM_2_TYPE.getSubtype(),
 									 UwCollectionUtils.map("encoding","utf-8"));
 		ObjectId oid = addResource(mt, getOMStream());
 		ObjectId[] datasets = getDataSetsForResource(oid);
 		createVisualization(oid, datasets[0], getNameForVisualizer(NormalDistributionVisualizer.Mean.class));
 	}
-	
+
 	@Test@Ignore
 	public void testMimeTypeParameterForUC() throws JSONException {
-		MediaType mt = new MediaType(MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE.getType(), 
-									 MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE.getSubtype(), 
+		MediaType mt = new MediaType(MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE.getType(),
+									 MediaTypes.JSON_UNCERTAINTY_COLLECTION_TYPE.getSubtype(),
 									 UwCollectionUtils.map("encoding","utf-8"));
 		ObjectId r = addResource(mt, getUncertaintyCollectionStream());
 		int created = 0;
@@ -83,5 +83,5 @@ public class MimeTypeParameterTest extends AbstractVissTest {
 			}
 		}
 		Assert.assertEquals(5, created);
-	}	
+	}
 }

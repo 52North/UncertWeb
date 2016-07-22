@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class that represents a continuous probability statistic.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Probability}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -21,9 +21,9 @@ public class Probability extends ContinuousStatistic {
 
     /**
      * Constructs a probability statistic from a single constraint and value.
-     * 
+     *
      * @see org.uncertml.statistic.ProbabilityConstraint
-     * 
+     *
      * @param constraint the probability constraint of this statistic.
      * @param value the value of this probability statistic.
      */
@@ -36,8 +36,8 @@ public class Probability extends ContinuousStatistic {
      * Each double represents a single probability statistic. This is in line with
      * the UncertML syntax whereby a collection of types can be represented by a
      * single entity.
-     * 
-     * @param constraints the constraints that each probability statistic represented 
+     *
+     * @param constraints the constraints that each probability statistic represented
      * by this object must satisfy.
      * @param values an array of doubles representing the value of n probability
      * statistics.
@@ -51,8 +51,8 @@ public class Probability extends ContinuousStatistic {
      * Each double represents a single probability statistic. This is in line with
      * the UncertML syntax whereby a collection of types can be represented by a
      * single entity.
-     * 
-     * @param constraint the constraint that each probability statistic represented 
+     *
+     * @param constraint the constraint that each probability statistic represented
      * by this object must satisfy.
      * @param values an array of doubles representing the value of n probability
      * statistics.
@@ -66,8 +66,8 @@ public class Probability extends ContinuousStatistic {
      * Each double represents a single probability statistic. This is in line with
      * the UncertML syntax whereby a collection of types can be represented by a
      * single entity.
-     * 
-     * @param constraint the constraint that each probability statistic represented 
+     *
+     * @param constraint the constraint that each probability statistic represented
      * by this object must satisfy.
      * @param values a <code>List</code> of doubles representing the value of n probability
      * statistics.
@@ -81,8 +81,8 @@ public class Probability extends ContinuousStatistic {
      * Each double represents a single probability statistic. This is in line with
      * the UncertML syntax whereby a collection of types can be represented by a
      * single entity.
-     * 
-     * @param constraints the constraints that each probability statistic represented 
+     *
+     * @param constraints the constraints that each probability statistic represented
      * by this object must satisfy.
      * @param values a <code>List</code> of doubles representing the value of n probability
      * statistics.
@@ -134,7 +134,7 @@ public class Probability extends ContinuousStatistic {
 
     /**
      * Constructor that takes a <code>List</code> of constraints and a single value.
-     * 
+     *
      * @param constraints the constraints that this probability statistic must satisfy.
      * @param value the value of the probability statistic.
      */
@@ -144,7 +144,7 @@ public class Probability extends ContinuousStatistic {
 
     /**
      * Constructor that takes an array of constraints and a single value.
-     * 
+     *
      * @param constraints the constraints that this probability statistic must satisfy.
      * @param value the value of the probability statistic.
      */
@@ -153,7 +153,7 @@ public class Probability extends ContinuousStatistic {
     }
 
     /**
-     * 
+     *
      * @return The list of constraints placed on the probability statistics represented
      * by this object.
      */

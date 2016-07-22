@@ -69,7 +69,7 @@ public class NcUwObservation extends UncertaintyObservation {
 	public GridCoordinates getGridCoordinates() {
 		return this.gridCoordinates;
 	}
-	
+
 	public boolean hasValue() {
 		return getResult() != null && getResult().getValue() != null;
 	}

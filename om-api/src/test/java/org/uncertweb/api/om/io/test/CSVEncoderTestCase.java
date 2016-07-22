@@ -27,14 +27,14 @@ import junit.framework.TestCase;
 
 /**
  * TestCase for CSV Observation Encoder
- * 
+ *
  * @author staschc
  *
  */
 public class CSVEncoderTestCase extends TestCase {
-	
+
 	private String pathToExamples = "src/test/resources";
-	
+
 	public void testCSVEncoder() throws Exception {
 		//read XML Observation Collection
 		/*XBObservationParser parser = new XBObservationParser();
@@ -61,7 +61,7 @@ public class CSVEncoderTestCase extends TestCase {
 			}
 		}*/
 	}
-	
+
 	private UncertaintyObservation getUncertaintyObservation() throws URISyntaxException{
 		DateTimeFormatter dtf = ISODateTimeFormat.dateTimeParser();
 		TimeObject phenomenonTime = new TimeObject(dtf.parseDateTime("2011-12-31T19:00:00.000-05:00"),dtf.parseDateTime("2012-01-31T19:00:00.000-05:00"));

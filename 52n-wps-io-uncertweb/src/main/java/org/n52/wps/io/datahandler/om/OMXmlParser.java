@@ -24,9 +24,9 @@ import org.uncertweb.utils.UwCollectionUtils;
 /**
  * Observation parser, handling observations encoded in XML according the
  * UncertWeb O&M profile; wraps {@link XBObservationParser}
- * 
+ *
  * @author Kiesow, staschc
- * 
+ *
  */
 public class OMXmlParser extends AbstractUwParser {
 
@@ -36,9 +36,9 @@ public class OMXmlParser extends AbstractUwParser {
 
 	public OMXmlParser() {
 		super(
-			set(SCHEMA_OM_V2, SCHEMA_OM_V1,SCHEMA_OMU,SCHEMA_OMU_52N), 
+			set(SCHEMA_OM_V2, SCHEMA_OM_V1,SCHEMA_OMU,SCHEMA_OMU_52N),
 			set(ENCODING_UTF_8),
-			set(MIME_TYPE_OMX_XML, MIME_TYPE_TEXT_XML), 
+			set(MIME_TYPE_OMX_XML, MIME_TYPE_TEXT_XML),
 			UwCollectionUtils.<Class<?>>set(OMBinding.class)
 		);
 	}
@@ -49,7 +49,7 @@ public class OMXmlParser extends AbstractUwParser {
 		try {
 			obsCol = primaryParser.parseObservationCollection(primaryFile);
 		} catch (OMParsingException e) {
-			//workaround, as WPS response uses XML Beans and sometimes, 
+			//workaround, as WPS response uses XML Beans and sometimes,
 			//there may be ns namespace prefixes that cannot be supported by STAXParser!
 			try {
 				obsCol = secondaryParser.parseObservationCollection(primaryFile);

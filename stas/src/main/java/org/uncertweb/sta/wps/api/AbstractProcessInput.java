@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -31,12 +31,12 @@ import org.n52.wps.io.data.IData;
  * Represents an input to a WPS process. It creates a second abstraction layer
  * to comfortably handle and encapsulate the process inputs. Especially
  * multivariate inputs can be processed without any knowledge about them.
- * 
+ *
  * @see SingleProcessInput
  * @see CompositeProcessInput
  * @see ProcessInputHandler
  * @param <T> the Java type in which this input will be converted
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public abstract class AbstractProcessInput<T> {
@@ -48,7 +48,7 @@ public abstract class AbstractProcessInput<T> {
 
 	/**
 	 * Creates a new input with the given id.
-	 * 
+	 *
 	 * @param id the input id
 	 */
 	protected AbstractProcessInput(String id) {
@@ -58,7 +58,7 @@ public abstract class AbstractProcessInput<T> {
 	/**
 	 * Breaks down this input to its basic components. If this is a input only
 	 * consisting of one input it should simply return itself.
-	 * 
+	 *
 	 * @return the basic components of this input
 	 */
 	public abstract Set<SingleProcessInput<?>> getProcessInputs();
@@ -66,7 +66,7 @@ public abstract class AbstractProcessInput<T> {
 	/**
 	 * Handles the input set of a WPS process and extracts the input which is
 	 * described by this class.
-	 * 
+	 *
 	 * @param inputs the WPS inputs
 	 * @return the final input
 	 */

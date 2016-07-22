@@ -8,7 +8,7 @@ import org.uncertml.statistic.Variance;
 
 /**
  * class provides utility methods for computing aggregates from UncertML Realisations
- * 
+ *
  * @author staschc
  *
  */
@@ -23,7 +23,7 @@ public class AggregationUncertMLUtils {
 		sum=sum/values.size();
 		return new Mean(sum);
 	}
-	
+
 	public static Variance computeVariance(ContinuousRealisation real){
 		double mean = computeMean(real).getValues().get(0);
 		List<Double> values = real.getValues();

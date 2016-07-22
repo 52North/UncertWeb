@@ -16,26 +16,26 @@ import org.apache.xmlbeans.XmlObject;
  * @author Christian Autermann <c.autermann@52north.org>
  */
 public class RegisterSensorRequestBuilder extends AbstractXmlBuilder<RegisterSensorDocument> {
-    
+
     private static final String AN_UOM = "uom";
     private XmlObject description;
-    
+
     public RegisterSensorRequestBuilder setDescription(XmlObject description) {
         this.description = description;
         return this;
     }
-    
+
     protected XmlObject getDescription() {
         return this.description;
     }
-    
+
     /**
      * Creates a {@code RegisterSensorDocument} that registers a {@code EEAStation} at a SOS.
-     * 
+     *
      * @param station
      *        the {@code EEASTation} that should be registered.
      * @return the RegisterSensor request
-     * @throws NoValidInputsOrOutputsException 
+     * @throws NoValidInputsOrOutputsException
      */
     @Override
     public RegisterSensorDocument build() throws NoValidInputsOrOutputsException {
@@ -49,7 +49,7 @@ public class RegisterSensorRequestBuilder extends AbstractXmlBuilder<RegisterSen
         SOSNamespaceUtils.insertSchemaLocations(regSensor);
         return regSensorDoc;
     }
-    
+
     private void buildObservationTemplate(ObservationTemplateDocument.ObservationTemplate template) {
         MeasurementType measurementType = (MeasurementType) template.addNewObservation()
                 .substitute(SOSNamespaceUtils.QN_OM_1_0_MEASUREMENT, MeasurementType.type);

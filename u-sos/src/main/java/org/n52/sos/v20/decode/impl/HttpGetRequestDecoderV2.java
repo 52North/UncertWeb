@@ -8,8 +8,8 @@
  48155 Muenster, Germany
  info@52north.org
 
- This program is free software; you can redistribute and/or modify it under 
- the terms of the GNU General Public License version 2 as published by the 
+ This program is free software; you can redistribute and/or modify it under
+ the terms of the GNU General Public License version 2 as published by the
  Free Software Foundation.
 
  This program is distributed WITHOUT ANY WARRANTY; even without the implied
@@ -66,14 +66,14 @@ import com.vividsolutions.jts.io.WKTReader;
  * documentation and handling of substitution groups is not simple. So it may be
  * easier for foreign developers to implement the DAO implementation classes for
  * other data sources then PGSQL databases.
- * 
+ *
  * !!! Use for each operation a new parser method. Use 'parse' + operation name
  * + 'Request', e.g. parseGetCapabilitiesRequest. In GetCapabilities the SOS can
  * check for GET and POST implementations. !!!
- * 
+ *
  * @author Stephan Kuenster
  * @author Carsten Hollmann
- * 
+ *
  */
 public class HttpGetRequestDecoderV2 implements IHttpGetRequestDecoder {
 
@@ -85,7 +85,7 @@ public class HttpGetRequestDecoderV2 implements IHttpGetRequestDecoder {
     /**
      * method receives request and returns internal SOS representation of
      * request
-     * 
+     *
      * @param request
      *            HttpServletRequest, which contains the request parameters
      * @return AbstractSosRequest The internal SOS representation of request
@@ -143,7 +143,7 @@ public class HttpGetRequestDecoderV2 implements IHttpGetRequestDecoder {
     /**
      * parses the String representing the getCapabilities request and creates a
      * SosGetCapabilities request
-     * 
+     *
      * @param capString
      *            String with getCapabilities parameters
      * @return Returns SosGetCapabilitiesRequest representing the request
@@ -236,7 +236,7 @@ public class HttpGetRequestDecoderV2 implements IHttpGetRequestDecoder {
     /**
      * parses the HttpServletRequest representing the describeSensor request and
      * creates a SosDescribeSensor request
-     * 
+     *
      * @param request
      *            HttpServletRequest, which contains the request parameters
      * @return SosDescribeSensorRequest
@@ -368,7 +368,7 @@ public class HttpGetRequestDecoderV2 implements IHttpGetRequestDecoder {
     /**
      * parses the HttpServletRequest representing the getObservation request and
      * creates a SosGetObservation request
-     * 
+     *
      * @param request
      *            HttpServletRequest, which contains the request parameters
      * @return SosGetObservationRequest
@@ -713,7 +713,7 @@ public class HttpGetRequestDecoderV2 implements IHttpGetRequestDecoder {
     /**
      * parses the HttpServletRequest representing the getFeatureOfInterest
      * request and creates a SosFeatureOfInterest request
-     * 
+     *
      * @param request
      *            HttpServletRequest, which contains the request parameters
      * @return SosGetFeatureOfInterestRequest
@@ -819,9 +819,9 @@ public class HttpGetRequestDecoderV2 implements IHttpGetRequestDecoder {
     /**
      * see section "Escaping special characters" in
      * http://www.oostethys.org/best-practices/best-practices-get
-     * 
+     *
      * Special character Escaped encoding : %3A / %2F # %23 ? %3F = %3D
-     * 
+     *
      * @param unescapedString
      * @return Returns the re-factored string
      */
@@ -837,7 +837,7 @@ public class HttpGetRequestDecoderV2 implements IHttpGetRequestDecoder {
     /**
      * parses the srsName and returns an integer representing the number of the
      * EPSG-code of the passed srsName
-     * 
+     *
      * @param srsName
      *            name of the spatial reference system in EPSG-format (withn urn
      *            identifier for EPSG)

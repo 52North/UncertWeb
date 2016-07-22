@@ -12,5 +12,5 @@ public class JSONTestSuite {
 		suite.addTestSuite(JSONStatisticTestCase.class);
 		return suite;
 	}
-	
+
 }

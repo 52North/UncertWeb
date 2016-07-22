@@ -4,9 +4,9 @@ import org.uncertweb.api.om.DQ_UncertaintyResult;
 
 /**
  * Interface to handle uncertain observations
- * 
+ *
  * @author Kiesow
- * 
+ *
  */
 public interface IUncertainObservation extends IUncertainObject {
 
@@ -18,7 +18,7 @@ public interface IUncertainObservation extends IUncertainObject {
 	 * identifier; not to be confused with observation id/obsID)
 	 */
 	public String getIdentifier();
-	
+
 	/**
 	 * get the gml id of this observation (consisting of code space and
 	 * identifier; not to be confused with observation id/obsID)
@@ -29,12 +29,12 @@ public interface IUncertainObservation extends IUncertainObject {
 	 * returns data quality as uncertainties, replacing om1 observations quality
 	 */
 	public DQ_UncertaintyResult[] getUncQuality();
-	
+
 	/**
 	 * sets data quality as uncertainties, replacing om1 observations quality
 	 */
 	public void setUncQuality(DQ_UncertaintyResult[] resultQuality);
-	
+
 	/**
 	 * returns unit of measurement
 	 */

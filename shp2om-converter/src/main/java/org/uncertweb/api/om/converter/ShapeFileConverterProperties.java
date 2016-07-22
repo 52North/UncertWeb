@@ -10,21 +10,21 @@ import java.util.Properties;
 import org.uncertweb.api.om.TimeObject;
 
 /**
- * 
+ *
  * class encapsulates properties read from shp2om.props file
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class ShapeFileConverterProperties {
-	
-	
+
+
 	public enum FILETYPE{
 		dbf,csv,shp
 	};
-	
+
 	private FILETYPE fileType;
-	
+
 
 	private String shpFilePath;
 	private String omPropsFilePath;
@@ -43,7 +43,7 @@ public class ShapeFileConverterProperties {
 	private String procPrefix;
 	private String foiPrefix;
 	private String obsPropsPrefix;
-	
+
 	private String phenTimeColName;
 	private String resultTimeColName;
 	private List<String> uncertaintyTypes;
@@ -57,8 +57,8 @@ public class ShapeFileConverterProperties {
 
 	/**
 	 * constructor; reads in config file and creates constants
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
+	 * @throws IOException
+	 * @throws FileNotFoundException
 	 * @throws Exception
 	 * 			if properties file shp2om is not found or if some mandatory properties are missing
 	 */
@@ -73,7 +73,7 @@ public class ShapeFileConverterProperties {
 		props.load(new FileInputStream(propsFilePath));
 		this.initialize(props);
 	}
-	
+
 	private void initialize(Properties props) throws FileNotFoundException, IOException {
 		shpFilePath = props.getProperty("SHPPATH");
 		omPropsFilePath = props.getProperty("OMFILEPATH");
@@ -100,15 +100,15 @@ public class ShapeFileConverterProperties {
 		phenTimeColName = props.getProperty("PHENTIMECOL");
 		resultTimeColName = props.getProperty("RESULTTIMECOL");
 	}
-	
-	
+
+
 	/**
 	 * helper method for parsing a list of properties from file
-	 * 
+	 *
 	 * @param obsPropsString
 	 *            comma seperated list of
-	 * @return 
-	 * @throws IOException 
+	 * @return
+	 * @throws IOException
 	 */
 	private List<String> parsePropsList(String obsPropsString) throws IOException{
 		if (obsPropsString != null && !obsPropsString.equals("")) {
@@ -123,8 +123,8 @@ public class ShapeFileConverterProperties {
 					"OBSPROPS property has to be set in config file!");
 		}
 	}
-	
-	
+
+
 
 	/**
 	 * @return the featClassName
@@ -205,7 +205,7 @@ public class ShapeFileConverterProperties {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the uncertainty type used in the result of observations
 	 */
 	public List<String> getUncertaintyType() {
@@ -225,10 +225,10 @@ public class ShapeFileConverterProperties {
 	public String getResultTimeColName() {
 		return resultTimeColName;
 	}
-	
+
 	/**
 	 * returns the names of fields which are read by the converter from the DBF file
-	 * 
+	 *
 	 * @return list containing the names of fields which are read by the converter from the DBF file
 	 */
 	public List<String> getFieldNames(){
@@ -243,7 +243,7 @@ public class ShapeFileConverterProperties {
 		return result;
 	}
 
-	
+
 	public FILETYPE getFileType() {
 		return fileType;
 	}
@@ -311,9 +311,9 @@ public class ShapeFileConverterProperties {
 	public String getMultivarNormalCovarianceColName() {
 		return multivarNormalCovarianceColName;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return the certainDataColName
 	 */
 	public String getCertainDataColName(){

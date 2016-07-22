@@ -8,7 +8,7 @@ import de.ifgi.airbase.feeder.util.Utils;
 
 public class Counter extends SosClient {
 	private static long count = 0;
-	
+
 	@Override
 	public void registerStation(EEAStation station) {}
 

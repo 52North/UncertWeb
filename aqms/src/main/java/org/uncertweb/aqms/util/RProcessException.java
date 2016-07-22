@@ -12,15 +12,15 @@ public class RProcessException extends Exception {
 	public RProcessException() {
 		super();
 	}
-	
+
 	public RProcessException(String message) {
 		super(message);
 	}
-	
+
 	public RProcessException(Exception cause) {
 		super(cause);
 	}
-	
+
 	public RProcessException(String message, Exception cause ) {
 		super(message, cause);
 	}

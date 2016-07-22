@@ -85,5 +85,5 @@ public class IrregularTemporalIntervals extends AbstractIrregularTemporalExtent 
 		}
 		return to;
 	}
-	
+
 }

@@ -19,7 +19,7 @@ public class StationFileFilter implements FileFilter {
 				if (station.matches(s))
 					return true;
 			}
-		} 
+		}
 		return false;
 	}
 

@@ -14,20 +14,20 @@ import de.ifgi.airbase.feeder.data.EEAStatistic;
 
 /**
  * Class to parse all sorts of EEA AirBase files.
- * 
+ *
  * @author Christian Autermann
- * 
+ *
  */
 public class EEAParser {
 
 	private Map<String, EEAStation> stations = new HashMap<String, EEAStation>();
 	private EEARawDataParser parser;
 	private File statisticsFile;
-	
-	
+
+
 	/**
 	 * Creates a new {@link EEAParser}.
-	 * 
+	 *
 	 * @param stationsFile
 	 *            the stations file
 	 * @param rawDataDirectory
@@ -49,7 +49,7 @@ public class EEAParser {
 		EEAConfigurationParser.parse(this.stations, measurementConfigurationFile);
 		this.parser = new EEARawDataParser(rawDataDirectory);
 	}
-	
+
 	/**
 	 * @return the parsed {@link EEAStation}s
 	 */

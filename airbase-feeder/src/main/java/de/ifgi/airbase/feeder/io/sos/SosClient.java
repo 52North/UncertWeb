@@ -10,7 +10,7 @@ import de.ifgi.airbase.feeder.io.sos.http.TransactionalSosClient;
 import de.ifgi.airbase.feeder.util.Utils;
 
 /**
- * 
+ *
  * @author Christian Autermann
  *
  */
@@ -19,7 +19,7 @@ public abstract class SosClient {
 
 	/**
 	 * Instantiates a {@link SosClient}.
-	 * 
+	 *
 	 * @param url
 	 *            the {@link URL}
 	 * @param path
@@ -42,11 +42,11 @@ public abstract class SosClient {
 		}
 		return sosClient;
 	}
-	
-	
+
+
 	/**
 	 * Registers a {@code EEAStation} to a SOS.
-	 * 
+	 *
 	 * @param station
 	 *            the {@code EEAStation}
 	 * @throws IOException
@@ -56,7 +56,7 @@ public abstract class SosClient {
 
 	/**
 	 * Inserts a {@code EEARawDataFile} into a SOS.
-	 * 
+	 *
 	 * @param file
 	 *            the {@code EEARawDataFile} to be inserted
 	 * @throws IOException

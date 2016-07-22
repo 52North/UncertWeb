@@ -17,22 +17,22 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Junit tests for XmlBeans parsing
- * 
+ *
  * @author staschc
  *
  */
 public class XmlBeansGeometryParserTestCase extends TestCase {
 
-	
+
 	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/";
 	private String pathToExamples = "src/test/resources";
-	
-	
-	
+
+
+
 	public void setUp() {
 	}
 
-	
+
 	public void testPointParser() throws Exception {
 		// read XML example file
 		String xmlString;
@@ -52,7 +52,7 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		assertEquals(4326, ((Point)geom).getSRID());
 	}
 
-	
+
 	public void testPolygonParser() throws Exception {
 		// read XML example file
 		String xmlString;
@@ -71,7 +71,7 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		assertEquals(4326, ((Polygon)geom).getSRID());
 	}
 
-	
+
 	public void testLineStringParser() throws Exception {
 		String xmlString;
 		try {
@@ -89,7 +89,7 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		assertEquals(4326, ((LineString)geom).getSRID());
 	}
 
-	
+
 	public void testMultiLineStringParser() throws Exception {
 		String xmlString;
 		try {
@@ -104,8 +104,8 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 		Geometry geom = parser.parseUwGeometry(xmlString);
 		assertEquals("MultiLineString", geom.getGeometryType());
 	}
-	
-	
+
+
 	public void testGridParser() throws Exception {
 		String xmlString;
 		try {
@@ -126,7 +126,7 @@ public class XmlBeansGeometryParserTestCase extends TestCase {
 	public void tearDown() {
 
 	}
-	
+
 	private String readXmlFile(String filePath) throws IOException{
 		String result = "";
 		BufferedReader in = new BufferedReader(new InputStreamReader(

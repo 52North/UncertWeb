@@ -44,7 +44,7 @@ OpenLayers.Layer.VISS = OpenLayers.Class({
 	initialize: function(ctrl, options) {
 		var self = this;
 		self.ctrl = ctrl;
-		
+
 		this.ctrl.getMap().events.register("changelayer", map, function(ev) {
 			var l = self.ctrl.getMap().layers;
 			if (self.olLayer && l[l.length-1] == self.olLayer) {
@@ -90,13 +90,13 @@ OpenLayers.Layer.VISS = OpenLayers.Class({
 			}
 		});
 	},
-	
+
 	getResourceUrl: function() {
 		return this.vissUrl
 			+ "/resources/"
 			+ this.resourceId;
 	},
-	
+
 	showRasterDialog: function() {
 		var self = this;
 
@@ -131,7 +131,7 @@ OpenLayers.Layer.VISS = OpenLayers.Class({
 				options += "<li>none</li>"
 			}
 			$("#optionsList").html(options);
-			
+
 			for (var key in v.options) {
 				var o = v.options[key];
 				if (o.type == "number" && o.minimum != "undefined" && o.maximum != "undefined") {
@@ -149,8 +149,8 @@ OpenLayers.Layer.VISS = OpenLayers.Class({
 				}
 			}
 		}
-		
-		
+
+
 		var html = '';
 		html += '<h2>Visualizers</h2><select id="visualizer" name="visualizer" size="1">'
 		for (var i = 0; i < this.visualizers.length; i++) {
@@ -209,7 +209,7 @@ OpenLayers.Layer.VISS = OpenLayers.Class({
 								options[key] = parseFloat($("#rasterInput-" + key).slider("value"));
 							} else {
 								options[key] = parseFloat($("#rasterInput-" + key).val());
-							}	
+							}
 							if (isNaN(options[key]) && v.options[key].required == true) {
 								error = true;
 								$('#rasterInput-' + key + '-error').html("required");
@@ -240,14 +240,14 @@ OpenLayers.Layer.VISS = OpenLayers.Class({
 						} else {
 							self.ctrl.getScale().update({uom: v.uom});
 							self.ctrl.updateScale(v.minValue, v.maxValue);
-						}	
+						}
 						self.ctrl.callback.updateValues(self.ctrl.values);
 					}
 				});
 			}
 		});
 	},
-	
+
 	updateSld: function() {
 		var update = false;
 		if (this.ctrl.getScale().max != this.scale.max) {
@@ -262,7 +262,7 @@ OpenLayers.Layer.VISS = OpenLayers.Class({
 			this.scale.ints = this.ctrl.getScale().ints;
 			update = true;
 		}
-		
+
 		if (this.visualization && update) {
 			var self = this;
 			var sld = this.ctrl.getScale().getSld();
@@ -294,7 +294,7 @@ OpenLayers.Layer.VISS = OpenLayers.Class({
 				/* browsers will cache the tiles. if the SLD changes the URL
 				 * stays the same and no new image is shown... so randomize
 				 * the url... */
-				imageCacheWorkaround : this.imageCacheWorkaround 
+				imageCacheWorkaround : this.imageCacheWorkaround
 			}, {
 				displayOutsideMaxExtent: true,
 				isBaseLayer: false,

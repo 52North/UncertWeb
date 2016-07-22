@@ -14,20 +14,20 @@ package org.uncertweb.impl;
 public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements org.uncertweb.DataType
 {
     private static final long serialVersionUID = 1L;
-    
+
     public DataTypeImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType);
     }
-    
-    private static final javax.xml.namespace.QName COMPLEXDATA$0 = 
+
+    private static final javax.xml.namespace.QName COMPLEXDATA$0 =
         new javax.xml.namespace.QName("http://www.uncertweb.org", "ComplexData");
-    private static final javax.xml.namespace.QName LITERALDATA$2 = 
+    private static final javax.xml.namespace.QName LITERALDATA$2 =
         new javax.xml.namespace.QName("http://www.uncertweb.org", "LiteralData");
-    private static final javax.xml.namespace.QName BOUNDINGBOXDATA$4 = 
+    private static final javax.xml.namespace.QName BOUNDINGBOXDATA$4 =
         new javax.xml.namespace.QName("http://www.uncertweb.org", "BoundingBoxData");
-    
-    
+
+
     /**
      * Gets the "ComplexData" element
      */
@@ -45,7 +45,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             return target;
         }
     }
-    
+
     /**
      * True if has "ComplexData" element
      */
@@ -57,7 +57,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             return get_store().count_elements(COMPLEXDATA$0) != 0;
         }
     }
-    
+
     /**
      * Sets the "ComplexData" element
      */
@@ -75,7 +75,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             target.set(complexData);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "ComplexData" element
      */
@@ -89,7 +89,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             return target;
         }
     }
-    
+
     /**
      * Unsets the "ComplexData" element
      */
@@ -101,7 +101,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             get_store().remove_element(COMPLEXDATA$0, 0);
         }
     }
-    
+
     /**
      * Gets the "LiteralData" element
      */
@@ -119,7 +119,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             return target;
         }
     }
-    
+
     /**
      * True if has "LiteralData" element
      */
@@ -131,7 +131,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             return get_store().count_elements(LITERALDATA$2) != 0;
         }
     }
-    
+
     /**
      * Sets the "LiteralData" element
      */
@@ -149,7 +149,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             target.set(literalData);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "LiteralData" element
      */
@@ -163,7 +163,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             return target;
         }
     }
-    
+
     /**
      * Unsets the "LiteralData" element
      */
@@ -175,7 +175,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             get_store().remove_element(LITERALDATA$2, 0);
         }
     }
-    
+
     /**
      * Gets the "BoundingBoxData" element
      */
@@ -193,7 +193,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             return target;
         }
     }
-    
+
     /**
      * True if has "BoundingBoxData" element
      */
@@ -205,7 +205,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             return get_store().count_elements(BOUNDINGBOXDATA$4) != 0;
         }
     }
-    
+
     /**
      * Sets the "BoundingBoxData" element
      */
@@ -223,7 +223,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             target.set(boundingBoxData);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "BoundingBoxData" element
      */
@@ -237,7 +237,7 @@ public class DataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexCont
             return target;
         }
     }
-    
+
     /**
      * Unsets the "BoundingBoxData" element
      */

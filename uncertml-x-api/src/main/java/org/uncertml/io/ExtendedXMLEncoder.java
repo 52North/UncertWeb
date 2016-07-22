@@ -24,7 +24,7 @@ public class ExtendedXMLEncoder implements IUncertaintyEncoder{
 			throws UnsupportedUncertaintyTypeException,
 			UncertaintyEncoderException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class ExtendedXMLEncoder implements IUncertaintyEncoder{
 			throws UnsupportedUncertaintyTypeException,
 			UncertaintyEncoderException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ExtendedXMLEncoder implements IUncertaintyEncoder{
 			throws UnsupportedUncertaintyTypeException,
 			UncertaintyEncoderException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

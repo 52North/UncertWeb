@@ -14,9 +14,9 @@ public class StudyArea {
 	private int y0;	// y coordinate of the lower left corner in local coordinates
 //	x0=-dd*nx/2-nx/2
 //	y0=-dd*ny/2-ny/2
-	
+
 	public StudyArea(){}
-	
+
 	public StudyArea(String GX, String GY, String DD, String NX, String NY){
 		gx = Integer.parseInt(GX);
 		gy = Integer.parseInt(GY);
@@ -26,7 +26,7 @@ public class StudyArea {
 		x0 = -dd*nx/2;
 		y0 = -dd*ny/2;
 	}
-	
+
 	// function to calculate GK3 into local coordinates
 	public int[] gk3toLocalCoordinates(int[] gk3Coords){
 		int[] localCoords = new int[2];
@@ -34,7 +34,7 @@ public class StudyArea {
 		localCoords[1] = gy - gk3Coords[1];
 		return(localCoords);
 	}
-	
+
 	// function to calculate local into GK3 coordinates
 	public int[] localToGK3Coordinates(int[] localCoords){
 		int[] gk3Coords = new int[2];
@@ -42,7 +42,7 @@ public class StudyArea {
 		gk3Coords[1] = localCoords[1] + gy;
 		return(gk3Coords);
 	}
-	
+
 	// *** Getters and Setters ***
 	public int getGx() {
 		return gx;
@@ -51,7 +51,7 @@ public class StudyArea {
 	public void setGx(int gx) {
 		this.gx = gx;
 	}
-	
+
 	public int getGy() {
 		return gy;
 	}
@@ -59,7 +59,7 @@ public class StudyArea {
 	public void setGy(int gy) {
 		this.gy = gy;
 	}
-	
+
 	public int getDd() {
 		return dd;
 	}
@@ -67,7 +67,7 @@ public class StudyArea {
 	public void setDd(int dd) {
 		this.dd = dd;
 	}
-	
+
 	public int getNx() {
 		return nx;
 	}
@@ -75,7 +75,7 @@ public class StudyArea {
 	public void setNx(int nx) {
 		this.nx = nx;
 	}
-	
+
 	public int getNy() {
 		return ny;
 	}
@@ -83,7 +83,7 @@ public class StudyArea {
 	public void setNy(int ny) {
 		this.ny = ny;
 	}
-	
+
 	public int getX0() {
 		return x0;
 	}
@@ -91,7 +91,7 @@ public class StudyArea {
 	public void setX0(int x0) {
 		this.x0 = x0;
 	}
-	
+
 	public int getY0() {
 		return y0;
 	}
@@ -99,7 +99,7 @@ public class StudyArea {
 	public void setY0(int y0) {
 		this.y0 = y0;
 	}
-	
+
 	// get coordinate arrays
 	public int[] getXcoords(){
 		int[] xCoords = new int[nx];
@@ -108,7 +108,7 @@ public class StudyArea {
 		}
 		return xCoords;
 	}
-	
+
 	public int[] getYcoords(){
 		int[] yCoords = new int[ny];
 		for(int i=0; i<ny; i++){
@@ -116,5 +116,5 @@ public class StudyArea {
 		}
 		return yCoords;
 	}
-	
+
 }

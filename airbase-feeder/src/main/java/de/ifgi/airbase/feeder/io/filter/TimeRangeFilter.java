@@ -77,11 +77,11 @@ public class TimeRangeFilter implements FileFilter {
     	}
     	return false;
     }
-    
+
     private boolean overlap(Range r1, Range r2) {
     	if (r1 == null || r2 == null)
     		throw new NullPointerException();
-    	if (r1.start == null) { 
+    	if (r1.start == null) {
     		if (r2.start == null) {
         		return true;
         	}
@@ -99,10 +99,10 @@ public class TimeRangeFilter implements FileFilter {
     	if (r2.end == null) {
     		return !r1.end.isBefore(r2.start);
     	}
-    	
+
     	return !(r1.end.isBefore(r2.start) || r2.end.isBefore(r1.start));
     }
-    
+
     @Override
     public boolean accept(File pathname) {
         if (pathname.isFile()) {
@@ -114,6 +114,6 @@ public class TimeRangeFilter implements FileFilter {
         return false;
     }
 
-    
-    
+
+
 }

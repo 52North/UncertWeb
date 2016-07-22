@@ -38,20 +38,20 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * encoder for writing O&M in plain CSV in the following table structure:
- * 
+ *
  * PhenomenonTime WKTGeometry ObservedProperty Procedure Result UncertaintyType.param1 UncertaintyType.param2, etc.
- * 
+ *
  * ATTENTION: It is assumed that all observations have the same uncertainties (or no uncertainties) in the collection!!
- * 
+ *
  * @author staschc
  *
  */
 public class CSVEncoder implements IObservationEncoder{
-	
+
 
 	private boolean isCollection=false;
 	private Map<String,Integer> columnNumber4UncertaintyColName;
-	
+
 
 	@Override
 	public synchronized String encodeObservationCollection(IObservationCollection obsCol)
@@ -81,7 +81,7 @@ public class CSVEncoder implements IObservationEncoder{
 		} catch (FileNotFoundException e) {
 			throw new OMEncodingException("Error while encoding observations to CSV file: "+e.getLocalizedMessage());
 		}
-		
+
 	}
 
 	@Override
@@ -96,12 +96,12 @@ public class CSVEncoder implements IObservationEncoder{
 	@Override
 	public synchronized void encodeObservationCollection(IObservationCollection obsCol,
 			Writer writer) throws OMEncodingException {
-		
+
 		isCollection = true;
-		
+
 		//initialize CSVEncoer
 		CSVWriter encoder = new CSVWriter(writer);
-				
+
 		List<? extends AbstractObservation> obs = obsCol.getObservations();
 		AbstractObservation o = obsCol.getObservations().get(0);
 		// for realisations find the observations with longest list of realisations
@@ -112,7 +112,7 @@ public class CSVEncoder implements IObservationEncoder{
 					o = obs.get(i);
 			}
 		}
-		
+
 		//write columnnames
 		encoder.writeNext(getColumnNames(o));
 		for (int i=0;i<obs.size();i++){
@@ -164,7 +164,7 @@ public class CSVEncoder implements IObservationEncoder{
 	public synchronized void encodeObservation(AbstractObservation obs, Writer writer)
 			throws OMEncodingException {
 		CSVWriter encoder = new CSVWriter(writer);
-		
+
 		//write columnnames
 		if (!isCollection){
 			encoder.writeNext(getColumnNames(obs));
@@ -178,7 +178,7 @@ public class CSVEncoder implements IObservationEncoder{
 			throw new OMEncodingException("Error while encoding observations to CSV file: "+e.getLocalizedMessage());
 		}
 	}
-	
+
 	public String[] getColumnNames(AbstractObservation obs){
 		ArrayList<String> columns = new ArrayList<String>();
 		columns.add(Columns.PHEN_TIME);
@@ -188,7 +188,7 @@ public class CSVEncoder implements IObservationEncoder{
 		columns.add(Columns.OBS_PROP);
 		columns.add(Columns.PROCEDURE);
 		columns.add(Columns.RESULT);
-		
+
 		IUncertainty uncertainty = null;
 		if (obs instanceof UncertaintyObservation){
 			uncertainty = ((UncertaintyObservation)obs).getResult().getUncertaintyValue();
@@ -217,17 +217,17 @@ public class CSVEncoder implements IObservationEncoder{
 			this.columnNumber4UncertaintyColName = new HashMap<String,Integer>();
 			for(int i=0; i<((ContinuousRealisation)uncertainty).getValues().size(); i++){
 				columns.add(Columns.CN_REALISATION+i);
-				this.columnNumber4UncertaintyColName.put(Columns.CN_REALISATION+i, columns.indexOf(Columns.CN_REALISATION+i));				
+				this.columnNumber4UncertaintyColName.put(Columns.CN_REALISATION+i, columns.indexOf(Columns.CN_REALISATION+i));
 			}
 		}
 		else if(uncertainty!=null && uncertainty instanceof Probability){
 			this.columnNumber4UncertaintyColName = new HashMap<String,Integer>();
 			for(int i=0; i<((ContinuousRealisation)uncertainty).getValues().size(); i++){
 				columns.add(Columns.CN_REALISATION+i);
-				this.columnNumber4UncertaintyColName.put(Columns.CN_REALISATION+i, columns.indexOf(Columns.CN_REALISATION+i));				
+				this.columnNumber4UncertaintyColName.put(Columns.CN_REALISATION+i, columns.indexOf(Columns.CN_REALISATION+i));
 			}
 		}
-		
+
 		else{
 			this.columnNumber4UncertaintyColName = new HashMap<String,Integer>();
 		}
@@ -235,12 +235,12 @@ public class CSVEncoder implements IObservationEncoder{
 		columns.toArray(result);
 		return result;
 	}
-	
-	
+
+
 	private String[] getLine4Obs(AbstractObservation obs){
 		int totalSize = Columns.NUMBER_OF_COLUMNS + this.columnNumber4UncertaintyColName.size();
 		String[] result = new String[totalSize];
-		
+
 		//set phenomenonTime
 		String timeString = "";
 		if(obs.getPhenomenonTime().isInterval()){
@@ -251,20 +251,20 @@ public class CSVEncoder implements IObservationEncoder{
 			timeString = obs.getPhenomenonTime().getDateTime().toString();
 		}
 		result[0] = timeString;
-		
+
 		//set geometry
 		SpatialSamplingFeature foi = obs.getFeatureOfInterest();
 		Geometry geom = obs.getFeatureOfInterest().getShape();
 		result[1] = foi.getIdentifier().toIdentifierString();
 		result[2] = new WKTWriter().write(geom);
 		result[3] = ""+geom.getSRID();
-		
+
 		//set observed property
 		result[4] = obs.getObservedProperty().toASCIIString();
-		
+
 		//set procedure
 		result[5] = obs.getProcedure().toASCIIString();
-		
+
 		//set resultValue
 		if (obs instanceof Measurement){
 			result[6] = ""+((MeasureResult)obs.getResult()).getMeasureValue();
@@ -288,7 +288,7 @@ public class CSVEncoder implements IObservationEncoder{
 				int meanPos = this.columnNumber4UncertaintyColName.get(Columns.CN_ND_MEAN);
 				int varPos = this.columnNumber4UncertaintyColName.get(Columns.CN_ND_VAR);
 				result[meanPos]=""+((NormalDistribution)uncertainty).getMean().get(0);
-				result[varPos]=""+((NormalDistribution)uncertainty).getVariance().get(0);}		
+				result[varPos]=""+((NormalDistribution)uncertainty).getVariance().get(0);}
 		} else if(obs instanceof CategoryObservation){
 			result[6] = obs.getResult().getValue().toString();
 		}
@@ -296,10 +296,10 @@ public class CSVEncoder implements IObservationEncoder{
 			throw new RuntimeException("CSVEncoder currently only supports Measurements and UncertaintyObservations");
 		}
 		return result;
-		
+
 	}
 
-	
+
 
 }
 

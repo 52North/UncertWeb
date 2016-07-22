@@ -27,25 +27,25 @@ public class Diary {
 	private String endTimeAtt = "endtime";
 	private String dateAtt = "date";
 	private String meAtt = "microenvironment";
-	
+
 	public Diary(String id){
 		this.id = id;
 		diary = new ArrayList<Map<String,String>>();
 	}
-	
+
 	public void addSingleEntry(int entryID, String key, String value){
-		
+
 	}
-	
+
 //	public Map<String,String> getEntriesByTime(DateTime start, DateTime end, String io){
 //		// find the entry which falls into this period
 //		for(int i=0; i<)
 //	}
-	
+
 	public ArrayList<String> getAttributeNames(){
 		return attributes;
 	}
-	
+
 	public ArrayList<DateTime> getStartTimes(){
 		ArrayList<DateTime> timeList = new ArrayList<DateTime>(diary.size());
 		for(int i=0; i<diary.size(); i++){
@@ -54,7 +54,7 @@ public class Diary {
 		}
 		return timeList;
 	}
-	
+
 	public ArrayList<DateTime> getEndTimes(){
 		ArrayList<DateTime> timeList = new ArrayList<DateTime>(diary.size());
 		for(int i=0; i<diary.size(); i++){
@@ -63,7 +63,7 @@ public class Diary {
 		}
 		return timeList;
 	}
-	
+
 	/**
 	 * converts MEs into IO and returns list for each diary entry
 	 * @return
@@ -79,23 +79,23 @@ public class Diary {
 		}
 		return ioList;
 	}
-	
-	
+
+
 //	public Set<String> getAttributes(){
 //		return diary.get(0).keySet();
 //	}
-	
+
 	public String getEntry(int entryID, String key){
 		return diary.get(entryID).get(key);
 	}
-	
+
 	public Map<String,String> getEntries(int entryID){
 		return diary.get(entryID);
 	}
-	
-	
+
+
 	// SETTERS
-	
+
 	public void addEntries(String[] keys, String[] values){
 		Map<String,String> diaryEntry = new HashMap<String,String>();
     	for (int i=0;i<values.length;i++){
@@ -103,7 +103,7 @@ public class Diary {
 		}
     	diary.add(diaryEntry);
 	}
-	
+
 	public int size(){
 		return(diary.size());
 	}

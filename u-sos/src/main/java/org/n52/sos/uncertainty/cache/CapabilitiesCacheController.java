@@ -12,13 +12,13 @@ import org.n52.sos.uncertainty.ds.IConfigDAO;
  * CapabilitiesCacheController implements all methods to request all objects and
  * relationships from a standard datasource; this class adds uncertainty
  * extension specific request methods including their actual CapabilitiesCache
- * 
+ *
  * @author Kiesow
- * 
+ *
  */
 public class CapabilitiesCacheController extends
 		org.n52.sos.cache.CapabilitiesCacheController {
-	
+
 	/** logger */
     private static Logger LOGGER = Logger.getLogger(CapabilitiesCacheController.class);
 
@@ -34,7 +34,7 @@ public class CapabilitiesCacheController extends
 
 	/**
 	 * returns the value units of uncertainties of this SOS
-	 * 
+	 *
 	 * @return List<String> containing the value units
 	 */
 	public List<String> getValueUnits() {
@@ -43,7 +43,7 @@ public class CapabilitiesCacheController extends
 
 	/**
 	 * sets the value units of uncertainties of this SOS
-	 * 
+	 *
 	 * @param valueUnits
 	 *            List<String> containing the value units
 	 */
@@ -53,7 +53,7 @@ public class CapabilitiesCacheController extends
 
     /**
      * queries the value units of uncertainties from the DB
-     * 
+     *
      * @throws OwsExceptionReport
      *             if query of value units of uncertainties failed
      */
@@ -66,10 +66,10 @@ public class CapabilitiesCacheController extends
 	 * and the offering names from the DB and sets these values in this
 	 * configurator; to remain threadsave this method was largely copied from
 	 * the super class
-	 * 
+	 *
 	 * @throws OwsExceptionReport
 	 *             if the query of one of the values described upside failed
-	 * 
+	 *
 	 */
 	public boolean update(boolean checkLastUpdateTime)
 			throws OwsExceptionReport {
@@ -133,12 +133,12 @@ public class CapabilitiesCacheController extends
 		}
 		return true;
 	}
-	
+
     /**
      * methods for adding relationships in Cache for recently received new
      * observation; to remain threadsave this method was largely copied from
 	 * the super class
-     * 
+     *
      * @param observation
      *            recently received observation which has been inserted into SOS
      *            db and whose relationships have to be maintained in cache
@@ -182,7 +182,7 @@ public class CapabilitiesCacheController extends
             queryDomainFeatures();
             queryDomainFeatureProcedures();
             queryDomainFeatureFois();
-            
+
 			queryValueUnits();
 
         } catch (InterruptedException e) {

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 package de.ifgi.airbase.feeder;
@@ -21,7 +21,7 @@ import de.ifgi.airbase.feeder.util.Utils;
 
 /**
  * @author Daniel Nüst (daniel.nuest@uni-muenster.de)
- * 
+ *
  */
 public class DownloadFeeder extends Feeder {
     private static final Logger log = LoggerFactory.getLogger(DownloadFeeder.class);

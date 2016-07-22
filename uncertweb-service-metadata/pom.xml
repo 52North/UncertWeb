@@ -18,7 +18,7 @@
 			<id>staschc</id>
 		</developer>
 	</developers>
-	
+
 	<dependencies>
 		<!-- Testing dependencies -->
 		<dependency>
@@ -28,5 +28,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 </project>

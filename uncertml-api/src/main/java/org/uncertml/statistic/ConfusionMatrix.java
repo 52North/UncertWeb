@@ -8,9 +8,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a confusion matrix.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/ConfusionMatrix}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -23,7 +23,7 @@ public class ConfusionMatrix implements IStatistic {
     /**
      * Constructor that takes an array of categories and counts. The source and
      * target categories are assumed to the same. There should be categories^2 count values.
-     * 
+     *
      * @param categories the categories (both source and target) of the confusion matrix.
      * @param counts the counts for each transition from source to target categories.
      */
@@ -34,7 +34,7 @@ public class ConfusionMatrix implements IStatistic {
     /**
      * Constructor that takes a <code>List</code> of categories and counts. The source and
      * target categories are assumed to the same. There should be categories^2 count values.
-     * 
+     *
      * @param categories the categories (both source and target) of the confusion matrix.
      * @param counts the counts for each transition from source to target categories.
      */
@@ -44,9 +44,9 @@ public class ConfusionMatrix implements IStatistic {
     }
 
     /**
-     * Constructor that takes an array of source and target categories and counts. 
+     * Constructor that takes an array of source and target categories and counts.
      * There should be source categories * target categories count values.
-     * 
+     *
      * @param categories the categories (both source and target) of the confusion matrix.
      * @param counts the counts for each transition from source to target categories.
      */
@@ -55,9 +55,9 @@ public class ConfusionMatrix implements IStatistic {
     }
 
     /**
-     * Constructor that takes a <code>List</code> of source and target categories and counts. 
+     * Constructor that takes a <code>List</code> of source and target categories and counts.
      * There should be source categories * target categories count values.
-     * 
+     *
      * @param categories the categories (both source and target) of the confusion matrix.
      * @param counts the counts for each transition from source to target categories.
      */
@@ -81,7 +81,7 @@ public class ConfusionMatrix implements IStatistic {
     }
 
     /**
-     * 
+     *
      * @return the list of counts for the confusion matrix.
      */
     public List<Integer> getCounts() {
@@ -89,7 +89,7 @@ public class ConfusionMatrix implements IStatistic {
     }
 
     /**
-     * 
+     *
      * @return the source categories of the confusion matrix.
      */
     public List<String> getSourceCategories() {
@@ -97,7 +97,7 @@ public class ConfusionMatrix implements IStatistic {
     }
 
     /**
-     * 
+     *
      * @return the target categories of the confusion matrix.
      */
     public List<String> getTargetCategories() {
@@ -105,7 +105,7 @@ public class ConfusionMatrix implements IStatistic {
     }
 
     /**
-     * 
+     *
      * @return the counts represented as probabilities.
      */
     public List<Double> getProbabilities() {

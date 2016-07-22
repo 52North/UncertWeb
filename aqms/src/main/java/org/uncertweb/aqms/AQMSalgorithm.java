@@ -66,7 +66,7 @@ import ucar.nc2.NetcdfFile;
 public class AQMSalgorithm extends AbstractObservableAlgorithm{
 
 	private List<String> errors = new ArrayList<String>();
-	
+
 	// WPS inputs & outputs
 	private final String inputIDReceptorPoints = "receptor-points";
 	private final String inputIDStartTime = "start-time";
@@ -75,7 +75,7 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 	private final String inputIDBackgroundSamples = "NumbBackgroundSamples";
 	private final String inputIDOutputUncertainty = "OutputUncertaintyType";
 	private final String outputIDResult = "result";
-		
+
 	// input variables
 	private DateTime startDate, endDate, preStartDate;
 	private DateTime minDate = ISODateTimeFormat.dateTime().parseDateTime("2008-07-01T01:00:00.000+01");
@@ -83,21 +83,21 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 	private int numberOfAustalRealisations, numberOfBackgroundSamples;
 	private boolean netcdf = false;
 	private List<String> statList = new ArrayList<String>();
-	
+
 	// system variables
-	private static String resourcesPath = "C:\\WebResources\\AQMS";	
-	private static String resultsPath = "C:\\WebResources\\AQMS\\outputs";		
-	
+	private static String resourcesPath = "C:\\WebResources\\AQMS";
+	private static String resultsPath = "C:\\WebResources\\AQMS\\outputs";
+
 	private static String sosURL = "http://localhost:8080/ubaSOS/sos";
 	private static String utsURL = "http://giv-uw2.uni-muenster.de:8080/uts/WebProcessingService";
 	private static String upsURL = "http://localhost:8080/ups/WebProcessingService";
 	private static String austalURL = "http://localhost:8080/austalWPS/WebProcessingService";
-	private static String interpolationURL = "http://localhost:8080/aqms/WebProcessingService";	
-	
+	private static String interpolationURL = "http://localhost:8080/aqms/WebProcessingService";
+
 	private int austalThr = 10;
 	private int bgThr = 10;
 	private int dayThr = 14;
-	
+
 	public AQMSalgorithm(){
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
 		for(Property property : propertyArray){
@@ -106,10 +106,10 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 				resultsPath = resourcesPath + "\\outputs";
 				break;
 			}
-		}	
+		}
 	}
-	
-	
+
+
 	public List<String> getErrors() {
 		return errors;
 	}
@@ -128,7 +128,7 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 		}else if(id.equals(inputIDReceptorPoints)){
 			return GTVectorDataBinding.class;
 		}else{
-			return GenericFileDataBinding.class;			
+			return GenericFileDataBinding.class;
 		}
 	}
 
@@ -140,49 +140,49 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 		// process parameters
 		boolean useUPS = false;
 		boolean saveOutputs = true;
-		
+
 		//1) INPUT HANDLING
 		DateTimeFormatter dateFormat = ISODateTimeFormat.dateTime();
-		
+
 		// 1.1) start and end date
-		List<IData> startList = inputMap.get(inputIDStartTime);		
+		List<IData> startList = inputMap.get(inputIDStartTime);
 		String startTime = "2010-03-01T01:00:00.000+01";
 		if(startList!=null){
 			startTime = ((IData)startList.get(0)).getPayload().toString();
 		}
-		
+
 		List<IData> endList = inputMap.get(inputIDEndTime);
 		String endTime = "2010-03-05T00:00:00.000+01";
 		if(endList!=null){
 			endTime = ((IData)endList.get(0)).getPayload().toString();
 		}
-		
+
 		startDate = dateFormat.parseDateTime(startTime);
-		preStartDate = startDate.minusDays(1);	
-		endDate = dateFormat.parseDateTime(endTime);	
-		
+		preStartDate = startDate.minusDays(1);
+		endDate = dateFormat.parseDateTime(endTime);
+
 		// 1.2) realisation numbers
 		List<IData> austalNumbList = inputMap.get(inputIDAustalRealisations);
 		if(austalNumbList!=null){
 			numberOfAustalRealisations = Integer.parseInt(((IData)austalNumbList.get(0)).getPayload().toString());
 		}
-		
+
 		List<IData> backgroundNumbList = inputMap.get(inputIDBackgroundSamples);
 		if(austalNumbList!=null){
 			numberOfBackgroundSamples = Integer.parseInt(((IData)backgroundNumbList.get(0)).getPayload().toString());
 		}
-		
+
 		// 1.3) receptor points
-		List<IData> receptorPointsDataList = inputMap.get(inputIDReceptorPoints);	
+		List<IData> receptorPointsDataList = inputMap.get(inputIDReceptorPoints);
 		FeatureCollection<?,?> receptorPoints = null;
 		if(!(receptorPointsDataList == null) && receptorPointsDataList.size() != 0){
 			netcdf = false;
-			IData receptorPointsData = receptorPointsDataList.get(0);	
-			if(receptorPointsData instanceof GTVectorDataBinding){			
+			IData receptorPointsData = receptorPointsDataList.get(0);
+			if(receptorPointsData instanceof GTVectorDataBinding){
 				receptorPoints = (FeatureCollection<?, ?>)receptorPointsData.getPayload();
 			}
 		}else{
-			netcdf = true;	
+			netcdf = true;
 			try {
 				throw new IOException("NetCDF is currently not supported. Please provide receptor points for model run.");
 			} catch (IOException e) {
@@ -193,46 +193,46 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 		// 1.4) output statistic parameters
 		List<IData> statisticsList = inputMap.get(inputIDOutputUncertainty);
 		if(!(statisticsList == null) && statisticsList.size() != 0){
-			statList = extractStatisticsFromRequest(statisticsList);			
-		}		
-		
+			statList = extractStatisticsFromRequest(statisticsList);
+		}
+
 		// objects for processing
-		AustalModelRun austal = new AustalModelRun(austalURL, resourcesPath+"\\Austal");	
-		TotalConcentration totalConc = new TotalConcentration(utsURL, startDate, endDate);	
-		
+		AustalModelRun austal = new AustalModelRun(austalURL, resourcesPath+"\\Austal");
+		TotalConcentration totalConc = new TotalConcentration(utsURL, startDate, endDate);
+
 		Map<String, IData> result = new HashMap<String, IData>();
 		UncertaintyObservationCollection backgroundColl = null;
 		UncertaintyObservationCollection austalColl= null;
 		NetcdfUWFile austalNCFile = null;
-		
-		
-		// 2) BACKGROUND INTERPOLATION 
-		// call interpolation algorithm	   
+
+
+		// 2) BACKGROUND INTERPOLATION
+		// call interpolation algorithm
     	backgroundColl = callInterpolationAlgorithm();
     	if(saveOutputs)
-    		Utils.writeObsColl(backgroundColl, resultsPath + "\\UBA_"+startDate.toString("yyyy-MM")+".xml"); 		
+    		Utils.writeObsColl(backgroundColl, resultsPath + "\\UBA_"+startDate.toString("yyyy-MM")+".xml");
 		//uncomment for local use
-    	//backgroundColl = (UncertaintyObservationCollection) Utils.readObsColl(resultsPath + "\\UBA_"+startDate.toString("yyyy-MM")+".xml");		
-		
-    	     			     	
-		// 3) AUSTAL2000 RUN  
+    	//backgroundColl = (UncertaintyObservationCollection) Utils.readObsColl(resultsPath + "\\UBA_"+startDate.toString("yyyy-MM")+".xml");
+
+
+		// 3) AUSTAL2000 RUN
     	// do not use UPS
     	if(!useUPS){
     		 // Austal execution
             if(!netcdf){
-            	// A) OM case  
+            	// A) OM case
             	austal.setReceptorPoints(receptorPoints);
-            	austalColl = austal.executeU_AustalWPSOM(startDate, endDate, numberOfAustalRealisations);                         
+            	austalColl = austal.executeU_AustalWPSOM(startDate, endDate, numberOfAustalRealisations);
             	if(saveOutputs)
-	    			Utils.writeObsColl(austalColl, resourcesPath + "\\Austal_"+startDate.toString("yyyy-MM")+".xml");        	
+	    			Utils.writeObsColl(austalColl, resourcesPath + "\\Austal_"+startDate.toString("yyyy-MM")+".xml");
             	//uncomment for local use
-            	//austalColl = (UncertaintyObservationCollection) Utils.readObsColl(resultsPath + "\\Austal_"+startDate.toString("yyyy-MM")+".xml");   	        
+            	//austalColl = (UncertaintyObservationCollection) Utils.readObsColl(resultsPath + "\\Austal_"+startDate.toString("yyyy-MM")+".xml");
             }
             else{
               // B) NetCDF case
             	//TODO: implement NetCDF support
-           //    austalNCFile = austal.executeU_AustalWPSNetCDF();             	
-            	//uncomment for local use      
+           //    austalNCFile = austal.executeU_AustalWPSNetCDF();
+            	//uncomment for local use
 //    		  	try {
 //    		  		NetcdfFile ncfile = NetcdfFile.open("C:/UncertWeb/Austal/austal.nc");
 //    		  		austalNCFile = new NetcdfUWFile(ncfile);
@@ -240,16 +240,16 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 //    		  		System.out.println("trying to open " + ""+ " " + ioe);
 //    		  	} catch (NetcdfUWException e) {
 //    				e.printStackTrace();
-//    			  }  
-    	    }    	            
+//    			  }
+    	    }
     	}
-    	
+
     	// use UPS
     	else{
     		// 3.1) prepare Austal inputs
     		AustalInputs austalInputs = new AustalInputs(preStartDate, endDate, resourcesPath+"\\Austal\\");
-    		austalInputs.prepareUncertainInputs();		
-    		austalInputs.prepareCertainInputs();   		
+    		austalInputs.prepareUncertainInputs();
+    		austalInputs.prepareCertainInputs();
     		AustalProperties austalProps = null;
         	try {
     			austalProps = new AustalProperties(resourcesPath+"\\Austal\\"+"austal.props");
@@ -258,47 +258,47 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
     		} catch (IOException e1) {
     			e1.printStackTrace();
     		}
-        	
+
         	// 3.2) Austal execution
             if(!netcdf){
             	// A) OM case
             	austal.setReceptorPoints(receptorPoints);
-                austalColl = austal.executeUPSOM(upsURL, numberOfAustalRealisations, austalProps);                               
+                austalColl = austal.executeUPSOM(upsURL, numberOfAustalRealisations, austalProps);
                 if(saveOutputs)
-                	Utils.writeObsColl(austalColl, resourcesPath + "\\Austal_"+startDate.toString("yyyy-MM")+".xml");        	                
+                	Utils.writeObsColl(austalColl, resourcesPath + "\\Austal_"+startDate.toString("yyyy-MM")+".xml");
              }
             else{
-              // B) NetCDF case  
+              // B) NetCDF case
             	//TODO: implement NetCDF support
-         //    austalNCFile = austal.executUPSNetCDF();   	            	  	
+         //    austalNCFile = austal.executUPSNetCDF();
         	  }
     	}
-				 	
-   	 
+
+
     	// Finally
         if(!netcdf){
         	 // 4) TOTAL CONCENTRATION
-      	    UncertaintyObservationCollection resultColl = totalConc.overlayOM(backgroundColl, austalColl, numberOfBackgroundSamples, statList);               	
+      	    UncertaintyObservationCollection resultColl = totalConc.overlayOM(backgroundColl, austalColl, numberOfBackgroundSamples, statList);
       	    if(saveOutputs)
-      	    	Utils.writeObsColl(resultColl, resultsPath + "\\AQMS_"+startDate.toString("yyyy-MM")+".xml"); 		          	    
-      
+      	    	Utils.writeObsColl(resultColl, resultsPath + "\\AQMS_"+startDate.toString("yyyy-MM")+".xml");
+
       	    // 5) OUTPUT
         	OMBinding omd = new OMBinding(resultColl);
-        	result.put(outputIDResult, omd);	
-        	return result;  
+        	result.put(outputIDResult, omd);
+        	return result;
     	}else{
     		 // 4) TOTAL CONCENTRATION
-    		NetcdfUWFile resultNCFile = totalConc.overlayNetCDF(backgroundColl, austalNCFile, "C:/UncertWeb/Austal/overlay.nc", numberOfBackgroundSamples);         	
-        
+    		NetcdfUWFile resultNCFile = totalConc.overlayNetCDF(backgroundColl, austalNCFile, "C:/UncertWeb/Austal/overlay.nc", numberOfBackgroundSamples);
+
          	// 5) OUTPUT
     		NetCDFBinding uwData = new NetCDFBinding(resultNCFile);
     		result.put(outputIDResult, uwData);
     		return result;
     	}
-     	
+
 	}
 
-	
+
 	/**
 	 * Checks id selected dates are within ranges
 	 * @throws IOException
@@ -311,7 +311,7 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 		}else if(Days.daysBetween(startDate, endDate).getDays()>dayThr){
 			throw new IOException("Requested period cannot be more than "+dayThr+" days!");
 		}
-						
+
 		// Check if dates are within available data range
 		if(preStartDate.isBefore(minDate)){
 			preStartDate = minDate;
@@ -325,9 +325,9 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 			if(Days.daysBetween(startDate, endDate).getDays()<2)
 				startDate = endDate.minusDays(2);
 			throw new IOException("Requested period must be before maximum date (2010-06-30)!");
-		}	
+		}
 	}
-	
+
 	private UncertaintyObservationCollection callInterpolationAlgorithm(){
 		UncertaintyObservationCollection uColl = null;
 		// connect to Interpolation Service
@@ -337,8 +337,8 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 		} catch (WPSClientException e1) {
 			e1.printStackTrace();
 		}
-		
-		// change dates in the request	
+
+		// change dates in the request
 		DateTimeFormatter dateFormat = ISODateTimeFormat.dateTime();
 
 		// add inputs for request
@@ -346,40 +346,40 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 		inputs.put("start-time", startDate.toString(dateFormat));
 		inputs.put("end-time", endDate.toString(dateFormat));
 		inputs.put("sos-url", sosURL);
-		
+
 		// specify prediction polygon reference
 		Map<String, String> predictionInput = new HashMap<String,String>();
 		predictionInput.put("href", "file:///"+resourcesPath+"\\Background\\predictionPolygon.xml");
 		predictionInput.put("schema", "http://schemas.opengis.net/gml/2.1.2/feature.xsd");
-		predictionInput.put("mimeType", "text/xml");		
+		predictionInput.put("mimeType", "text/xml");
 		inputs.put("prediction-area", predictionInput);
-		
+
 		// Make execute request
 		ExecuteDocument execDoc = null;
 		try {
-			execDoc = Utils.createExecuteDocumentManually(interpolationURL, "org.uncertweb.aqms.PolygonInterpolationAlgorithm", 
+			execDoc = Utils.createExecuteDocumentManually(interpolationURL, "org.uncertweb.aqms.PolygonInterpolationAlgorithm",
 					inputs, UncertWebDataConstants.MIME_TYPE_OMX_XML);
 		} catch (Exception e) {
 			//logger.debug(e);
 		}
-		
-			
+
+
 		// Run WPS and get output (= Realisation object)
 		ExecuteResponseDocument responseDoc = null;
 		try {
 			responseDoc = (ExecuteResponseDocument) session.execute(
 				interpolationURL, execDoc);
-					
+
 			OutputDataType oType = responseDoc.getExecuteResponse().getProcessOutputs().getOutputArray(0);
 			// all output elements
 			Node wpsComplexData = oType.getData().getComplexData().getDomNode();
 			// the complex data node
-			Node unRealisation = wpsComplexData.getChildNodes().item(0); 
-			// the realisation node			 
+			Node unRealisation = wpsComplexData.getChildNodes().item(0);
+			// the realisation node
 			IObservationCollection iobs = new XBObservationParser().parseObservationCollection(nodeToString(unRealisation));
 			uColl = (UncertaintyObservationCollection) iobs;
 			return uColl;
-					
+
 		} catch (WPSClientException e) {// Auto-generated catch block
 				e.printStackTrace();
 		} catch (OMParsingException e) {
@@ -389,7 +389,7 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 		} catch (TransformerException e) {
 				e.printStackTrace();
 		}
-		
+
 		return uColl;
 	}
 
@@ -401,18 +401,18 @@ public class AQMSalgorithm extends AbstractObservableAlgorithm{
 			String statistics = ((LiteralStringBinding) statParam)
 			.getPayload();
 			params.add(statistics);
-		}		
+		}
 		return params;
 	}
-	
+
 	private String nodeToString(Node node) throws TransformerFactoryConfigurationError, TransformerException {
 		StringWriter stringWriter = new StringWriter();
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		transformer.transform(new DOMSource(node), new StreamResult(stringWriter));
-		
+
 		return stringWriter.toString();
 	}
-	
-	
+
+
 }

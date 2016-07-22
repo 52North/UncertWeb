@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -22,13 +22,13 @@
 OpenLayers.SOS = OpenLayers.SOS || {};
 OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 		CLASS_NAME: "OpenLayers.SOS.ObservationSeries",
-		
+
 		srid: null,
 		threshold: Number.NaN,
 		time: Number.NaN,
 
 		initialize: function(id, geometry, srid, procedure, observedProperty, uom, values) {
-			function test(obj, name) { 
+			function test(obj, name) {
 				if (!obj) throw name + " is obligatory!";
 			}
 			test(id, "ID");
@@ -40,10 +40,10 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			test(values, "values");
 
 			this.srid = srid;
-			
+
 			var mapValue = 0;
 			var timeValueArray = [];
-			
+
 			values.sort(function(a, b) {
 				var time1, time2;
 				a = (a.time.samplingTime) ? a.time.samplingTime : a.time;
@@ -67,7 +67,7 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 				}
 				return time1.getTime() - time2.getTime();
 			});
-			
+
 			for (var i = 0; i < values.length; i++) {
 				var time;
 				if (values[i].time.timeInstant) {
@@ -80,9 +80,9 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 				}
 				timeValueArray.push([time, values[i].value]);
 			}
-			
-			var attr = { 
-				id: id, 
+
+			var attr = {
+				id: id,
 				uom: uom,
 				procedure: procedure,
 				observedProperty: observedProperty,
@@ -92,13 +92,13 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			};
 			OpenLayers.Feature.Vector.prototype.initialize.apply(this, [geometry, attr]);
 		},
-	
+
 		getMapValueForArray: function(values) {
 			var mapValue = 0.0;
 			for (var i = 0; i < values.length; i++) {
 				if (typeof(values[i][1]) == "number") {
 					mapValue += values[i][1];
-				} else if (values[i][1].getClassName 
+				} else if (values[i][1].getClassName
 						&& values[i][1].getClassName().match(".*Distribution$")) {
 					mapValue += values[i][1].getMean();
 				} else if (values[i][1].length) { // realisations
@@ -115,7 +115,7 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			}
 			return mapValue/values.length;
 		},
-		
+
 		calculateExceedanceProbability: function(t, val) {
 			var result;
 			if (typeof(val) === "number") {
@@ -133,32 +133,32 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			}
 			return result;
 		},
-		
+
 		_update: function() {
 			if (isNaN(this.time)){
 				return;
 			}
 			var v = this.getValues(), matchedValues = [];
 			for (var i = 0; i < v.length; i++) {
-				if ((v[i][0][0] == this.time) || (v[i][0].length == 2 
-					&& v[i][0][0] <= this.time && v[i][0][1] >= this.time)) { 
+				if ((v[i][0][0] == this.time) || (v[i][0].length == 2
+					&& v[i][0][0] <= this.time && v[i][0][1] >= this.time)) {
 					matchedValues.push(v[i]);
 				}
 			}
-			if (!isNaN(this.threshold)) { 
-				this.attributes.exceedance = (matchedValues.length > 0) ? 
-					this.calculateExceedanceProbability(this.threshold, matchedValues[0][1]) 
+			if (!isNaN(this.threshold)) {
+				this.attributes.exceedance = (matchedValues.length > 0) ?
+					this.calculateExceedanceProbability(this.threshold, matchedValues[0][1])
 						: Number.NEGATIVE_INFINITY;
 			}
 			var rv = this.getMapValueForArray(matchedValues);
 			this.attributes.resultValue = (isNaN(rv)) ? Number.NEGATIVE_INFINITY : rv;
 		},
-		
+
 		setTime: function(time) {
 			this.time = time;
 			this._update();
 		},
-		
+
 		setThreshold: function(val) {
 			this.threshold = val;
 			this._update();
@@ -167,7 +167,7 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			this.geometry.transform(this.srid, dest);
 			this.srid = dest;
 		},
-		
+
 		getHumanReadableObservedProperty: function() {
 			var split = this.getObservedProperty();
 			if (split.match("^http")) {
@@ -179,7 +179,7 @@ OpenLayers.SOS.ObservationSeries = OpenLayers.Class(OpenLayers.Feature.Vector, {
 			}
 			return split[split.length-1];
 		},
-		
+
 		getFoiId: function() { return this.attributes.id; },
 		getUom: function() { return this.attributes.uom; },
 		getObservedProperty: function() { return this.attributes.observedProperty; },

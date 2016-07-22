@@ -24,16 +24,16 @@ public class Austal2000Txt implements Serializable {
 	 * Class to read, write and manage austal2000.txt
 	 */
 	private static final long serialVersionUID = 1639886246212812488L;
-	private final String SEPARATOR = System.getProperty("line.separator");		
+	private final String SEPARATOR = System.getProperty("line.separator");
 	private static Logger LOGGER = Logger.getLogger(Austal2000Txt.class);
-	
-	// Austal parameters 
+
+	// Austal parameters
 	private StudyArea studyArea;
-	private List<ReceptorPoint> receptorPoints;	
+	private List<ReceptorPoint> receptorPoints;
 	private List<EmissionSource> emissionSources;
 	private int qs;	// parameter to define number of particles used in the model run
 	private String os = "\"NOSTANDARD;Kmax=1;Average=1;Interval=3600\""; // special options; here to force Austal to write hourly grid outputs
-	
+
 
 	// constructor to create austal object from file
 	public Austal2000Txt(File austalFile){
@@ -46,34 +46,34 @@ public class Austal2000Txt implements Serializable {
 	public Austal2000Txt(StudyArea sa, List<EmissionSource> es){
 		studyArea = sa;
 		emissionSources = es;
-	}	
-	
+	}
+
 	// constructor to create austal object from file
 	public Austal2000Txt(InputStream in){
 		parseFile(in);
 		LOGGER.debug("Parsing InputStream");
 	}
-	
+
 	public Austal2000Txt(Austal2000Txt austalTemplate) {
 		this.studyArea = austalTemplate.studyArea;
 		this.receptorPoints = copyReceptorPoints(austalTemplate.receptorPoints);
 		this.emissionSources = copySources(austalTemplate.emissionSources);
 	}
-	
+
 	// ***** MODIFICATION *****
 	public List<EmissionSource> getEmissionSources(){
 		return emissionSources;
 	}
-	
+
 	public void setEmissionSources(List<EmissionSource> emisSources){
 		emissionSources = emisSources;
 	}
-		
+
 	// modify receptor points
 	public void setReceptorPoints(List<ReceptorPoint> pointList){
 		this.receptorPoints = pointList;
 	}
-				
+
 	// ***** PARSER *****
 	private void parseFile(InputStream in){
 		try {
@@ -87,9 +87,9 @@ public class Austal2000Txt implements Serializable {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}		
-	}	
-	
+		}
+	}
+
 	// ***** PARSER *****
 	private void parseFile(File austalFile){
 		try {
@@ -105,13 +105,13 @@ public class Austal2000Txt implements Serializable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// method to parse each row
 	private void parseLine(String line){
 		if (line.length() ==0) return;
-		
+
 		// if current line is a comment, look for source ids or skip this line
 		if(line.startsWith("'")){
 			if(line.contains("sourceid")){
@@ -119,7 +119,7 @@ public class Austal2000Txt implements Serializable {
 				int startID = Integer.parseInt(line.split(" ")[1].split("-")[0].trim());
 				int endID = Integer.parseInt(line.split(":")[0].split(" ")[1].split("-")[1].trim());
 				String type = line.split(":")[1].trim();
-				
+
 				// assign source type to the sources within the specified range
 				for(int i=0; i<emissionSources.size(); i++){
 					int id = emissionSources.get(i).getDynamicSourceID();
@@ -130,7 +130,7 @@ public class Austal2000Txt implements Serializable {
 				return;
 			}else return;
 		}
-		
+
 		// check if current line includes a comment at a later position
 		int commentPosition = line.indexOf("'");
 		String lineNoComment = line;
@@ -140,10 +140,10 @@ public class Austal2000Txt implements Serializable {
 		while(lineNoComment.charAt(lineNoComment.length()-1)== ' '||lineNoComment.charAt(lineNoComment.length()-1)== '\t'){
 			lineNoComment = lineNoComment.substring(0,lineNoComment.length()-1);
 		}
-		
+
 		// get single entries for this line
 		String[] lineTokens = lineNoComment.split(" ");
-		
+
 		// first entry is the header
 		String lineHeader = lineTokens[0];
 		if (!(lineHeader == null)){
@@ -161,7 +161,7 @@ public class Austal2000Txt implements Serializable {
 				return;
 			}
 			if(lineHeader.equalsIgnoreCase("xp")||lineHeader.equalsIgnoreCase("yp")||lineHeader.equalsIgnoreCase("hp")){
-				if(lineTokens.length<2) return;			
+				if(lineTokens.length<2) return;
 				createReceptorPoints(lineTokens);
 				return;
 			}
@@ -172,14 +172,14 @@ public class Austal2000Txt implements Serializable {
 			}
 		}
 	}
-	
+
 	// ***** PARSER DETAILS *****
-	// add data to study area 
+	// add data to study area
 	private void createStudyArea(String[] lineTokens){
 		// for the first line, create study area
 		if(studyArea==null)
 			studyArea = new StudyArea();
-			
+
 		// use header to identify which parameter to add
 		String lineHeader = lineTokens[0];
 		if(lineHeader.equalsIgnoreCase("gx")){
@@ -204,7 +204,7 @@ public class Austal2000Txt implements Serializable {
 			studyArea.setY0(Integer.parseInt(lineTokens[1]));
 		}
 	}
-	
+
 	// add data to receptor points
 	private void createReceptorPoints(String[] lineTokens) {
 		// for the first line, fill list of receptor points
@@ -214,7 +214,7 @@ public class Austal2000Txt implements Serializable {
 				receptorPoints.add(new ReceptorPoint());
 			}
 		}
-		
+
 		// for further lines add information to receptorPoints
 		if(lineTokens[0].equalsIgnoreCase("xp")){
 			for(int i = 1; i<lineTokens.length; i++){
@@ -231,7 +231,7 @@ public class Austal2000Txt implements Serializable {
 				receptorPoints.get(i-1).setHp(lineTokens[i]);
 			}
 		}
-		
+
 	}
 
 	// add data to emission sources
@@ -243,7 +243,7 @@ public class Austal2000Txt implements Serializable {
 				emissionSources.add(new EmissionSource());
 			}
 		}
-		
+
 		// for further lines add information to emission sources
 		if(lineTokens[0].equalsIgnoreCase("pm-2")){
 			// distinguish between static and dynamic sources here
@@ -256,7 +256,7 @@ public class Austal2000Txt implements Serializable {
 				else{
 					emissionSources.get(i-1).setStaticStrength(lineTokens[i]);
 				}
-				
+
 			}
 		}
 		if(lineTokens[0].equalsIgnoreCase("xq")){
@@ -302,7 +302,7 @@ public class Austal2000Txt implements Serializable {
 		try {
 			FileWriter fw = new FileWriter(targetFile);
 			BufferedWriter bw = new BufferedWriter(fw);
-			
+
 			bw.write("gx "+studyArea.getGx()+SEPARATOR);
 			bw.write("gy "+studyArea.getGy()+SEPARATOR);
 			bw.write(SEPARATOR);
@@ -339,9 +339,9 @@ public class Austal2000Txt implements Serializable {
 			bw.close();
 		} catch (IOException e) {
 			LOGGER.error(e);
-		}		
+		}
 	}
-	
+
 	private String parseReceptorPointToString(String header) {
 		String result = "";
 		if(header.equalsIgnoreCase("xp")){
@@ -406,25 +406,25 @@ public class Austal2000Txt implements Serializable {
 		}
 		return result;
 	}
-	
+
 	// ***** UTILITIES *****
-	
+
 	public int getQs(){
 		return qs;
 	}
-	
+
 	public void setQs(int qs){
 		this.qs = qs;
 	}
-	
+
 	public String getOs(){
 		return os;
 	}
-	
+
 	public void setOs(String os){
 		this.os = os;
 	}
-	
+
 	private List<ReceptorPoint> copyReceptorPoints(
 			List<ReceptorPoint> observationPoints) {
 		List<ReceptorPoint> copy = new ArrayList<ReceptorPoint>();
@@ -446,10 +446,10 @@ public class Austal2000Txt implements Serializable {
 		return studyArea;
 	}
 
-//	public void multiplyPM2(double value){  
+//	public void multiplyPM2(double value){
 //		DecimalFormat df = (DecimalFormat) DecimalFormat.getInstance(Locale.ENGLISH);
 //		df.applyPattern("0.000E00");
-//		
+//
 //		for(AustalSource as : sources){
 //			String s = as.getPm2();
 //			if (!s.equals("?")){
@@ -457,14 +457,14 @@ public class Austal2000Txt implements Serializable {
 //				d = d*value;
 //				as.setPm2(df.format(d.doubleValue()));
 //			}
-//			
+//
 //		}
 //	}
-//	
-//	public void addPM2(double value){  
+//
+//	public void addPM2(double value){
 //		DecimalFormat df = (DecimalFormat) DecimalFormat.getInstance(Locale.ENGLISH);
 //		df.applyPattern("0.000E00");
-//		
+//
 //		for(AustalSource as : sources){
 //			String s = as.getPm2();
 //			if (!s.equals("?")){
@@ -472,8 +472,8 @@ public class Austal2000Txt implements Serializable {
 //				d = d+value;
 //				as.setPm2(df.format(d.doubleValue()));
 //			}
-//			
+//
 //		}
 //	}
-	
+
 }

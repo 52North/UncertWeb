@@ -13,22 +13,22 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Boolean observation contains boolean result and inherits other properties from AbstractObservation
- * 
+ *
  * @author Kiesow, staschc
  *
  */
 public class BooleanObservation extends AbstractObservation{
-	
+
 	/** boolean result of the observation */
 	private BooleanResult result;
-	
+
 	/**type name of this observation*/
 	public static final String NAME = "OM_BooleanObservation";
-	
-	
+
+
 	/**
 	 * Constructor with mandatory attributes
-	 * 
+	 *
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -47,12 +47,12 @@ public class BooleanObservation extends AbstractObservation{
 			SpatialSamplingFeature featureOfInterest, BooleanResult result){
 		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
 		setResult(result);
-		
+
 	}
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param identifier
 	 * 			identifier of the observation
 	 * @param boundedBy
@@ -73,7 +73,7 @@ public class BooleanObservation extends AbstractObservation{
 	 *            result
 	 * @param resultQuality
 	 * 			  (optional) result qualities as UncertaintyResults
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public BooleanObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
 			TimeObject resultTime, TimeObject validTime, URI procedure,
@@ -103,12 +103,12 @@ public class BooleanObservation extends AbstractObservation{
 			this.result = (BooleanResult)result;
 		}
 		else throw new IllegalArgumentException("Result type of BooleanObservation has to be Boolean!");
-		
+
 	}
 
 	@Override
 	public String getName() {
 		return NAME;
 	}
-	
+
 }

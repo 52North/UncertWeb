@@ -11,18 +11,18 @@ import org.uncertweb.ems.data.profiles.GeometryProfile;
 public class MEProfile extends GeometryProfile {
 	protected HashMap<Interval, Microenvironment> meList;
 	protected HashMap<Interval, double[]> inConc;
-	
+
 	public MEProfile(IObservationCollection activityObservations, HashMap<Interval, Microenvironment> meList) {
 		super(activityObservations);
 		this.meList = meList;
 	}
-	
+
 	public void setMEList(HashMap<Interval, Microenvironment> meList){
 		this.meList = meList;
 	}
-	
+
 	public HashMap<Interval, Microenvironment> getMEList(){
 		return meList;
 	}
-	
+
 }

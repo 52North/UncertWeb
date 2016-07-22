@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a normal distribution with parameters mean and variance.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Normal}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -27,7 +27,7 @@ public class NormalDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single mean and variance parameter.
-     * 
+     *
      * @param mean the mean parameter.
      * @param variance the variance parameter.
      */
@@ -40,7 +40,7 @@ public class NormalDistribution implements IContinuousDistribution {
      * Each mean and variance pair represents a unique normal distribution.
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The arrays must be of equal length.
-     * 
+     *
      * @param mean an array of doubles representing the mean parameter of n
      * normal distributions.
      * @param variance an array of doubles representing the variance parameter of n
@@ -54,9 +54,9 @@ public class NormalDistribution implements IContinuousDistribution {
      * Constructor that takes a list of doubles for the mean and variance parameters.
      * Each mean and variance pair represents a unique normal distribution.
      * This is in line with the UncertML syntax whereby a collection of types can
-     * be represented by a single entity. The lists must be of equal length and 
+     * be represented by a single entity. The lists must be of equal length and
      * must not contain any null elements.
-     * 
+     *
      * @param mean a list of doubles representing the mean parameter of n
      * normal distributions.
      * @param variance a list of doubles representing the variance parameter of n
@@ -74,7 +74,7 @@ public class NormalDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the mean parameter of each normal distribution represented by this
      * object.
      */
@@ -83,7 +83,7 @@ public class NormalDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the variance parameter of each normal distribution represented by
      * this object.
      */

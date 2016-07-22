@@ -9,8 +9,8 @@ import org.uncertml.util.Validate;
 /**
  * Abstract class representing a continuous statistic. A continuous statistic is
  * one that has an array of doubles as its values.
- * 
- * 
+ *
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -21,7 +21,7 @@ public abstract class ContinuousStatistic implements IStatistic {
     /**
      * Constructor that takes a single value to represent a single continuous
      * statistic.
-     * 
+     *
      * @param value the value of the continuous statistic.
      */
     public ContinuousStatistic(double value) {
@@ -33,7 +33,7 @@ public abstract class ContinuousStatistic implements IStatistic {
      * statistic. Each value represents a single continuous statistic. This is in
      * line with the UncertML syntax whereby a collection of types can be represented
      * by a single entity.
-     * 
+     *
      * @param values an array of doubles representing the values of n continuous
      * statistics.
      */
@@ -46,7 +46,7 @@ public abstract class ContinuousStatistic implements IStatistic {
      * statistic. Each value represents a single continuous statistic. This is in
      * line with the UncertML syntax whereby a collection of types can be represented
      * by a single entity.
-     * 
+     *
      * @param values a <code>List</code> of doubles representing the values of n continuous
      * statistics.
      */
@@ -57,7 +57,7 @@ public abstract class ContinuousStatistic implements IStatistic {
     }
 
     /**
-     * 
+     *
      * @return the value of each continuous statistic represented by this object.
      */
     public List<Double> getValues() {

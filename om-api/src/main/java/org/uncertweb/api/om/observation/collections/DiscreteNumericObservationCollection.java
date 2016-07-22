@@ -9,25 +9,25 @@ import org.uncertweb.api.om.observation.DiscreteNumericObservation;
 
 /**
  * Collection for DiscreteNumericObservation
- * 
+ *
  * @author staschc
  *
  */
 public class DiscreteNumericObservationCollection implements
 		IObservationCollection {
-	
+
 	/** gml Id of collection */
 	private String gmlId;
 
 	/** members of collection */
 	private List<DiscreteNumericObservation> members;
-	
+
 	/**type name of observation collection*/
 	public static final String NAME = "OM_DiscreteNumericObservationCollection";
-	
+
 	/**
 	 * contructor; initializes members list
-	 * 
+	 *
 	 */
 	public DiscreteNumericObservationCollection(){
 		this.members = new LinkedList<DiscreteNumericObservation>();
@@ -35,7 +35,7 @@ public class DiscreteNumericObservationCollection implements
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param members
 	 *            members of collection
 	 */
@@ -60,7 +60,7 @@ public class DiscreteNumericObservationCollection implements
 	public void addObservation(AbstractObservation obs) throws IllegalArgumentException {
 		if (!(obs instanceof DiscreteNumericObservation)){
 			throw new IllegalArgumentException("Only DiscreteNumericObservation could be added to DiscreteNumericObservationCollection!");
-		}	
+		}
 		this.members.add((DiscreteNumericObservation)obs);
 	}
 
@@ -73,7 +73,7 @@ public class DiscreteNumericObservationCollection implements
 	public String getTypeName() {
 		return NAME;
 	}
-	
+
 	@Override
 	public void addObservationCollection(IObservationCollection obsCol) {
 		if (obsCol.getObservations().get(0) instanceof DiscreteNumericObservation){

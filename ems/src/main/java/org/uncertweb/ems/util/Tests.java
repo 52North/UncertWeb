@@ -85,7 +85,7 @@ public class Tests {
 		// // TODO Auto-generated catch block
 		// e.printStackTrace();
 		// }
-		
+
 		 try {
 			 //D:\UncertWeb\WP8\D8.3\WP7_data
 			 xml2json("D:/UncertWeb/WP8/D8.3/WP7_data/albatross_output_short_1.xml");
@@ -93,7 +93,7 @@ public class Tests {
 			 // TODO Auto-generated catch block
 			 e.printStackTrace();
 		 }
-		
+
 //		try {
 //			 createDummyOMColl("D:/UncertWeb/meetings/12-09 Workshop Muenster/AQMS_2010-01.xml",
 //					 "D:/UncertWeb/meetings/12-09 Workshop Muenster/MS_points_PM10.xml");
@@ -101,10 +101,10 @@ public class Tests {
 //			 // TODO Auto-generated catch block
 //			 e.printStackTrace();
 //		 }
-		
+
 
 	}
-	
+
 	private static void testNetCDFfile(String ncFilePath){
 		NcUwFile ncFile = null;
 		try {
@@ -114,21 +114,21 @@ public class Tests {
 			throw new RuntimeException("Error while reading NetCDF input: "
 					+ e.getMessage(), e);
 		}
-		
+
 		// check primary variables
 		Set<INcUwVariable> primaryVariables = ncFile.getPrimaryVariables();
 		for(INcUwVariable primVar : primaryVariables){
 			primVar.getCRS();
 		}
 	}
-	
+
 	private static void xml2json(String xmlPath) throws OMEncodingException{
 		IObservationCollection template = null;
 		try {
 			XmlObject xml = XmlObject.Factory.parse(new FileInputStream(
 					xmlPath));
 			template = (IObservationCollection) new XBObservationParser()
-					.parse(xml.xmlText());	
+					.parse(xml.xmlText());
 			new JSONObservationEncoder().encodeObservationCollection(template,
 					new File(xmlPath.replace("xml", "json")));
 		} catch (FileNotFoundException e) {
@@ -142,8 +142,8 @@ public class Tests {
 		}
 
 	}
-	
-	
+
+
 	// method to create a dummy uncertainty data with OM input
 		private static void createDummyOMColl(String omTemplatePath,
 				String omDummyPath) throws OMEncodingException {
@@ -162,12 +162,12 @@ public class Tests {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			UncertaintyObservationCollection dummy = new UncertaintyObservationCollection();
 
 			// go through observations
 			for (AbstractObservation obs : template.getObservations()) {
-				
+
 				// get result
 				NormalDistribution newDist = null;
 				if(obs.getResult() instanceof UncertaintyResult){
@@ -181,12 +181,12 @@ public class Tests {
 								var = Math.pow(((StandardDeviation)stat).getValues().get(0),2);
 							}
 						}
-						
+
 						newDist = new NormalDistribution(mean,var);
 					}
 				}else{
 					newDist = new NormalDistribution(
-							Double.parseDouble(obs.getResult().getValue().toString()), 
+							Double.parseDouble(obs.getResult().getValue().toString()),
 							Double.parseDouble(obs.getResult().getValue().toString()) * Math.random() + Math.random() * 10);
 				}
 					// create new observation
@@ -199,7 +199,7 @@ public class Tests {
 				newObs.getResult().setUnitOfMeasurement("ug m-3");
 				dummy.addObservation(newObs);
 			}
-			
+
 			new StaxObservationEncoder().encodeObservationCollection(dummy,
 					new File(omDummyPath));
 			new JSONObservationEncoder().encodeObservationCollection(dummy,
@@ -207,7 +207,7 @@ public class Tests {
 //			new CSVEncoder().encodeObservationCollection(dummy, new File(
 //					omDummyPath.replace("xml", "csv")));
 		}
-	
+
 
 	// method to create a dummy output with WP6/7 data
 	private static void createDummyTrajectoryOMColl(String omTemplatePath,
@@ -329,27 +329,27 @@ public class Tests {
 		 */
 		// define inputs
 		List<IObservationCollection> omList = new ArrayList<IObservationCollection>();
-		
+
 		// WP8.3
 // 		String ncFilePath = "D:/UncertWeb/WP8/D8.3/WP6_data/nox_dummy_8days.nc";
 //		String omFilePath = "D:/UncertWeb/WP8/D8.3/WP7_data/albatross_output_new2.xml";
 //		String resultFilePath = "D:/UncertWeb/WP8/D8.3/WP8.3_output.xml";
 //		int minuteResolution = 60;
-		
+
 		// Muenster
 		String ncFilePath = "C:/WebResources/AQMS/outputs/PM10/aqms_2010-04-01.nc";
 		String omFilePath = "C:/WebResources/EMS/profiles/profile_p7.xml";
 		String resultFilePath = "C:/WebResources/EMS/outputs/p7_PM10.xml";
 		int minuteResolution = 10;
-		
+
 		// statistics
 		List<String> statList = new ArrayList<String>();
 		statList.add("mean");
 		statList.add("standard-deviation");
-		
+
 		// read inputs
 	//	IObservationCollection omFile = null;
-		
+
 		try {
 			XmlObject xml = XmlObject.Factory.parse(new FileInputStream(
 					omFilePath));
@@ -369,16 +369,16 @@ public class Tests {
 			throw new RuntimeException("Error while reading NetCDF input: "
 					+ e.getMessage(), e);
 		}
-				
-		
-		
-		
-		
-	
-		
+
+
+
+
+
+
+
 		/*
 		 *  2) create internal data types
-		 */	
+		 */
 		// output collection
 		UncertaintyObservationCollection exposureProfiles = new UncertaintyObservationCollection();
 
@@ -389,17 +389,17 @@ public class Tests {
 		if(timeVar==null){
 			//TODO: throw exception
 		}
-				
+
 		// create time list from Netcdf time array
 		//TODO: ensure that this is done in UTC/GMT!!!
 		ArrayList<DateTime> ncTimeList = new ArrayList<DateTime>();
-		String timeUnit = timeVar.getUnitsString();	
+		String timeUnit = timeVar.getUnitsString();
 		try {
 			DateUnit dateUnit = new DateUnit(timeUnit);
 			for(int i=1; i<=timeVar.getDimension(0).getLength(); i++){
 				ncTimeList.add(new DateTime(dateUnit.makeDate(i)));
-			}	
-			
+			}
+
 			// if minuteResolution has not been provided make this as default resolution
 			if(minuteResolution==0){
 				String unit = dateUnit.getTimeUnitString();
@@ -412,18 +412,18 @@ public class Tests {
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
-		}	
-		
+		}
+
 		for(IObservationCollection omFile : omList){
 			// 2.2) create profile list from OM file
 			List<AbstractProfile> profileList = new OMProfileParser().OM2Profiles(omFile, ncTimeList, minuteResolution);
-						
+
 			/*
 			 *  3) check if modelling is possible
-			 */	
-			
-				
-			
+			 */
+
+
+
 			/*
 			 * 4) OUTDOOR MODEL
 			 */
@@ -431,7 +431,7 @@ public class Tests {
 			// A) for the moment, do the overlay for GPS tracks in MS with the local version
 			OutdoorModel outdoor = new OutdoorModel(resultFilePath);
 			outdoor.run(profileList, ncFile);
-		
+
 			// perform averaging of profile observations
 			// profile.aggregateProfile(minuteResolution);
 
@@ -443,11 +443,11 @@ public class Tests {
 			// if activities are available, create indoor model with parameters
 			// if(profile instanceof MEProfile || profile instanceof
 			// ActivityProfile){
-//			String parameter = ncFile.getPrimaryVariableNames().toArray(new String[1])[0];	
+//			String parameter = ncFile.getPrimaryVariableNames().toArray(new String[1])[0];
 			// IndoorModel indoor = new IndoorModel();
 			// indoor.readParametersFile("DE",parameter,
 			// "src/main/resources/indoorModel/parameters.csv");
-			
+
 			// indoor.runModel(profileList, indoorIterations, minuteResolution,
 			// false);
 			//
@@ -455,17 +455,17 @@ public class Tests {
 
 			/*
 			 * RESULT COLLECTION
-			 */		
+			 */
 			// go through each individual profile
-			for (AbstractProfile profile : profileList) {			
+			for (AbstractProfile profile : profileList) {
 				// get OM file and add to overall observation collection
 				exposureProfiles.addObservationCollection(new OMProfileGenerator()
 						.createExposureProfileObservationCollection(profile,
 								statList));
 			}
-		}	
-		
-		
+		}
+
+
 		// write output locally
 		try {
 			new StaxObservationEncoder().encodeObservationCollection(exposureProfiles,
@@ -476,7 +476,7 @@ public class Tests {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 
 	}
 

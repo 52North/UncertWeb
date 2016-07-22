@@ -33,9 +33,9 @@ import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.vis.statistic.StatisticCollectionVisualizer;
 
 public class StatisticCollectionTest extends AbstractVissTest {
-	private static final URI STATISTIC_COLLECTION = 
+	private static final URI STATISTIC_COLLECTION =
 			URI.create("http://giv-uw.uni-muenster.de/data/netcdf/uts-statistic-collection.nc");
-	
+
 	@Test
 	public void testStatisticCollection() throws JSONException {
 		ObjectId r = addResource(MediaTypes.NETCDF_TYPE, STATISTIC_COLLECTION);
@@ -48,10 +48,10 @@ public class StatisticCollectionTest extends AbstractVissTest {
 				.getJSONObject(JSONConstants.OPTIONS_KEY)
 				.getJSONObject(StatisticCollectionVisualizer.STATISTIC_PARAMETER)
 				.getJSONArray(JSONSchema.Key.ENUM).getString(0);
-		
+
 		createVisualization(r, d, visualizer, new JSONObject()
 				.put(StatisticCollectionVisualizer.STATISTIC_PARAMETER, stat));
-		
+
 	}
 
 }

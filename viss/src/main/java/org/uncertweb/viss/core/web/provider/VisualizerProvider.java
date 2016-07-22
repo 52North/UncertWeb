@@ -54,11 +54,11 @@ public class VisualizerProvider extends
 			ar.put(ut.getUri());
 		}
 		j.put(SUPPORTED_UNCERTAINTIES_KEY, ar);
-		Map<String, JSONObject> options = (v.getDataSet() != null) ? 
+		Map<String, JSONObject> options = (v.getDataSet() != null) ?
 				v.getOptionsForDataSet(v.getDataSet()) : v.getOptions();
 		/*
 		JSONObject joptions = new JSONObject();
-		
+
 		for (Entry<String, JSONObject> e : options.entrySet()) {
 			joptions.putOpt(e.getKey(), e.getValue());
 		}

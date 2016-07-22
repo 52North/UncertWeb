@@ -13,7 +13,7 @@ import org.uncertml.statistic.IStatistic;
 
 /**
  * A class with static helper methods to generate UncertML URLs.
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -61,7 +61,7 @@ public class UncertML {
                 	URL.append(CONTINUOUS_PATH);
             		return URL.toString();
             	}
-            	
+
 //            	className = className.replace(CONTINUOUS_CLASS_PREFIX, EMPTY_STRING);
             } else if (IDiscreteDistribution.class.isAssignableFrom(inputClass)) {
 //            	URL.append(DISCRETE_PATH);
@@ -123,7 +123,7 @@ public class UncertML {
             }
             className = className.replace(SAMPLE_CLASS_POSTFIX, EMPTY_STRING);
         }
-        
+
         URL.append("/").append(sluggify(className));
 
         return URL.toString();
@@ -131,9 +131,9 @@ public class UncertML {
 
     /**
      * Helper method that converts simple class names to a URL-friendly format.
-     * For example, <code>ChiSquareDistribution</code> is converted to 
+     * For example, <code>ChiSquareDistribution</code> is converted to
      * <code>chi-square</code>
-     * 
+     *
      * @param input The class name, as a <code>String</code> to convert.
      * @return A <code>String</code> representation of a URL-friendly class name.
      */

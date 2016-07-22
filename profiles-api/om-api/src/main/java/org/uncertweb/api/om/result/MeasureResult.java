@@ -2,9 +2,9 @@ package org.uncertweb.api.om.result;
 
 /**
  * Result representing a measured value including unit of measurement
- * 
+ *
  * @author Kiesow
- * 
+ *
  */
 public class MeasureResult implements IResult {
 
@@ -13,7 +13,7 @@ public class MeasureResult implements IResult {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param v
 	 *            double value of this result
 	 * @param u

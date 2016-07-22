@@ -54,7 +54,7 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 
 
 public class VissTest extends AbstractVissTest {
-		
+
 	@Test
 	public void testGetOptions() throws JSONException {
 		ObjectId r = addResource(MediaTypes.NETCDF_TYPE, BIOTEMP_T);
@@ -63,12 +63,12 @@ public class VissTest extends AbstractVissTest {
 		System.err.println(j.toString(4));
 		assertFalse(j.get(JSONConstants.OPTIONS_KEY) instanceof String);
 	}
-	
+
 	@Test
 	public void testGetDataSetWithEpsgCode() throws JSONException, OMEncodingException {
 		ObjectId r = addResource(MediaTypes.NETCDF_TYPE, BIOTEMP_T);
 		ObjectId d = getDataSetsForResource(r)[0];
-		
+
 		String path = RESTServlet.DATASET
 				.replace(RESTServlet.RESOURCE_PARAM_P, r.toString())
 				.replace(RESTServlet.DATASET_PARAM_P, d.toString());
@@ -77,7 +77,7 @@ public class VissTest extends AbstractVissTest {
 		j = getWebResource().path(path).queryParam(DataSetProvider.EPSG_CODE_QUERY_PARAMETER, "4326").get(JSONObject.class);
 		System.err.println(j.getJSONObject(JSONConstants.SPATIAL_EXTENT_KEY).toString(4));
 	}
-	
+
 	@Test
 	public void testEmpty() throws UniformInterfaceException, JSONException {
 		getWebResource().path(RESTServlet.RESOURCES).accept(MediaTypes.JSON_RESOURCE_LIST_TYPE)
@@ -97,7 +97,7 @@ public class VissTest extends AbstractVissTest {
 		}
 		fail();
 	}
-	
+
 	@Test
 	public void sameVisualizationWithParameters() throws JSONException {
 		ObjectId oid = addResource(MediaTypes.OM_2_TYPE, getOMStream());
@@ -138,24 +138,24 @@ public class VissTest extends AbstractVissTest {
 				.path(url)
 				.entity(getSLDStream(), MediaTypes.STYLED_LAYER_DESCRIPTOR_TYPE)
 				.post(ClientResponse.class);
-		
+
 		JSONObject j = cr.getEntity(JSONObject.class);
 		System.out.println("StyleID:" + j.getString(JSONConstants.ID_KEY));
 		System.out.println(j.toString(4));
 		String xml = getWebResource().path(URI.create(j.getString(JSONConstants.HREF_KEY)).getPath()).get(String.class);
-		
+
 		System.err.println(xml);
 		StyledLayerDescriptorDocument.Factory.parse(xml);
-		
+
 		cr = getWebResource().path(cr.getLocation().getPath())
 				.entity(getSLDStream(), MediaTypes.STYLED_LAYER_DESCRIPTOR_TYPE)
 				.put(ClientResponse.class);
-		
+
 		j = cr.getEntity(JSONObject.class);
 		System.out.println("StyleID:" + j.getString(JSONConstants.ID_KEY));
 		xml = getWebResource().path(URI.create(j.getString(JSONConstants.HREF_KEY)).getPath()).get(String.class);
 		StyledLayerDescriptorDocument.Factory.parse(xml);
-		
+
 	}
 
 	@Test

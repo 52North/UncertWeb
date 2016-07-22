@@ -78,7 +78,7 @@ import org.uncertml.sample.UnknownSample;
 
 /**
  * JSON implementation of an UncertML parser.
- * 
+ *
  * @author Richard Jones
  * @version 2.0
  */
@@ -96,7 +96,7 @@ public class JSONParser implements IUncertaintyParser {
 
     /**
      * Register the individual instance creators with the GSON builder.
-     * 
+     *
      * @param builder <code>GsonBuilder</code> used to build the UncertML objects
      * from JSON representations.
      */
@@ -315,7 +315,7 @@ public class JSONParser implements IUncertaintyParser {
             }
 
         });
-        
+
         builder.registerTypeAdapter(ContinuousRealisation.class, new InstanceCreator<ContinuousRealisation>() {
 
             @Override
@@ -324,7 +324,7 @@ public class JSONParser implements IUncertaintyParser {
             }
 
         });
-        
+
         builder.registerTypeAdapter(RandomSample.class, new InstanceCreator<RandomSample>() {
 
             @Override
@@ -349,7 +349,7 @@ public class JSONParser implements IUncertaintyParser {
             }
 
         });
-        
+
         builder.registerTypeAdapter(CategoricalMode.class, new InstanceCreator<CategoricalMode>() {
 
             @Override
@@ -386,9 +386,9 @@ public class JSONParser implements IUncertaintyParser {
 
             @Override
             public ConfusionMatrix createInstance(Type arg0) {
-                
+
                 String[] categories = new String[] {"OAK"};
-                return new ConfusionMatrix(categories, new int[] {1}); 
+                return new ConfusionMatrix(categories, new int[] {1});
                 //return (ConfusionMatrix) new Randomizer().generate(ConfusionMatrix.class, 1);
             }
 
@@ -397,7 +397,7 @@ public class JSONParser implements IUncertaintyParser {
 
             @Override
             public Correlation createInstance(Type arg0) {
-                return new Correlation(0.0); 
+                return new Correlation(0.0);
                 //return (Correlation) new Randomizer().generate(Correlation.class, 1);
             }
 

@@ -102,19 +102,19 @@ import org.uncertml.statistic.Variance;
 import org.uncertweb.utils.UwCollectionUtils;
 
 public enum NcUwUncertaintyType {
-	UNCERTAINTY(IUncertainty.class), 
+	UNCERTAINTY(IUncertainty.class),
 	SAMPLE(ISample.class, UNCERTAINTY),
-	DISTRIBUTION(IDistribution.class,UNCERTAINTY), 
+	DISTRIBUTION(IDistribution.class,UNCERTAINTY),
 	STATISTIC(IStatistic.class, UNCERTAINTY),
-	
+
 	CONTINUOUS_REALISATION(ContinuousRealisation.class, SAMPLE, URI.create("http://www.uncertml.org/samples/realisation")),
 	CATEGORICAL_REALISATION(CategoricalRealisation.class, SAMPLE),
-	
+
 	CONTINUOUS_DISTRIBUTION(IContinuousDistribution.class, DISTRIBUTION),
 	DISCRETE_DISTRIBUTION(IDiscreteDistribution.class, DISTRIBUTION),
 	CATEGORICAL_DISTRIBUTION(ICategoricalDistribution.class, DISTRIBUTION),
 	MULTIVARIATE_DISTRIBUTION(IMultivariateDistribution.class, DISTRIBUTION),
-	
+
 	BETA_DISTRIBUTION(BetaDistribution.class, CONTINUOUS_DISTRIBUTION),
 	CAUCHY_DISTRIBUTION(CauchyDistribution.class, CONTINUOUS_DISTRIBUTION),
 	CHI_SQUARE_DISTRIBUTION(ChiSquareDistribution.class, CONTINUOUS_DISTRIBUTION),
@@ -133,27 +133,27 @@ public enum NcUwUncertaintyType {
 	STUDENT_T_DISTRIBUTION(StudentTDistribution.class, CONTINUOUS_DISTRIBUTION),
 	UNIFORM_DISTRIBUTION(UniformDistribution.class, CONTINUOUS_DISTRIBUTION),
 	WEIBULL_DISTRIBUTION(WeibullDistribution.class, CONTINUOUS_DISTRIBUTION),
-	
+
 	BERNOULLI_DISTRIBUTION(BernoulliDistribution.class, DISCRETE_DISTRIBUTION),
 	BINOMINAL_DISTRIBUTION(BinomialDistribution.class, DISCRETE_DISTRIBUTION),
-	
+
 	DISCRETE_UNIFORM_DISTRIBUTION(DiscreteUniformDistribution.class, DISCRETE_DISTRIBUTION),
 	GEOMETRIC_DISTRIBUTION(GeometricDistribution.class, DISCRETE_DISTRIBUTION),
 	HYPERGEOMETRIC_DISTRIBUTION(HypergeometricDistribution.class, DISCRETE_DISTRIBUTION),
 	NEGATIVE_BINOMINAL_DISTRIBUTION(NegativeBinomialDistribution.class, DISCRETE_DISTRIBUTION),
-	
+
 	CATEGORICAL_UNIFORM_DISTRIBUTION(CategoricalUniformDistribution.class, CATEGORICAL_DISTRIBUTION),
-	
+
 	DIRICHLET_DISTRIBUTION(DirichletDistribution.class, MULTIVARIATE_DISTRIBUTION),
 	MULTINOMINAL_DISTRIBUTION(MultinomialDistribution.class, MULTIVARIATE_DISTRIBUTION),
 	MULTIVARIATE_NORMAL_DISTRIBUTION(MultivariateNormalDistribution.class, MULTIVARIATE_DISTRIBUTION),
 	MULTIVARIATE_STUDENT_T_DISTRIBUTION(MultivariateStudentTDistribution.class, MULTIVARIATE_DISTRIBUTION),
 	WISHART_DISTRIBUTION(WishartDistribution.class, MULTIVARIATE_DISTRIBUTION),
-	
+
 	RANDOM_SAMPLE(RandomSample.class, SAMPLE),
 	SYSTEMATIC_SAMPLE(SystematicSample.class, SAMPLE),
 	UNKNOWN_SAMPLE(UnknownSample.class, SAMPLE),
-	
+
 	CATEGORICAL_MODE(CategoricalMode.class, STATISTIC),
 	CENTRED_MOMENT(CentredMoment.class, STATISTIC),
 	COEFFICIENT_OF_VARIATION(CoefficientOfVariation.class, STATISTIC),
@@ -186,27 +186,27 @@ public enum NcUwUncertaintyType {
 	VARIOGRAM_FUNCTION(VariogramFunction.class, DISTRIBUTION),
 
 	STATISTIC_COLLECTION(StatisticCollection.class, STATISTIC,URI.create("http://www.uncertml.org/statistics/statistics-collection"));
-	
+
 	private static final String CONSTRAINT_URI = UncertML.getURI(ConstraintType.class);
 	private static final URI GREATER_THAN_URI = URI.create(CONSTRAINT_URI + "/greater-than");
 	private static final URI LESS_THAN_URI = URI.create(CONSTRAINT_URI + "/less-than");
 	private static final URI GREATER_OR_EQUAL_URI = URI.create(CONSTRAINT_URI+ "/greater-or-equal");
 	private static final URI LESS_OR_EQUAL_URI = URI.create(CONSTRAINT_URI + "/less-or-equal");
-	
+
 	private final Set<URI> alias;
 	private final Class<? extends IUncertainty> clazz;
 	private final NcUwUncertaintyType type;
 	private final URI uri;
-	
+
 	private NcUwUncertaintyType(Class<? extends IUncertainty> clazz, URI... uris) {
 		this(clazz, null, uris);
 	}
-	
+
 	private NcUwUncertaintyType(Class<? extends IUncertainty> clazz, NcUwUncertaintyType type, URI... uris) {
 		this.uri = getUri(clazz);
 		this.clazz = clazz;
 		this.type = type;
-		this.alias = Collections.unmodifiableSet(uris == null ? 
+		this.alias = Collections.unmodifiableSet(uris == null ?
 				UwCollectionUtils.<URI>set() : UwCollectionUtils.asSet(uris));
 	}
 
@@ -217,7 +217,7 @@ public enum NcUwUncertaintyType {
 	public URI getUri() {
 		return this.uri;
 	}
-	
+
 	public Set<URI> getAlias(){
 		return this.alias;
 	}
@@ -225,28 +225,28 @@ public enum NcUwUncertaintyType {
 	public NcUwUncertaintyType getSuperType() {
 		return this.type;
 	}
-	
+
 	public boolean isUri(URI uri) {
 		return getUri().equals(uri) || getAlias().contains(uri);
 	}
 	public boolean isClass(Class<? extends IUncertainty> c) {
 		return getImplementationClass().equals(c);
 	}
-	
+
 	public boolean isDistribtution() {
 		if (getSuperType() != null && getSuperType() != UNCERTAINTY) {
 			return getSuperType().isDistribtution();
 		}
 		return this == DISTRIBUTION;
 	}
-	
+
 	public boolean isSample() {
 		if (getSuperType() != null && getSuperType() != UNCERTAINTY) {
 			return getSuperType().isSample();
 		}
 		return this == SAMPLE;
 	}
-	
+
 	public boolean isStatistic() {
 		if (getSuperType() != null && getSuperType() != UNCERTAINTY) {
 			return getSuperType().isStatistic();
@@ -256,7 +256,7 @@ public enum NcUwUncertaintyType {
 	public Class<? extends IUncertainty> getImplementationClass() {
 		return this.clazz;
 	}
-	
+
 	public static URI getUri(Class<? extends IUncertainty> u) {
 		String spec = UncertML.getURI(u);
 		if (spec == null) {
@@ -264,19 +264,19 @@ public enum NcUwUncertaintyType {
 		}
 		return URI.create(spec);
 	}
-	
+
 	public static NcUwUncertaintyType fromUri(URI uri) {
 		for (NcUwUncertaintyType s : values())
 			if (s.isUri(uri)) return s;
 		return null;
 	}
-	
+
 	public static NcUwUncertaintyType fromClass(Class<? extends IUncertainty> c) {
 		for (NcUwUncertaintyType s : values())
 			if (s.isClass(c)) return s;
 		return null;
 	}
-	
+
 	public static URI getURIforConstraint(ConstraintType ct) {
 		switch (ct) {
 		case GREATER_OR_EQUAL: 	return GREATER_OR_EQUAL_URI;

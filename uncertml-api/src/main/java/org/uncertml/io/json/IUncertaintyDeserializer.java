@@ -23,7 +23,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * 
+ *
  * @author Richard Jones
  * @version 2.0
  */
@@ -54,7 +54,7 @@ public class IUncertaintyDeserializer implements JsonDeserializer<IUncertainty> 
         } else if (uncertaintyType.equals("Realisation")) {
         	// another special case
         	JsonObject realisationObj = json.get("Realisation").getAsJsonObject();
-        	
+
         	// get values/categories
         	AbstractRealisation realisation;
         	if (realisationObj.has("categories")) {
@@ -81,7 +81,7 @@ public class IUncertaintyDeserializer implements JsonDeserializer<IUncertainty> 
         		}
         		realisation = new ContinuousRealisation(values, weight, id);
         	}
-        	
+
         	return realisation;
         } else {
             Class<?> uncertaintyClass = getUncertaintyClass(uncertaintyType);

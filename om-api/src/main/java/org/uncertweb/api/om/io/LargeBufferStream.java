@@ -196,13 +196,13 @@ package org.uncertweb.api.om.io;
           */
          public void writeTo(final OutputStream os)
                          throws IOException {
-                
+
                  if (blocks != null) {
                          // Everything is in core so we can stream directly to   the output.
                          //
                         for (final Block b : blocks) {
                                  os.write(b.buffer, 0, b.count);
-                                 
+
                          }
                  } else {
                          // Reopen the temporary file and copy the contents.
@@ -213,7 +213,7 @@ package org.uncertweb.api.om.io;
                                  final byte[] buf = new byte[Block.SZ];
                                  while ((cnt = in.read(buf)) >= 0) {
                                         os.write(buf, 0, cnt);
-                                       
+
                                 }
                          } finally {
                               in.close();

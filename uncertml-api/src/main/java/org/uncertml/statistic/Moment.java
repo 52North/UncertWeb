@@ -7,9 +7,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a moment statistic.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Moment}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -22,7 +22,7 @@ public class Moment extends ContinuousStatistic {
      * doubles for the value of a moment statistic. Each value represents a single
      * moment statistic. This is in line with the UncertML syntax whereby a collection
      * of types can be represented by a single entity.
-     * 
+     *
      * @param order the order of the moment, e.g. 1st order.
      * @param values a <code>List</code> of doubles representing the value of n
      * moment statistics.
@@ -38,7 +38,7 @@ public class Moment extends ContinuousStatistic {
      * doubles for the value of a moment statistic. Each value represents a single
      * moment statistic. This is in line with the UncertML syntax whereby a collection
      * of types can be represented by a single entity.
-     * 
+     *
      * @param order the order of the moment, e.g. 1st order.
      * @param values an array of doubles representing the value of n
      * moment statistics.
@@ -50,7 +50,7 @@ public class Moment extends ContinuousStatistic {
     /**
      * Constructor that takes a single integer order and double value of a moment
      * statistic.
-     * 
+     *
      * @param order the order of the moment, e.g. 1st order.
      * @param value the value of the moment.
      */
@@ -59,7 +59,7 @@ public class Moment extends ContinuousStatistic {
     }
 
     /**
-     * 
+     *
      * @return the order of the moment, e.g. 1st order.
      */
     public int getOrder() {

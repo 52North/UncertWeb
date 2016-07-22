@@ -8,8 +8,8 @@
  48155 Muenster, Germany
  info@52north.org
 
- This program is free software; you can redistribute and/or modify it under 
- the terms of the GNU General Public License version 2 as published by the 
+ This program is free software; you can redistribute and/or modify it under
+ the terms of the GNU General Public License version 2 as published by the
  Free Software Foundation.
 
  This program is distributed WITHOUT ANY WARRANTY; even without the implied
@@ -61,15 +61,15 @@ import org.n52.sos.utilities.SosUtilities;
 
 /**
  * class encapsulates encoding methods for OM sampling features
- * 
+ *
  * @author Carsten Hollmann
- * 
+ *
  */
 public class FeatureEncoderV2 implements IFeatureEncoder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sos.encode.IFeatureEncoder#createGetFeatureOfInterestResponse
      * (org.n52.sos.ogc.om.features.SosAbstractFeature)
@@ -114,7 +114,7 @@ public class FeatureEncoderV2 implements IFeatureEncoder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sos.encode.IFeatureEncoder#createSpatialSamplingFeature(org.n52
      * .sos.ogc.om.features.SosAbstractFeature)
@@ -178,7 +178,7 @@ public class FeatureEncoderV2 implements IFeatureEncoder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sos.encode.IFeatureEncoder#createSamplingFeatureCollection(java
      * .util.List)
@@ -209,7 +209,7 @@ public class FeatureEncoderV2 implements IFeatureEncoder {
 
     /**
      * Get the OM 2.0 feature type definition for a SOS feature.
-     * 
+     *
      * @param absFeature
      *            SOS feature
      * @return Feature type definition.

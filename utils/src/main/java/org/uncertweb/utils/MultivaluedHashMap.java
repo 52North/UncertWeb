@@ -51,7 +51,7 @@ public class MultivaluedHashMap<K, V> extends HashMap<K, List<V>> implements
 		}
 		return l;
 	}
-	
+
 	public static <X,Y> MultivaluedHashMap<X,Y> create(){
 		return new MultivaluedHashMap<X,Y>();
 	}
@@ -60,7 +60,7 @@ public class MultivaluedHashMap<K, V> extends HashMap<K, List<V>> implements
 	public <U extends Iterable<? extends V>> void addAll(Map<K, U> col) {
 		for (Entry<K, U> e : col.entrySet()) {
 			add(e.getKey(), e.getValue());
-		}		
+		}
 	}
 
 }

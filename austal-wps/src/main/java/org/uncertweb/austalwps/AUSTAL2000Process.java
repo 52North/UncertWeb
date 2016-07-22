@@ -92,9 +92,9 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 	private String tmpDir = "";
 	private String workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
 	private String austalHome = "";
-//	private String resultsPath = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\AustalWPS\\results";	
+//	private String resultsPath = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\AustalWPS\\results";
 	//private String resourcePath = "D:/JavaProjects/austal-wps/src/main/webapp/res/";
-	
+
 	// WPS inputs & outputs
 	private final String inputIDCentralPoint = "central-point";
 	private final String inputIDdd = "dd";
@@ -108,18 +108,18 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 	private final String inputIDStabilityClass = "stability-class";
 	private final String inputIDStreetEmissions = "street-emissions";
 	private final String inputIDVariableEmissions = "variable-emissions";
-	private final String inputIDStaticEmissions = "static-emissions";	
+	private final String inputIDStaticEmissions = "static-emissions";
 	private final String inputIDReceptorPoints = "receptor-points";
 	private final String inputIDStartTime = "start-time";
 	private final String inputIDEndTime = "end-time";
 	private final String outputIDResult = "result";
-		
+
 	// WPS variables
 	private int numberOfRealisations;
 	private DateTime startDate;
 	private DateTime preStartDate;
 	private DateTime endDate;
-	
+
 	//Austal variables
 //	private Austal2000Txt austal;
 //	private Zeitreihe ts;
@@ -128,8 +128,8 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 	private String zeitreiheFileName = "zeitreihe.dmna";
 	private String zeitreiheFileNameEnglish = "series.dmna";
 	private String austalFileName = "austal2000.txt";
-	
-	public AUSTAL2000Process(){		
+
+	public AUSTAL2000Process(){
 		if(OS_Name.contains("Windows")){
 			tmpDir = System.getenv("TMP");
 		}else{
@@ -137,19 +137,19 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		}
 	//	tmpDir = "c:/temp";
 		workDirPath = tmpDir + fileSeparator + "PO" + fileSeparator;
-		
+
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
 		for(Property property : propertyArray){
 			if(property.getName().equalsIgnoreCase("Austal_Home")){
 				austalHome = property.getStringValue();
 				break;
 			}
-		}	
-//		}		
-	//	resourcePath = "http://" + host + ":" + hostPort + "/" + 
-	//	WebProcessingService.WEBAPP_PATH + "/" + "res" + "/" + "";		
+		}
+//		}
+	//	resourcePath = "http://" + host + ":" + hostPort + "/" +
+	//	WebProcessingService.WEBAPP_PATH + "/" + "res" + "/" + "";
 	}
-	
+
 	@Override
 	public List<String> getErrors() {
 		return errors;
@@ -191,7 +191,7 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 			return GTVectorDataBinding.class;
 			//return LiteralStringBinding.class;
 		}else{
-			return GenericFileDataBinding.class;			
+			return GenericFileDataBinding.class;
 		}
 	}
 
@@ -206,10 +206,10 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		// 1) Get inputs
 		//TODO
 		// 1.1) get study area parameters
-		List<IData> inDataList = inputData.get(inputIDCentralPoint);	
+		List<IData> inDataList = inputData.get(inputIDCentralPoint);
 		if(!(inDataList == null) && inDataList.size() != 0){
-			IData inData = inDataList.get(0);				
-			if(inData instanceof GTVectorDataBinding){			
+			IData inData = inDataList.get(0);
+			if(inData instanceof GTVectorDataBinding){
 				//TODO: extract gx, gy and epsg from point
 				FeatureCollection<?, ?> featColl = (FeatureCollection<?, ?>)inData.getPayload();
 				FeatureIterator<?> iterator = featColl.features();
@@ -222,188 +222,188 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 						gy = (int) coord.y;
 					}
 				}
-			}	
+			}
 		}
-		
+
 		// dd input
-		inDataList = inputData.get(inputIDdd);	
+		inDataList = inputData.get(inputIDdd);
 		String dd = "";
 		if(!(inDataList == null) && inDataList.size() != 0){
-			IData inData = inDataList.get(0);				
-			if(inData instanceof LiteralIntBinding){			
+			IData inData = inDataList.get(0);
+			if(inData instanceof LiteralIntBinding){
 				dd = ""+(Integer) inData.getPayload();
-			}	
+			}
 		}
-		
+
 		// nx input
-		inDataList = inputData.get(inputIDnx);	
+		inDataList = inputData.get(inputIDnx);
 		String nx = "";
 		if(!(inDataList == null) && inDataList.size() != 0){
-			IData inData = inDataList.get(0);				
-			if(inData instanceof LiteralIntBinding){			
+			IData inData = inDataList.get(0);
+			if(inData instanceof LiteralIntBinding){
 				nx = ""+(Integer) inData.getPayload();
-			}	
+			}
 		}
-		
+
 		// ny input
-		inDataList = inputData.get(inputIDny);	
+		inDataList = inputData.get(inputIDny);
 		String ny = "";
 		if(!(inDataList == null) && inDataList.size() != 0){
-			IData inData = inDataList.get(0);				
-			if(inData instanceof LiteralIntBinding){			
+			IData inData = inDataList.get(0);
+			if(inData instanceof LiteralIntBinding){
 				ny = ""+(Integer) inData.getPayload();
-			}	
-		}	
-		
+			}
+		}
+
 		// qs input
-		inDataList = inputData.get(inputIDqs);	
+		inDataList = inputData.get(inputIDqs);
 		String qs = "";
 		if(!(inDataList == null) && inDataList.size() != 0){
-			IData inData = inDataList.get(0);				
-			if(inData instanceof LiteralIntBinding){			
+			IData inData = inDataList.get(0);
+			if(inData instanceof LiteralIntBinding){
 				qs = ""+(Integer) inData.getPayload();
-			}	
+			}
 		}
-		
+
 		// qs input
-		inDataList = inputData.get(inputIDz0);	
+		inDataList = inputData.get(inputIDz0);
 		String z0 = "";
 		if(!(inDataList == null) && inDataList.size() != 0){
-			IData inData = inDataList.get(0);				
-			if(inData instanceof LiteralDoubleBinding){			
+			IData inData = inDataList.get(0);
+			if(inData instanceof LiteralDoubleBinding){
 				z0 = ""+(Double) inData.getPayload();
-			}	
+			}
 		}
-		
+
 		// parameters input
-		inDataList = inputData.get(inputIDParameters);	
+		inDataList = inputData.get(inputIDParameters);
 		List<String> parameters = new ArrayList<String>();
 		if(!(inDataList == null) && inDataList.size() != 0){
 			for(IData inData : inDataList){
-				if(inData instanceof LiteralStringBinding){			
+				if(inData instanceof LiteralStringBinding){
 					parameters.add((String) inData.getPayload());
-				}	
-			}				
+				}
+			}
 		}
-		
+
 		// create study area
 		StudyArea sa = new StudyArea(gx+"", gy+"", dd, nx, ny);
-		
-		
-		
+
+
+
 		//1.2) get meteorology inputs
-		MeteorologyTimeSeries metList = new MeteorologyTimeSeries();		
-		
+		MeteorologyTimeSeries metList = new MeteorologyTimeSeries();
+
 		// windspeed
-		inDataList = inputData.get(inputIDWindSpeed);	
+		inDataList = inputData.get(inputIDWindSpeed);
 		if(!(inDataList == null) && inDataList.size() != 0 ){
-			IData inData = inDataList.get(0);			
-			if(inData instanceof OMBinding){				
+			IData inData = inDataList.get(0);
+			if(inData instanceof OMBinding){
 				IObservationCollection obsCol = ((OMBinding)inData).getPayload();
-				metList = addMeteorology(metList, obsCol);	
+				metList = addMeteorology(metList, obsCol);
 			}
-		}	
-		
+		}
+
 		// winddirection
-		inDataList = inputData.get(inputIDWindDirection);	
+		inDataList = inputData.get(inputIDWindDirection);
 		if(!(inDataList == null) && inDataList.size() != 0 ){
-			IData inData = inDataList.get(0);			
-			if(inData instanceof OMBinding){				
+			IData inData = inDataList.get(0);
+			if(inData instanceof OMBinding){
 				IObservationCollection obsCol = ((OMBinding)inData).getPayload();
-				metList = addMeteorology(metList, obsCol);	
+				metList = addMeteorology(metList, obsCol);
 			}
-		}	
-		
+		}
+
 		// stabilityclass
-		inDataList = inputData.get(inputIDStabilityClass);	
+		inDataList = inputData.get(inputIDStabilityClass);
 		if(!(inDataList == null) && inDataList.size() != 0 ){
-			IData inData = inDataList.get(0);			
-			if(inData instanceof OMBinding){				
+			IData inData = inDataList.get(0);
+			if(inData instanceof OMBinding){
 				IObservationCollection obsCol = ((OMBinding)inData).getPayload();
-				metList = addMeteorology(metList, obsCol);	
+				metList = addMeteorology(metList, obsCol);
 			}
-		}	
-		
+		}
+
 		// 1.3) get emission inputs
-		List<EmissionSource> emissionSources = new ArrayList<EmissionSource>();		
-		
+		List<EmissionSource> emissionSources = new ArrayList<EmissionSource>();
+
 		// check if all emission sources have the same length as the meteorology time series
 		int length = metList.getSize();
-		
+
 		// street emissions
-		inDataList = inputData.get(inputIDStreetEmissions);		
+		inDataList = inputData.get(inputIDStreetEmissions);
 		if(!(inDataList == null) && inDataList.size() != 0){
-			IData inData = inDataList.get(0);			
+			IData inData = inDataList.get(0);
 			if(inData instanceof OMBinding){
 				//input is O&M UncertWeb profile and can be processed now
 				IObservationCollection obsCol = ((OMBinding)inData).getPayload();
 				emissionSources = addVariableEmissionSources(emissionSources, obsCol, length);
-			}			
-		}		
-				
+			}
+		}
+
 		// variable emissions
-		inDataList = inputData.get(inputIDVariableEmissions);		
+		inDataList = inputData.get(inputIDVariableEmissions);
 		if(!(inDataList == null) && inDataList.size() != 0){
-			for(IData inData : inDataList){		
+			for(IData inData : inDataList){
 				if(inData instanceof OMBinding){
 					//input is O&M UncertWeb profile and can be processed now
 					IObservationCollection obsCol = ((OMBinding)inData).getPayload();
 					emissionSources = addVariableEmissionSources(emissionSources, obsCol, length);
-				} 
+				}
 			}
-		}			
-				
+		}
+
 		// static emissions
-		inDataList = inputData.get(inputIDStaticEmissions);		
+		inDataList = inputData.get(inputIDStaticEmissions);
 		if(!(inDataList == null) && inDataList.size() != 0){
 			for(IData inData : inDataList){
 				if(inData instanceof OMBinding){
 					//input is O&M UncertWeb profile and can be processed now
 					IObservationCollection obsCol = ((OMBinding)inData).getPayload();
 					emissionSources = addStaticEmissionSources(emissionSources, obsCol);
-				} 
+				}
 			}
-		}		
-					
+		}
+
 		// then get emission and meteorology time series and create zeitreihe and austal2000txt
 		Austal2000Txt austal = new Austal2000Txt(sa, emissionSources);
 		austal.setQs(Integer.parseInt(qs));
-		Zeitreihe ts = new Zeitreihe(metList, emissionSources, z0);	
-		
+		Zeitreihe ts = new Zeitreihe(metList, emissionSources, z0);
+
 		// adapt lengths of time series
 	//	ts.setTimePeriod(ts.getMeteorologyTimeSeries().getMinDate(), ts.getMeteorologyTimeSeries().getMaxDate());
-		
+
 		// 1.4) get receptor point input
 		List<IData> receptorPointsDataList = inputData.get(inputIDReceptorPoints);
 		List<ReceptorPoint> pointList = new ArrayList<ReceptorPoint>();
-				
+
 		if(!(receptorPointsDataList == null) && receptorPointsDataList.size() != 0){
-			IData receptorPointsData = receptorPointsDataList.get(0);					
-			if(receptorPointsData instanceof GTVectorDataBinding){			
+			IData receptorPointsData = receptorPointsDataList.get(0);
+			if(receptorPointsData instanceof GTVectorDataBinding){
 				handleReceptorPoints(pointList, (FeatureCollection<?, ?>)receptorPointsData.getPayload());
 				// set Austal into non-grid mode
 				austal.setOs("");
-			}	
+			}
 		}else{ // for raster execution
 			austal.setOs("\"NOSTANDARD;Kmax=1;Average=1;Interval=3600\"");
 		}
 		if(pointList.size()>0)
 			austal.setReceptorPoints(pointList);
-		
+
 		// 1.5)  write files
 		writeFiles(austal, ts);
-								
+
 		// 2) execute Austal for each sample and collect results
 		try {
 			// get command for execute Austal
 //			String command = austalHome + fileSeparator + "austal2000.exe " + workDirPath;
-			
+
 			String command = "";
-			
+
 			String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 			int webinfIndex = path.indexOf("WEB-INF");
 			path = path.substring(0, webinfIndex);
-			
+
 			if (!OS_Name.startsWith("Windows")) {
 				path = path + "/res/Austal_bin/Linux";
 				command = path + fileSeparator + "austal2000 "
@@ -413,20 +413,20 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 				command = path + fileSeparator + "austal2000.exe "
 						+ workDirPath;
 			}
-			
-			
-			Runtime rt = Runtime.getRuntime();				
+
+
+			Runtime rt = Runtime.getRuntime();
 			Process proc = rt.exec(command);
-				
+
 			// any error message?
 			StreamGobbler errorGobbler = new StreamGobbler(proc
 					.getErrorStream(), "ERROR");
-				
+
 			// any output?
 			StreamGobbler outputGobbler = new StreamGobbler(proc
 					.getInputStream(), "OUTPUT");
 			outputGobbler.setSubject(this);
-				
+
 			// kick them off
 			errorGobbler.start();
 			outputGobbler.start();
@@ -441,14 +441,14 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 			if(exitVal == 0){
 				LOGGER.debug("Process finished normally.");
 			}
-				
+
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
-	
+		}
+
 		// 3) handle results
-		Map<String, IData> result = new HashMap<String, IData>();	
-		
+		Map<String, IData> result = new HashMap<String, IData>();
+
 		// if receptor points were provided give their results back
 		if(!(receptorPointsDataList == null) && receptorPointsDataList.size() != 0){
 			try {
@@ -458,16 +458,16 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 //				// save result locally
 //				String filepath = resultsPath + "\\Austal_"+startDate.toString("yyyy-MM")+".xml";
 //				File file = new File(filepath);
-//				
+//
 //				// encode, store (for using in austal request later)
 //				try {
 //					new StaxObservationEncoder().encodeObservationCollection(mcoll,file);
 //				} catch (OMEncodingException e) {
 //					e.printStackTrace();
 //				}
-				
+
 				OMBinding omd = new OMBinding(mcoll);
-				result.put(outputIDResult, omd);	
+				result.put(outputIDResult, omd);
 				return result;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -479,20 +479,20 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 			// get results only from start date to end date only
 			HashMap<Integer, HashMap<Integer, ArrayList<Double>>> realisationsMap = new HashMap<Integer, HashMap<Integer, ArrayList<Double>>>();
 			AustalOutputReader outputReader = new AustalOutputReader();
-			realisationsMap.put(1, outputReader.readHourlyFiles(workDirPath, 1, false));			
-			
+			realisationsMap.put(1, outputReader.readHourlyFiles(workDirPath, 1, false));
+
 //			for(int i=0; i<numberOfRealisations; i++){
 //				String folder = resultsPath + "\\"+ startDate.toString("yyyy-MM") +"\\PO"+i;
 //				realisationsMap.put(i+1, outputReader.readHourlyFiles(folder, h+1, false));
 //			}
-			
+
 			// write results to a NetCDF file
 			String filepath = workDirPath + "Austal_"+startDate.toString("yyyy-MM")+".nc";
-	//				+ System.currentTimeMillis() + ".nc";		
+	//				+ System.currentTimeMillis() + ".nc";
 			NetcdfUWFile resultFile = null;
 			try {
-				resultFile = outputReader.createNetCDFfile(filepath, 
-						austal.getStudyArea().getXcoords(), austal.getStudyArea().getYcoords(), 
+				resultFile = outputReader.createNetCDFfile(filepath,
+						austal.getStudyArea().getXcoords(), austal.getStudyArea().getYcoords(),
 						startDate, 1, realisationsMap);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -501,26 +501,26 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 			} catch (InvalidRangeException e) {
 				e.printStackTrace();
 			}
-			
+
 			NetCDFBinding uwData = new NetCDFBinding(resultFile);
 			result.put(outputIDResult, uwData);
 			return result;
-		}	
-		
+		}
+
 		return  new HashMap<String, IData>();
 	}
 
-	
+
 	private void writeFiles(Austal2000Txt austal, Zeitreihe ts){
 		// test writer
-		
+
 		//create folder if necessary
 		File po_folder = new File(workDirPath);
 		if (!po_folder.exists()) {
 			po_folder.mkdir();
 		}
 		File new_austalFile = new File(workDirPath+"/"+austalFileName);
-		
+
 		//create austal file if necessary
 		if (!new_austalFile.exists()) {
 			try {
@@ -532,7 +532,7 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		}
 		//write austal file
 		austal.writeFile(new_austalFile);
-		
+
 		//create Zeitreihe file if necessray
 		File new_tsFile = new File(workDirPath+"/"+zeitreiheFileName);
 		if (!new_tsFile.exists()) {
@@ -544,37 +544,37 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		}
 		//write Zeitreihe
 		ts.writeFile(new_tsFile);
-		
+
 		File new_tsFile2 = new File(workDirPath+"/"+zeitreiheFileNameEnglish);
 		ts.writeFile(new_tsFile2);
 	}
-		
-		
+
+
 	private List<EmissionSource> addVariableEmissionSources(List<EmissionSource> emissions, IObservationCollection coll, int tsSize) {
 			SpatialSamplingFeature spsam = null;
 			int counter = emissions.size()+1;
 			/*
 			 * The samplingfeature of the observations is only defined explicitly once
 			 * and the remainder of the observations holds just references.
-			 * So we need to check all observations and if the sampling feature is 
-			 * "new" we add it to the list. 
+			 * So we need to check all observations and if the sampling feature is
+			 * "new" we add it to the list.
 			 */
 			EmissionTimeSeries emisTS = null;
-			
+
 			for (AbstractObservation abstractObservation : coll.getObservations()) {
-				
+
 				// for the first observation
 				if(spsam == null){
 					spsam = abstractObservation.getFeatureOfInterest();
 					emisTS = new EmissionTimeSeries(counter);// assign id of respective source
-					
+
 					// create EmissionSource
 					EmissionSource tmpEMS = FeatOfInt2EmisSource(abstractObservation.getFeatureOfInterest().getShape());
 					tmpEMS.setDynamicSourceID(counter);
-					emissions.add(tmpEMS);	
-		
+					emissions.add(tmpEMS);
+
 					counter++;
-				} 
+				}
 				// only if it's a new spatial sampling feature
 				else if (!spsam.equals(abstractObservation.getFeatureOfInterest())) {
 					// check if current time series has correct length
@@ -585,27 +585,27 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 						// else remove last source and reset counter
 						emissions.remove(emissions.size()-1);
 						counter--;
-					}					
-					
+					}
+
 					// new emissions time series
 					emisTS = new EmissionTimeSeries(counter);// assign id of respective source
 					spsam = abstractObservation.getFeatureOfInterest();
-					
+
 					// create EmissionSource
 					EmissionSource tmpEMS = FeatOfInt2EmisSource(abstractObservation.getFeatureOfInterest().getShape());
 					tmpEMS.setDynamicSourceID(counter);
 					emissions.add(tmpEMS);
-					
+
 					counter++;
-				}				
+				}
 				// This do always:
 				// add current observation to current time series
 				DateTime dt = abstractObservation.getPhenomenonTime().getDateTime();
-				IResult result = abstractObservation.getResult();				
+				IResult result = abstractObservation.getResult();
 				Double obs = (Double) result.getValue();
 				// correct for negative values
 				if(obs<0)
-					obs = 0d;				
+					obs = 0d;
 				emisTS.addEmissionValue(dt, obs);
 			}
 
@@ -615,29 +615,29 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 			}else{
 				// else remove last source and reset counter
 				emissions.remove(emissions.size()-1);
-			}		
+			}
 			return emissions;
 	}
-		
+
 	private List<EmissionSource> addStaticEmissionSources(List<EmissionSource> emissions, IObservationCollection coll){
 		// here each sampling feature has only one observation
-		for (AbstractObservation abstractObservation : coll.getObservations()) {			
+		for (AbstractObservation abstractObservation : coll.getObservations()) {
 			// create EmissionSource
 			EmissionSource tmpEMS = FeatOfInt2EmisSource(abstractObservation.getFeatureOfInterest().getShape());
-			
+
 			// get observation result
-			IResult result = abstractObservation.getResult();				
+			IResult result = abstractObservation.getResult();
 			Double obs = (Double) result.getValue();
-			
+
 			// correct for negative values
 			if(obs<0)
-				obs = 0d;	
+				obs = 0d;
 			tmpEMS.setStaticStrength(obs);
-			emissions.add(tmpEMS);	
-		}		
+			emissions.add(tmpEMS);
+		}
 		return emissions;
 	}
-		
+
 	private EmissionSource FeatOfInt2EmisSource(Geometry geom){
 		EmissionSource tmpEMS = null;
 		if (geom instanceof MultiLineString) {
@@ -660,19 +660,19 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		}
 		return tmpEMS;
 	}
-		
+
 
 	private MeteorologyTimeSeries addMeteorology(MeteorologyTimeSeries meteorology, IObservationCollection coll){
 			/*
 			 * the O&M is structured in that way that at first the wind direction values are listed
-			 * and second the wind speed values. each timestamp has a wind direction value and on wind speed value 
+			 * and second the wind speed values. each timestamp has a wind direction value and on wind speed value
 			 */
-			for (AbstractObservation obs : coll.getObservations()) {				
-				// get result	
+			for (AbstractObservation obs : coll.getObservations()) {
+				// get result
 				Double val = (Double)obs.getResult().getValue();
-				DateTime dt = obs.getPhenomenonTime().getDateTime();	
-				
-				// check which observation is contained	
+				DateTime dt = obs.getPhenomenonTime().getDateTime();
+
+				// check which observation is contained
 				if(obs.getObservedProperty().getPath().contains("winddirection")){
 					// correct for outlier samples
 					while(val<0)
@@ -688,14 +688,14 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 				}else if(obs.getObservedProperty().getPath().contains("stabilityclass")){
 					val= (Double)obs.getResult().getValue();
 					meteorology.addStabilityClass(dt, val);
-				}													
+				}
 			}
-			
+
 			return meteorology;
 	}
-		
-	
-	
+
+
+
 	/**
 	 * Method to create Receptor point list from FeatureCollection input
 	 * @param pointList
@@ -730,7 +730,7 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 				coordinateCount = lineString.getCoordinates().length;
 
 				LOGGER.debug("Linestring has " + coordinateCount + " coordinates.");
-				
+
 				for (int i = 0; i < lineString.getCoordinates().length; i++) {
 
 					if (i == 20) {
@@ -775,48 +775,48 @@ public class AUSTAL2000Process extends AbstractObservableAlgorithm{
 		}
 
 	}
-	
+
 	/**
 	 * Method to create OM Observation Collection with Austal results for receptor points
 	 * @return
 	 * @throws URISyntaxException
 	 */
-	private IObservationCollection createReceptorPointsResultCollection() throws URISyntaxException{		
-		MeasurementCollection mcoll = new MeasurementCollection();					
+	private IObservationCollection createReceptorPointsResultCollection() throws URISyntaxException{
+		MeasurementCollection mcoll = new MeasurementCollection();
 		AustalOutputReader austal = new AustalOutputReader();
 		ArrayList<Point> points = austal.readReceptorPointList(workDirPath, false);
-		
+
 		URI procedure = new URI("http://www.uncertweb.org/models/austal2000");
-		URI observedProperty = new URI("http://www.uncertweb.org/phenomenon/pm10");		
+		URI observedProperty = new URI("http://www.uncertweb.org/phenomenon/pm10");
 		URI codeSpace = new URI("");
-		
+
 		// loop through points
-		for (int j = 0; j < points.size(); j++) {			
+		for (int j = 0; j < points.size(); j++) {
 			Point p = points.get(j);
 			ArrayList<Value> vals = p.values();
 			double[] coords = p.coordinates();
-			
+
 			// get coordinates and create point
-			Coordinate coord = new Coordinate(coords[0], coords[1]);											
+			Coordinate coord = new Coordinate(coords[0], coords[1]);
 			PrecisionModel pMod = new PrecisionModel(PrecisionModel.FLOATING);
 			GeometryFactory geomFac = new GeometryFactory(pMod, 31467);
 			SpatialSamplingFeature featureOfInterest = new SpatialSamplingFeature("sampledFeature", geomFac.createPoint(coord));
 			featureOfInterest.setIdentifier(new Identifier(codeSpace, "point" + j));
-			
-			// loop through observations										
-			for (int k = 0; k < vals.size(); k++) {	
-					Identifier identifier = new Identifier(codeSpace, "m" + k);					
-					String timeStamp = vals.get(k).TimeStamp().trim();					
+
+			// loop through observations
+			for (int k = 0; k < vals.size(); k++) {
+					Identifier identifier = new Identifier(codeSpace, "m" + k);
+					String timeStamp = vals.get(k).TimeStamp().trim();
 					timeStamp = timeStamp.replace(" ", "T");
-					
-					TimeObject phenomenonTime = new TimeObject(timeStamp);						
-					MeasureResult resultm = new MeasureResult(vals.get(k).PM10val(), "ug/m3");						
+
+					TimeObject phenomenonTime = new TimeObject(timeStamp);
+					MeasureResult resultm = new MeasureResult(vals.get(k).PM10val(), "ug/m3");
 					Measurement m1 = new Measurement(identifier, null, phenomenonTime, phenomenonTime, null, procedure, observedProperty, featureOfInterest, null, resultm);
 					mcoll.addObservation(m1);
-			}								
+			}
 		}
 		return mcoll;
-	}	
-	
-	
+	}
+
+
 }

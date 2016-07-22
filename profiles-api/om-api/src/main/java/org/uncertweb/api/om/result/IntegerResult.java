@@ -4,9 +4,9 @@ import java.math.BigInteger;
 
 /**
  * Result representing an integer value, using Java's {@link java.math.BigInteger}
- * 
+ *
  * @author Kiesow
- * 
+ *
  */
 public class IntegerResult implements IResult {
 
@@ -14,7 +14,7 @@ public class IntegerResult implements IResult {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param bigInteger
 	 *            integer value of this result
 	 */

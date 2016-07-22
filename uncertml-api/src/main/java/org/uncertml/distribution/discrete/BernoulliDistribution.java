@@ -7,9 +7,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a Bernoulli distribution with probability parameter.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Bernoulli}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -19,7 +19,7 @@ public class BernoulliDistribution implements IDiscreteDistribution {
 
     /**
      * Constructor that takes a single probability parameter.
-     * 
+     *
      * @param probability the probability parameter.
      */
     public BernoulliDistribution(double probability) {
@@ -28,10 +28,10 @@ public class BernoulliDistribution implements IDiscreteDistribution {
 
     /**
      * Constructor that takes an array of doubles for probability parameters. Each probability
-     * represents a unique Bernoulli distribution. This is in line with the 
+     * represents a unique Bernoulli distribution. This is in line with the
      * UncertML syntax whereby a collection of types can be represented by a single
      * entity.
-     * 
+     *
      * @param probability an array of doubles representing the probability parameter of n
      * Bernoulli distributions.
      */
@@ -41,10 +41,10 @@ public class BernoulliDistribution implements IDiscreteDistribution {
 
     /**
      * Constructor that takes a list of doubles for probability parameters. Each probability
-     * represents a unique Bernoulli distribution. This is in line with the 
+     * represents a unique Bernoulli distribution. This is in line with the
      * UncertML syntax whereby a collection of types can be represented by a single
      * entity. The list must not contain any null elements.
-     * 
+     *
      * @param probability a list of doubles representing the probability parameter of n
      * probability distributions.
      */
@@ -59,7 +59,7 @@ public class BernoulliDistribution implements IDiscreteDistribution {
     }
 
     /**
-     * 
+     *
      * @return the probability parameter of each Bernoulli distribution represented
      * by this object.
      */

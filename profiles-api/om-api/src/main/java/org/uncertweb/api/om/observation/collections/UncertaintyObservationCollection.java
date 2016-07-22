@@ -8,35 +8,35 @@ import org.uncertweb.api.om.observation.UncertaintyObservation;
 
 /**
  * represents collection with ReferenceObservations
- * 
+ *
  * @author staschc
  *
  */
 public class UncertaintyObservationCollection implements IObservationCollection {
-	
+
 	/**gml ID of collection*/
 	private String gmlId;
-	
+
 	/**members of collection*/
 	private List<UncertaintyObservation> members;
-	
+
 	/**type name of observation collection*/
 	public static final String NAME = "OM_UncertaintyObservationCollection";
-	
+
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param members
 	 * 		members of collection
 	 */
 	public UncertaintyObservationCollection(List<UncertaintyObservation> members){
 		this.members = members;
 	}
-	
+
 	/**
 	 * constructor; initializes collection and members array; members have to be added
 	 * using the add(UncertaintyObs) method
-	 * 
+	 *
 	 */
 	public UncertaintyObservationCollection() {
 		this.members = new ArrayList<UncertaintyObservation>();
@@ -48,7 +48,7 @@ public class UncertaintyObservationCollection implements IObservationCollection 
 	public List<UncertaintyObservation> getMembers() {
 		return members;
 	}
-	
+
 	@Override
 	public String getGmlId() {
 		return gmlId;

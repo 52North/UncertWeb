@@ -19,24 +19,24 @@ public class ProcessTests {
 //	private String ncRotterdam8days = testDataPath + "/rotterdam_conc_20110402";
 //	private String ncRotterdam3days = testDataPath + "/nox_dummy_8days.nc";
 //	private String ncMuenster3days = testDataPath + "/airQualityData.nc";
-//	
+//
 //	/*
 //	 * Outdoor Model tests:
 //	 * - no temporal overlay
 //	 * - no spatial overlay
-//	 * 
+//	 *
 //	 */
-//	
+//
 //	public void testOutdoorModel(){
 //		NcUwFile ncFile = Utils.getNetCDFUfile(ncRotterdam3days);
 //		List<AbstractProfile> profileList = new OMProfileParser().OM2Profiles(Utils.getOMfile(genericTimeOMFile),
-//				Utils.createTimeList(ncFile.getVariable(NcUwConstants.StandardNames.TIME).getUnitsString(), 
+//				Utils.createTimeList(ncFile.getVariable(NcUwConstants.StandardNames.TIME).getUnitsString(),
 //						ncFile.getVariable(NcUwConstants.StandardNames.TIME).getDimension(0).getLength()),60);
 //		new OutdoorModel().run(profileList, ncFile);
-//		
+//
 //		// check if exposure values are in the profiles
-//		
+//
 //	}
-	
-	
+
+
 }

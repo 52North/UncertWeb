@@ -15,33 +15,33 @@ import org.w3c.dom.NodeList;
 
 /**
  * loads and represents the AggregationProcessConfiguration; processes need
- * to be configured in aggregationProcessConfig.xml 
- * 
+ * to be configured in aggregationProcessConfig.xml
+ *
  * @author staschc
  *
  */
 public class AggregationServiceConfiguration {
-	
+
 	private static Logger LOGGER = Logger.getLogger(AggregationServiceConfiguration.class);
-	
+
 	/** singleton instance*/
 	private static AggregationServiceConfiguration instance;
-	
+
 	/**
 	 * map holds the configuration (class name of algorithm and semantics) for the process identifiers
-	 * 
+	 *
 	 */
 	private Map<String, AggregationProcessConfiguration> configs4pIdentifiers;
-	
+
 	/**
 	 * constructor
 	 */
 	private AggregationServiceConfiguration(){
 		readConfig();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return only existing instance of this class.
 	 */
 	public static AggregationServiceConfiguration getInstance(){
@@ -50,45 +50,45 @@ public class AggregationServiceConfiguration {
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * returns semantics about the process as second element for a process identifier
-	 * 
+	 *
 	 * @param processIdentifier
 	 * 			identifier of an aggregation process
 	 * @return list containing the classname of the algorithm implementation as first element and semantics about the process as second element for a process identifier
-	 * 
+	 *
 	 */
 	public String getClassSemantics4ProcIdentifier(String processIdentifier){
 		return this.configs4pIdentifiers.get(processIdentifier).getSemantics();
 	}
-	
+
 	/**
 	 * returns a list containing the classname of the algorithm implementation as first element and semantics about the process as second element for a process identifier
-	 * 
+	 *
 	 * @param processIdentifier
 	 * 			identifier of an aggregation process
 	 * @return list containing the classname of the algorithm implementation as first element and semantics about the process as second element for a process identifier
-	 * 
+	 *
 	 */
 	public String getClassName4ProcIdentifier(String processIdentifier){
 		return this.configs4pIdentifiers.get(processIdentifier).getClassName();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return all aggregation process identifiers
 	 */
 	public Set<String> getAllProcessIdentifiers(){
 		return this.configs4pIdentifiers.keySet();
 	}
-	
+
 	/**
 	 * helper method for reading the configuration
-	 * 
+	 *
 	 */
 	private void readConfig(){
-		
+
 		String configIs = this.getClass().getResource("/aggregationProcessConfig.xml").getFile();
 		File fXmlFile = new File(configIs);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -120,33 +120,33 @@ public class AggregationServiceConfiguration {
 					}
 				}
 				this.configs4pIdentifiers.put(identifier, new AggregationProcessConfiguration(identifier,clazzName,semantics));
-			}			
+			}
 		} catch (Exception e) {
 			LOGGER.debug("Error while reading config file for aggregation processes: " + e.getLocalizedMessage());
 			throw new RuntimeException(e);
-		} 
+		}
 	}
-	
+
 	/**
 	 * represents a single process configuration
-	 * 
+	 *
 	 * @author staschc
 	 *
 	 */
 	private class AggregationProcessConfiguration {
-		
+
 		/**identifier of the aggregation process*/
 		private String identifier;
-		
+
 		/**className of the Aggregation process*/
 		private String className;
-		
+
 		/** semantics of the process*/
 		private String semantics;
-		
+
 		/**
-		 * constructor 
-		 * 
+		 * constructor
+		 *
 		 * @param id
 		 * @param clazz
 		 * @param sem
@@ -156,7 +156,7 @@ public class AggregationServiceConfiguration {
 			setClassName(clazz);
 			setSemantics(sem);
 		}
-		
+
 		/**
 		 * @return the identifier
 		 */
@@ -164,7 +164,7 @@ public class AggregationServiceConfiguration {
 		public String getIdentifier() {
 			return identifier;
 		}
-		
+
 		/**
 		 * @param identifier the identifier to set
 		 */
@@ -196,6 +196,6 @@ public class AggregationServiceConfiguration {
 			this.semantics = semantics;
 		}
 	}
-	
-	
+
+
 }

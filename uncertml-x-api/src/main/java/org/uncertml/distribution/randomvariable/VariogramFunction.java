@@ -5,43 +5,43 @@ import org.uncertml.statistics.Anisotropy;
 
 /**
  * class represents a variogram
- * 
+ *
  * @author staschc
  *
  */
 public class VariogramFunction implements IDistribution, INormalCovarianceParameter{
-	
+
 	/**sill value of variogram*/
 	private double sill;
-	
+
 	/**range value of variogram*/
 	private double range;
-	
+
 	/**nugget of variogram*/
 	private double nugget;
-	
+
 	/**kappa value; only used if model is MATERN*/
 	private double kappa = Double.NaN;
-	
+
 	/**model of th variogram*/
 	private Model model;
-	
+
 	/**anistropy of the variogram*/
 	private Anisotropy anis;
-	
+
 	/**
 	 * enumeration that represents the different models for the variogram
-	 * 
+	 *
 	 * @author staschc
 	 *
 	 */
 	public enum Model{
 		Gau,Sph,Exp,Lin,Mat
 	}
-	
+
 	/**
 	 * constructor with all parameters
-	 * 
+	 *
 	 * @param sill
 	 * @param range
 	 * @param nugget
@@ -57,10 +57,10 @@ public class VariogramFunction implements IDistribution, INormalCovarianceParame
 		this.model = model;
 		this.anis = anis;
 	}
-	
+
 	/**
 	 * constructor with mandatory parameters
-	 * 
+	 *
 	 * @param sill
 	 * @param range
 	 * @param nugget
@@ -72,10 +72,10 @@ public class VariogramFunction implements IDistribution, INormalCovarianceParame
 		this.nugget = nugget;
 		this.model = model;
 	}
-	
+
 	/**
 	 * constructor with mandatory parameters and anisotropy
-	 * 
+	 *
 	 * @param sill
 	 * @param range
 	 * @param nugget
@@ -131,5 +131,5 @@ public class VariogramFunction implements IDistribution, INormalCovarianceParame
 	public Anisotropy getAnis() {
 		return anis;
 	}
-	
+
 }

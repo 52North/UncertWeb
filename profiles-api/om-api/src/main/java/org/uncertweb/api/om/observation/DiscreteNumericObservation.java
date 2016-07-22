@@ -13,7 +13,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Discrete observation contains BigInteger result and inherits other properties from AbstractObservation
- * 
+ *
  * @author Kiesow, staschc
  *
  */
@@ -21,14 +21,14 @@ public class DiscreteNumericObservation extends AbstractObservation{
 
 	/** integer result of the observation */
 	private IntegerResult result;
-	
+
 	/**type name of this observation*/
 	public static final String NAME = "OM_DiscreteNumericObservation";
-	
-	
+
+
 	/**
 	 * Constructor with mandatory attributes
-	 * 
+	 *
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -51,7 +51,7 @@ public class DiscreteNumericObservation extends AbstractObservation{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param identifier
 	 *            identifier of the observation
 	 * @param boundedBy
@@ -72,7 +72,7 @@ public class DiscreteNumericObservation extends AbstractObservation{
 	 *            result
 	 * @param resultQuality
 	 * 			  (optional) result qualities as UncertaintyResults
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public DiscreteNumericObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
 			TimeObject resultTime, TimeObject validTime, URI procedure,
@@ -84,7 +84,7 @@ public class DiscreteNumericObservation extends AbstractObservation{
 		setValidTime(validTime);
 		setResultQuality(resultQuality);
 		setResult(result);
-		
+
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class DiscreteNumericObservation extends AbstractObservation{
 			this.result = (IntegerResult)result;
 		}
 		else throw new IllegalArgumentException("Result type of DiscreteNumericObservation has to be Integer!");
-		
+
 	}
 
 	@Override

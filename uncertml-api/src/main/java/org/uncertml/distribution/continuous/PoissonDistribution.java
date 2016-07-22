@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a Poisson distribution with rate parameter.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Poisson}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -21,7 +21,7 @@ public class PoissonDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single rate parameter.
-     * 
+     *
      * @param rate the rate parameter.
      */
     public PoissonDistribution(double rate) {
@@ -30,10 +30,10 @@ public class PoissonDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes an array of doubles for rate parameters. Each rate
-     * represents a unique Poisson distribution. This is in line with the 
+     * represents a unique Poisson distribution. This is in line with the
      * UncertML syntax whereby a collection of types can be represented by a single
      * entity.
-     * 
+     *
      * @param rate an array of doubles representing the rate parameter of n
      * Poisson distributions.
      */
@@ -43,10 +43,10 @@ public class PoissonDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a list of doubles for rate parameters. Each rate
-     * represents a unique Poisson distribution. This is in line with the 
+     * represents a unique Poisson distribution. This is in line with the
      * UncertML syntax whereby a collection of types can be represented by a single
      * entity. The list must not contain any null elements.
-     * 
+     *
      * @param rate a list of doubles representing the rate parameter of n
      * Poisson distributions.
      */
@@ -58,8 +58,8 @@ public class PoissonDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
-     * @return the rate parameter of each exponential distributions 
+     *
+     * @return the rate parameter of each exponential distributions
      * represented by this object.
      */
     public List<Double> getRate() {

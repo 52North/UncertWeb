@@ -280,8 +280,8 @@ public abstract class NormalDistributionVisualizer extends
 	protected double[] getRange(IDataSet r, int tsd) {
 		double min = Double.POSITIVE_INFINITY;
 		double max = Double.NEGATIVE_INFINITY;
-		
-		Iterator<NcUwObservation> i = getIteratorForDataSet(r);		
+
+		Iterator<NcUwObservation> i = getIteratorForDataSet(r);
 		while (i.hasNext()){
 			NcUwObservation val = i.next();
 			if (val != null && val.hasValue()) {

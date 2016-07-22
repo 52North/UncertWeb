@@ -38,9 +38,9 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
  * the GetObservationDAO; after query of Database, class encodes the
  * ObservationResponse; this subclass also queries uncertainties and encodes O&M
  * 2 Observations
- * 
+ *
  * @author Christoph Stasch, Martin Kiesow
- * 
+ *
  */
 public class GetObservationListener extends org.n52.sos.GetObservationListener
 		implements ISosRequestListener {
@@ -51,13 +51,13 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 
 	/**
 	 * method receives the GetObservation request and sends back a repsonse
-	 * 
+	 *
 	 * @param request
 	 *            the XMLObject request (which should be a
 	 *            GetObservationDocument)
-	 * 
+	 *
 	 * @return Returns the GetObservation response
-	 * 
+	 *
 	 */
 	public synchronized ISosResponse receiveRequest(AbstractSosRequest request) {
 
@@ -85,9 +85,9 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 				if (sosRequest.getResult() != null
 						&& sosRequest.getResult().getOperator().equals(FilterConstants.ComparisonOperator.PropertyIsEqualTo)
 						&& sosRequest.getResult().getPropertyName().equals(PGDAOUncertaintyConstants.u_numOfReals)) {
-					
+
 					numOfReals = Integer.parseInt(sosRequest.getResult().getValue());
-					
+
 					if (numOfReals < 0) {
 						OwsExceptionReport se = new OwsExceptionReport(
 								ExceptionLevel.DetailedExceptions);
@@ -98,11 +98,11 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 								"A result filter limit to the number of returned realisations per sample has to be a non-negativ value.");
 						return new ExceptionResp(se.getDocument());
 					}
-					
+
 					// clear result filter
 					sosRequest.setResult(null);
-				}	
-								
+				}
+
 				SosObservationCollection obsCollection;
 
 				obsCollection = getDao().getObservation(sosRequest);
@@ -117,17 +117,17 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 									sosRequest.getResultModel(), numOfReals);
 
 					StaxObservationEncoder xmlEncoder = new StaxObservationEncoder();
-					
+
 					ByteArrayOutputStream staxOutputStream = new ByteArrayOutputStream();
 					xmlEncoder.encodeObservationCollection(om2obsCol, staxOutputStream);
-					
+
 					if (om2obsCol instanceof UncertaintyObservationCollection) {
-						
+
 						response = new UncertaintyObservationResponse (
 								staxOutputStream, zipCompression);
 
 					} else if (om2obsCol instanceof MeasurementCollection) {
-						
+
 						response = new MeasurementObservationResponse (
 								staxOutputStream, zipCompression);
 
@@ -154,7 +154,7 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 //					} else if (om2obsCol instanceof ObservationCollection) {
 //						response = new ObservationResponse(staxOutputStream,
 //								zipCompression);
-						
+
 					} else {
 						OwsExceptionReport se = new OwsExceptionReport(
 								ExceptionLevel.DetailedExceptions);
@@ -186,14 +186,14 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 
 					// create response
 					if (om2obsCol.getTypeName().equals(OM2Constants.OBS_COL_TYPE_MEASUREMENT)) {
-						
+
 						response = new MeasurementObservationResponse(
 								jsonOutputStream, zipCompression);
 						((MeasurementObservationResponse) response)
 						.setContentType(SosUncConstants.CONTENT_TYPE_JSON_OM2);
 
 					} else if (om2obsCol.getTypeName().equals(OM2Constants.OBS_COL_TYPE_UNCERTAINTY)) {
-						
+
 						response = new UncertaintyObservationResponse(
 								jsonOutputStream, zipCompression);
 						((UncertaintyObservationResponse) response)
@@ -220,7 +220,7 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 					xb_obsCol = (ObservationCollectionDocument) SosConfigurator
 								.getInstance().getOmEncoder()
 								.createObservationCollection(obsCollection);
-					
+
 					response = new ObservationResponse(xb_obsCol,
 							zipCompression, Sos1Constants.SERVICEVERSION);
 				}
@@ -253,7 +253,7 @@ public class GetObservationListener extends org.n52.sos.GetObservationListener
 	 * result format is set, true is returned. If not and the value is text/xml;
 	 * subtype="OM" false is returned. If neither zip nor OM is set, a
 	 * ServiceException with InvalidParameterValue as its code is thrown.
-	 * 
+	 *
 	 * @param responseFormat
 	 *            String containing the value of the result format parameter
 	 * @return boolean true if application/zip is the resultFormat value, false

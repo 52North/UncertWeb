@@ -4,9 +4,9 @@ import org.uncertml.IUncertainty;
 
 /**
  * data binding for uncertainties encoded as UncertML
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class UncertMLBinding extends UncertWebIODataBinding {
 	private static final long serialVersionUID = -4919512307491127757L;
@@ -18,7 +18,7 @@ public class UncertMLBinding extends UncertWebIODataBinding {
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param data
 	 */
 	public UncertMLBinding(IUncertainty data) {

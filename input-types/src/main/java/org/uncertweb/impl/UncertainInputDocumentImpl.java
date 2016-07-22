@@ -15,16 +15,16 @@ package org.uncertweb.impl;
 public class UncertainInputDocumentImpl extends org.uncertweb.impl.AbstractUncertainInputDocumentImpl implements org.uncertweb.UncertainInputDocument
 {
     private static final long serialVersionUID = 1L;
-    
+
     public UncertainInputDocumentImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType);
     }
-    
-    private static final javax.xml.namespace.QName UNCERTAININPUT$0 = 
+
+    private static final javax.xml.namespace.QName UNCERTAININPUT$0 =
         new javax.xml.namespace.QName("http://www.uncertweb.org", "UncertainInput");
-    
-    
+
+
     /**
      * Gets the "UncertainInput" element
      */
@@ -42,7 +42,7 @@ public class UncertainInputDocumentImpl extends org.uncertweb.impl.AbstractUncer
             return target;
         }
     }
-    
+
     /**
      * Sets the "UncertainInput" element
      */
@@ -60,7 +60,7 @@ public class UncertainInputDocumentImpl extends org.uncertweb.impl.AbstractUncer
             target.set(uncertainInput);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "UncertainInput" element
      */

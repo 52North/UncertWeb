@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -96,15 +96,15 @@ import org.uncertweb.utils.UwConstants;
 /**
  * Algorithm that encapsulates input/ouput handling and execution of
  * {@link GroupingMethod}s and {@link AggregationMethod}s.
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class GenericObservationAggregationProcess extends
 		ExtendedSelfDescribingAlgorithm {
-	
-	
+
+
 		EncoderHook<OMObservationDocument> encoderHook = new EncoderHook<OMObservationDocument>() {
-			
+
 			@Override
 			public void encode(AbstractObservation ao, OMObservationDocument xml) {
 				Origin o = (Origin) ao.getParameter(Constants.OBSERVATION_PARAMETER_AGGREGATED_OF);
@@ -115,9 +115,9 @@ public class GenericObservationAggregationProcess extends
 					oct.addNewRole().setRole(Constants.OBSERVATION_PARAMETER_AGGREGATED_OF);
 				}
 			}
-			
+
 		};
-	
+
 
 	/**
 	 * The URL of the SOS from which the {@link ObservationCollection} will be
@@ -153,28 +153,28 @@ public class GenericObservationAggregationProcess extends
 
 	/**
 	 * The {@code GetObservation} request which will be postet to the SOS
-	 * 
+	 *
 	 * @see #SOS_URL
 	 */
 	public static final SingleProcessInput<GetObservationDocument> SOS_REQUEST = new SingleProcessInput<GetObservationDocument>(
 			Constants.Process.Inputs.SOS_REQUEST_ID,
 			GetObservationRequestBinding.class, 0, 1, null, null);
-	
-	
+
+
 	public static final SingleProcessInput<String> SOS_REQUEST_RETURN_MIME_TYPE = new SingleProcessInput<String>(
 			Constants.Process.Inputs.SOS_REQUEST_RETURN_MIME_TYPE,
 			LiteralStringBinding.class, 0, 1, null, null);
-	
+
 	public static final SingleProcessInput<String> SOS_REQUEST_RETURN_SCHEMA = new SingleProcessInput<String>(
 			Constants.Process.Inputs.SOS_REQUEST_RETURN_SCHEMA,
 			LiteralStringBinding.class, 0, 1, null, null);
 
 	/**
 	 * Composite input which combines {@link #SOS_URL} and {@link #SOS_REQUEST}.
-	 * 
+	 *
 	 * @see ObservationCollectionInputHandler
 	 */
-	public static final AbstractProcessInput<IObservationCollection> OBSERVATION_COLLECTION_INPUT = 
+	public static final AbstractProcessInput<IObservationCollection> OBSERVATION_COLLECTION_INPUT =
 			new CompositeProcessInput<IObservationCollection>(
 			Constants.Process.Inputs.OBSERVATION_COLLECTION_INPUT_ID,
 			new ObservationCollectionInputHandler(SOS_URL, SOS_REQUEST, SOS_REQUEST_RETURN_MIME_TYPE, SOS_REQUEST_RETURN_SCHEMA));
@@ -187,7 +187,7 @@ public class GenericObservationAggregationProcess extends
 	/**
 	 * Process output that contains a {@code GetObservation} request to fetch
 	 * the aggregated observations from a SOS.
-	 * 
+	 *
 	 * @see Constants.Process.Inputs.Common#SOS_DESTINATION_URL
 	 */
 	public static final ProcessOutput AGGREGATED_OBSERVATIONS_REFERENCE = new ProcessOutput(
@@ -245,7 +245,7 @@ public class GenericObservationAggregationProcess extends
 	 * The {@link AggregationMethod} to for temporal aggregation.
 	 */
 	private Class<? extends AggregationMethod> tam;
-	
+
 	/**
 	 * The identifier of this algorithm.
 	 */
@@ -259,7 +259,7 @@ public class GenericObservationAggregationProcess extends
 	/**
 	 * Generates the common {@link AbstractProcessInput}s for all
 	 * {@link GenericObservationAggregationProcess}.
-	 * 
+	 *
 	 * @return the common inputs.
 	 */
 	private static Set<AbstractProcessInput<?>> getCommonInputs() {
@@ -273,14 +273,14 @@ public class GenericObservationAggregationProcess extends
 
 	/**
 	 * Creates a new {@code GenericObservationAggregationProcess}.
-	 * 
+	 *
 	 * @param identifier identifier of the process
 	 * @param title title of the process
 	 * @param sg spatial grouping method
 	 * @param tg temporal grouping method
 	 */
 	public GenericObservationAggregationProcess(String identifier,
-			String title, 
+			String title,
 			Class<? extends SpatialGrouping> sg,
 			Class<? extends TemporalGrouping> tg,
 			Class<? extends AggregationMethod> sam,
@@ -348,10 +348,10 @@ public class GenericObservationAggregationProcess extends
 
 	@Override
 	protected Set<ProcessOutput> getOutputs() {
-		return set(AGGREGATED_OBSERVATIONS, 
+		return set(AGGREGATED_OBSERVATIONS,
 						 AGGREGATED_OBSERVATIONS_REFERENCE);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -378,35 +378,35 @@ public class GenericObservationAggregationProcess extends
 		try {
 			/* Helper class to fetch the inputs asynchronously. */
 			class Mapper implements Callable<Mapper> {
-				AbstractProcessInput<?> i; Object o; 
+				AbstractProcessInput<?> i; Object o;
 				Mapper(AbstractProcessInput<?> t) { this.i = t; }
 				@Override public Mapper call() {
 					this.o = i.handle(inputs);
-					return this; 
+					return this;
 				}
 				boolean is(AbstractProcessInput<?> t) {
 					return this.i.equals(t); }
 			}
-			
+
 			/* creating tasks */
 			Set<Mapper> tasks = set();
 			for (AbstractProcessInput<?> i : COMMON_INPUTS) { tasks.add(new Mapper(i)); }
 			for (AbstractProcessInput<?> i : sgInputs) { tasks.add(new Mapper(i)); }
 			for (AbstractProcessInput<?> i : tgInputs) { tasks.add(new Mapper(i)); }
-			
+
 			/* execute tasks */
 			List<Future<Mapper>> futures =  INPUT_FETCHER.invokeAll(tasks);
 			if (futures.size() != tasks.size()) {
 				throw new RuntimeException("Not all input processing tasks could be completed.");
 			}
-			
+
 			/* input declarations */
 			Map<AbstractProcessInput<?>, Object>  sgInputMap = map();
 			Map<AbstractProcessInput<?>, Object>  tgInputMap = map();
 			IObservationCollection observations = null;
 			Boolean groupByObservedProperty = null;
 			Boolean spatialBeforeTemporal = null;
-			
+
 			/* extracting of inputs from the tasks */
 			for (Future<Mapper> future : futures) {
 				Mapper m = future.get();
@@ -428,7 +428,7 @@ public class GenericObservationAggregationProcess extends
 			log.info("Using Temporal Grouping Method: {}", tg.getName());
 			log.info("Using Temporal Aggregation Method: {}", tam.getName());
 			log.info("Input: {} Observations.", observations.getObservations().size());
-			
+
 			/* sort by observed property or set it to null */
 			Map<URI, List<? extends AbstractObservation>> obs = map();
 			if (groupByObservedProperty) {
@@ -440,15 +440,15 @@ public class GenericObservationAggregationProcess extends
 			} else {
 				obs.put(UwConstants.URN.NULL.uri, observations.getObservations());
 			}
-			
+
 			List<AbstractObservation> result = list();
-	
+
 			String sosUrl = SOS_URL.handle(inputs);
 			int i = sosUrl.lastIndexOf('?');
 			if (i > 0) {
 				sosUrl = sosUrl.substring(0, i);
 			}
-			
+
 			for (Entry<URI, List<? extends AbstractObservation>> e : obs.entrySet()) {
 				if (spatialBeforeTemporal) {
 					List<AbstractObservation> firstResult = doSpatialAggregation(process, sosUrl, e.getKey(), sgInputMap, e.getValue());
@@ -457,23 +457,23 @@ public class GenericObservationAggregationProcess extends
 					List<AbstractObservation> firstResult = doTemporalAggregation(process, sosUrl, e.getKey(), tgInputMap, e.getValue());
 					result.addAll(doSpatialAggregation(process, sosUrl, e.getKey(), sgInputMap, firstResult));
 				}
-				
+
 			}
-			
+
 			log.info("Output: Generated {} Observations in {}.", result.size(), Utils.timeElapsed(start));
-			
+
 			/* Outputs */
 			Map<String, IData> response = map();
 			response.put(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_ID,
 					new OMBinding(asIObservationCollection(result)));
-	
+
 			String destinationUrl = SOS_DESTINATION_URL.handle(inputs);
 			if (destinationUrl != null) {
 				GetObservationRequestBinding b;
 				try {
 					long insertStart = System.currentTimeMillis();
 					Map<String, Object> meta = map();
-					
+
 					/* TODO add inputs of methods... like time range */
 					meta.put(Constants.Sos.ProcessDescription.Parameter.GROUPED_BY_OBSERVED_PROPERTY, groupByObservedProperty);
 					meta.put(Constants.Sos.ProcessDescription.Parameter.SPATIAL_BEFORE_TEMPORAL_AGGREGATION, spatialBeforeTemporal);
@@ -481,20 +481,20 @@ public class GenericObservationAggregationProcess extends
 					meta.put(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_GROUPING_METHOD, this.tg);
 					meta.put(Constants.Sos.ProcessDescription.Parameter.SPATIAL_AGGREGATION_METHOD, this.sam);
 					meta.put(Constants.Sos.ProcessDescription.Parameter.TEMPORAL_AGGREGATION_METHOD, this.tam);
-					
+
 					log.info("Inserting Observations into SOS: {}", destinationUrl);
 					b = new SOSClient().registerAggregatedObservations(result, destinationUrl, process, meta);
 					log.info("Registered {} Observations in {}.", result.size(), Utils.timeElapsed(insertStart));
-				
+
 					response.put(Constants.Process.Outputs.AGGREGATED_OBSERVATIONS_REFERENCE_ID, b);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
-				
+
 			}
-	
+
 			log.info("Served Request in {}.", Utils.timeElapsed(start));
-	
+
 			return response;
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
@@ -528,12 +528,12 @@ public class GenericObservationAggregationProcess extends
 		}
 		return col;
 	}
-	
+
 	/**
 	 * Aggregates a collection of {@code Observation}s with the
 	 * {@code TemporalGrouping} method of this class. Observations will first be
 	 * sorted by their FeatureOfInterest.
-	 * 
+	 *
 	 * @param process the process URN
 	 * @param sourceUrl the URL of source SOS
 	 * @param m the {@code AggregationMethod}
@@ -576,7 +576,7 @@ public class GenericObservationAggregationProcess extends
 	 * Aggregates a collection of {@code Observation}s with the
 	 * {@code SpatialGrouping} method of this class. Observations will first be
 	 * sorted by their SamplingTime.
-	 * 
+	 *
 	 * @param process the process URN
 	 * @param sourceUrl the URL of source SOS
 	 * @param m the {@code AggregationMethod}
@@ -616,7 +616,7 @@ public class GenericObservationAggregationProcess extends
 
 	/**
 	 * Instantiates the {@code SpatialGrouping} method and set the given inputs.
-	 * 
+	 *
 	 * @param obs the {@code Observation} collection to set
 	 * @param inputs the inputs for the {@code SpatialGrouping}
 	 * @return the instantiated {@code SpatialGrouping}
@@ -636,7 +636,7 @@ public class GenericObservationAggregationProcess extends
 	/**
 	 * Instantiates the {@code TemporalGrouping} method and set the given
 	 * inputs.
-	 * 
+	 *
 	 * @param obs the {@code Observation} collection to set
 	 * @param inputs the inputs for the {@code TemporalGrouping}
 	 * @return the instantiated {@code TemporalGrouping}
@@ -655,7 +655,7 @@ public class GenericObservationAggregationProcess extends
 
 	/**
 	 * Aggregates a collection of {@code Observation}s with the given paramters.
-	 * 
+	 *
 	 * @param process the process URN to set on the aggregated
 	 *            {@code OriginAwareObservation}
 	 * @param sourceUrl the URL of the SOS from which the original
@@ -689,7 +689,7 @@ public class GenericObservationAggregationProcess extends
 		MeasureResult result = (MeasureResult) method.aggregate(obs);
 		Measurement m = new Measurement(id, null, time, time, null, process,
 				observedProperty, f, null, result);
-		m.addParameter(Constants.OBSERVATION_PARAMETER_AGGREGATED_OF, 
+		m.addParameter(Constants.OBSERVATION_PARAMETER_AGGREGATED_OF,
 				new Origin(sourceUrl, sourceObservations));
 		return m;
 	}

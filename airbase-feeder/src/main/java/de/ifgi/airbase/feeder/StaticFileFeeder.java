@@ -19,9 +19,9 @@ import de.ifgi.airbase.feeder.io.filter.PrefixFileFilter;
 import de.ifgi.airbase.feeder.io.sos.http.TransactionalSosClient;
 
 public class StaticFileFeeder extends TransactionalSosClient implements Runnable {
-	
+
 	private List<File> files = null;
-	
+
 	public StaticFileFeeder(List<File> files) {
 		this.files = files;
 	}
@@ -52,7 +52,7 @@ public class StaticFileFeeder extends TransactionalSosClient implements Runnable
 		}
 		log.info("Done.");
 	}
-	
+
 	public static void processDirectory(File dir) {
 		if (dir == null) {
 			throw new NullPointerException();
@@ -69,7 +69,7 @@ public class StaticFileFeeder extends TransactionalSosClient implements Runnable
 		}
 		new Thread(new StaticFileFeeder(filesToProcess)).start();
 	}
-	
+
 	public static void main(String[] args) {
 		File directory = new File("/tmp/AirBase_Feeder_TEMP/FailedRequests");
 		processDirectory(directory);

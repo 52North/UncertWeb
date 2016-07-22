@@ -6,9 +6,9 @@ import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Class representing a Pareto distribution with parameters scale and shape.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Pareto}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -19,7 +19,7 @@ public class ParetoDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single scale and shape parameter.
-     * 
+     *
      * @param scale the scale parameter.
      * @param shape the shape parameter.
      */
@@ -32,7 +32,7 @@ public class ParetoDistribution implements IContinuousDistribution {
      * Each scale and shape pair represents a unique Pareto distribution.
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The arrays must be of equal length.
-     * 
+     *
      * @param scale an array of doubles representing the scale parameter of n
      * Pareto distributions.
      * @param shape an array of doubles representing the shape parameter of n
@@ -48,7 +48,7 @@ public class ParetoDistribution implements IContinuousDistribution {
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The lists must be of equal length and
      * must not contain any null elements.
-     * 
+     *
      * @param scale a list of doubles representing the scale parameter of n
      * Pareto distributions.
      * @param shape a list of doubles representing the shape parameter of n
@@ -60,7 +60,7 @@ public class ParetoDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the scale parameter of each Pareto distribution represented by
      * this object.
      */
@@ -69,7 +69,7 @@ public class ParetoDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the shape parameter of each Pareto distribution represented by
      * this object.
      */

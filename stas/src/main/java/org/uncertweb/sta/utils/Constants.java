@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -40,7 +40,7 @@ import org.uncertweb.utils.UwXmlUtils;
 
 /**
  * Constants.
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class Constants {
@@ -178,7 +178,7 @@ public class Constants {
 			OPTIONS;
 		}
 	}
-	
+
 	public static final String OBSERVATION_PARAMETER_AGGREGATED_OF = "aggregatedOf";
 
 	/**
@@ -358,7 +358,7 @@ public class Constants {
 
 	/**
 	 * Numbers of cached SOS requests.
-	 * 
+	 *
 	 * @see RequestCache
 	 */
 	public static final int MAX_CACHED_REQUESTS = getInt("stas.requestCache.max");
@@ -382,7 +382,7 @@ public class Constants {
 
 	/**
 	 * Loads a configuration property.
-	 * 
+	 *
 	 * @param key
 	 *            the property key
 	 * @return the property
@@ -402,7 +402,7 @@ public class Constants {
 
 	/**
 	 * Loads a configuration property.
-	 * 
+	 *
 	 * @param key
 	 *            the property key
 	 * @param defaultValue
@@ -426,7 +426,7 @@ public class Constants {
 
 	/**
 	 * Loads a boolean configuration property.
-	 * 
+	 *
 	 * @param key
 	 *            the property key
 	 * @return the property
@@ -442,7 +442,7 @@ public class Constants {
 
 	/**
 	 * Loads a integer configuration property.
-	 * 
+	 *
 	 * @param key
 	 *            the property key
 	 * @return the property
@@ -457,7 +457,7 @@ public class Constants {
 
 	/**
 	 * Loads a property from {@link Constants#COMMON_PROPERTIES}
-	 * 
+	 *
 	 * @param key
 	 *            the property key
 	 * @return the property
@@ -484,7 +484,7 @@ public class Constants {
 
 	/**
 	 * Loads a property from {@link Constants#PROCESS_PROPERTIES}
-	 * 
+	 *
 	 * @param key
 	 *            the property key
 	 * @return the property

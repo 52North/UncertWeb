@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -27,14 +27,14 @@ import java.util.ArrayList;
 
 /**
  * Class to generate random Strings. Used to be a passwort generator
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
- * 
+ *
  */
 public class RandomStringGenerator {
 
 	/* @formatter off */
-	
+
 	/**
 	 * All printable characters.
 	 */
@@ -47,14 +47,14 @@ public class RandomStringGenerator {
 		')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '?', '@', '[', '\\',
 		']', '^', '_', '`', '{', '|', '}', '~'
 	};
-	
+
 	/**
 	 * Number characters.
 	 */
 	private static final Character[] NUMBERS = {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
 	};
-	
+
 	/**
 	 * Lower case characters.
 	 */
@@ -62,7 +62,7 @@ public class RandomStringGenerator {
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
 		'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
 	};
-	
+
 	/**
 	 * Upper case characters.
 	 */
@@ -70,7 +70,7 @@ public class RandomStringGenerator {
 		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
 		'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
 	};
-	
+
 	/**
 	 * Printable, non alphanumeric characters.
 	 */
@@ -99,7 +99,7 @@ public class RandomStringGenerator {
 
 	/**
 	 * Returns the lazy created singleton.
-	 * 
+	 *
 	 * @return the singleton.
 	 */
 	public static RandomStringGenerator getInstance() {
@@ -123,11 +123,11 @@ public class RandomStringGenerator {
 	/**
 	 * Shortcut for generating a string with upper case, lower case and digits
 	 * of given length. Equivalent to
-	 * 
+	 *
 	 * <pre>
 	 * generate(length, true, true, true, false);
 	 * </pre>
-	 * 
+	 *
 	 * @param length the length of the generated string.
 	 * @return the generated string.
 	 */
@@ -139,7 +139,7 @@ public class RandomStringGenerator {
 	 * Generates a random string. Every component type has the even chance to be
 	 * chosen and every character within the component has the equal opportunity
 	 * to be chosen.
-	 * 
+	 *
 	 * @param length the length of the generated string
 	 * @param digits if the string should contain digits
 	 * @param uppercase if the string should contain upper case characters

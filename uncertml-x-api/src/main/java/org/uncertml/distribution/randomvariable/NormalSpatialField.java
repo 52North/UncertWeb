@@ -3,40 +3,40 @@ package org.uncertml.distribution.randomvariable;
 import org.uncertml.distribution.IDistribution;
 
 /**
- * 
+ *
  * implementation of a Gaussian spatial random field
- * 
+ *
  * @author staschc
  *
  */
 public class NormalSpatialField extends AbstractSpatialField implements IDistribution{
-	
+
 	/** covariance parameter*/
 	private INormalCovarianceParameter covarianceParameter;
-	
+
 	/**coefficients of a spatial trend polynom*/
 	private double[] spatialTrend;
-	
+
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param sampleReference
-	 * 
+	 *
 	 * @param covarianceParameter
-	 * 
+	 *
 	 */
 	public NormalSpatialField(SampleReference sampleReference,INormalCovarianceParameter covarianceParameter){
 		super.samples=sampleReference;
 		this.covarianceParameter=covarianceParameter;
 	}
-	
+
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param sampleReference
-	 * 
+	 *
 	 * @param covarianceParameter
-	 * 
+	 *
 	 * @param spatialTrend
 	 */
 	public NormalSpatialField(SampleReference sampleReference,INormalCovarianceParameter covarianceParameter, double[] spatialTrend){
@@ -45,8 +45,8 @@ public class NormalSpatialField extends AbstractSpatialField implements IDistrib
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param gp
 	 * @param spatialTrendp
 	 */
@@ -84,5 +84,5 @@ public class NormalSpatialField extends AbstractSpatialField implements IDistrib
 	public void setSpatialTrend(double[] spatialTrend) {
 		this.spatialTrend = spatialTrend;
 	}
-	
+
 }

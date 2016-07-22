@@ -63,8 +63,8 @@ public class UncertaintyObservationCollectionProvider extends AbstractJsonSingle
 						for (int i : gc.getCoordinateValues()) { c.put(i); }
 						eo.put("gridCoordinate", c);
 					}
-				} catch (JSONException e) { 
-					throw new OMEncodingException(e); 
+				} catch (JSONException e) {
+					throw new OMEncodingException(e);
 				}
 			}
 		}

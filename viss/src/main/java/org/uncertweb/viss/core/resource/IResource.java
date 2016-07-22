@@ -33,7 +33,7 @@ public interface IResource extends Closeable {
 	public ObjectId getId();
 
 	public MediaType getMediaType();
-	
+
 	public void setMediaType(MediaType mt);
 
 	public Object getResource();

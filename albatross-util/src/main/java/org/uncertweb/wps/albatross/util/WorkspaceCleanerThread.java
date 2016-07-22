@@ -15,50 +15,50 @@ import org.apache.commons.io.FileUtils;
  *
  */
 public class WorkspaceCleanerThread implements Callable<Void> {
-	
+
 	private Set<Pair<File, Long>> fileSet;
 	private Long interruptTime;
-	
+
 	private static WorkspaceCleanerThread instance = new WorkspaceCleanerThread();
-	
+
 	private WorkspaceCleanerThread(){
-		
+
 		this.fileSet = new HashSet<Pair<File,Long>>();
 	}
-	
+
 	public static WorkspaceCleanerThread getInstance(){
-		
+
 		return instance;
 	}
-	
+
 	public synchronized boolean addFileSet(Set<Pair<File,Long>> files){
-		
+
 		return this.fileSet.addAll(files);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param processInterruptTime time until the files will be removed - in minutes
 	 */
 	public synchronized void setInterruptTime(int processInterruptTime){
-		
+
 		this.interruptTime = TimeUnit.MILLISECONDS.convert(processInterruptTime,TimeUnit.MINUTES);
 	}
 
 	@Override
 	public synchronized Void call() throws Exception {
-		
+
 		synchronized (fileSet) {
-			
+
 			Iterator<Pair<File,Long>> iterator = fileSet.iterator();
-			
+
 			while(iterator.hasNext()){
-				
+
 				Pair<File,Long> currentPair = iterator.next();
-				
+
 				//its time to remove the files
 				if((System.currentTimeMillis() - currentPair.getRight()) > this.interruptTime){
-					
+
 					try {
 						FileUtils.deleteDirectory(currentPair.getLeft());
 						iterator.remove();
@@ -66,12 +66,12 @@ public class WorkspaceCleanerThread implements Callable<Void> {
 						throw new Exception("Error while deleting directory:" +currentPair.getLeft());
 					}
 				}
-				
-				
+
+
 
 			}
-			
+
 		}
-		return null;	
+		return null;
 	}
 }

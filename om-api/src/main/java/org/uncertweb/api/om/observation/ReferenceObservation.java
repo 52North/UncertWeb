@@ -13,7 +13,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Reference observation contains reference as result and inherits other properties from AbstractObservation
- * 
+ *
  * @author Kiesow, staschc
  *
  */
@@ -21,13 +21,13 @@ public class ReferenceObservation extends AbstractObservation{
 
 	/** measure result of the observation */
 	private ReferenceResult result;
-	
+
 	/**type name of this observation*/
 	public static final String NAME = "OM_ReferenceObservation";
-	
+
 	/**
 	 * Constructor with mandatory attributes
-	 * 
+	 *
 
 	 * @param phenomenonTime
 	 *            phenomenon time property
@@ -51,7 +51,7 @@ public class ReferenceObservation extends AbstractObservation{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param identifier
 	 *            gml id attribute
 	 * @param boundedBy
@@ -72,7 +72,7 @@ public class ReferenceObservation extends AbstractObservation{
 	 *            result
 	 * @param resultQuality
 	 * 			  (optional) result qualities as UncertaintyResults
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public ReferenceObservation(Identifier identifier, Envelope boundedBy,
 			TimeObject phenomenonTime, TimeObject resultTime,
@@ -95,12 +95,12 @@ public class ReferenceObservation extends AbstractObservation{
 			this.result = (ReferenceResult)result;
 		}
 		else throw new IllegalArgumentException("Result type of ReferenceObservation has to be Reference!");
-		
+
 	}
 
 	@Override
 	public String getName() {
 		return NAME;
 	}
-	
+
 }

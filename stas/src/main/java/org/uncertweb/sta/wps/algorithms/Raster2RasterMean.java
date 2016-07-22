@@ -26,20 +26,20 @@ import org.uncertweb.sta.wps.api.ProcessOutput;
 import org.uncertweb.sta.wps.api.SingleProcessInput;
 
 /**
- * represents a Raster2Raster approach with 
- * 
+ * represents a Raster2Raster approach with
+ *
  * @author staschc
  *
  */
 public class Raster2RasterMean extends AbstractAggregationProcess{
-	
-	
+
+
 	/**
 	 * The Logger.
 	 */
 	protected static final Logger log = LoggerFactory
 			.getLogger(Raster2RasterMean.class);
-	
+
 	/**
 	 * identifier of aggregation process
 	 */
@@ -52,58 +52,58 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 	public static final SingleProcessInput<String> TARGETGRID = new SingleProcessInput<String>(
 			"TargetGrid",
 			NetCDFBinding.class, 0, 1, null, null);
-	
+
 	/**
 	 * xoffset of target grid
 	 */
 	public static final SingleProcessInput<String> XOFFSET = new SingleProcessInput<String>(
 			"XOffset",
 			LiteralDoubleBinding.class, 0, 1, null, null);
-	
+
 	/**
 	 * yoffset of target grid
 	 */
 	public static final SingleProcessInput<String> YOFFSET = new SingleProcessInput<String>(
 			"YOffset",
 			LiteralDoubleBinding.class, 0, 1, null, null);
-	
+
 	/**
 	 * yoffset of target grid
 	 */
 	public static final SingleProcessInput<String> SCALEFACTOR = new SingleProcessInput<String>(
 			"ScaleFactor",
 			LiteralDoubleBinding.class, 0, 1, null, null);
-	
+
 	/**
 	 * The URL of the SOS in which the aggregated observations will be inserted.
 	 */
 	public static final SingleProcessInput<String> INPUT_DATA = new SingleProcessInput<String>(
 			Constants.Process.Inputs.INPUT_DATA,
 			NetCDFBinding.class, 1, 1, null, null);
-	
+
 	/**
 	 * Process output that contains a {@code GetObservation} request to fetch
 	 * the aggregated observations from a SOS.
-	 * 
+	 *
 	 * @see Constants.Process.Inputs.Common#SOS_DESTINATION_URL
 	 */
 	public static final ProcessOutput AGGREGATED_OUTPUT = new ProcessOutput(
 			Constants.Process.Outputs.AGGREGATED_DATA,
 			NetCDFBinding.class);
-	
+
 	/**
 	 * constructor
-	 * 
+	 *
 	 */
 	public Raster2RasterMean(){
 		log.debug("Aggregation process " + IDENTIFIER+" has been initialized");
 	}
-	
+
 	@Override
 	public String getIdentifier() {
 		return IDENTIFIER;
 	}
-	
+
 	@Override
 	public String getTitle() {
 		return "Raster Mean Aggregation";
@@ -111,10 +111,10 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 
 	@Override
 	protected Set<AbstractProcessInput<?>> getInputs() {
-		
+
 		//query common process inputs from abstract super class
 		Set<AbstractProcessInput<?>> result = super.getCommonProcessInputs();
-		
+
 		//add specific parameters
 		result.add(INPUT_DATA);
 		result.add(TARGETGRID);
@@ -133,7 +133,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
-		
+
 		//instantiate result
 		Map<String, IData> result = new HashMap<String,IData>();
 		double xoffset=Double.NaN;
@@ -144,32 +144,32 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 		String targetGridFilePath = null;
 		String outputFilePath = tmpDirPath + "/aggResult"+System.currentTimeMillis()+".nc";
 		outputFilePath = outputFilePath.replace("\\", "/");
-		
+
 		///////////////////////////////////////////////////////////////////////////////
 		//extract Inputs
-		
+
 		//get common Inputs
 		AggregationInputs commonInputs = super.getAggregationInputs4Inputs(inputData);
-	
+
 		//get specific inputs
 		//xoffset
 		List<IData> xoffsetInput = inputData.get(XOFFSET.getId());
 		if (xoffsetInput!=null&&xoffsetInput.size()==1){
 			xoffset = ((LiteralDoubleBinding)xoffsetInput.get(0)).getPayload();
 		}
-		
+
 		//yoffset
 		List<IData> yoffsetInput = inputData.get(YOFFSET.getId());
 		if (yoffsetInput!=null&&xoffsetInput.size()==1){
 			yoffset = ((LiteralDoubleBinding)yoffsetInput.get(0)).getPayload();
 		}
-		
+
 		//scale factor
 		List<IData> scaleInput = inputData.get(SCALEFACTOR.getId());
 		if (scaleInput!=null&&scaleInput.size()==1){
 			scale = ((LiteralDoubleBinding)scaleInput.get(0)).getPayload();
 		}
-		
+
 		//targetGrid
 		List<IData> targetGridInput = inputData.get(TARGETGRID.getId());
 		if (targetGridInput!=null&&targetGridInput.size()==1){
@@ -177,7 +177,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 			targetGridFilePath = ncFile.getFile().getLocation();
 			targetGridFilePath = targetGridFilePath.replace("\\","/");
 		}
-		
+
 		//getInputFilePath
 		List<IData> inputDataInput = inputData.get(INPUT_DATA.getId());
 		if (inputDataInput!=null&&inputDataInput.size()==1){
@@ -185,8 +185,8 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 			inputFilePath = ncFile.getFile().getLocation();
 			inputFilePath = inputFilePath.replace("\\","/");
 		}
-		
-		
+
+
 		//initialize R Connection
 		// get number of realisations
 		// establish connection to Rserve running on localhost
@@ -197,33 +197,33 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 				// TODO if server requires authentication,
 				c.login("rserve", "aI2)Jad$%");
 			}
-			
+
 			//create
 			File tmpDir = new File(tmpDirPath);
 			if (!tmpDir.exists()) {
 				tmpDir.mkdir();
 			}
-			
-			
+
+
 			//Run R Script
 			//load libraries
 //			c.tryVoidEval("library(RNetCDF)");
 //			c.tryVoidEval("library(spacetime)");
-			
+
 			//set FilePath in R
 			c.tryVoidEval("file <- \""+inputFilePath+"\"");
-			
+
 			//load readUNetCDF and WriteUNetCDF functions
 //			String readUnetCDFRFunction = getReadUNetCDFRFunction();
 //			String writeUnetCDFRFunction = getWriteUNetCDFRFunction();
 //			c.tryVoidEval(readUnetCDFRFunction);
 //			c.tryVoidEval(writeUnetCDFRFunction);
-			
+
 			//read NetCDF file with passed variables
 			String varString = getVariablesRVector(commonInputs.getVariables());
 			String rCmd = (varString!=null)?"spUNetCDF <- readUNetCDF(file,"+varString+")":"spUNetCDF <- readUNetCDF(file))";
 			c.tryVoidEval(rCmd);
-			
+
 			//calculating new Grid
 			if (targetGridFilePath!=null){
 				c.tryVoidEval("targetGridFile <- \""+targetGridFilePath+"\"");
@@ -232,7 +232,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 				c.tryVoidEval("newSpatialGrid <- as(newGrid,\"SpatialGrid\")");
 				c.tryVoidEval("newPixels <- as(newSpatialGrid,\"SpatialPixels\")");
 			}
-			
+
 			else if (!Double.isNaN(xoffset)&&!Double.isNaN(yoffset)){
 				c.tryVoidEval("newCellsize <- spUNetCDF@grid@cellsize");
 				c.tryVoidEval("newCellsize[[1]] <- "+xoffset);
@@ -244,7 +244,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 				c.tryVoidEval(rcmd2);
 				c.tryVoidEval("newPixels <- as(newGrid,\"SpatialPixels\")");
 			}
-			
+
 			else if (!Double.isNaN(scale)){
 				c.tryVoidEval("scale <- "+scale);
 				c.tryVoidEval("newCellsize <- scale*spUNetCDF@grid@cellsize");
@@ -257,18 +257,18 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 			else {
 				throw new RuntimeException("Execute for process is missing one of the following parameters: "+ TARGETGRID.getId()+", "+XOFFSET.getId()+"+"+YOFFSET.getId()+", or "+SCALEFACTOR.getId()+"!");
 			}
-			
+
 			//executing aggregation
 			c.tryVoidEval("spAgg <- aggregate.Spatial(spUNetCDF,newPixels,mean)");
 			c.tryVoidEval("attr(spAgg@data,\"UncertML\")<-attr(spUNetCDF@data,\"UncertML\")");
-			
+
 			//Create response
 			c.tryVoidEval("writeUNetCDF(newfile=\""+outputFilePath+"\", spAgg)");
-		
+
 			//NetcdfFile ncFile = NetcdfFile.open(outputFilePath);
 			NcUwFile uwFile = new NcUwFile(outputFilePath);
 			result.put(AGGREGATED_OUTPUT.getId(), new NetCDFBinding(uwFile));
-		
+
 		} catch (RserveException e) {
 			String msg = "Error while establishing RServe connection: "+e.getLocalizedMessage();
 			log.debug(msg);
@@ -286,7 +286,7 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 			log.debug(msg);
 			throw new RuntimeException(msg);
 		}
-		
+
 		//check whether RServe connection is closed
 		finally {
 			if (c != null) {
@@ -295,8 +295,8 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 		}
 		return result;
 	}
-	
-	
+
+
 	private String getVariablesRVector(List<String> variables){
 		Iterator<String>varIter = variables.iterator();
 		String rVector = null;
@@ -313,6 +313,6 @@ public class Raster2RasterMean extends AbstractAggregationProcess{
 		}
 		return rVector;
 	}
-	
+
 
 }

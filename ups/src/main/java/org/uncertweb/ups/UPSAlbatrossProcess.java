@@ -50,12 +50,12 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 
 	/*
 	 * how often to call the WPS
-	 */	
-	private int numberOfRealisations = -999;	
+	 */
+	private int numberOfRealisations = -999;
 	/*
 	 * URL of the WPS
 	 */
-	private String serviceURL = ""; 
+	private String serviceURL = "";
 	/*
 	 * identifier for number of realisations
 	 */
@@ -63,64 +63,64 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 	/*
 	 * identifier for model service URL
 	 */
-	private String inputIDServiceURL = "ServiceURL";	
+	private String inputIDServiceURL = "ServiceURL";
 	/*
 	 * identifier for process identifier of the simulated process/model
 	 */
-	private String inputIDIdentifierSimulatedProcess = "IdentifierSimulatedProcess"; 
+	private String inputIDIdentifierSimulatedProcess = "IdentifierSimulatedProcess";
 	/*
 	 * identifier for static inputs
-	 */	
-	private String inputIDgenpop_households = "genpop-households"; 
+	 */
+	private String inputIDgenpop_households = "genpop-households";
 	/*
 	 * identifier for static inputs
-	 */	
-	private String inputIDrwdata_householdss = "rwdata-households"; 
+	 */
+	private String inputIDrwdata_householdss = "rwdata-households";
 	/*
 	 * identifier for static inputs
-	 */	
-	private String inputIDpostcode_areas = "postcode-areas"; 
+	 */
+	private String inputIDpostcode_areas = "postcode-areas";
 	/*
 	 * identifier for static inputs
-	 */	
-	private String inputIDzones = "zones"; 
+	 */
+	private String inputIDzones = "zones";
 	/*
 	 * identifier for static inputs
-	 */	
-	private String inputIDmunicipalities = "municipalities"; 
+	 */
+	private String inputIDmunicipalities = "municipalities";
 	/*
 	 * identifier for static inputs
-	 */	
-	private String inputIDexport_file= "export-file"; 
+	 */
+	private String inputIDexport_file= "export-file";
 	/*
 	 * identifier for static inputs
-	 */	
-	private String inputIDexport_file_bin = "export-file-bin";       
+	 */
+	private String inputIDexport_file_bin = "export-file-bin";
 	/*
 	 * identifier for requested output uncertainty type
-	 */	
+	 */
 	private String inputIDOutputUncertaintyType = "OutputUncertaintyType";
 	/*
 	 * identifier for the uncertain output
-	 */	
-	private String outputIDUncertainProcessOutputs = "UncertainProcessOutputs";	
-	
+	 */
+	private String outputIDUncertainProcessOutputs = "UncertainProcessOutputs";
+
 	private ExecuteDocument exDoc = null;
-	
+
 	private List<String> errors;
-	
+
 	private List<String> inputIDs;
 
 	private String modelIdentifier;
-	
+
 	List<MeasurementCollection> realisationCollection;
-	
+
 	public UPSAlbatrossProcess(){
 	}
-	
+
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
-		
+
 		// Retrieve model service URL from input. Must exist!
 		List<IData> list = inputData.get(inputIDServiceURL);
 		IData serviceURL_IData = list.get(0);
@@ -135,51 +135,51 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 		list = inputData.get(inputIDNumberOfRealisations);
 		IData numberOfReal = list.get(0);
 		numberOfRealisations = (Integer) numberOfReal.getPayload();
-		
+
 		realisationCollection = new ArrayList<MeasurementCollection>(numberOfRealisations);
-		
+
 		/*
 		 * fill the map that is required to create the executedocument
 		 */
 		Map<String, Object> idsAndValues = new HashMap<String, Object>(getInputIDs().size());
-		
+
 		for (String id : getInputIDs()) {
 			list = inputData.get(id);
-			IData data = list.get(0);			
+			IData data = list.get(0);
 			if(data instanceof LiteralStringBinding){
-				idsAndValues.put(id,(String) data.getPayload());				
+				idsAndValues.put(id,(String) data.getPayload());
 			}
 		}
-		
+
 		try {
 			exDoc = createExecuteDocument(serviceURL, modelIdentifier, idsAndValues, "indicators");
 		} catch (Exception e) {
 			errors.add(e.getMessage());
 			logger.error(e);
-			throw new RuntimeException(e);			
+			throw new RuntimeException(e);
 		}
-		
+
 		for (int i = 0; i < numberOfRealisations; i++) {
 			handleResponse(i);
 		}
-		
+
 		/*
-		 *TODO: check output uncertainty type 
+		 *TODO: check output uncertainty type
 		 */
-		
+
 		UncertaintyObservationCollection resultCollection = createResultCollection();
-		
+
 		UncertaintyObservationCollection uobscoll = new UncertaintyObservationCollection();
-		
+
 		Map<String, IData> result = new HashMap<String, IData>();
-		
+
 		result.put(outputIDUncertainProcessOutputs, new OMBinding(resultCollection));
-		
+
 		return result;
 	}
 
 	private UncertaintyObservationCollection createResultCollection(){
-	
+
 		UncertaintyObservationCollection uobscoll = new UncertaintyObservationCollection();
 
 		/*
@@ -187,53 +187,53 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 		 * so take the first one and save the attributes (phenomenonTime, feautureOfInterest,...)
 		 */
 		Measurement m = realisationCollection.get(0).getObservations().get(0);
-		
+
 		/*
 		 * create hashmap with identifier of observed property and values of the different realisations
 		 */
 		Map<String, List<Double>> observedPropertyValuesMap = new HashMap<String, List<Double>>(realisationCollection.get(0).getObservations().size());
 		Map<String, String> observedPropertyResultUOMMap = new HashMap<String, String>(realisationCollection.get(0).getObservations().size());
-		
+
 		for (MeasurementCollection obscoll : realisationCollection) {
-			
+
 			MeasurementCollection mcoll = (MeasurementCollection)obscoll;
-			
+
 			for (Measurement tmpm : mcoll.getObservations()) {
-				
+
 				if(!observedPropertyValuesMap.keySet().contains(tmpm.getObservedProperty().toString())){
-					
+
 					List<Double> valuesList = new ArrayList<Double>();
-					
+
 					valuesList.add(tmpm.getResult().getMeasureValue());
-					
+
 					observedPropertyValuesMap.put(tmpm.getObservedProperty().toString(), valuesList);
 					observedPropertyResultUOMMap.put(tmpm.getObservedProperty().toString(), tmpm.getResult().getUnitOfMeasurement());
 				}else{
 					observedPropertyValuesMap.get(tmpm.getObservedProperty().toString()).add(tmpm.getResult().getMeasureValue());
 				}
-				
+
 			}
 		}
-		
+
 		/*
 		 * iterate over observedproperties and create uncertaintyobservations
 		 * with attributes of Measurement "m" and the respective values
 		 */
-		
+
 		int counter = 0;
-		
+
 		for (String uriString : observedPropertyValuesMap.keySet()) {
-			
+
 			List<Double> values = observedPropertyValuesMap.get(uriString);
-			
+
 			URI uri = null;
 
 			URI procedure = null;
-			
+
 			URI observedProperty = null;
-			
+
 			try {
-				uri = new URI("http://uncertweb.org"); 
+				uri = new URI("http://uncertweb.org");
 				procedure = new URI(
 						"http://www.uncertweb.org/models/albatross");
 				observedProperty = new URI(
@@ -249,19 +249,19 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 
 
 			UncertaintyResult uResult = new UncertaintyResult(cr, observedPropertyResultUOMMap.get(uriString));
-			
-//			Identifier identifier = new Identifier(uri, "Albatross" + counter);	
-			
+
+//			Identifier identifier = new Identifier(uri, "Albatross" + counter);
+
 			UncertaintyObservation uob = new UncertaintyObservation(m.getPhenomenonTime(), m.getResultTime(), procedure, observedProperty, m.getFeatureOfInterest(), uResult);
-			
+
 			uobscoll.addObservation(uob);
-			
+
 			counter++;
 		}
-		
+
 		return uobscoll;
 	}
-	
+
 	private void handleResponse(int runNumber) {
 		try {
 			 ExecuteResponseDocument response =
@@ -297,16 +297,16 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 			logger.error(e);
 		}
 	}
-	
+
 	private String nodeToString(Node node) throws TransformerFactoryConfigurationError, TransformerException {
 		StringWriter stringWriter = new StringWriter();
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		transformer.transform(new DOMSource(node), new StreamResult(stringWriter));
-		
+
 		return stringWriter.toString();
 	}
-	
+
 	@Override
 	public List<String> getErrors() {
 		return errors;
@@ -323,7 +323,7 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 		} else if (id.equals(inputIDNumberOfRealisations)) {
 			return LiteralIntBinding.class;
 		}else if(getInputIDs().contains(id)) {
-			return LiteralStringBinding.class;			
+			return LiteralStringBinding.class;
 		}
 		return null;
 	}
@@ -335,35 +335,35 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * This method creates an <c>ExecuteDocument</c>.
-	 * 
-	 * @param url The url of the WPS the ExecuteDocument 
+	 *
+	 * @param url The url of the WPS the ExecuteDocument
 	 * @param processID The id of the process the ExecuteDocument
 	 * @param inputs A map holding the identifiers of the inputs and the values
 	 * @return
 	 * @throws Exception
 	 */
 	public ExecuteDocument createExecuteDocument(String url, String processID,
-			Map<String, Object> inputs) throws Exception {		
+			Map<String, Object> inputs) throws Exception {
 		return createExecuteDocument(url, processID, inputs, null);
 	}
-	
+
 	/**
 	 * This method creates an <c>ExecuteDocument</c>.
-	 * 
-	 * @param url The url of the WPS the ExecuteDocument 
+	 *
+	 * @param url The url of the WPS the ExecuteDocument
 	 * @param processID The id of the process the ExecuteDocument
 	 * @param inputs A map holding the identifiers of the inputs and the values
 	 * @return
 	 * @throws Exception
 	 */
 	public ExecuteDocument createExecuteDocument(String url, String processID,
-			Map<String, Object> inputs, String outputID) throws Exception {		
+			Map<String, Object> inputs, String outputID) throws Exception {
 
 		ProcessDescriptionType processDescription = WPSClientSession.getInstance().getProcessDescription(url, processID);
-		
+
 		org.n52.wps.client.ExecuteRequestBuilder executeBuilder = new org.n52.wps.client.ExecuteRequestBuilder(
 				processDescription);
 
@@ -377,20 +377,20 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 							(String) inputValue);
 				}
 			} else if (input.getComplexData() != null) {
-				
+
 				String schema = input.getComplexData().getDefault().getFormat().getSchema();
-				
-				logger.debug(schema);				
-				
+
+				logger.debug(schema);
+
 				String mimetype = input.getComplexData().getDefault().getFormat().getMimeType();
-				
+
 				logger.debug(mimetype);
-				
+
 				// Complexdata by value
 				if (inputValue instanceof IUncertainty) {
-					
+
 					UncertMLBinding d = new UncertMLBinding((IUncertainty) inputValue);
-					
+
 					executeBuilder
 							.addComplexData(
 									inputName,
@@ -405,9 +405,9 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 									schema,
 									"UTF-8", mimetype);
 				}else if (inputValue instanceof IObservationCollection) {
-					
+
 					OMBinding d = new OMBinding((IObservationCollection) inputValue);
-					
+
 					executeBuilder
 							.addComplexData(
 									inputName,
@@ -423,38 +423,38 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 		String outputIdentifier = "";
 		OutputDescriptionType outType = null;
 		if(outputID != null){
-			
+
 			for (OutputDescriptionType oType : processDescription.getProcessOutputs().getOutputArray()) {
 				if(oType.getIdentifier().getStringValue().equals(outputID)){
 					outType = oType;
 					outputIdentifier = oType.getIdentifier().getStringValue();
 				}
 			}
-			
+
 		}else{
-		
+
 		outType = processDescription.getProcessOutputs().getOutputArray(0);
-		
+
 		outputIdentifier = outType.getIdentifier().getStringValue();
 		}
 		String outputSchema = outType.getComplexOutput().getDefault().getFormat().getSchema();
-		
+
 		String outputMimeType = outType.getComplexOutput().getDefault().getFormat().getMimeType();
-		
+
 		executeBuilder.setSchemaForOutput(
 				outputSchema,
 				outputIdentifier);
 		executeBuilder.setMimeTypeForOutput(outputMimeType, outputIdentifier);
-		
+
 		logger.debug(executeBuilder.getExecute());
-		
+
 		return executeBuilder.getExecute();
 	}
-	
-	
+
+
 	private List<String> getInputIDs(){
-		
-		if(inputIDs == null){			
+
+		if(inputIDs == null){
 			inputIDs = new ArrayList<String>();
 			inputIDs.add(inputIDexport_file);
 			inputIDs.add(inputIDexport_file_bin);
@@ -463,7 +463,7 @@ public class UPSAlbatrossProcess extends AbstractAlgorithm {
 			inputIDs.add(inputIDpostcode_areas);
 			inputIDs.add(inputIDrwdata_householdss);
 			inputIDs.add(inputIDzones);
-		}		
+		}
 		return inputIDs;
 	}
 

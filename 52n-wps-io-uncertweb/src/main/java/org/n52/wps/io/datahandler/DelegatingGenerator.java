@@ -27,7 +27,7 @@ public abstract class DelegatingGenerator extends DelegatingHandler implements I
 	public InputStream generateBase64Stream(IData data, String mimeType, String schema) throws IOException {
 		return new Base64InputStream(generateStream(data, mimeType, schema), true);
 	}
-	
+
 	@Override
 	public InputStream generateStream(IData data, String mimeType, String schema) throws IOException {
 		return findGenerator(data.getClass(), mimeType, schema).generateStream(data, mimeType, schema);
@@ -43,7 +43,7 @@ public abstract class DelegatingGenerator extends DelegatingHandler implements I
 		}
 		throw new RuntimeException("No applicable generator found.");
 	}
-	
+
 	public boolean isSupportedSchema(String schema){
 		if (schema==null){
 			return true;

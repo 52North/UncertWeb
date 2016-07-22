@@ -34,19 +34,19 @@ import de.ifgi.airbase.feeder.util.Utils;
 
 /**
  * writer that can be used to write EEA Measurements to XML output file
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class OMFileWriter {
 
 	/**
 	 * writes the Observations to an output file
-	 * 
+	 *
 	 * @param outputFile
 	 *            file to which the observations should be written
 	 * @param file
-	 * 
+	 *
 	 */
 	public void writeObservations2File(File outputFile, EEARawDataFile file) {
 		StaxObservationEncoder encoder = new StaxObservationEncoder();
@@ -67,15 +67,15 @@ public class OMFileWriter {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * writes the Observations to an output file
-	 * 
+	 *
 	 * @param outputFile
 	 *            file to which the observations should be written
 	 * @param files
 	 * 			array of input files read from EEA input
-	 * 
+	 *
 	 */
 	public void writeObservations2File(File outputFile, List<EEARawDataFile> inputFiles) {
 		StaxObservationEncoder encoder = new StaxObservationEncoder();
@@ -92,7 +92,7 @@ public class OMFileWriter {
 	}
 	/**
 	 * converts observations of EEA file into observation collection
-	 * 
+	 *
 	 * @param file
 	 * 			file containing the observations
 	 * @return returns UncertWeb observation collection
@@ -103,7 +103,7 @@ public class OMFileWriter {
 		List<EEAMeasurement> allMeasurements = file.getMeasurements();
 		IObservationCollection obsCol = null;
 		Collection<Measurement> measCol = new ArrayList<Measurement>(allMeasurements.size());
-		
+
 		while (index < allMeasurements.size()) {
 			Measurement meas = null;
 			while (index < allMeasurements.size()) {
@@ -114,7 +114,7 @@ public class OMFileWriter {
 					try {
 						foi = createSF4EEAStation(file
 								.getStation());
-					
+
 					TimeObject resultTime = new TimeObject(
 							Utils.ISO8601_DATETIME_FORMAT.print(e.getTime()));
 					String procedureID = AbstractXmlBuilder.getStationId(file.getStation());
@@ -141,10 +141,10 @@ public class OMFileWriter {
 	}
 
 	/**
-	 * 
+	 *
 	 * creates a normal distribution around mean by adding variance as random number between 0 and 1 multiplied by factor and added to
 	 * varianceSummand
-	 * 
+	 *
 	 * @param mean
 	 * 			mean of the normal distribution
 	 * @param factor
@@ -160,7 +160,7 @@ public class OMFileWriter {
 
 	/**
 	 * creates SpatialSamplingFeature from station description
-	 * 
+	 *
 	 * @param station
 	 * 			station for which sampling feature should be created
 	 * @return sampling feature created from station

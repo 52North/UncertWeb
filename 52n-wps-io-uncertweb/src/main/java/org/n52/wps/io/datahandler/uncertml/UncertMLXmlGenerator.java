@@ -17,20 +17,20 @@ import org.uncertweb.utils.UwCollectionUtils;
 
 /**
  * XMLGenerator for UncertML uncertainties
- * 
+ *
  * @author staschc
  *
  */
 public class UncertMLXmlGenerator extends AbstractUwGenerator {
 
 	private static Logger LOGGER = Logger.getLogger(UncertMLXmlGenerator.class);
-	
-	
+
+
 	public UncertMLXmlGenerator() {
 		super(
-			set(SCHEMA_UNCERTML), 
+			set(SCHEMA_UNCERTML),
 			set(ENCODING_UTF_8),
-			set(MIME_TYPE_UNCERTML_XML), 
+			set(MIME_TYPE_UNCERTML_XML),
 			UwCollectionUtils.<Class<?>>set(UncertMLBinding.class)
 		);
 	}
@@ -45,7 +45,7 @@ public class UncertMLXmlGenerator extends AbstractUwGenerator {
 			String message = "Error while encoding UncertML uncertainties: " +e.getMessage();
 			LOGGER.info(message);
 			throw new RuntimeException(message,e);
-		} 
+		}
 	}
 
 }

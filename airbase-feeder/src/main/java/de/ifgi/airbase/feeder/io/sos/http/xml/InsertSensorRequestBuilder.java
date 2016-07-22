@@ -21,21 +21,21 @@ import org.apache.xmlbeans.XmlObject;
 public class InsertSensorRequestBuilder extends AbstractXmlBuilder<InsertSensorDocument> {
     private EEAStation station;
     private XmlObject description;
-    
+
     public InsertSensorRequestBuilder setStation(EEAStation station) {
         this.station = station;
         return this;
     }
-    
+
     protected EEAStation getStation() {
         return station;
     }
-    
+
     public InsertSensorRequestBuilder setDescription(XmlObject description) {
         this.description = description;
         return this;
     }
-    
+
     protected XmlObject getDescription() {
         return this.description;
     }
@@ -61,7 +61,7 @@ public class InsertSensorRequestBuilder extends AbstractXmlBuilder<InsertSensorD
             insertSensorType.addObservableProperty(getPhenomenonId(configuration.getComponentCode()));
         }
     }
-    
+
     private void setInsertionMetadata(InsertSensorType insertSensorType) {
         SosInsertionMetadataDocument sosInsertionMetadataDocument = SosInsertionMetadataDocument.Factory.newInstance();
         SosInsertionMetadataType sosInsertionMetadataType = sosInsertionMetadataDocument.addNewSosInsertionMetadata();
@@ -70,5 +70,5 @@ public class InsertSensorRequestBuilder extends AbstractXmlBuilder<InsertSensorD
         insertSensorType.addNewMetadata().set(sosInsertionMetadataDocument);
     }
 
-    
+
 }

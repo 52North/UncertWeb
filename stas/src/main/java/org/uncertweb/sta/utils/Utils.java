@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -57,7 +57,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Utilities class.
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class Utils {
@@ -88,20 +88,20 @@ public class Utils {
 
 	/**
 	 * Formats the time elapsed since {@code start}.
-	 * 
+	 *
 	 * @param start the start point
 	 * @return a {@link String} describing the elapsed time
 	 */
 	public static String timeElapsed(long start) {
 		return PERIOD_FORMAT.print(new Period(System.currentTimeMillis() - start));
 	}
-	
+
 	/**
 	 * Sends an HTTP POST request to the specified URL.
-	 * 
+	 *
 	 * @param url the URL the POST request will be send to
 	 * @param request the request which will be send
-	 * 
+	 *
 	 * @return the resulting {@code InputStream}
 	 * @throws IOException if an IO error occurs
 	 * @see Constants.Http.Timeout#CONNECTION
@@ -123,7 +123,7 @@ public class Utils {
 			conn.setDoOutput(true);
 			conn.setRequestMethod(Constants.Http.Method.POST.name());
 			conn.setRequestProperty(Constants.Http.Header.CONTENT_TYPE, "text/xml");
-			
+
 			wr = new OutputStreamWriter(conn.getOutputStream());
 			wr.write(request);
 			wr.flush();
@@ -140,7 +140,7 @@ public class Utils {
 	/**
 	 * Builds a URL from a given URL and a set of parameters. {@code url} can or
 	 * can not end with an '?'.
-	 * 
+	 *
 	 * @param url the base URL
 	 * @param props a key-value parameter set
 	 * @return the complete URL
@@ -168,11 +168,11 @@ public class Utils {
 
 	/**
 	 * Shortcut for
-	 * 
+	 *
 	 * <pre>
 	 * sendGetRequest(buildGetRequest(url, props));
 	 * </pre>
-	 * 
+	 *
 	 * @param url the URL
 	 * @param props the key-value-paramters
 	 * @return the resulting {@link InputStream}
@@ -187,7 +187,7 @@ public class Utils {
 
 	/**
 	 * Sends an HTTP GET request to the specified URL.
-	 * 
+	 *
 	 * @param url the URL the GET request will be send to
 	 * @return the resulting {@code InputStream}
 	 * @throws IOException if an IO error occurs
@@ -215,10 +215,10 @@ public class Utils {
 			System.getProperties().remove(Constants.Http.Timeout.READ_PROPERTY);
 		}
 	}
-	
+
 	/**
 	 * Generates GetObservationById GET request for the give observation Id's.
-	 * 
+	 *
 	 * @param url the base URL
 	 * @param observationIds the Id's of the {@link Observation}s
 	 * @return the generated request
@@ -241,15 +241,15 @@ public class Utils {
 		}
 		props.put(Constants.Sos.Parameter.OBSERVATION_ID, sb.toString());
 		return Utils.buildGetRequest(url, props);
-	}	
-	
+	}
+
 	/**
 	 * helper method for generating a spatial sampling feature from a vector feature from Geotools
-	 * 
+	 *
 	 * @param feature
 	 * 			Geotools Feature
-	 * @return	
-	 * 
+	 * @return
+	 *
 	 * @throws URISyntaxException
 	 */
 	public static SpatialSamplingFeature createSF4GTFeature(Feature feature, int srid) throws URISyntaxException{
@@ -262,11 +262,11 @@ public class Utils {
 		SpatialSamplingFeature sfs = new SpatialSamplingFeature(identifier,null,geom);
 		return sfs;
 	}
-	
+
 	/**
 	 * extracts realisations of either ContinuousRealisation or RandomSample with Realisation element for each realisation
 	 * and returns a ContinuousRealisation that contains all realisation values in the values array.
-	 * 
+	 *
 	 * @param uncertResult
 	 * 				Realisation or RandomSample that should be converted
 	 * @return Returns ContinuousRealisation that contains all realisation values in the values array
@@ -293,7 +293,7 @@ public class Utils {
 
 	/**
 	 * methods creates RandomSample from single ContinuousRealisation that contains more than one value in its values array.
-	 * 
+	 *
 	 * @param aggResult
 	 * 			ContinuousRealisation that contains more than one value in its values array.
 	 * @return RandomSample that contains a single Realisation element for each realisation value

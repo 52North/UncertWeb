@@ -6,18 +6,18 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Super class for all GML features used in UncertWeb
- * 
+ *
  * @author staschc
  *
  */
 public abstract class UwAbstractFeature {
-	
+
 	/**GML id of feature*/
 	private String gmlId;
-	
+
 	/**bounded by element describing the boundary of the feature*/
 	private Envelope boundedBy;
-	
+
 	/** location attribute which contains one of the geometries defined in the UncertWeb GML profile*/
 	private Geometry location;
 

@@ -13,21 +13,21 @@ import org.apache.log4j.Logger;
 
 /**
  * Functionality around the workspace generation is encapsulated in this class. By creating a new instance the workspace will be created.
- * 
+ *
  * @author s_voss13
- * 
+ *
  */
 public class Workspace {
 
 	private File originalDataFolder, workspaceFolder, publicFolder;
 	private String folderNumber;
-	
+
 	protected static Logger log = Logger.getLogger(Workspace.class);
 
 	/**
-	 * By calling this ctor a new workspace and public folder will be created. Additionally the content of the original data folder is copied into the new workspace. 
+	 * By calling this ctor a new workspace and public folder will be created. Additionally the content of the original data folder is copied into the new workspace.
 	 * Some additional files may ba copied after the run into the public folder.
-	 * 
+	 *
 	 * @param originalDataFolder the path to the original data
 	 * @param workspace the path to the workspace folder
 	 * @param publicFolder the path to a folder which is visible from the outside
@@ -52,27 +52,27 @@ public class Workspace {
 		// copy result into public folder -> done after calculation
 
 	}
-	
+
 	/**
 	 * Returns the number which was assigned to the workspace.
 	 * This number is part of the workspace folder name.
-	 * 
+	 *
 	 * @return the number assigned to the workspace.
 	 */
 	public String getFolderNumber(){
-		
+
 		return this.folderNumber;
 	}
 
 	/**
 	 * Copies a {@link List} of (existing) files into the in the configuration file defined public folder.
-	 * 
+	 *
 	 * @param files a {@link List} of files to copy
 	 */
 	public void copyResultIntoPublicFolder(List<String> files) {
-		
+
 		for(String currentFileName : files){
-			
+
 			this.copyFile(this.getWorkspaceFolder(), this.getPublicFolder(), currentFileName);
 		}
 
@@ -96,7 +96,7 @@ public class Workspace {
 
 	/**
 	 * Returns the {@link File} to the public folder.
-	 * 
+	 *
 	 * @return the {@link File} to the public folder.
 	 */
 	public File getPublicFolder() {
@@ -106,7 +106,7 @@ public class Workspace {
 	/**
 	 * Copies a single file from a given source folder into a target folder.
 	 * The file name must be a valid file.
-	 * 
+	 *
 	 * @param sourceLocation
 	 * @param targetLocation
 	 * @param fileName
@@ -127,9 +127,9 @@ public class Workspace {
 	}
 
 	/**
-	 * The method copies all folders and file from the source directory into the target directory. This is done recursive. 
+	 * The method copies all folders and file from the source directory into the target directory. This is done recursive.
 	 * Thus we have a deep copy of the source folder.
-	 * 
+	 *
 	 * @param sourceLocation
 	 * @param targetLocation
 	 */
@@ -187,7 +187,7 @@ public class Workspace {
 
 	/**
 	 * Creates a new directory. If the parent folder does not exist it will be created too.
-	 * 
+	 *
 	 * @param s a valid directory
 	 * @return the {@link File}
 	 */
@@ -204,9 +204,9 @@ public class Workspace {
 	}
 
 	/**
-	 * Generates a unique number for a new workspace. To ensure that the number is really unique, the method checks the already existing numbers in the workspace. 
+	 * Generates a unique number for a new workspace. To ensure that the number is really unique, the method checks the already existing numbers in the workspace.
 	 * Thus it is guaranteed that non existing number is reused.
-	 * 
+	 *
 	 * @param workspace a valid path to the target workspace
 	 * @return a unique workspace number
 	 */
@@ -229,7 +229,7 @@ public class Workspace {
 
 	/**
 	 * [1000,Integer.Max[
-	 * 
+	 *
 	 * @return
 	 */
 	private int generateRandomNumber() {

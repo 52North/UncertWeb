@@ -17,13 +17,13 @@ import de.ifgi.airbase.feeder.util.Utils;
 
 /**
  * Class to unzip the country specific data files.
- * 
+ *
  * @author Christian Autermann
- * 
+ *
  */
 public class Unzipper {
 	private static final String AIRBASE_FILE_PREFIX = "AirBase";
-	
+
 	//private static final String AIRBASE_FILE_VERSION = "v4";
 	//TODO needs to be updated to newer version
 	private static final String AIRBASE_FILE_VERSION = "v4";
@@ -44,7 +44,7 @@ public class Unzipper {
 
 	/**
 	 * Creates a new {@code Unzipper}.
-	 * 
+	 *
 	 * @param zipFile
 	 *            the {@code File} that contains the data.
 	 * @throws ZipException
@@ -68,7 +68,7 @@ public class Unzipper {
 	private void unzip() throws ZipException, IOException {
 		if (this.unzippedMain)
 			return;
-		
+
 		this.unzippedMain = true;
 
 		long start = System.currentTimeMillis();

@@ -6,7 +6,7 @@ import org.uncertweb.api.om.exceptions.OMParsingException;
 /**
  * class represents a general time string as an extension to the ISO:8601 standard allowing times like
  * "every weekday". For more information take a look at {@link https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/TemporalEncodings}
- * 
+ *
  * @author staschc
  *
  */
@@ -14,7 +14,7 @@ public class GeneralTimeInstant implements IGeneralTime{
 
 	/**
 	 * Seperators used in GeneralTime strings
-	 * 
+	 *
 	 * @author staschc
 	 *
 	 */
@@ -25,15 +25,15 @@ public class GeneralTimeInstant implements IGeneralTime{
 		static final String MINUTE_SEP="m";
 		static final String SECOND_SEP="s";
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private int month=Integer.MIN_VALUE,day=Integer.MIN_VALUE,hour=Integer.MIN_VALUE,minute=Integer.MIN_VALUE,second=Integer.MIN_VALUE;
-	
+
 	/**
-	 * @throws OMParsingException 
-	 * 
+	 * @throws OMParsingException
+	 *
 	 */
 	public GeneralTimeInstant(String timeString) throws OMParsingException{
 		boolean valid = false;
@@ -46,7 +46,7 @@ public class GeneralTimeInstant implements IGeneralTime{
 				valid=true;
 			}
 			else{
-				valid=false;	
+				valid=false;
 				}
 		}
 		if (timeString.contains(Seperators.DAY_SEP)){
@@ -58,7 +58,7 @@ public class GeneralTimeInstant implements IGeneralTime{
 				valid=true;
 			}
 			else{
-				valid=false;	
+				valid=false;
 				}
 		}
 		if (timeString.contains(Seperators.HOUR_SEP)){
@@ -70,10 +70,10 @@ public class GeneralTimeInstant implements IGeneralTime{
 				valid=true;
 			}
 			else{
-				valid=false;	
+				valid=false;
 				}
 		}
-		
+
 		if (timeString.contains(Seperators.MINUTE_SEP)){
 			int pos = timeString.indexOf(Seperators.MINUTE_SEP);
 			String minS = timeString.substring(pos+1, pos+3);
@@ -83,10 +83,10 @@ public class GeneralTimeInstant implements IGeneralTime{
 				valid=true;
 			}
 			else{
-				valid=false;	
+				valid=false;
 				}
 		}
-		
+
 		if (timeString.contains(Seperators.SECOND_SEP)){
 			int pos = timeString.indexOf(Seperators.SECOND_SEP);
 			String secS = timeString.substring(pos+1, pos+3);
@@ -96,18 +96,18 @@ public class GeneralTimeInstant implements IGeneralTime{
 				valid=true;
 			}
 			else{
-				valid=false;	
+				valid=false;
 				}
-			
+
 		}
 		if (!valid){
 			throw new OMParsingException("The String of general time is not valid!");
 		}
 	}
-	
+
 	public String toString(){
 		String result = "";
-		
+
 		if (this.getMonth()!=Integer.MIN_VALUE){
 			result+=Seperators.MONTH_SEP;
 			if (this.getMonth()<10){
@@ -115,12 +115,12 @@ public class GeneralTimeInstant implements IGeneralTime{
 			}
 			result=result+this.getMonth();
 		}
-		
+
 		if (this.getDay()!=Integer.MIN_VALUE){
 			result+=Seperators.DAY_SEP;
 			result=result+this.getDay();
 		}
-		
+
 		if (this.getHour()!=Integer.MIN_VALUE){
 			result+=Seperators.HOUR_SEP;
 			if (this.getHour()<10){
@@ -214,5 +214,5 @@ public class GeneralTimeInstant implements IGeneralTime{
 	public void setSecond(int second) {
 		this.second = second;
 	}
-	
+
 }

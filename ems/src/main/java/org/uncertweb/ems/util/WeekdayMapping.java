@@ -37,5 +37,5 @@ public final class WeekdayMapping {
 			put("Sonntag",7);
 		}
 	};
-	
+
 }

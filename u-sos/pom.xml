@@ -34,7 +34,7 @@
             <artifactId>52n-sos-ogc</artifactId>
             <version>${project.version}</version>
         </dependency>
-		
+
         <!-- SOS v2 dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>

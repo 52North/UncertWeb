@@ -2,9 +2,9 @@ package de.ifgi.airbase.feeder.util;
 
 /**
  * Simple class to encapsulate a pair of values.
- * 
+ *
  * @author Christian Autermann
- * 
+ *
  * @param <U>
  *            the first element
  * @param <V>
@@ -23,7 +23,7 @@ public class Tuple<U, V> {
 
 	/**
 	 * Creates a new {@code Tuple} with specified values.
-	 * 
+	 *
 	 * @param elem1
 	 *            the elem1
 	 * @param elem2

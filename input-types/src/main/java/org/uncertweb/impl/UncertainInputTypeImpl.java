@@ -14,11 +14,11 @@ package org.uncertweb.impl;
 public class UncertainInputTypeImpl extends org.uncertweb.impl.AbstractUncertainInputTypeImpl implements org.uncertweb.UncertainInputType
 {
     private static final long serialVersionUID = 1L;
-    
+
     public UncertainInputTypeImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType);
     }
-    
-    
+
+
 }

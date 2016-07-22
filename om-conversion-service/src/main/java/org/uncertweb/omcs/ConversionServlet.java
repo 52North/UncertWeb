@@ -44,7 +44,7 @@ import static org.uncertweb.omcs.Constants.*;
 
 @Path("/")
 public class ConversionServlet {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ConversionServlet.class);
 
 	private WebApplicationException missingQueryParameter(String name) {
@@ -75,13 +75,13 @@ public class ConversionServlet {
 	public Response post(@HeaderParam("content-type") MediaType from,
 						  @HeaderParam("accept") MediaType to,
 						  InputStream i) {
-		
+
 		if (from == null) throw new WebApplicationException(Status.UNSUPPORTED_MEDIA_TYPE);
 		if (to == null) to = from;
 		if (from.isCompatible(to)) return Response.ok(i, to).build();
-		
+
 		log.debug("Converting from {} to {}", from, to);
-		
+
 		Conversion c = Conversion.fromMediaTypes(from, to);
 		if (c == null) {
 			throw new WebApplicationException(Response

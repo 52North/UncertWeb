@@ -27,13 +27,13 @@ import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
 /**
  * encoder for UncertWeb O&M observations to JSON
- * 
+ *
  * @author staschc
  *
  */
 public class JSONObservationEncoder implements IObservationEncoder{
 
-	
+
 	@Override
 	public String encodeObservation(AbstractObservation obs)
 			throws IllegalArgumentException, XmlException,
@@ -45,7 +45,7 @@ public class JSONObservationEncoder implements IObservationEncoder{
 		return jsonString;
 	}
 
-	
+
 
 	@Override
 	public String encodeObservationCollection(IObservationCollection obsCol)
@@ -63,10 +63,10 @@ public class JSONObservationEncoder implements IObservationEncoder{
 		writer.endObject();
 		return writer.toString();
 	}
-	
+
 	/**
 	 * encodes an observation to JSON
-	 * 
+	 *
 	 * @param writer
 	 * @param obs
 	 * @throws JSONException
@@ -75,7 +75,7 @@ public class JSONObservationEncoder implements IObservationEncoder{
 		writer.object();
 		writer.key(obs.getName());
 		writer.object();
-		
+
 		//encode identifier, if present
 		if (obs.getIdentifier()!=null){
 			writer.key("identifier");
@@ -99,19 +99,19 @@ public class JSONObservationEncoder implements IObservationEncoder{
 		//encode observed property
 		writer.key("observedProperty");
 		writer.value(obs.getObservedProperty().toString());
-		
+
 		//encode procedure
 		writer.key("procedure");
 		writer.value(obs.getProcedure().toString());
-		
+
 		//encode foi
 		encodeSamplingFeature(writer,obs.getFeatureOfInterest());
-		
+
 		//encode resultQuality
 		if (obs.getResultQuality()!=null){
 			encodeResultQuality(writer,obs.getResultQuality());
 		}
-		
+
 		encodeResult(writer,obs.getResult());
 		writer.endObject();
 		writer.endObject();
@@ -145,7 +145,7 @@ public class JSONObservationEncoder implements IObservationEncoder{
 		}
 		else if (result instanceof ReferenceResult){
 			writer.object();
-			
+
 			//TODO add further elements
 			writer.key("href");
 			writer.value(((ReferenceResult) result).getHref());
@@ -182,7 +182,7 @@ public class JSONObservationEncoder implements IObservationEncoder{
 			writer.array();
 			for (int j=0;j<values.length;j++){
 				//writer.value(new JSONEncoder().encode(values[j]));
-				
+
 				JSONObject jsonUncertainty = new JSONObject(new JSONEncoder().encode(values[j]));
 				writer.value(jsonUncertainty);
 			}
@@ -257,6 +257,6 @@ public class JSONObservationEncoder implements IObservationEncoder{
 
 
 
-	
+
 
 }

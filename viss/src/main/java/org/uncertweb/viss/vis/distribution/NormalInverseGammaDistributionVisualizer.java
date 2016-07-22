@@ -30,7 +30,7 @@ import org.uncertweb.viss.vis.AbstractAnnotatedUncertaintyVisualizer.Type;
 @Type(NcUwUncertaintyType.NORMAL_INVERSE_GAMMA_DISTRIBUTION)
 public abstract class NormalInverseGammaDistributionVisualizer extends
     AbstractAnnotatedUncertaintyVisualizer {
-	
+
 	@Override
 	public double evaluate(IUncertainty u) {
 		return evaluate((NormalInverseGammaDistribution) u);

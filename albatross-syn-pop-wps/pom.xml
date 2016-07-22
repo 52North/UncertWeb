@@ -9,7 +9,7 @@
   <groupId>org.uncertweb</groupId>
   <artifactId>albatross-syn-pop-wps</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  
+
   	<repositories>
 		<repository>
 			<id>UncertWebMavenRepository</id>
@@ -23,7 +23,7 @@
 <properties>
 <wps.version>2.0-RC8-SNAPSHOT</wps.version>
   </properties>
-  
+
   <distributionManagement>
 		<repository>
 			<id>UncertWebMavenDeployRepository</id>
@@ -31,7 +31,7 @@
 			<url>scp://giv-uw.uni-muenster.de:/var/www/m2/repo</url>
 		</repository>
 	</distributionManagement>
-	
+
   <dependencies>
   <dependency>
       <groupId>com.thetransactioncompany</groupId>
@@ -82,9 +82,9 @@
     	<version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
-  
 
-    
+
+
   <build>
   		<finalName>albatross-syn-pop-wps</finalName>
 		<resources>

@@ -7,13 +7,13 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a categorical realisation.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Realisation}
- * 
+ *
  * @see org.uncertml.sample.RandomSample
  * @see org.uncertml.sample.SystematicSample
  * @see org.uncertml.sample.UnknownSample
- * 
+ *
  * @author Richard Jones
  * @version 2.0
  */
@@ -24,7 +24,7 @@ public class CategoricalRealisation extends AbstractRealisation {
     /**
      * Constructor that takes a <code>List</code> of strings as the categories of
      * the realisation.
-     * 
+     *
      * @param categories the string categories of a single realisation.
      */
     public CategoricalRealisation(List<String> categories) {
@@ -34,7 +34,7 @@ public class CategoricalRealisation extends AbstractRealisation {
     /**
      * Constructor that takes a <code>List</code> of strings as the categories of
      * the realisation and a weight, used in weighted samples.
-     * 
+     *
      * @param categories the string categories of a single realisation.
      * @param weight the weight of this realisation, between 0 - 1.
      */
@@ -45,7 +45,7 @@ public class CategoricalRealisation extends AbstractRealisation {
     /**
      * Constructor that takes a <code>List</code> of strings as the categories of
      * the realisation, a weight used in weighted samples and an ID.
-     * 
+     *
      * @param categories the string categories of a single realisation.
      * @param weight the weight of this realisation, between 0 - 1.
      * @param id a unique identifier for this realisation. Used to track realisations
@@ -53,14 +53,14 @@ public class CategoricalRealisation extends AbstractRealisation {
      */
     public CategoricalRealisation(List<String> categories, double weight, String id) {
     	super(weight, id);
-        Validate.noNullElements(categories);        
+        Validate.noNullElements(categories);
         this.categories = categories;
     }
 
     /**
      * Constructor that takes an array of strings as the categories of
      * the realisation.
-     * 
+     *
      * @param categories the string categories of a single realisation.
      */
     public CategoricalRealisation(String[] categories) {
@@ -70,7 +70,7 @@ public class CategoricalRealisation extends AbstractRealisation {
     /**
      * Constructor that takes an array of strings as the categories of
      * the realisation and a weight, used in weighted samples.
-     * 
+     *
      * @param categories the string categories of a single realisation.
      * @param weight the weight of this realisation, between 0 - 1.
      */
@@ -81,7 +81,7 @@ public class CategoricalRealisation extends AbstractRealisation {
     /**
      * Constructor that takes an array of strings as the categories of
      * the realisation, a weight used in weighted samples and an ID.
-     * 
+     *
      * @param categories the string categories of a single realisation.
      * @param weight the weight of this realisation, between 0 - 1.
      * @param id a unique identifier for this realisation. Used to track realisations
@@ -92,7 +92,7 @@ public class CategoricalRealisation extends AbstractRealisation {
     }
 
     /**
-     * 
+     *
      * @return a <code>List</code> of strings representing the categories of this realisation.
      */
     public List<String> getCategories() {

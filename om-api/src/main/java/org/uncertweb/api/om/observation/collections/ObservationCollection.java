@@ -9,46 +9,46 @@ import org.uncertweb.api.om.observation.Measurement;
 
 /**
  * class represents a soft-typed collection where a mix of different observation types is allowed
- * 
+ *
  * @author staschc
  *
  */
 public class ObservationCollection implements IObservationCollection{
-		
+
 		/**gml Id of collection*/
 		private String gmlId;
-		
+
 		/**members of collection*/
 		private List<AbstractObservation> members;
-		
+
 		/**type name of observation collection*/
 		public static final String NAME = "OM_ObservationCollection";
-		
+
 		/**
 		 * constructor creates an empty collection; add method can be used to fill the collection
-		 * 
+		 *
 		 */
 		public ObservationCollection(){
 			members = new LinkedList<AbstractObservation>();
 		}
-		
+
 		/**
 		 * constructor
-		 * 
+		 *
 		 * @param members
 		 * 			members of collection
 		 */
 		public ObservationCollection(List<AbstractObservation> members){
 			this.members = members;
 		}
-		
+
 		/**
 		 * @return the members
 		 */
 		public List<AbstractObservation> getMembers() {
 			return members;
 		}
-		
+
 		@Override
 		public String getGmlId() {
 			return gmlId;
@@ -68,7 +68,7 @@ public class ObservationCollection implements IObservationCollection{
 		public String getTypeName() {
 			return NAME;
 		}
-		
+
 		@Override
 		public void addObservationCollection(IObservationCollection obsCol) {
 			if (obsCol.getObservations().get(0) instanceof Measurement){

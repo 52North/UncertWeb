@@ -4,7 +4,7 @@ import org.uncertml.distribution.IDistribution;
 
 /**
  * class represents a normal spatio-temporal field
- * 
+ *
  * @author staschc
  *
  */
@@ -12,16 +12,16 @@ public class NormalSpatioTemporalField extends AbstractSpatioTemporalField imple
 
 	/** covariance parameter*/
 	private INormalCovarianceParameter covarianceParameter;
-	
+
 	/**coefficients of a spatial trend polynom*/
 	private double[] spatialTrend;
-	
+
 	/**coefficients of a temporal trend polynom*/
 	private double[] temporalTrend;
-	
+
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param sampleReference
 	 * 			reference to samples
 	 * @param covarianceParameter
@@ -37,10 +37,10 @@ public class NormalSpatioTemporalField extends AbstractSpatioTemporalField imple
 		setSpatialTrend(spatialTrend);
 		setTemporalTrend(temporalTrend);
 	}
-	
+
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param sampleReference
 	 * 			reference to samples
 	 * @param covarianceParameter
@@ -53,11 +53,11 @@ public class NormalSpatioTemporalField extends AbstractSpatioTemporalField imple
 		setCovarianceParameter(covarianceParameter);
 		setTemporalTrend(temporalTrend);
 	}
-	
+
 
 	/**
 	 * constructor with samples and cov parameter
-	 * 
+	 *
 	 * @param ref
 	 * 			sample reference
 	 * @param gp
@@ -71,7 +71,7 @@ public class NormalSpatioTemporalField extends AbstractSpatioTemporalField imple
 
 	/**
 	 * constructor with covariance paramter and trend parameters
-	 * 
+	 *
 	 * @param gp
 	 * @param spatialTrend2
 	 * @param temporalTrend2

@@ -24,10 +24,10 @@ public class Utils {
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
-//		
+//
 //		return ncTimeList;
 //	}
-//	
+//
 //	public static IObservationCollection getOMfile(String omFilePath){
 //		IObservationCollection obsColl = null;
 //		try {
@@ -40,11 +40,11 @@ public class Utils {
 //			throw new RuntimeException("Error while reading OM input: "
 //					+ e.getMessage(), e);
 //		}
-//		
-//		return obsColl;		
+//
+//		return obsColl;
 //	}
-//	
-//	public static NcUwFile getNetCDFUfile(String ncFilePath){	
+//
+//	public static NcUwFile getNetCDFUfile(String ncFilePath){
 //		NcUwFile ncFile = null;
 //
 //		try {
@@ -54,7 +54,7 @@ public class Utils {
 //			throw new RuntimeException("Error while reading NetCDF input: "
 //					+ e.getMessage(), e);
 //		}
-//		
-//		return ncFile;		
+//
+//		return ncFile;
 //	}
 }

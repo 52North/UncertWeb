@@ -8,7 +8,7 @@ jQuery(document).ready(function($) {
 
 		 var app = new App(options, {
 			"albatross": function() {
-				this.showVisualizationLink("albatross", "om_schedules"); 
+				this.showVisualizationLink("albatross", "om_schedules");
 			}
 		});
 

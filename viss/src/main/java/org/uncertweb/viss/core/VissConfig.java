@@ -63,7 +63,7 @@ public class VissConfig {
 
 	private static final Logger log = LoggerFactory.getLogger(VissConfig.class);
 	private static VissConfig instance;
-	
+
 	public synchronized static VissConfig getInstance() {
 		return (instance == null) ? instance = new VissConfig() : instance;
 	}

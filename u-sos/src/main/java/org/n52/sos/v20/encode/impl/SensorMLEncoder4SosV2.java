@@ -8,8 +8,8 @@
  48155 Muenster, Germany
  info@52north.org
 
- This program is free software; you can redistribute and/or modify it under 
- the terms of the GNU General Public License version 2 as published by the 
+ This program is free software; you can redistribute and/or modify it under
+ the terms of the GNU General Public License version 2 as published by the
  Free Software Foundation.
 
  This program is distributed WITHOUT ANY WARRANTY; even without the implied
@@ -112,9 +112,9 @@ import com.vividsolutions.jts.geom.Point;
 
 /**
  * class offers static operations for encoding of SensorML documents/elements
- * 
+ *
  * @author Carsten Hollmann
- * 
+ *
  */
 public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
@@ -123,7 +123,7 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * creates sml:System
-     * 
+     *
      * @param smlDescription
      *            SensorML encoded system description
      * @param history
@@ -320,7 +320,7 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * Creates the identification section of the SensorML description.
-     * 
+     *
      * @param xbIdentification
      *            Xml identification object
      * @param identifications
@@ -339,7 +339,7 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * Creates the classification section of the SensorML description.
-     * 
+     *
      * @param xbClassification
      *            Xml classifications object
      * @param classifications
@@ -357,12 +357,12 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * Creates the characteristics section of the SensorML description.
-     * 
+     *
      * @param xbCharacteristics
      *            Xml characteristics object
      * @param characteristics
      *            SOS SWE representation.
-     * @throws OwsExceptionReport 
+     * @throws OwsExceptionReport
      */
     private void createCharacteristics(Characteristics xbCharacteristics, SosSMLCharacteristics characteristics) throws OwsExceptionReport {
         if (characteristics.getCharacteristicsType().equals(SweAggregateType.SimpleDataRecord)) {
@@ -392,12 +392,12 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * Creates the capabilities section of the SensorML description.
-     * 
+     *
      * @param xbCapabilities
      *            Xml capabilities object
      * @param capabilities
      *            SOS SWE representation.
-     * @throws OwsExceptionReport 
+     * @throws OwsExceptionReport
      */
     private void createCapabilities(Capabilities xbCapabilities, SosSMLCapabilities capabilities) throws OwsExceptionReport {
         if (capabilities.getCapabilitiesType().equals(SweAggregateType.SimpleDataRecord)) {
@@ -425,7 +425,7 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * Creates the position section of the SensorML description.
-     * 
+     *
      * @param xbPosition
      *            Xml position object
      * @param position
@@ -450,12 +450,12 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * Creates the inputs section of the SensorML description.
-     * 
+     *
      * @param xbInputs
      *            Xml inputs object
      * @param inputs
      *            SOS SWE representation.
-     * @throws OwsExceptionReport 
+     * @throws OwsExceptionReport
      */
     private void createInputs(Inputs xbInputs, List<SosSMLIo> inputs) throws OwsExceptionReport {
         InputList xbInputList = xbInputs.addNewInputList();
@@ -467,12 +467,12 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * Creates the outputs section of the SensorML description.
-     * 
+     *
      * @param xbOutputs
      *            Xml outputs object
      * @param outputs
      *            SOS SWE representation.
-     * @throws OwsExceptionReport 
+     * @throws OwsExceptionReport
      */
     private void createOutputs(Outputs xbOutputs, List<SosSMLIo> outputs) throws OwsExceptionReport {
         OutputList xbOutputList = xbOutputs.addNewOutputList();
@@ -484,7 +484,7 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * Creates the components section of the SensorML description.
-     * 
+     *
      * @param xbComponents
      *            Xml components object
      * @param sosComponents
@@ -499,12 +499,12 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * Adds a SOS SWE simple type to a XML SWE field.
-     * 
+     *
      * @param xbField
      *            XML SWE field
      * @param sosSweSimpleType
      *            SOS SWE simple type.
-     * @throws OwsExceptionReport 
+     * @throws OwsExceptionReport
      */
     private void addSweSimpleTypeToField(AnyScalarPropertyType xbField, ISosSweSimpleType sosSweSimpleType) throws OwsExceptionReport {
         switch (sosSweSimpleType.getSimpleType()) {
@@ -561,12 +561,12 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * Adds a SOS SWE simple type to a XML SML IO component.
-     * 
+     *
      * @param xbIoComponentPopertyType
      *            SML IO component
      * @param sosSMLInput
      *            SOS SWE simple type.
-     * @throws OwsExceptionReport 
+     * @throws OwsExceptionReport
      */
     private void addIoComponentPropertyType(IoComponentPropertyType xbIoComponentPopertyType, SosSMLIo sosSMLIO) throws OwsExceptionReport {
         xbIoComponentPopertyType.setName(sosSMLIO.getIoName());
@@ -629,7 +629,7 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
 
     /**
      * creates swe:Position element from passed JTS Point
-     * 
+     *
      * @param point
      *            JTS point containing the coords for swe:POsition
      * @return Returns XMLBeans representation of swe:Position
@@ -662,7 +662,7 @@ public class SensorMLEncoder4SosV2 implements ISensorMLEncoder {
     /**
      * checks the remaining heapsize and throws exception, if it is smaller than
      * 8 kB
-     * 
+     *
      * @throws OwsExceptionReport
      *             if remaining heapsize is smaller than 8kb
      */

@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a Dirichlet distribution with concentration parameter.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Dirichlet}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -21,7 +21,7 @@ public class DirichletDistribution implements IMultivariateDistribution {
 
     /**
      * Constructor that takes a single concentration parameter.
-     * 
+     *
      * @param concentration the concentration parameter.
      */
     public DirichletDistribution(double concentration) {
@@ -30,7 +30,7 @@ public class DirichletDistribution implements IMultivariateDistribution {
 
     /**
      * Constructor that takes an array of doubles for the concentration parameter.
-     * 
+     *
      * @param concentration an array of doubles representing the concentration
      * parameter.
      */
@@ -40,7 +40,7 @@ public class DirichletDistribution implements IMultivariateDistribution {
 
     /**
      * Constructor that takes a list of doubles for the concentration parameter.
-     * 
+     *
      * @param concentration a list of doubles representing the concentration
      * parameter.
      */
@@ -53,7 +53,7 @@ public class DirichletDistribution implements IMultivariateDistribution {
     }
 
     /**
-     * 
+     *
      * @return the concentration parameter.
      */
     public List<Double> getConcentration() {

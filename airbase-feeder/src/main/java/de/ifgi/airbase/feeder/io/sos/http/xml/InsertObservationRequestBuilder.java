@@ -34,9 +34,9 @@ import java.util.Collections;
 /**
  * Class to build a {@link InsertObservationDocument} for an
  * {@link EEARawDataFile}.
- * 
+ *
  * @author Christian Autermann
- * 
+ *
  */
 public class InsertObservationRequestBuilder extends AbstractXmlBuilder<InsertObservationDocument> {
 
@@ -51,20 +51,20 @@ public class InsertObservationRequestBuilder extends AbstractXmlBuilder<InsertOb
     protected EEARawDataFile getFile() {
         return file;
     }
-    
+
     public InsertObservationRequestBuilder setValues(Collection<EEAMeasurement> values) {
         this.values = values;
         return this;
     }
-    
+
     protected Collection<EEAMeasurement> getValues() {
         return Collections.unmodifiableCollection(values);
     }
-    
+
 	/**
 	 * Creates a {@code InsertObservationDocument} that inserts a
 	 * {@code EEARawDataFile} into a SOS.
-	 * 
+	 *
 	 * @return the InsertObservation request
 	 */
     @Override
@@ -84,11 +84,11 @@ public class InsertObservationRequestBuilder extends AbstractXmlBuilder<InsertOb
 		SOSNamespaceUtils.insertSchemaLocations(insObDoc);
 		return insObDoc;
 	}
-    
+
 	protected void buildObservedProperty(ObservationType observation) {
 		observation.addNewObservedProperty().setHref(getPhenomenonId(getFile().getConfiguration().getComponentCode()));
 	}
-    
+
 	protected void buildProcedure(ObservationType observation) {
 		observation.addNewProcedure().setHref(getStationId(getFile().getStation()));
 	}

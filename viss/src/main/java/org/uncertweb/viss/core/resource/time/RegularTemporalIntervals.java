@@ -58,7 +58,7 @@ public class RegularTemporalIntervals extends AbstractRegularTemporalExtent impl
 				getIntervalSize().getMillis());
 	}
 
-	
+
 	@Override
 	public boolean contains(DateTime t) {
 		return t.getMillis() >= getBegin().getMillis() && t.getMillis() <= getEnd().getMillis();

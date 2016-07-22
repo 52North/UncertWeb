@@ -46,21 +46,21 @@ import com.vividsolutions.jts.geom.Polygon;
 /**
  * XMLBeans based parser implementation for parsing geometries defined in the
  * UncertWeb GML profile into JTS geometries
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class XmlBeansGeometryParser implements IGeometryParser {
 
 	/** factory used to create JTS geometries */
 	private GeometryFactory geomFac;
-	
+
 	/**UncertWeb geometry factory*/
 	private GmlGeometryFactory factory;
 
 	/**
 	 * constructor; initializes GeometryFactory
-	 * 
+	 *
 	 */
 	public XmlBeansGeometryParser() {
 		this.geomFac = new GeometryFactory();
@@ -99,19 +99,19 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 					.getRectifiedGrid());
 			return geom;
 		}
-		
+
 		// geometry is MultiPoint
 		else if (xb_geomObj instanceof MultiPointDocument) {
 			geom = parseMultiPoint((MultiPointDocument) xb_geomObj);
 			return geom;
 		}
-		
+
 		// geometry is MultiLineString
 		else if (xb_geomObj instanceof MultiLineStringDocument) {
 			geom = parseMultiLineString((MultiLineStringDocument) xb_geomObj);
 			return geom;
 		}
-		
+
 		// geometry is MultiPolygon
 		else if (xb_geomObj instanceof MultiPolygonDocument) {
 			geom = parseMultiPolygon((MultiPolygonDocument) xb_geomObj);
@@ -125,7 +125,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 
 	/**
 	 * method for parsing XmlBeans representation of point into JTS geometry
-	 * 
+	 *
 	 * @param xb_pointType
 	 *            XmlBeans representation of point defined in UncertWeb GML
 	 *            profile
@@ -147,7 +147,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 
 	/**
 	 * method for parsing XmlBeans representation of polygon into JTS geometry
-	 * 
+	 *
 	 * @param xb_polyDoc
 	 * @return
 	 * @throws IllegalArgumentException
@@ -181,7 +181,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	/**
 	 * method for parsing XmlBeans representation of lineString into JTS
 	 * geometry
-	 * 
+	 *
 	 * @param xb_lsType
 	 *            XMLBeans representation of line string
 	 * @return Returns JTS LineString
@@ -206,7 +206,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	/**
 	 * method for parsing XmlBeans representation of rectified grid into JTS
 	 * geometry
-	 * 
+	 *
 	 * @param xb_rgType
 	 *            XmlBeans representation of rectified grid
 	 * @return Returns JTS representation of Rectified grid
@@ -242,23 +242,23 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 			if (al.size() != 2) {
 				throw new IllegalArgumentException(
 						"Grid must have 2-dim coords and thus 2 axis labels. There are more than 2 axis labels defined!");
-			} 
+			}
 			axisLabels.add((String) al.get(0));
 			axisLabels.add((String) al.get(1));
-			
+
 		}
 		else {
 			if (an.length != 2) {
 				throw new IllegalArgumentException(
 						"Grid must have 2-dim coords and thus 2 axis names. There are more than 2 axis labels defined!");
 			}
-			axisLabels.add(an[0]);	
+			axisLabels.add(an[0]);
 			axisLabels.add(an[1]);
 		}
-		
+
 		//parse origin
 		origin = parsePoint(xb_rgType.getOrigin().getPoint());
-		
+
 		//parse offset vectors
 		VectorType[] xb_offsets = xb_rgType.getOffsetVectorArray();
 		offsetVectors = new ArrayList<Point>(xb_offsets.length);
@@ -268,17 +268,17 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 			p.setSRID(srs);
 			offsetVectors.add(p);
 		}
-		
+
 		rg= new RectifiedGrid(gridEnv,axisLabels,origin,offsetVectors,geomFac);
-		
+
 		return rg;
 	}
 
-	
+
 	/**
 	 * method for parsing XmlBeans representation of multiLineString into JTS
 	 * geometry
-	 * 
+	 *
 	 * @param xb_mlsDoc
 	 *            XmlBeans representation of multiLineString
 	 * @return Returns JTS representation of multiLineString
@@ -296,11 +296,11 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		mp = factory.createMultiLineString(ls, srid);
 		return mp;
 	}
-	
+
 	/**
 	 * method for parsing XmlBeans representation of multiPoint into JTS
 	 * geometry
-	 * 
+	 *
 	 * @param xb_mlsDoc
 	 * 				XmlBeans representation of multiPoint
 	 * @return Returns JTS representation of multiPoint
@@ -315,14 +315,14 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 		for (int i=0; i<xb_lsArray.length;i++){
 			ls[i]=parsePoint(xb_lsArray[i].getPoint());
 		}
-		mp = factory.createMultiPoint(ls, srid); 
+		mp = factory.createMultiPoint(ls, srid);
 		return mp;
 	}
-	
+
 	/**
 	 * method for parsing XmlBeans representation of MultiPolygon into JTS
 	 * geometry
-	 * 
+	 *
 	 * @param xb_mlsDoc
 	 * 				XmlBeans representation of MultiPolygon
 	 * @return Returns JTS representation of MultiPolygon
@@ -343,7 +343,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 
 	/**
 	 * helper method for parsing epsg code from srsName
-	 * 
+	 *
 	 * @param srsName
 	 *            String representing the EPSG Code with OGC conform EPSG URL as
 	 *            prefix
@@ -370,7 +370,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 	 * just parsed per order and NOT switched depending on coordinate system
 	 * (e.g. EPSG:4326 is not switched, thus latitude will be x and longitude
 	 * will be y)
-	 * 
+	 *
 	 * @param position
 	 *            position string contained in XML document
 	 * @return Returns JTS Coordinate
@@ -390,7 +390,7 @@ public class XmlBeansGeometryParser implements IGeometryParser {
 
 	/**
 	 * helper method for parsing an XMLBeans representation of  linear ring to a JTS representation
-	 * 
+	 *
 	 * @param xb_lrType
 	 * 			XMLBeans representation of  linear ring
 	 * @return JTS representation of linear ring

@@ -26,16 +26,16 @@ import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
 public class StaxObservationParser implements IObservationParser{
 	/**
-	 * XMLBeans encoder is used to 
+	 * XMLBeans encoder is used to
 	 */
 	private XBObservationParser xbParser;
-	
-	
-	
+
+
+
 	public StaxObservationParser(){
 		this.xbParser = new XBObservationParser();
 	}
-	
+
 
 	@Override
 	public IObservationCollection parse(String xmlString)
@@ -64,7 +64,7 @@ public class StaxObservationParser implements IObservationParser{
 		//delegate single observation to XmlBeans parser
 		return xbParser.parseObservation(xmlObs);
 	}
-	
+
 	public IObservationCollection parseObservationCollection(InputStream in) throws OMParsingException{
 		IObservationCollection obsCol = new ObservationCollection();
 		xbParser.setIsCollection(true);
@@ -74,7 +74,7 @@ public class StaxObservationParser implements IObservationParser{
 			XMLEventReader parser = factory.createXMLEventReader(in);
 			StringBuilder obsString = null;
 			while( parser.hasNext() ) {
-			    
+
 			    XMLEvent event = parser.nextEvent();
 			    int eventType = event.getEventType();
 			    switch (eventType) {
@@ -106,20 +106,20 @@ public class StaxObservationParser implements IObservationParser{
 			            break;
 			    }
 			}
-			
+
 		} catch (XMLStreamException e) {
 			throw new OMParsingException("Error while reading observation input with STAX parser: "+e.getLocalizedMessage());
 		}
 		finally{
 			xbParser.setIsCollection(false);
 		}
-		
+
 		return obsCol;
 	}
-	
+
 	/**
 	 * TODO might be removed later on; added due to former implementations using this method in the XBObservationParser
-	 * 
+	 *
 	 * @param xb_featureOfInterest
 	 * @return
 	 * @throws IllegalArgumentException
@@ -129,10 +129,10 @@ public class StaxObservationParser implements IObservationParser{
 	 */
 	public synchronized SpatialSamplingFeature parseSamplingFeature(
 			FoiPropertyType xb_featureOfInterest) throws IllegalArgumentException, MalformedURLException, URISyntaxException, XmlException {
-	
+
 		return xbParser.parseSamplingFeature(xb_featureOfInterest);
 	}
-	
+
 	private String appendNamespaces(String eString) {
 		String plainElement = removeNamespaces(eString);
 		String fullElement = plainElement.replace(">", "");
@@ -183,5 +183,5 @@ public class StaxObservationParser implements IObservationParser{
 		eString= eString.replace("['"+OMConstants.NS_UNCERTML+"']:", "");
 		return eString;
 	}
-	
+
 }

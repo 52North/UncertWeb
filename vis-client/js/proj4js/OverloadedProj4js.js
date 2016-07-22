@@ -93,12 +93,12 @@
     /**
      * APIFunction: loadScript
      * Load a JS file from a URL into a <script> tag in the page.
-     * 
+     *
      * Parameters:
      * url - {String} The URL containing the script to load
      * onload - {Function} A method to be executed when the script loads successfully
      * onfail - {Function} A method to be executed when there is an error loading the script
-     * loadCheck - {Function} A boolean method that checks to see if the script 
+     * loadCheck - {Function} A boolean method that checks to see if the script
      *            has loaded.  Typically this just checks for the existance of
      *            an object in the file just loaded.
      */
@@ -154,7 +154,7 @@
         this.onStateChange(request);
       }
     };
-    
+
     /**
      * APIFunction: onStateChange
      * Handle loading the JSON and possibly manage errors.

@@ -10,7 +10,7 @@
 		<name>Institute for Geoinformatics</name>
 		<url>http://ifgi.uni-muenster.de</url>
 	</organization>
-	
+
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 		<wps.version>2.0-RC8-SNAPSHOT</wps.version>
@@ -44,7 +44,7 @@
 	    	<artifactId>Rserve</artifactId>
 	    	<version>0.6-1</version>
 	    </dependency>
-	    
+
 		<!-- Logging -->
 
 		<dependency>
@@ -64,9 +64,9 @@
 			<version>1.2.15</version>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<!-- UncertWeb dependencies -->
-	<!-- 	<dependency> 
+	<!-- 	<dependency>
 		    <groupId>org.uncertweb</groupId>
 			<artifactId>netcdf-u-api</artifactId>
 			<version>1.0-SNAPSHOT</version>
@@ -99,7 +99,7 @@
 			<artifactId>52n-wps-webapp</artifactId>
 			<version>${wps.version}</version> <scope>compile</scope>
 			<type>war</type> <exclusions>
-		
+
 			<!-- we don't need them ... -->
 			<exclusion> <groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-gridgain</artifactId> </exclusion> <exclusion>
@@ -168,7 +168,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+
 	<build>
 		<finalName>austalWPS</finalName>
 		<resources>

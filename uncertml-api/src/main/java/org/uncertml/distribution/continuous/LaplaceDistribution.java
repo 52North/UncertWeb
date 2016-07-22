@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing the Laplace distribution with location and scale parameters.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Laplace}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -22,7 +22,7 @@ public class LaplaceDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single location and scale parameter.
-     * 
+     *
      * @param location the location parameter.
      * @param scale the scale parameter.
      */
@@ -35,7 +35,7 @@ public class LaplaceDistribution implements IContinuousDistribution {
      * Each location and scale pair represents a unique Laplace distribution.
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The arrays must be of equal length.
-     * 
+     *
      * @param location an array of doubles representing the location parameter of n
      * Laplace distributions.
      * @param scale an array of doubles representing the scale parameter of n
@@ -51,7 +51,7 @@ public class LaplaceDistribution implements IContinuousDistribution {
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The lists must be of equal length and
      * must not contain any null elements.
-     * 
+     *
      * @param location a list of doubles representing the location parameter of n
      * Laplace distributions.
      * @param scale a list of doubles representing the scale parameter of n
@@ -71,7 +71,7 @@ public class LaplaceDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the location parameter of each Laplace distribution represented by
      * this object.
      */
@@ -80,7 +80,7 @@ public class LaplaceDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the scale parameter of each Laplace distribution represented by
      * this object.
      */

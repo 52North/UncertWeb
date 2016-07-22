@@ -23,18 +23,18 @@ import java.util.List;
 import org.apache.xmlbeans.XmlObject;
 
 /**
- * @param <T> 
+ * @param <T>
  * @author Christian Autermann
  */
 public abstract class AbstractXmlBuilder<T extends XmlObject> {
     protected static final String OM_2_MEASUREMENT_OBSERVATION = "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement";
     protected static final String SF_SAMPLING_POINT = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint";
     protected static final String OGC_UNKNOWN = "http://www.opengis.net/def/nil/OGC/0/unknown";
-	
+
     protected static final String SOS_SERVICE_NAME = "SOS";
 	protected static final String SOS_V1_SERVICE_VERSION = "1.0.0";
     protected static final String SOS_V2_SERVICE_VERSION = "2.0.0";
-    
+
 	protected static final String UNIQUE_ID_DEFINITION = Utils.get("eea.urn.definition.uniqueId");
 	protected static final String LONG_NAME_DEFINITION = Utils.get("eea.urn.definition.longName");
     protected static final String SHORT_NAME_DEFINITION = Utils.get("eea.urn.definition.shortName");
@@ -47,7 +47,7 @@ public abstract class AbstractXmlBuilder<T extends XmlObject> {
 	protected static final String FOI_URN_PREFIX = Utils.get("eea.urn.id.foiPrefix");
 	protected static final String DF_URN_PREFIX = Utils.get("eea.urn.id.dfPrefix");
 	protected static final String COMPONENT_URN_PREFIX = Utils.get("eea.urn.id.propertyPrefix.component");
-    
+
 	protected static final String COORDINATE_UOM = "degree";
 	protected static final String METER_UOM = "m";
 	protected static final String SWE_DATA_ARRAY_BLOCK_SEPERATOR = ";";
@@ -56,9 +56,9 @@ public abstract class AbstractXmlBuilder<T extends XmlObject> {
 
     protected static final NumberFormat MEASUREMENT_VALUE_FORMAT = new DecimalFormat(
             "0.########",  new DecimalFormatSymbols(Locale.US));
-    
+
 	protected static final Logger log = LoggerFactory.getLogger(AbstractXmlBuilder.class);
-	
+
 	private static HashMap<Integer,String> offeringsCache = new HashMap<Integer, String>();
 	private static HashMap<Integer,String> phenomenonsCache = new HashMap<Integer, String>();
 	private static HashMap<Integer,String> componentsCache = new HashMap<Integer, String>();
@@ -87,7 +87,7 @@ public abstract class AbstractXmlBuilder<T extends XmlObject> {
 		}
 		return id;
 	}
-	
+
 	public static String getOfferingName(int componentCode) {
 		Integer code = new Integer(componentCode);
 		String offering = offeringsCache.get(code);
@@ -114,7 +114,7 @@ public abstract class AbstractXmlBuilder<T extends XmlObject> {
 		}
 		return offering;
 	}
-    
+
     public static String getOfferingName(EEAStation station) {
         String procedure = getStationId(station);
         if (procedure.startsWith(URN_PREFIX)) {
@@ -143,7 +143,7 @@ public abstract class AbstractXmlBuilder<T extends XmlObject> {
 				.append(new BigDecimal(station.getLongitude())).append(" ")
 				.append(new BigDecimal(station.getAltitude())).toString();
 	}
-    
+
     protected List<EEAMeasurement> sortMeasurements(Collection<EEAMeasurement> eeams) {
         List<EEAMeasurement> sortedMeasurements = new LinkedList<EEAMeasurement>(
 				eeams);
@@ -164,8 +164,8 @@ public abstract class AbstractXmlBuilder<T extends XmlObject> {
                 .append(urn ? ":" : "/")
                 .append(getOfferingName(configuration.getComponentCode())).toString();
     }
-    
-    
+
+
     protected Collection<EEAConfiguration> getUniqueConfigurations(EEAStation station) throws NoValidInputsOrOutputsException {
         HashMap<Integer, EEAConfiguration> uniqueConfigs = new HashMap<Integer, EEAConfiguration>();
         for (EEAConfiguration config : station.getConfigurations()) {
@@ -174,15 +174,15 @@ public abstract class AbstractXmlBuilder<T extends XmlObject> {
             }
         }
         if (uniqueConfigs.isEmpty()) {
-            throw new NoValidInputsOrOutputsException();        	
+            throw new NoValidInputsOrOutputsException();
         }
         return uniqueConfigs.values();
     }
 
     public String asString() throws EncodingException {
         return SOSNamespaceUtils.toString(build());
-    } 
-    
+    }
+
     protected abstract T build() throws EncodingException;
-    
+
 }

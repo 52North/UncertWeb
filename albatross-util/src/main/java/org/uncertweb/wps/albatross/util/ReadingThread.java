@@ -5,12 +5,12 @@ import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
 
 /**
- * 
+ *
  * @author s_voss13
  *
  */
 public class ReadingThread implements Callable<Void> {
-	
+
     private final InputStream inputStream;
     private final String name;
 

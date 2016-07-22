@@ -66,36 +66,36 @@ import com.vividsolutions.jts.geom.Point;
  * converter which can be used to read data from an ESRI shapefile and to write
  * these data in an XML document containing O&M 2.0 observations according to
  * the UncertWeb profile.
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class ShapeFileConverter {
 
 	private int counter = 0;
-	
+
 
 	/** properties read from shp2om.properties file */
 	private ShapeFileConverterProperties props;
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @throws IOException
 	 * 				if initialisation of properties from shp2om.properties file
-	 *             failed 
-	 * @throws FileNotFoundException 
+	 *             failed
+	 * @throws FileNotFoundException
 	 *             if initialisation of properties from shp2om.properties file
 	 *             failed
 	 */
 	public ShapeFileConverter() throws FileNotFoundException, IOException {
 		props = new ShapeFileConverterProperties();
 	}
-	
+
 	public ShapeFileConverter(String propsFilePath) throws FileNotFoundException, IOException {
 		props = new ShapeFileConverterProperties(propsFilePath);
 	}
-	
+
 	public boolean run() throws MalformedURLException, URISyntaxException, IOException, OMEncodingException{
 		FILETYPE fileType = props.getFileType();
 		if (fileType== FILETYPE.valueOf("csv")){
@@ -113,21 +113,21 @@ public class ShapeFileConverter {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * method for converting a shapefile containing the features with geometries
 	 * and the
-	 * 
+	 *
 	 * @param shpFilePat
-	 * 
+	 *
 	 * @param dbfFilePath
-	 * 
+	 *
 	 * @param outputFilePath
-	 * @throws URISyntaxException 
-	 * @throws IOException 
-	 * @throws MalformedURLException 
-	 * @throws OMEncodingException 
-	 * 
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 * @throws MalformedURLException
+	 * @throws OMEncodingException
+	 *
 	 */
 	public void convertSHPnCSV2OM(String csvFilePath, String shpFilePath,
 			String outputFilePath) throws URISyntaxException, MalformedURLException, IOException, OMEncodingException  {
@@ -137,18 +137,18 @@ public class ShapeFileConverter {
 		FeatureCollection<SimpleFeatureType, SimpleFeature> foiCollection = getFCollectionFromShpFile(new File(shpFilePath).toURL(), props.getFeatClassName());
 		Map<String,SpatialSamplingFeature> sf4featureID=new HashMap<String,SpatialSamplingFeature>(foiCollection.size());
 		FeatureIterator<SimpleFeature> features = foiCollection.features();
-		
+
 		/*
-		 * TODO workaround because Geotools seems to add 1 to the FID when read in; 
+		 * TODO workaround because Geotools seems to add 1 to the FID when read in;
 		 * so, if number starts with 1
 		 */
 		while (features.hasNext()) {
 			SimpleFeature feature = features.next();
-			
+
 			/*
-			 * Getting FID 
-			 * 
-			 * TODO workaround because Geotools seems to add 1 to the FID when read in; 
+			 * Getting FID
+			 *
+			 * TODO workaround because Geotools seems to add 1 to the FID when read in;
 			 */
 			String fidPrefix = props.getFeatClassName()+".";
 			String textFID = feature.getID().replace(fidPrefix,"");
@@ -164,29 +164,29 @@ public class ShapeFileConverter {
 			//TODO only encode feature once and then use xlink:href to reference the feature
 		}
 
-		
-		//TODO currently only one procedure per 
+
+		//TODO currently only one procedure per
 		String procID = props.getProcPrefix()+props.getProcId();
 		String obsProp = props.getObsPropsPrefix()+props.getObsProps().get(0);
 		List<String> uncertaintyTypes = props.getUncertaintyType();
 		String obsType = props.getObsPropsType();
-		
+
 		// decide if uncertainties are available or if provided data is not certain
-		if(uncertaintyTypes.get(0).equals("certain")||uncertaintyTypes.get(0).equals("")){		
+		if(uncertaintyTypes.get(0).equals("certain")||uncertaintyTypes.get(0).equals("")){
 			if (obsType.equals("double")) {
 				result = new MeasurementCollection();
 			}
 		}else{
 			result = new UncertaintyObservationCollection();
-		}		
-		
+		}
+
 		// read CSV File
 		CSVReader reader = new CSVReader(new FileReader(props.getOmPropsFilePath()));
 		String[] nextLine;
-		Map<String,Integer> pos4ColumnName = null; 
+		Map<String,Integer> pos4ColumnName = null;
 		int obsCounter =0;
 	    while ((nextLine = reader.readNext()) != null) {
-	    	
+
 	    	obsCounter++;
 	    	//if first row, initialize mapping between column names and column position
 	    	if (pos4ColumnName==null){
@@ -195,24 +195,24 @@ public class ShapeFileConverter {
 	    			pos4ColumnName.put(nextLine[i], new Integer(i));
 	    		}
 	    	}
-	    	
+
 	    	else {
 		    	//parse featureID
 		    	String featureID = props.getFeatClassName()+"."+nextLine[pos4ColumnName.get("fid")];
 		    	SpatialSamplingFeature ssf = sf4featureID.get(featureID);
-		    	
+
 		    	//retrieve phenomenonTime
 	    	  	String phenTime = nextLine[pos4ColumnName.get(props.getPhenTimeColName())].trim();
 	    	  	TimeObject to = ShapeFileConverterUtil.parsePhenTime(phenTime);
-	    	  	
+
 	    	  	// for certain data
 	    	  	if(result instanceof MeasurementCollection){
 	    	  		String value = nextLine[pos4ColumnName.get(props.getCertainDataColName())].trim();
 	    	  		MeasureResult r = new MeasureResult(Double.parseDouble(value), props.getUom());
 	    	  		Measurement obs = new Measurement(to,to,new URI(procID),new URI(obsProp),ssf,r);
 	    	  		result.addObservation(obs);
-	    	  	}	  
-	    	  	
+	    	  	}
+
 	    	  	//check if MultivariateNormalDistribution parameters are set, then parse uncertainty and add observations
 	    	  	if (uncertaintyTypes.contains("MultivariateNormalDistribution")&&props.getMultivarNormalMeanColName()!=null&&props.getMultivarNormalCovarianceColName()!=null){
 	    	  		String means = nextLine[pos4ColumnName.get(props.getMultivarNormalMeanColName())].trim();
@@ -225,7 +225,7 @@ public class ShapeFileConverter {
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
-	    	  	
+
 	    	  	//check if NormalDistribution parameters are set, then also create uncertainty type and create new observation
 	    	  	if (uncertaintyTypes.contains("NormalDistribution")&&props.getNormalMeanColName()!=null&&props.getNormalVarianceColName()!=null){
 	    	  		Double mean = new Double(nextLine[pos4ColumnName.get(props.getNormalMeanColName())]);
@@ -259,31 +259,31 @@ public class ShapeFileConverter {
 //        CSVEncoder encoder = new CSVEncoder();
 //        File out = new File(outputFilePath);
 //        encoder.encodeObservationCollection(result,out);
-		
-	
+
+
 
 		// TODO write to file
 
 	}
 
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * method for converting a shapefile containing the features with geometries
 	 * and the
-	 * 
+	 *
 	 * @param shpFilePat
-	 * 
+	 *
 	 * @param dbfFilePath
-	 * 
+	 *
 	 * @param outputFilePath
-	 * @throws IOException 
-	 * @throws URISyntaxException 
-	 * @throws OMEncodingException 
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws OMEncodingException
 	 * @throws Exception
-	 * 
+	 *
 	 */
 	public void convertSHPnDBF2OM(String dbfFilePath, String shpFilePath,
 			String outputFilePath) throws IOException, URISyntaxException, OMEncodingException {
@@ -306,10 +306,10 @@ public class ShapeFileConverter {
 
 		FeatureCollection<SimpleFeatureType, SimpleFeature> foiCollection = source
 				.getFeatures();
-		
+
 		Map<String,SpatialSamplingFeature> sf4featureID=new HashMap<String,SpatialSamplingFeature>(foiCollection.size());
 		FeatureIterator<SimpleFeature> features = foiCollection.features();
-		
+
 		while (features.hasNext()) {
 			SimpleFeature feature = features.next();
 
@@ -341,7 +341,7 @@ public class ShapeFileConverter {
 			System.out.println(name);
 			number4fieldName.put(name, new Integer(i));
 		}
-		
+
 		Object[] rowObjects;
 		String procID = props.getProcPrefix()+props.getProcId();
 		String obsProp = props.getObsPropsPrefix()+props.getObsProps().get(0);
@@ -352,11 +352,11 @@ public class ShapeFileConverter {
 	    	  	//retrieve featureID of row
 	    	  	String featureID = props.getFeatClassName()+"."+((Double)rowObjects[0]).intValue();
 	    	  	SpatialSamplingFeature ssf = sf4featureID.get(featureID);
-	    	  	
+
 	    	  	//retrieve phenomenonTime
 	    	  	String phenTime = ((String) rowObjects[number4fieldName.get(props.getPhenTimeColName())]).trim();
 	    	  	TimeObject to = ShapeFileConverterUtil.parsePhenTime(phenTime);
-	    	  	
+
 	    	  	//check if MultivariateNormalDistribution parameters are set, then parse uncertainty and add observations
 	    	  	if (uncertaintyType.contains("MultivariateNormalDistribution")&&props.getMultivarNormalMeanColName()!=null&&props.getMultivarNormalCovarianceColName()!=null){
 	    	  		String means = ((String) rowObjects[number4fieldName.get(props.getMultivarNormalMeanColName())]).trim();
@@ -369,7 +369,7 @@ public class ShapeFileConverter {
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
-	    	  	
+
 	    	  	//check if NormalDistribution parameters  are set, then also create uncertainty type and create new observation
 	    	  	if (uncertaintyType.contains("NormalDistribution")&&props.getNormalMeanColName()!=null&&props.getNormalVarianceColName()!=null){
 	    	  		Double mean = ((Double) rowObjects[number4fieldName.get(props.getNormalMeanColName())]);
@@ -380,15 +380,15 @@ public class ShapeFileConverter {
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
-	    	  	
+
 	    	}
 
 	      inputStream.close();
 	      StaxObservationEncoder encoder = new StaxObservationEncoder();
 	      File out = new File(outputFilePath);
 	      encoder.encodeObservationCollection(result,out);
-		
-	
+
+
 
 		// TODO write to file
 
@@ -415,15 +415,15 @@ public class ShapeFileConverter {
 		for (int i = 0; i<elements.length;i++){
 			elementDoubles[i] = Double.parseDouble(elements[i]);
 		}
-		
+
 		CovarianceMatrix cm = new CovarianceMatrix(dim,elementDoubles);
-		
+
 		return cm;
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param shpFilePath
 	 * @param outputFilePath
 	 * @throws Exception
@@ -449,7 +449,7 @@ public class ShapeFileConverter {
 		Map<String,SpatialSamplingFeature> sf4featureID=new HashMap<String,SpatialSamplingFeature>(foiCollection.size());
 		FeatureIterator<SimpleFeature> features = foiCollection.features();
 		SpatialSamplingFeature lastSF = null;
-		
+
 //		// read shapefile
 //		ShapefileDataStore store = new ShapefileDataStore(new URL(shpFilePath));
 //		// extract feature class from feature source
@@ -466,12 +466,12 @@ public class ShapeFileConverter {
 //		FeatureCollection<SimpleFeatureType, SimpleFeature> foiCollection = source
 //				.getFeatures();
 //		FeatureIterator<SimpleFeature> features = foiCollection.features();
-		
+
 		while (features.hasNext()) {
 			SimpleFeature feature = features.next();
 
 			/*
-			 * TODO workaround because Geotools seems to add 1 to the FID when read in; 
+			 * TODO workaround because Geotools seems to add 1 to the FID when read in;
 			 * so, if number starts with 1
 			 */
 			// get GML ID
@@ -481,43 +481,43 @@ public class ShapeFileConverter {
 			textFID = fidPrefix+id;
 			Object geom = feature.getDefaultGeometry();
 
-			
-			SpatialSamplingFeature sf = null;		
-			
+
+			SpatialSamplingFeature sf = null;
+
 			// create samplingFeature
 			if (geom instanceof Geometry) {
-				
-				// check if this feature already exists in the observations list						
+
+				// check if this feature already exists in the observations list
 				boolean same = true;
 				if(lastSF!=null){
 					Coordinate[] coords = ((Geometry)geom).getCoordinates();
-					Coordinate[] lastCoords = lastSF.getShape().getCoordinates();					
+					Coordinate[] lastCoords = lastSF.getShape().getCoordinates();
 					// loop through coordinates and see if all are the same
 					for(int i=0; i<coords.length; i++){
 						same = same & (coords[i].x==lastCoords[i].x) & (coords[i].y==lastCoords[i].y);
 					}
 				}else
 					same= false;
-				
+
 				if(same)
 					sf = lastSF;
 				else{
 					sf = ShapeFileConverterUtil.createSamplingFeature(textFID, (Geometry) geom);
 					lastSF = sf;
-				}					
+				}
 			}
-			
+
 
 	//		sf.setSampledFeature("http://giv-uw2.uni-muenster.de/profileDictionary#p2");
 			// retrieve phenomenonTime
 			TimeObject to = props.getPhenTime();
-			
+
 			// else get time in the shapefile attribute table
 			if(!props.getPhenTimeColName().equals("")){
 				String phenTime = (String) feature.getAttribute(props.getPhenTimeColName());
 				to = ShapeFileConverterUtil.parsePhenTime(phenTime);
 			}
-				
+
 			// retrieve procedure(s)
 			String procID = props.getProcId();
 			if (procID != null) {
@@ -583,8 +583,8 @@ public class ShapeFileConverter {
 	//	System.out.println(encoder.encodeObservationCollection(result));
 	}
 
-	
-	
+
+
 	public void convertSHP2OM(String csvFilePath, String shpFilePath,
 			String outputFilePath) throws URISyntaxException, MalformedURLException, IOException, OMEncodingException  {
 		counter=0;
@@ -593,18 +593,18 @@ public class ShapeFileConverter {
 		FeatureCollection<SimpleFeatureType, SimpleFeature> foiCollection = getFCollectionFromShpFile(new File(shpFilePath).toURL(), props.getFeatClassName());
 		Map<String,SpatialSamplingFeature> sf4featureID=new HashMap<String,SpatialSamplingFeature>(foiCollection.size());
 		FeatureIterator<SimpleFeature> features = foiCollection.features();
-		
+
 		/*
-		 * TODO workaround because Geotools seems to add 1 to the FID when read in; 
+		 * TODO workaround because Geotools seems to add 1 to the FID when read in;
 		 * so, if number starts with 1
 		 */
 		while (features.hasNext()) {
 			SimpleFeature feature = features.next();
-			
+
 			/*
-			 * Getting FID 
-			 * 
-			 * TODO workaround because Geotools seems to add 1 to the FID when read in; 
+			 * Getting FID
+			 *
+			 * TODO workaround because Geotools seems to add 1 to the FID when read in;
 			 */
 			String fidPrefix = props.getFeatClassName()+".";
 			String textFID = feature.getID().replace(fidPrefix,"");
@@ -620,29 +620,29 @@ public class ShapeFileConverter {
 			//TODO only encode feature once and then use xlink:href to reference the feature
 		}
 
-		
-		//TODO currently only one procedure per 
+
+		//TODO currently only one procedure per
 		String procID = props.getProcPrefix()+props.getProcId();
 		String obsProp = props.getObsPropsPrefix()+props.getObsProps().get(0);
 		List<String> uncertaintyTypes = props.getUncertaintyType();
 		String obsType = props.getObsPropsType();
-		
+
 		// decide if uncertainties are available or if provided data is not certain
-		if(uncertaintyTypes.get(0).equals("certain")||uncertaintyTypes.get(0).equals("")){		
+		if(uncertaintyTypes.get(0).equals("certain")||uncertaintyTypes.get(0).equals("")){
 			if (obsType.equals("double")) {
 				result = new MeasurementCollection();
 			}
 		}else{
 			result = new UncertaintyObservationCollection();
-		}		
-		
+		}
+
 		// read CSV File
 		CSVReader reader = new CSVReader(new FileReader(props.getOmPropsFilePath()));
 		String[] nextLine;
-		Map<String,Integer> pos4ColumnName = null; 
+		Map<String,Integer> pos4ColumnName = null;
 		int obsCounter =0;
 	    while ((nextLine = reader.readNext()) != null) {
-	    	
+
 	    	obsCounter++;
 	    	//if first row, initialize mapping between column names and column position
 	    	if (pos4ColumnName==null){
@@ -651,24 +651,24 @@ public class ShapeFileConverter {
 	    			pos4ColumnName.put(nextLine[i], new Integer(i));
 	    		}
 	    	}
-	    	
+
 	    	else {
 		    	//parse featureID
 		    	String featureID = props.getFeatClassName()+"."+nextLine[pos4ColumnName.get("fid")];
 		    	SpatialSamplingFeature ssf = sf4featureID.get(featureID);
-		    	
+
 		    	//retrieve phenomenonTime
 	    	  	String phenTime = nextLine[pos4ColumnName.get(props.getPhenTimeColName())].trim();
 	    	  	TimeObject to = ShapeFileConverterUtil.parsePhenTime(phenTime);
-	    	  	
+
 	    	  	// for certain data
 	    	  	if(result instanceof MeasurementCollection){
 	    	  		String value = nextLine[pos4ColumnName.get(props.getCertainDataColName())].trim();
 	    	  		MeasureResult r = new MeasureResult(Double.parseDouble(value), props.getUom());
 	    	  		Measurement obs = new Measurement(to,to,new URI(procID),new URI(obsProp),ssf,r);
 	    	  		result.addObservation(obs);
-	    	  	}	  
-	    	  	
+	    	  	}
+
 	    	  	//check if MultivariateNormalDistribution parameters are set, then parse uncertainty and add observations
 	    	  	if (uncertaintyTypes.contains("MultivariateNormalDistribution")&&props.getMultivarNormalMeanColName()!=null&&props.getMultivarNormalCovarianceColName()!=null){
 	    	  		String means = nextLine[pos4ColumnName.get(props.getMultivarNormalMeanColName())].trim();
@@ -681,7 +681,7 @@ public class ShapeFileConverter {
 	    	  		UncertaintyObservation obs = new UncertaintyObservation(to,to,new URI(procID),new URI(obsProp),ssf,ur);
 	    	  		result.addObservation(obs);
 	    	  	}
-	    	  	
+
 	    	  	//check if NormalDistribution parameters are set, then also create uncertainty type and create new observation
 	    	  	if (uncertaintyTypes.contains("NormalDistribution")&&props.getNormalMeanColName()!=null&&props.getNormalVarianceColName()!=null){
 	    	  		Double mean = new Double(nextLine[pos4ColumnName.get(props.getNormalMeanColName())]);
@@ -715,19 +715,19 @@ public class ShapeFileConverter {
 //        CSVEncoder encoder = new CSVEncoder();
 //        File out = new File(outputFilePath);
 //        encoder.encodeObservationCollection(result,out);
-		
-	
+
+
 
 		// TODO write to file
 
 	}
 
-	
-	
-	
+
+
+
 	/**
-	 * helper method for reading featureCollection for passed feature type from SHP file 
-	 * 
+	 * helper method for reading featureCollection for passed feature type from SHP file
+	 *
 	 * @param filePath
 	 * 			path of SHP file
 	 * @param featureClassName

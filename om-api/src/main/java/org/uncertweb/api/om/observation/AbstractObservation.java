@@ -26,7 +26,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Abstract super class for all observation types
- * 
+ *
  * @author Kiesow, staschc
  *
  */
@@ -246,7 +246,7 @@ public abstract class AbstractObservation {
 			return ao;
 		}
 	}
-	
+
 
 	protected Identifier identifier;
 	protected Envelope boundedBy;
@@ -266,11 +266,11 @@ public abstract class AbstractObservation {
 	 */
 	protected DQ_UncertaintyResult[] resultQuality;
 
-	
-	
+
+
 	/**
 	 * Constructor with mandatory attributes
-	 * 
+	 *
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -297,7 +297,7 @@ public abstract class AbstractObservation {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param identifier
 	 *            identifier of observation
 	 * @param boundedBy
@@ -329,7 +329,7 @@ public abstract class AbstractObservation {
 		setValidTime(validTime);
 		setResultQuality(resultQuality);
 	}
-	
+
 	///////////////////////////////////////////////////
 	//abstract Methods
 	/**
@@ -338,7 +338,7 @@ public abstract class AbstractObservation {
 	public abstract IResult getResult();
 
 	/**
-	 * 
+	 *
 	 * @param result
 	 * 			the result of the observation
 	 * @throws Exception
@@ -480,7 +480,7 @@ public abstract class AbstractObservation {
 	public Map<String, Object> getParameters() {
 		return parameters;
 	}
-	
+
 	/**
 	 * @param id the name of the parameter
 	 * @return the parameter with the specified name
@@ -493,22 +493,22 @@ public abstract class AbstractObservation {
 	 * @param key the key of the parameter
 	 * @param value the value of the parameter
 	 */
-	public void addParameter(String key, Object value) { 
+	public void addParameter(String key, Object value) {
 		this.parameters.put(key, value);
 	}
-	
+
 	/**
 	 * @param parameters the parameters to set
 	 */
 	public void setParameters(Map<String, Object> parameters) {
 		this.parameters = parameters;
 	}
-	
+
 	/**
 	 * returns the name of observation
-	 * 
+	 *
 	 * @return
 	 */
 	public abstract String getName();
-	
+
 }

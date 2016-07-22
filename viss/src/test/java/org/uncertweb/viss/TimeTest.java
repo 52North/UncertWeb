@@ -43,18 +43,18 @@ public class TimeTest extends AbstractVissTest {
 		createVisualization(r, d, v, new JSONObject()
 				.put(AbstractVisualizer.TIME_PARAMETER, "2005-11-11T00:00:00.000Z"));
 	}
-	
-	
+
+
 	@Test
 	public void testBiotempTime() throws JSONException {
 		ObjectId r = addResource(MediaTypes.NETCDF_TYPE, BIOTEMP_T);
 		ObjectId[] datasets = getDataSetsForResource(r);
 		assertEquals(1, datasets.length);
 		ObjectId d = datasets[0];
-		
+
 		String[] visualizers = getVisualizersForDataset(r, d);
 		assertEquals(7, visualizers.length);
-		
+
 		DateTime begin = UwTimeUtils.parseDateTime("2012-04-01T09:00:00.000Z");
 		for (int i = 0; i < 6; ++i) {
 			String time = UwTimeUtils.format(begin.plusHours(i));

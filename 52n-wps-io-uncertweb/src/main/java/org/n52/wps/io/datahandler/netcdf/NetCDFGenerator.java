@@ -20,9 +20,9 @@ import org.uncertweb.utils.UwCollectionUtils;
 
 /**
  * Generator for NetCDF-U outputs
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class NetCDFGenerator extends AbstractUwGenerator {
 
@@ -30,9 +30,9 @@ public class NetCDFGenerator extends AbstractUwGenerator {
 
 	public NetCDFGenerator() {
 		super(
-			new HashSet<String>(), 
+			new HashSet<String>(),
 			set(ENCODING_BINARY,ENCODING_UTF_8),
-			set(MIME_TYPE_NETCDFX, MIME_TYPE_NETCDF), 
+			set(MIME_TYPE_NETCDFX, MIME_TYPE_NETCDF),
 			UwCollectionUtils.<Class<?>>set(NetCDFBinding.class)
 		);
 	}

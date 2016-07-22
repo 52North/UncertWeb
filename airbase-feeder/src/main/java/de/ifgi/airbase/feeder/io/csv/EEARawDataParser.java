@@ -23,7 +23,7 @@ import au.com.bytecode.opencsv.CSVReader;
 
 
 class EEARawDataParser {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(EEARawDataParser.class);
 	private File[] files;
 
@@ -79,12 +79,12 @@ class EEARawDataParser {
 				MutableDateTime lineStart = Utils.parseDateReverse(line[0]).toMutableDateTime();
 				for (int i = 1; i < line.length; i += 2) {
 					EEAMeasurement m = new EEAMeasurement(
-							Double.parseDouble(line[i]), 
-							Integer.parseInt(line[i + 1]), 
+							Double.parseDouble(line[i]),
+							Integer.parseInt(line[i + 1]),
 							lineStart.toDateTime());
 					file.addMeasurement(m);
 					lineStart.add(period);
-				}				
+				}
 			}
 			reader.close();
 			return file;
@@ -116,5 +116,5 @@ class EEARawDataParser {
 		file.setType(getTypeByFileName(fileName));
 		return file;
 	}
-	
+
 }

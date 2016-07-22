@@ -16,9 +16,9 @@ import org.apache.commons.io.FileUtils;
  * This workspace contains all static files and runnables. After coping this data into one of the generated workspace the WPS starts to run the runnables and local changes are made in
  * the specific workspace. In order to publish results on the web (e.g. via tomcat) a method {@link Workspace#copyResultIntoPublicFolder(List)} to copy selected files exist. The list of files
  * to copy can be defined by the user in the corresponding config file for the this WPS. Moreover methods to get the workspace and public folder are available.
- * 
+ *
  * @author s_voss13
- * 
+ *
  */
 public class Workspace {
 
@@ -27,7 +27,7 @@ public class Workspace {
 
 	/**
 	 * Creates the workspace folder, the public folder and copies the original data into the workspace folder. If the folders does not exist the will be created.
-	 * 
+	 *
 	 * @param originalDataFolder
 	 * @param workspace
 	 * @param publicFolder
@@ -52,21 +52,21 @@ public class Workspace {
 		// copy result into public folder -> done after calculation
 
 	}
-	
+
 	public String getFolderNumber(){
-		
+
 		return this.folderNumber;
 	}
 
 	/**
 	 * Copies the given files from the workspace into the public folder.
-	 * 
+	 *
 	 * @param files
 	 */
 //	public void copyResultIntoPublicFolder(List<String> files) {
-//		
+//
 //		for(String currentFileName : files){
-//			
+//
 //			this.copyFile(this.getWorkspaceFolder(), this.getPublicFolder(), currentFileName);
 //		}
 //
@@ -98,7 +98,7 @@ public class Workspace {
 
 	/**
 	 * Copies a file with the help of apaches FileUtilities.
-	 * 
+	 *
 	 * @param sourceLocation the source location
 	 * @param targetLocation the target location
 	 * @param fileName the existing! file name
@@ -115,14 +115,14 @@ public class Workspace {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
-	 * Copies a complete directory into another one. This is achieved by using recursion. 
+	 * Copies a complete directory into another one. This is achieved by using recursion.
 	 * If the target location does not exist, the location will be created.
 	 * the source location has to be a directory.
-	 * 
+	 *
 	 * @param sourceLocation the source location
 	 * @param targetLocation the target location
 	 */
@@ -175,7 +175,7 @@ public class Workspace {
 	/**
 	 * Creates a directory if it does not already exists. If the parent does not exist it will be created too.
 	 * This is true for the whole path.
-	 * 
+	 *
 	 * @param s the new directory
 	 * @return the file to the new directory
 	 */
@@ -194,7 +194,7 @@ public class Workspace {
 	/**
 	 * Generates a unique workspace number. It is done by testing if the suggested number is already used in the workspace. If this is true
 	 * a new number will be generated.
-	 * 
+	 *
 	 * @param workspace the workspace in which a new number is required.
 	 * @return a unique number
 	 */
@@ -217,7 +217,7 @@ public class Workspace {
 
 	/**
 	 * [1000,Integer.Max[
-	 * 
+	 *
 	 * @return
 	 */
 	private int generateRandomNumber() {

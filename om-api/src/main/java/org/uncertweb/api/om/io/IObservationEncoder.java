@@ -10,7 +10,7 @@ import org.uncertweb.api.om.observation.collections.IObservationCollection;
 
 /**
  * Interface for encoding observations
- * 
+ *
  * @author Kiesow
  *
  */
@@ -18,7 +18,7 @@ public interface IObservationEncoder {
 
 	/**
 	 * encodes an {@link IObservationCollection}
-	 * 
+	 *
 	 * @param obsCol
 	 *            observation collection
 	 * @return observation collections's xml document as formatted String
@@ -29,7 +29,7 @@ public interface IObservationEncoder {
 
 	/**
 	 * encodes an {@link IObservationCollection}
-	 * 
+	 *
 	 * @param obsCol
 	 *            observation collection
 	 * @param f
@@ -40,9 +40,9 @@ public interface IObservationEncoder {
 	public void encodeObservationCollection(IObservationCollection obsCol, File f) throws OMEncodingException;
 
 	/**
-	 * 
+	 *
 	 * encodes an {@link IObservationCollection}
-	 * 
+	 *
 	 * @param obsCol
 	 * 			obsbervation collection
 	 * @param out
@@ -50,11 +50,11 @@ public interface IObservationEncoder {
 	 * @throws OMEncodingException
 	 */
 	public void encodeObservationCollection(IObservationCollection obsCol, OutputStream out) throws OMEncodingException;
-	
+
 	/**
-	 * 
+	 *
 	 * encodes an {@link IObservationCollection}
-	 * 
+	 *
 	 * @param obsCol
 	 * 			observation collection
 	 * @param writer
@@ -62,10 +62,10 @@ public interface IObservationEncoder {
 	 * @throws OMEncodingException
 	 */
 	public void encodeObservationCollection(IObservationCollection obsCol, Writer writer) throws OMEncodingException;
-	
+
 	/**
 	 * encodes an {@link AbstractObservation}
-	 * 
+	 *
 	 * @param obs
 	 *            observation
 	 * @return observation's xml document as formatted String
@@ -75,9 +75,9 @@ public interface IObservationEncoder {
 	public String encodeObservation(AbstractObservation obs) throws OMEncodingException;
 
 	/**
-	 * 
+	 *
 	 * encodes subtypes of an {@link AbstractObservation}
-	 * 
+	 *
 	 * @param obs
 	 * 			observation that should be encoded
 	 * @param f
@@ -86,10 +86,10 @@ public interface IObservationEncoder {
 	 * 			if encoding fails
 	 */
 	public void encodeObservation(AbstractObservation obs, File f) throws OMEncodingException;
-	
+
 	/**
 	 * encodes subtypes of an {@link AbstractObservation}
-	 * 
+	 *
 	 * @param obs
 	 * 			observation that should be encoded
 	 * @param out
@@ -98,10 +98,10 @@ public interface IObservationEncoder {
 	 * 			if encoding fails
 	 */
 	public void encodeObservation(AbstractObservation obs, OutputStream out) throws OMEncodingException;
-	
+
 	/**
 	 * encodes subtypes of an {@link AbstractObservation}
-	 * 
+	 *
 	 * @param obs
 	 * 			observation that should be encoded
 	 * @param writer
@@ -110,6 +110,6 @@ public interface IObservationEncoder {
 	 * 			if encoding fails
 	 */
 	public void encodeObservation(AbstractObservation obs, Writer writer) throws OMEncodingException;
-	
-	
+
+
 }

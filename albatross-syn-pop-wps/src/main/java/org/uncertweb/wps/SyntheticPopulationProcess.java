@@ -40,9 +40,9 @@ import org.uncertweb.wps.util.Workspace;
 /**
  * implements a process that invokes the Albatross Model and returns the outputs
  * according to the UncertWeb profiles
- * 
+ *
  * @author Steffan Voss
- * 
+ *
  */
 public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
@@ -67,7 +67,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 	private final String outputIDProjectFile = "project-file";
 	private final String outputIDExportFile = "export-file";
-	
+
 	private final String inputIDNoCases = "noCases";
 	private final String inputIDNoCasesNew = "noCasesNew";
 
@@ -80,28 +80,28 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	private String noCases;
 	private String noCasesNew;
 	private Boolean isModelUncertainty;
-	
+
 	private Workspace ws;
 	private ProjectFile projectFile;
-	
+
 	//private static ProcessMonitorThread processMonitorThread = ProcessMonitorThread.getInstance();
 	//private static WorkspaceCleanerThread workspaceCleanerThread = WorkspaceCleanerThread.getInstance();
-	
+
 	//scheduler valid for all instances of the wps
 	private static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
 	protected static Logger log = Logger.getLogger(SyntheticPopulationProcess.class);
-	
+
 	//According to the language spec the static initializer block is only loaded once -> when the class is initialized by the JRE
 	static{
-		
+
 		readProperties();
-		
+
 		//processMonitorThread.setInterruptTime(processInterruptTime);
 		//workspaceCleanerThread.setInterruptTime(folderRemoveCycle);
 
 		//This is ridiculous... no schedule methods for callables, on the other side the will run forever as the call is inside a try block
 //		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
-//			
+//
 //			@Override
 //			public void run() {
 //				try {
@@ -109,12 +109,12 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 //				} catch (Exception e) {
 //					e.printStackTrace();
 //				}
-//				
+//
 //			}
 //		}, 1,1, TimeUnit.MINUTES);
-//		
+//
 //		scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
-//			
+//
 //			@Override
 //			public void run() {
 //				try {
@@ -122,10 +122,10 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 //				} catch (Exception e) {
 //					e.printStackTrace();
 //				}
-//				
+//
 //			}
 //		}, 1,1, TimeUnit.MINUTES);
-//		
+//
 	}
 
 	@Override
@@ -185,28 +185,28 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		this.checkAndCopyInput(inputData);
 
 		this.setupFolder();
-		
+
 		//what we have to do if this is the case...
 		//create a config input file wiith two additional parameters
 		//run the sampleDraw exe and take care about the input project file
 		if(isBootstrapping){
-			
+
 			this.setupSampleDraw();
-			
+
 			this.runSampleDraw();
-			
+
 		}
 
 		this.runModel();
-		
+
 		ws.copyResultIntoPublicFolder(filesToCopyProp);
 
 		Map<String, IData> result = new HashMap<String, IData>();
-		
+
 		result.put("project-file", new LiteralStringBinding(serverAddressProp + "/" +publicFolderVisiblePartProp+"/"+ ws.getFolderNumber()+"/"+ projectFile.getProjectFileName()));
 
 		result.put("export-file", new LiteralStringBinding(serverAddressProp + "/" +publicFolderVisiblePartProp+"/"+ ws.getFolderNumber()+"/"+ exportFileNameProp));
-		
+
 		result.put("export-file-bin", new LiteralStringBinding(serverAddressProp + "/" +publicFolderVisiblePartProp+"/"+ ws.getFolderNumber()+"/"+ exportFileBinNameProp));
 
 		try {
@@ -214,13 +214,13 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		} catch (IOException e) {
 			throw new RuntimeException("Error while deleting temporary workspace folder: "+e.getLocalizedMessage());
 		}
-		
+
 		return result;
 	}
 
 	/**
 	 * Reads the properties from the 'albatross-synthetic-population-process.properties' file.
-	 * 
+	 *
 	 */
 	private static void readProperties() {
 
@@ -252,12 +252,12 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		publicFolderVisiblePartProp = properties.getProperty("publicFolderVisiblePart");
 		folderRemoveCycle = Integer.valueOf(properties.getProperty("folderRemoveCycle"));
 		processInterruptTime = Integer.valueOf(properties.getProperty("processInterruptTime"));
-		
+
 	}
 
 	/**
 	 * Checks if the parameters are available and not <code>null</code>.
-	 * 
+	 *
 	 * @param inputData a {@link List} of input data.
 	 */
 	private void checkAndCopyInput(Map<String, List<IData>> inputData) {
@@ -307,42 +307,42 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 		municipalities = ((LiteralIntBinding) municipalitiesList.get(0))
 				.getPayload().toString();
-		
+
 		List<IData> modelUncertaintyList = inputData
 				.get(inputIDIsModelUncertainty);
-		
+
 		isModelUncertainty = ((LiteralBooleanBinding) modelUncertaintyList.get(0)).getPayload();
-		
+
 		List<IData> isBootstrappingList = inputData.get(inputIDIsBootstrapping);
-		
+
 		if(isBootstrappingList == null || isBootstrappingList.isEmpty()){
 			throw new IllegalArgumentException("isBootstrapping is missing");
 		}
-		
+
 		isBootstrapping = ((LiteralBooleanBinding) isBootstrappingList.get(0)).getPayload();
-		
+
 		//if the user set the bootstrapping flag he/she has to provide two additional parameters
 		if(isBootstrapping){
-			
+
 			List<IData> noCasesList = inputData.get(inputIDNoCases);
-			
+
 			if(noCasesList == null || noCasesList.isEmpty()){
 				throw new IllegalArgumentException("number of cases is missing");
 			}
-			
+
 			noCases = ((LiteralIntBinding) noCasesList.get(0))
 					.getPayload().toString();
-			
+
 			List<IData> noCasesNewList = inputData.get(inputIDNoCasesNew);
-			
+
 			if(noCasesNewList == null || noCasesNewList.isEmpty()){
 				throw new IllegalArgumentException("number of cases NEW is missing");
 			}
-			
+
 			noCasesNew = ((LiteralIntBinding) noCasesNewList.get(0))
 					.getPayload().toString();
 		}
-		
+
 
 	}
 
@@ -361,24 +361,24 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		projectFile = new ProjectFile("ProjectFile.prj", ws.getWorkspaceFolder().getPath(),
 				ws.getWorkspaceFolder().getPath(), householdFraction, rwdataHouseholds,
 				municipalities, zones, postcodeAreas,isModelUncertainty);
-		
+
 		ProjectFile.newSysParProjectFile("SYSpars_test.txt", ws.getWorkspaceFolder().getPath(), householdFraction);
-		
-		
+
+
 		//supervise the newly created folder and remove them after a specific time
 		Set<Pair<File, Long>> fileSet = new HashSet<Pair<File,Long>>();
-		
+
 		fileSet.add(new Pair<File, Long>(ws.getWorkspaceFolder(), System.currentTimeMillis()));
 		fileSet.add(new Pair<File, Long>(ws.getPublicFolder(), System.currentTimeMillis()));
-		
+
 		//workspaceCleanerThread.addFileSet(fileSet);
 
 	}
-	
+
 	private void setupSampleDraw(){
 		ProjectFile.newInputDrawProjectFile("config.txt", ws.getWorkspaceFolder().getPath(), noCases, noCasesNew);
 	}
-	
+
 	private void runSampleDraw(){
 		Process proc = null;
 		BufferedWriter out = null;
@@ -392,16 +392,16 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 			pb.directory(ws.getWorkspaceFolder());
 
-			proc = pb.start(); 
-			
+			proc = pb.start();
+
 			//make sure the new process is supervised
 			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process,Long>>();
 			currentProcess.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
-			
+
 			//processMonitorThread.addProcessSet(currentProcess);
 
 			ExecutorService executorService = Executors.newFixedThreadPool(2);
-			
+
 			executorService.submit(new ReadingThread(proc.getInputStream(), "out"));
 			executorService.submit(new ReadingThread(proc.getErrorStream(), "err"));
 
@@ -434,26 +434,26 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		}
 
 		int result = 0;
-		
+
 		try {
 
 			result = proc.waitFor();
-			
+
 			log.info("Return value: " + result);
-			
+
 		} catch (Exception e) {
 
 			log.info("Error while running sample draw: "+e.getLocalizedMessage());
 			throw new RuntimeException("Error while running sample draw: "+e.getLocalizedMessage());
-			
+
 		}
 		finally{
-			
+
 			if(result != 0){
 				throw new RuntimeException("Could not run sample draw properly. Try again.");
 			}
 		}
-		
+
 	}
 
 	/**
@@ -461,14 +461,14 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 	 * The method runs the exe inside the workspace and sets the two required arguemnts.
 	 * The first argument is the projectfile, which contains the paths to the necessary data files.
 	 * The second argument is the filename of the output. This name can be specified in the properties file and is usually 'export.txt'.
-	 * 
+	 *
 	 * The process itself is also monitored. If the process runs longer then the specified time for processes from the properties file it will be canceled.
 	 */
 	private void runModel() {
 
 		Process proc = null;
 		BufferedWriter out =null;
-		
+
 		try {
 
 			List<String> commands = new ArrayList<String>();
@@ -479,16 +479,16 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 			pb.directory(ws.getWorkspaceFolder());
 
-			proc = pb.start(); 
-			
+			proc = pb.start();
+
 			//make sure the new process is supervised
 			Set<Pair<Process, Long>> currentProcess = new HashSet<Pair<Process,Long>>();
 			currentProcess.add(new Pair<Process, Long>(proc, System.currentTimeMillis()));
-			
+
 			//processMonitorThread.addProcessSet(currentProcess);
 
 			ExecutorService executorService = Executors.newFixedThreadPool(2);
-			
+
 			executorService.submit(new ReadingThread(proc.getInputStream(), "out"));
 			executorService.submit(new ReadingThread(proc.getErrorStream(), "err"));
 
@@ -499,26 +499,26 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 
 			/*
 			 * and now... it gets dirty
-			 * if the sample draw run was made (bootstrapping) the name of the project files changes, because the new 
+			 * if the sample draw run was made (bootstrapping) the name of the project files changes, because the new
 			 * project file points to different files it works like projFile.txt -> projFile-0.prj
 			 */
-			
+
 			if(!isBootstrapping){
-				
+
 				//the project file as argument
 				out.write(projectFile.getProjectFileName());
 				out.newLine();
 				out.flush();
-			
+
 			}
-			
+
 			if(isBootstrapping){
-				
+
 				//the project file as argument
 				out.write(projectFile.getProjectFileNameAfterSampleDrawRun());
 				out.newLine();
 				out.flush();
-				
+
 			}
 
 			//the export.txt as argument
@@ -538,7 +538,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 		}
 
 		int result = 0;
-		
+
 		try {
 			result = proc.waitFor();
 			log.info("Return value: " + result);
@@ -547,7 +547,7 @@ public class SyntheticPopulationProcess extends AbstractAlgorithm {
 			throw new RuntimeException("Error while running sample draw: "+e.getLocalizedMessage());
 		}
 		finally{
-			
+
 			if(result != 0){
 				throw new RuntimeException("Could not run synpop properly. Try again.");
 			}

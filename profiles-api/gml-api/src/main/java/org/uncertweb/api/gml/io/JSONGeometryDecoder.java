@@ -21,19 +21,19 @@ import com.vividsolutions.jts.geom.Polygon;
 /**
  * JSON decoder for decoding geometries in GeoJSON as defined in the
  * UncertWeb GML Profile
- * 
+ *
  * follows the GeoJSON specification of http://www.geojson.org/geojson-spec.html
- * 
+ *
  * @author staschc
  *
  */
 public class JSONGeometryDecoder implements IGeometryParser{
 
-	
+
 	@Override
 	public Geometry parseUwGeometry(String geomJson)
 			throws IllegalArgumentException, XmlException, JSONException {
-		
+
 		Geometry geom = null;
 		JSONObject jo= new JSONObject(geomJson);
 		String geomType = jo.getString("type");
@@ -55,17 +55,17 @@ public class JSONGeometryDecoder implements IGeometryParser{
 		else if (geomType.equals(UwGMLUtil.MULTIPOLYGON_TYPE)){
 			geom = parseMultiPolygon(jo);
 		}
-		
+
 		else {
 			throw new IllegalArgumentException("Geometrytype + " + geomType +" is not supported by the JSONParser!!");
 		}
-		
+
 		return geom;
 	}
 
 	/**
 	 * methods parses an JSON string representing a MultiPolygon
-	 * 
+	 *
 	 * @param geomJson
 	 * 			json object that should be parsed
 	 * @return Returns JTS MultiPolygon
@@ -95,7 +95,7 @@ public class JSONGeometryDecoder implements IGeometryParser{
 
 	/**
 	 * methods parses an JSON string representing a MultiLineString
-	 * 
+	 *
 	 * @param geomJson
 	 * 			json object that should be parsed
 	 * @return Returns JTS MultiLineString
@@ -110,7 +110,7 @@ public class JSONGeometryDecoder implements IGeometryParser{
 			Coordinate[] coords = getCoordinates4JSONArray(ls.getJSONArray(i));
 			lineStrings[i] = geomFac.createLineString(coords);
 		}
-		
+
 		MultiLineString mls = new GeometryFactory().createMultiLineString(lineStrings);
 		mls.setSRID(getSrid(geomJson));
 		return mls;
@@ -118,7 +118,7 @@ public class JSONGeometryDecoder implements IGeometryParser{
 
 	/**
 	 * methods parses an JSON string representing a MultiPoint
-	 * 
+	 *
 	 * @param geomJson
 	 * 			json object that should be parsed
 	 * @return Returns JTS MultiPoint
@@ -134,7 +134,7 @@ public class JSONGeometryDecoder implements IGeometryParser{
 
 	/**
 	 * methods parses an JSON string representing a Polygon
-	 * 
+	 *
 	 * @param geomJson
 	 * 			json object that should be parsed
 	 * @return Returns JTS Polygon
@@ -142,17 +142,17 @@ public class JSONGeometryDecoder implements IGeometryParser{
 	 * 			if parsing fails
 	 */
 	private Geometry parsePolygon(JSONObject geomJson) throws JSONException {
-		
+
 		GeometryFactory geomFac = new GeometryFactory();
 		JSONArray rings = geomJson.getJSONArray("coordinates");
-		
+
 		//check number of rings in polygon
 		int ringsLength=rings.length();
-		
+
 		//extract exterior ring
 		Coordinate[] exterior = getCoordinates4JSONArray(rings.getJSONArray(0));
 		LinearRing shell = geomFac.createLinearRing(exterior);
-		
+
 		//extract interior rings
 		LinearRing[] interior = new LinearRing[ringsLength-1];
 		if (ringsLength>1){
@@ -161,7 +161,7 @@ public class JSONGeometryDecoder implements IGeometryParser{
 				interior[i-1]= geomFac.createLinearRing(interiorCoords);
 			}
 		}
-		
+
 		Polygon poly = geomFac.createPolygon(shell, interior);
 		poly.setSRID(getSrid(geomJson));
 		return poly;
@@ -169,11 +169,11 @@ public class JSONGeometryDecoder implements IGeometryParser{
 
 	/**
 	 * methods parses an JSON string representing a LineString
-	 * 
+	 *
 	 * @param geomJson
 	 * 			json object that should be parsed
 	 * @return Returns JTS LineString
-	 * @throws JSONException 
+	 * @throws JSONException
 	 * @throws JSONException
 	 * 			if parsing fails
 	 */
@@ -186,7 +186,7 @@ public class JSONGeometryDecoder implements IGeometryParser{
 
 	/**
 	 * methods parses an JSON string representing a Point
-	 * 
+	 *
 	 * @param geomJson
 	 * 			json object that should be parsed
 	 * @return Returns JTS Point
@@ -202,7 +202,7 @@ public class JSONGeometryDecoder implements IGeometryParser{
 
 	/**
 	 * method for parsing an EPSG code from a GeoJSON object
-	 * 
+	 *
 	 * @param geomJson
 	 * 		json object
 	 * @return Returns epsg code
@@ -214,10 +214,10 @@ public class JSONGeometryDecoder implements IGeometryParser{
 		srid = srid.replace(UwGMLUtil.EPSG_URL, "");
 		return Integer.parseInt(srid);
 	}
-	
+
 	/**
 	 * creates Coordinate from JSONArray
-	 * 
+	 *
 	 * @param array
 	 * 			GeoJSONArray containing the coordinates
 	 * @return
@@ -230,10 +230,10 @@ public class JSONGeometryDecoder implements IGeometryParser{
 		double y = array.getDouble(1);
 		return new Coordinate(x,y);
 	}
-	
+
 	/**
 	 * creates Coordinate array 4 JSONArray
-	 * 
+	 *
 	 * @param array
 	 * 			JSONArray containing an array of coordinates in GeoJSON
 	 * @return

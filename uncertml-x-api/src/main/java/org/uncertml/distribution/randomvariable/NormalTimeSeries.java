@@ -3,24 +3,24 @@ package org.uncertml.distribution.randomvariable;
 import org.uncertml.distribution.IDistribution;
 
 /**
- * 
- * 
+ *
+ *
  * @author staschc
  *
  */
 public class NormalTimeSeries extends AbstractTimeSeries implements IDistribution {
-	
+
 	/** covariance parameter*/
 	private INormalCovarianceParameter covarianceParameter;
-	
+
 	/**coefficients of a temporal trend polynom*/
 	private double[] temporalTrend;
-	
-	
+
+
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param covarianceParameter
 	 * 			covariance parameter; can be either variogram function or covariance matrix
 	 * @param temporalTrend
@@ -33,7 +33,7 @@ public class NormalTimeSeries extends AbstractTimeSeries implements IDistributio
 		this.covarianceParameter = covarianceParameter;
 		this.temporalTrend = temporalTrend;
 	}
-	
+
 	public NormalTimeSeries(INormalCovarianceParameter covarianceParameter,
 			double[] temporalTrend) {
 		super();
@@ -42,7 +42,7 @@ public class NormalTimeSeries extends AbstractTimeSeries implements IDistributio
 	}
 
 	/**
-	 * 
+	 *
 	 * @param ref
 	 * @param gp
 	 */
@@ -80,6 +80,6 @@ public class NormalTimeSeries extends AbstractTimeSeries implements IDistributio
 	public void setTemporalTrend(double[] temporalTrend) {
 		this.temporalTrend = temporalTrend;
 	}
-	
-	
+
+
 }

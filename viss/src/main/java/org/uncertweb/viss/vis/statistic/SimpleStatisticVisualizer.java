@@ -61,24 +61,24 @@ public abstract class SimpleStatisticVisualizer extends
 
 	@Type(NcUwUncertaintyType.MEAN)
 	@Description("Returns the mean.")
-	public static class MeanStatistic extends 
+	public static class MeanStatistic extends
 			SimpleStatisticVisualizer {}
 
 	@Type(NcUwUncertaintyType.MEDIAN)
 	@Description("Returns the median.")
-	public static class MedianStatistic extends 
+	public static class MedianStatistic extends
 			SimpleStatisticVisualizer {}
 
 	@Type(NcUwUncertaintyType.CONTINOUS_MODE)
 	@Description("Returns the mode.")
-	public static class ModeStatistic extends 
+	public static class ModeStatistic extends
 			SimpleStatisticVisualizer {}
 
 	@Type(NcUwUncertaintyType.SKEWNESS)
 	@Description("Returns the skewness.")
 	public static class SkewnessStatistic extends
 	    SimpleStatisticVisualizer {}
-	
+
 	@Type(NcUwUncertaintyType.PROBABILITY)
 	@Description("Returns the probability.")
 	public static class ProbabilityStatistic extends

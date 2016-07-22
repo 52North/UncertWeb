@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package de.ifgi.airbase.feeder.io.filter;
 
@@ -11,9 +11,9 @@ import de.ifgi.airbase.feeder.data.EEAMeasurementType;
 
 /**
  * {@link FileFilter} to filter all for specific {@link EEAMeasurementType}s.
- * 
+ *
  * @author Christian Autermann
- * 
+ *
  */
 public class MeasurementTypeFileFilter implements FileFilter {
 
@@ -22,7 +22,7 @@ public class MeasurementTypeFileFilter implements FileFilter {
 	/**
 	 * Creates a new {@code FileFilter} for the specified
 	 * {@code EEAMeasurementType}s.
-	 * 
+	 *
 	 * @param types
 	 *            the {@code EEAMeasurementType}s
 	 */

@@ -28,15 +28,15 @@ import com.vividsolutions.jts.geom.Point;
 
 /**
  * JUnit tests for O&M encoding
- * 
+ *
  * @author Kiesow, staschc
- * 
+ *
  */
 public class XBObservationEncoderTestCase extends TestCase {
 
 	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/om-api/";
 	private String pathToExamples = "src/test/resources";
-	
+
 	public void testObservationEncoder() throws Exception {
 
 		point_TimeInstant_DoubleTest();
@@ -47,7 +47,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 
 	/**
 	 * gests encoding of observation collection containing measurements
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void obsCol_Point_TimeInstant_Double() throws Exception {
@@ -73,23 +73,23 @@ public class XBObservationEncoderTestCase extends TestCase {
 
 		AbstractObservation obs1 = (AbstractObservation) obsCol.getObservations()
 				.toArray()[0];
-		
+
 
 		// encode XML example file
 		XBObservationEncoder encoder = new XBObservationEncoder();
 		String obsColString = encoder
 				.encodeObservationCollection(obsCol);
 		System.out.println(obsColString);
-		
+
 		IObservationCollection obsCol2 = parser.parseObservationCollection(obsColString);
 		AbstractObservation obs2 = (AbstractObservation) obsCol2.getObservations()
 		.toArray()[0];
-		
+
 		System.out.println(encoder.encodeObservation(obs1));
 		System.out.println(new JSONObservationEncoder().encodeObservation(obs1));
 		String jsonObsColString = new JSONObservationEncoder().encodeObservationCollection(obsCol2);
 		System.out.println(jsonObsColString);
-		
+
 
 		// test collection
 		// test id
@@ -98,7 +98,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 		// test boundedBy (optional parameter)
 
 		// test phenomenonTime
-		
+
 		assertEquals(obs1.getPhenomenonTime().getDateTime().toString(),
 				obs2.getPhenomenonTime().getDateTime().toString());
 
@@ -133,7 +133,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 
 	/**
 	 * tests encoding of observation with double result and time instants in time properties
-	 * 
+	 *
 	 * @throws Exception
 	 * 			if encoding fails
 	 */
@@ -166,7 +166,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 		System.out.println(jobsString);
 		AbstractObservation obs3 = new JSONObservationParser().parseObservation(jobsString);
 		System.out.println(jobsEnc.encodeObservation(obs3));
-		
+
 		AbstractObservation obs2 = parser.parseObservation(xmlString);
 
 		// test id
@@ -175,7 +175,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 		// test boundedBy (optional parameter)
 
 		// test phenomenonTime
-		
+
 		assertEquals(obs.getPhenomenonTime().getDateTime(),
 				obs2.getPhenomenonTime().getDateTime());
 
@@ -212,7 +212,7 @@ public class XBObservationEncoderTestCase extends TestCase {
 		assertEquals(obs.getResultQuality()[0].getUom(),
 				obs2.getResultQuality()[0].getUom());
 	}
-	
+
 	private void encode_Point_TimeInstant_FOIref() throws Exception{
 		// read XML example file
 		String xmlString;
@@ -234,18 +234,18 @@ public class XBObservationEncoderTestCase extends TestCase {
 		assertEquals(obs.getFeatureOfInterest().getHref().toASCIIString(), encodedObs.getOMObservation().getFeatureOfInterest().getHref());
 
 	}
-	
+
 	public void encodeObsTP() throws Exception{
 		try {
 		//create temporal elements
 		TimeObject phenomenonTime = new TimeObject("2005-01-11T16:22:25.000+01:00","2005-01-12T16:22:25.000+01:00");
 		TimeObject resultTime = new TimeObject("2005-01-12T16:22:25.000+01:00");
 		TimeObject validTime = new TimeObject("2005-01-13T16:22:25.000+01:00","2005-01-14T16:22:25.000+01:00");
-		
+
 		//create spatial feature
 		Point p = new GmlGeometryFactory().createPoint(52.72, 8.72, 4326);
 		SpatialSamplingFeature sf = new SpatialSamplingFeature("Muenster",p);
-		
+
 		//optional identifier
 		Identifier id = new Identifier(new URI("http://www.uncertweb.org"),"o_1");
 		Measurement meas = new Measurement(id,null,phenomenonTime,resultTime,validTime,new URI("sensor1"),new URI("phen1"),sf,null,new MeasureResult(2.45,"cm"));

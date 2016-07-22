@@ -92,9 +92,9 @@ import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
 
 public class TotalConcentration {
- 
+
 	private static Logger LOGGER = Logger.getLogger(PolygonKriging.class);
-	// NetCDF variables	
+	// NetCDF variables
 		private final static String TIME_VAR_NAME = "time";
 		private final static String OLD_MAIN_VAR_NAME = "PM10_Austal2000";
 		private final static String MAIN_VAR_NAME = "PM10";
@@ -106,13 +106,13 @@ public class TotalConcentration {
 		private final static String LONG_NAME_ATTR_NAME = "long_name";
 		//private final static String GRID_MAPPING_VAR_NAME = "gauss_krueger_3";
 		private final static String GRID_MAPPING_VAR_NAME = "crs";
-		private final static String GRID_MAPPING_ATTR_NAME = "grid_mapping";	
+		private final static String GRID_MAPPING_ATTR_NAME = "grid_mapping";
 		private final static String MAIN_VAR_UNITS = "ug m-3";
-		
+
 		private List<String> statParams;
-		
+
 		private static Logger logger = Logger.getLogger(TotalConcentration.class);
-		
+
 		private String utsAddress = "";
 	//	private String resPath = "D:\\JavaProjects\\aqMS-wps\\src\\main\\resources";
 	//	private int numberOfRealisations;
@@ -120,67 +120,67 @@ public class TotalConcentration {
 		private boolean bg = false;
 		private boolean austal = false;
 		WPSClientSession session = null;
-		
-		
+
+
 	public TotalConcentration(DateTime start, DateTime end){
 		startDate = start;
 		endDate = end;
 	}
-	
+
 	public TotalConcentration(String utsURL, DateTime start, DateTime end){
 		startDate = start;
 		endDate = end;
 		utsAddress = utsURL;
-		
+
 		// connect to UTS
 		session = WPSClientSession.getInstance();
 		try {
 			session.connect(utsAddress);
 		} catch (WPSClientException e1) {
 			e1.printStackTrace();
-		}		
+		}
 	}
-	
+
 	/*
 	 * METHODS FOR OM
 	 */
-	
+
 	// Method for OM
-		public UncertaintyObservationCollection overlayOM(UncertaintyObservationCollection uColl, UncertaintyObservationCollection austalColl, int numberOfBackgroundSamples, List<String> stats){	
+		public UncertaintyObservationCollection overlayOM(UncertaintyObservationCollection uColl, UncertaintyObservationCollection austalColl, int numberOfBackgroundSamples, List<String> stats){
 			statParams = stats;
-			
+
 			// get samples for background
 			//HashMap<Integer, Double[]>  samplesTS = getBackgroundSamplesTS(uColl, numberOfRealisations);
 			HashMap<Integer, Double[]>  samplesTS = callUTS4Samples(uColl, numberOfBackgroundSamples);
-			
+
 			// add samples to NetCDF realisations of Austal
 			UncertaintyObservationCollection resultColl = addSamples2RealisationsOM(austalColl, samplesTS, numberOfBackgroundSamples);
-			
+
 			return resultColl;
 		}
-	
+
 	// Method for OM
 		private UncertaintyObservationCollection addSamples2RealisationsOM(UncertaintyObservationCollection austalColl, HashMap<Integer, Double[]> samplesTS, int numberOfRealisations){
 			UncertaintyObservationCollection resultColl = new UncertaintyObservationCollection();
 			UncertaintyObservationCollection realisationColl = new UncertaintyObservationCollection();
-			ExtendedRConnection c = null;	
+			ExtendedRConnection c = null;
 			DateTime startTemp = startDate.minusHours(1);
 			boolean useUTS = true;
 //			HashMap<String,HashMap<String, Double[]>> receptorPointResults = new HashMap<String,HashMap<String, Double[]>>();
 
-			try {		
+			try {
 					// establish connection to Rserve running on localhost
 					c = new ExtendedRConnection("127.0.0.1");
 					if (c.needLogin()) {
 						// if server requires authentication, send one
 						c.login("rserve", "aI2)Jad$%");
 					}
-					
+
 					int hours = -1;
 					URI procedure = new URI("http://www.uncertweb.org/models/aqms");
 					URI observedProperty = new URI("http://www.uncertweb.org/phenomenon/pm10");
 					// loop through observation collection
-					for (AbstractObservation obs : austalColl.getObservations()) {  		
+					for (AbstractObservation obs : austalColl.getObservations()) {
 						if(obs instanceof UncertaintyObservation){
 							// get result and information from observation
 							UncertaintyResult uResult = (UncertaintyResult) obs.getResult();
@@ -191,27 +191,27 @@ public class TotalConcentration {
 								hours = Hours.hoursBetween(startTemp, dateTime).getHours();
 							else
 								hours = -1;
-							
+
 							// only continue if data is after startDate
 							if(hours>0){
 								// first check if samples are available for background
-								Double[] bgSamples = samplesTS.get(hours);	
+								Double[] bgSamples = samplesTS.get(hours);
 								if(bgSamples==null){
 									bgSamples = new Double[numberOfRealisations];
 								}
-								
+
 								// get Austal samples for this observation
-								ContinuousRealisation real = null;						
-								if(uncertainty instanceof ContinuousRealisation){	
+								ContinuousRealisation real = null;
+								if(uncertainty instanceof ContinuousRealisation){
 									real = (ContinuousRealisation) uncertainty;
 								}else if(uncertainty instanceof ISample){
 									AbstractSample sample = (AbstractSample) uncertainty;
-									real = (ContinuousRealisation) sample.getRealisations().get(0);	
+									real = (ContinuousRealisation) sample.getRealisations().get(0);
 								}
-								
+
 								if(real!=null){
 									List<Double> austalSamples = real.getValues();
-									
+
 									// check if UTS should be used or if sample size is too large
 									//TODO: Adapt thresholds?
 									if(useUTS){
@@ -220,7 +220,7 @@ public class TotalConcentration {
 										if(sampleSize>500||tsSize>500)
 											useUTS = false;
 									}
-									
+
 									// create total concentration
 									double[] newRealisations = new double[austalSamples.size()*bgSamples.length];
 									// add values and calculate mean
@@ -239,31 +239,31 @@ public class TotalConcentration {
 												e.printStackTrace();
 											}
 										}
-									}									
+									}
 									// add results to HashMap
-//									String fid = tmpSF.getIdentifier().getIdentifier();									
-									
+//									String fid = tmpSF.getIdentifier().getIdentifier();
+
 									TimeObject newT = new TimeObject(dateTime);
-									
+
 									if(!useUTS){
 										REXPDouble d = new REXPDouble(newRealisations);
-										c.assign("samples", d);	
+										c.assign("samples", d);
 										// write samples to workspace
 										//c.tryVoidEval("save(samples, file=)");
 										double mean =  c.tryEval("mean(samples)").asDouble();
 										double sd =  c.tryEval("sd(samples)").asDouble();
-										double[] ci95 = c.tryEval("quantile(samples,c(0.025,0.975))").asDoubles();	
-										
-										// create results									
-										Mean m = new Mean(mean);								
+										double[] ci95 = c.tryEval("quantile(samples,c(0.025,0.975))").asDoubles();
+
+										// create results
+										Mean m = new Mean(mean);
 										StandardDeviation s = new StandardDeviation(sd);
 										CredibleInterval ci = new CredibleInterval(new Quantile(0.025, ci95[0]), new Quantile(0.975, ci95[1]));
-										
+
 										StatisticCollection statColl = new StatisticCollection();
 										statColl.add(m);
 										statColl.add(s);
-										statColl.add(ci);									
-										
+										statColl.add(ci);
+
 										UncertaintyResult newResult = new UncertaintyResult(statColl, "ug/m3");
 										UncertaintyObservation uObs = new UncertaintyObservation(
 												newT, newT, procedure, observedProperty, tmpSF, newResult);
@@ -275,12 +275,12 @@ public class TotalConcentration {
 												newT, newT, procedure, observedProperty, tmpSF, realisationResult);
 										realisationColl.addObservation(realisationObs);
 									}
-									
+
 //									if(receptorPointResults.containsKey(fid)){
 ////										receptorPointResults.get(fid).put(dateTime.toString(ISODateTimeFormat.dateTime()), newRealisations);
 //										c.tryVoidEval(fid+"_"+startDate.toString("yyyy_MM")+"<-rbind("+fid+"_"+startDate.toString("yyyy_MM")+",samples)");
 //										c.tryVoidEval("dates <- c(dates, \""+dateTime.toString(ISODateTimeFormat.dateTime())+"\")");
-////										
+////
 //									}else{
 //										//"AQMS_bg_"+startDate.toString("yyyy-MM")+"_"+fid
 //										receptorPointResults.put(fid, null);
@@ -293,16 +293,16 @@ public class TotalConcentration {
 ////										realisations.put(dateTime.toString(ISODateTimeFormat.dateTime()), newRealisations);
 ////										receptorPointResults.put(fid, realisations);
 //									}
-																								
-								}								
-							}							
+
+								}
+							}
 						}
 					}
 					// get statistics
 					//TODO: Call UTS here
 					if(useUTS)
 						resultColl = this.callUTS4Statistics(realisationColl);
-					
+
 //					// write data.frames
 //					Set<String> keys = receptorPointResults.keySet();
 //					String cmd1 = "save(dates, file=\"D:/PhD/WP1.1_AirQualityModel/WebServiceChain/results/dates_"+startDate.toString("yyyy_MM")+".RData\")";
@@ -311,7 +311,7 @@ public class TotalConcentration {
 //						String cmd = "save("+fid+"_"+startDate.toString("yyyy_MM")+", file=\"D:/PhD/WP1.1_AirQualityModel/WebServiceChain/results/"+fid+"_"+startDate.toString("yyyy_MM")+".RData\")";
 //						c.tryVoidEval(cmd);
 //					}
-					
+
 				}catch (Exception e) {
 					LOGGER
 					.debug("Error while calculating Total Concentration: "
@@ -319,44 +319,44 @@ public class TotalConcentration {
 					throw new RuntimeException(
 					"Error while calculating Total Concentration "
 							+ e.getMessage(), e);
-				} 
+				}
 				finally {
 					if (c != null) {
 						c.close();
 					}
-				}		
-			
+				}
+
 			return resultColl;
 		}
-		
-	
+
+
 
 	/*
 	 * METHODS FOR NetCDF
 	 */
-		
+
 	// Method for NetCDF
-	public NetcdfUWFile overlayNetCDF(UncertaintyObservationCollection uColl, NetcdfUWFile austalNcdf, String filepath, int numberOfBackgroundSamples){	
+	public NetcdfUWFile overlayNetCDF(UncertaintyObservationCollection uColl, NetcdfUWFile austalNcdf, String filepath, int numberOfBackgroundSamples){
 		// get samples for background
 		HashMap<Integer, Double[]>  samplesTS = getBackgroundSamplesTS(uColl, numberOfBackgroundSamples);
-		
+
 		// add samples to NetCDF realisations of Austal
 		NetcdfUWFile resultNetcdf = addSamples2RealisationsNetCDF(austalNcdf, samplesTS, filepath, false);
-		
+
 		return resultNetcdf;
 	}
-	
-	
+
+
 	// Method for NetCDF
 	private NetcdfUWFileWriteable addSamples2RealisationsNetCDF(NetcdfUWFile austalNcdf, HashMap<Integer, Double[]> samplesTS, String filepath, boolean keepRealisations){
 		NetcdfUWFileWriteable resultNetcdf = null;
-		ExtendedRConnection c = null;	
-		
+		ExtendedRConnection c = null;
+
 		int xi=0;
 		int yi=0;
 		int r=0;
 		int t=0;
-		try {		
+		try {
 			// establish connection to Rserve running on localhost
 			//c = new ExtendedRConnection("giv-uw.uni-muenster.de");
 			c = new ExtendedRConnection("127.0.0.1");
@@ -364,12 +364,12 @@ public class TotalConcentration {
 				// if server requires authentication, send one
 				c.login("rserve", "aI2)Jad$%");
 			}
-			
+
 			// prepare new netCDF file for realisations
 			NetcdfFileWriteable resultFile = NetcdfUWFileWriteable.createNew(
 					filepath, true);
 			resultNetcdf = new NetcdfUWFileWriteable(resultFile);
-			
+
 			// get realisation and time dimension
 			Dimension xDim = null;
 			Dimension yDim = null;
@@ -377,11 +377,11 @@ public class TotalConcentration {
 			Dimension tDim = null;
 			Iterator<Dimension> dimensions = austalNcdf.getNetcdfFile()
 					.getDimensions().iterator();
-			
+
 			// add dimensions to result file
 			while (dimensions.hasNext()) {
 				Dimension dim = dimensions.next();
-				
+
 				if (dim.getName().equals("realisation")){
 					rDim=dim;
 				}else if (dim.getName().equals(TIME_VAR_NAME)){
@@ -404,15 +404,15 @@ public class TotalConcentration {
 					resultFile.addDimension(null, dim);
 				}
 			}
-			
-			// Set dimensions for value variable		
+
+			// Set dimensions for value variable
 			ArrayList<Dimension> dims = new ArrayList<Dimension>(3);
 			dims.add(xDim);
 			dims.add(yDim);
 			dims.add(tDim);
-			
+
 			String TIME_VAR_UNITS = "";
-			
+
 			// Add old variables to resultfile
 			Iterator<Variable> vars = austalNcdf.getNetcdfFile().getVariables().iterator();
 			while (vars.hasNext()) {
@@ -426,17 +426,17 @@ public class TotalConcentration {
 						Attribute timeUnits = var.findAttribute(UNITS_ATTR_NAME);
 						TIME_VAR_UNITS = timeUnits.getStringValue();
 					}
-					resultFile.setRedefineMode(false);					
+					resultFile.setRedefineMode(false);
 					resultFile.write(var.getName(), var.read());
 				}
 			}
-			
+
 			// get start time
 			//String TIME_VAR_UNITS = "hours since "+dateFormat.format(minDate)+ " 00:00";
 //			DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss 00:00");
 //			String substring1 = TIME_VAR_UNITS.replace("hours since ", "");
-//			DateTime startDate = dateFormat.parseDateTime(substring1);					
-			
+//			DateTime startDate = dateFormat.parseDateTime(substring1);
+
 			//TODO: Add handler for keepRealisations==true
 			// add new variables to resultfile
 			resultFile.setRedefineMode(false);
@@ -446,55 +446,55 @@ public class TotalConcentration {
 					.addStatisticVariable(MAIN_VAR_NAME+"_standard-deviation", DataType.DOUBLE, dims, org.uncertml.statistic.StandardDeviation.class);
 			Variable varVar = resultNetcdf
 					.addStatisticVariable(MAIN_VAR_NAME+"_variance", DataType.DOUBLE, dims, org.uncertml.statistic.Variance.class);
-			
+
 			// add Attributes to variables
 			meanVar.addAttribute(new Attribute(UNITS_ATTR_NAME, MAIN_VAR_UNITS));
 			meanVar.addAttribute(new Attribute(MISSING_VALUE_ATTR_NAME, -9999F));
 			meanVar.addAttribute(new Attribute(LONG_NAME_ATTR_NAME, OLD_MAIN_VAR_LONG_NAME));
 			meanVar.addAttribute(new Attribute(GRID_MAPPING_ATTR_NAME, GRID_MAPPING_VAR_NAME));
-			
+
 			sdVar.addAttribute(new Attribute(UNITS_ATTR_NAME, MAIN_VAR_UNITS));
 			sdVar.addAttribute(new Attribute(MISSING_VALUE_ATTR_NAME, -9999F));
 			sdVar.addAttribute(new Attribute(GRID_MAPPING_ATTR_NAME, GRID_MAPPING_VAR_NAME));
-			
+
 			varVar.addAttribute(new Attribute(UNITS_ATTR_NAME, MAIN_VAR_UNITS+"^2"));
 			varVar.addAttribute(new Attribute(MISSING_VALUE_ATTR_NAME, -9999F));
 			varVar.addAttribute(new Attribute(GRID_MAPPING_ATTR_NAME, GRID_MAPPING_VAR_NAME));
-			
+
 			resultNetcdf.setPrimaryVariable(meanVar);
-					
+
 			// get data variable
 			Variable dataVariable = austalNcdf.getPrimaryVariable();
 			Array samplesArray = dataVariable.read();
 			ArrayDouble meanArray = new ArrayDouble.D3(xDim.getLength(), yDim.getLength(),tDim.getLength());
 			ArrayDouble sdArray = new ArrayDouble.D3(xDim.getLength(), yDim.getLength(),tDim.getLength());
-			ArrayDouble varArray = new ArrayDouble.D3(xDim.getLength(), yDim.getLength(),tDim.getLength());		
-			
+			ArrayDouble varArray = new ArrayDouble.D3(xDim.getLength(), yDim.getLength(),tDim.getLength());
+
 			Index samplesIndex = samplesArray.getIndex();
 			Index statsIndex = meanArray.getIndex();
-			
+
 			// loop through cells
 			for (xi = 0; xi < xDim.getLength(); xi++) {
 				for (yi = 0; yi < yDim.getLength(); yi++) {
-					
+
 					// get time series of realisations
 					for(t=0; t<tDim.getLength(); t++){
 						// get actual time
 						//DateTime date = startDate.plusHours(t+1);
-						
+
 						// collect new realisations
 						double[] newRealisations = new double[rDim.getLength()*samplesTS.get(samplesTS.keySet().toArray()[0]).length];
 						int count = 0;
-						
+
 						// for each time step, loop through realisations
-						for (r=0; r<rDim.getLength(); r++){					
+						for (r=0; r<rDim.getLength(); r++){
 							// get Austal result
 							samplesIndex.set(r, xi, yi, t);
 							double austalValue = samplesArray.getDouble(samplesIndex);
-							
+
 							// loop through Background samples
 							for(int s=0; s<samplesTS.get(samplesTS.keySet().toArray()[0]).length; s++){
-								
+
 								// check if value is available for current date
 								if(samplesTS.containsKey(t+1)){
 									double backgroundValue = samplesTS.get(t+1)[s];
@@ -502,7 +502,7 @@ public class TotalConcentration {
 									count++;
 								}else{
 								//	System.out.println(date.toString());
-								}							
+								}
 							}
 						}
 						// get statistics from new realisations and fill new variables
@@ -518,86 +518,86 @@ public class TotalConcentration {
 					}
 				}
 			}
-			
+
 			// add CF conventions
 			resultNetcdf.getNetcdfFileWritable().setRedefineMode(true);
 			Attribute conventions = resultNetcdf.getNetcdfFileWritable().findGlobalAttribute("Conventions");
 			String newValue =  conventions.getStringValue() + " CF-1.5";
 			resultNetcdf.getNetcdfFileWritable().deleteGlobalAttribute("Conventions");
 			resultNetcdf.getNetcdfFileWritable().addGlobalAttribute("Conventions", newValue);
-					
+
 			//write result array to NetCDF file
 			resultNetcdf.getNetcdfFileWritable().setRedefineMode(false);
 			resultNetcdf.getNetcdfFileWritable().write(MAIN_VAR_NAME+"_mean",meanArray);
 			resultNetcdf.getNetcdfFileWritable().write(MAIN_VAR_NAME+"_standard-deviation",sdArray);
-			resultNetcdf.getNetcdfFileWritable().write(MAIN_VAR_NAME+"_variance",varArray);			
+			resultNetcdf.getNetcdfFileWritable().write(MAIN_VAR_NAME+"_variance",varArray);
 			resultNetcdf.getNetcdfFile().close();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("y: "+yi+", x: "+xi+", t: "+t);
 		}
-		
+
 		return resultNetcdf;
 	}
-		
-	
+
+
 	/*
 	 * SAMPLING METHODS
 	 */
-	
+
 			// Method to get samples from background time series
 			// advantage: RServe is called only once
 			private HashMap<Integer, Double[]> getBackgroundSamplesTS(UncertaintyObservationCollection uColl, int numberOfRealisations){
 				 HashMap<Integer, Double[]>  samplesTS = new  HashMap<Integer, Double[]>();
-				 ExtendedRConnection c = null;	
-				 
-					try {		
+				 ExtendedRConnection c = null;
+
+					try {
 						// establish connection to Rserve running on localhost
 						c = new ExtendedRConnection("127.0.0.1");
 						if (c.needLogin()) {
 							// if server requires authentication, send one
 							c.login("rserve", "aI2)Jad$%");
 						}
-						
+
 						// loop through observation collection
-						for (AbstractObservation obs : uColl.getObservations()) {  		
+						for (AbstractObservation obs : uColl.getObservations()) {
 							if(obs instanceof UncertaintyObservation){
 								UncertaintyResult uResult = (UncertaintyResult) obs.getResult();
 								IUncertainty distribution = uResult.getUncertaintyValue();
-									
+
 								// get samples for this observation
 								if(distribution instanceof NormalDistribution){
 									NormalDistribution normDist = (NormalDistribution) distribution;
 									List<Double> mean = normDist.getMean();
 									List<Double> var = normDist.getVariance();
-									
+
 									// define parameters in R
 									c.tryVoidEval("i <- " + numberOfRealisations);
 									c.tryVoidEval("m.gauss <- " + mean.get(0));
 									c.tryVoidEval("var.gauss <- " + var.get(0));
-									c.tryVoidEval("sd.gauss <- sqrt(var.gauss)");		
-						    		
+									c.tryVoidEval("sd.gauss <- sqrt(var.gauss)");
+
 									// perform sampling
-									REXP rSamples =  c.tryEval("round(rnorm(i, m.gauss, sd.gauss),digits=2)");			
+									REXP rSamples =  c.tryEval("round(rnorm(i, m.gauss, sd.gauss),digits=2)");
 									double[] samples = rSamples.asDoubles();
 									Double[] samplesD = new Double[samples.length];
 									for(int i=0; i<samples.length; i++){
 										samplesD[i] = (Double) samples[i];
 									}
-									
+
 									// get sampling time
 						    		DateTime d = obs.getResultTime().getDateTime();
 						    		if(d.isAfter(startDate)){
 						    			Hours h = Hours.hoursBetween(startDate, d);
 						    			samplesTS.put(h.getHours(), samplesD);
 						    		}
-									
-								}					
-							}					
-						}			
-						
-						
+
+								}
+							}
+						}
+
+
 					}catch (Exception e) {
 						LOGGER
 						.debug("Error while getting random samples for Gaussian distribution: "
@@ -605,17 +605,17 @@ public class TotalConcentration {
 						throw new RuntimeException(
 						"Error while getting random samples for Gaussian distribution: "
 								+ e.getMessage(), e);
-					} 
+					}
 					finally {
 						if (c != null) {
 							c.close();
 						}
 					}
-				
+
 				return samplesTS;
 			}
-	
-			
+
+
 			/**
 			 * uses UTS to get samples from OM document with Normal Distribution observations
 			 * @param uColl
@@ -631,7 +631,7 @@ public class TotalConcentration {
 				Map<String, Object> inputs = new HashMap<String, Object>();
 				inputs.put("distribution", uColl);
 				inputs.put("numbReal", ""+numberOfRealisations);
-				
+
 				// Make execute request
 				ExecuteDocument execDoc = null;
 				try {
@@ -645,15 +645,15 @@ public class TotalConcentration {
 				try {
 					responseDoc = (ExecuteResponseDocument) session.execute(
 						utsAddress, execDoc);
-					
+
 					OutputDataType oType = responseDoc.getExecuteResponse().getProcessOutputs().getOutputArray(0);
 					// all output elements
 					Node wpsComplexData = oType.getData().getComplexData().getDomNode();
 					// the complex data node
-					Node unRealisation = wpsComplexData.getChildNodes().item(0); 
-					// the realisation node			 
+					Node unRealisation = wpsComplexData.getChildNodes().item(0);
+					// the realisation node
 					iobs = new XBObservationParser().parseObservationCollection(nodeToString(unRealisation));
-			
+
 				} catch (WPSClientException e) {// Auto-generated catch block
 						e.printStackTrace();
 				} catch (OMParsingException e) {
@@ -663,20 +663,20 @@ public class TotalConcentration {
 				} catch (TransformerException e) {
 					e.printStackTrace();
 				}
-				
+
 				if(iobs!=null){
 					// get samples from Collection
-					for (AbstractObservation obs : iobs.getObservations()) {  		
+					for (AbstractObservation obs : iobs.getObservations()) {
 						if(obs instanceof UncertaintyObservation){
 							UncertaintyResult uResult = (UncertaintyResult) obs.getResult();
 							IUncertainty uncertainty = uResult.getUncertaintyValue();
-							
+
 							ContinuousRealisation realisations = null;
-							
+
 							// get samples for this distribution
 							if(uncertainty instanceof ISample){
 								AbstractSample sample = (AbstractSample) uncertainty;
-								realisations = (ContinuousRealisation) sample.getRealisations().get(0);		
+								realisations = (ContinuousRealisation) sample.getRealisations().get(0);
 							}else if(uncertainty instanceof ContinuousRealisation){
 									realisations = (ContinuousRealisation) uncertainty;
 							}
@@ -696,7 +696,7 @@ public class TotalConcentration {
 				return samples;
 			}
 
-			
+
 			//TODO: Implement UTS statistics estimation
 			/**
 			 * uses UTS to get statistics for OM document with realisations as observations
@@ -704,14 +704,14 @@ public class TotalConcentration {
 			 * @return
 			 */
 			private UncertaintyObservationCollection callUTS4Statistics(UncertaintyObservationCollection uColl){
-				UncertaintyObservationCollection resultColl = null;			
-				
+				UncertaintyObservationCollection resultColl = null;
+
 				// add inputs for request
 				Map<String, Object> inputs = new HashMap<String, Object>();
 				inputs.put("samples", uColl);
 				String[] stats = (String[]) statParams.toArray(new String[0]);
 				inputs.put("statistics", stats);
-				
+
 				// Make execute request
 				ExecuteDocument execDoc = null;
 				try {
@@ -719,7 +719,7 @@ public class TotalConcentration {
 				} catch (Exception e) {
 					logger.debug(e);
 				}
-				
+
 				// save result locally
 				try {
 					String filepath = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\results\\UTS_statistics_request.xml";
@@ -732,21 +732,21 @@ public class TotalConcentration {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
+
 				// Run WPS and get output
 				ExecuteResponseDocument responseDoc = null;
 				try {
 					responseDoc = (ExecuteResponseDocument) session.execute(
 						utsAddress, execDoc);
-					
+
 					OutputDataType oType = responseDoc.getExecuteResponse().getProcessOutputs().getOutputArray(0);
 					// all output elements
 					Node wpsComplexData = oType.getData().getComplexData().getDomNode();
 					// the complex data node
-					Node unStatistics = wpsComplexData.getChildNodes().item(0); 
+					Node unStatistics = wpsComplexData.getChildNodes().item(0);
 					// Observation Collection
 					resultColl = (UncertaintyObservationCollection) new XBObservationParser().parseObservationCollection(nodeToString(unStatistics));
-					
+
 				} catch (WPSClientException e) {// Auto-generated catch block
 						e.printStackTrace();
 				} catch (TransformerFactoryConfigurationError e) {
@@ -755,21 +755,21 @@ public class TotalConcentration {
 					e.printStackTrace();
 				} catch (TransformerException e) {
 					e.printStackTrace();
-				} 
-				
+				}
+
 				return resultColl;
 			}
-		
+
 			//TODO: Implement UTS statistics estimation
 			private StatisticCollection callUTS4Statistics(double[] realisations){
-				StatisticCollection statColl = null;			
-			
+				StatisticCollection statColl = null;
+
 				// add inputs for request
 				Map<String, Object> inputs = new HashMap<String, Object>();
 				inputs.put("samples", new ContinuousRealisation(realisations));
 				String[] stats = (String[]) statParams.toArray(new String[0]);
 				inputs.put("statistics", stats);
-				
+
 				// Make execute request
 				ExecuteDocument execDoc = null;
 				try {
@@ -777,7 +777,7 @@ public class TotalConcentration {
 				} catch (Exception e) {
 					logger.debug(e);
 				}
-				
+
 //				// save result locally
 //				try {
 //					String filepath = "D:\\PhD\\WP1.1_AirQualityModel\\WebServiceChain\\results\\UTS_statistics_request.xml";
@@ -790,21 +790,21 @@ public class TotalConcentration {
 //				} catch (IOException e) {
 //					e.printStackTrace();
 //				}
-				
+
 				// Run WPS and get output
 				ExecuteResponseDocument responseDoc = null;
 				try {
 					responseDoc = (ExecuteResponseDocument) session.execute(
 						utsAddress, execDoc);
-					
+
 					OutputDataType oType = responseDoc.getExecuteResponse().getProcessOutputs().getOutputArray(0);
 					// all output elements
 					Node wpsComplexData = oType.getData().getComplexData().getDomNode();
 					// the complex data node
-					Node unStatistics = wpsComplexData.getChildNodes().item(0); 
+					Node unStatistics = wpsComplexData.getChildNodes().item(0);
 					//TODO check if this works or if parameters have to be parsed separately and assembled afterwards to StatisticCollection
-					statColl = (StatisticCollection) new XMLParser().parse(unStatistics.toString());					
-					
+					statColl = (StatisticCollection) new XMLParser().parse(unStatistics.toString());
+
 				} catch (WPSClientException e) {// Auto-generated catch block
 						e.printStackTrace();
 				} catch (TransformerFactoryConfigurationError e) {
@@ -812,17 +812,17 @@ public class TotalConcentration {
 				} catch (UncertaintyParserException e) {
 					e.printStackTrace();
 				}
-				
+
 				return statColl;
 			}
-			
+
 
 			private String nodeToString(Node node) throws TransformerFactoryConfigurationError, TransformerException {
 				StringWriter stringWriter = new StringWriter();
 				Transformer transformer = TransformerFactory.newInstance().newTransformer();
 				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 				transformer.transform(new DOMSource(node), new StreamResult(stringWriter));
-				
+
 				return stringWriter.toString();
 			}
 }

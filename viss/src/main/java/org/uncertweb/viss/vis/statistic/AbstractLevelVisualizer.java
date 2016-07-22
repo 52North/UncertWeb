@@ -37,7 +37,7 @@ public abstract class AbstractLevelVisualizer extends AbstractAnnotatedUncertain
 
 	public static final String LEVEL_PARAMETER = "level";
 	public static final String LEVEL_PARAMETER_DESCRIPTION = "the level";
-	
+
 	protected double evaluate(IUncertainty u) {
 		try {
 			return evaluate(u, getParams().getDouble(LEVEL_PARAMETER));
@@ -45,7 +45,7 @@ public abstract class AbstractLevelVisualizer extends AbstractAnnotatedUncertain
 			throw VissError.invalidParameter(LEVEL_PARAMETER);
 		}
 	}
-	
+
 	@Override
 	public Map<String, JSONObject> getOptions() {
 		Map<String, JSONObject> options = super.getOptions();
@@ -60,7 +60,7 @@ public abstract class AbstractLevelVisualizer extends AbstractAnnotatedUncertain
 		}
 		return options;
 	}
-	
+
 	@Override
 	public Map<String, JSONObject> getOptionsForDataSet(IDataSet r) {
 		Map<String, JSONObject> options = super.getOptionsForDataSet(r);
@@ -71,7 +71,7 @@ public abstract class AbstractLevelVisualizer extends AbstractAnnotatedUncertain
 		}
 		return options;
 	}
-	
+
 	protected abstract Set<Double> getLevels();
 	protected abstract double evaluate(IUncertainty u, double level);
 

@@ -4,50 +4,50 @@ import org.uncertml.IUncertainty;
 
 /**
  * Data quality uncertainty result which can be contained in resultQuality of an observation.
- * 
+ *
  * @author Kiesow, staschc
  *
  */
 public class DQ_UncertaintyResult {
 
-	
+
 	/**array containing uncertainties*/
 	private IUncertainty[] values;
-	
+
 	/**definition of value unit*/
 	private String uom;
-	
+
 	/**
 	 * Constructor
-	 * 
-	 * @param values 
+	 *
+	 * @param values
 	 *			values representing uncertainties
-	 * @param valueUnit 
+	 * @param valueUnit
 	 * 			the value's unit
 	 */
 	public DQ_UncertaintyResult(IUncertainty[] values, String uom) {
-		
+
 		this.setValues(values);
 		this.uom = uom;
 	}
-	
+
 
 
 	// getters and setters
-	
+
 
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @return Returns uncertainty values
 	 */
 	public IUncertainty[] getValues() {
 		return values;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param values
 	 * 			uncertainty values
 	 */
@@ -72,6 +72,6 @@ public class DQ_UncertaintyResult {
 	public void setUom(String uom) {
 		this.uom = uom;
 	}
-	
+
 
 }

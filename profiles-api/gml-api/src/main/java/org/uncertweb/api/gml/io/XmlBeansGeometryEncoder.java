@@ -48,12 +48,12 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Interface for encoding GML geometries and features in XMLBeans
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class XmlBeansGeometryEncoder implements IGeometryEncoder {
-	
+
 	/**counter used for generation of gml IDs*/
 	private int gmlIDcounter=0;
 
@@ -80,8 +80,8 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 		return result;
 	}
-	
-	
+
+
 
 	@Override
 	public String encodeFeature(UwAbstractFeature feature) {
@@ -90,29 +90,29 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	}
 
 
-	
+
 	/**
 	 * helper method for encoding rectified grid
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of rectified grid
 	 * @return
 	 * 		Returns GML string representing the rectified grid
-	 * 
+	 *
 	 */
 	private String encodeRectifiedGrid(RectifiedGrid geom) {
-	
+
 		return encodeRectifiedGrid2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for encoding rectified grid
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of rectified grid
 	 * @return
 	 * 		Returns GML document representing the rectified grid
-	 * 
+	 *
 	 */
 	public RectifiedGridDocument encodeRectifiedGrid2Doc(RectifiedGrid geom) {
 		RectifiedGridDocument xb_rgDoc = RectifiedGridDocument.Factory
@@ -168,26 +168,26 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 	/**
 	 * helper method for encoding line string
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of line string
 	 * @return
 	 * 		Returns GML string representing the line string
-	 * 
+	 *
 	 */
 	private String encodeLineString(LineString geom) {
 
 		return encodeLineString2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for encoding line string
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of line string
 	 * @return
 	 * 		Returns GML document representing the line string
-	 * 
+	 *
 	 */
 	public LineStringDocument encodeLineString2Doc(LineString geom) {
 		LineStringDocument xb_lsDoc = LineStringDocument.Factory.newInstance();
@@ -206,26 +206,26 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 	/**
 	 * helper method for encoding polygon
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of polygon
 	 * @return
 	 * 		Returns GML string representing the polygon
-	 * 
+	 *
 	 */
 	private String encodePolygon(Polygon geom) {
 
 		return encodePolygon2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for encoding polygon
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of polygon
 	 * @return
 	 * 		Returns GML document representing the polygon
-	 * 
+	 *
 	 */
 	public PolygonDocument encodePolygon2Doc(Polygon geom) {
 		PolygonDocument xb_pd = PolygonDocument.Factory.newInstance();
@@ -248,26 +248,26 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 	/**
 	 * helper method for point
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of point
 	 * @return
 	 * 		Returns GML string representing the point
-	 * 
+	 *
 	 */
 	private String encodePoint(Point geom) {
 
 		return encodePoint2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for point
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of point
 	 * @return
 	 * 		Returns GML document representing the point
-	 * 
+	 *
 	 */
 	public PointDocument encodePoint2Doc(Point geom) {
 		PointDocument xb_pd = PointDocument.Factory.newInstance();
@@ -282,12 +282,12 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 	/**
 	 * helper method for linear ring encoding
-	 * 
+	 *
 	 * @param geom
 	 * 		JTS representatioin of linear ring
 	 * @return
 	 * 		Returns GML string representing the linear ring
-	 * 
+	 *
 	 */
 	private LinearRingDocument encodeLinearRing(LineString lr) {
 		Coordinate[] coords = lr.getCoordinates();
@@ -304,10 +304,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		xb_lrType.setPosArray(xb_posList);
 		return xb_lrDoc;
 	}
-	
+
 	/**
 	 * helper mehtod for encoding MultiLineString
-	 * 
+	 *
 	 * @param gmlMls
 	 * 			JTS representation of MultiLineString
 	 * @return
@@ -316,10 +316,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	private String encodeMultiLineString(MultiLineString gmlMls){
 		return encodeMultiLineString2Doc(gmlMls).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper mehtod for encoding MultiLineString
-	 * 
+	 *
 	 * @param gmlMls
 	 * 			JTS representation of MultiLineString
 	 * @return
@@ -330,7 +330,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		MultiLineStringType xb_mls = xb_mlsDoc.addNewMultiLineString();
 		//set gml ID
 		xb_mls.setId(generateGmlId());
-		
+
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
 			LineStringPropertyType xb_ls = xb_mls.addNewLineStringMember();
@@ -343,7 +343,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 
 	/**
 	 * helper method for encoding MultiPoint
-	 * 
+	 *
 	 * @param gmlMls
 	 * 			JTS representation of MultiPoint
 	 * @return
@@ -352,10 +352,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	private String encodeMultiPoint(MultiPoint geom) {
 		return encodeMultiPoint2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for encoding MultiPoint
-	 * 
+	 *
 	 * @param gmlMls
 	 * 			JTS representation of MultiPoint
 	 * @return
@@ -366,7 +366,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		MultiPointType xb_mls = xb_mlsDoc.addNewMultiPoint();
 		//set gml ID
 		xb_mls.setId(generateGmlId());
-		
+
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
 			PointPropertyType xb_ls = xb_mls.addNewPointMember();
@@ -375,10 +375,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		}
 		return xb_mlsDoc;
 	}
-	
+
 	/**
 	 * helper method for encoding MultiPolygon
-	 * 
+	 *
 	 * @param gmlMls
 	 * 			JTS representation of MultiPolygon
 	 * @return
@@ -387,10 +387,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 	private String encodeMultiPolygon(MultiPolygon geom) {
 		return encodeMultiPolygon2Doc(geom).xmlText(getGMLOptions());
 	}
-	
+
 	/**
 	 * helper method for encoding MultiPolygon
-	 * 
+	 *
 	 * @param gmlMls
 	 * 			JTS representation of MultiPolygon
 	 * @return
@@ -401,7 +401,7 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		MultiPolygonType xb_mls = xb_mlsDoc.addNewMultiPolygon();
 		//set gml ID
 		xb_mls.setId(generateGmlId());
-		
+
 		int size = gmlMls.getNumGeometries();
 		for (int i=0;i<size;i++){
 			PolygonPropertyType xb_ls = xb_mls.addNewPolygonMember();
@@ -410,15 +410,15 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		}
 		return xb_mlsDoc;
 	}
-	
+
 	//TODO add further encoding methods for MultiPoint and MultiPolygon
-	
+
 	/**
 	 * method returns XmlOptions which are used by XmlBeans for a proper encoding
-	 * 
+	 *
 	 * @return
 	 * 		Returns GML string representing the point
-	 * 
+	 *
 	 */
 	private XmlOptions getGMLOptions() {
 		XmlOptions xmlOptions = new XmlOptions();
@@ -429,10 +429,10 @@ public class XmlBeansGeometryEncoder implements IGeometryEncoder {
 		xmlOptions.setSavePrettyPrint();
 		return xmlOptions;
 	}
-	
+
 	/**
 	 * helper methods which generates GML ID using the counter
-	 * 
+	 *
 	 * @return Returns GML ID
 	 */
 	private String generateGmlId(){

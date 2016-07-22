@@ -5,7 +5,7 @@ import java.net.URL;
 
 /**
  * abstract super class for all spatial random fields
- * 
+ *
  * @author staschc
  *
  */
@@ -21,5 +21,5 @@ public abstract class AbstractSpatialField {
 	public void setSamples(SampleReference samples) {
 		this.samples = samples;
 	}
-	
+
 }

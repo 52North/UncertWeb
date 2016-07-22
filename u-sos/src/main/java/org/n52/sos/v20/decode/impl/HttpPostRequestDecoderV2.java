@@ -8,8 +8,8 @@
  48155 Muenster, Germany
  info@52north.org
 
- This program is free software; you can redistribute and/or modify it under 
- the terms of the GNU General Public License version 2 as published by the 
+ This program is free software; you can redistribute and/or modify it under
+ the terms of the GNU General Public License version 2 as published by the
  Free Software Foundation.
 
  This program is distributed WITHOUT ANY WARRANTY; even without the implied
@@ -77,14 +77,14 @@ import org.n52.sos.request.SosGetObservationRequest;
  * documentation and handling of substitution groups is not simple. So it may be
  * easier for foreign developers to implement the DAO implementation classes for
  * other data sources then PGSQL databases.
- * 
+ *
  * !! Use for each operation a new parser method. Use 'parse' + operation name +
  * 'Request', e.g. parseGetCapabilitiesRequest. In GetCapabilities the SOS can
  * check for GET and POST implementations. !!!
- * 
+ *
  * @author Christoph Stasch
  * @author Carsten Hollmann
- * 
+ *
  */
 public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
 
@@ -97,7 +97,7 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
     /**
      * method receives request and returns internal SOS representation of
      * request
-     * 
+     *
      * @param docString
      *            string, which contains the request document
      * @return Returns internal SOS representation of request
@@ -139,7 +139,7 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
     /**
      * parses the XmlBean representing the getCapabilities request and creates a
      * SosGetCapabilities request
-     * 
+     *
      * @param xbCapsDoc
      *            XmlBean created from the incoming request stream
      * @return Returns SosGetCapabilitiesRequest representing the request
@@ -183,7 +183,7 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
     /**
      * parses the XmlBean representing the getObservation request and creates a
      * SoSGetObservation request
-     * 
+     *
      * @param xbGetObsDoc
      *            XmlBean created from the incoming request stream
      * @return Returns SosGetObservationRequest representing the request
@@ -212,7 +212,7 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
     /**
      * parses the passes XmlBeans document and creates a SOS describeSensor
      * request
-     * 
+     *
      * @param xbDescSenDoc
      *            XmlBeans document representing the describeSensor request
      * @return Returns SOS describeSensor request
@@ -241,7 +241,7 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
     /**
      * parses the passes XmlBeans document and creates a SOS
      * getFeatureOfInterest request
-     * 
+     *
      * @param xbGetFoiDoc
      *            XmlBeans document representing the getFeatureOfInterest
      *            request
@@ -268,7 +268,7 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
 
     /**
      * Parses the spatial filter of a request.
-     * 
+     *
      * @param xbSpatialOpsType
      *            XmlBean representing the feature of interest parameter of the
      *            request
@@ -310,7 +310,7 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
 
     /**
      * Parses the spatial filter of a GetObservation request.
-     * 
+     *
      * @param xbFilter
      *            XmlBean representing the spatial filter parameter of the
      *            request
@@ -329,7 +329,7 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
 
     /**
      * Parses the spatial filters of a GetFeatureOfInterest request.
-     * 
+     *
      * @param xbFilters
      *            XmlBean representing the spatial filter parameter of the
      *            request
@@ -350,7 +350,7 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
     /**
      * parses the Time of the requests and returns an array representing the
      * temporal filters
-     * 
+     *
      * @param xbTemporalFilters
      *            array of XmlObjects representing the Time element in the
      *            request
@@ -370,7 +370,7 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
     /**
      * parses a single temporal filter of the requests and returns SOS temporal
      * filter
-     * 
+     *
      * @param xbTemporalOpsType
      *            XmlObject representing the temporal filter
      * @return Returns SOS representation of temporal filter
@@ -409,10 +409,10 @@ public class HttpPostRequestDecoderV2 implements IHttpPostRequestDecoder {
 
     /**
      * checks whether the getObservationRequest XMLDocument is valid
-     * 
+     *
      * @param getObsDoc
      *            the document which should be checked
-     * 
+     *
      * @throws OwsExceptionReport
      *             if the Document is not valid
      */

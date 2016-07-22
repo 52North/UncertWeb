@@ -12,14 +12,14 @@ public class ExtendedXMLParserTestCase extends TestCase {
 
 	private String localPath = "D:/uncertwebWorkspace/uncertml-x-api/";
 	private String pathToExamples = "src/test/resources";
-	
+
 	public void testParser() throws Exception{
 		File folder = new File(localPath+pathToExamples);
 		File[] fileArray = folder.listFiles();
 		if (fileArray!=null){
 			for (int i=0;i<fileArray.length;i++){
 				String path = fileArray[i].getAbsolutePath();
-				
+
 				//parse xmlFile
 				if (!path.contains("svn")){
 					String xmlString = UwFileUtils.readXmlFile(path);

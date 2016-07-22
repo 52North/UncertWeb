@@ -24,7 +24,7 @@ package org.uncertweb.viss.core.resource;
 import java.util.List;
 
 public class UncertaintyCollection {
-	
+
 	private List<UncertaintyReference> references;
 
 	public List<UncertaintyReference> getReferences() {

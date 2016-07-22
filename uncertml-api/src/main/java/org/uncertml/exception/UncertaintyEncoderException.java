@@ -3,7 +3,7 @@ package org.uncertml.exception;
 /**
  * Class representing an encoding exception. This class wraps all common encoding
  * exceptions into a single encoding exception.
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */

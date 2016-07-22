@@ -39,7 +39,7 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 	private static Logger logger = Logger.getLogger(AirQualityForecastProcess.class);
 
 	private List<String> errors;
-	
+
 	private final String inputIDStartDate = "sdate";
 	private final String inputIDEndDate = "edate";
 	private final String inputIDSite = "site";
@@ -52,7 +52,7 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 	private final String outputIDPredictedConcentrations_06h = "predicted-concentrations_06h";
 	private final String outputIDPredictedConcentrations_12h = "predicted-concentrations_12h";
 	private final String outputIDPredictedConcentrations_18h = "predicted-concentrations_18h";
-	
+
 	public static final String OS_Name = System.getProperty("os.name");
 
 //	private boolean finished;
@@ -63,10 +63,10 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 	private String tmpDir;
 
 	private FTPUtil ftpUtil;
-	
+
 	public AirQualityForecastProcess(){
 		this.errors = new ArrayList<String>();
-		ftpUtil  = new FTPUtil();		
+		ftpUtil  = new FTPUtil();
 		Property[] propertyArray = WPSConfig.getInstance()
 				.getPropertiesForRepositoryClass(
 						LocalAlgorithmRepository.class.getCanonicalName());
@@ -89,7 +89,7 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 			tmpDir = System.getenv("CATALINA_TMPDIR");
 		}
 	}
-	
+
 	@Override
 	public List<String> getErrors() {
 		return errors;
@@ -97,11 +97,11 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 
 	@Override
 	public Class<?> getInputDataType(String arg0) {
-		
+
 		if (arg0.equals(inputIDStartDate)) {
 //			return LiteralDateTimeBinding.class;//TODO: check whether datetime can be used
 			return LiteralStringBinding.class;
-		} else if (arg0.equals(inputIDEndDate)) {	
+		} else if (arg0.equals(inputIDEndDate)) {
 //			return LiteralDateTimeBinding.class;
 			return LiteralStringBinding.class;
 		} else if (arg0.equals(inputIDSite)) {
@@ -114,9 +114,9 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 			return LiteralIntBinding.class;
 		} else if (arg0.equals(inputIDReceptorPoints)) {
 			return LiteralStringBinding.class;
-		} else if (arg0.equals(inputIDNumberOfRealisations)) {	
-			return LiteralIntBinding.class;	
-		}		
+		} else if (arg0.equals(inputIDNumberOfRealisations)) {
+			return LiteralIntBinding.class;
+		}
 		return null;
 	}
 
@@ -130,10 +130,10 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
-		
-		String[] resultFileNames = new String[]{};		
+
+		String[] resultFileNames = new String[]{};
 		String resultFileFullPath = "";
-		
+
 		if(!testRun){
 		/*
 		 * get input data
@@ -143,7 +143,7 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 		 * download result netCDF-U
 		 * output result netCDF-U
 		 */
-		
+
 		if (inputData == null)
 			throw new NullPointerException("inputData cannot be null");
 
@@ -158,40 +158,40 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 
 		startDate = ((LiteralStringBinding) extractData(inputData, inputIDStartDate))
 				.getPayload().toString();
-		
+
 		endDate = ((LiteralStringBinding) extractData(inputData, inputIDEndDate))
 				.getPayload().toString();
-		
+
 		site = ((LiteralStringBinding) extractData(inputData, inputIDSite))
 				.getPayload().toString();
-		
+
 		component = ((LiteralStringBinding) extractData(inputData, inputIDComponent))
 				.getPayload().toString();
-		
+
 		numberOfRealisations = ((LiteralIntBinding) extractData(inputData, inputIDNumberOfRealisations))
 				.getPayload();
-		
+
 		numberOfDaysForSpinning = ((LiteralIntBinding) extractData(inputData, inputIDNumberOfDaysForSpinning))
 				.getPayload();
-		
+
 		numberOfForecastHours = ((LiteralIntBinding) extractData(inputData, inputIDNumberOfForecastHours))
 				.getPayload();
-		
+
 		receptorPoints = inputData
 				.get(inputIDReceptorPoints);
 
 //		if (receptorPoints == null || receptorPoints.isEmpty())
 //			throw new IllegalArgumentException(
 //					"could not find input for " + inputIDReceptorPoints);
-		
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyymmddhhmmss");
-		
+
 		String id = sdf.format(new Date());
-		
+
 		String parametersFileNameID = parametersFileName.replace("id", id);
-		
+
 		String parametersFileFullPath = tmpDir + File.separatorChar + parametersFileNameID;
-		
+
 		try {
 			BufferedWriter parametersFileWriter = new BufferedWriter(new FileWriter(parametersFileFullPath));
 
@@ -202,7 +202,7 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 			parametersFileWriter.write(inputIDNumberOfForecastHours + " = " + numberOfForecastHours + "\n");
 			parametersFileWriter.write(inputIDNumberOfRealisations + " = " + numberOfRealisations + "\n");
 			parametersFileWriter.write(inputIDComponent+ " = " + component + "\n");
-			
+
 				if (receptorPoints != null) {
 
 					for (IData iData : receptorPoints) {
@@ -212,86 +212,86 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 				}
 			parametersFileWriter.flush();
 			parametersFileWriter.close();
-			
+
 		} catch (IOException e1) {
 			logger.error(e1);
-		} 
-		
+		}
+
 		try {
 			ftpUtil.upload(parametersFileFullPath, parametersFileNameID);
 		} catch (IOException e1) {
 			logger.error(e1);
-		}	
-		
+		}
+
 		/*
 		 * search base results directory
 		 */
 		listFiles2(id, true);
-		
+
 		resultFileNames = listFiles2(id, false);
-		
+
 		return createResultMap(resultFileNames, id);
-		
+
 //		resultFileFullPath = tmpDir + File.separator + resultFileName;
-//		
+//
 //		try {
 //			ftpUtil.download(resultFileFullPath, id, resultFileName);
 //		} catch (IOException e) {
 //			logger.error(e);
 //		}
-		
-		}else{		
+
+		}else{
 
 			logger.debug("################ Test run ###############");
-			
+
 			try {
 				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			resultFileFullPath = tmpDir + File.separator + resultFileName;
-			
+
 			try {
-				
+
 				String site = ((LiteralStringBinding) extractData(inputData, inputIDSite))
 						.getPayload().toString();
-				
+
 				URL url = null;
-				
+
 				if(site .equals("oslo")){
 					url = new URL("http://v-soknos.uni-muenster.de:8080/data/oslo_mete_20110103.nc");
 				}else{
 					url = new URL("http://v-soknos.uni-muenster.de:8080/data/pm10_conc_rotterdam_20110408.nc");
 				}
-				
+
 //				InputStream in = url.openStream();
-//				
+//
 //				int i;
-//				
+//
 //				FileOutputStream fOut = new FileOutputStream(new File(resultFileFullPath));
-//				
+//
 //				while ((i = in.read()) != -1) {
 //					System.out.print((char)i);
 //					fOut.write(i);
 //				}
-				
+
 				org.apache.commons.io.FileUtils.copyURLToFile(url, new File(resultFileFullPath));
-				
+
 //				in.close();
 //				fOut.flush();
 //				fOut.close();
-				
-				
+
+
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
-		
+
 		Map<String, IData> result = new HashMap<String, IData>();
-		
+
 		try {
 //			NetCDFBinding ndw = new NetCDFBinding(new NetcdfUWFile(new NetcdfFile(resultFileFullPath)));
 			NetCDFBinding ndw = new NetCDFBinding(new NetcdfUWFile(NetcdfFile.open(resultFileFullPath)));
@@ -301,10 +301,10 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return result;
 	}
-	
+
 	private IData extractData(Map<String, List<IData>> inputData, String id){
 		List<IData> dataList = inputData
 				.get(id);
@@ -312,20 +312,20 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 		if (dataList == null || dataList.isEmpty())
 			throw new IllegalArgumentException(
 					"could not find input for " + id);
-		
-		return dataList.get(0);		
+
+		return dataList.get(0);
 	}
-	
+
 	private String listFiles(String id, boolean searchResultsBaseDir){
-		
+
 		String resultName = "";
-		
+
 		boolean finished = false;
-		
+
 //		if(id == null){
 //			searchResultsBaseDir = true;
 //		}
-		
+
 		while (true) {
 
 			if (abort) {
@@ -333,17 +333,17 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 			}
 
 			try {
-				
+
 				String[] files = new String[]{};
 				if(searchResultsBaseDir){
 					files = ftpUtil.list();
 				}else{
-					files = ftpUtil.list(id);					
+					files = ftpUtil.list(id);
 				}
 
 				for (String string : files) {
 					logger.info("found file: " + string);
-					
+
 					if(searchResultsBaseDir){
 						if(string.contains(id)) {
 							logger.info("found result subdirectory for id " + id);
@@ -380,35 +380,35 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 		}
 		return resultName;
 	}
-	
+
 	private String[] listFiles2(String id, boolean searchResultsBaseDir){
-		
+
 		String[] files = new String[]{};
-		
+
 		boolean finished = false;
-		
+
 		while (true) {
 
 			if (abort) {
 				break;
 			}
 
-			try {				
+			try {
 				if(searchResultsBaseDir){
 					files = ftpUtil.list();
 				}else{
-					files = ftpUtil.list(id);	
+					files = ftpUtil.list(id);
 					if(files.length > 0){
 						/*
 						 * result/{id} directory was searched and something was found
 						 * assume it is the resulting netcdf file
 						 */
-						return files;						
-					}					
+						return files;
+					}
 				}
 				for (String string : files) {
 					logger.info("found file: " + string);
-					
+
 					if(searchResultsBaseDir){
 						if(string.contains(id)) {
 							logger.info("found result subdirectory for id " + id);
@@ -441,30 +441,30 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 	private Map<String, IData> createResultMap(String[] resultFileNames, String id){
 
 		Map<String, IData> result = new HashMap<String, IData>();
-		
+
 		for (String string : resultFileNames) {
-			
+
 			string = string.substring(string.lastIndexOf("/") + 1);
-			
+
 			String resultFileFullPath = tmpDir + File.separator + string;
-			
+
 			try {
 				ftpUtil.download(resultFileFullPath, id, string);
 			} catch (IOException e) {
 				logger.error(e);
 			}
-			
+
 			NetCDFBinding ndw = null;
-			
+
 			try {
 				ndw = new NetCDFBinding(new NetcdfUWFile(NetcdfFile.open(resultFileFullPath)));
-				
+
 			} catch (NetcdfUWException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			if(string.contains("_06h")){
 				result.put(outputIDPredictedConcentrations_06h, ndw);
 			}else if(string.contains("_12h")){
@@ -474,10 +474,10 @@ public class AirQualityForecastProcess extends AbstractObservableAlgorithm {
 			}else {
 				result.put(outputIDPredictedConcentrations, ndw);
 			}
-			
+
 		}
-		
+
 		return result;
 	}
-	
+
 }

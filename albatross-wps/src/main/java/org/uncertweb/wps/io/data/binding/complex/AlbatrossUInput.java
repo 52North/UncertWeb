@@ -10,7 +10,7 @@ public class AlbatrossUInput {
 	private List<String> albatrossIDs;
 	private Map<String, String> parameters;
 	private StandardDeviation standardDeviation;
-	
+
 	public AlbatrossUInput(List<String> albatrossIDs, Map<String, String> parameters, StandardDeviation standardDeviation){
 		this.albatrossIDs = albatrossIDs;
 		this.parameters = parameters;
@@ -40,5 +40,5 @@ public class AlbatrossUInput {
 	public void setStandardDeviation(StandardDeviation standardDeviation) {
 		this.standardDeviation = standardDeviation;
 	}
-	
+
 }

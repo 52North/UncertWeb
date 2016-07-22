@@ -13,12 +13,12 @@ import org.uncertml.IUncertainty;
 public class UncertMLTestProcess extends AbstractAlgorithm {
 
 	@Override
-	public Class<?> getInputDataType(String arg0) {		
+	public Class<?> getInputDataType(String arg0) {
 		return UncertWebIODataBinding.class;
 	}
 
 	@Override
-	public Class<?> getOutputDataType(String arg0) {		
+	public Class<?> getOutputDataType(String arg0) {
 		return UncertWebIODataBinding.class;
 	}
 
@@ -26,19 +26,19 @@ public class UncertMLTestProcess extends AbstractAlgorithm {
 	public Map<String, IData> run(Map<String, List<IData>> arg0) {
 
 		List<IData> inputDataList = arg0.get("input");
-		
+
 		IData firstData = inputDataList.get(0);
-		
+
 		if(!(firstData instanceof UncertMLBinding)){
-			return null;			
+			return null;
 		}
-		
+
 		IUncertainty uncertaintyType = ((UncertMLBinding)firstData).getPayload();
-		
+
 		HashMap<String, IData> result = new HashMap<String, IData>();
-		
+
 		result.put("output", (UncertMLBinding)firstData);
-		
+
 		return result;
 	}
 

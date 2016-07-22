@@ -5,7 +5,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * Container for common constants and helper methods used in the API
- * 
+ *
  * @author staschc
  *
  */
@@ -15,7 +15,7 @@ public class UwGMLUtil {
 	//CONSTANTS
 	/**constant for EPSG URL used in srsName*/
 	public final static String EPSG_URL = "http://www.opengis.net/def/crs/EPSG/0/";
-	
+
 	///Constants for Geometry type names
 	public final static String POINT_TYPE="Point";
 	public final static String LINESTRING_TYPE="LineString";
@@ -25,14 +25,14 @@ public class UwGMLUtil {
 	public final static String MULTILINESTRING_TYPE="MultiLineString";
 	public final static String MULTIPOLYGON_TYPE="MultiSurface";
 	public final static String MULTIRECTIFIEDGRID_TYPE="MultiRectifiedGrid";
-	
-	
-	
+
+
+
 	///////////////////////////////////////////////////////////////////
 	// HELPER METHODS
 	/**
      * parses an iso8601 time String to a DateTime Object.
-     * 
+     *
      * @param timeString
      *            the time String
      * @return Returns a DateTime Object.
@@ -43,8 +43,8 @@ public class UwGMLUtil {
             return null;
         }
         return ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(timeString);
-        
+
     }
-    
-    
+
+
 }

@@ -16,41 +16,41 @@ import com.vividsolutions.jts.geom.Point;
 
 /**
  * Rectified Grid of UncertWeb GML profile; extends JTS geometry;
- * 
+ *
  * A RectifiedGrid is a grid for which there is an affine transformation between
  * the grid coordinates and the coordinates of an external coordinate reference
  * system.
- * 
+ *
  * It contains several elements:
- * 
+ *
  * -limits define the extent of the grid
- * 
+ *
  * <gml:limits> <gml:GridEnvelope> <gml:low>1 1</gml:low> <gml:high>5
  * 5</gml:high> </gml:GridEnvelope> </gml:limits>
- * 
- * 
+ *
+ *
  * -axis labels define the labels of the axis of the grid
- * 
+ *
  * <gml:axisLabels>u v</gml:axisLabels>
- * 
+ *
  * -origin defines a georeferenced point which is the origin for the affine
  * transformation
- * 
+ *
  * <gml:origin> <gml:Point gml:id="IfGI"
  * srsName="urn:x-ogc:def:crs:EPSG:6.6:4326"> <gml:pos>52.77 7.82</gml:pos>
  * </gml:Point> </gml:origin>
- * 
- * 
+ *
+ *
  * -offset vectors describe the transformation from the grid to the
  * georeferenced grid in consuming applications (e.g. for visualization on the
  * earth's surface)
- * 
+ *
  * <gml:offsetVector srsName="urn:x-ogc:def:crs:EPSG:6.6:4329">-0.3
  * 1.25</gml:offsetVector> <gml:offsetVector
  * srsName="urn:x-ogc:def:crs:EPSG:6.6:4329">1.3 0.25</gml:offsetVector>
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class RectifiedGrid extends Geometry {
 
@@ -75,7 +75,7 @@ public class RectifiedGrid extends Geometry {
 
 	/**
 	 * georeferenced origin of the grid
-	 * 
+	 *
 	 */
 	private Point origin;
 
@@ -86,7 +86,7 @@ public class RectifiedGrid extends Geometry {
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param factory
 	 */
 	public RectifiedGrid(Envelope gridEnvelope, List<String> axisLabel,

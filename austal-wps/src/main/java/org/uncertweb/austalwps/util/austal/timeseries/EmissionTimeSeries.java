@@ -17,16 +17,16 @@ public class EmissionTimeSeries {
 	private List<DateTime> timeStamps = new ArrayList<DateTime>();
 	private String dynamicIDToken;	// id of the source in the zeitreihe file
 	private int dynamicID;
-	
+
 	public EmissionTimeSeries(){
-		
+
 	}
-	
+
 	public EmissionTimeSeries(String dynamicSourceIDToken){
 		this.dynamicIDToken = dynamicSourceIDToken;
 		this.dynamicID = Integer.parseInt(dynamicSourceIDToken.substring(1, 3));
 	}
-	
+
 	public EmissionTimeSeries(int dynamicSourceID){
 		String count;
 		if(dynamicSourceID<10)
@@ -36,11 +36,11 @@ public class EmissionTimeSeries {
 		this.dynamicIDToken = count + ".pm-2%10.3e\"";
 		this.dynamicID = dynamicSourceID;
 	}
-	
+
 	public String getDynamicSourceIDToken(){
 		return dynamicIDToken;
 	}
-	
+
 	public int getDynamicSourceID(){
 		return dynamicID;
 	}
@@ -49,7 +49,7 @@ public class EmissionTimeSeries {
 		this.dynamicIDToken = dynamicSourceIDToken;
 		this.dynamicID = Integer.parseInt(dynamicSourceIDToken.substring(0, 2));
 	}
-	
+
 	public void setSourceID(int id){
 		String count;
 		if(id<10)
@@ -59,7 +59,7 @@ public class EmissionTimeSeries {
 		this.dynamicIDToken = count + ".pm-2%10.3e\"";
 		this.dynamicID = id;
 	}
-	
+
 	public void cutTimePeriod(DateTime start, DateTime end){
 		// loop through dates and delete those outside the time period
 		List<DateTime> newTimeStamps = new ArrayList<DateTime>();
@@ -73,7 +73,7 @@ public class EmissionTimeSeries {
 		this.timeStamps = newTimeStamps;
 		this.emisVals = newEmisVals;
 	}
-	
+
 	// time stamps
 	public List<DateTime> getTimeStamps(){
 		return timeStamps;
@@ -82,7 +82,7 @@ public class EmissionTimeSeries {
 	public void setTimeStamps(int index, DateTime date) {
 		timeStamps.set(index, date);
 	}
-	
+
 	public DateTime getMinDate(){
 		DateTime minDate = timeStamps.get(0);
 		for(int i=1; i<timeStamps.size(); i++){
@@ -91,7 +91,7 @@ public class EmissionTimeSeries {
 		}
 		return minDate;
 	}
-	
+
 	public DateTime getMaxDate(){
 		DateTime maxDate = timeStamps.get(0);
 		for(int i=1; i<timeStamps.size(); i++){
@@ -100,7 +100,7 @@ public class EmissionTimeSeries {
 		}
 		return maxDate;
 	}
-	
+
 	// emission values
 	public Double getEmissionValue(int i){
 		Double res = null;
@@ -111,7 +111,7 @@ public class EmissionTimeSeries {
 		}
 		return emisVals.get(i);
 	}
-	
+
 	public Double getEmissionValue(DateTime timeStamp){
 		return emisVals.get(getTimeStampIndex(timeStamp));
 	}
@@ -120,35 +120,35 @@ public class EmissionTimeSeries {
 		timeStamps.add(timeStamp);
 		emisVals.add(value);
 	}
-	
+
 	public void addEmissionValue(DateTime timeStamp, String value) {
 		timeStamps.add(timeStamp);
 		emisVals.add(Double.parseDouble(value));
 	}
-	
+
 	public void setEmissionValue(int column, Double value) {
 		emisVals.set(column, value);
 	}
-	
+
 	public void setEmissionValue(DateTime timeStamp, Double value) {
 		emisVals.set(getTimeStampIndex(timeStamp), value);
 	}
-	
+
 	// emission list
 	public List<Double> getEmissionSeries(){
 		return emisVals;
 	}
-	
+
 	public void setEmissionSeries(Double[] values) {
 		for(int i=0; i<values.length; i++){
 			emisVals.set(i, values[i]);
-		}		
+		}
 	}
 
 	public void setEmissionSeries(String[] values) {
 		for(int i=0; i<values.length; i++){
 			emisVals.set(i, Double.parseDouble(values[i]));
-		}		
+		}
 	}
 
 	// utilities

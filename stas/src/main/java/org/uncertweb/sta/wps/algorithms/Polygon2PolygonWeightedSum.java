@@ -63,9 +63,9 @@ import com.vividsolutions.jts.geom.Geometry;
 /**
  * algorithm that implements a weighted sum of a polygon to polygon aggregation.
  * The intersection area of polygons serves as weight.
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class Polygon2PolygonWeightedSum extends
 		AbstractUncertainAggregationProcess {
@@ -81,14 +81,14 @@ public class Polygon2PolygonWeightedSum extends
 
 	// default SRS EPSG Code
 	private static final int DEFAULT_SRS = 27700;
-	
+
 
 	//indicates the number of digits for the aggregates
 	private static final int NUMBER_OF_DIGITS=4;
-	
+
 	//used for caching features from WFS
 	private FeatureCache featureCache = new FeatureCache();
-	
+
 	private HashMap<String,Double> weightsForIntersection = new HashMap<String,Double>(10000);
 
 	/**
@@ -125,7 +125,7 @@ public class Polygon2PolygonWeightedSum extends
 	/**
 	 * Process output that contains a {@code GetObservation} request to fetch
 	 * the aggregated observations from a SOS.
-	 * 
+	 *
 	 * @see Constants.Process.Inputs.Common#SOS_DESTINATION_URL
 	 */
 	public static final ProcessOutput AGGREGATED_OUTPUT = new ProcessOutput(
@@ -183,8 +183,8 @@ public class Polygon2PolygonWeightedSum extends
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
@@ -265,7 +265,7 @@ public class Polygon2PolygonWeightedSum extends
 
 	/**
 	 * helper method that actually runs the agggregation
-	 * 
+	 *
 	 * @param originalObs
 	 * @param targetRegions
 	 * @return
@@ -296,7 +296,7 @@ public class Polygon2PolygonWeightedSum extends
 			UncertaintyObservation uncertObs = (UncertaintyObservation) obsIter
 					.next();
 			URI observedProperty = uncertObs.getObservedProperty();
-			
+
 			Geometry foiGeom = null;
 			String foiID = null;
 			if (uncertObs.getFeatureOfInterest().getHref()!=null){
@@ -318,13 +318,13 @@ public class Polygon2PolygonWeightedSum extends
 			// iterate over target regions
 			FeatureIterator features = targetRegions.features();
 			while (features.hasNext()) {
-				
+
 				Feature targetRegion = features.next();
 				String targetID = targetRegion.getIdentifier().getID();
 
 				String idCombi = targetID
 						+ foiID;
-				
+
 				double weight = Double.NaN;
 				if (!this.weightsForIntersection.containsKey(idCombi)){
 					Geometry regionGeom = (Geometry) targetRegion
@@ -332,7 +332,7 @@ public class Polygon2PolygonWeightedSum extends
 					if (regionGeom.intersects(foiGeom)) {
 						Geometry intersectionArea = regionGeom
 							.intersection(foiGeom);
-					
+
 						// multiply areal weight with scaleFactor
 						weight = scaleFactor * intersectionArea.getArea();
 						this.weightsForIntersection.put(idCombi,weight);
@@ -340,7 +340,7 @@ public class Polygon2PolygonWeightedSum extends
 				}else{
 					weight=this.weightsForIntersection.get(idCombi);
 				}
-					
+
 				if (weight!=Double.NaN){
 
 					// extract values from either ContinuousRealisation or
@@ -449,7 +449,7 @@ public class Polygon2PolygonWeightedSum extends
 				}
 			}
 		}
-		
+
 		if (result.getObservations().size()==0){
 			throw new RuntimeException("No source observations intersect with the aggregation regions!");
 		}
@@ -459,7 +459,7 @@ public class Polygon2PolygonWeightedSum extends
 	/**
 	 * sorts the input observations by time and provides a map containing the
 	 * times as keys and the corresponding observation collections as values
-	 * 
+	 *
 	 * @param obsCol
 	 *            observation collection that should be sorted by time
 	 * @return map containing the times as keys and the corresponding
@@ -488,9 +488,9 @@ public class Polygon2PolygonWeightedSum extends
 	/**
 	 * helper class that encapsulates the values that should be aggregated per
 	 * region and allows to aggregate them
-	 * 
+	 *
 	 * @author staschc
-	 * 
+	 *
 	 */
 	private class RegionAggregates {
 		private URI observedProperty;

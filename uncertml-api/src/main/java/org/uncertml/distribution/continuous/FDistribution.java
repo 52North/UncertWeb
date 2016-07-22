@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing the F distribution with parameters denominator and numerator.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/F}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -22,7 +22,7 @@ public class FDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single denominator and numerator parameter.
-     * 
+     *
      * @param denominator the denominator parameter
      * @param numerator the numerator parameter
      */
@@ -32,14 +32,14 @@ public class FDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes an array of integers for denominator and numerator
-     * parameters. Each denominator and numerator pair represents a unique F 
+     * parameters. Each denominator and numerator pair represents a unique F
      * distribution. This is in line with the UncertML syntax whereby a collection
-     * of types can be represented by a single entity. Both arrays must be of 
+     * of types can be represented by a single entity. Both arrays must be of
      * equal length and contain no null elements.
-     * 
-     * @param denominator an array of integers representing the denominator 
+     *
+     * @param denominator an array of integers representing the denominator
      * parameters of n F distributions.
-     * @param numerator an array of doubles representing the numerator parameters 
+     * @param numerator an array of doubles representing the numerator parameters
      * of n F distributions.
      */
     public FDistribution(int[] denominator, int[] numerator) {
@@ -48,14 +48,14 @@ public class FDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a list of integers for denominator and numerator
-     * parameters. Each denominator and numerator pair represents a unique F 
+     * parameters. Each denominator and numerator pair represents a unique F
      * distribution. This is in line with the UncertML syntax whereby a collection
-     * of types can be represented by a single entity. Both lists must be of 
+     * of types can be represented by a single entity. Both lists must be of
      * equal length and contain no null elements.
-     * 
-     * @param denominator a list of integers representing the denominator 
+     *
+     * @param denominator a list of integers representing the denominator
      * parameters of n F distributions.
-     * @param numerator a list of doubles representing the numerator parameters 
+     * @param numerator a list of doubles representing the numerator parameters
      * of n F distributions.
      */
     public FDistribution(List<Integer> denominator, List<Integer> numerator) {
@@ -69,7 +69,7 @@ public class FDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the denominator parameter of each F distribution represented by
      * this object
      */
@@ -78,7 +78,7 @@ public class FDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the numerator parameter of each F distribution represented by
      * this object.
      */
@@ -86,5 +86,5 @@ public class FDistribution implements IContinuousDistribution {
         return numerator;
     }
 
-    
+
 }

@@ -31,7 +31,7 @@ public abstract class AbstractHookedObservationEncoder<T> implements
 	public final Set<EncoderHook<T>> getHooks() {
 		return this.hooks;
 	}
-	
+
 	public final Set<EncoderHook<T>> getHooks(Class<?> toEncode) {
 		return this.hooks;
 	}

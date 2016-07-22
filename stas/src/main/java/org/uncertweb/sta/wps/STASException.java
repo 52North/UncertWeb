@@ -2,7 +2,7 @@ package org.uncertweb.sta.wps;
 
 /**
  * TODO JavaDoc
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class STASException extends Exception {

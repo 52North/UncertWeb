@@ -8,8 +8,8 @@
  48155 Muenster, Germany
  info@52north.org
 
- This program is free software; you can redistribute and/or modify it under 
- the terms of the GNU General Public License version 2 as published by the 
+ This program is free software; you can redistribute and/or modify it under
+ the terms of the GNU General Public License version 2 as published by the
  Free Software Foundation.
 
  This program is distributed WITHOUT ANY WARRANTY; even without the implied
@@ -70,16 +70,16 @@ import com.vividsolutions.jts.geom.util.PolygonExtracter;
 /**
  * class encapsulates encoding methods for GML elements as features or
  * geometries
- * 
+ *
  * @author Christoph Stasch
  * @author Carsten Hollmanns
- * 
+ *
  */
 public class GML321Encoder implements IGMLEncoder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sos.encode.IGMLEncoder#createFeature(org.n52.sos.ogc.om.features
      * .SosAbstractFeature)
@@ -93,7 +93,7 @@ public class GML321Encoder implements IGMLEncoder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sos.encode.IGMLEncoder#createTime(org.n52.sos.ogc.gml.time.ISosTime
      * )
@@ -145,7 +145,7 @@ public class GML321Encoder implements IGMLEncoder {
 
     /**
      * Creates a XML TimePeriod from the SOS time object.
-     * 
+     *
      * @param timePeriod
      *            SOS time object
      * @return XML TimePeriod
@@ -170,13 +170,13 @@ public class GML321Encoder implements IGMLEncoder {
 
             xbTimeInstantBegin.setTimePosition(xbTimePositionBegin);
             xbTimeInstantPropertyBegin.setTimeInstant(xbTimeInstantBegin);
-            
+
             // endPosition
             TimeInstantPropertyType xbTimeInstantPropertyEnd = TimeInstantPropertyType.Factory.newInstance();
             TimeInstantType xbTimeInstantEnd = TimeInstantType.Factory.newInstance();
             TimePositionType xbTimePositionEnd = TimePositionType.Factory.newInstance();
             String endString = SosDateTimeUtilities.formatDateTime2ResponseString(timePeriod.getEnd());
-            
+
             // concat minutes for timeZone offset, because gml requires
             // xs:dateTime, which needs minutes in
             // timezone offset
@@ -185,8 +185,8 @@ public class GML321Encoder implements IGMLEncoder {
 
             xbTimeInstantEnd.setTimePosition(xbTimePositionEnd);
             xbTimeInstantPropertyEnd.setTimeInstant(xbTimeInstantEnd);
-            
-            
+
+
             xbTimePeriod.setBegin(xbTimeInstantPropertyBegin);
             xbTimePeriod.setEnd(xbTimeInstantPropertyEnd);
         }
@@ -196,7 +196,7 @@ public class GML321Encoder implements IGMLEncoder {
 
     /**
      * Creates a XML TimeInstant from the SOS time object.
-     * 
+     *
      * @param timeInstant
      *            SOS time object
      * @return XML TimeInstant
@@ -223,7 +223,7 @@ public class GML321Encoder implements IGMLEncoder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sos.encode.IGMLEncoder#createPosition(com.vividsolutions.jts.
      * geom.Geometry, org.apache.xmlbeans.XmlObject)
@@ -258,7 +258,7 @@ public class GML321Encoder implements IGMLEncoder {
 
     /**
      * Creates a XML Point from a SOS Point.
-     * 
+     *
      * @param jtsPoint
      *            SOS Point
      * @param xbPoint
@@ -278,7 +278,7 @@ public class GML321Encoder implements IGMLEncoder {
 
     /**
      * Creates a XML LineString from a SOS LineString.
-     * 
+     *
      * @param jtsLineString
      *            SOS LineString
      * @param xbLst
@@ -287,19 +287,19 @@ public class GML321Encoder implements IGMLEncoder {
     private void createLineStringFromJtsGeometry(LineString jtsLineString, LineStringType xbLst) {
         xbLst.setSrsName(SosConfigurator.getInstance().getSrsNamePrefixSosV2()
                 + Integer.toString(jtsLineString.getSRID()));
-        
-        
+
+
         if (SosConfigurator.getInstance().switchCoordinatesForEPSG(jtsLineString.getSRID())) {
         	xbLst.setPosArray(switchCoordinates4Array(jtsLineString));
         } else {
         	xbLst.setPosArray(getCoordinates4Array(jtsLineString));
         }
-        
+
 //        Coordinate[] crds = jtsLineString.getCoordinates();
-//        
+//
 //        for (Coordinate crd : crds) {
 //        	DirectPositionType xbDirPos = xbLst.addNewPos();
-//        	
+//
 //        	if (SosConfigurator.getInstance().switchCoordinatesForEPSG(jtsLineString.getSRID())) {
 //
 //        		if (Double.isNaN(crd.z)) {
@@ -316,10 +316,10 @@ public class GML321Encoder implements IGMLEncoder {
 //        	}
 //        }
     }
-    
+
     /**
      * Creates a XML Polygon from a SOS Polygon.
-     * 
+     *
      * @param jtsPolygon
      *            SOS Polygon
      * @param xbPolType
@@ -334,14 +334,14 @@ public class GML321Encoder implements IGMLEncoder {
             AbstractRingPropertyType xbArpt = xbPolType.addNewExterior();
             AbstractRingType xbArt = xbArpt.addNewAbstractRing();
 
-            // SrsName is no longer set for single xbLrt, but for the polygon 
+            // SrsName is no longer set for single xbLrt, but for the polygon
             xbPolType.setSrsName(SosConfigurator.getInstance().getSrsNamePrefixSosV2() + jtsPolygon.getSRID());
-            
+
             LinearRingType xbLrt = LinearRingType.Factory.newInstance();
 
             // Exterior ring
             LineString ring = pol.getExteriorRing();
-            
+
             // switch coordinates
             if (SosConfigurator.getInstance().switchCoordinatesForEPSG(jtsPolygon.getSRID())) {
             	xbLrt.setPosArray(switchCoordinates4Array(ring));
@@ -368,7 +368,7 @@ public class GML321Encoder implements IGMLEncoder {
                 ring = pol.getInteriorRingN(ringNumber);
 
                 // SrsName is no longer set for single xbLrt
-                
+
                 // switch coordinates
                 if (SosConfigurator.getInstance().switchCoordinatesForEPSG(jtsPolygon.getSRID())) {
                 	xbLrt.setPosArray(switchCoordinates4Array(ring));
@@ -389,7 +389,7 @@ public class GML321Encoder implements IGMLEncoder {
 
     /**
      * Builds a String from jts_Geometry coordinates.
-     * 
+     *
      * @param sourceGeom
      *            jts_Geometry to get the coordinates.
      * @return String with coordinates.
@@ -418,7 +418,7 @@ public class GML321Encoder implements IGMLEncoder {
 
     /**
      * Builds a String from jts_Geometry coordinates and switches the xy.
-     * 
+     *
      * @param sourceGeom
      *            jts_Geometry to get the coordinates.
      * @return String with coordinates.
@@ -444,49 +444,49 @@ public class GML321Encoder implements IGMLEncoder {
         }
         return switchedCoords.toString();
     }
-    
+
     /**
      * Builds an array of position coordinates.
-     * 
+     *
      * @param sourceGeom
      *            jts_Geometry to get the coordinates.
      * @return positions with coordinates.
      */
     protected DirectPositionType[] getCoordinates4Array(Geometry sourceGeom) {
-    	
+
     	Coordinate[] crds = sourceGeom.getCoordinates();
         ArrayList<DirectPositionType> posList = new ArrayList<DirectPositionType>(sourceGeom.getCoordinates().length);
-    	
+
         for (Coordinate crd : crds) {
-        	
+
         	DirectPositionType xbDirPos = DirectPositionType.Factory.newInstance();
-        	
+
     		if (Double.isNaN(crd.z)) {
     			xbDirPos.setStringValue(crd.x + " " + crd.y);
             } else {
             	xbDirPos.setStringValue(crd.x + " " + crd.y + " " + crd.z);
             }
         }
-        
+
     	return posList.toArray(new DirectPositionType[0]);
     }
-    
+
     /**
      * Builds an array of positions and switches the xy.
-     * 
+     *
      * @param sourceGeom
      *            jts_Geometry to get the coordinates.
      * @return positions with coordinates.
      */
     protected DirectPositionType[] switchCoordinates4Array(Geometry sourceGeom) {
-    	
+
     	Coordinate[] crds = sourceGeom.getCoordinates();
     	ArrayList<DirectPositionType> posList = new ArrayList<DirectPositionType>(sourceGeom.getCoordinates().length);
-    	
+
         for (Coordinate crd : crds) {
-        	
+
         	DirectPositionType xbDirPos = DirectPositionType.Factory.newInstance();
-        	
+
     		if (Double.isNaN(crd.z)) {
     			xbDirPos.setStringValue(crd.y + " " + crd.x);
             } else {

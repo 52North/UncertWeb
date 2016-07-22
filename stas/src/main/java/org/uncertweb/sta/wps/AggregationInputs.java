@@ -5,29 +5,29 @@ import java.util.List;
 
 /**
  * class represents common aggregation inputs of all Input Parameters
- * 
+ *
  * @author staschc
  *
  */
 public class AggregationInputs {
-	
-	
+
+
 	/**variables whose data should be aggregated*/
 	private List<String> variables;
 
-	
+
 	/**indicates whether spatial aggregation should be done first; default is false*/
 	private boolean isSpatialFirst=false;
-	
+
 	/**URL of the server to which the output should be written; might be null*/
 	private URL targetServer;
-	
+
 	/**type of the server to which data should be written*/
-	private String targetServerType; 
-	
+	private String targetServerType;
+
 	/**
 	 * constructor with mandatory parameters
-	 * 
+	 *
 	 * @param identifierp
 	 * 			identifier of the aggregation process
 	 * @param variablesp

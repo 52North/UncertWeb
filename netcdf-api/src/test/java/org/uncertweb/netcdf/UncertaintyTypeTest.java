@@ -53,7 +53,7 @@ public class UncertaintyTypeTest {
 			return (t.getModifiers() & NOT_INSTANTIABLE) == 0;
 		}
 	}
-	
+
 	protected static class NotParameterFilter implements Filter<Class<?>> {
 		public boolean test(Class<?> t) {
 			return !IDistribution.IParameter.class.isAssignableFrom(t);
@@ -64,7 +64,7 @@ public class UncertaintyTypeTest {
 
 	@SuppressWarnings("unchecked")
 	public static <T> Set<Class<? extends T>> getSubclasses(Class<T> t) {
-		return UwCollectionUtils.filter(r.getSubTypesOf(t), 
+		return UwCollectionUtils.filter(r.getSubTypesOf(t),
 				new InstantiableFilter(), new NotParameterFilter());
 	}
 
@@ -79,7 +79,7 @@ public class UncertaintyTypeTest {
 			assertNotNull(uri + " not recognized (" + uc + ").", type);
 			assertNotNull(uc + " not recognized (" + uri + ").", fromClass);
 			assertEquals(type, fromClass);
-			
+
 			if (IStatistic.class.isAssignableFrom(uc)) {
 				assertTrue(type + " should be a statistic", type.isStatistic());
 			}
@@ -98,7 +98,7 @@ public class UncertaintyTypeTest {
 			if (type.isSample()) {
 				assertTrue(type + " should not be a sample", ISample.class.isAssignableFrom(type.getImplementationClass()));
 			}
-			
+
 		}
 		for (final NcUwUncertaintyType type : NcUwUncertaintyType.values()) {
 			System.out.println(type.getImplementationClass().getCanonicalName() +" " + type.getUri());

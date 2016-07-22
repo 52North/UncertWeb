@@ -47,17 +47,17 @@ import com.sun.jersey.core.provider.AbstractMessageReaderWriterProvider;
 public class SLDProvider extends
 		AbstractMessageReaderWriterProvider<StyledLayerDescriptorDocument> {
 
-	
+
 	private boolean isProcessable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
 		return mt.isCompatible(STYLED_LAYER_DESCRIPTOR_TYPE)
 				&& StyledLayerDescriptorDocument.class.isAssignableFrom(t);
 	}
-	
+
 	@Override
 	public boolean isReadable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
 		return isProcessable(t, gt, a, mt);
 	}
-	
+
 	@Override
 	public boolean isWriteable(Class<?> t, Type gt, Annotation[] a, MediaType mt) {
 		return isProcessable(t, gt, a, mt);
@@ -71,14 +71,14 @@ public class SLDProvider extends
 		try {
 			String encoding = mt.getParameters().get("encoding");
 			String sld = (encoding != null) ? IOUtils.toString(es, encoding) : IOUtils.toString(es);
-			return StyledLayerDescriptorDocument.Factory.parse(sld, 
+			return StyledLayerDescriptorDocument.Factory.parse(sld,
 					VissConfig.getInstance().getDefaultXmlOptions());
 		} catch (XmlException e) {
 			throw VissError.internal(e);
 		}
 	}
 
-	
+
 	@Override
 	public void writeTo(StyledLayerDescriptorDocument x, Class<?> t, Type gt,
 			Annotation[] a, MediaType mt, MultivaluedMap<String, Object> hh,

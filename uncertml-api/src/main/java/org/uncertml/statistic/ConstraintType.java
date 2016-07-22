@@ -2,10 +2,10 @@ package org.uncertml.statistic;
 
 /**
  * Enumeration used in <code>ProbabilityConstraint</code> objects.
- * 
+ *
  * @see org.uncertml.statistic.Probability
  * @see org.uncertml.statistic.ProbabilityConstraint
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */

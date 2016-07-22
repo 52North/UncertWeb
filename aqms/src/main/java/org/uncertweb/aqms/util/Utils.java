@@ -55,22 +55,22 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
 
 public class Utils {
 
-	private static String resultsPath = "C:/Temp/AQMS";	
+	private static String resultsPath = "C:/Temp/AQMS";
 	private static Logger logger = Logger.getLogger(Utils.class);
-	
+
 	public static String date4SOS(Date date){
 		String sosDate = "";
 		//"2009-03-08T11:00:00+01"
 		SimpleDateFormat sosFormat = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss+01");
-		sosFormat.setTimeZone(TimeZone.getTimeZone("GMT+01"));		
-		
+		sosFormat.setTimeZone(TimeZone.getTimeZone("GMT+01"));
+
 		return sosDate;
 	}
-	
-	public static void writeObsColl(IObservationCollection obs, String filepath){		   
+
+	public static void writeObsColl(IObservationCollection obs, String filepath){
         // save result locally
 		File file = new File(filepath);
-			
+
 		// encode
 		try {
 			new StaxObservationEncoder().encodeObservationCollection(obs,file);
@@ -78,13 +78,13 @@ public class Utils {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static IObservationCollection readObsColl(String filepath){
 		File file = new File(filepath);
         IObservationCollection obs = null;
 		try {
 			InputStream in = new FileInputStream(file);
-			XmlObject xml = XmlObject.Factory.parse(in);			
+			XmlObject xml = XmlObject.Factory.parse(in);
 			XBObservationParser omParser = new XBObservationParser();
 			  if (xml instanceof OMUncertaintyObservationCollectionDocumentImpl){
 				 obs = (IObservationCollection) omParser.parse(xml.xmlText());
@@ -99,12 +99,12 @@ public class Utils {
 			e.printStackTrace();
 		} catch (OMParsingException e) {
 			e.printStackTrace();
-		}    
-		
+		}
+
 		return obs;
 	}
-	
-	
+
+
 	public static void writeCSV(HashMap<String, double[]> data, String filename){
 		try {
 			String filepath = resultsPath + "\\"+filename+".csv";
@@ -116,17 +116,17 @@ public class Utils {
 			out.write("Date");
 			for(int i=0; i<data.get(date).length; i++){
 				out.write(", "+i);
-			}		
+			}
 			out.newLine();
-			
+
 			// write each observation as one line
 			while(keys.hasNext()){
 				date = keys.next();
-				out.write(date);			
+				out.write(date);
 				double[] r = data.get(date);
 				for(int i=0; i<r.length; i++){
 					out.write(", "+r[i]);
-				}	
+				}
 				out.newLine();
 			}
 			out.close();
@@ -137,12 +137,12 @@ public class Utils {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 	/**
 	 * This method creates an <c>ExecuteDocument</c>.
-	 * 
-	 * @param url The url of the WPS the ExecuteDocument 
+	 *
+	 * @param url The url of the WPS the ExecuteDocument
 	 * @param processID The id of the process the ExecuteDocument
 	 * @param inputs A map holding the identifiers of the inputs and the values
 	 * @return
@@ -151,7 +151,7 @@ public class Utils {
 	public static ExecuteDocument createExecuteDocument(String url, String processID,
 			Map<String, Object> inputs, String outputMimeType) throws Exception {
 		// get process description to create execute document
-		ProcessDescriptionType processDescription = WPSClientSession.getInstance().getProcessDescription(url, processID);		
+		ProcessDescriptionType processDescription = WPSClientSession.getInstance().getProcessDescription(url, processID);
 		ExecuteRequestBuilder executeBuilder = new ExecuteRequestBuilder(
 				processDescription);
 
@@ -161,14 +161,14 @@ public class Utils {
 			// get respective input from map
 			String inputName = input.getIdentifier().getStringValue();
 			Object inputValue = inputs.get(inputName);
-			
+
 			// if input is Literal data
 			if (input.getLiteralData() != null) {
 				if (inputValue instanceof String) {
 					executeBuilder.addLiteralData(inputName,
 							(String) inputValue);
 				}
-			} 
+			}
 			// if input is Complex data
 			else if (input.getComplexData() != null) {
 				// get supported mime types
@@ -178,14 +178,14 @@ public class Utils {
 				for(ComplexDataDescriptionType type: supportedTypes){
 					inputMimeTypes.add(type.getMimeType());
 				}
-				
+
 				// Complexdata UncertML
-				if (inputValue instanceof IUncertainty) {		
+				if (inputValue instanceof IUncertainty) {
 					if(inputMimeTypes.contains(UncertWebDataConstants.MIME_TYPE_UNCERTML_XML)){
-						UncertMLBinding d = new UncertMLBinding((IUncertainty) inputValue);					
+						UncertMLBinding d = new UncertMLBinding((IUncertainty) inputValue);
 						executeBuilder.
-								addComplexData(inputName, d, 
-									UncertWebDataConstants.SCHEMA_UNCERTML, 
+								addComplexData(inputName, d,
+									UncertWebDataConstants.SCHEMA_UNCERTML,
 									UncertWebDataConstants.ENCODING_UTF_8,
 									UncertWebDataConstants.MIME_TYPE_UNCERTML_XML);
 					}
@@ -196,7 +196,7 @@ public class Utils {
 				}
 				// Complexdata Reference
 				else if (inputValue instanceof String) {
-					if(inputMimeTypes.contains(UncertWebDataConstants.MIME_TYPE_OMX_XML)){						
+					if(inputMimeTypes.contains(UncertWebDataConstants.MIME_TYPE_OMX_XML)){
 						executeBuilder
 								.addComplexDataReference(
 										inputName,
@@ -213,12 +213,12 @@ public class Utils {
 				// Complexdata OM
 				else if (inputValue instanceof IObservationCollection) {
 					if(inputMimeTypes.contains(UncertWebDataConstants.MIME_TYPE_OMX_XML)){
-						OMBinding d = new OMBinding((IObservationCollection) inputValue);					
+						OMBinding d = new OMBinding((IObservationCollection) inputValue);
 						executeBuilder
 								.addComplexData(
-										inputName, d, 
-										UncertWebDataConstants.SCHEMA_OM_V2, 
-										UncertWebDataConstants.ENCODING_UTF_8, 
+										inputName, d,
+										UncertWebDataConstants.SCHEMA_OM_V2,
+										UncertWebDataConstants.ENCODING_UTF_8,
 										UncertWebDataConstants.MIME_TYPE_OMX_XML);
 					}
 					else{
@@ -233,14 +233,14 @@ public class Utils {
 				}
 			}
 		}
-		
+
 		// set output type
-		OutputDescriptionType outType = processDescription.getProcessOutputs().getOutputArray(0);		
+		OutputDescriptionType outType = processDescription.getProcessOutputs().getOutputArray(0);
 		String outputIdentifier = outType.getIdentifier().getStringValue();
-			
+
 		// if not the default type is used, find the correct mime type and schema
-		String defaultOutputMimeType = outType.getComplexOutput().getDefault().getFormat().getMimeType();		
-		String outputSchema = outType.getComplexOutput().getDefault().getFormat().getSchema();	
+		String defaultOutputMimeType = outType.getComplexOutput().getDefault().getFormat().getMimeType();
+		String outputSchema = outType.getComplexOutput().getDefault().getFormat().getSchema();
 		boolean mimeTypeExists = false;
 		if(!defaultOutputMimeType.equals(outputMimeType)){
 			ComplexDataDescriptionType[] supportedTypes = outType.getComplexOutput().getSupported().getFormatArray();
@@ -249,18 +249,18 @@ public class Utils {
 					outputSchema = type.getSchema();
 					mimeTypeExists = true;
 				}
-			}			
+			}
 		}
 		if(mimeTypeExists){
-			logger.debug(outputSchema);		
-			logger.debug(outputMimeType);		
+			logger.debug(outputSchema);
+			logger.debug(outputMimeType);
 			logger.debug(outputIdentifier);
-			
+
 			executeBuilder.setSchemaForOutput(
 					outputSchema,
 					outputIdentifier);
 			executeBuilder.setMimeTypeForOutput(outputMimeType, outputIdentifier);
-			
+
 			logger.debug(executeBuilder.getExecute());
 		}else{
 			throw new IOException("Given Output mime type is not supported: "
@@ -269,13 +269,13 @@ public class Utils {
 
 	return executeBuilder.getExecute();
 	}
-	
-	
+
+
 	public static ExecuteDocument createExecuteDocumentManually(String url, String processID,
 			Map<String, Object> inputs, String outputMimeType) throws Exception {
 		// get process description to create execute document
-				ProcessDescriptionType processDescription = WPSClientSession.getInstance().getProcessDescription(url, processID);		
-				
+				ProcessDescriptionType processDescription = WPSClientSession.getInstance().getProcessDescription(url, processID);
+
 				// create new ExecuteDocument
 				ExecuteDocument execDoc = ExecuteDocument.Factory.newInstance();
 				Execute ex = execDoc.addNewExecute();
@@ -289,10 +289,10 @@ public class Utils {
 					// get respective input from map
 					String inputName = inputDescType.getIdentifier().getStringValue();
 					Object inputValue = inputs.get(inputName);
-					
+
 					// if input is Literal data
 					if (inputDescType.getLiteralData() != null) {
-						if (inputValue instanceof String) {				
+						if (inputValue instanceof String) {
 							InputType input = execDoc.getExecute().getDataInputs().addNewInput();
 							input.addNewIdentifier().setStringValue(inputName);
 							input.addNewData().addNewLiteralData().setStringValue((String)inputValue);
@@ -311,7 +311,7 @@ public class Utils {
 							input.addNewIdentifier().setStringValue(inputName);
 							input.addNewData().addNewLiteralData().setStringValue(((Integer) inputValue)+"");
 						}
-					} 
+					}
 					// if input is Complex data
 					else if (inputDescType.getComplexData() != null) {
 						// get supported mime types
@@ -321,9 +321,9 @@ public class Utils {
 						for(ComplexDataDescriptionType type: supportedTypes){
 							inputMimeTypes.add(type.getMimeType());
 						}
-						
+
 						// Complex data UncertML
-						if (inputValue instanceof IUncertainty) {		
+						if (inputValue instanceof IUncertainty) {
 							if(inputMimeTypes.contains(UncertWebDataConstants.MIME_TYPE_UNCERTML_XML)){
 								InputType input = execDoc.getExecute().getDataInputs().addNewInput();
 								input.addNewIdentifier().setStringValue(inputName);
@@ -333,7 +333,7 @@ public class Utils {
 									data.set(XmlObject.Factory.parse(xmlString));
 									data.setMimeType(UncertWebDataConstants.MIME_TYPE_UNCERTML_XML);
 									data.setSchema(UncertWebDataConstants.SCHEMA_UNCERTML);
-									data.setEncoding(UncertWebDataConstants.ENCODING_UTF_8);							
+									data.setEncoding(UncertWebDataConstants.ENCODING_UTF_8);
 								} catch (XmlException e) {
 									e.printStackTrace();
 								}
@@ -347,7 +347,7 @@ public class Utils {
 						// Complex data Reference
 						else if (inputValue instanceof String) {
 							// OM reference
-							if(inputMimeTypes.contains(UncertWebDataConstants.MIME_TYPE_OMX_XML)){						
+							if(inputMimeTypes.contains(UncertWebDataConstants.MIME_TYPE_OMX_XML)){
 								InputType input = execDoc.getExecute().getDataInputs().addNewInput();
 								input.addNewIdentifier().setStringValue(inputName);
 								input.addNewReference().setHref((String)inputValue);
@@ -378,9 +378,9 @@ public class Utils {
 								input.getReference().setSchema(inputMap.get("schema"));
 								input.getReference().setEncoding(UncertWebDataConstants.ENCODING_UTF_8);
 							}
-							
+
 						}
-						
+
 						// Complex data OM
 						else if (inputValue instanceof IObservationCollection) {
 							if(inputMimeTypes.contains(UncertWebDataConstants.MIME_TYPE_OMX_XML)){
@@ -392,7 +392,7 @@ public class Utils {
 									data.set(XmlObject.Factory.parse(collString));
 									data.setMimeType(UncertWebDataConstants.MIME_TYPE_OMX_XML);
 									data.setSchema(UncertWebDataConstants.SCHEMA_OM_V2);
-									data.setEncoding(UncertWebDataConstants.ENCODING_UTF_8);							
+									data.setEncoding(UncertWebDataConstants.ENCODING_UTF_8);
 								} catch (OMEncodingException e) {
 									e.printStackTrace();
 								} catch (XmlException e) {
@@ -408,12 +408,12 @@ public class Utils {
 						else if (inputValue instanceof FeatureCollection) {
 							if(inputMimeTypes.contains(UncertWebDataConstants.MIME_TYPE_TEXT_XML)){
 								// make String from GML object
-								GTVectorDataBinding g = new GTVectorDataBinding((FeatureCollection) inputValue);						
+								GTVectorDataBinding g = new GTVectorDataBinding((FeatureCollection) inputValue);
 								StringWriter buffer = new StringWriter();
 								SimpleGMLGenerator generator = new SimpleGMLGenerator();
 								generator.write(g, buffer);
 								String fc = buffer.toString();
-								
+
 								// add data to request document
 								InputType input = execDoc.getExecute().getDataInputs().addNewInput();
 								input.addNewIdentifier().setStringValue(inputName);
@@ -421,7 +421,7 @@ public class Utils {
 								data.set(XmlObject.Factory.parse(fc));
 								data.setMimeType(UncertWebDataConstants.MIME_TYPE_TEXT_XML);
 								data.setSchema("http://schemas.opengis.net/gml/2.1.2/feature.xsd");
-								data.setEncoding(UncertWebDataConstants.ENCODING_UTF_8);	
+								data.setEncoding(UncertWebDataConstants.ENCODING_UTF_8);
 							}
 						}
 						// if an input is missing
@@ -431,11 +431,11 @@ public class Utils {
 						}
 					}
 				}
-				
-				// get output type from process description		
-				OutputDescriptionType outDesc = processDescription.getProcessOutputs().getOutputArray(0);	
+
+				// get output type from process description
+				OutputDescriptionType outDesc = processDescription.getProcessOutputs().getOutputArray(0);
 				String outputIdentifier = outDesc.getIdentifier().getStringValue();
-				
+
 				// prepare output type in execute document
 				if (!execDoc.getExecute().isSetResponseForm()) {
 					execDoc.getExecute().addNewResponseForm();
@@ -443,19 +443,19 @@ public class Utils {
 				if (!execDoc.getExecute().getResponseForm().isSetResponseDocument()) {
 					execDoc.getExecute().getResponseForm().addNewResponseDocument();
 				}
-				
+
 				//TODO: implement handling for more than one output definition
 				DocumentOutputDefinitionType outputDef = null;
 				if(execDoc.getExecute().getResponseForm().getResponseDocument().getOutputArray().length>0)
 					outputDef = execDoc.getExecute().getResponseForm().getResponseDocument().getOutputArray()[0];
 				else{
 					outputDef = execDoc.getExecute().getResponseForm().getResponseDocument().addNewOutput();
-					outputDef.setIdentifier(outDesc.getIdentifier());			
+					outputDef.setIdentifier(outDesc.getIdentifier());
 				}
-			
+
 				// if not the default type is used, find the correct mime type and schema
-				String defaultOutputMimeType = outDesc.getComplexOutput().getDefault().getFormat().getMimeType();		
-				String outputSchema = outDesc.getComplexOutput().getDefault().getFormat().getSchema();	
+				String defaultOutputMimeType = outDesc.getComplexOutput().getDefault().getFormat().getMimeType();
+				String outputSchema = outDesc.getComplexOutput().getDefault().getFormat().getSchema();
 				boolean mimeTypeExists = false;
 				if(!defaultOutputMimeType.equals(outputMimeType)){
 					ComplexDataDescriptionType[] supportedTypes = outDesc.getComplexOutput().getSupported().getFormatArray();
@@ -464,19 +464,19 @@ public class Utils {
 							outputSchema = type.getSchema();
 							mimeTypeExists = true;
 						}
-					}			
+					}
 				}
 				else{
 					mimeTypeExists = true;
 				}
-				
+
 				if(mimeTypeExists){
-					logger.debug(outputSchema);		
-					logger.debug(outputMimeType);		
+					logger.debug(outputSchema);
+					logger.debug(outputMimeType);
 					logger.debug(outputIdentifier);
 					outputDef.setSchema(outputSchema);
 					outputDef.setMimeType(outputMimeType);
-					
+
 				}else{
 					throw new IOException("Given Output mime type is not supported: "
 							+ outputMimeType);

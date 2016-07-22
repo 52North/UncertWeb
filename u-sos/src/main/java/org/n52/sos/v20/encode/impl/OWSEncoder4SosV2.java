@@ -8,8 +8,8 @@
  48155 Muenster, Germany
  info@52north.org
 
- This program is free software; you can redistribute and/or modify it under 
- the terms of the GNU General Public License version 2 as published by the 
+ This program is free software; you can redistribute and/or modify it under
+ the terms of the GNU General Public License version 2 as published by the
  Free Software Foundation.
 
  This program is distributed WITHOUT ANY WARRANTY; even without the implied
@@ -106,9 +106,9 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Encoder for OWS reponses (capabilities docuement).
- * 
+ *
  * @author Carsten Hollmann
- * 
+ *
  */
 public class OWSEncoder4SosV2 implements IOWSEncoder {
 
@@ -117,7 +117,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sos.encode.IOWSEncoder#createCapabilitiesDocument(org.n52.sos
      * .ogc.ows.SosCapabilities)
@@ -157,7 +157,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Set the service identification information
-     * 
+     *
      * @param serviceIdentification
      *            XML object loaded from file.
      * @param xbCaps
@@ -198,7 +198,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
     /**
      * Get the SOS 2.0 supported profiles for the service identification
      * section.
-     * 
+     *
      * @return Array with supported profiles.
      */
     private String[] getProfileArray() {
@@ -211,7 +211,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Set the service provider information
-     * 
+     *
      * @param serviceProvider
      *            XML object loaded from file.
      * @param xbCaps
@@ -235,7 +235,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the OperationsMetadata section to the capabilities document.
-     * 
+     *
      * @param xbMeta
      *            OWS operations metadata
      * @param operationsMetadata
@@ -318,7 +318,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the filter capabilities section to capabilities
-     * 
+     *
      * @param xbFilterCapabilities
      *            FES filter capabilities
      * @param sosFilterCaps
@@ -343,7 +343,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the content section to the Capabilities document.
-     * 
+     *
      * @param xbContents
      *            SOS 2.0 contents section
      * @param offerings
@@ -389,13 +389,13 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
                     PhenomenonTime xbPhenTime = xbObsOff.addNewPhenomenonTime();
                     TimePeriodType xbTime = xbPhenTime.addNewTimePeriod();
                     xbTime.setId("pt_" + offering.getOfferingId());
-                    
+
                     TimeInstantType xbTimeInstantBegin = TimeInstantType.Factory.newInstance();
                     TimePositionType xbTimePositionBegin = TimePositionType.Factory.newInstance();
                     xbTimePositionBegin.setStringValue(tp.getStart().toString());
                     xbTimeInstantBegin.setTimePosition(xbTimePositionBegin);
                     xbTime.addNewBegin().setTimeInstant(xbTimeInstantBegin);
-                    
+
                     TimeInstantType xbTimeInstantEnd = TimeInstantType.Factory.newInstance();
                     TimePositionType xbTimePositionEnd = TimePositionType.Factory.newInstance();
                     xbTimePositionEnd.setStringValue(tp.getEnd().toString());
@@ -445,7 +445,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Set the SOS 2.0 extensions section.
-     * 
+     *
      * @param xbExtensions
      *            Extension
      */
@@ -455,7 +455,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the GetObservation operation and parameters to OperationsMetadata.
-     * 
+     *
      * @param operation
      *            GetObservation operation.
      * @param owsOperationsMetadata
@@ -489,7 +489,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the DescribeSensor operation and parameters to OperationsMetadata.
-     * 
+     *
      * @param operation
      *            DescribeSensor operation.
      * @param owsOperationsMetadata
@@ -515,7 +515,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the GetObservation operation and parameters to OperationsMetadata.
-     * 
+     *
      * @param operation
      *            GetObservation operation.
      * @param owsOperationsMetadata
@@ -563,7 +563,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
     /**
      * Sets the GetFeatureOfInterest operation and parameters to
      * OperationsMetadata.
-     * 
+     *
      * @param operation
      *            GetFeatureOfInterest operation.
      * @param owsOperationsMetadata
@@ -599,7 +599,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the metadata for GetObservationById operation
-     * 
+     *
      * @param operation
      *            GetObservationById operation
      * @param owsOperationsMetadata
@@ -616,7 +616,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the metadata for InsertSensor operation
-     * 
+     *
      * @param operation
      *            InsertSensor operation
      * @param owsOperationsMetadata
@@ -633,7 +633,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the metadata for DeleteSensor operation
-     * 
+     *
      * @param operation
      *            DeleteSensor operation
      * @param owsOperationsMetadata
@@ -649,7 +649,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the metadata for InsertObservation operation
-     * 
+     *
      * @param operation
      *            InsertObservation operation
      * @param owsOperationsMetadata
@@ -665,7 +665,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the metadata for InsertResult operation
-     * 
+     *
      * @param operation
      *            InsertResult operation
      * @param owsOperationsMetadata
@@ -681,7 +681,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the metadata for InsertResultTemplate operation
-     * 
+     *
      * @param operation
      *            InsertResultTemplate operation
      * @param owsOperationsMetadata
@@ -697,7 +697,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the metadata for GetResultTemplate operation
-     * 
+     *
      * @param operation
      *            GetResultTemplate operation
      * @param owsOperationsMetadata
@@ -713,7 +713,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the metadata for GetResult operation
-     * 
+     *
      * @param operation
      *            GetResult operation
      * @param owsOperationsMetadata
@@ -732,7 +732,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets an operation parameter to AnyValue, NoValues or AllowedValues.
-     * 
+     *
      * @param domainType
      *            Parameter.
      * @param name
@@ -753,7 +753,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets operation parameters to AnyValue, NoValues or AllowedValues.
-     * 
+     *
      * @param domainType
      *            Paramter.
      * @param name
@@ -784,7 +784,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
     /**
      * Sets operation parameters to AnyValue, NoValues or AllowedValues for
      * GetObservation operation. If not all parameters are to be shown.
-     * 
+     *
      * @param domainType
      *            Paramter.
      * @param name
@@ -803,7 +803,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the parameter for result.
-     * 
+     *
      * @param domainType
      *            Paramter.
      * @param name
@@ -816,7 +816,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the ResultModel parameters.
-     * 
+     *
      * @param domainType
      *            Paramter.
      * @param name
@@ -834,7 +834,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Acts the parameter for observation ids as range
-     * 
+     *
      * @param domainType
      *            Parameter.
      * @param name
@@ -860,7 +860,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the parameter for SpatialFilter.
-     * 
+     *
      * @param domainType
      *            Paramter.
      * @param name
@@ -873,7 +873,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the DCP operation.
-     * 
+     *
      * @param dcp
      *            The operation.
      * @param get
@@ -893,7 +893,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the EventTime parameter.
-     * 
+     *
      * @param domainType
      *            Parameter.
      * @throws OwsExceptionReport
@@ -928,7 +928,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the FES conformance classes in the filter capabilities section.
-     * 
+     *
      * @param conformance
      *            FES conformence
      */
@@ -1013,9 +1013,9 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the SpatialFilterCapabilities.
-     * 
+     *
      * !!! Modify method addicted to your implementation !!!
-     * 
+     *
      * @param spatialCapabilitiesType
      *            FES SpatialCapabilities.
      * @param sosFilterCaps
@@ -1049,9 +1049,9 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the TemporalFilterCapabilities.
-     * 
+     *
      * !!! Modify method addicted to your implementation !!!
-     * 
+     *
      * @param temporalCapabilitiesType
      *            FES TemporalCapabilities.
      * @param sosFilterCaps
@@ -1085,9 +1085,9 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the ScalarFilterCapabilities.
-     * 
+     *
      * !!! Modify method addicted to your implementation !!!
-     * 
+     *
      * @param scalarCapabilitiesType
      *            FES ScalarCapabilities.
      * @param sosFilterCaps
@@ -1106,9 +1106,9 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Set the IdFilterCapabilities.
-     * 
+     *
      * !!! Modify method addicted to your implementation !!!
-     * 
+     *
      * @param idCapabilitiesType
      *            FES IdCapabilities.
      */
@@ -1118,7 +1118,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Get the FES spatial operator name for SOS spatial operator
-     * 
+     *
      * @param spatialOperator
      *            SOS spatial operator
      * @return FES spatial operator name
@@ -1155,7 +1155,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Get the FES temporal operator name for SOS temporal operator
-     * 
+     *
      * @param temporalOperator
      *            SOS temporal operator
      * @return FES temporal operator name
@@ -1196,7 +1196,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Get the FES comparison operator name for SOS comparison operator
-     * 
+     *
      * @param comparisonOperator
      *            SOS comparison operator
      * @return FES comparison operator name
@@ -1231,7 +1231,7 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * Sets the first character to UpperCase.
-     * 
+     *
      * @param name
      *            String to be modified.
      * @return Modified string.
@@ -1243,9 +1243,9 @@ public class OWSEncoder4SosV2 implements IOWSEncoder {
 
     /**
      * queries the bounding box of all requested feature of interest IDs
-     * 
+     *
      * @param envelope
-     * 
+     *
      * @param foiIDs
      *            ArrayList with String[]s containing the ids of the feature of
      *            interests for which the BBOX should be returned

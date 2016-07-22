@@ -59,15 +59,15 @@ public class AustalModelRun {
 
 	private String uncertaintyPrefix = "u_";
 	private String certaintyPrefix = "c_";
-	
+
 	private static Logger logger = Logger.getLogger(AustalModelRun.class);
-	
+
 	public AustalModelRun(String austalAddress, String resPath){
 		this.austalAddress = austalAddress;
 		this.resPath = resPath;
 		inputPath = resPath + "\\inputs";
 	}
-	
+
 	public void setReceptorPoints(FeatureCollection<?,?> fc){
 		FeatureIterator<?> iterator = fc.features();
 		while (iterator.hasNext()) {
@@ -77,10 +77,10 @@ public class AustalModelRun {
 			}
 		}
 	}
-	
+
 	public UncertaintyObservationCollection executeU_AustalWPSOM(DateTime startDate, DateTime endDate, int numberOfRealisations){
 		UncertaintyObservationCollection result = null;
-		
+
 		// connect to Austal WPS
 		WPSClientSession session = WPSClientSession.getInstance();
 		try {
@@ -91,7 +91,7 @@ public class AustalModelRun {
 
 		// Make execute request
 		ExecuteDocument execDoc = null;
-		
+
 		// Read execute request template
 		try {
 			execDoc = ExecuteDocument.Factory.parse(new File(
@@ -101,14 +101,14 @@ public class AustalModelRun {
 		} catch (IOException e) {
 				e.printStackTrace();
 		}
-		
+
 		// Get WPS data inputs and change them
 		InputType[] types = execDoc.getExecute().getDataInputs()
 				.getInputArray();
 		DateTimeFormatter dateFormat = ISODateTimeFormat.dateTime();
 		for (InputType inputType : types) {
 			String id = inputType.getIdentifier().getStringValue();
-			
+
 			if (id.equals("NumberOfRealisations")) {
 				Node wpsLiteralDataValueNode = inputType.getData().getLiteralData()
 						.getDomNode().getChildNodes().item(0);
@@ -127,23 +127,23 @@ public class AustalModelRun {
 				wpsLiteralDataValueNode.setNodeValue(newEndDate);
 			}
 		}
-		
+
 		// Run WPS and get output (= Realisation object)
 		ExecuteResponseDocument responseDoc = null;
 		try {
 			responseDoc = (ExecuteResponseDocument) session.execute(
 				austalAddress, execDoc);
-			
+
 			OutputDataType oType = responseDoc.getExecuteResponse().getProcessOutputs().getOutputArray(0);
 			// all output elements
 			Node wpsComplexData = oType.getData().getComplexData().getDomNode();
 			// the complex data node
-			Node unRealisation = wpsComplexData.getChildNodes().item(0); 
-			// the realisation node			 
+			Node unRealisation = wpsComplexData.getChildNodes().item(0);
+			// the realisation node
 			IObservationCollection iobs = new XBObservationParser().parseObservationCollection(nodeToString(unRealisation));
 			result = (UncertaintyObservationCollection) iobs;
 			return result;
-			
+
 		} catch (WPSClientException e) {// Auto-generated catch block
 				e.printStackTrace();
 		} catch (OMParsingException e) {
@@ -155,38 +155,38 @@ public class AustalModelRun {
 		}
 		return result;
 	}
-	
+
 	//TODO: implement NetCDF handling
 	public void executeU_AustalWPSNetCDF(){
-		
+
 	}
-	
+
 	public UncertaintyObservationCollection executeUPSOM(String upsAddress, int numberOfRealisations,  AustalProperties austalProps){
 			UncertaintyObservationCollection result = null;
-		
+
 			// connect to UPS
 			WPSClientSession session = WPSClientSession.getInstance();
 			try {
 				session.connect(upsAddress);
 			} catch (WPSClientException e1) {
 				e1.printStackTrace();
-			}	
-			
+			}
+
 			// add inputs for request
 			Map<String, Object> inputs = new HashMap<String, Object>();
-			
+
 			// UPS properties
 			inputs.put("ServiceURL", austalAddress);
 			inputs.put("NumberOfRealisations", numberOfRealisations);
 			inputs.put("IdentifierSimulatedProcess", "org.uncertweb.austalwps.AUSTAL2000Process");
-			inputs.put("UncertainProcessOutputs", "uncertweb:Realisations");			
+			inputs.put("UncertainProcessOutputs", "uncertweb:Realisations");
 
 			// uncertain inputs
 			inputs.put(uncertaintyPrefix+"wind-speed", "file:///"+inputPath+"\\windspeed.xml");
 			inputs.put(uncertaintyPrefix+"wind-direction", "file:///"+inputPath+"\\winddirection.xml");
 			inputs.put(uncertaintyPrefix+"street-emissions", "file:///"+inputPath+"\\streets.xml");
-			
-			//certain inputs	
+
+			//certain inputs
 			inputs.put(certaintyPrefix+"dd", austalProps.getDD());
 			inputs.put(certaintyPrefix+"nx", austalProps.getNX());
 			inputs.put(certaintyPrefix+"ny", austalProps.getNY());
@@ -200,16 +200,16 @@ public class AustalModelRun {
 				String[] parInputs = austalParams.toArray(new String[0]);
 				inputs.put(certaintyPrefix+"model-parameters", parInputs);
 			}
-			
+
 			// central point
 			Point point = austalProps.getCentralPoint();
 			String centralPointFile = writeGMLobject2File("central-point", point);
 			inputs.put(certaintyPrefix+"central-point", "file:///" + centralPointFile);
-		
-			// receptor points	
+
+			// receptor points
 			String receptorPointsFile = writeGMLobject2File("receptor-points", receptorPoints);
 			inputs.put(certaintyPrefix+"receptor-points", "file:///" + receptorPointsFile);
-			
+
 			// Make execute request
 			ExecuteDocument execDoc = null;
 			try {
@@ -217,22 +217,22 @@ public class AustalModelRun {
 			} catch (Exception e) {
 				logger.debug(e);
 			}
-			
+
 			// Run WPS and get output (= Realisation object)
 			ExecuteResponseDocument responseDoc = null;
 			try {
 				responseDoc = (ExecuteResponseDocument) session.execute(
 					upsAddress, execDoc);
-				
+
 				OutputDataType oType = responseDoc.getExecuteResponse().getProcessOutputs().getOutputArray(0);
 				// all output elements
 				Node wpsComplexData = oType.getData().getComplexData().getDomNode();
 				// the complex data node
-				Node unRealisation = wpsComplexData.getChildNodes().item(0); 
-				// the realisation node			 
+				Node unRealisation = wpsComplexData.getChildNodes().item(0);
+				// the realisation node
 				IObservationCollection iobs = new XBObservationParser().parseObservationCollection(nodeToString(unRealisation));
 				result = (UncertaintyObservationCollection) iobs;
-				return result;				
+				return result;
 			} catch (WPSClientException e) {// Auto-generated catch block
 					e.printStackTrace();
 			} catch (OMParsingException e) {
@@ -244,19 +244,19 @@ public class AustalModelRun {
 			}
 			return result;
 	}
-	
+
 	private String writeGMLobject2File(String identifier, Geometry geometry){
 		int srs = 31467;
 		String coordinates = "";
-		File fIn = new File(resPath+"\\central-point.xml");		
-		File f = new File(inputPath + identifier + ".xml");	
-		
+		File fIn = new File(resPath+"\\central-point.xml");
+		File f = new File(inputPath + identifier + ".xml");
+
 		// extract details from geometry
 		if (geometry instanceof MultiLineString) {
 			MultiLineString lineString = (MultiLineString) geometry;
 			if(lineString.getSRID()!=0)
-				srs = lineString.getSRID();	
-			// loop through coordinates and add them to the string						
+				srs = lineString.getSRID();
+			// loop through coordinates and add them to the string
 			for (int i = 0; i < lineString.getCoordinates().length; i++) {
 				Coordinate coord = lineString.getCoordinates()[i];
 				coordinates = coordinates +coord.x + ","+coord.y+" ";
@@ -268,13 +268,13 @@ public class AustalModelRun {
 			if(point.getSRID()!=0)
 				srs = point.getSRID();
 		}
-		
+
 		// write details to file
 		try {
-			BufferedReader bread = new BufferedReader(new FileReader(fIn));				
-			String content = "";					
-			String line = "";								
-				
+			BufferedReader bread = new BufferedReader(new FileReader(fIn));
+			String content = "";
+			String line = "";
+
 			// substitute values
 			while ((line = bread.readLine()) != null) {
 				if(line.contains("srsName")){
@@ -286,11 +286,11 @@ public class AustalModelRun {
 				}else if(line.contains("%$coords$%")){
 					line = line.replace("%$coords$%", "" + coordinates);
 				}
-				content = content.concat(line);				
+				content = content.concat(line);
 			}
-				
-			// write new file				
-			BufferedWriter b = new BufferedWriter(new FileWriter(fIn));				
+
+			// write new file
+			BufferedWriter b = new BufferedWriter(new FileWriter(fIn));
 			b.write(content);
 			b.flush();
 			b.close();
@@ -299,19 +299,19 @@ public class AustalModelRun {
 		}
 		return f.getAbsoluteFile().toString();
 	}
-	
+
 	//TODO: Implement NetCDF UPS case
 	public void executeUPSNetCDF(DateTime startDate, DateTime endDate, int numberOfRealisations){
 
-	}	
-	
+	}
+
 	private String nodeToString(Node node) throws TransformerFactoryConfigurationError, TransformerException {
 		StringWriter stringWriter = new StringWriter();
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		transformer.transform(new DOMSource(node), new StreamResult(stringWriter));
-		
+
 		return stringWriter.toString();
 	}
 }
-	
+

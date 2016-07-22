@@ -13,21 +13,21 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Text observation contains string result and inherits other properties from AbstractObservation
- * 
+ *
  * @author Kiesow, staschc
  *
  */
 public class TextObservation extends AbstractObservation {
-	
+
 	/** measure result of the observation */
 	private TextResult result;
-	
+
 	/**type name of this observation*/
 	public static final String NAME = "OM_TextObservation";
-	
+
 	/**
 	 * Constructor with mandatory attributes
-	 * 
+	 *
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -50,7 +50,7 @@ public class TextObservation extends AbstractObservation {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param identifier
 	 *            gml id attribute
 	 * @param boundedBy
@@ -94,7 +94,7 @@ public class TextObservation extends AbstractObservation {
 			this.result = (TextResult)result;
 		}
 		else throw new IllegalArgumentException("Result type of TextObservation has to be Text!");
-		
+
 	}
 
 	@Override

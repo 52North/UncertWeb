@@ -128,7 +128,7 @@ public class AlbatrossUInputParser extends AbstractParser {
 
 		return stringWriter.toString();
 	}
-	
+
 	@Override
 	public Class<?>[] getSupportedDataBindings() {
 		return new Class<?>[]{AlbatrossUInputBinding.class};

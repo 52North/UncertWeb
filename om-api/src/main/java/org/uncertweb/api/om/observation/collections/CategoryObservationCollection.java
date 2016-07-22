@@ -9,41 +9,41 @@ import org.uncertweb.api.om.observation.CategoryObservation;
 
 /**
  * collection for CategoryObservations
- * 
+ *
  * @author staschc
  *
  */
 public class CategoryObservationCollection implements IObservationCollection{
-	
+
 	/**gml Id of collection*/
 	private String gmlId;
-	
+
 	/**members of collection*/
 	private List<CategoryObservation> members;
-	
+
 	/**type name of observation collection*/
 	public static final String NAME = "OM_CategoryObservationCollection";
-	
+
 	/**
 	 * contructor; initializes members list
-	 * 
+	 *
 	 */
 	public CategoryObservationCollection(){
 		this.members = new LinkedList<CategoryObservation>();
 	}
-	
+
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param members
 	 * 			members of collection
 	 */
 	public CategoryObservationCollection(List<CategoryObservation> members){
 		this.members = members;
 	}
-	
-	
-	
+
+
+
 	@Override
 	public String getGmlId() {
 		return gmlId;
@@ -92,6 +92,6 @@ public class CategoryObservationCollection implements IObservationCollection{
 		}
 	}
 
-	
+
 
 }

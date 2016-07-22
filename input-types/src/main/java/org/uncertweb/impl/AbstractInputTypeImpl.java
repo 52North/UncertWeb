@@ -14,24 +14,24 @@ package org.uncertweb.impl;
 public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements org.uncertweb.AbstractInputType
 {
     private static final long serialVersionUID = 1L;
-    
+
     public AbstractInputTypeImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType);
     }
-    
-    private static final javax.xml.namespace.QName IDENTIFIER$0 = 
+
+    private static final javax.xml.namespace.QName IDENTIFIER$0 =
         new javax.xml.namespace.QName("http://www.opengis.net/ows/1.1", "Identifier");
-    private static final javax.xml.namespace.QName TITLE$2 = 
+    private static final javax.xml.namespace.QName TITLE$2 =
         new javax.xml.namespace.QName("http://www.opengis.net/ows/1.1", "Title");
-    private static final javax.xml.namespace.QName ABSTRACT$4 = 
+    private static final javax.xml.namespace.QName ABSTRACT$4 =
         new javax.xml.namespace.QName("http://www.opengis.net/ows/1.1", "Abstract");
-    private static final javax.xml.namespace.QName REFERENCE$6 = 
+    private static final javax.xml.namespace.QName REFERENCE$6 =
         new javax.xml.namespace.QName("http://www.opengis.net/wps/1.0.0", "Reference");
-    private static final javax.xml.namespace.QName DATA$8 = 
+    private static final javax.xml.namespace.QName DATA$8 =
         new javax.xml.namespace.QName("http://www.opengis.net/wps/1.0.0", "Data");
-    
-    
+
+
     /**
      * Gets the "Identifier" element
      */
@@ -49,7 +49,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return target;
         }
     }
-    
+
     /**
      * Sets the "Identifier" element
      */
@@ -67,7 +67,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             target.set(identifier);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "Identifier" element
      */
@@ -81,7 +81,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return target;
         }
     }
-    
+
     /**
      * Gets the "Title" element
      */
@@ -99,7 +99,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return target;
         }
     }
-    
+
     /**
      * True if has "Title" element
      */
@@ -111,7 +111,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return get_store().count_elements(TITLE$2) != 0;
         }
     }
-    
+
     /**
      * Sets the "Title" element
      */
@@ -129,7 +129,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             target.set(title);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "Title" element
      */
@@ -143,7 +143,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return target;
         }
     }
-    
+
     /**
      * Unsets the "Title" element
      */
@@ -155,7 +155,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             get_store().remove_element(TITLE$2, 0);
         }
     }
-    
+
     /**
      * Gets the "Abstract" element
      */
@@ -173,7 +173,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return target;
         }
     }
-    
+
     /**
      * True if has "Abstract" element
      */
@@ -185,7 +185,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return get_store().count_elements(ABSTRACT$4) != 0;
         }
     }
-    
+
     /**
      * Sets the "Abstract" element
      */
@@ -203,7 +203,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             target.set(xabstract);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "Abstract" element
      */
@@ -217,7 +217,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return target;
         }
     }
-    
+
     /**
      * Unsets the "Abstract" element
      */
@@ -229,7 +229,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             get_store().remove_element(ABSTRACT$4, 0);
         }
     }
-    
+
     /**
      * Gets the "Reference" element
      */
@@ -247,7 +247,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return target;
         }
     }
-    
+
     /**
      * True if has "Reference" element
      */
@@ -259,7 +259,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return get_store().count_elements(REFERENCE$6) != 0;
         }
     }
-    
+
     /**
      * Sets the "Reference" element
      */
@@ -277,7 +277,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             target.set(reference);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "Reference" element
      */
@@ -291,7 +291,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return target;
         }
     }
-    
+
     /**
      * Unsets the "Reference" element
      */
@@ -303,7 +303,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             get_store().remove_element(REFERENCE$6, 0);
         }
     }
-    
+
     /**
      * Gets the "Data" element
      */
@@ -321,7 +321,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return target;
         }
     }
-    
+
     /**
      * True if has "Data" element
      */
@@ -333,7 +333,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return get_store().count_elements(DATA$8) != 0;
         }
     }
-    
+
     /**
      * Sets the "Data" element
      */
@@ -351,7 +351,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             target.set(data);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "Data" element
      */
@@ -365,7 +365,7 @@ public class AbstractInputTypeImpl extends org.apache.xmlbeans.impl.values.XmlCo
             return target;
         }
     }
-    
+
     /**
      * Unsets the "Data" element
      */

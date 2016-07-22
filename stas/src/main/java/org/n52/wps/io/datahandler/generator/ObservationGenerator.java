@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -63,7 +63,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Generator for {@link ObservationDocument}s.
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class ObservationGenerator {
@@ -76,7 +76,7 @@ public class ObservationGenerator {
 
 	/**
 	 * Generates a {@link ObservationDocument}.
-	 * 
+	 *
 	 * @param o the {@code Observation}
 	 */
 	public ObservationDocument generateXML(AbstractObservation o) {
@@ -99,7 +99,7 @@ public class ObservationGenerator {
 
 	/**
 	 * Generates the Metadata.
-	 * 
+	 *
 	 * @param o the {@code Observation}
 	 * @param m the XmlBean within the Metadata is generated.
 	 */
@@ -112,7 +112,7 @@ public class ObservationGenerator {
 
 	/**
 	 * Generates the FeatureOfInterest.
-	 * 
+	 *
 	 * @param o the {@code Observation}
 	 * @param m the XmlBean within the FeatureOfInterest is generated.
 	 */
@@ -158,8 +158,8 @@ public class ObservationGenerator {
 			} else if (f.getShape() instanceof Polygon || f.getShape() instanceof MultiPolygon) {
 				SamplingSurfaceType sst = (SamplingSurfaceType) fpt
 						.addNewFeature().changeType(SamplingSurfaceType.type);
-				
-				
+
+
 				if (f.getIdentifier() != null) {
 					sst.addNewName().setStringValue(f.getIdentifier().getIdentifier());
 					sst.setId(f.getIdentifier().getIdentifier());
@@ -183,7 +183,7 @@ public class ObservationGenerator {
 	/**
 	 * Generates a sampling surface. Currently {@link Polygon} and
 	 * {@link MultiPolygon} are supported.
-	 * 
+	 *
 	 * @param geom the {@code Geometry}
 	 * @param sst the XmlBean in which the surface will generated
 	 */
@@ -204,7 +204,7 @@ public class ObservationGenerator {
 	/**
 	 * Generates the {@code MultiPolygon} (encoded as an
 	 * {@code CompositeSurfaceType}).
-	 * 
+	 *
 	 * @param p the {@code MultiPolygon}
 	 * @param spt the XmlBean which will be substituted
 	 */
@@ -224,7 +224,7 @@ public class ObservationGenerator {
 
 	/**
 	 * Generates the Polygon.
-	 * 
+	 *
 	 * @param p the {@code Polygon}
 	 * @param ast the XmlBean which will be substituted
 	 */
@@ -258,7 +258,7 @@ public class ObservationGenerator {
 
 	/**
 	 * Generates a coordinate string.
-	 * 
+	 *
 	 * @param epsg the EPSG id of the SRS
 	 * @param c the coordinate array
 	 * @return the coordinate string
@@ -283,7 +283,7 @@ public class ObservationGenerator {
 
 	/**
 	 * Generates the Procedure.
-	 * 
+	 *
 	 * @param o the {@code Observation}
 	 * @param m the XmlBean within the Procedure is generated.
 	 */
@@ -295,7 +295,7 @@ public class ObservationGenerator {
 
 	/**
 	 * Generates the ObservedProperty.
-	 * 
+	 *
 	 * @param o the {@code Observation}
 	 * @param m the XmlBean within the ObservedProperty is generated.
 	 */
@@ -308,14 +308,14 @@ public class ObservationGenerator {
 
 	/**
 	 * Generates the Result.
-	 * 
+	 *
 	 * @param o the {@code Observation}
 	 * @param m the XmlBean within the Result is generated.
 	 */
 	protected static void generateResult(AbstractObservation o, MeasurementType m) {
-		
+
 		MeasureResult r = ((Measurement) o).getResult();
-		
+
 		if (!new Double(r.getMeasureValue()).equals(Double.NaN)) {
 			MeasureType xbresult = MeasureType.Factory.newInstance();
 			xbresult.setStringValue(""+r.getValue());
@@ -330,7 +330,7 @@ public class ObservationGenerator {
 
 	/**
 	 * Generates the SamplingTime.
-	 * 
+	 *
 	 * @param o the {@code Observation}
 	 * @param m the XmlBean within the SamplingTime is generated.
 	 */

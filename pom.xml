@@ -44,18 +44,18 @@
         <module>viss</module>
         <module>xml</module>
     </modules>
-    
+
     <licenses>
         <license>
             <name>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</name>
             <url>http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt</url>
         </license>
     </licenses>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
     <developers>
         <developer>
             <name>Christian Autermann</name>
@@ -183,7 +183,7 @@
                 <artifactId>om-api-legacy</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.uncertweb</groupId>
                 <artifactId>52n-wps-io-uncertweb</artifactId>
@@ -220,7 +220,7 @@
                 <artifactId>52n-wps-client-lib</artifactId>
                 <version>2.0-RC8-SNAPSHOT</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.n52.swe.sos</groupId>
                 <artifactId>52n-sos-xml-om</artifactId>
@@ -360,7 +360,7 @@
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
                 <version>20090211</version>
-            </dependency>	
+            </dependency>
             <dependency>
                 <groupId>net.sf.opencsv</groupId>
                 <artifactId>opencsv</artifactId>
@@ -593,7 +593,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <build>
         <plugins>
             <!-- Compiler set to 1.6 -->
@@ -612,7 +612,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.10</version> 
+                <version>2.10</version>
                 <configuration>
                     <ignoreNonCompile>true</ignoreNonCompile>
                 </configuration>
@@ -626,9 +626,9 @@
                 </executions>
             </plugin>
         </plugins>
-        
+
     </build>
-    
+
     <repositories>
         <repository>
             <id>geotools</id>

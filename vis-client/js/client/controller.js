@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -22,12 +22,12 @@
 OpenLayers.SOS.Controller = OpenLayers.Class({
 	CLASS_NAME: "OpenLayers.SOS.Controller",
 	selectedConfInterval: 95,
-	
+
 	format: {
 		jsom: new OpenLayers.SOS.Format.JSOM(),
 		xml: new OpenLayers.SOS.Format.ObservationCollection()
 	},
-	
+
 	callback: {
 		ready:			 function(){},
 		fail: 			 function(){},
@@ -37,24 +37,24 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		exceedanceMode:  function(){},
 		standardMode:	 function(){}
 	},
-	
+
 	scale: null,
 	map: null,
 	oldValues: null,
-	
-	times: { 
-		selected: null, 
-		step: null, 
-		min: null, 
-		max: null 
+
+	times: {
+		selected: null,
+		step: null,
+		min: null,
+		max: null
 	},
-	values: { 
-		min: null, 
-		max: null, 
-		uom: null, 
+	values: {
+		min: null,
+		max: null,
+		uom: null,
 		propertyName: 'resultValue',
-		mode: "intervals", 
-		ints: null, 
+		mode: "intervals",
+		ints: null,
 		threshold: null,
 		clone: function () {
 			var n = {};
@@ -64,7 +64,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 	},
 
 	rasterLayers: [],
-	
+
 	initialize: function(scalebar, map, callbacks) {
 		this.scale = scalebar; this.map = map;
 		OpenLayers.Util.extend(this.values, {
@@ -81,7 +81,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 				if (!ev.layer.getVisibility()) {
 					if (!mapContainsProbabilityLayer) {
 						self.switchToMode("intervals");
-					}					
+					}
 				} else if (!mapContainsProbabilityLayer) {
 					self.mapContainsProbabilityLayer = true;
 					self.switchToMode("probabilities");
@@ -93,16 +93,16 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 			$.each(self.map.getControlsByClass('OpenLayers.Control.AdvancedLayerSwitcher'), function(i,c) { c.draw(); });
 		});
 	},
-	
+
 	addLayer: function(options) {
 		var self = this;
 
 		function updateTime(time){
-			if (self.times.min == null || self.times.min > time.min) 
+			if (self.times.min == null || self.times.min > time.min)
 				self.times.min = time.min;
-			if (self.times.max == null || self.times.max < time.max) 
+			if (self.times.max == null || self.times.max < time.max)
 				self.times.max = time.max;
-			self.times.step = (self.times.step == null) ? time.step : 
+			self.times.step = (self.times.step == null) ? time.step :
 				OpenLayers.Util.gcd(time.step, self.times.step);
 			self.callback.updateTime(self.times);
 			self._update();
@@ -112,7 +112,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 			var map = self.getMap();
 			var dest = map.getProjectionObject();
 			var meta = OpenLayers.Util.analyzeFeatures(f);
-			
+
 			/* reproject features to the maps reference system */
 			$.each(f, function(i,e) { e.transform(dest); });
 
@@ -126,19 +126,19 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 				self.selectTime(time); self.callback.updateTime(self.times);
 			});
 
-			OpenLayers.Util.extend(layer, { 
-				isObservationLayer: true, 
+			OpenLayers.Util.extend(layer, {
+				isObservationLayer: true,
 				isProbabilityLayer: meta.gotProbabilities
 			});
-			
-			layer.addFeatures(f); 
+
+			layer.addFeatures(f);
 			map.addLayer(layer);
 			map.addControl(ctrl);
 
 			updateTime(meta.time);
-			
+
 			self.selectTime(self.times.min);
-		
+
 			if (!meta.containsProbabilities) {
 				var val = self.oldValues ? self.oldValues : self.values;
 				if (val.min > meta.min) {
@@ -149,7 +149,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 				}
 				val.uom = meta.uom;
 			}
-		
+
 			if (meta.containsProbabilities) {
 				self.switchToMode('probabilities');
 			} else if (self.values.mode == 'probabilities') {
@@ -158,14 +158,14 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 				self.callback.updateValues(self.values);
 				self._update();
 			}
-			
+
 			self.callback.ready();
 		}
 
-		function generateFromJsom(r) { 
-			createLayer(self.format.jsom.read(r.responseText)); 
+		function generateFromJsom(r) {
+			createLayer(self.format.jsom.read(r.responseText));
 		}
-		
+
 		function generateFromXml(r) {
 			if (r.responseXML) {
 				createLayer(self.format.xml.read(r.responseXML));
@@ -210,7 +210,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		if (!options.mime) {
 			options.mime = "application/xml";
 		}
-		
+
 		switch (options.mime) {
 			case "application/jsom":
 				request(options, generateFromJsom);
@@ -224,11 +224,11 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 				createRasterLayer(options);
 		}
 	},
-	
+
 
 	switchToMode: function(val, opts) {
 		var self = this;
-		
+
 		function switchToPercantageMode(val) {
 			if (self.oldValues == null) {
 				self.oldValues = self.values.clone();
@@ -239,7 +239,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 			self._update();
 			self.callback.updateValues(self.values);
 		}
-		
+
 		if (val === 'bars' || val === 'intervals') {
 			var prevMode = this.values.mode;
 			if (this.oldValues != null) {
@@ -270,7 +270,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 	},
 
 	_updateControls: function() {
-		$.each(this.getMap().getControlsByClass("OpenLayers.Control.Visualizer"), 
+		$.each(this.getMap().getControlsByClass("OpenLayers.Control.Visualizer"),
 			function(i, c) { c.update(); }
 		);
 	},
@@ -287,7 +287,7 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		}
 		this._update();
 	},
-	
+
 	_update: function() {
 		this.scale.update(this.values);
 		this._updateLayers();
@@ -309,42 +309,42 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 			l.styleMap = sm;
 			l.redraw();
 		});
-		
+
 		$.each(this.rasterLayers, function(i,l) {
 			l.updateSld();
 		});
 	},
-	
-	selectTime: function(val) { 
+
+	selectTime: function(val) {
 		if (val) this.times.selected = val;
 		this._update();
 	},
-	
+
 	_deactivateProbabilityLayers: function() {
-		$.each(this.getMap().getLayersBy("isObservationLayer", true), 
+		$.each(this.getMap().getLayersBy("isObservationLayer", true),
 			function(i, l) {
-				if (l.isProbabilityLayer && l.getVisibility()) { 
-					l.setVisibility(false); 
+				if (l.isProbabilityLayer && l.getVisibility()) {
+					l.setVisibility(false);
 				}
 			}
 		);
 	},
-	
+
 	_deactivateNonProbabilityLayers: function() {
-		$.each(this.getMap().getLayersBy("isObservationLayer", true), 
+		$.each(this.getMap().getLayersBy("isObservationLayer", true),
 			function(i, l) {
-				if (!l.isProbabilityLayer && l.getVisibility()) { 
-					l.setVisibility(false); 
+				if (!l.isProbabilityLayer && l.getVisibility()) {
+					l.setVisibility(false);
 				}
 			}
 		);
 	},
-	
+
 	_doesMapContainProbabilityLayers: function() {
 		var contains = false;
-		$.each(this.getMap().getLayersBy("isProbabilityLayer", true), 
+		$.each(this.getMap().getLayersBy("isProbabilityLayer", true),
 			function(i,l) {
-				if (l.getVisibility()) { 
+				if (l.getVisibility()) {
 					contains = true;
 					return false; //~break;
 				}
@@ -352,14 +352,14 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 		);
 		return contains;
 	},
-	
+
 	_getStyleMap: function() {
 		return new OpenLayers.StyleMap({
 			"default": this.getScale().getStyle(),
 			select: { 'pointRadius': 10 }
 		});
 	},
-	
+
 	getThreshold: function() { return this.values.threshold; },
 	getMap: function() { return this.map; },
 	getScale: function() { return this.scale; },
@@ -370,5 +370,5 @@ OpenLayers.SOS.Controller = OpenLayers.Class({
 	getVisibleScale: function() { return [this.values.min, this.values.max]; },
 	getVisualStyle: function() { return this.values.mode; },
 	fail: function(l, m) { l.destroy(); this.callback.fail(m); },
-	
+
 });

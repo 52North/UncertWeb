@@ -9,9 +9,9 @@ import org.uncertweb.ems.util.ActivityMapping;
  */
 public class Microenvironment extends AbstractActivity{
 
-	private static String[] meTypes = new String[]{"car","bus","train", "home", "otherindoor", 
+	private static String[] meTypes = new String[]{"car","bus","train", "home", "otherindoor",
 		"work", "outdoor", "restaurant", "disco", "pub"};
-	
+
 	public Microenvironment(String description) {
 		super(description);
 	}

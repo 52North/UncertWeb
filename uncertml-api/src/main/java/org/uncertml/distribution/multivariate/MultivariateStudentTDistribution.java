@@ -11,11 +11,11 @@ import org.uncertml.util.Validate;
 /**
  * Class representing a multivariate Student T distribution with parameters
  * mean, covariance matrix and degrees of freedom.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/MultivariateStudentT}
- * 
+ *
  * @see org.uncertml.statistic.CovarianceMatrix
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -28,10 +28,10 @@ public class MultivariateStudentTDistribution implements IMultivariateDistributi
     /**
      * Constructor that takes an array of doubles for the mean parameter, a covariance
      * matrix and an array of integers for the degrees of freedom parameter. Each
-     * mean and degrees of freedom pair represents a marginal distribution. The 
+     * mean and degrees of freedom pair represents a marginal distribution. The
      * arrays must be of equal length and the covariance matrix must contain n^2
      * values where n is the length of the arrays.
-     * 
+     *
      * @param mean an array of doubles representing the mean parameter of n marginal
      * Student T distributions.
      * @param covarianceMatrix a covariance matrix.
@@ -45,11 +45,11 @@ public class MultivariateStudentTDistribution implements IMultivariateDistributi
     /**
      * Constructor that takes a list of doubles for the mean parameter, a covariance
      * matrix and a list of integers for the degrees of freedom parameter. Each
-     * mean and degrees of freedom pair represents a marginal distribution. The 
+     * mean and degrees of freedom pair represents a marginal distribution. The
      * lists must be of equal length and the covariance matrix must contain n^2
      * values where n is the length of the lists. The lists must not contain any
      * null elements.
-     * 
+     *
      * @param mean a list of doubles representing the mean parameter of n marginal
      * Student T distributions.
      * @param covarianceMatrix a covariance matrix.
@@ -84,7 +84,7 @@ public class MultivariateStudentTDistribution implements IMultivariateDistributi
     }
 
     /**
-     * 
+     *
      * @return the covariance matrix.
      * @see org.uncertml.statistic.CovarianceMatrix
      */
@@ -93,8 +93,8 @@ public class MultivariateStudentTDistribution implements IMultivariateDistributi
     }
 
     /**
-     * 
-     * @return the degrees of freedom parameter of each marginal distribution 
+     *
+     * @return the degrees of freedom parameter of each marginal distribution
      * represented by this multivariate distribution.
      */
     public List<Integer> getDegreesOfFreedom() {
@@ -102,7 +102,7 @@ public class MultivariateStudentTDistribution implements IMultivariateDistributi
     }
 
     /**
-     * 
+     *
      * @return the mean parameter of each marginal distribution represented by this
      * multivariate distribution.
      */

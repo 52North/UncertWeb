@@ -9,41 +9,41 @@ import org.uncertweb.api.om.observation.TextObservation;
 
 /**
  * collection for TextObservations
- * 
+ *
  * @author staschc
  *
  */
 public class TextObservationCollection implements IObservationCollection{
-	
+
 	/**gml Id of collection*/
 	private String gmlId;
-	
+
 	/**members of collection*/
 	private List<TextObservation> members;
-	
+
 	/**type name of observation collection*/
 	public static final String NAME = "OM_TextObservationCollection";
-	
+
 	/**
 	 * contructor; initializes members list
-	 * 
+	 *
 	 */
 	public TextObservationCollection(){
 		this.members = new LinkedList<TextObservation>();
 	}
-	
+
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param members
 	 * 			members of collection
 	 */
 	public TextObservationCollection(List<TextObservation> members){
 		this.members = members;
 	}
-	
-	
-	
+
+
+
 	@Override
 	public String getGmlId() {
 		return gmlId;
@@ -91,6 +91,6 @@ public class TextObservationCollection implements IObservationCollection{
 			throw new RuntimeException("ObservationCollection with type"+obsCol.getObservations().get(0).getName()+ " cannot be added to TextObservationCollection!!");
 		}
 	}
-	
+
 
 }

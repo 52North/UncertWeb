@@ -8,12 +8,12 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a collection of statistics. Implements the List and Iterable interfaces.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/StatisticsCollection}
- * 
+ *
  * @see java.util.List
  * @see java.util.Iterator
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -29,7 +29,7 @@ public class StatisticCollection extends ArrayList<IStatistic> implements IStati
 
     /**
      * Constructs a statistics collection from a single member.
-     * 
+     *
      * @param member an <code>IStatistic</code> member.
      */
     public StatisticCollection(IStatistic member) {
@@ -39,7 +39,7 @@ public class StatisticCollection extends ArrayList<IStatistic> implements IStati
     /**
      * Constructs a statistics collection from an array of <code>IStatistic</code>
      * members.
-     * 
+     *
      * @param members an array of <code>IStatistic</code> members.
      */
     public StatisticCollection(IStatistic[] members) {
@@ -49,7 +49,7 @@ public class StatisticCollection extends ArrayList<IStatistic> implements IStati
     /**
      * Constructs a statistics collection from a <code>List</code> of <code>IStatistic</code>
      * members.
-     * 
+     *
      * @param members a <code>List</code> of <code>IStatistic</code> members.
      */
     public StatisticCollection(List<IStatistic> members) {
@@ -59,7 +59,7 @@ public class StatisticCollection extends ArrayList<IStatistic> implements IStati
     }
 
     /**
-     * 
+     *
      * @return the list of <code>IStatistic</code> members of this statistics collection.
      */
     public List<IStatistic> getMembers() {

@@ -21,9 +21,9 @@ public class OMJsonGenerator extends AbstractUwGenerator {
 
 	public OMJsonGenerator() {
 		super(
-			set(SCHEMA_OM_V2,SCHEMA_OM_V1,SCHEMA_OMU,SCHEMA_OMU_52N), 
-			set(ENCODING_UTF_8), 
-			set(MIME_TYPE_OMX_JSON), 
+			set(SCHEMA_OM_V2,SCHEMA_OM_V1,SCHEMA_OMU,SCHEMA_OMU_52N),
+			set(ENCODING_UTF_8),
+			set(MIME_TYPE_OMX_JSON),
 			UwCollectionUtils.<Class<?>> set(OMBinding.class)
 		);
 	}

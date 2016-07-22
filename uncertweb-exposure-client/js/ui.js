@@ -63,7 +63,7 @@ UIBuilder.prototype.generateOption = function(option) {
 	var $option = $("<div>").addClass("control-group");
 	var self = this;
 	switch (option.type) {
-	case "complex": 
+	case "complex":
 		function create() {
 			var $group = $("<div>").addClass("control-group");
 			$group.append($("<label>").addClass("control-label").text(option.title));
@@ -81,7 +81,7 @@ UIBuilder.prototype.generateOption = function(option) {
 			}
 			$help.append($label).append(" " + option.description).appendTo($controls);
 			var $button = $("<button>").css({
-					"margin-top": "-22px", 
+					"margin-top": "-22px",
 					"margin-right": "-15px"
 				}).attr("type", "button").addClass("btn")
 				  .append($("<i>").addClass("icon-minus"));
@@ -102,10 +102,10 @@ UIBuilder.prototype.generateOption = function(option) {
 					.addClass("btn")
 					.css("margin-bottom", "6px")
 					.append($("<i>").addClass("icon-plus"))
-					.appendTo($controls).on("click", function() { 
+					.appendTo($controls).on("click", function() {
 						var $a = create();
 						$a.find(".required").trigger("input");
-						$a.hide().appendTo($div).slideDown(); 
+						$a.hide().appendTo($div).slideDown();
 					});
 		return $div;
 	case "integer":
@@ -119,7 +119,7 @@ UIBuilder.prototype.generateOption = function(option) {
 		if (option.multiple) {
 			function plus(e) {
 				e.preventDefault();
-				var $newInput = self.createInput(option).val(""); 
+				var $newInput = self.createInput(option).val("");
 
 				var $div = $("<div>").addClass("multiple span12")
 						.append($newInput.removeClass("span12").addClass("span10"))
@@ -134,9 +134,9 @@ UIBuilder.prototype.generateOption = function(option) {
 			function minus(e) {
 				e.preventDefault();
 				var $prev = $(this).parents("div.multiple").prev().find("input,textarea");
-				$(this).parents("div.multiple").andSelf().fadeOut("fast",function() { 
-					$(this).remove(); 
-					$prev.trigger("input"); 
+				$(this).parents("div.multiple").andSelf().fadeOut("fast",function() {
+					$(this).remove();
+					$prev.trigger("input");
 				});
 			}
 			$input = $("<div>").addClass("multiple span12")
@@ -146,12 +146,12 @@ UIBuilder.prototype.generateOption = function(option) {
 		} else {
 			$input = this.createInput(option);
 		}
-		
+
 		var $description = $("<span>").addClass("help-block").html(option.description);
 		if (option.required) {
 			var $required = $("<span>").addClass("label label-warning").text("required");
 			$description.prepend(" ").prepend($required);
-			
+
 		} else {
 			var $optional = $("<span>").addClass("label label-info").text("optional");
 			$description.prepend(" ").prepend($optional);
@@ -205,7 +205,7 @@ UIBuilder.prototype.generateOption = function(option) {
 
 UIBuilder.prototype.required = function () {
 	var valid = true;
-	$(this).parents(".control-group").find(".required").each(function(){ 
+	$(this).parents(".control-group").find(".required").each(function(){
 		var val = $(this).val();
 		return valid = (val !== null && val !== undefined && val !== "");
 	});

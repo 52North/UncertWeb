@@ -1,9 +1,9 @@
 package org.uncertml;
 
 /**
- * An interface representing an uncertain class. Every uncertainty type in 
+ * An interface representing an uncertain class. Every uncertainty type in
  * UncertML implements this.
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */

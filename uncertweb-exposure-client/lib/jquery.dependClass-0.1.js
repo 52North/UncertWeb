@@ -1,6 +1,6 @@
 /**
  * jquery.dependClass - Attach class based on first class in list of current element
- * 
+ *
  * Written by
  * Egor Khmelev (hmelyoff@gmail.com)
  *
@@ -8,7 +8,7 @@
  *
  * @author Egor Khmelev
  * @version 0.1.0-BETA ($Id$)
- * 
+ *
  **/
 
 (function($) {
@@ -16,7 +16,7 @@
 	  obj = $(obj);
 	  return obj.get(0).className.match(/([^ ]+)/)[1];
 	};
-	
+
 	$.fn.addDependClass = function(className, delimiter){
 		var options = {
 		  delimiter: delimiter ? delimiter : '-'

@@ -19,9 +19,9 @@ import de.ifgi.airbase.feeder.util.Utils;
 import java.util.logging.Level;
 
 /**
- * 
+ *
  * @author Christian Autermann
- * 
+ *
  */
 public class Feeder {
 	private static final Logger log = LoggerFactory.getLogger(Feeder.class);
@@ -29,14 +29,14 @@ public class Feeder {
 	private static final boolean REGISTER_STATIONS = Boolean.parseBoolean(Utils.get(REGISTER_STATIONS_PROPERTY));
 	private static final String REGISTER_OBSERVATIONS_PROPERTY = "eea.registerObservations";
 	private static final boolean REGISTER_OBSERVATIONS = Boolean.parseBoolean(Utils.get(REGISTER_OBSERVATIONS_PROPERTY));
-    
+
     private static final boolean EXIT_ON_FAILURE = true;
 //	private static final String IS_FILE_WRITER_PROPERTY = "eea.writeToFile";
 //	private static final boolean IS_FILE_WRITER = Boolean.parseBoolean(Utils.get(IS_FILE_WRITER_PROPERTY));
 //	private static final String OUTPUT_FILE_PATH_PROPERTY = "eea.outputFilePath";
 //	private static final String OUTPUT_FILE_PATH = Utils.get(OUTPUT_FILE_PATH_PROPERTY);
-	
-	
+
+
 	protected void process(String fileName) {
 		long start = System.currentTimeMillis();
 		try {
@@ -74,35 +74,35 @@ public class Feeder {
 		try {
 //			//write to file
 //			if (IS_FILE_WRITER){
-//				
+//
 //				Unzipper uz = new Unzipper(f);
 //				EEAParser p = new EEAParser(uz.getStationsFile(),
-//											uz.getRawDataDirectory(), 
+//											uz.getRawDataDirectory(),
 //											uz.getStatisticsFile(),
 //											uz.getConfigurationFile());
 //				File out = new File(OUTPUT_FILE_PATH);
 //				if (!out.exists()) out.mkdirs();
 //				for (EEAStation station : p.getStations()) {
-//						String outputFileTmpPath = OUTPUT_FILE_PATH+"/"+station.getLocalCode(); 
+//						String outputFileTmpPath = OUTPUT_FILE_PATH+"/"+station.getLocalCode();
 //						int i=1;
 //						 Iterator<EEARawDataFile> fileIter = p.getDataByStation(station).iterator();
 //						 while (fileIter.hasNext()){
 //							 OMFileWriter writer = new OMFileWriter();
 //							 String tmpFilePath = outputFileTmpPath+i+".xml";
 //							 File tmpFile = new File(tmpFilePath);
-//							 
+//
 //							 writer.writeObservations2File(tmpFile,fileIter.next());
 //						 }
 //					}
-//				
+//
 //			}
-			
+
 			//send to SOS-T
 //			else {
 				SosClient sos = SosClient.newInstance();
 				Unzipper uz = new Unzipper(f);
 				EEAParser p = new EEAParser(uz.getStationsFile(),
-											uz.getRawDataDirectory(), 
+											uz.getRawDataDirectory(),
 											uz.getStatisticsFile(),
 											uz.getConfigurationFile());
 				for (EEAStation station : p.getStations()) {
@@ -122,7 +122,7 @@ public class Feeder {
                             if (EXIT_ON_FAILURE) { throw ex; }
                         }
 					}
-					
+
 				}
 				sos = null;
 				uz = null;

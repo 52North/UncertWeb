@@ -29,7 +29,7 @@ import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.vis.sample.SampleVisualizer;
 
 public class OsloTest extends AbstractVissTest {
-	
+
 	@Test
 	public void testOslo() throws JSONException {
 		ObjectId r = addResource(MediaTypes.NETCDF_TYPE, AbstractVissTest.class.getResourceAsStream("/data/oslo_conc_20110103_new2.nc"));
@@ -43,6 +43,6 @@ public class OsloTest extends AbstractVissTest {
 				.put(SampleVisualizer.TIME_PARAMETER, "2011-01-03T02:00:00.000+01:00"));
 		System.err.println(vis);
 	}
-	
-	
+
+
 }

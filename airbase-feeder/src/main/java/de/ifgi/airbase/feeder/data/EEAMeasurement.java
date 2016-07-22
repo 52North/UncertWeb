@@ -9,7 +9,7 @@ public class EEAMeasurement {
 	private double value;
 	private int quality;
 	private DateTime time;
-	
+
 	/**
 	 * Constructs a new {@code EEAMeasurement}
 	 * @param value the value
@@ -21,7 +21,7 @@ public class EEAMeasurement {
 		this.quality = quality;
 		this.time = time;
 	}
-	
+
 	/**
 	 * @return whether the quality is greater 0
 	 */

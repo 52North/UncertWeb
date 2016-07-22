@@ -40,9 +40,9 @@ import com.vividsolutions.jts.geom.Point;
  * elements to SOS objects. Currently this class includes only one method to
  * parse a System, as it is contained in the System template for registering
  * mobile sensorSystems to the SOSmobile
- * 
+ *
  * @author Christoph Stasch, Martin Kiesow
- * 
+ *
  */
 public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
 
@@ -58,7 +58,7 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
     /**
      * parses System, which should accords to SensorML System template for
      * registerSensor requests to SOSmobile
-     * 
+     *
      * @param xb_system
      *            XMLBeans representation of SensorML System, whcih should be
      *            mapped to SOS's SensorSystem
@@ -175,12 +175,12 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
         }
         return system;
     }
-	
+
 	/**
 	 * parses the outputs of a SensorML system and returns SosPhenomena
 	 * representing the observed outputs of the sensor system; ATTENTION:
 	 * currently only implemented for Quantities, Texts and Positions!
-	 * 
+	 *
 	 * @param xb_outputs
 	 *            XMLBeans representation of SensorML System's output element
 	 * @return Returns collection containing SosPhenomena representing the
@@ -251,14 +251,14 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
 					valueType = SosConstants.ValueTypes.countType.name();
 				} else if (xb_quantity != null) {
 					metaDataArray = xb_quantity.getMetaDataPropertyArray();
-					
+
 					if (metaDataArray.length == 0) {
 						String offeringID = null;
 						String offeringName = null;
-						
+
 						XmlCursor qCursor = xb_quantity.newCursor();
 						qCursor.toFirstChild();
-						
+
 						qCursor.toFirstContentToken();
 						qCursor.toFirstChild();
 
@@ -295,8 +295,8 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
 							offerings.add(new SosOffering(offeringID, offeringName,
 									null, null));
 						}
-					}					
-					
+					}
+
 					phenID = xb_quantity.getDefinition();
 					phenGmlDesc = xb_quantity.getDescription();
 					valueType = SosConstants.ValueTypes.numericType.name();
@@ -414,7 +414,7 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
 				if (uncertObs) {
 					valueType = SosConstants.ValueTypes.uncertaintyType.name();
 				}
-								
+
 				SosPhenomenon phen = new SosPhenomenon(phenID, phenDesc, uom,
 						null, valueType, null, offerings);
 				phenomena.add(phen);
@@ -429,10 +429,10 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
 		}
 		return phenomena;
 	}
-	
+
     /**
      * Checks the URN of uniqueID definition.
-     * 
+     *
      * @param definition
      *            URN of uniqueID.
      * @return Boolean.
@@ -446,10 +446,10 @@ public class SensorMLDecoder extends org.n52.sos.decode.impl.SensorMLDecoder {
         }
         return false;
     }
-    
+
     /**
      * throws service exception, if passed phenID is null or empty string
-     * 
+     *
      * @param phenID
      *            phenID, which should be checked
      * @throws OwsExceptionReport

@@ -19,9 +19,9 @@ public class UncertMLJsonGenerator extends AbstractUwGenerator {
 
 	public UncertMLJsonGenerator() {
 		super(
-			set(SCHEMA_UNCERTML), 
+			set(SCHEMA_UNCERTML),
 			set(ENCODING_UTF_8),
-			set(MIME_TYPE_UNCERTML_JSON), 
+			set(MIME_TYPE_UNCERTML_JSON),
 			UwCollectionUtils.<Class<?>>set(UncertMLBinding.class)
 		);
 	}

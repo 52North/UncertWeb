@@ -15,5 +15,5 @@ public class UncertWebIODataGenerator extends DelegatingGenerator {
 	public Format[] getSupportedFullFormats() {
 		return null;
 	}
-	
+
 }

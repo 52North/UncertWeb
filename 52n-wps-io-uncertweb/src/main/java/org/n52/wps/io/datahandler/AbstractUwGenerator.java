@@ -11,7 +11,7 @@ import org.n52.wps.io.data.IData;
 import org.n52.wps.io.datahandler.generator.AbstractGenerator;
 
 public abstract class AbstractUwGenerator extends AbstractGenerator {
-	
+
 	public AbstractUwGenerator(Set<String> supportedSchemas,
 			Set<String> supportedEncodings, Set<String> supportedFormats,
 			Set<Class<?>> supportedBindings) {
@@ -25,7 +25,7 @@ public abstract class AbstractUwGenerator extends AbstractGenerator {
 		if (supportedSchemas != null)
 			this.supportedSchemas.addAll(supportedSchemas);
 	}
-	
+
 	@Override
 	public InputStream generateStream(IData data, String mime, String encoding)
 			throws IOException {
@@ -33,6 +33,6 @@ public abstract class AbstractUwGenerator extends AbstractGenerator {
 		writeToStream(data, out);
 		return new ByteArrayInputStream(out.toByteArray());
 	}
-	
+
 	protected abstract void writeToStream(IData data, OutputStream out);
 }

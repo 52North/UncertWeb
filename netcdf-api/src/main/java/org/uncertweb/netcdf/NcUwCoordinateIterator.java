@@ -30,7 +30,7 @@ import org.uncertweb.utils.MultiDimensionalIterator;
 import org.uncertweb.utils.UwCollectionUtils;
 
 public abstract class NcUwCoordinateIterator<T> extends MultiDimensionalIterator<T> {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(NcUwCoordinateIterator.class);
 
 	private final Map<Integer, NcUwDimension> indexes = UwCollectionUtils.map();
@@ -45,7 +45,7 @@ public abstract class NcUwCoordinateIterator<T> extends MultiDimensionalIterator
 				this.indexes.put(sizes.size() - 1, d);
 			}
 		}
-		
+
 		this.coordinate = c;
 		this.variable = v;
 		final int[] size = new int[sizes.size()];

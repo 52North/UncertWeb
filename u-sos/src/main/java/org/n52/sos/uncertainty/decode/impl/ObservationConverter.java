@@ -47,18 +47,18 @@ import com.vividsolutions.jts.geom.Point;
 /**
  * Converter class to create O&M 1 Observations out of O&M 2 Observations and
  * vice versa
- * 
+ *
  * @see AbstractSosObservation
  * @see AbstractObservation
  * @author Kiesow
- * 
+ *
  */
 public class ObservationConverter {
 
 	/**
 	 * converts single uncertainty enabled O&M 2 observations into O&M 1
 	 * observations with uncertainties
-	 * 
+	 *
 	 * @param om2Obs
 	 *            O&M 2 observation
 	 * @return O&M 1 observation
@@ -235,7 +235,7 @@ public class ObservationConverter {
 	/**
 	 * converts multiple uncertainty enabled O&M 2 observations into O&M 1
 	 * observations with uncertainties
-	 * 
+	 *
 	 * @param om2ObsCol
 	 *            O&M 2 observation collection
 	 * @return O&M 1 observation collection
@@ -273,13 +273,13 @@ public class ObservationConverter {
 		String notSet = OMConstants.PARAMETER_NOT_SET;
 		String id = foi.getIdentifier().toIdentifierString();
 		String description = "";
-		
+
 		String featureType = foi.getFeatureType();
 		String name = foi.getIdentifier().getIdentifier();
 		Geometry jts_geom = foi.getShape();
-		
-		
-		
+
+
+
 
 		if (jts_geom instanceof Point) {
 			return new SosSamplingPoint(id, name, description, (Point) jts_geom,
@@ -294,7 +294,7 @@ public class ObservationConverter {
 	/**
 	 * converts single O&M 1 observations into (non-uncertainty-enabled) O&M 2
 	 * observations
-	 * 
+	 *
 	 * @param om1Obs
 	 *            O&M 1 observation
 	 * @return O&M 2 observation
@@ -416,7 +416,7 @@ public class ObservationConverter {
 	/**
 	 * converts multiple O&M1 observations with uncertainties into uncertainty
 	 * enabled O&M 2 observations
-	 * 
+	 *
 	 * @param om1ObsCol
 	 *            O&M 1 observation collection
 	 * @return O&M 2 observation collection; null if input is null or empty
@@ -479,13 +479,13 @@ public class ObservationConverter {
 
 	/**
 	 * converts SOS features into O&M 2 features
-	 * 
+	 *
 	 * @throws OwsExceptionReport
 	 */
 	private static SpatialSamplingFeature convertOM1FOI(SosAbstractFeature foi)
 			throws OwsExceptionReport {
 
-		
+
 		String sampledFeature = OMConstants.PARAMETER_NOT_SET;
 		Geometry shape = foi.getGeom();
 		Envelope boundedBy = shape.getEnvelopeInternal();
@@ -513,7 +513,7 @@ public class ObservationConverter {
 
 	/**
 	 * converts a String identifier into an Identifier class object
-	 * @throws OwsExceptionReport 
+	 * @throws OwsExceptionReport
 	 */
 	private static Identifier convertIdentifier(String id) throws OwsExceptionReport {
 
@@ -527,17 +527,17 @@ public class ObservationConverter {
 		String idName = splitID[splitID.length - 1];
 
 		try {
-			
+
 			if (id.length() == idName.length()) {
 				// identifier without codeSpace
 				identifier = new Identifier(new URI(""), idName);
-				
+
 			} else {
 				// codeSpace without appended slash
 				identifier = new Identifier(new URI(id.substring(0, id.length()
 					- idName.length() - 1)), idName);
 			}
-			
+
 		} catch (URISyntaxException e) {
 			OwsExceptionReport se = new OwsExceptionReport();
 			se.addCodedException(

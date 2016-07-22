@@ -29,7 +29,7 @@ public class QuantileVisualizer extends AbstractLevelVisualizer {
 
 	@Override
 	protected Set<Double> getLevels() {
-		
+
 		// TODO Auto-generated method stub
 		return null;
 	}

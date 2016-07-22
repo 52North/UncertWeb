@@ -34,7 +34,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * @author s_voss13, Christoph Stasch, Lydia Gerharz
- * 
+ *
  */
 public class AlbatrossOutputMapper {
 
@@ -188,7 +188,7 @@ public class AlbatrossOutputMapper {
 	}
 
 	private static Geometry getGeometryFromPPC(String ppc) throws IOException {
-		
+
 		if (ppcMap.containsKey(ppc)) {
 			return ppcMap.get(ppc);
 		}

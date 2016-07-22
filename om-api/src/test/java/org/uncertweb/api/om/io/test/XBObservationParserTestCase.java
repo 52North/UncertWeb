@@ -26,16 +26,16 @@ import com.vividsolutions.jts.geom.Point;
 
 /**
  * JUnit tests for O&M parsing
- * 
+ *
  * @author Kiesow, staschc
- * 
+ *
  */
 public class XBObservationParserTestCase extends TestCase {
 
 	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/om-api/";
 	private String pathToExamples = "src/test/resources";
-	
-	
+
+
 	public void testObservationParser() throws Exception {
 //		point_TimeInstant_Double();
 		obsCol_Measurement();
@@ -45,7 +45,7 @@ public class XBObservationParserTestCase extends TestCase {
 //		point_TimeInstant_FOIref();
 //		testJSON();
 	}
-	
+
 
 	public void testJSON() throws Exception{
 		File folder = new File(localPath);
@@ -56,7 +56,7 @@ public class XBObservationParserTestCase extends TestCase {
 		if (fileArray!=null){
 			for (int i=0;i<fileArray.length;i++){
 				String path = fileArray[i].getAbsolutePath();
-				
+
 				//parse xmlFile
 				if (!path.contains("svn")){
 					String xmlString = Utils.readXmlFile(path);
@@ -64,13 +64,13 @@ public class XBObservationParserTestCase extends TestCase {
 					IObservationCollection obsCol = parser.parse(xmlString);
 					System.out.println("-----XMLfile read from path " + path);
 					System.out.print(xmlString);
-					
+
 					//Encode Json FIle
 					JSONObservationEncoder jEncoder = new JSONObservationEncoder();
 					String jsonString = jEncoder.encodeObservationCollection(obsCol);
 					System.out.println("-----JSONEncodedfile");
 					System.out.println(jsonString);
-					
+
 					JSONObservationParser jParser = new JSONObservationParser();
 					System.out.println("-----JSONParsedFile");
 					IObservationCollection jObs = jParser.parse(jsonString);
@@ -79,7 +79,7 @@ public class XBObservationParserTestCase extends TestCase {
 			}
 		}
 	}
-	
+
 	private void obsCol_yield() throws Exception {
 
 		// read XML example file
@@ -116,7 +116,7 @@ public class XBObservationParserTestCase extends TestCase {
 		XBObservationEncoder encoder = new XBObservationEncoder();
 		System.out.println(encoder.encodeObservationCollection(oc));
 	}
-	
+
 	private void obsCol_generic() throws Exception {
 
 		// read XML example file
@@ -134,7 +134,7 @@ public class XBObservationParserTestCase extends TestCase {
 		XBObservationEncoder encoder = new XBObservationEncoder();
 		System.out.println(encoder.encodeObservationCollection(oc));
 	}
-		
+
 	private void obsCol_Austal() throws Exception {
 
 		// read XML example file
@@ -152,7 +152,7 @@ public class XBObservationParserTestCase extends TestCase {
 		XBObservationEncoder encoder = new XBObservationEncoder();
 		System.out.println(encoder.encodeObservationCollection(oc));
 	}
-		
+
 
 	private void point_TimeInstant_Double() throws Exception {
 
@@ -176,7 +176,7 @@ public class XBObservationParserTestCase extends TestCase {
 		// test boundedBy (optional parameter)
 
 		// test phenomenonTime
-	
+
 		DateTimeFormatter format = ISODateTimeFormat.dateTime();
 		assertEquals("2005-01-11T16:22:25.000+01:00",
 				format.print(obs.getPhenomenonTime().getDateTime()).toString());
@@ -195,7 +195,7 @@ public class XBObservationParserTestCase extends TestCase {
 				.getObservedProperty().toString());
 
 		// test featureOfInterest
-	
+
 		Point shape = (Point) obs.getFeatureOfInterest().getShape();
 		assertEquals("Point", shape.getGeometryType());
 		assertEquals(52.87, shape.getX());
@@ -209,14 +209,14 @@ public class XBObservationParserTestCase extends TestCase {
 		assertEquals("org.uncertml.distribution.continuous.GaussianDistribution",uValue.getClass().getName());
 		assertEquals(29.564,((NormalDistribution)uValue).getMean().get(0));
 		assertEquals(7.45,((NormalDistribution)uValue).getVariance().get(0));
-		
+
 		// test result
 		assertEquals("degC",
 				((MeasureResult) obs.getResult()).getUnitOfMeasurement());
 		assertEquals(36.0, ((MeasureResult) obs.getResult()).getMeasureValue());
 
 	}
-	
+
 	private void point_TimeInstant_Uncertainty() throws Exception {
 
 		// read XML example file
@@ -273,8 +273,8 @@ public class XBObservationParserTestCase extends TestCase {
 		assertEquals(35.0, ((Probability)uncertainty).getConstraints().get(0).getValue());
 		assertEquals(0.25, ((Probability)uncertainty).getValues().get(0).doubleValue());
 		System.out.println(new JSONObservationEncoder().encodeObservation(obs));
-	}	
-	
+	}
+
 	private void point_TimeInstant_FOIref() throws Exception{
 		// read XML example file
 		String xmlString;

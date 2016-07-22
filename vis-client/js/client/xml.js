@@ -1,27 +1,27 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-/* 
+/*
  * Contains portions of OpenLayers Map Viewer Library (http:/openlayers.org):
- * 
+ *
  * Copyright 2005-2010 OpenLayers Contributors, released under the Clear BSD
  * license. Please see http://svn.openlayers.org/trunk/openlayers/license.txt
  * for the full text of the license.
@@ -33,7 +33,7 @@ OpenLayers.SOS.Format = OpenLayers.SOS.Format || {};
  OpenLayers.SOS.Format.ExceptionReport = OpenLayers.Class(OpenLayers.Format.XML, {
 	CLASS_NAME: "OpenLayers.SOS.Format.ExceptionReport",
 	namespaces: { ows: "http://www.opengis.net/ows/1.1" },
-	schemaLocation: "http://www.opengis.net/ows/1.1" 
+	schemaLocation: "http://www.opengis.net/ows/1.1"
 			+ " http://schemas.opengis.net/ows/1.1.0/owsAll.xsd",
 	defaultPrefix: "ows",
 	regExes: { trimSpace: (/^\s*|\s*$/g) },
@@ -56,14 +56,14 @@ OpenLayers.SOS.Format = OpenLayers.SOS.Format || {};
 			"ExceptionReport": function (node, obj) {
 				obj.exceptions = [];
 				obj.version = node.getAttribute("version");
-				this.readChildNodes(node, obj);	
+				this.readChildNodes(node, obj);
 			},
 			"Exception": function (node, report) {
 				var ex = { exceptionTexts: [] };
 				ex.exceptionCode = node.getAttribute("exceptionCode");
 				var locator = node.getAttribute("locator");
 				if (locator) {
-					ex.locator = locator;	
+					ex.locator = locator;
 				}
 				report.exceptions.push(ex);
 				this.readChildNodes(node, ex);
@@ -119,7 +119,7 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 			var info = {};
 			this.readNode(data, info);
 			if (info.exceptions) {
-				var message = ""; 
+				var message = "";
 				for (var i = 0; i < info.exceptions.length; i++) {
 					message += info.exceptions[i].exceptionCode +": ";
 					for (var j = 0; j < info.exceptions[i].exceptionTexts.length; j++) {
@@ -129,7 +129,7 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 				throw message;
 			}
 			/* create measurements out of observations */
-			for (var i = 0; i < info.observations.length; i++){ 
+			for (var i = 0; i < info.observations.length; i++){
 				var o = info.observations[i];
 				for (var j = 0; j < o.result.values.length; j++) {
 					var m = {
@@ -147,7 +147,7 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 			delete info;
 			return f;
 		},
-		
+
 		generateFeatures: function (obs, eP) {
 			if (!obs) return;
 
@@ -168,8 +168,8 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 				};
 				mapping[foi.attributes.id].values.push(attr);
 			}
-			
-			
+
+
 			/* Merge observations with the same feature */
 			for (key in mapping) {
 				var id = mapping[key].feature.attributes.id;
@@ -198,7 +198,7 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 			}
 			return features;
 		},
-		
+
 		readers: {
 			"ows": OpenLayers.SOS.Format.ExceptionReport.prototype.readers.ows,
 			"swe": {
@@ -231,7 +231,7 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 					obj.definition = node.getAttribute("definition");
 				},
 				"Text": function (node,obj){
-					obj.definition = node.getAttribute("definition");	
+					obj.definition = node.getAttribute("definition");
 				},
 				"Quantity": function (node,obj){
 					obj.definition = node.getAttribute("definition");
@@ -262,28 +262,28 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 					for (var i = 0; i < result.fields.length; i++){
 						switch(result.fields[i].definition) {
 						case "http://www.opengis.net/def/property/OGC/0/SamplingTime":
-						case "urn:ogc:data:time:iso8601": 
+						case "urn:ogc:data:time:iso8601":
 							timeField = i; break;
 						case "http://www.opengis.net/def/property/OGC/0/FeatureOfInterest":
-						case "urn:ogc:data:feature": 
+						case "urn:ogc:data:feature":
 							foiField = i; break;
-						default: phenField = i; 
+						default: phenField = i;
 						}
 					}
 					function isValid(value){
 						return (!value || value === 0);
 					}
-					if (isValid(timeField) && isValid(foiField) 
+					if (isValid(timeField) && isValid(foiField)
 							&& isValid(phenField)) {
-							throw "Unsupported Field Format: timeField:" 
-							+ timeField + " foiField:" + foiField 
+							throw "Unsupported Field Format: timeField:"
+							+ timeField + " foiField:" + foiField
 							+ " phenField:" + phenField;
 						}
 					result.values = [];
 					for (var i = 0; i < valueBlocks.length; i++) {
 						var tokens = valueBlocks[i]
 						.split(new RegExp(result.encoding.tSeperator));
-						result.values.push({ 
+						result.values.push({
 								samplingTime: {
 									timeInstant:{
 										timePosition: OpenLayers.Date.parse(
@@ -291,11 +291,11 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 									}
 								},
 								result: {
-									value: parseFloat(tokens[phenField]), 
+									value: parseFloat(tokens[phenField]),
 									uom: result.fields[phenField].uom
 								},
 								observedProperty: result.fields[phenField].definition
-							});					
+							});
 					}
 				}
 			},
@@ -306,7 +306,7 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 						obj.features.push(feature);
 						obj = feature;
 					}
-					obj.attributes.id = this.getAttributeNS(node, 
+					obj.attributes.id = this.getAttributeNS(node,
 						this.namespaces.gml, "id");
 					this.readChildNodes(node, obj);
 				},
@@ -316,7 +316,7 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 						obj.features.push(feature);
 						obj = feature;
 					}
-					obj.attributes.id = this.getAttributeNS(node, 
+					obj.attributes.id = this.getAttributeNS(node,
 						this.namespaces.gml, "id");
 					this.readChildNodes(node, obj);
 				},
@@ -426,12 +426,12 @@ OpenLayers.SOS.Format.ObservationCollection = OpenLayers.Class(OpenLayers.Format
 					this.readChildNodes(node, samplingTime);
 				},
 				"observedProperty": function (node, measurement) {
-					measurement.observedProperty = this.getAttributeNS(node, 
+					measurement.observedProperty = this.getAttributeNS(node,
 						this.namespaces.xlink, "href");
 					this.readChildNodes(node, measurement);
 				},
 				"procedure": function (node, measurement) {
-					measurement.procedure = this.getAttributeNS(node, 
+					measurement.procedure = this.getAttributeNS(node,
 						this.namespaces.xlink, "href");
 					this.readChildNodes(node, measurement);
 				},

@@ -10,12 +10,12 @@ import org.uncertweb.netcdf.NcUwFile;
 
 /**
  * binding class for NetCDFData containing a NetCDF-U file
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class NetCDFBinding extends UncertWebIODataBinding {
-	
+
 	private static final long serialVersionUID = 5465758473705293719L;
 	private static final Logger log = Logger.getLogger(NetCDFBinding.class);
 
@@ -27,7 +27,7 @@ public class NetCDFBinding extends UncertWebIODataBinding {
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param data
 	 */
 	public NetCDFBinding(NcUwFile data) {
@@ -46,7 +46,7 @@ public class NetCDFBinding extends UncertWebIODataBinding {
 
 	/**
 	 * method for retrieving input stream for netcdf file
-	 * 
+	 *
 	 * @return Returns input stream for netcdf file
 	 */
 	public InputStream getInputStream() {

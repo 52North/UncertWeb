@@ -2,9 +2,9 @@ package org.uncertweb.api.om.result;
 
 /**
  * Result representing a boolean
- * 
+ *
  * @author Kiesow
- * 
+ *
  */
 public class BooleanResult implements IResult {
 
@@ -12,7 +12,7 @@ public class BooleanResult implements IResult {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param v
 	 *            boolean value of this result
 	 */

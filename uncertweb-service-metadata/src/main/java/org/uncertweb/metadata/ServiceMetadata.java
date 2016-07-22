@@ -6,22 +6,22 @@ import java.io.StringWriter;
 import java.util.Properties;
 
 /**
- * class represents service metadata as defined in UncertWeb project 
+ * class represents service metadata as defined in UncertWeb project
  * (see <a href="https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/ProcessMetadata">UncertWeb Process Metadata</a>)
- * 
+ *
  * @author staschc
  *
  */
 public class ServiceMetadata {
-	
+
 	/**spatial resolution*/
 	private String spatialResolutions;
-	
+
 	/**spatial support type*/
 	private String spatialSupportTypes;
-	
+
 	/**
-	 * spatial reference system; EPSG code (e.g. EPSG:4326) 
+	 * spatial reference system; EPSG code (e.g. EPSG:4326)
 	 * or URL can be used (e.g. http://www.opengis.net/def/crs/EPSG/0/4326) can be used
 	 */
 	private String srs;
@@ -30,55 +30,55 @@ public class ServiceMetadata {
 	 * spatial geometry types
 	 */
 	private String spatialGeometryTypes;
-	
-	
+
+
 	/**
-	 * spatial domain encoded as 'minx miny to maxx maxy' e.g. '42N 7W to 52N 8E) 
+	 * spatial domain encoded as 'minx miny to maxx maxy' e.g. '42N 7W to 52N 8E)
 	 */
 	private String spatialDomain;
-	
-	
+
+
 	/**temporal resolution*/
 	private String temporalResolutions;
-	
+
 	/**temporal support types*/
 	private String temporalSupportTypes;
-	
+
 	/**
-	 * spatial domain encoded as 'minx miny to maxx maxy' e.g. '42N 7W to 52N 8E) 
+	 * spatial domain encoded as 'minx miny to maxx maxy' e.g. '42N 7W to 52N 8E)
 	 */
 	private String temporalDomain;
-	
+
 	/**
-	 * variable identifier - would be the observedProperty URI in case of O&M data and the variable ID in NetCDF 
+	 * variable identifier - would be the observedProperty URI in case of O&M data and the variable ID in NetCDF
 	 */
 	private String variablePhenomena;
-	
+
 	/**
 	 * uncertainty type - UncertML type of uncertainty information
 	 */
 	private String variableUncertaintyTypes;
-	
+
 	/**
-	 * units of measure of the variable 
+	 * units of measure of the variable
 	 */
 	private String variableUOMs;
-	
+
 	/**
 	 * any additional information about the inputs we need to encode
 	 */
 	private String misc;
-	
+
 	/**
 	 * properties file representing the service metadata
 	 */
 	private Properties props;
-	
+
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param props
-	 * 			{@link Properties} containing the ServiceMetadata 
+	 * 			{@link Properties} containing the ServiceMetadata
 	 */
 	public ServiceMetadata(Properties props){
 		this.spatialResolutions = props.getProperty("@spatial-resolutions");
@@ -95,10 +95,10 @@ public class ServiceMetadata {
 		this.misc = props.getProperty("@misc");
 		this.props = props;
 	}
-	
+
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param props
 	 */
 	public ServiceMetadata(String propertiesString){
@@ -121,10 +121,10 @@ public class ServiceMetadata {
 		this.variableUOMs = props.getProperty("@variable-units-of-measure");
 		this.misc = props.getProperty("@misc");
 	}
-	
+
 	/**
 	 * serializes the metadata to a string
-	 * 
+	 *
 	 * @return {@link String} containing the serialized service metadata
 	 */
 	public String serialize() {

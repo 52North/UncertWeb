@@ -93,7 +93,7 @@ import org.uncertml.x20.MixtureModelType.Component;
 
 /**
  * XML implementation of an UncertML encoder. Based on the XmlBeans library.
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -173,8 +173,8 @@ public class XMLEncoder implements IUncertaintyEncoder {
             return encodeSystematicSample((SystematicSample) element);
         } else if (element instanceof UnknownSample) {
             return encodeUnknownSample((UnknownSample) element);
-        } 
-        
+        }
+
 		throw new UnsupportedUncertaintyTypeException(element.getClass().getSimpleName() + " not supported in this version of the UncertML API");
     }
 
@@ -184,7 +184,7 @@ public class XMLEncoder implements IUncertaintyEncoder {
 
         xb_rType.setSamplingMethodDescription(element.getSamplingMethodDescription());
         xb_rType.addNewRealisation();
-        
+
         xb_rType.setRealisationArray(this.encodeRealisations(element.getRealisations()));
         return xb_rDoc;
     }
@@ -204,13 +204,13 @@ public class XMLEncoder implements IUncertaintyEncoder {
 
         xb_rType.setSamplingMethodDescription(element.getSamplingMethodDescription());
         xb_rType.setRealisationArray(this.encodeRealisations(element.getRealisations()));
-        
+
         return xb_rDoc;
     }
 
     private RealisationDocument encodeRealisation(AbstractRealisation element) {
         RealisationDocument xb_rDoc = RealisationDocument.Factory.newInstance();
-        
+
             RealisationType type = xb_rDoc.addNewRealisation();
             String id = element.getId();
             double weight = element.getWeight();
@@ -232,13 +232,13 @@ public class XMLEncoder implements IUncertaintyEncoder {
             	}else{
             		type.addNewValues().setHref(cr.getReferenceURL().toString());
             	}
-            	
+
             }
-        
+
 
         return xb_rDoc;
     }
-    
+
     /*
      * Method to encode categorical, discrete and continuous realisations
      */
@@ -257,7 +257,7 @@ public class XMLEncoder implements IUncertaintyEncoder {
             if (!Double.isNaN(weight)) {
                 type.setWeight(r.getWeight());
             }
-            
+
             if (r instanceof CategoricalRealisation) {
             	type.addNewCategories().setListValue(((CategoricalRealisation)r).getCategories());
             }else if(r instanceof ContinuousRealisation){
@@ -267,9 +267,9 @@ public class XMLEncoder implements IUncertaintyEncoder {
             	}else{
             		type.addNewValues().setHref(cr.getReferenceURL().toString());
             	}
-            	
+
             }
-            
+
             types[i] = type;
         }
 

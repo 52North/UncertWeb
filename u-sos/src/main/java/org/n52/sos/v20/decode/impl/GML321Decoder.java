@@ -8,8 +8,8 @@
  48155 Muenster, Germany
  info@52north.org
 
- This program is free software; you can redistribute and/or modify it under 
- the terms of the GNU General Public License version 2 as published by the 
+ This program is free software; you can redistribute and/or modify it under
+ the terms of the GNU General Public License version 2 as published by the
  Free Software Foundation.
 
  This program is distributed WITHOUT ANY WARRANTY; even without the implied
@@ -61,11 +61,11 @@ import org.w3c.dom.Node;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * 
+ *
  * class offers methods for parsing GML 3.2.1 elements of requests
- * 
+ *
  * @author Carsten Hollmann
- * 
+ *
  */
 public class GML321Decoder {
 
@@ -80,7 +80,7 @@ public class GML321Decoder {
 
     /**
      * Parses a XML representation of a spatial filter.
-     * 
+     *
      * @param xbSpatialOpsType
      *            XML spatial filter representation.
      * @return SOS representation of a spatial filter
@@ -106,7 +106,7 @@ public class GML321Decoder {
      * parses the BBOX element of the featureOfInterest element contained in the
      * GetObservation request and returns a String representing the BOX in
      * Well-Known-Text format
-     * 
+     *
      * @param xb_bbox
      *            XmlBean representing the BBOX-element in the request
      * @return Returns WKT-String representing the BBOX as Multipoint with two
@@ -145,10 +145,10 @@ public class GML321Decoder {
     /**
      * switches the order of coordinates contained in a string, e.g. from String
      * '3.5 4.4' to '4.4 3.5'
-     * 
+     *
      * NOTE: ACTUALLY checks, whether dimension is 2D, othewise throws
      * Exception!!
-     * 
+     *
      * @param coordsString
      *            contains coordinates, which should be switched
      * @return Returns String contained coordinates in switched order
@@ -173,7 +173,7 @@ public class GML321Decoder {
     /**
      * parses the srsName and returns an integer representing the number of the
      * EPSG-code of the passed srsName
-     * 
+     *
      * @param srsName
      *            name of the spatial reference system in EPSG-format (withn urn
      *            identifier for EPSG)
@@ -213,7 +213,7 @@ public class GML321Decoder {
 
     /**
      * Parses a XML time object to a SOS representation.
-     * 
+     *
      * @param xbTemporalOpsType
      *            XML time object
      * @return SOS time object representation.
@@ -249,7 +249,7 @@ public class GML321Decoder {
 
     /**
      * parses TimeInstant
-     * 
+     *
      * @param tp
      *            XmlBean representation of TimeInstant
      * @return Returns a TimeInstant created from the TimeInstantType
@@ -279,7 +279,7 @@ public class GML321Decoder {
      * TimeInstantType. This constructor is necessary cause XMLBeans does not
      * full support substitution groups. So one has to do a workaround with
      * XmlCursor and the DomNodes of the elements.
-     * 
+     *
      * @param timeInstant
      *            DOM Node of timeInstant element
      * @return Returns a TimeInstant created from the DOM-Node
@@ -333,8 +333,8 @@ public class GML321Decoder {
      * the TimePeriodType. This constructor is necessary cause XMLBeans does not
      * fully support substitution groups. So one has to do a workaround with
      * XmlCursor and the DomNodes of the elements.
-     * 
-     * 
+     *
+     *
      * @param timePeriod
      *            the DomNode of the timePeriod element
      * @return Returns a TimePeriod created from the DOM-Node
@@ -351,7 +351,7 @@ public class GML321Decoder {
         TimePeriodType xbTimePeriod = xbTimePeriodDocument.getTimePeriod();
 
         if (xbTimePeriod.getBegin() != null) {
-        	
+
         } else if (xbTimePeriod.getBegin() != null) {
             String startString = xbTimePeriod.getBegin().getTimeInstant().getTimePosition().getStringValue();
             if (startString.equals("")) {
@@ -403,7 +403,7 @@ public class GML321Decoder {
     /**
      * creates SOS representation of time period from XMLBeans representation of
      * time period
-     * 
+     *
      * @param xb_timePeriod
      *            XMLBeans representation of time period
      * @return Returns SOS representation of time period

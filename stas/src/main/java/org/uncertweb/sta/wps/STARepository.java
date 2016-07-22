@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -58,7 +58,7 @@ import org.uncertweb.sta.wps.method.grouping.TemporalGrouping;
  * {@link GenericObservationAggregationProcess}. All {@link GroupingMethod}s
  * will be loaded at startup and all combinations will be registered as separate
  * processes.
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class STARepository implements IAlgorithmRepository {
@@ -108,7 +108,7 @@ public class STARepository implements IAlgorithmRepository {
 	protected static HashMap<String, MethodCombination> loadProcesses() {
 		HashMap<String, MethodCombination> algos = new HashMap<String, MethodCombination>();
 		MethodFactory mf = MethodFactory.getInstance();
-		
+
 		for (Class<? extends SpatialGrouping> sg : mf.getSpatialGroupingMethods()) {
 //			log.debug("Processing SpatialGrouping {}", sg.getName());
 			if (sg.getAnnotation(Ignore.class) != null) { continue; }
@@ -116,7 +116,7 @@ public class STARepository implements IAlgorithmRepository {
 			SpatialPartitioningPredicate spp = sg.getAnnotation(SpatialPartitioningPredicate.class);
 			String sppName = (spp == null) ? sg.getSimpleName() : spp.value();
 			IsOnlyCompatibleWith sgIocw = sg.getAnnotation(IsOnlyCompatibleWith.class);
-			
+
 			for (Class<? extends AggregationMethod> sm : mf.getAggregationMethods()) {
 //				log.debug("Processing AggregationMethod {} for SpatialGrouping.", sm.getName());
 				if (sm.getAnnotation(Ignore.class) != null) { continue; }
@@ -125,7 +125,7 @@ public class STARepository implements IAlgorithmRepository {
 				if (!isCompatible(sgIocw, sm)) { continue; }
 				SpatialAggregationFunction sam = sm.getAnnotation(SpatialAggregationFunction.class);
 				String samName = (sam == null) ? sm.getSimpleName() : sam.value();
-				
+
 				for (Class<? extends TemporalGrouping> tg : mf.getTemporalGroupingMethods()) {
 //					log.debug("Processing TemporalGrouping {} for SpatialGrouping {}.", tg.getName(), sg.getName());
 					if (tg.getAnnotation(Ignore.class) != null) { continue; }
@@ -134,7 +134,7 @@ public class STARepository implements IAlgorithmRepository {
 					TemporalPartitioningPredicate tpp = tg.getAnnotation(TemporalPartitioningPredicate.class);
 					String tppName = (tpp == null) ? tg.getSimpleName() : tpp.value();
 					IsOnlyCompatibleWith tgIocw = tg.getAnnotation(IsOnlyCompatibleWith.class);
-				
+
 					for (Class<? extends AggregationMethod> tm : mf.getAggregationMethods()) {
 //						log.debug("Processing AggregationMethod {} for TemporalGrouping.", tm.getName());
 						if (tm.getAnnotation(Ignore.class) != null) { continue; }
@@ -147,7 +147,7 @@ public class STARepository implements IAlgorithmRepository {
 						String id = PROCESS_NAME.format(new Object[] {
 								sppName, samName, tppName, tamName
 						});
-						
+
 						algos.put(id, new MethodCombination(sg, tg, sm, tm));
 						log.info("Registered Algorithm: {}", id);
 					}
@@ -173,7 +173,7 @@ public class STARepository implements IAlgorithmRepository {
 	}
 
 	private static boolean isCompatible(IsOnlyCompatibleWith iocw, Class<?> a) {
-		if (iocw == null) { 
+		if (iocw == null) {
 			return true;
 		}
 		for (Class<? extends AggregationMethod> c : iocw.value()) {
@@ -195,7 +195,7 @@ public class STARepository implements IAlgorithmRepository {
 	/**
 	 * Instantiates the {@link IAlgorithm} with the given {@code id} and tests
 	 * if the process description is valid.
-	 * 
+	 *
 	 * @param id the process id
 	 * @return the {@code IAlgorithm} with that {@code Id}. {@code null} if the
 	 *         process description is not valid or the {@code IAlgorithm} does
@@ -240,7 +240,7 @@ public class STARepository implements IAlgorithmRepository {
 	public boolean containsAlgorithm(String processID) {
 		return STARepository.ALGORITHMS.containsKey(processID);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

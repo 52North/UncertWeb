@@ -15,11 +15,11 @@ import org.uncertweb.api.om.result.UncertaintyResult;
 /**
  * Adapter class to handle O&M 2 uncertainty observations in O&M 1 observation
  * classes
- * 
+ *
  * @see UncertaintyObservation
  * @see SosMeasurement
  * @author Kiesow
- * 
+ *
  */
 public class UNCUncertaintyObservation extends SosMeasurement implements
 		IUncertainObservation {
@@ -29,7 +29,7 @@ public class UNCUncertaintyObservation extends SosMeasurement implements
 	 * identifier)
 	 */
 	private String identifier;
-	
+
 	/**
 	 * data quality as uncertainties, replacing om1 observations quality
 	 */
@@ -43,11 +43,11 @@ public class UNCUncertaintyObservation extends SosMeasurement implements
 	 * xml type name of this observation
 	 */
 	public static final String NAME = "OM_UncertaintyObservation";
-	
-	
+
+
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param identifier
 	 * 			  gml identifier
 	 * @param time
@@ -88,10 +88,10 @@ public class UNCUncertaintyObservation extends SosMeasurement implements
 		this.uncQuality = uncQuality;
 		this.uncertainty = uncertainty;
 	}
-	
+
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param time
 	 *            time at which the observation event took place
 	 * @param obsID
@@ -128,21 +128,21 @@ public class UNCUncertaintyObservation extends SosMeasurement implements
 	public String getIdentifier() {
 		return identifier;
 	}
-	
+
 	/**
 	 * sets gml identifier (not to be confused with observation id/obsID)
 	 */
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
-	
+
 	/**
 	 * returns the uncertainty result
 	 */
 	public IUncertainty getUncertainty() {
 		return uncertainty;
 	}
-	
+
 	/**
 	 * sets the uncertainty result
 	 */
@@ -156,7 +156,7 @@ public class UNCUncertaintyObservation extends SosMeasurement implements
 	public DQ_UncertaintyResult[] getUncQuality() {
 		return uncQuality;
 	}
-	
+
 	/**
 	 * sets data quality as uncertainties, replacing om1 observations quality
 	 */

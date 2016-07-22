@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -86,7 +86,7 @@ import org.uncertweb.utils.UwTimeUtils;
 
 /**
  * TODO JavaDoc
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class RegisterSensorBuilder {
@@ -100,7 +100,7 @@ public class RegisterSensorBuilder {
     public static final String ELEMENT_NAME_NAME = "name";
     public static final String FIELD_NAME_STATUS = "status";
     public static final String ATTRIBUTE_NAME_UOM = "uom";
-	
+
     public static final String COORD_NAME_LAT = "latitude";
     public static final String COORD_NAME_LON = "longitude";
     public static final String QUANTITY_AXIS_ID_LAT = "y";
@@ -109,9 +109,9 @@ public class RegisterSensorBuilder {
     public static final String COORD_NAME_ALTITUDE = "altitude";
     public static final String EPSG_4326_REFERENCE_SYSTEM_DEFINITION = UwConstants.URN.EPSG_SRS_PREFIX.value + "4326";
     public static final String COORDINATE_UOM = "degree";
-    public static final String METER_UOM = "m";	
+    public static final String METER_UOM = "m";
     public static final double lat = 0, lon = 0, alt = 0;
-    
+
     protected static final Logger log = LoggerFactory.getLogger(RegisterSensorBuilder.class);
 	private static RegisterSensorBuilder singleton;
 
@@ -121,9 +121,9 @@ public class RegisterSensorBuilder {
 		}
 		return singleton;
 	}
-	
+
 	private RegisterSensorBuilder(){}
-	
+
 	public RegisterSensorDocument build(URI process, List<AbstractObservation> obs, Map<String,Object> meta) {
 		RegisterSensorDocument regSenDoc = RegisterSensorDocument.Factory.newInstance();
 		RegisterSensor regSen = regSenDoc.addNewRegisterSensor();
@@ -133,7 +133,7 @@ public class RegisterSensorBuilder {
 		buildObservationTemplate(regSen);
 		return regSenDoc;
 	}
-	
+
 	protected void buildParameters(AbstractPureProcessType pmt, Map<String,Object> meta) {
 		if (meta.isEmpty()) return;
 		ParameterList pl = pmt.addNewParameters().addNewParameterList();
@@ -166,20 +166,20 @@ public class RegisterSensorBuilder {
 			adrt.setDefinition(Constants.Sos.ProcessDescription.Parameter.URN_PREFIX + e.getKey());
 		}
 	}
-	
+
 	protected void buildSensorDescription(RegisterSensor regSen,
 			URI process, List<AbstractObservation> obs, Map<String,Object> meta) {
 		SensorDescription description = regSen.addNewSensorDescription();
 		SensorMLDocument smlDocument = SensorMLDocument.Factory.newInstance();
 		SensorML sml = smlDocument.addNewSensorML();
 		sml.setVersion(SML_VERSION);
-		
+
 		SystemType processType = (SystemType) sml.addNewMember().addNewProcess().substitute(SML.q("System"), SystemType.type);
 		buildPosition(processType);
 
 //		ProcessModelType processType = (ProcessModelType) sml.addNewMember().addNewProcess().substitute(qualify(SML, "ProcessModel"), ProcessModelType.type);
 //		buildParameters(processType, meta);
-		
+
 		/* unique id */
 		IdentifierList idenList = processType.addNewIdentification().addNewIdentifierList();
 		Identifier ident = idenList.addNewIdentifier();
@@ -191,14 +191,14 @@ public class RegisterSensorBuilder {
 		buildValidTime(processType, obs);
 		buildCapabilities(processType);
 		/* TODO additional SensorML information
-		 * build keywords 
-		 * build contact: no idea... maybe provided as an additional input? 
+		 * build keywords
+		 * build contact: no idea... maybe provided as an additional input?
 		 */
-		
+
 		buildInputOutputLists(processType, obs);
 		description.set(smlDocument);
 	}
-    
+
 	protected void buildPosition(SystemType systemType) {
 		Position position = systemType.addNewPosition();
 		position.setName("sensorPosition");
@@ -246,23 +246,23 @@ public class RegisterSensorBuilder {
 		} else {
 			throw new RuntimeException("Can only handle AbstractComponentType and AbstractPureProcessType");
 		}
-		
+
 		Set<URI> processes = UwCollectionUtils.set();
-		
-		String url = null;		
+
+		String url = null;
 		for (AbstractObservation o : obs) {
 			Origin origin = (Origin) o.getParameter(Constants.OBSERVATION_PARAMETER_AGGREGATED_OF);
 			if (origin != null) {
 				if (url == null) {
 					url = origin.getSourceUrl();
 					int i = url.lastIndexOf('?');
-					if (i < url.length() && i > 0) 
+					if (i < url.length() && i > 0)
 						url = url.substring(0, i); /* cut off old parameters */
 				}
 				processes.addAll(origin.getSourceSensors());
 			}
 		}
-		
+
         /* inputs */
 		int j = 0;
 		for (URI s : processes) {
@@ -295,7 +295,7 @@ public class RegisterSensorBuilder {
 			cursor.insertElementWithText(ELEMENT_NAME_NAME, Constants.Sos.AGGREGATION_OFFERING_NAME);
 		}
 	}
-	
+
 	public static String getDescribeSensorUrl(String url, String sensorId) {
 		HashMap<Constants.Sos.Parameter, Object> props = new HashMap<Constants.Sos.Parameter, Object>();
 		props.put(Constants.Sos.Parameter.REQUEST, Constants.Sos.Operation.DESCRIBE_SENSOR);
@@ -305,13 +305,13 @@ public class RegisterSensorBuilder {
 		props.put(Constants.Sos.Parameter.PROCEDURE, sensorId);
 		return Utils.buildGetRequest(url, props);
 	}
-	
-	
+
+
 	protected void buildValidTime(AbstractProcessType systemType, List<? extends AbstractObservation> obs) {
 		DateTime start = null, end = null;
 		for (AbstractObservation o : obs) {
 			TimeObject to = o.getPhenomenonTime();
-			
+
 			if (to.isInstant()) {
 				DateTime t = to.getDateTime();
 				if (start == null || t.isBefore(start))
@@ -323,7 +323,7 @@ public class RegisterSensorBuilder {
 				if (start == null || s.isBefore(start))
 					start = s;
 				DateTime e = to.getInterval().getEnd();
-				if (end == null || e.isAfter(end)) 
+				if (end == null || e.isAfter(end))
 					end = e;
 			}
 		}
@@ -355,61 +355,61 @@ public class RegisterSensorBuilder {
 		DataRecordType dataRecord = (DataRecordType) abstractDataRecord
 				.substitute(SWE.q("DataRecord"), DataRecordType.type);
 		dataRecord.setDefinition(UwConstants.URN.CAPABILITIES_DEFINITION.value);
-		
 
-		/* TODO generate BBOX 
+
+		/* TODO generate BBOX
 		DataComponentPropertyType field_bbox = dataRecord.addNewField();
 		field_bbox.setName(Constants.FIELD_NAME_BBOX);
 		*/
-		
+
 		DataComponentPropertyType statusField = dataRecord.addNewField();
         statusField.setName(FIELD_NAME_STATUS);
         Boolean statusBoolean = statusField.addNewBoolean();
         statusBoolean.setDefinition(UwConstants.URN.IS_ACTIVE.value);
         statusBoolean.setValue(false);
-        
+
 //        // spatial grouping method
 //        DataComponentPropertyType sgmField = dataRecord.addNewField();
 //        sgmField.setName(Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD);
 //        Text sgmText = sgmField.addNewText();
 //        sgmText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_SPATIAL_GROUPING_METHOD);
 //        sgmText.setValue(meta.get(Constants.PROPERTY_NAME_SPATIAL_GROUPING_METHOD));
-//    
+//
 //        // temporal grouping method
 //        DataComponentPropertyType tgmField = dataRecord.addNewField();
 //        tgmField.setName(Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD);
 //        Text tgmText = tgmField.addNewText();
 //        tgmText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD);
 //        tgmText.setValue(meta.get(Constants.PROPERTY_NAME_TEMPORAL_GROUPING_METHOD));
-//        
+//
 //        // spatial aggregation method
 //        DataComponentPropertyType samField = dataRecord.addNewField();
 //        samField.setName(Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD);
 //        Text samText = samField.addNewText();
 //        samText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD);
 //        samText.setValue(meta.get(Constants.PROPERTY_NAME_SPATIAL_AGGREGATION_METHOD));
-//        
+//
 //        // temporal aggregation method
 //        DataComponentPropertyType tamField = dataRecord.addNewField();
 //        tamField.setName(Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD);
 //        Text tamText = tamField.addNewText();
 //        tamText.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD);
 //        tamText.setValue(meta.get(Constants.PROPERTY_NAME_TEMPORAL_AGGREGATION_METHOD));
-//        
+//
 //        // temporal before spatial
 //        DataComponentPropertyType tbsField = dataRecord.addNewField();
 //        tbsField.setName(Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
 //        Boolean tbsBoolean = tbsField.addNewBoolean();
 //        tbsBoolean.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION);
 //        tbsBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PROPERTY_NAME_TEMPORAL_BEFORE_SPATIAL_AGGREGATION)));
-//     
+//
 //        // grouped by observed property
 //        DataComponentPropertyType gbopField = dataRecord.addNewField();
 //        gbopField.setName(Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY);
 //        Boolean gbopBoolean = gbopField.addNewBoolean();
 //        gbopBoolean.setDefinition(Constants.CAPS_PROPERTY_PREFIX + Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY);
 //        gbopBoolean.setValue(java.lang.Boolean.parseBoolean(meta.get(Constants.PROPERTY_NAME_GROUPED_BY_OBSERVED_PROPERTY)));
-//        
+//
         // time of aggregation
         DataComponentPropertyType toaField = dataRecord.addNewField();
         toaField.setName(Constants.Sos.ProcessDescription.Capabilities.TIME_OF_AGGREGATION);

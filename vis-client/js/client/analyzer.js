@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -48,14 +48,14 @@ OpenLayers.Util.gcd = function(u,v){
 };
 
 OpenLayers.Util.analyzeFeatures = function (features) {
-	
+
 	function getValueMinMax(v) {
 		if (typeof(v) === 'number') {
 			return [v, v];
 		} else if (v.getClassName && v.getClassName().match('.*Distribution$')) {
 			var m = v.getMean(); return [m, m];
 		} else if (v.length) {
-			var m = [ Number.POSITIVE_INFINITY, 
+			var m = [ Number.POSITIVE_INFINITY,
 					  Number.NEGATIVE_INFINITY ];
 			for (var k = 0; k < values[j][1].length; k++) {
 				if (v[k] < m[0]) { m[0] = v[k]; }
@@ -66,7 +66,7 @@ OpenLayers.Util.analyzeFeatures = function (features) {
 			throw "Unsupported Type " + v;
 		}
 	}
-	
+
 	var meta = {
 		proposedTitle: null,
 		uom: null,
@@ -80,13 +80,13 @@ OpenLayers.Util.analyzeFeatures = function (features) {
 			step: Number.NaN
 		}
 	}
-	
+
 	for (var i = 0; i < features.length; i++) {
 		var values = features[i].getValues();
 		if (!meta.uom) {
 			meta.uom = features[i].getUom();
 		}
-		
+
 		for (var j = 0; j < values.length; j++) {
 			var t = values[j][0], v = values[j][1];
 			if (v.probability) {
@@ -94,8 +94,8 @@ OpenLayers.Util.analyzeFeatures = function (features) {
 				if (!meta.probabilityConstraint) {
 					meta.probabilityConstraint = v.constraint;
 				} else if (meta.probabilityConstraint !== v.constraint) {
-					throw 'Mixed constraints are not supporeted: "' 
-						+ meta.probabilityConstraint + '" != "' 
+					throw 'Mixed constraints are not supporeted: "'
+						+ meta.probabilityConstraint + '" != "'
 						+ v.constraint + '".';
 				}
 			} else if (meta.containsProbabilities) {
@@ -104,7 +104,7 @@ OpenLayers.Util.analyzeFeatures = function (features) {
 				// check value extent
 				var mm = getValueMinMax(v)
 				if (mm[0] < meta.min) {
-					meta.min = mm[0]; 
+					meta.min = mm[0];
 				}
 				if (mm[1] > meta.max) {
 					meta.max = mm[1];
@@ -115,7 +115,7 @@ OpenLayers.Util.analyzeFeatures = function (features) {
 			}
 
 			// check temporal extent
-			if (t.length == 1) { 
+			if (t.length == 1) {
 				t = [t[0], t[0]];
 			}
 			if (t[0] < meta.time.min) {
@@ -133,11 +133,11 @@ OpenLayers.Util.analyzeFeatures = function (features) {
 					meta.time.step = curStep;
 				}
 			}
-		}			
+		}
 	}
-	if (isNaN(meta.time.step)) { 
+	if (isNaN(meta.time.step)) {
 		meta.time.step = 0;
-	}	
+	}
 	if (meta.probabilityConstraint) {
 		meta.proposedTitle = meta.probabilityConstraint;
 	} else {

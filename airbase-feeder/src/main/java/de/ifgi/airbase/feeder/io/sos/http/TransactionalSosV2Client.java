@@ -21,11 +21,11 @@ import net.opengis.swes.x20.InsertSensorDocument;
  * @author Christian Autermann <c.autermann@52north.org>
  */
 public class TransactionalSosV2Client extends AbstractTransactionalSosClient {
-    
+
     private static final String INSERT_SENSOR_REQUEST_FILE_PREFIX = "InsertSensor-";
     private static final String INSERT_RESULT_REQUEST_FILE_PREFIX = "InsertResult-";
     private static final String INSERT_RESULT_TEMPLATE_REQUEST_FILE_PREFIX = "InsertResultTemplate-";
-    
+
     @Override
     public void registerStation(EEAStation station) throws IOException, RequestFailedException {
         insertSensor(station);
@@ -43,7 +43,7 @@ public class TransactionalSosV2Client extends AbstractTransactionalSosClient {
     private void insertResultTemplate(EEAStation station, EEAConfiguration configuration) throws IOException, RequestFailedException {
         try {
             long start = System.currentTimeMillis();
-            
+
             InsertResultTemplateDocument doc = new InsertResultTemplateRequestBuilder()
                     .setConfiguration(configuration).setStation(station).build();
             String req = new SoapRequestBuilder().setBody(doc).asString();
@@ -110,9 +110,9 @@ public class TransactionalSosV2Client extends AbstractTransactionalSosClient {
                     .getCode()), "-", String.valueOf(reqNo), ".xml");
             long requestStart = System.currentTimeMillis();
             InputStream in = request(req);
-            
+
             log.debug("Build InsertResult {} for Station {}; SOS processed it in {}.",
-                      new Object[] {Integer.valueOf(reqNo), 
+                      new Object[] {Integer.valueOf(reqNo),
                                     file.getStation().getEuropeanCode(),
                                     Utils.timeElapsed(requestStart)});
 

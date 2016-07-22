@@ -6,11 +6,11 @@ import org.uncertml.statistic.CovarianceMatrix;
 /**
  * Class representing the Wishart distribution with parameters degrees of freedom
  * and scale matrix.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Wishart}
- * 
+ *
  * @see org.uncertml.statistic.CovarianceMatrix
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -22,7 +22,7 @@ public class WishartDistribution implements IMultivariateDistribution {
     /**
      * Constructor that takes a single degrees of freedom parameter and scale
      * matrix.
-     * 
+     *
      * @param degreesOfFreedom the degrees of freedom parameter.
      * @param scaleMatrix a scale matrix.
      */
@@ -41,7 +41,7 @@ public class WishartDistribution implements IMultivariateDistribution {
     }
 
     /**
-     * 
+     *
      * @return the degrees of freedom parameter.
      */
     public double getDegreesOfFreedom() {
@@ -49,7 +49,7 @@ public class WishartDistribution implements IMultivariateDistribution {
     }
 
     /**
-     * 
+     *
      * @return the scale matrix parameter.
      * @see org.uncertml.statistic.CovarianceMatrix
      */

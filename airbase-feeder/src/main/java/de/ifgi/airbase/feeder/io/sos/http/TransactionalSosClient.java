@@ -15,19 +15,19 @@ import java.util.List;
 
 /**
  * A class to register {@link EEAStation}s and insert {@link EEARawDataFile} to a SOS.
- * 
+ *
  * @author Christian Autermann
- * 
+ *
  */
 public class TransactionalSosClient extends AbstractTransactionalSosClient {
-    
+
     private static final String REGISTER_SENSOR_REQUEST_FILE_PREFIX = "RegisterSensor-";
     private static final String INSERT_OBSERVATION_REQUEST_FILE_PREFIX = "InsertObservation-";
 
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see de.ifgi.airbase.feeder.io.sos.http.SosClient#registerStation(de.ifgi.
      * airbase.feeder.data.EEAStation)
      */
@@ -50,7 +50,7 @@ public class TransactionalSosClient extends AbstractTransactionalSosClient {
         printRequest(req, getPath(), REGISTER_SENSOR_REQUEST_FILE_PREFIX, station.getEuropeanCode(), ".xml");
         String buildTime = Utils.timeElapsed(start);
         InputStream in = request(req);
-        log.info("Build RegisterSensor for {} in {}; SOS processed it in {}.", 
+        log.info("Build RegisterSensor for {} in {}; SOS processed it in {}.",
                 new Object[] {station.getEuropeanCode(), buildTime, Utils.timeElapsed(start)});
 
         if ( !processResponse(in)) {
@@ -58,7 +58,7 @@ public class TransactionalSosClient extends AbstractTransactionalSosClient {
                     station.getEuropeanCode(), ".xml");
         }
     }
-    
+
     @Override
     protected void insertObservations(int reqNo, EEARawDataFile file, List<EEAMeasurement> valuesToInsert) throws IOException, RequestFailedException {
         try {

@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SimpleStartupTest {
-	
+
 	private static final String CONFIG_PATH = SimpleStartupTest.class.getResource("/wps_config/wps_config.xml").getFile();
 	protected static final Logger log = LoggerFactory.getLogger(SimpleStartupTest.class);
 
@@ -28,20 +28,20 @@ public class SimpleStartupTest {
 		ParserFactory.initialize(WPSConfig.getInstance().getRegisteredParser());
 		GeneratorFactory.initialize(WPSConfig.getInstance().getRegisteredGenerator());
 	}
-	
-	
+
+
 	public static void main(String[] args) {
 		for (IParser p : ParserFactory.getInstance().getAllParsers()) {
 			System.out.println(p.getClass().getName());
 		}
-		
+
 		for (IGenerator p : GeneratorFactory.getInstance().getAllGenerators()) {
 			System.out.println(p.getClass().getName());
 		}
 		STARepository r = new STARepository();
 		for (String name : r.getAlgorithmNames()) {
 			System.out.println(r.getProcessDescription(name));
-			
+
 		}
 	}
 }

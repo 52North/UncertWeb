@@ -12,17 +12,17 @@ import org.n52.sos.ogc.ows.OwsExceptionReport;
 
 /**
  * DAO factory for PostgreSQL 8.1
- * 
+ *
  * @author Christoph Stasch, Martin Kiesow
- * 
+ *
  */
 public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implements IDAOFactory {
 
 	//TODO comments
-	
+
     /**
      * constructor
-     * 
+     *
      * @param connection
      *            String containing the connection URL
      * @param user
@@ -42,10 +42,10 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
     	super(daoProps);
 
     }
-    
+
     /**
      * method intitializes and returns a PostgreSQLGetTargetFeatureDAO
-     * 
+     *
      * @return PostgreSQLGetTargetFeatureDAO DAO for the GetTargetFeature
      *         operation
      */
@@ -55,7 +55,7 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
 
 	/**
      * method intitializes and returns a PostgreSQLGetTargetFeatureDAO
-     * 
+     *
      * @param logLevel
      *            Level for logging, parameter is necessary cause the
      *            PGSQLConfigDAO is used in the SosConfigurator's constructor
@@ -71,7 +71,7 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
 
     /**
      * initializes the DAOConstants
-     * 
+     *
      * @param daoProps
      *            Properties created from the dssos.config file
      * @throws OwsExceptionReport
@@ -83,9 +83,9 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
 
     /**
      * returns the registerSensor DAO
-     * 
+     *
      * @return returns the registerSensor DAO
-     * 
+     *
      */
     public IRegisterSensorDAO getRegisterSensorDAO() {
 
@@ -93,7 +93,7 @@ public class PGSQLDAOFactory extends org.n52.sos.ds.pgsql.PGSQLDAOFactory implem
     }
 
     /**
-     * 
+     *
      * @return Returns the insertObservation DAO
      */
     public IInsertObservationOperationDAO getInsertObservationOperationDAO() {

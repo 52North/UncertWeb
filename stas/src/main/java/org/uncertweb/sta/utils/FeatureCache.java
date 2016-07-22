@@ -25,30 +25,30 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * helper class for caching simple features from a WFS
- * 
+ *
  * @author staschc
  *
  */
 public class FeatureCache {
-	
+
 	private String wfsUrl = null;
-	
+
 	private String wfsTypeName = null;
-	
+
 	/**
 	 * The Logger.
 	 */
 	protected static final Logger log = LoggerFactory.getLogger(FeatureCache.class);
-	
+
 	/**
 	 * Geotools parser used to parse the GML
 	 */
 	private Parser parser = new Parser(new GMLConfiguration());
-	
+
 	/**caches the features that are already retrieved from the WFS*/
 	private HashMap<URL,SpatialSamplingFeature> feature4WfsURL= new HashMap<URL,SpatialSamplingFeature>(10000);
-	
-	
+
+
 	public FeatureCache(){
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(AggregationAlgorithmRepository.class.getCanonicalName());
 		for(Property property : propertyArray){
@@ -60,15 +60,15 @@ public class FeatureCache {
 			}
 		}
 	}
-	
+
 	/**
 	 * adds a new feature and adds it to the cache; if it is already contained in cache, it is directly returned.
-	 * 
+	 *
 	 * @param url
 	 * 			Get URL to feature in WFS
 	 * @return SpatialSamplingFeature
 	 * @throws STASException
-	 * @throws MalformedURLException 
+	 * @throws MalformedURLException
 	 */
 	public SpatialSamplingFeature getFeatureFromWfs(String href) throws STASException, MalformedURLException {
 		if (!href.startsWith("http://")){
@@ -79,7 +79,7 @@ public class FeatureCache {
 		if (feature4WfsURL.containsKey(url)){
 			return feature4WfsURL.get(url);
 		}
-		
+
 		//geometry needs to be retrieved from WFS
 		SpatialSamplingFeature feature = null;
 		InputStream is = null;
@@ -88,9 +88,9 @@ public class FeatureCache {
 		} catch (Exception e) {
 			log.info("Error while retrieving features from WFS: "+e.getLocalizedMessage());
 			throw new STASException("Error while retrieving features from WFS: "+e.getLocalizedMessage());
-		} 
-		
-		
+		}
+
+
 		try {
 			DefaultFeatureCollection featCol = (DefaultFeatureCollection)parser.parse(is);
 			SimpleFeatureIterator features = featCol.features();
@@ -107,7 +107,7 @@ public class FeatureCache {
 		}
 		return feature;
 	}
-	
+
 	public String getWfsUrl() {
 		return wfsUrl;
 	}

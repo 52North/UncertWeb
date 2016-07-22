@@ -22,7 +22,7 @@ public class AustalProperties {
 	private List<String> otherParameters, ha;
 	private String pollutant;
 	private Point centralPoint;
-	
+
 	public AustalProperties(String propsFilePath) throws FileNotFoundException, IOException{
 		Properties props = new Properties();
 		props.load(new FileInputStream(propsFilePath));
@@ -39,14 +39,14 @@ public class AustalProperties {
 		ha = parsePropsList(props.getProperty("HA"));
 		centralPoint = createCentralPoint();
 	}
-	
+
 	/**
 	 * helper method for parsing a list of properties from file
-	 * 
+	 *
 	 * @param obsPropsString
 	 *            comma seperated list of
-	 * @return 
-	 * @throws IOException 
+	 * @return
+	 * @throws IOException
 	 */
 	private List<String> parsePropsList(String obsPropsString){
 		if (obsPropsString != null && !obsPropsString.equals("")) {
@@ -60,96 +60,96 @@ public class AustalProperties {
 			return null;
 		}
 	}
-	
+
 	private Point createCentralPoint(){
 		PrecisionModel pMod = new PrecisionModel(PrecisionModel.FLOATING);
 		GeometryFactory geomFac = new GeometryFactory(pMod, Integer.parseInt(epsg));
 		double gxD = Double.parseDouble(gx);
 		double gyD = Double.parseDouble(gy);
-		Coordinate coord = new Coordinate(gxD, gyD);											
+		Coordinate coord = new Coordinate(gxD, gyD);
 		Point p = geomFac.createPoint(coord);
 		return(p);
 	}
-	
+
 	//TODO implement featurecollection
 	private Point createCentralPointFeatureCollection(){
-		Coordinate coord = new Coordinate(Double.parseDouble(gx), Double.parseDouble(gy));											
+		Coordinate coord = new Coordinate(Double.parseDouble(gx), Double.parseDouble(gy));
 		PrecisionModel pMod = new PrecisionModel(PrecisionModel.FLOATING);
 		GeometryFactory geomFac = new GeometryFactory(pMod, Integer.parseInt(epsg));
 		Point p = geomFac.createPoint(coord);
 		return(p);
 	}
-	
+
 	/**
 	 * @return the gx parameter
 	 */
 	public String getGX() {
 		return gx;
 	}
-	
+
 	/**
 	 * @return the gy parameter
 	 */
 	public String getGY() {
 		return gy;
 	}
-		
+
 	/**
 	 * @return the dd parameter
 	 */
 	public String getDD() {
 		return dd;
 	}
-	
+
 	/**
 	 * @return the nx parameter
 	 */
 	public String getNX() {
 		return nx;
 	}
-	
+
 	/**
 	 * @return the ny parameter
 	 */
 	public String getNY() {
 		return ny;
 	}
-	
+
 	/**
 	 * @return the qs parameter
 	 */
 	public String getQS() {
 		return qs;
 	}
-	
+
 	/**
 	 * @return the z0 parameter
 	 */
 	public String getZ0() {
 		return z0;
 	}
-	
+
 	/**
 	 * @return the epsg parameter
 	 */
 	public String getEPSG() {
 		return epsg;
 	}
-	
+
 	/**
 	 * @return the pollutant parameter
 	 */
 	public String getPollutant() {
 		return pollutant;
 	}
-	
+
 	/**
 	 * @return the other parameters
 	 */
 	public List<String> getOtherParameters() {
 		return otherParameters;
 	}
-	
+
 	public Point getCentralPoint() {
 		return centralPoint;
 	}

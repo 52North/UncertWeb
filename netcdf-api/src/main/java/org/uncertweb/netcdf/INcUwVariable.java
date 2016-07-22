@@ -60,11 +60,11 @@ public interface INcUwVariable extends Iterable<NcUwObservation> {
 	public abstract NcUwObservation getObservation(NcUwCoordinate c);
 	@Override public abstract Iterator<NcUwObservation> iterator();
 	public abstract Iterable<NcUwObservation> getTimeLayer(TimeObject t);
-	
+
 	public String getStringAttribute(String name, boolean failIfNotExisting);
 	public Variable getVariable(String name, boolean failIfNotExisting);
 	public Variable getVariable(String name);
-	public Number getNumberAttribute(String name, boolean failIfNotExisting); 
+	public Number getNumberAttribute(String name, boolean failIfNotExisting);
 	public String getStringAttribute(String name);
 	public Number getNumberAttribute(String name);
 

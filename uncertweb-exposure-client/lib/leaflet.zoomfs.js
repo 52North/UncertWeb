@@ -47,7 +47,7 @@ L.Control.ZoomFS = L.Control.Zoom.extend({
 
 	  // add ESC listener
 	  L.DomEvent.addListener(document, 'keyup', this._onKeyUp, this);
-	  
+
     // fire fullscreen event on map
     this._map.fire('enterFullscreen');
   },
@@ -60,7 +60,7 @@ L.Control.ZoomFS = L.Control.Zoom.extend({
 
     // remove fullscreen style; make sure we're still position relative for Leaflet core.
     container.removeAttribute('style');
-    
+
     // re-apply position:relative; if user does not have it.
     var position = L.DomUtil.getStyle(container, 'position');
     if (position !== 'absolute' && position !== 'relative') {

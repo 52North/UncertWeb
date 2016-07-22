@@ -4,18 +4,18 @@ import org.uncertml.statistic.CovarianceMatrix;
 
 /**
  * wrapper for covariance matrix parameter
- * 
+ *
  * @author staschc
  *
  */
 public class CovarianceMatrixParameter implements INormalCovarianceParameter {
-		
+
 		/** Covariance matrix of UncertML*/
 		private CovarianceMatrix cvMatrix;
-		
+
 		/**
 		 * constructor
-		 * 
+		 *
 		 * @param cvMatrixp
 		 * 		Covariance matrix of UncertML
 		 */

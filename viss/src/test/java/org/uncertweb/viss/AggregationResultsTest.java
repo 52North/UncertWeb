@@ -29,7 +29,7 @@ import org.uncertweb.viss.core.util.MediaTypes;
 import org.uncertweb.viss.vis.statistic.SimpleStatisticVisualizer;
 
 public class AggregationResultsTest extends AbstractVissTest {
-	
+
 	@Test
 	public void testAggregationResults() throws JSONException {
 		ObjectId r = addResource(MediaTypes.NETCDF_TYPE, AGGREGATION_RESULT);

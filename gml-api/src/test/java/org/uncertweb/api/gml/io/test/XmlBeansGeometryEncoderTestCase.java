@@ -23,18 +23,18 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Junit tests for XmlBeans encoding
- * 
+ *
  * @author staschc
  *
  */
 public class XmlBeansGeometryEncoderTestCase extends TestCase {
-	
+
 	private GeometryFactory geomFac;
-	
+
 	public void setUp() {
 		geomFac = new GeometryFactory();
 	}
-	
+
 	public void testPointEncoder() throws Exception {
 		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
 		Point x = new GmlGeometryFactory().createPoint(52.77, 8.76, 4326);
@@ -45,7 +45,7 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		Geometry geometry = new JSONGeometryDecoder().parseUwGeometry(jsonString);
 		System.out.println(new JSONGeometryEncoder().encodeGeometry(geometry));
 	}
-	
+
 	public void testPolygonEncoder() throws Exception{
 		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
 		Coordinate[] coords = new Coordinate[5];
@@ -54,7 +54,7 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		coords[2] = new Coordinate(1.0,1.0);
 		coords[3] = new Coordinate(1.0,0.0);
 		coords[4] = new Coordinate(0.0,0.0);
-		
+
 		Coordinate[] coords2 = new Coordinate[5];
 		coords2[0] = new Coordinate(0.25,0.25);
 		coords2[1] = new Coordinate(0.25,0.75);
@@ -70,8 +70,8 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		Geometry geometry = new JSONGeometryDecoder().parseUwGeometry(jsonString);
 		System.out.println(new JSONGeometryEncoder().encodeGeometry(geometry));
 	}
-	
-	
+
+
 	public void testLineStringEncoder() throws Exception{
 		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
 		Coordinate[] coords = new Coordinate[4];
@@ -86,7 +86,7 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		Geometry geom = new JSONGeometryDecoder().parseUwGeometry(jsonString);
 		System.out.println(new JSONGeometryEncoder().encodeGeometry(geom));
 	}
-	
+
 	public void testRectifiedGridEncoder() throws Exception{
 		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
 		Coordinate[] coords = new Coordinate[4];
@@ -110,7 +110,7 @@ public class XmlBeansGeometryEncoderTestCase extends TestCase {
 		RectifiedGrid rg = new RectifiedGrid( env, axisLabels, p, offsetVectors, geomFac);
 		System.out.println(encoder.encodeGeometry(rg));
 	}
-	
+
 	public void testMultiGeometryEncoder() throws Exception{
 		XmlBeansGeometryEncoder encoder = new XmlBeansGeometryEncoder();
 		Point[] geom = new Point[3];

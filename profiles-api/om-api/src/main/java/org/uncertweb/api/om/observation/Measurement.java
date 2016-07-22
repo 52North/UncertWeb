@@ -13,7 +13,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Measurement contains double result and inherits other properties from AbstractObservation
- * 
+ *
  * @author Kiesow, staschc
  *
  */
@@ -21,13 +21,13 @@ public class Measurement extends AbstractObservation {
 
 	/** measure result of the observation */
 	private MeasureResult result;
-	
+
 	/**type name of this observation*/
 	public static final String NAME = "OM_Measurement";
-	
+
 	/**
 	 * Constructor with mandatory attributes
-	 * 
+	 *
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -40,7 +40,7 @@ public class Measurement extends AbstractObservation {
 	 *            feature of interest property
 	 * @param result
 	 *            result
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public Measurement(TimeObject phenomenonTime, TimeObject resultTime,
 			URI procedure, URI observedProperty,
@@ -51,7 +51,7 @@ public class Measurement extends AbstractObservation {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param identifier
 	 *            identifier of the observation
 	 * @param boundedBy
@@ -72,7 +72,7 @@ public class Measurement extends AbstractObservation {
 	 *            result
 	 * @param resultQuality
 	 * 			  (optional) result qualities as UncertaintyResults
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public Measurement(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
 			TimeObject resultTime, TimeObject validTime, URI procedure,
@@ -97,7 +97,7 @@ public class Measurement extends AbstractObservation {
 			this.result = (MeasureResult)result;
 		}
 		else throw new IllegalArgumentException("Result type of MeasurementObservation has to be Measurement!");
-		
+
 	}
 
 	@Override

@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a geometric distribution with probability parameter.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Geometric}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -21,7 +21,7 @@ public class GeometricDistribution implements IDiscreteDistribution {
 
     /**
      * Constructor that takes a single probability parameter.
-     * 
+     *
      * @param probability the probability parameter.
      */
     public GeometricDistribution(double probability) {
@@ -30,10 +30,10 @@ public class GeometricDistribution implements IDiscreteDistribution {
 
     /**
      * Constructor that takes an array of doubles for probability parameters. Each probability
-     * represents a unique geometric distribution. This is in line with the 
+     * represents a unique geometric distribution. This is in line with the
      * UncertML syntax whereby a collection of types can be represented by a single
      * entity.
-     * 
+     *
      * @param probability an array of doubles representing the probability parameter of n
      * geometric distributions.
      */
@@ -43,10 +43,10 @@ public class GeometricDistribution implements IDiscreteDistribution {
 
     /**
      * Constructor that takes a list of doubles for probability parameters. Each probability
-     * represents a unique geometric distribution. This is in line with the 
+     * represents a unique geometric distribution. This is in line with the
      * UncertML syntax whereby a collection of types can be represented by a single
      * entity. The list must not contain any null elements.
-     * 
+     *
      * @param probability a list of doubles representing the probability parameter of n
      * geometric distributions.
      */
@@ -58,7 +58,7 @@ public class GeometricDistribution implements IDiscreteDistribution {
     }
 
     /**
-     * 
+     *
      * @return the probability parameter of each geometric distribution represented
      * by this object.
      */

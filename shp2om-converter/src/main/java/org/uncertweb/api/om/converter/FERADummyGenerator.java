@@ -28,44 +28,44 @@ import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * class for generating dummy data using the shp files Dummy_soils.shp and Dummy_fields.shp 
- * 
+ * class for generating dummy data using the shp files Dummy_soils.shp and Dummy_fields.shp
+ *
  * @author staschc
  *
  */
 public class FERADummyGenerator {
-	
+
 	///Shapefile constants
 	private final String SHP_PATH="E:/uncertwebWorkspace/shape-om-converter/etc/";
 	private final String SHP_FILE_FIELDS="Dummy_fields.shp";
 	private final String FEATURE_CLASS_FIELDS="Dummy_fields";
 	private final int SRID = 27700;
-	
+
 	//observation property constants
 	private final String OBS_PROP_YIELD="urn:ogc:def:phenomenon:OGC:cropYield";
 	private final String PROC_ID_AQUACROP="http://www.uncertweb.org/models/aquacrop";
 	private final int START_YEAR = 2000;
 	private final int END_YEAR = 2004;
-	
+
 	//properties of the yield distribution
 	private final double YIELD_MEAN=80.0;
 	private final double YIELD_SD=20.0;
-	
+
 	//Target file properties
 	private final String TARGET_FILE_PATH = SHP_PATH+"yield_om_"+System.currentTimeMillis()+".xml";
-	
-	
+
+
 	private Collection<TimeObject> years;
-	
+
 	public FERADummyGenerator(){
 		years = initializeYears();
 	}
-	
+
 	public void generateYieldObservationRealisations(int numberOfRealisations) throws IOException, URISyntaxException, OMEncodingException{
-		
-		
+
+
 		UncertaintyObservationCollection obsCol = new UncertaintyObservationCollection();
-		
+
 		///////////////
 		// extract features from shapefile
 		String shpFilePath = SHP_PATH + SHP_FILE_FIELDS;
@@ -83,8 +83,8 @@ public class FERADummyGenerator {
 
 		FeatureCollection<SimpleFeatureType, SimpleFeature> foiCollection = source
 				.getFeatures();
-		
-		
+
+
 		//////////////////
 		// iterate over features to create observations
 		FeatureIterator<SimpleFeature> features = foiCollection.features();
@@ -100,7 +100,7 @@ public class FERADummyGenerator {
 				Geometry jtsGeom = (Geometry) geom;
 				jtsGeom.setSRID(SRID);
 				sf = ShapeFileConverterUtil.createSamplingFeature(id, jtsGeom);
-				
+
 				//create an uncertainty observation containing the realisations for each year
 				Iterator<TimeObject> iter = this.years.iterator();
 				while (iter.hasNext()){
@@ -111,17 +111,17 @@ public class FERADummyGenerator {
 				}
 			}
 		}
-		
+
 		//encode observation collection to target file
 		StaxObservationEncoder encoder = new StaxObservationEncoder();
 		File outputFile = new File(TARGET_FILE_PATH);
 		encoder.encodeObservationCollection(obsCol,outputFile);
 	}
-	
-	
+
+
 	/**
 	 * helper method that generates realisations for yields
-	 * 
+	 *
 	 * @param numberOfRealisations
 	 * 			number of realisations for each year
 	 * @return Returns ContinuousRealisation containing the realisations
@@ -135,11 +135,11 @@ public class FERADummyGenerator {
 		}
 		return new ContinuousRealisation(values);
 	}
-	
-	
+
+
 	/**
 	 * helper method that generates random sample from a Gaussian distribution
-	 * 
+	 *
 	 * @param mean
 	 * 			mean of the Gaussian Distribution
 	 * @param variance
@@ -151,7 +151,7 @@ public class FERADummyGenerator {
 		Random generator = new Random();
 		return mean+generator.nextGaussian()*variance;
 	}
-	
+
 	private Collection<TimeObject> initializeYears() {
 		int year = this.START_YEAR;
 		Collection<TimeObject> yearsTmp = new ArrayList<TimeObject>();
@@ -163,8 +163,8 @@ public class FERADummyGenerator {
 		}
 		return yearsTmp;
 	}
-	
-	
+
+
 	public static void main(String[] args) {
 		try {
 			new FERADummyGenerator().generateYieldObservationRealisations(100);

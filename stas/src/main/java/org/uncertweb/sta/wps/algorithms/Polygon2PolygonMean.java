@@ -58,15 +58,15 @@ import com.vividsolutions.jts.geom.Geometry;
 /**
  * algorithm that implements a weighted sum of a polygon to polygon aggregation. The intersection area of polygons serves
  * as weight.
- * 
+ *
  * @author staschc
  *
  */
 public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
-	
-	
-	
-	
+
+
+
+
 	///////////////////////
 	// supported uncertainty types
 	private static final String CREAL_URI = UncertML.getURI(ContinuousRealisation.class);
@@ -74,59 +74,59 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 	private static final String VARIANCE_URI = UncertML.getURI(Variance.class);
 	private static final String RANDOMSAMPLE_URI = UncertML
 			.getURI(RandomSample.class);
-	
+
 	//indicates the number of digits for the aggregates
 	private static final int NUMBER_OF_DIGITS=4;
-	
-	
+
+
 	//default SRS EPSG Code
 	private static final int DEFAULT_SRS = 27700;
-	
+
 	//used for retrieving FOIS in observations from WFS
 	private FeatureCache featureCache = new FeatureCache();
-	
+
 	private String wfsURL = "";
 	private String typeName = "";
-	private LinkedList<String> intersections = new LinkedList<String>();	
-	
-	
+	private LinkedList<String> intersections = new LinkedList<String>();
+
+
 	/**
 	 * Input parameter which contains the input regions
 	 */
 	public static final SingleProcessInput<GTVectorDataBinding> INPUT_REGIONS = new SingleProcessInput<GTVectorDataBinding>(
 			"InputRegions",
 			GTVectorDataBinding.class, 0, 1, null, null);
-	
+
 	/**
 	 * Input parameter which contains the scale factor for the weights calculated from areas
 	 */
 	public static final SingleProcessInput<LiteralStringBinding> PERM_INPUT_REFERENCE = new SingleProcessInput<LiteralStringBinding>(
 			"PermanentInputReference",
 			LiteralStringBinding.class, 0, 1, null, null);
-	
+
 	/**
 	 * The URL of the SOS in which the aggregated observations will be inserted.
 	 */
 	public static final SingleProcessInput<String> INPUT_DATA = new SingleProcessInput<String>(
 			Constants.Process.Inputs.INPUT_DATA, "@variable-uncertainty-types "+CREAL_URI+","+MEAN_URI+","+VARIANCE_URI + " \n @om-types OM_UncertaintyObservation",
 			OMBinding.class, 1, 1, null, null);
-	
+
 	/**
 	 * Process output that contains a {@code GetObservation} request to fetch
 	 * the aggregated observations from a SOS.
-	 * 
+	 *
 	 * @see Constants.Process.Inputs.Common#SOS_DESTINATION_URL
 	 */
 	public static final ProcessOutput AGGREGATED_OUTPUT = new ProcessOutput(
 			Constants.Process.Outputs.AGGREGATED_DATA,
 			OMBinding.class);
-	
+
 	/**
 	 * The Logger.
 	 */
 	protected static final Logger log = LoggerFactory
 			.getLogger(Polygon2PolygonMean.class);
-	
+
 	/**
 	 * identifier of aggregation process
 	 */
@@ -145,14 +145,14 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 		super.OUTPUT_UNCERTAINTY_TYPE.setAllowedValues(allowedUncertaintyTypes);
 		log.debug("Aggregation process " + IDENTIFIER+" has been initialized");
 	}
-	
-	
+
+
 
 	@Override
 	public String getIdentifier() {
 		return IDENTIFIER;
 	}
-	
+
 	@Override
 	public String getTitle() {
 		return "Weighted Sum Aggregation from polygons to polygons.";
@@ -173,19 +173,19 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 		result.add(AGGREGATED_OUTPUT);
 		return result;
 	}
-	
+
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
 		Map<String, IData> result = new HashMap<String,IData>();
-		
+
 		//get common Inputs
 		AggregationInputs commonInputs = super.getAggregationInputs4Inputs(inputData);
 		UncertainAggregationInputs uncertInputs = super.getUncertainAggregationInputs4Inputs(inputData);
-		
+
 		if (uncertInputs.getNumberOfRealisations()!=1){
 			return runMonteCarlo(inputData);
 		}
@@ -194,34 +194,34 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 			return runMonteCarlo(inputData);
 		}
 	}
-	
+
 	@Override
 	public Map<String, IData> runMonteCarlo(Map<String, List<IData>> inputData) {
-		
+
 		Map<String, IData> result = new HashMap<String,IData>();
-		
+
 		//get common Inputs
 		AggregationInputs commonInputs = super.getAggregationInputs4Inputs(inputData);
 		UncertainAggregationInputs uncertInputs = super.getUncertainAggregationInputs4Inputs(inputData);
-		
+
 		IObservationCollection originalObs = null;
 		FeatureCollection targetRegions = null;
-		
+
 		//get scale factor for area weights
 		double scaleFactor = 1.0;
-		
-		
+
+
 		//get observation input
 		List<IData> inputDataInput = inputData.get(INPUT_DATA.getId());
 		if (inputDataInput!=null&&inputDataInput.size()==1){
 			originalObs = ((OMBinding)inputDataInput.get(0)).getPayload();
 		}
-		
+
 		List<IData> inputRegionsInput = inputData.get(INPUT_REGIONS.getId());
 		if (inputRegionsInput!=null&&inputRegionsInput.size()==1){
 			targetRegions = ((GTVectorDataBinding)inputRegionsInput.get(0)).getPayload();
 		}
-		
+
 		/*
 		 * observations are first sorted by time and then for each time stamp, the aggregation is done
 		 */
@@ -247,23 +247,23 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 
 	/**
 	 * helper method that actually runs the agggregation
-	 * 
+	 *
 	 * @param originalObs
 	 * @param targetRegions
 	 * @return
-	 * @throws STASException 
+	 * @throws STASException
 	 */
-	private IObservationCollection runAggregation4TimeObject(TimeObject time, 
+	private IObservationCollection runAggregation4TimeObject(TimeObject time,
 			IObservationCollection originalObs, FeatureCollection targetRegions, int numberOfRealisations,List<String> uncertaintyTypes, double scaleFactor) throws STASException {
 		//Map<SpatialSamplingFeature, IObservationCollection> obsCols4Fois = sortObsByFoi(originalObs);
-		
-		
-		
+
+
+
 		//Iterator<SpatialSamplingFeature> foiIter = obsCols4Fois.keySet().iterator();
 		Map<String,Map<URI,RegionAggregates>> regionsAggCache = new HashMap<String,Map<URI,RegionAggregates>>(1000);
-		
+
 		/*
-		 * iterate over fois and for each target region, check intersection; if FOI intersects, store obsCol with intersection are 
+		 * iterate over fois and for each target region, check intersection; if FOI intersects, store obsCol with intersection are
 		 */
 		Iterator<? extends AbstractObservation> obsIter = originalObs.getObservations().iterator();
 		while (obsIter.hasNext()){
@@ -289,12 +289,12 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 			}
 			//iterate over target regions
 			FeatureIterator features = targetRegions.features();
-			
+
 			while (features.hasNext()){
 				Feature targetRegion = features.next();
 				String targetID = targetRegion.getIdentifier().getID();
 				String idCombi = targetRegion.getIdentifier().getID() + foiID;
-				
+
 				boolean intersects = false;
 				if (!this.intersections.contains(idCombi)){
 					Geometry regionGeom = (Geometry)targetRegion.getDefaultGeometryProperty().getValue();
@@ -305,10 +305,10 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 				} else {
 					intersects = true;
 				}
-				
-				
+
+
 				if (intersects){
-					
+
 					//TODO add type check
 					IUncertainty uncertResult = uncertObs.getResult().getUncertaintyValue();
 					ContinuousRealisation realisations = Utils.getRealisation4uncertResult(uncertResult);
@@ -333,13 +333,13 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 						}
 					}
 				}
-				
-				
+
+
 			}
-			
+
 		}
-		
-		
+
+
 		//iterate over regions aggregate cache and run aggregations
 		IObservationCollection result = new UncertaintyObservationCollection();
 		Iterator<Map<URI, RegionAggregates>> regionsAggIter = regionsAggCache.values().iterator();
@@ -361,7 +361,7 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 					throw new STASException(e.getLocalizedMessage());
 				}
 				try {
-					
+
 					if (uncertaintyTypes==null||uncertaintyTypes.contains(CREAL_URI)){
 						UncertaintyResult obsResult = new UncertaintyResult(aggResult);
 						UncertaintyObservation obs = new UncertaintyObservation(time,time,new URI(IDENTIFIER),observedProperty,foi,obsResult);
@@ -391,19 +391,19 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 		}
 		return result;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * sorts the input observations by time and provides a map containing the times as keys and the corresponding observation collections as values
-	 * 
+	 *
 	 * @param obsCol
 	 * 			observation collection that should be sorted by time
 	 * @return
 	 * 			map containing the times as keys and the corresponding observation collections as values
 	 */
 	private Map<TimeObject,IObservationCollection> sortObsByTime(IObservationCollection obsCol){
-		
+
 		Map<TimeObject,IObservationCollection> result = new HashMap<TimeObject,IObservationCollection>();
 		Iterator<? extends AbstractObservation> obsIter = obsCol.getObservations().iterator();
 		while (obsIter.hasNext()){
@@ -420,29 +420,29 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 		}
 		return result;
 	}
-	
-	
+
+
 	private class RegionAggregates{
 		private URI observedProperty;
 		private Feature region;
 		private List<ContinuousRealisation> originalObsResults;
-		
-		
+
+
 		public RegionAggregates(Feature region,
 				List<ContinuousRealisation> originalObsCols, URI observedProperty) {
 			this.region = region;
 			this.originalObsResults = originalObsCols;
 			this.observedProperty=observedProperty;
 		}
-		
+
 		public Feature getRegion() {
 			return region;
 		}
-		
+
 		public void addRealisation(ContinuousRealisation realisation){
 			this.originalObsResults.add(realisation);
 		}
-		
+
 		public ContinuousRealisation aggregate(int numberOfRealisations){
 			List<Double> aggregatedValues = new ArrayList<Double>(numberOfRealisations);
 			//iterate over each realisation and take i-th element to aggregate on each set of i-th realisations within a region
@@ -457,7 +457,7 @@ public class Polygon2PolygonMean extends AbstractUncertainAggregationProcess{
 					}
 				}
 				sum= sum/originalObsResults.size();
-				//rounding to 
+				//rounding to
 				BigDecimal bd = new BigDecimal(sum).setScale(NUMBER_OF_DIGITS, RoundingMode.HALF_EVEN);
 				aggregatedValues.add(bd.doubleValue());
 			}

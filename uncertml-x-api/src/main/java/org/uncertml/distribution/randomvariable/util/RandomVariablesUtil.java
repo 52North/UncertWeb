@@ -2,15 +2,15 @@ package org.uncertml.distribution.randomvariable.util;
 
 /**
  * utility class for UncertML random variables extension
- * 
+ *
  * @author staschc
  *
  */
 public class RandomVariablesUtil {
-	
+
 	/**
 	 * parses a string containing space seperated trend coefficients to a double array
-	 * 
+	 *
 	 * @param trends
 	 * 			a string containing space seperated trend coefficients
 	 * @return double array containing the trend coefficients

@@ -4,7 +4,7 @@ function App(options, sendCallbacks) {
 	for (var p in this.options.processes) {
 		sendCallbacks[p] = $.isFunction(sendCallbacks[p]) ? sendCallbacks[p] : $.noop;
 	}
-	this.sendCallbacks = sendCallbacks; 
+	this.sendCallbacks = sendCallbacks;
 	this.generateInterface();
 	this.addListeners();
 }
@@ -35,7 +35,7 @@ $.extend(App.prototype, {
 				.find("a").trigger("click");
 			$(this).parent().fadeOut(function() {
 				$(this).remove();
-			}) 
+			})
 		});
 		var self = this;
 		$(".sidebar-nav a").click(function(e){
@@ -52,7 +52,7 @@ $.extend(App.prototype, {
 			});
 		})
 	},
-	
+
 	showVisualizationLink: function(process, output) {
 		var self = this, ref, pid, text,
 			r = this.getResponse(process);
@@ -65,13 +65,13 @@ $.extend(App.prototype, {
 					$.ajax({ type: "GET", url: ref["xlink:href"], dataType: "xml" })
 					 .done(function(e) {
 					 	var i, $a, $text = $("<ul>"),
-					 		refs = XmlUtils.getOCsFromRandomSample(e), 
+					 		refs = XmlUtils.getOCsFromRandomSample(e),
 					 		s = refs.length, text;
-					 	
+
 					 	$text = $("<ul>")
 					 	for (i = 0; i < s; ++i) {
 					 		$a = $("<a>").attr({
-					 			href: self.options.visualizationUrl 
+					 			href: self.options.visualizationUrl
 									+ "?url="  + encodeURIComponent(refs[i]["xlink:href"])
 									+ "&mime=" + encodeURIComponent(refs[i]["mimeType"]),
 								target: "_blank"
@@ -91,9 +91,9 @@ $.extend(App.prototype, {
 					text = "Do you want to see the output of the " + pid + " process?";
 					this.buildModalDialog("Visualization", text, function(dialog) {
 						window.open(
-							self.options.visualizationUrl 
+							self.options.visualizationUrl
 								+ "?url="  + encodeURIComponent(ref["xlink:href"])
-								+ "&mime=" + encodeURIComponent(ref["mimeType"]));	
+								+ "&mime=" + encodeURIComponent(ref["mimeType"]));
 						dialog.modal("hide");
 					});
 				}
@@ -110,9 +110,9 @@ $.extend(App.prototype, {
 			this.buildModalDialog("Download", text, function(dialog) {
 				var ref = XmlUtils.getOutput(r, output);
 				if (typeof(ref) === "object") {
-					window.open(ref["xlink:href"]);	
+					window.open(ref["xlink:href"]);
 				} else if (typeof(ref) === "string") {
-					window.open(ref);	
+					window.open(ref);
 				}
 				dialog.modal("hide");
 			});
@@ -165,9 +165,9 @@ $.extend(App.prototype, {
 				.appendTo($footer)
 				.on("click", function() {
 					$dialog.modal("hide");
-				});	
+				});
 		}
-		
+
 
 		$dialog.appendTo($("body")).modal({
 			"keyboard": true,
@@ -190,7 +190,7 @@ $.extend(App.prototype, {
 
 	onRequiredChange: function(event, element) {
 		var valid = true;
-		$(element).parents("form").find(".required").each(function(){ 
+		$(element).parents("form").find(".required").each(function(){
 			var val = $(element).val();
 			return valid = (val !== null && val !== undefined && val !== "");
 		});
@@ -225,13 +225,13 @@ $.extend(App.prototype, {
 					return;
 				}
 			}
-		}	
+		}
 	},
 
 	createRequest: function(id, form) {
 		var settings = this.options.processes[id];
-		var o = { 
-			id: settings.id, 
+		var o = {
+			id: settings.id,
 			inputs: {},
 			outputs: settings.outputs
 		};
@@ -246,8 +246,8 @@ $.extend(App.prototype, {
 				if (settings.inputs.sections[i].options[key].type === "boolean" && !o.inputs[key]) {
 					o.inputs[key] =  [ false ];
 				}
-				if (!settings.inputs.sections[i].options[key].required 
-					&& o.inputs[key] && o.inputs[key].length === 1 
+				if (!settings.inputs.sections[i].options[key].required
+					&& o.inputs[key] && o.inputs[key].length === 1
 					&& (o.inputs[key][0] === "" || o.inputs[key][0] === undefined)) {
 					delete o.inputs[key];
 				}
@@ -270,7 +270,7 @@ $.extend(App.prototype, {
 				e.preventDefault();
 				if ($(this).text() === "show") {
 					$(this).text("hide");
-					$("#" + coderowid).fadeIn("fast");	
+					$("#" + coderowid).fadeIn("fast");
 				} else if ($(this).text() === "hide") {
 					$(this).text("show");
 					$("#" + coderowid).fadeOut("fast");
@@ -289,7 +289,7 @@ $.extend(App.prototype, {
 						.text(XmlUtils.xml2string(message)))));
 		prettyPrint();
 		if (failed) {
-			$("#"+logrowid).addClass("text-error");	
+			$("#"+logrowid).addClass("text-error");
 		}
 		return id;
 	},
@@ -353,7 +353,7 @@ $.extend(App.prototype, {
 	},
 
 	sendRequest: function(e, element, callback) {
-		var req, s, previousProcess, output, input, 
+		var req, s, previousProcess, output, input,
 			response, reqXml, changed, previousOutput,
 			usedMap = !!this.options.outputs.map,
 			self = this,
@@ -364,16 +364,16 @@ $.extend(App.prototype, {
 		if (self.options.processes.ems) {
 			self.options.processes.ems.outputs.result = usedMap ?
 			 	{ asReference: true, mimeType: "application/x-om-u+xml", schema: "http://schemas.opengis.net/om/2.0/observation.xsd" } :
-				{ asReference: true, mimeType: "application/x-uncertml+xml", schema: "http://uncertml.org/uncertml.xsd" };	
+				{ asReference: true, mimeType: "application/x-uncertml+xml", schema: "http://uncertml.org/uncertml.xsd" };
 		}
 
 		req = this.createRequest(process, $form.serializeArray());
 
 		for (previousProcess in mappings) {
 			if (usedMap && previousProcess === "albatross") {
-				/* skip albatross if the schedules 
+				/* skip albatross if the schedules
 				   were entered on the map*/
-				continue; 
+				continue;
 			}
 			previousOutput = mappings[previousProcess];
 			if (typeof previousOutput === "string") {
@@ -418,7 +418,7 @@ $.extend(App.prototype, {
 								changed = true;
 							}
 						}
-					}	
+					}
 				} else {
 					// multiple values
 					changed = true;
@@ -460,10 +460,10 @@ $.extend(App.prototype, {
 
 	onRequestFailure: function(request, e, message, exception) {
 		if (message === "parsererror") {
-			this.showError("<code>" + request.type + " " + request.url + "</code> failed: response is no valid XML.");	
+			this.showError("<code>" + request.type + " " + request.url + "</code> failed: response is no valid XML.");
 		} else {
-			this.showError("<code>" + request.type + " " + request.url + "</code> failed: <code><b>" 
-				+ e.status + "</b> " + e.statusText + "</code>");	
+			this.showError("<code>" + request.type + " " + request.url + "</code> failed: <code><b>"
+				+ e.status + "</b> " + e.statusText + "</code>");
 		}
 	},
 
@@ -502,21 +502,21 @@ TimePoint = function(day, time) {
 };
 
 $.extend(TimePoint.prototype, {
-	getDay: function() { 
+	getDay: function() {
 		return this.d;
 	},
-	getHours: function() { 
+	getHours: function() {
 		return this.h;
 	},
-	getMinutes: function() { 
+	getMinutes: function() {
 		return this.m;
 	},
-	getTime: function() { 
+	getTime: function() {
 		return this.getHours() * 60 + this.getMinutes();
 	},
-	compareTo: function(that) { 
-		return  (this.d === that.d) ? (this.h === that.h) 
-			? (this.m === that.m) ? 0 : (this.m < that.m) ? -1 : 1 : 
+	compareTo: function(that) {
+		return  (this.d === that.d) ? (this.h === that.h)
+			? (this.m === that.m) ? 0 : (this.m < that.m) ? -1 : 1 :
 			(this.h < that.h) ? -1 : 1  : (this.d < that.d) ? -1 : 1;
 	},
 	toString: function() {
@@ -531,17 +531,17 @@ TimeValue = function() {
 	if (arguments.length === 3) {
 		this.d = parseInt(arguments[0], 10);
 		this.b = parseInt(arguments[1], 10);
-		this.l = parseInt(arguments[2], 10);	
+		this.l = parseInt(arguments[2], 10);
 	} else if (arguments.length === 1 && $.isPlainObject(arguments[0])) {
 		this.d = parseInt(arguments[0].day, 10);
 		this.b = parseInt(arguments[0].begin, 10);
-		this.l = parseInt(arguments[0].length, 10);	
+		this.l = parseInt(arguments[0].length, 10);
 	} else {
 		throw new Error("Invalid arguments");
 	}
 
 	this.begin = new TimePoint(this.d, this.b);
-	this.end   = new TimePoint((this.d + Math.floor((this.b + this.l) / 1440)) % 6, 
+	this.end   = new TimePoint((this.d + Math.floor((this.b + this.l) / 1440)) % 6,
 							   (this.b + this.l) % 1440);
 	if (isNaN(this.b) || this.b < 0 || this.b >= (24 * 60 - 1)) {
 		throw new Error("Begin time has to be below 23:59!");
@@ -584,9 +584,9 @@ Map = function(options) {
 	this.formid = 1;
 	this.markers = [];
 	this.$div = $("#" + options.div);
-	this.WEEKDAYS = [ "Monday", 
-		"Tuesday",   "Wednesday", 
-		"Thursday",  "Friday", 
+	this.WEEKDAYS = [ "Monday",
+		"Tuesday",   "Wednesday",
+		"Thursday",  "Friday",
 		"Saturday",  "Sunday" ];
 
 	this.icon = L.icon({
@@ -606,8 +606,8 @@ Map = function(options) {
 		doubleClickZoom: false,
 		closePopupOnClick: false,
 		zoomControl: false,
-		layers: [ 
-			new L.TileLayer("http://tile.openstreetmap.org/{z}/{x}/{y}.png") 
+		layers: [
+			new L.TileLayer("http://tile.openstreetmap.org/{z}/{x}/{y}.png")
 		]
 	});
 	this.map.addControl(new L.Control.ZoomFS());
@@ -673,7 +673,7 @@ $.extend(Map.prototype, {
 			"disabled": true
 		}).css("display", "none")
 		  .prependTo($select);
-			
+
 
 		$("<label>").attr("for", "begin")
 			.html("<h5>Begin Time</h5>").appendTo($fieldset);
@@ -729,22 +729,22 @@ $.extend(Map.prototype, {
 		if (time !== undefined) {
 			marker.time = time;
 		}
-		marker.bindPopup(this.getPopupContent(marker), 
+		marker.bindPopup(this.getPopupContent(marker),
 			{ closeButton: false }).addTo(this.map);
-		
+
 		if (marker.time === undefined) {
 			marker.openPopup();
 			this.createSlider(marker);
 		}
 		this.markers.push(marker);
-		
+
 		marker.on({
 			drag: this.onMarkerDrag
 		}, this).fire("drag");
 	},
 
 	createSlider: function(marker) {
-		var lengthScale = (function() { var scale = []; for (var i = 0; i <= 24; i += 3) scale.push((i % 6) != 0 ? "|" : i + "h"  ); return scale; })(), 
+		var lengthScale = (function() { var scale = []; for (var i = 0; i <= 24; i += 3) scale.push((i % 6) != 0 ? "|" : i + "h"  ); return scale; })(),
 			beginScale  = (function() { var scale = []; for (var i = 0; i <= 24; i += 3) scale.push((i % 6) != 0 ? "|" : i + ":00"); return scale; })(),
 			self        = this,
 			$form       = $("form#trajectory" + marker.formid),
@@ -755,7 +755,7 @@ $.extend(Map.prototype, {
 			$abort      = $form.find("button.form-abort"),
 			$delete     = $form.find("button.form-delete"),
 			$error      = $form.find("div.alert").hide();
-		
+
 		function validate() {
 			var time, values = Utils.formArrayToObject($form.serializeArray());
 			values.begin = parseInt(values.begin);
@@ -769,7 +769,7 @@ $.extend(Map.prototype, {
 					$error.text("There is a error with the selected time: " +  e.message)
 								.prepend($("<strong>").text("Ooops! "));
 					$error.slideDown(function() {
-						marker._popup._adjustPan();	
+						marker._popup._adjustPan();
 					});
 					return;
 				}
@@ -780,7 +780,7 @@ $.extend(Map.prototype, {
 				$save.disabled();
 				return;
 			}
-			
+
 			for (var i = 0; i < self.markers.length; ++i) {
 				if (self.markers[i] === marker) { continue; }
 				if (self.markers[i].time) {
@@ -789,7 +789,7 @@ $.extend(Map.prototype, {
 						$error.text("There is a trajectory conflicting with this one.")
 							.prepend($("<strong>").text("Conflict! "))
 						$error.slideDown(function() {
-							marker._popup._adjustPan();	
+							marker._popup._adjustPan();
 						});
 						return;
 					}
@@ -808,7 +808,7 @@ $.extend(Map.prototype, {
 				value = parseInt(value, 10);
 				var hours = Math.floor(value/60);
 				var mins = value - hours * 60;
-				return (hours < 10 ? "0" + hours : hours) + ":" 
+				return (hours < 10 ? "0" + hours : hours) + ":"
 						+ ( mins < 10 ? "0" + mins : mins );
 			},
 			callback: validate
@@ -821,7 +821,7 @@ $.extend(Map.prototype, {
 				value = parseInt(value, 10);
 				var hours = Math.floor(value/60);
 				var mins = value - hours * 60;
-				return (hours < 10 ? "0" + hours : hours) + "h " 
+				return (hours < 10 ? "0" + hours : hours) + "h "
 						+ (mins < 10 ? "0" + mins : mins) + "m";
 			},
 			callback: validate
@@ -830,7 +830,7 @@ $.extend(Map.prototype, {
 		$save.on("click", function() {
 			marker.time = new TimeValue(Utils.formArrayToObject($form.serializeArray()));
 			marker.closePopup();
-			self.onChange();			
+			self.onChange();
 		});
 
 		$abort.on("click", function() { marker.closePopup(); });
@@ -843,7 +843,7 @@ $.extend(Map.prototype, {
 		if (marker.time) {
 			$weekday.val(marker.time.getDay());
 		}
-		
+
 		$weekday.on("change", validate).trigger("change");
 	},
 
@@ -851,7 +851,7 @@ $.extend(Map.prototype, {
 		this.map.removeLayer(marker);
 		var i = this.markers.indexOf(marker);
 		if (i >= 0) {
-			this.markers.splice(i, 1);	
+			this.markers.splice(i, 1);
 		}
 		this.onMarkerDrag();
 	},
@@ -860,7 +860,7 @@ $.extend(Map.prototype, {
 		if (!this.line) {
 			this.line = L.polyline([], {
 				color: '#49AFCD'
-			}).addTo(this.map);	
+			}).addTo(this.map);
 		}
 		var latlng = [];
 		for (var i = 0; i <this.markers.length; ++i) {
@@ -901,7 +901,7 @@ $.extend(Map.prototype, {
 		if (!this.line) {
 			this.map.fitWorld();
 		} else {
-			this.map.fitBounds(this.line.getBounds());	
+			this.map.fitBounds(this.line.getBounds());
 		}
 	},
 
@@ -929,10 +929,10 @@ function transformer(name) {
 		delete options.inputs[name+"-stddev"],
 		delete options.inputs[name+"-aid"],
 		delete options.inputs[name+"-parameter"];
-		var parameterName = (name === "uncert-link") ? 
+		var parameterName = (name === "uncert-link") ?
 			"sector" : "link"; /* FIXME real name? */
-		if (stddev && aid && parameter 
-			&& stddev.length === aid.length 
+		if (stddev && aid && parameter
+			&& stddev.length === aid.length
 			&& stddev.length === parameter.length
 			&& stddev.length > 0) {
 			var l = stddev.length;

@@ -2,9 +2,9 @@ package org.uncertweb.api.om.result;
 
 /**
  * Result representing a text value
- * 
+ *
  * @author Kiesow
- * 
+ *
  */
 public class TextResult implements IResult {
 
@@ -12,7 +12,7 @@ public class TextResult implements IResult {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param v
 	 *            text value of this result
 	 */

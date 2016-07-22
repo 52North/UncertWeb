@@ -7,9 +7,9 @@ import org.w3.x1999.xlink.ActuateAttribute.Actuate;
 
 /**
  * Result representing an reference with optional attributes
- * 
+ *
  * @author Kiesow
- * 
+ *
  */
 public class ReferenceResult implements IResult {
 
@@ -25,10 +25,10 @@ public class ReferenceResult implements IResult {
 	 * Generic constructor
 	 */
 	public ReferenceResult() { }
-	
+
 	/**
 	 * constructor with reference and role attribute
-	 * 
+	 *
 	 * @param href
 	 * 			reference
 	 * @param role
@@ -38,7 +38,7 @@ public class ReferenceResult implements IResult {
 		this.href=href;
 		this.role=role;
 	}
-	
+
 	/**
 	 * Constructor with all possible attributes
 	 * @param type

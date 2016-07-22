@@ -24,7 +24,7 @@ public abstract class AbstractProfile {
 
 	protected IObservationCollection obsColl;
 	protected HashMap<Interval, ArrayList<ExposureValue>> expoVals;
-		
+
 		public AbstractProfile(IObservationCollection activityObservations){
 			this.obsColl = activityObservations;
 			expoVals = new HashMap<Interval, ArrayList<ExposureValue>>();
@@ -33,13 +33,13 @@ public abstract class AbstractProfile {
 		public int getSize(){
 			return obsColl.getObservations().size();
 		}
-		
+
 		// get and set for OM observation collection
 		public void setObservationCollection(IObservationCollection observationCollection) {
-			this.obsColl = observationCollection;		
+			this.obsColl = observationCollection;
 		}
 
-		public IObservationCollection getObservationCollection() {	
+		public IObservationCollection getObservationCollection() {
 			if(obsColl!=null)
 				return obsColl;
 			else
@@ -57,7 +57,7 @@ public abstract class AbstractProfile {
 			}
 			return dateMap;
 		}
-		
+
 		//TODO: implement correct getters and setters for expo vals
 		public void setExposureValue(Interval in, double[] c, String type, String pollutant, String uom){
 
@@ -79,24 +79,24 @@ public abstract class AbstractProfile {
 				expoVals.put(in, valueList);
 			}
 
-		}		
-		
+		}
+
 		public ArrayList<ExposureValue> getExposureValues(Interval in){
 			return expoVals.get(in);
 		}
-		
+
 		/***
 	     * Writes spatial and temporal information from the Observation Collection to csv file
 	     * @param filepath
-	     * 
+	     *
 	     */
-		public void writeObsCollGeometry2csv(String filepath){ 		
-			// use CSVEncoder 
+		public void writeObsCollGeometry2csv(String filepath){
+			// use CSVEncoder
 			try {
 				new CSVEncoder().encodeObservationCollection(obsColl, new File(filepath));
 			} catch (OMEncodingException e) {
 				e.printStackTrace();
-			}	
-			
+			}
+
 	    }
 }

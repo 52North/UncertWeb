@@ -59,15 +59,15 @@ import uw.odmatrix.ODMatrix;
 /**
  * Implements a process that invokes the Albatross Model and returns the outputs
  * according to the UncertWeb profiles.
- * 
+ *
  * @author Steffan Voss, Christoph Stasch
- * 
+ *
  */
 public class AlbatrossProcess extends AbstractAlgorithm {
-	
+
 	protected static Logger log = Logger.getLogger(AlbatrossProcess.class);
 
-	
+
 	//////////////////////////////
 	// input ids
 	private final String inputIDGenpopHouseholds = "genpop-households";
@@ -81,12 +81,12 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	private final String inputIDExportFileBin = "export-file-bin";
 	private final String DEFAULT_EXPORT_FILE_URL = "http://giv-uw.uni-muenster.de/data/export.txt";
 	private final String DEFAULT_EXPORT_FILE_BIN_URL = "http://giv-uw.uni-muenster.de/data/exportBin.bin";
-	
+
 	private final String inputIDUncertLink = "uncert-link";
 	private final String inputIDUncertArea = "uncert-area";
 	private final String inputIDnoSchedules = "number-of-schedules";
 
-	
+
 	private final String outputIDExportFile = "export-file";
 	private final String outputIDODMatrix = "om_ODmatrix";
 	private final String outputIDindicators = "om_indicators";
@@ -244,7 +244,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	 */
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
-		
+
 		List<String> outputIdentifiers = super.getOutputIdentifiers();
 
 		this.checkAndCopyInput(inputData);
@@ -254,7 +254,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		this.downloadFiles();
 
 		// If the user passes some uncert area and uncert link ML through the request it is likely that his/her intention was to perform an inputDraw run.
-		// Thus we check if the values are not null and therefore contain some data, if thats the case the link-sd and area-sd files are written in the workspace and 
+		// Thus we check if the values are not null and therefore contain some data, if thats the case the link-sd and area-sd files are written in the workspace and
 		// the inputDraw.exe is called afterwards
 		if (!uncertArea.isEmpty() && !uncertLink.isEmpty()) {
 
@@ -262,7 +262,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 			this.runInputDraw();
 		}
-		
+
 		//The Rwdata.exe (often named 'Albatross') is called.
 		this.runModel();
 
@@ -275,7 +275,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 		// The by the postprocessing process generated files are parsed and send to the user.
 		Map<String, IData> result = new HashMap<String, IData>();
 		OutputMapper om = new OutputMapper();
-		
+
 		//encode indicators
 		if (outputIdentifiers.contains(outputIDindicators)){
 			IObservationCollection indicatorCol = null;
@@ -289,7 +289,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 			OMBinding indOutput = new OMBinding(indicatorCol);
 			result.put(outputIDindicators, indOutput);
 		}
-		
+
 		//encode odMatrix
 		if (outputIdentifiers.contains(outputIDODMatrix)){
 			IObservationCollection odMatrixCol = null;
@@ -301,9 +301,9 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 								+ e.getMessage());
 			}
 			OMBinding odMatrixOutput = new OMBinding(odMatrixCol);
-			result.put(outputIDODMatrix, odMatrixOutput);			
+			result.put(outputIDODMatrix, odMatrixOutput);
 		}
-		
+
 		//encode schedules
 		if (outputIdentifiers.contains(outputIDSchedules)){
 			OMBinding schedules = null;
@@ -313,15 +313,15 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 			} catch (Exception e) {
 				throw new RuntimeException(
 						"Error while encoding observation responses from Albatross Output: "
-								+ e.getMessage()); 
-			} 
+								+ e.getMessage());
+			}
 			result.put(outputIDSchedules, schedules);
 		}
-		
-		
+
+
 		//encode raw data export file
 		if (outputIdentifiers.contains(outputIDExportFile)){
-			
+
 			try {
 				GenericFileData data;
 				File srcFile = new File(ws.getWorkspaceFolder()+File.separator+exportFileNameProp);
@@ -333,18 +333,18 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 			} catch (IOException e) {
 				throw new RuntimeException(
 						"Error while encoding observation responses from Albatross Output: "
-								+ e.getMessage()); 
+								+ e.getMessage());
 			}
-			
+
 		}
-		
+
 		//clean up workspace
 		try {
 			FileUtils.deleteDirectory(this.ws.getWorkspaceFolder());
 		} catch (IOException e) {
 			throw new RuntimeException("Error while deleting temporary workspace folder: "+e.getLocalizedMessage());
 		}
-		
+
 		return result;
 	}
 
@@ -393,9 +393,9 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	}
 
 	/**
-	 * All user defined parameters are checked if they are not <code>null</code>. 
+	 * All user defined parameters are checked if they are not <code>null</code>.
 	 * Afterwards they are copied to the local members for futher use.
-	 * 
+	 *
 	 * @param inputData
 	 */
 	private void checkAndCopyInput(Map<String, List<IData>> inputData) {
@@ -464,14 +464,14 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 		List<IData> modelUncertaintyList = inputData
 				.get(inputIDIsModelUncertainty);
-		
+
 		isModelUncertainty = ((LiteralBooleanBinding) modelUncertaintyList.get(0)).getPayload();
 
 		List<IData> uncertLinkList = inputData.get(inputIDUncertLink);
 
 		uncertLink = new ArrayList<AlbatrossUInput>();
 		uncertArea = new ArrayList<AlbatrossUInput>();
-		
+
 		if (uncertLinkList != null) {
 			for (IData currentLinkList : uncertLinkList) {
 
@@ -488,7 +488,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 			}
 		}
-		
+
 		List<IData> noSchedulesList = inputData
 				.get(inputIDnoSchedules);
 		if (noSchedulesList != null){
@@ -550,7 +550,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 	/**
 	 * Wrapper for the apache URL2file method from the FileUtilities.
-	 * 
+	 *
 	 * @param urlString
 	 * @param filename
 	 * @throws MalformedURLException
@@ -572,7 +572,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	 * postprocessing folder.this methods created the required config.xml and
 	 * sets the paths to the output files, which will be parsed afterwards (this
 	 * is actually the output of the model run).
-	 * 
+	 *
 	 * @see AlbatrossProcess#runPostProcessing()
 	 */
 	private void setupPostProcessing() {
@@ -595,7 +595,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	 * required. Furthermore the two files link-sd.txt and area-sd.txt are
 	 * needed to run the executable. The method generates the three files and
 	 * writes them into the workspace.
-	 * 
+	 *
 	 * Moreover the uncertML encoded data for the area and link sd are
 	 * transformed to the expected inputDraw format.
 	 */
@@ -629,7 +629,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	 * The process is supervised by the system and will be terminated after the
 	 * by the user specified time for a run expires. The output, usually written
 	 * to std out will be read by a thread and printed to the console.
-	 * 
+	 *
 	 * @see AlbatrossProcess#setupInputDraw()
 	 */
 	private void runInputDraw() {
@@ -703,7 +703,7 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 
 	/**
 	 * The post progressing step consists of the creation of the configuration file for the post processing and the actual run.
-	 * In this step the method points to the post processing configuration file and gives this path as argument to the system, such that 
+	 * In this step the method points to the post processing configuration file and gives this path as argument to the system, such that
 	 * the spring based system can determine the beans required to run the post processing. The actual run of the post processing is the last step in this method.
 	 */
 	private void runPostProcessing() {
@@ -739,9 +739,9 @@ public class AlbatrossProcess extends AbstractAlgorithm {
 	/**
 	 * The albotross model requires two input values. The first one is the project file, which contains all necessary paths to the input files for the exe.
 	 * The second one is the so called 'export' file a path to a file were human readable output will be written.
-	 * 
+	 *
 	 * The external exe is encapsulated with the help of the {@link ProcessBuilder}. Therefore it is possible to monitor the running process. If the process
-	 * runs longer as allowed the monitoring thread will destroy the current process. 
+	 * runs longer as allowed the monitoring thread will destroy the current process.
 	 */
 	private void runModel() {
 

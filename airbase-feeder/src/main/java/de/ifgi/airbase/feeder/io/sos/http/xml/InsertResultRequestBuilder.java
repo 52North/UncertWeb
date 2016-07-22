@@ -22,7 +22,7 @@ import org.apache.xmlbeans.XmlString;
 public class InsertResultRequestBuilder extends AbstractXmlBuilder<InsertResultDocument> {
     private EEARawDataFile file;
     private Collection<EEAMeasurement> values;
-    
+
     public InsertResultRequestBuilder setFile(EEARawDataFile file) {
         this.file = file;
         return this;
@@ -32,7 +32,7 @@ public class InsertResultRequestBuilder extends AbstractXmlBuilder<InsertResultD
         this.values = values;
         return this;
     }
-    
+
     protected EEARawDataFile getFile() {
         return file;
     }
@@ -40,7 +40,7 @@ public class InsertResultRequestBuilder extends AbstractXmlBuilder<InsertResultD
     protected Collection<EEAMeasurement> getValues() {
         return Collections.unmodifiableCollection(values);
     }
-    
+
     @Override
     public InsertResultDocument build() {
         InsertResultDocument insertResultDocument = InsertResultDocument.Factory.newInstance();

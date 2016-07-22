@@ -18,7 +18,7 @@ import au.com.bytecode.opencsv.CSVReader;
 class EEAStatisticsParser {
 
 	private static final Logger log = LoggerFactory.getLogger(EEAStationParser.class);
-	
+
 	static Collection<EEAStatistic> parse(File file) throws IOException {
 		CSVReader reader = null;
 		try {

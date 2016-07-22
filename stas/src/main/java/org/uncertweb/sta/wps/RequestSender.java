@@ -22,7 +22,7 @@ import org.uncertweb.utils.UwXmlUtils;
 
 public class RequestSender {
 
-	
+
 	static {
 		try {
 			WPSConfig.forceInitialization(RequestSender.class.getResourceAsStream("/wps_config/wps_config.xml"));
@@ -34,14 +34,14 @@ public class RequestSender {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public static String sendPostRequest(String request) {
 		if (request == null) {
 			throw new NullPointerException();
 		}
 		return sendPostRequest(IOUtils.toInputStream(request));
 	}
-	
+
 	public static String sendPostRequest(InputStream request) {
 		if (request == null) {
 			throw new NullPointerException();
@@ -57,7 +57,7 @@ public class RequestSender {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public static String sendGetRequest(Map<String, List<String>> parameters) {
 		if (parameters == null) {
 			parameters = map();
@@ -77,17 +77,17 @@ public class RequestSender {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public static boolean isExceptionReport(String s) {
 		try {
 			XmlObject xml = XmlObject.Factory.parse(s);
-			return xml instanceof net.opengis.ows.ExceptionReportDocument 
+			return xml instanceof net.opengis.ows.ExceptionReportDocument
 					|| xml instanceof net.opengis.ows.x11.ExceptionReportDocument;
 		} catch (XmlException e) {
 			throw new RuntimeException(e);
-		}  
+		}
 	}
-	
+
 	public static String describeProcess(String identifier) {
 		Map<String,List<String>> parameter = map();
 		parameter.put("version", list("1.0.0"));
@@ -96,18 +96,18 @@ public class RequestSender {
 		parameter.put("identifier", list(identifier));
 		return sendGetRequest(parameter);
 	}
-	
+
 	public static void main(String[] args) {
 		InputStream is = RequestSender.class.getResourceAsStream("request-oldOM-ref-fc.xml");
-		
+
 		String response = sendPostRequest(is);
-		
+
 		if (isExceptionReport(response)) {
 			throw new RuntimeException("\n"+response);
 		}
-		
+
 //		describeProcess("urn:ogc:def:aggregationProcess:polygonContainment:spatialSum:noPartitioning:temporalMax");
-		
-		
+
+
 	}
 }

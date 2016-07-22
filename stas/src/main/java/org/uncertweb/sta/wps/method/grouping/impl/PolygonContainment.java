@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -56,7 +56,7 @@ import com.vividsolutions.jts.geom.Geometry;
 /**
  * A {@code CoverageGrouping} takes an {@link FeatureCollection} and groups all
  * {@link Observation}s that are located in one {@link Feature} together.
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 @SpatialPartitioningPredicate(Constants.MethodNames.Grouping.Spatial.POLYGON_CONTAINMENT)
@@ -67,7 +67,7 @@ public class PolygonContainment extends SpatialGrouping {
 	/**
 	 * The {@link FeatureCollection} which will be merged with the
 	 * {@code FeatureCollection} fetched from {@link #WFS_URL}.
-	 * 
+	 *
 	 * @see PolygonContainment
 	 */
 	public static final SingleProcessInput<FeatureCollection<FeatureType, Feature>> FEATURE_COLLECTION = new SingleProcessInput<FeatureCollection<FeatureType, Feature>>(
@@ -77,7 +77,7 @@ public class PolygonContainment extends SpatialGrouping {
 	/**
 	 * The URL of the WFS from which the {@link FeatureCollection} will be
 	 * fetched. Can also be a GET request.
-	 * 
+	 *
 	 * @see PolygonContainment
 	 */
 	public static final SingleProcessInput<String> WFS_URL = new SingleProcessInput<String>(
@@ -86,7 +86,7 @@ public class PolygonContainment extends SpatialGrouping {
 
 	/**
 	 * The request which will be posted to {@link #WFS_URL}.
-	 * 
+	 *
 	 * @see PolygonContainment
 	 */
 	public static final SingleProcessInput<GetFeatureDocument> WFS_REQUEST = new SingleProcessInput<GetFeatureDocument>(
@@ -95,7 +95,7 @@ public class PolygonContainment extends SpatialGrouping {
 	/**
 	 * {@link CompositeProcessInput} to combine {@link #FEATURE_COLLECTION},
 	 * {@link #WFS_URL} and {@link #WFS_REQUEST}.
-	 * 
+	 *
 	 * @see FeatureCollectionInputHandler
 	 * @see PolygonContainment
 	 */
@@ -177,7 +177,7 @@ public class PolygonContainment extends SpatialGrouping {
 	/**
 	 * Gets all {@link Observation}s that are located in the given
 	 * {@link Feature} and creates a {@link ObservationMapping}.
-	 * 
+	 *
 	 * @param feature
 	 *            the feature
 	 * @return the mapping

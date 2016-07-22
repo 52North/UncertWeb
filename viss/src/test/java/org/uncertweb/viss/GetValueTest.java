@@ -44,7 +44,7 @@ public class GetValueTest extends AbstractVissTest {
 	public void testGetValue() throws JSONException, OMEncodingException {
 		ObjectId r = addResource(MediaTypes.NETCDF_TYPE, BIOTEMP_T);
 		ObjectId d = getDataSetsForResource(r)[0];
-		
+
 		getVisualizerForDataset(r,d, getVisualizersForDataset(r, d)[0]);
 		System.err.println(getDataSetForResource(r, d).toString(4));
 		JSONObject req = new JSONObject()
@@ -67,12 +67,12 @@ public class GetValueTest extends AbstractVissTest {
 		XBObservationEncoder enc = new XBObservationEncoder();
 		enc.encodeObservationCollection(col, System.err);
 	}
-	
+
 	@Test
 	public void testGetValueWithDifferentSrs() throws JSONException, OMEncodingException {
 		ObjectId r = addResource(MediaTypes.NETCDF_TYPE, BIOTEMP_T);
 		ObjectId d = getDataSetsForResource(r)[0];
-		
+
 		getVisualizerForDataset(r,d, getVisualizersForDataset(r, d)[0]);
 		System.err.println(getDataSetForResource(r, d).toString(4));
 		JSONObject req = new JSONObject()
@@ -92,12 +92,12 @@ public class GetValueTest extends AbstractVissTest {
 		XBObservationEncoder enc = new XBObservationEncoder();
 		enc.encodeObservationCollection(col, System.err);
 	}
-	
+
 	@Test
 	public void testGetValueWithDifferentSrs2() throws JSONException, OMEncodingException {
 		ObjectId r = addResource(MediaTypes.NETCDF_TYPE, BIOTEMP_T);
 		ObjectId d = getDataSetsForResource(r)[0];
-		
+
 		getVisualizerForDataset(r,d, getVisualizersForDataset(r, d)[0]);
 		System.err.println(getDataSetForResource(r, d).toString(4));
 		JSONObject req = new JSONObject()
@@ -116,5 +116,5 @@ public class GetValueTest extends AbstractVissTest {
 		XBObservationEncoder enc = new XBObservationEncoder();
 		enc.encodeObservationCollection(col, System.err);
 	}
-	
+
 }

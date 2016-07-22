@@ -9,13 +9,13 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a continuous realisation.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Realisation}
- * 
+ *
  * @see org.uncertml.sample.RandomSample
  * @see org.uncertml.sample.SystematicSample
  * @see org.uncertml.sample.UnknownSample
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -23,21 +23,21 @@ public class ContinuousRealisation extends AbstractRealisation {
 
     private List<Double> values;
     private URL referenceURL;
-    
+
     /**
      * Constructor that takes a <code>List</code> of strings as the categories of
      * the realisation.
-     * 
+     *
      * @param referenceURL the reference URL of the realisation
      */
     public ContinuousRealisation(URL referenceURL) {
         this(referenceURL, Double.NaN, null);
     }
-    
+
     /**
      * Constructor that takes a <code>List</code> of strings as the categories of
      * the realisation and a weight, used in weighted samples.
-     * 
+     *
      * @param referenceURL the reference URL of the realisation
      * @param weight the weight of this realisation, between 0 - 1.
      */
@@ -48,7 +48,7 @@ public class ContinuousRealisation extends AbstractRealisation {
     /**
      * Constructor that takes a <code>List</code> of strings as the categories of
      * the realisation, a weight used in weighted samples and an ID.
-     * 
+     *
      * @param referenceURL the reference URL of the realisation
      * @param weight the weight of this realisation, between 0 - 1.
      * @param id a unique identifier for this realisation. Used to track realisations
@@ -56,14 +56,14 @@ public class ContinuousRealisation extends AbstractRealisation {
      */
     public ContinuousRealisation(URL referenceURL, double weight, String id) {
     	super(weight, id);
-        Validate.notNull(referenceURL);        
+        Validate.notNull(referenceURL);
         this.referenceURL = referenceURL;
     }
-    
+
     /**
      * Constructor that takes a <code>List</code> of doubles as the values of
      * the realisation.
-     * 
+     *
      * @param values the numeric values of a single realisation.
      */
     public ContinuousRealisation(List<Double> values) {
@@ -73,7 +73,7 @@ public class ContinuousRealisation extends AbstractRealisation {
     /**
      * Constructor that takes a <code>List</code> of doubles as the values of
      * the realisation and a weight, used in weighted samples.
-     * 
+     *
      * @param values the numeric values of a single realisation.
      * @param weight the weight of this realisation, between 0 - 1.
      */
@@ -84,7 +84,7 @@ public class ContinuousRealisation extends AbstractRealisation {
     /**
      * Constructor that takes a <code>List</code> of doubles as the values of
      * the realisation,a weight used in weighted samples and an ID.
-     * 
+     *
      * @param values the numeric values of a single realisation.
      * @param weight the weight of this realisation, between 0 - 1.
      * @param id a unique identifier for this realisation. Used to track realisations
@@ -99,7 +99,7 @@ public class ContinuousRealisation extends AbstractRealisation {
     /**
      * Constructor that takes an array of doubles as the values of
      * the realisation.
-     * 
+     *
      * @param values the numeric values of a single realisation.
      */
     public ContinuousRealisation(double[] values) {
@@ -109,7 +109,7 @@ public class ContinuousRealisation extends AbstractRealisation {
     /**
      * Constructor that takes an array of doubles as the values of
      * the realisation and a weight, used in weighted samples.
-     * 
+     *
      * @param values the numeric values of a single realisation.
      * @param weight the weight of this realisation, between 0 - 1.
      */
@@ -120,7 +120,7 @@ public class ContinuousRealisation extends AbstractRealisation {
     /**
      * Constructor that takes an array of doubles as the values of
      * the realisation,a weight used in weighted samples and an ID.
-     * 
+     *
      * @param values the numeric values of a single realisation.
      * @param weight the weight of this realisation, between 0 - 1.
      * @param id a unique identifier for this realisation. Used to track realisations
@@ -131,7 +131,7 @@ public class ContinuousRealisation extends AbstractRealisation {
     }
 
     /**
-     * 
+     *
      * @return a <code>List</code> of doubles representing the values of this realisation.
      */
     public List<Double> getValues() {
@@ -141,12 +141,12 @@ public class ContinuousRealisation extends AbstractRealisation {
 	public URL getReferenceURL() {
 		return referenceURL;
 	}
-	
+
 	/**
 	 * @ returns boolean if the realisation contains href attribute to a URL
 	 */
 	public boolean isReferenced(){
 		return referenceURL!=null;
 	}
-		
+
 }

@@ -17,7 +17,7 @@ import org.n52.sos.uncertainty.decode.impl.OM2Constants;
  * Implementation of the ISosResponse interface for a response to a
  * getObservation request, returning uncertainty enabled O&M 2 Uncertainty
  * Observations.
- * 
+ *
  * @author Christoph Stasch, Martin Kiesow
  */
 public class UncertaintyObservationResponse extends AbstractUncertaintyResponse
@@ -31,7 +31,7 @@ public class UncertaintyObservationResponse extends AbstractUncertaintyResponse
 
 	/**
 	 * Creates an ObservationResponse from a passed ObservationDoc.
-	 * 
+	 *
 	 * @param obsDoc
 	 *            the response doc
 	 * @param applyZipCompression
@@ -59,7 +59,7 @@ public class UncertaintyObservationResponse extends AbstractUncertaintyResponse
 
 	/**
 	 * Creates an ObservationResponse from a ByteArray
-	 * 
+	 *
 	 * @param obsDoc
 	 *            the response doc
 	 * @param applyZipCompression

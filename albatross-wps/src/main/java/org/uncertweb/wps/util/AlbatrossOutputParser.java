@@ -19,9 +19,9 @@ import au.com.bytecode.opencsv.CSVReader;
  * end/startime or activity type. This class provides a methods to parse this
  * output file and to deliver a {@link Set} of {@link Individual} with there
  * corresponding {@link Travel}.
- * 
+ *
  * @author s_voss13
- * 
+ *
  */
 public final class AlbatrossOutputParser {
 
@@ -30,7 +30,7 @@ public final class AlbatrossOutputParser {
 
 	/**
 	 * Returns a {@link Set} of {@link Individual} from the given file.
-	 * 
+	 *
 	 * @param absolutPath
 	 *            valid path to the albatross model output file
 	 * @return
@@ -49,9 +49,9 @@ public final class AlbatrossOutputParser {
 			fr = new FileReader(absolutPath);
 			reader = new CSVReader(fr, '\t',
 				'\'', 1);
-		
+
 		List<String[]> myEntries = reader.readAll();
-		
+
 
 		Individual currentIndividual = null;
 		HouseHold currentHouseHold = null;
@@ -98,7 +98,7 @@ public final class AlbatrossOutputParser {
 			reader.close();
 			fr.close();
 		}
-		
+
 
 		return Collections.unmodifiableSet(houseHolds);
 
@@ -108,7 +108,7 @@ public final class AlbatrossOutputParser {
 	 * Returns the {@link GeneralTimeInstant} for the albatross model time. The
 	 * albatross time can have values [0,27] for hours, if a value > 24 appears
 	 * the date will be shifted to the next day.
-	 * 
+	 *
 	 * @param time
 	 * @param sDay
 	 * @return
@@ -155,7 +155,7 @@ public final class AlbatrossOutputParser {
 				+ "m" + time.substring(2, 4));
 
 	}
-	
+
 	public static class HouseHold {
 
 		private Set<Individual> individuals = new HashSet<AlbatrossOutputParser.Individual>();
@@ -172,9 +172,9 @@ public final class AlbatrossOutputParser {
 	}
 
 	/**
-	 * 
+	 *
 	 * @author s_voss13
-	 * 
+	 *
 	 */
 	public static class Individual {
 
@@ -244,9 +244,9 @@ public final class AlbatrossOutputParser {
 	}
 
 	/**
-	 * 
+	 *
 	 * @author s_voss13
-	 * 
+	 *
 	 */
 	public static class Travel {
 

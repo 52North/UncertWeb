@@ -7,12 +7,12 @@ import org.uncertweb.api.om.TimeObject;
 
 /**
  * TestCase for CSV Observation Encoder
- * 
+ *
  * @author staschc
  *
  */
 public class GeneralTimeTestCase extends TestCase {
-	
+
 	public void testGeneralTime() throws Exception {
 		String testString = "M03D4h14m30";
 		GeneralTimeInstant t = new GeneralTimeInstant(testString);

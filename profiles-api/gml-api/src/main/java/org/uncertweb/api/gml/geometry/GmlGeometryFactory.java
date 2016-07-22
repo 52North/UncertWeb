@@ -18,7 +18,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * factory providing easy creation methods for GmlGeometry Objects
- * 
+ *
  * @author staschc
  *
  */
@@ -28,25 +28,25 @@ public class GmlGeometryFactory {
 	 * geometry factory used for creating JTS geometries
 	 */
 	private GeometryFactory geomFac;
-	
+
 	/**
 	 * coordinate sequence factory used to create JTS coordinate sequences
 	 */
 	private CoordinateSequenceFactory coordSeqFac;
-	
+
 	/**
 	 * constructor initializes factories
-	 * 
+	 *
 	 */
 	public GmlGeometryFactory(){
 		this.geomFac = new GeometryFactory();
 		this. coordSeqFac = this.geomFac.getCoordinateSequenceFactory();
 	}
-	
+
 	/**
 	 * Factory method for creating JTS Points
-	 * 
-	 * @param x 
+	 *
+	 * @param x
 	 * 			x coordinate of point
 	 * @param y
 	 * 			y coordinate of point
@@ -62,10 +62,10 @@ public class GmlGeometryFactory {
 		point.setSRID(epsgCode);
 		return point;
 	}
-	
+
 	/**
 	 * factory method for creating JTS polygon
-	 * 
+	 *
 	 * @param boundary
 	 * 			exterior boundary of polygon
 	 * @param holes
@@ -88,10 +88,10 @@ public class GmlGeometryFactory {
 		polygon.setSRID(epsgCode);
 		return polygon;
 	}
-	
+
 	/**
 	 * factory method for creating JTS line string
-	 * 
+	 *
 	 * @param coordinateSequence
 	 * 			set of Coordinates representing the anchor points defining the line string
 	 * @param srid
@@ -103,10 +103,10 @@ public class GmlGeometryFactory {
 		lineString.setSRID(srid);
 		return lineString;
 	}
-	
+
 	/**
 	 * factory method for creating a grid
-	 * 
+	 *
 	 * @param gridEnvelope
 	 * 			envelope of the grid
 	 * @param axisLabel
@@ -122,19 +122,19 @@ public class GmlGeometryFactory {
 		RectifiedGrid grid = new RectifiedGrid(gridEnvelope,axisLabel,origin,offsetVectors,new GeometryFactory());
 		return grid;
 	}
-	
+
 	public MultiPoint createMultiPoint(Point[] points, int srid){
 		MultiPoint mp = geomFac.createMultiPoint(points);
 		mp.setSRID(srid);
 		return mp;
 	}
-	
+
 	public MultiPolygon createMultiPolygon(Polygon[] polygons, int srid){
 		MultiPolygon mp = geomFac.createMultiPolygon(polygons);
 		mp.setSRID(srid);
 		return mp;
 	}
-	
+
 	public MultiLineString createMultiLineString(LineString[] lineStrings, int srid){
 		MultiLineString mls = geomFac.createMultiLineString(lineStrings);
 		mls.setSRID(srid);

@@ -1,12 +1,12 @@
 /***************************************************************
 This implementation provides a framework to publish processes to the
-web through the  OGC Web Processing Service interface. The framework 
-is extensible in terms of processes and data handlers. It is compliant 
-to the WPS version 0.4.0 (OGC 05-007r4). 
+web through the  OGC Web Processing Service interface. The framework
+is extensible in terms of processes and data handlers. It is compliant
+to the WPS version 0.4.0 (OGC 05-007r4).
 
 Copyright (C) 2009 by con terra GmbH
 
-Authors: 
+Authors:
 	Bastian Sch�ffer, University of Muenster
 
 
@@ -54,15 +54,15 @@ import org.n52.wps.server.request.ExecuteRequest;
  *
  */
 public class LocalAlgorithmRepository implements ITransactionalAlgorithmRepository{
-	
+
 	private static Logger LOGGER = Logger.getLogger(LocalAlgorithmRepository.class);
 	private Map<String, String> algorithmMap;
 	private Map<String, ProcessDescriptionType> processDescriptionMap;
-	
+
 	public LocalAlgorithmRepository() {
 		algorithmMap = new HashMap<String, String>();
-		processDescriptionMap = new HashMap<String, ProcessDescriptionType>(); 
-		
+		processDescriptionMap = new HashMap<String, ProcessDescriptionType>();
+
 		// check if the repository is active
 		if(WPSConfig.getInstance().isRepositoryActive(this.getClass().getCanonicalName())){
 			Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(this.getClass().getCanonicalName());
@@ -76,34 +76,34 @@ public class LocalAlgorithmRepository implements ITransactionalAlgorithmReposito
 			LOGGER.debug("Local Algorithm Repository is inactive.");
 		}
 	}
-	
+
 	public boolean addAlgorithms(String[] algorithms)  {
 		for(String algorithmClassName : algorithms) {
 			addAlgorithm(algorithmClassName);
 		}
 		LOGGER.info("Algorithms registered!");
 		return true;
-		
+
 	}
-	
+
 	public IAlgorithm getAlgorithm(String className, ExecuteRequest executeRequest) {
 		try {
 			return loadAlgorithm(algorithmMap.get(className), executeRequest);
 		} catch (Exception e) {
-			
+
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
+
 	public Collection<String> getAlgorithmNames() {
 		return new ArrayList<String>(algorithmMap.keySet());
 	}
-	
+
 	public boolean containsAlgorithm(String className) {
 		return algorithmMap.containsKey(className);
 	}
-	
+
 	private IAlgorithm loadAlgorithm(String algorithmClassName, ExecuteRequest executeRequest) throws Exception{
 		IAlgorithm algorithm = (IAlgorithm)LocalAlgorithmRepository.class.getClassLoader().loadClass(algorithmClassName).newInstance();
 		if(!algorithm.processDescriptionIsValid()) {
@@ -121,12 +121,12 @@ public class LocalAlgorithmRepository implements ITransactionalAlgorithmReposito
 			return false;
 		}
 		String algorithmClassName = (String) processID;
-				
+
 		algorithmMap.put(algorithmClassName, algorithmClassName);
 		LOGGER.info("Algorithm class registered: " + algorithmClassName);
-					
-			
-		
+
+
+
 		return true;
 
 	}

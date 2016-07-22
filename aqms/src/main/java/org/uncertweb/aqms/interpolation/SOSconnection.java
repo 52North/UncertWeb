@@ -59,59 +59,59 @@ public class SOSconnection {
 	private static String OBSERVED_PROPERTY = "urn:ogc:def:phenomenon:OGC:1.0.30:PM10";
 	private static String OFFERING = "PM10";
 	private static String RESPONSE_FORMAT = "text/xml;subtype=&quot;om/1.0.0&quot;";
-	
+
 	public SOSconnection(String url){
 		serviceURL = url;
 	}
-	
+
 	/**
-	 * Method to get Capabilities of the SOS. Can be used to retrieve offering and 
+	 * Method to get Capabilities of the SOS. Can be used to retrieve offering and
 	 * fid information for getObservation request.
 	 */
 	public void getCapabilities(){
-		
+
 	}
-	
+
 	/**
 	 * Method to retrieve observations from the SOS for a defined time period.
 	 * @param startDate
 	 * @param endDate
 	 * @return ObservationCollection
 	 */
-	public IObservationCollection getObservationAll(String startDate, String endDate){	
-		
+	public IObservationCollection getObservationAll(String startDate, String endDate){
+
 		// build request document
-		GetObservationDocument doc = GetObservationDocument.Factory.newInstance();		
-		     
+		GetObservationDocument doc = GetObservationDocument.Factory.newInstance();
+
 		// getObservation request
 		GetObservation getObs = doc.addNewGetObservation();
-		
+
 		// set parameters
 		getObs.setSrsName(SRS_NAME);
 		getObs.setService(SERVICE_NAME);
 		getObs.setVersion(SERVICE_VERSION);
 		getObs.addObservedProperty(OBSERVED_PROPERTY);
-		getObs.setOffering(OFFERING);	
-				
+		getObs.setOffering(OFFERING);
+
 		// create Time Period
-		BinaryTemporalOpType binTempOp = BinaryTemporalOpType.Factory.newInstance();  
+		BinaryTemporalOpType binTempOp = BinaryTemporalOpType.Factory.newInstance();
 		binTempOp.addNewPropertyName();
         XmlCursor cursor = binTempOp.newCursor();
         cursor.toChild(new QName("http://www.opengis.net/ogc", "PropertyName"));
         cursor.setTextValue("om:samplingTime");
-              
+
         // TimePeriod
         TimePeriodType timePeriod = TimePeriodType.Factory.newInstance();
         TimePositionType beginPosition = timePeriod.addNewBeginPosition();
         beginPosition.setStringValue(startDate);
         TimePositionType endPosition = timePeriod.addNewEndPosition();
-        endPosition.setStringValue(endDate);        
+        endPosition.setStringValue(endDate);
         binTempOp.setTimeObject(timePeriod);
-         
+
 		//<eventTime>
 		EventTime eventTime = getObs.addNewEventTime();
 		eventTime.setTemporalOps(binTempOp);
-		 
+
 		// rename elements:
         cursor = eventTime.newCursor();
         //<ogc:TM_During>
@@ -119,28 +119,28 @@ public class SOSconnection {
         cursor.setName(new QName("http://www.opengis.net/ogc", "TM_During"));
         //<gml:TimePeriod>
         cursor.toChild(new QName("http://www.opengis.net/gml", "_TimeObject"));
-        cursor.setName(new QName("http://www.opengis.net/gml", "TimePeriod"));        
+        cursor.setName(new QName("http://www.opengis.net/gml", "TimePeriod"));
 
         // set response format
-      	getObs.setResponseFormat("text/xml;subtype=&quot;om/1.0.0&quot;");      	
-      		
+      	getObs.setResponseFormat("text/xml;subtype=&quot;om/1.0.0&quot;");
+
       	// set result model
       	QName resultModel = new QName("http://www.opengis.net/om/1.0", "Measurement", "om");
 		getObs.setResultModel(resultModel);
-				
+
 		// workaround with character replacement for responseFormat and resultModel
 		// TODO: find better solution for char replacement
 		// remove amp; in the String
 		String r1 = doc.toString();
 		String r2 = r1.replace("amp;", "");
-		
+
 		// replace ns with om
 		String r3 = r2.replace("ns:Measurement", "om:Measurement");
 		String request = r3.replace("xmlns:ns", "xmlns:om");
 		//System.out.println(request);
-		
+
 		 OutputStreamWriter wr = null;
-		 
+
 		 try {
 			// connect to SOS
 			URL url = new URL(serviceURL);
@@ -148,20 +148,20 @@ public class SOSconnection {
 	        conn.setDoOutput(true);
 	        conn.setRequestMethod("POST");
 	        conn.setRequestProperty("Content-Type", "application/xml");
-	           
+
 	        // send request
 	        wr = new OutputStreamWriter(conn.getOutputStream());
 	        wr.write(request);
 	        wr.flush();
-	           
+
 	        // get response
-	        InputStream in = conn.getInputStream();	    
+	        InputStream in = conn.getInputStream();
 	        XmlObject xml = XmlObject.Factory.parse(in);
 	        IObservationCollection iobs = processResponse(xml);
-	        
+
 	        //XmlObject xml = XmlObject.Factory.parse(in);
-            //IObservationCollection iobs = new XBObservationParser().parseObservationCollection(xml);			
-			
+            //IObservationCollection iobs = new XBObservationParser().parseObservationCollection(xml);
+
 	        in.close();
 	        wr.close();
 	        System.out.println("SOS request successfully finished!");
@@ -172,7 +172,7 @@ public class SOSconnection {
 	            return null;
 	        }
 	}
-	
+
 	/**
 	 * Method to process SOS response. Returns IObservationCollection
 	 * @param xml
@@ -181,7 +181,7 @@ public class SOSconnection {
 	 * @throws IOException
 	 */
 
-    protected IObservationCollection processResponse(XmlObject xml) throws IOException {   	             	
+    protected IObservationCollection processResponse(XmlObject xml) throws IOException {
             if (xml instanceof ObservationCollectionDocument){
             	// parse IObservationCollection
             	try {
@@ -191,7 +191,7 @@ public class SOSconnection {
 					e.printStackTrace();
 					return null;
 				}
-            }     
+            }
             else if (xml instanceof ExceptionReportDocument) {
             	System.out.println(xml.toString());
                 return null;
@@ -202,7 +202,7 @@ public class SOSconnection {
             }
 
     }
-    
+
     /***
      * Method to extract spatial information and measurements from the observation collection.
      * These are written as tables to be read by R for the interpolation.
@@ -211,20 +211,20 @@ public class SOSconnection {
      */
 //    public HashMap<DateTime, HashMap<String, Double[]>> obsCollection2Table(IObservationCollection iobs){
 //    	HashMap<DateTime, HashMap<String, Double[]>> obsTS = new HashMap<DateTime, HashMap<String, Double[]>>();
-//    	
+//
 //    	// loop through observations
-//    	for (AbstractObservation obs : iobs.getObservations()) {  		
+//    	for (AbstractObservation obs : iobs.getObservations()) {
 //    		// If it is a measurements object, it is easier
 //    		String fid = obs.getFeatureOfInterest().getIdentifier().getIdentifier();
 //    		Coordinate c = obs.getFeatureOfInterest().getShape().getCoordinate();
-//			
+//
 //			// get result values
 //    		Double res = (Double) obs.getResult().getValue();
 //    		Double[] vals = {c.x,c.y,res};
-//    		
+//
 //    		// get sampling time
 //    		DateTime st = obs.getResultTime().getDateTime();
-//    		
+//
 //    		// if it's a new date add it to the list
 //    		if(!obsTS.containsKey(st)){
 //    			HashMap<String, Double[]> station = new HashMap<String,Double[]>();
@@ -239,13 +239,13 @@ public class SOSconnection {
 ////    			station.put(fid, vals);
 ////    			obsTS.put(st, station);
 //    		}
-//    		    	
+//
 //    		// TODO: get coordinate reference system
-//    		
+//
 //    	}
-//    	
+//
 //    	return obsTS;
 //    }
-//    
-    
+//
+
 }

@@ -7,11 +7,11 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a percentile. A percentile is a specification of a <code>Quantile</code>.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Percentile}
- * 
+ *
  * @see org.uncertml.statistic.Quantile
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -21,7 +21,7 @@ public class Percentile extends Quantile {
      * Constructs a percentile from a specified level and a <code>List</code> of doubles.
      * Each double represents a single percentile statistic. This is in line with the
      * UncertML syntax whereby a collection of types can be represented by a single entity.
-     * 
+     *
      * @param level a double level of the set of percentiles represented by this object.
      * Must be in the range 0 - 100.
      * @param values a <code>List</code> of doubles representing the value of n
@@ -36,7 +36,7 @@ public class Percentile extends Quantile {
      * Constructs a percentile from a specified level and an array of doubles.
      * Each double represents a single percentile statistic. This is in line with the
      * UncertML syntax whereby a collection of types can be represented by a single entity.
-     * 
+     *
      * @param level a double level of the set of percentiles represented by this object.
      * Must be in the range 0 - 100.
      * @param values an array of doubles representing the value of n
@@ -49,7 +49,7 @@ public class Percentile extends Quantile {
     /**
      * Constructor that takes a single level and value, representing a single percentile
      * statistic.
-     * 
+     *
      * @param level the level of the percentile, must be in the range 0 - 100.
      * @param value the value of the percentile statistic.
      */
@@ -58,7 +58,7 @@ public class Percentile extends Quantile {
     }
 
     /**
-     * 
+     *
      * @return the level of the percentile in the range 0 - 100;
      */
     public int getPercentileLevel() {
@@ -66,7 +66,7 @@ public class Percentile extends Quantile {
     }
 
     /**
-     * Method that validates the level of a percentile by ensuring it is in the 
+     * Method that validates the level of a percentile by ensuring it is in the
      * range of 0 - 100.
      * @param level the level to validate.
      * @return the converted level.

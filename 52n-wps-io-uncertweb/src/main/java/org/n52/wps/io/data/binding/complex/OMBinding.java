@@ -25,11 +25,11 @@ import org.uncertweb.api.om.observation.collections.UncertaintyObservationCollec
  */
 public class OMBinding extends UncertWebIODataBinding {
 	private static final long serialVersionUID = -3033594002991918048L;
-	
+
 	private static final Logger log = Logger.getLogger(OMBinding.class);
 	private IObservationCollection obsCol;
 	private AbstractObservation obs;
-	
+
 	public OMBinding(IObservationCollection obsCol) {
 		this.obsCol = obsCol;
 	}
@@ -37,7 +37,7 @@ public class OMBinding extends UncertWebIODataBinding {
 	public OMBinding(AbstractObservation obs) {
 		this.obs = obs;
 	}
-	
+
 	@Override
 	public IObservationCollection getPayload() {
 		return getObservationCollection();
@@ -51,7 +51,7 @@ public class OMBinding extends UncertWebIODataBinding {
 	/**
 	 * gets the observation collection, if available; if there is only one
 	 * observation, it is wrapped with an new collection
-	 * 
+	 *
 	 * @return an observation collection or null
 	 */
 	public IObservationCollection getObservationCollection() {
@@ -92,7 +92,7 @@ public class OMBinding extends UncertWebIODataBinding {
 
 	/**
 	 * gets the observation, if available
-	 * 
+	 *
 	 * @return an observation of null
 	 */
 	public AbstractObservation getObservation() {

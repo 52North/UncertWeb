@@ -12,13 +12,13 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a mixture model. A mixture model is constructed with a number
- * of <code>WeightedDistribution</code>s. This implements the iterable and list 
+ * of <code>WeightedDistribution</code>s. This implements the iterable and list
  * interfaces.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/MixtureModel}
- * 
+ *
  * @see WeightedDistribution
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -33,8 +33,8 @@ public class MixtureModel implements IContinuousDistribution, Iterable<WeightedD
      * Constructor that takes an array of <code>WeightedDistribution</code> objects.
      * Each component has an underlying <code>IDistribution</code> type and an
      * associated weight. The weights should sum to 1.
-     * 
-     * @param components an array of <code>WeightedDistribution</code> objects 
+     *
+     * @param components an array of <code>WeightedDistribution</code> objects
      * representing the weighted components of a mixture model.
      */
     public MixtureModel(WeightedDistribution[] components) {
@@ -45,8 +45,8 @@ public class MixtureModel implements IContinuousDistribution, Iterable<WeightedD
      * Constructor that takes a list of <code>WeightedDistribution</code> objects.
      * Each component has an underlying <code>IDistribution</code> type and an
      * associated weight. The weights should sum to 1.
-     * 
-     * @param components an array of <code>WeightedDistribution</code> objects 
+     *
+     * @param components an array of <code>WeightedDistribution</code> objects
      * representing the weighted components of a mixture model.
      */
     public MixtureModel(List<WeightedDistribution> components) {
@@ -59,7 +59,7 @@ public class MixtureModel implements IContinuousDistribution, Iterable<WeightedD
     }
 
     /**
-     * 
+     *
      * @return a list of <code>IDistribution</code> objects that describe the mixture
      * model. These are returned without the attached weight.
      */
@@ -74,8 +74,8 @@ public class MixtureModel implements IContinuousDistribution, Iterable<WeightedD
     }
 
     /**
-     * 
-     * @return a list of doubles representing the weights of the constituent 
+     *
+     * @return a list of doubles representing the weights of the constituent
      * distributions.
      */
     public List<Double> getWeights() {
@@ -89,7 +89,7 @@ public class MixtureModel implements IContinuousDistribution, Iterable<WeightedD
     }
 
     /**
-     * 
+     *
      * @return a list of <code>WeightedDistribution</code> objects that fully
      * describe the mixture model.
      */

@@ -59,16 +59,16 @@ import ucar.nc2.units.DateUnit;
 /**
  * Algorithm to estimate uncertain exposure towards air pollutants
  * @author LydiaGerharz
- * 
+ *
  */
 
 public class EMSalgorithm extends AbstractObservableAlgorithm{
 
 	private List<String> errors = new ArrayList<String>();
 	private static Logger log = Logger.getLogger(EMSalgorithm.class);
-	
+
 	private static String resourcesPath = "";
-	
+
 	// WPS inputs & outputs
 	private final String INPUT_IDENTIFIER_ACTIVITY_PROFILE = "activityProfile";
 	private final String INPUT_IDENTIFIER_AIR_QUALITY = "airQualityData";
@@ -77,14 +77,14 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 	private final String INPUT_IDENTIFIER_OUTPUT_UNCERTAINTY = "outputUncertaintyType";
 	private final String OUTPUT_IDENTIFIER = "result";
 	private boolean uncertml = false;
-	
+
 	// EMS data structures
 	private List<IObservationCollection> omList;
 	private NcUwFile ncFile;
 	private int indoorIterations;
 	private int minuteResolution;
 	private List<String> statList = new ArrayList<String>();
-	
+
 	public EMSalgorithm(){
 		Property[] propertyArray = WPSConfig.getInstance().getPropertiesForRepositoryClass(LocalAlgorithmRepository.class.getCanonicalName());
 		for(Property property : propertyArray){
@@ -92,10 +92,10 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 				resourcesPath = property.getStringValue();
 				break;
 			}
-		}	
+		}
 	}
-	
-	
+
+
 	@Override
 	public List<String> getErrors() {
 		return errors;
@@ -116,7 +116,7 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 //		}else if(id.equals(INPUT_IDENTIFIER_OUTPUT_UNCERTAINTY)){
 //			return LiteralStringBinding.class;
 //		}else{
-//			return GenericFileDataBinding.class;			
+//			return GenericFileDataBinding.class;
 //		}
 	}
 
@@ -127,55 +127,55 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 	}
 
 	@Override
-	public Map<String, IData> run(Map<String, List<IData>> inputMap) {				
-		// ********* Get WPS inputs********* 
+	public Map<String, IData> run(Map<String, List<IData>> inputMap) {
+		// ********* Get WPS inputs*********
 		getWPSInputs(inputMap);
-		
-		File baseDir = new File(System.getProperty("catalina.base") + File.separator + "webapps/public");		
+
+		File baseDir = new File(System.getProperty("catalina.base") + File.separator + "webapps/public");
 		if(!baseDir.exists()){
 			try {
 				baseDir.mkdir();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}		
+		}
 		String baseDirPath = baseDir.getAbsolutePath();
-		
-		// ********* Create internal data types *********		
+
+		// ********* Create internal data types *********
 		//  create time list from Netcdf time array
 		ArrayList<DateTime> ncTimeList = null;
-		ncTimeList = this.getTimeArrayFromNcUwFile(ncFile);				
-		
+		ncTimeList = this.getTimeArrayFromNcUwFile(ncFile);
+
 		// if minuteResolution has not been provided make this as default resolution
 		if(minuteResolution==0){
 			minuteResolution = new Interval(ncTimeList.get(0),ncTimeList.get(1)).toPeriod(PeriodType.minutes()).getMinutes();
 		}
-		
+
 		// output collection
 		UncertaintyObservationCollection exposureProfiles = new UncertaintyObservationCollection();
 //		ArrayList<ContinuousRealisation> realisations = new ArrayList<ContinuousRealisation>();
 		HashMap<URI, ArrayList<ContinuousRealisation>> individualList= new HashMap<URI, ArrayList<ContinuousRealisation>>();
-		
+
 		// TODO
 		// if the activity input is uncertain, we can only make daily averages
 //		if(omList.size()>1)
 
-		
+
 		// go through the OM files in the list
 		for(IObservationCollection omFile : omList){
-			
+
 			// create profile list from OM file
 			List<AbstractProfile> profileList = new OMProfileParser().OM2Profiles(omFile, ncTimeList, minuteResolution);
-						
+
 			// TODO: ********* Check if modelling is possible *********
-						
-			
+
+
 			// ********* OUTDOOR MODEL *********
 			// get outdoor concentration at profile locations
 			// A) for the moment, do the overlay for GPS tracks in MS with the local version
 			OutdoorModel outdoor = new OutdoorModel(resourcesPath);
 			outdoor.run(profileList, ncFile);
-		
+
 			// perform averaging of profile observations
 			// profile.aggregateProfile(minuteResolution);
 
@@ -185,30 +185,30 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 			// if activities are available, create indoor model with parameters
 			// if(profile instanceof MEProfile || profile instanceof
 			// ActivityProfile){
-//			String parameter = ncFile.getPrimaryVariableNames().toArray(new String[1])[0];	
+//			String parameter = ncFile.getPrimaryVariableNames().toArray(new String[1])[0];
 			// IndoorModel indoor = new IndoorModel();
 			// indoor.readParametersFile("DE",parameter,
 			// "src/main/resources/indoorModel/parameters.csv");
-			
+
 			// indoor.runModel(profileList, indoorIterations, minuteResolution,
 			// false);
 			//
 			// }
 
-			// ********* RESULT COLLECTION *********	
+			// ********* RESULT COLLECTION *********
 			//TODO: add handling for different activity realisations -> mapping to one O&M file!
-			
+
 			// for a single OM file make an OM Collection as result
 			if(!uncertml){
 				// go through each individual profile
-				for (AbstractProfile profile : profileList) {			
+				for (AbstractProfile profile : profileList) {
 					// get OM file and add to overall observation collection
 					exposureProfiles.addObservationCollection(new OMProfileGenerator()
 							.createExposureProfileObservationCollection(profile,
 									statList));
 				}
-				
-				// ********* Prepare WPS result ********* 
+
+				// ********* Prepare WPS result *********
 				Map<String, IData> result = new HashMap<String, IData>(1);
 				OMBinding uwData = new OMBinding(exposureProfiles);
 				result.put(ExposureModelConstants.ProcessInputs.OUTPUT_IDENTIFIER, uwData);
@@ -218,10 +218,10 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 			else{
 				// get results for the individuals
 				ArrayList<UncertaintyObservationCollection> individualRealisations = new OMProfileGenerator().createIndividualExposureProfileObservationCollections(profileList, statList);
-					
+
 				// write results to separate files
 				for(UncertaintyObservationCollection realisation : individualRealisations){
-					String uuidString = UUID.randomUUID().toString().substring(0, 5);	
+					String uuidString = UUID.randomUUID().toString().substring(0, 5);
 					File file = new File(baseDirPath + File.separator + uuidString + ".xml");
 					try {
 						new StaxObservationEncoder().encodeObservationCollection(realisation,
@@ -229,64 +229,64 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 					} catch (OMEncodingException e) {
 						e.printStackTrace();
 					}
-					
+
 					// make URL from this file path
 					String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
-					String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();			
+					String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
 					URL url = null;
 					try {
 						url = new URL("http://" + host + ":" + hostPort+ "/" + "public/" + file.getName());
 					} catch (MalformedURLException e) {
 						e.printStackTrace();
 					}
-					
+
 					// make realisation
-					ContinuousRealisation cr = new ContinuousRealisation(url);	
-					
+					ContinuousRealisation cr = new ContinuousRealisation(url);
+
 					// get the current individual URI
 					URI currentURI = realisation.getObservations().get(0).getProcedure();
-					
+
 					// add it to the individual list
 					if(individualList.get(currentURI)==null)
 						individualList.put(currentURI, new ArrayList<ContinuousRealisation>());
-					individualList.get(currentURI).add(cr);	
-				}	
-							
-			}
-						
-		}
-			
+					individualList.get(currentURI).add(cr);
+				}
 
-		// ********* Prepare WPS result for more than one realisation ********* 
-		Map<String, IData> result = new HashMap<String, IData>(1);	
-		
+			}
+
+		}
+
+
+		// ********* Prepare WPS result for more than one realisation *********
+		Map<String, IData> result = new HashMap<String, IData>(1);
+
 		//TODO: workaround as long as we do not have a sample collection
 		ArrayList<ContinuousRealisation> reals = new ArrayList<ContinuousRealisation>();
-		
+
 		// add each individual with its realisations as one sample
 		for(ArrayList<ContinuousRealisation> realisations : individualList.values()){
 		//	RandomSample rs = new RandomSample(realisations.toArray(new ContinuousRealisation[] {}));
 			reals.addAll(realisations);
 		}
-		
+
 		RandomSample rs = new RandomSample(reals.toArray(new ContinuousRealisation[] {}));
 		UncertMLBinding ub = new UncertMLBinding(rs);
 		result.put(ExposureModelConstants.ProcessInputs.OUTPUT_IDENTIFIER, ub);
 		return result;
-		
+
 	}
 
 	private void getWPSInputs(Map<String, List<IData>> inputMap){
 		// activity data
 				omList = new ArrayList<IObservationCollection>();
-				List<IData> omInputList = inputMap.get(INPUT_IDENTIFIER_ACTIVITY_PROFILE);	
+				List<IData> omInputList = inputMap.get(INPUT_IDENTIFIER_ACTIVITY_PROFILE);
 				if(omInputList != null && omInputList.size()!=0){
 					IData tmp = omInputList.get(0);
 					// if one OM file is provided directly
 					if(tmp instanceof OMBinding){
 						omList.add(((OMBinding)tmp).getPayload());
 					}
-					//TODO: implement handling of additional uncertainty for Albatross outputs			
+					//TODO: implement handling of additional uncertainty for Albatross outputs
 					// if an UncertML file with refs to OM documents is provided
 					else if(tmp instanceof UncertMLBinding){
 						uncertml = true;
@@ -300,7 +300,7 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 									URL url = ((ContinuousRealisation)absReal).getReferenceURL();
 									try {
 										// parse OM file in this reference
-										
+
 										try {
 											XBObservationParser omParser = new XBObservationParser();
 											XmlObject xml = XmlObject.Factory.parse(url.openConnection().getInputStream());
@@ -310,7 +310,7 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 											e.printStackTrace();
 										}catch (OMParsingException e) {
 											e.printStackTrace();
-										}																				
+										}
 									} catch (IOException e) {
 										e.printStackTrace();
 									}
@@ -318,34 +318,34 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 							}
 							// TODO: Add handler for non-referenced UncertML file
 							else{
-								
+
 							}
-								
+
 						}else{
 							throw new EMSInputException("Activity input has to be of type samples or realisations in UncertML!");
-						}					
-						
+						}
+
 					}else{
 						throw new EMSInputException("Activity input has to be in O&M or UncertML!");
-					}			
-				}else{	
+					}
+				}else{
 					throw new EMSInputException("Activity input is missing!");
 				}
-				
+
 				ncFile = null;
 				List<IData> ncList = inputMap.get(INPUT_IDENTIFIER_AIR_QUALITY);
 				if(ncList != null && ncList.size()!=0){
 					IData tmp = ncList.get(0);
 					if(tmp instanceof NetCDFBinding){
-						ncFile = ((NetCDFBinding)tmp).getPayload();				
+						ncFile = ((NetCDFBinding)tmp).getPayload();
 					}else{
 						throw new EMSInputException("Air Quality input has to be in NetCDF-U format!");
 					}
-				}else{	
+				}else{
 					throw new EMSInputException("Air quality input is missing!");
 				}
-				
-				//	number of samples	
+
+				//	number of samples
 				List<IData> samplesList = inputMap.get(INPUT_IDENTIFIER_NUMBER_OF_SAMPLES);
 				if(samplesList != null && samplesList.size()!=0){
 					if(samplesList.get(0) instanceof LiteralIntBinding){
@@ -356,7 +356,7 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 				}else{ //default
 					indoorIterations = 100;
 				}
-				
+
 				// temporal resolution
 				List<IData> resList = inputMap.get(INPUT_IDENTIFIER_RESOLUTION);
 				if(resList != null && resList.size()!=0){
@@ -370,49 +370,49 @@ public class EMSalgorithm extends AbstractObservableAlgorithm{
 				}else{ //default
 					minuteResolution = 0;
 				}
-						
-				// output uncertainty type		
+
+				// output uncertainty type
 				List<IData> statisticsList = inputMap.get(INPUT_IDENTIFIER_OUTPUT_UNCERTAINTY);
 				if(!(statisticsList == null) && statisticsList.size() != 0){
-					statList = extractStatisticsFromRequest(statisticsList);			
+					statList = extractStatisticsFromRequest(statisticsList);
 				}else{ //default
 					statList.add("http://www.uncertml.org/samples/realisation");
 				}
 	}
 
-	
+
 	private ArrayList<DateTime> getTimeArrayFromNcUwFile(NcUwFile ncFile) throws EMSInputException{
 		//TODO: ensure that this is done in UTC/GMT!!!
 		Variable timeVar = ncFile.getVariable(NcUwConstants.StandardNames.TIME);
-		
+
 		// if no time variable has been found
 		if(timeVar==null){
 			throw new EMSInputException("No valid time variable could be found for the input NetCDF file.");
 		}
-		
+
 		ArrayList<DateTime> ncTimeList = new ArrayList<DateTime>();
-		String timeUnit = timeVar.getUnitsString();	
+		String timeUnit = timeVar.getUnitsString();
 		try {
 			DateUnit dateUnit = new DateUnit(timeUnit);
 			for(int i=1; i<=timeVar.getDimension(0).getLength(); i++){
 				ncTimeList.add(new DateTime(dateUnit.makeDate(i)));
-			}	
+			}
 
 		} catch (Exception e) {
 			throw new EMSInputException("No valid DateTime object could be created from the NetCDF time unit String.", e);
-		}	
-		
+		}
+
 		return ncTimeList;
 	}
-	
+
 	private List<String> extractStatisticsFromRequest(List<IData> statParams){
 		List<String> params = new ArrayList<String>(statParams.size());
 		for(IData statParam : statParams){
 			String parameter = ((LiteralStringBinding) statParam).getPayload();
 			if(ExposureModelConstants.allowedOutputUncertaintyTypes.contains(parameter))
 				params.add(parameter);
-		}		
+		}
 		return params;
 	}
-	
+
 }

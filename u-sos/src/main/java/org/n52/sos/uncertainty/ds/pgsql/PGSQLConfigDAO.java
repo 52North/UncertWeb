@@ -32,9 +32,9 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
      * file
      */
     private static Logger LOGGER = Logger.getLogger(PGSQLConfigDAO.class);
-	
+
 	/**
-	 * Constructor 
+	 * Constructor
 	 * @param conPool
 	 */
 	public PGSQLConfigDAO(PGConnectionPool conPool) {
@@ -43,7 +43,7 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
 
     /**
      * queries the result models for each offerings and puts them into a HashMap
-     * 
+     *
      * @return Returns HashMap<String,String[]> containing the offerings as keys
      *         and the corresponding result models as values
      * @throws OwsExceptionReport
@@ -97,8 +97,8 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
                         resultModels.add(SosConstants.RESULT_MODEL_SPATIAL_OBSERVATION);
                         result.put(offeringID, resultModels);
                     }
-                    
-                    // if uncertainty value add scopledNameType to result models 
+
+                    // if uncertainty value add scopledNameType to result models
                     else if (valueType.equalsIgnoreCase(SosConstants.ValueTypes.uncertaintyType.name())) {
                         resultModels.add(SosUncConstants.RESULT_MODEL_UNCERTAINTY_OBSERVATION);
                         result.put(offeringID, resultModels);
@@ -233,14 +233,14 @@ public class PGSQLConfigDAO extends org.n52.sos.ds.pgsql.PGSQLConfigDAO implemen
 
 	/**
 	 * queries the value units of uncertainties from the DB
-	 * @return 
-	 * 
+	 * @return
+	 *
 	 * @throws OwsExceptionReport
 	 *             if query of value units failed
 	 */
 	@Override
 	public List<String> queryValueUnits() throws OwsExceptionReport {
-		
+
 		String query = "SELECT " + PGDAOUncertaintyConstants.uVUValUnitCn
 				+ " FROM " + PGDAOUncertaintyConstants.uValUnitTn;
 		List<String> valueUnits = new ArrayList<String>();

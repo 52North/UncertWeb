@@ -19,16 +19,16 @@ public class XMLTester {
     public XMLTester() {
     }
 
-    
+
     public static void main(String[] args) {
     XMLTester t = new XMLTester();
     t.testAll(new File(args[0]), new File(args[1]));
     }
-     
-    
-    	
 
-    
+
+
+
+
     /**
      * Tests all XML files in a specified folder
      * @param input the folder to read the XML files from

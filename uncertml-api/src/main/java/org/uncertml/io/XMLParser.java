@@ -156,9 +156,9 @@ import org.w3c.dom.Document;
 
 /**
  * XML implementation of an UncertML parser, based on the XmlBeans library.
- * 
+ *
  * @see org.uncertml.io.IUncertaintyParser
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -465,7 +465,7 @@ public class XMLParser implements IUncertaintyParser {
 				} catch (MalformedURLException e) {
 					throw new UncertaintyParserException(e);
 				}
-        	}else{        		
+        	}else{
         		r = new ContinuousRealisation(
             			parseDoubleArray(xb_rType.getValues()), weight, id);
         		}
@@ -477,7 +477,7 @@ public class XMLParser implements IUncertaintyParser {
         return r;
     }
 
-    
+
 
 	private DirichletDistribution parseDirichletDistribution(DirichletDistributionType xb_ddType) {
 		DirichletDistribution dd = new DirichletDistribution(
@@ -541,7 +541,7 @@ public class XMLParser implements IUncertaintyParser {
 		return bd;
     }
 
-  
+
 
 	private LogNormalDistribution parseLogNormalDistribution(LogNormalDistributionType xb_lndType) {
 		LogNormalDistribution lnd = new LogNormalDistribution(
@@ -557,8 +557,8 @@ public class XMLParser implements IUncertaintyParser {
 				parseIntArray(xb_stdType.getDegreesOfFreedom()));
         return std;
     }
-    
-    
+
+
 
     private IDistribution parseUniformDistribution(UniformDistributionType xb_udType) {
 		if (!xb_udType.isSetNumberOfClasses()) {
@@ -584,7 +584,7 @@ public class XMLParser implements IUncertaintyParser {
 
     private MultivariateStudentTDistribution parseMultivariateStudentTDistribution(MultivariateStudentTDistributionType xb_mstdType) {
 		MultivariateStudentTDistribution mstd = new MultivariateStudentTDistribution(
-				parseDoubleArray(xb_mstdType.getMean()), 
+				parseDoubleArray(xb_mstdType.getMean()),
 				parseCovarianceMatrix(xb_mstdType.getCovarianceMatrix()),
 				convertBigIntegers(xb_mstdType.getDegreesOfFreedom().getListValue()));
 		return mstd;
@@ -657,8 +657,8 @@ public class XMLParser implements IUncertaintyParser {
 
     private HypergeometricDistribution parseHypergeometricDistribution(HypergeometricDistributionType xb_hdType) {
         HypergeometricDistribution hd = new HypergeometricDistribution(
-        		convertBigIntegers(xb_hdType.getNumberOfTrials().getListValue()), 
-        		convertBigIntegers(xb_hdType.getNumberOfSuccesses().getListValue()), 
+        		convertBigIntegers(xb_hdType.getNumberOfTrials().getListValue()),
+        		convertBigIntegers(xb_hdType.getNumberOfSuccesses().getListValue()),
         		convertBigIntegers(xb_hdType.getPopulationSize().getListValue()));
         return hd;
     }
@@ -672,7 +672,7 @@ public class XMLParser implements IUncertaintyParser {
 
 	private NegativeBinomialDistribution parseNegativeBinomialDistribution(NegativeBinomialDistributionType xb_nbdType) {
         NegativeBinomialDistribution nbd = new NegativeBinomialDistribution(
-        		convertBigIntegers(xb_nbdType.getNumberOfFailures().getListValue()), 
+        		convertBigIntegers(xb_nbdType.getNumberOfFailures().getListValue()),
         		parseDoubleArray(xb_nbdType.getProbability()));
         return nbd;
     }
@@ -848,7 +848,7 @@ public class XMLParser implements IUncertaintyParser {
 
     private CovarianceMatrix parseCovarianceMatrix(CovarianceMatrixType xb_cmType) {
 		CovarianceMatrix cm = new CovarianceMatrix(
-				xb_cmType.getDimension().intValue(), 
+				xb_cmType.getDimension().intValue(),
 				parseDoubleArray(xb_cmType.getValues()));
 		return cm;
     }
@@ -873,18 +873,18 @@ public class XMLParser implements IUncertaintyParser {
 
     private InterquartileRange parseInterquartileRange(InterquartileRangeType xb_iqrType) {
         InterquartileRange iqr = new InterquartileRange(
-        		parseDoubleArray(xb_iqrType.getLower()), 
+        		parseDoubleArray(xb_iqrType.getLower()),
         		parseDoubleArray(xb_iqrType.getUpper()));
         return iqr;
     }
 
     private Quartile parseQuartile(QuartileType xb_qType) {
         Quartile q = new Quartile(
-        		xb_qType.getLevel(), 
+        		xb_qType.getLevel(),
         		parseDoubleArray(xb_qType.getValues()));
         return q;
     }
-    
+
     private StandardDeviation parseStandardDeviation(StandardDeviationType xb_sdType) {
         StandardDeviation sd = new StandardDeviation(
         		parseDoubleArray(xb_sdType.getValues()));
@@ -933,8 +933,8 @@ public class XMLParser implements IUncertaintyParser {
         }
         return result;
     }
-    
-   
+
+
 	private List<Integer> parseIntArray(PositiveNaturalNumbersType xb) {
 		return parseList(xb.getListValue());
 	}

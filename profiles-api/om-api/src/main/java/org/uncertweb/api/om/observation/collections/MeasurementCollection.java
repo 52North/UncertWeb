@@ -8,46 +8,46 @@ import org.uncertweb.api.om.observation.Measurement;
 
 /**
  * collection of O&M measurements
- * 
+ *
  * @author staschc
  *
  */
 public class MeasurementCollection implements IObservationCollection{
-	
+
 	/**gml Id of collection*/
 	private String gmlId;
-	
+
 	/**members of collection*/
 	private List<Measurement> members;
-	
+
 	/**type name of observation collection*/
 	public static final String NAME = "OM_MeasurementCollection";
-	
+
 	/**
 	 * constructor creates an empty collection; add method can be used to fill the collection
-	 * 
+	 *
 	 */
 	public MeasurementCollection(){
 		members = new ArrayList<Measurement>();
 	}
-	
+
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param members
 	 * 			members of collection
 	 */
 	public MeasurementCollection(List<Measurement> members){
 		this.members = members;
 	}
-	
+
 	/**
 	 * @return the members
 	 */
 	public List<Measurement> getMembers() {
 		return members;
 	}
-	
+
 	@Override
 	public String getGmlId() {
 		return gmlId;
@@ -70,6 +70,6 @@ public class MeasurementCollection implements IObservationCollection{
 	public String getTypeName() {
 		return NAME;
 	}
-	
-	
+
+
 }

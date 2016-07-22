@@ -8,7 +8,7 @@ import org.joda.time.DateTime;
 
 /**
  * @author Christian Autermann
- * 
+ *
  */
 public class EEARawDataFile implements Iterable<EEAMeasurement> {
 

@@ -4,21 +4,21 @@ import java.util.List;
 
 /**
  * class that carries the uncertain aggregation inputs
- * 
+ *
  * @author staschc
  *
  */
 public class UncertainAggregationInputs {
-	
+
 	/**types of uncertainty for outputs*/
 	private List<String> outputUncertaintyTypes;
 
 	/**number of realisations*/
 	private int numberOfRealisations;
-	
+
 	/**
-	 * constructor 
-	 * 
+	 * constructor
+	 *
 	 * @param outputUncertaintyTypes
 	 * 		types of uncertainty for outputs
 	 * @param numberOfRealisations
@@ -29,7 +29,7 @@ public class UncertainAggregationInputs {
 		this.outputUncertaintyTypes = outputUncertaintyTypes;
 		this.numberOfRealisations = numberOfRealisations;
 	}
-	
+
 
 	public List<String> getOutputUncertaintyTypes() {
 		return outputUncertaintyTypes;

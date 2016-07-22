@@ -11,11 +11,11 @@ import org.uncertml.util.Validate;
 /**
  * Class representing a multivariate normal distribution with parameters mean and
  * covariance matrix.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/MultivariateNormal}
- * 
+ *
  * @see org.uncertml.statistic.CovarianceMatrix
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -29,7 +29,7 @@ public class MultivariateNormalDistribution implements IMultivariateDistribution
      * and a covariance matrix. Each mean parameter represents a marginal normal
      * distribution. The covariance matrix should contain n^2 elements where n is
      * the size of the array.
-     * 
+     *
      * @param mean an array of doubles representing the mean parameter of n marginal
      * distributions.
      * @param covarianceMatrix a covariance matrix.
@@ -43,7 +43,7 @@ public class MultivariateNormalDistribution implements IMultivariateDistribution
      * and a covariance matrix. Each mean parameter represents a marginal normal
      * distribution. The covariance matrix should contain n^2 elements where n is
      * the size of the list. The list should not contain any null elements.
-     * 
+     *
      * @param mean a list of doubles representing the mean parameter of n marginal
      * distributions.
      * @param covarianceMatrix a covariance matrix.
@@ -68,7 +68,7 @@ public class MultivariateNormalDistribution implements IMultivariateDistribution
     }
 
     /**
-     * 
+     *
      * @return the covariance matrix.
      * @see org.uncertml.statistic.CovarianceMatrix
      */
@@ -77,7 +77,7 @@ public class MultivariateNormalDistribution implements IMultivariateDistribution
     }
 
     /**
-     * 
+     *
      * @return the mean parameter of each marginal distribution represented by
      * this multivariate distribution.
      */

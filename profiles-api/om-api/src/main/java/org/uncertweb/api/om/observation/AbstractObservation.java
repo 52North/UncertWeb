@@ -12,7 +12,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Abstract super class for all observation types
- * 
+ *
  * @author Kiesow, staschc
  *
  */
@@ -35,11 +35,11 @@ public abstract class AbstractObservation {
 	 */
 	private DQ_UncertaintyResult[] resultQuality;
 
-	
-	
+
+
 	/**
 	 * Constructor with mandatory attributes
-	 * 
+	 *
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -66,7 +66,7 @@ public abstract class AbstractObservation {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param identifier
 	 *            identifier of observation
 	 * @param boundedBy
@@ -99,7 +99,7 @@ public abstract class AbstractObservation {
 		this.validTime = validTime;
 		this.resultQuality = resultQuality;
 	}
-	
+
 	///////////////////////////////////////////////////
 	//abstract Methods
 	/**
@@ -108,7 +108,7 @@ public abstract class AbstractObservation {
 	public abstract IResult getResult();
 
 	/**
-	 * 
+	 *
 	 * @param result
 	 * 			the result of the observation
 	 * @throws Exception
@@ -246,9 +246,9 @@ public abstract class AbstractObservation {
 
 	/**
 	 * returns the name of observation
-	 * 
+	 *
 	 * @return
 	 */
 	public abstract String getName();
-	
+
 }

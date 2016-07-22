@@ -8,9 +8,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a covariance matrix.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/CovarianceMatrix}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -22,7 +22,7 @@ public class CovarianceMatrix implements IStatistic {
     /**
      * Constructor that takes a dimension and an array of values. There should be
      * dimension^2 values in the covariance matrix.
-     * 
+     *
      * @param dimension the dimension of the covariance matrix.
      * @param values the values of the covariance matrix.
      */
@@ -33,7 +33,7 @@ public class CovarianceMatrix implements IStatistic {
     /**
      * Constructor that takes a dimension and a <code>List</code> of values. There should be
      * dimension^2 values in the covariance matrix.
-     * 
+     *
      * @param dimension the dimension of the covariance matrix.
      * @param values the values of the covariance matrix.
      */
@@ -50,7 +50,7 @@ public class CovarianceMatrix implements IStatistic {
     }
 
     /**
-     * 
+     *
      * @return the dimension of the covariance matrix.
      */
     public int getDimension() {
@@ -58,7 +58,7 @@ public class CovarianceMatrix implements IStatistic {
     }
 
     /**
-     * 
+     *
      * @return the values of the covariance matrix.
      */
     public List<Double> getValues() {

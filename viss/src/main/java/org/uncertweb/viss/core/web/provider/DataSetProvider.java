@@ -51,7 +51,7 @@ import com.vividsolutions.jts.geom.Geometry;
 @Provider
 public class DataSetProvider extends AbstractJsonSingleWriterProvider<IDataSet> {
 	public static final String EPSG_CODE_QUERY_PARAMETER = "srs";
-	
+
 	public DataSetProvider() {
 		super(IDataSet.class, JSON_DATASET_TYPE);
 	}

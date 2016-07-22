@@ -9,7 +9,7 @@ public abstract class AbstractUncertaintyResponse implements ISosResponse {
 
 	/** indicator for compression usage */
 	private boolean applyZipCompression;
-	
+
 	/** content type for different types than text/xml;subtype="om/2.0.0" */
 	private String contentType;
 
@@ -26,7 +26,7 @@ public abstract class AbstractUncertaintyResponse implements ISosResponse {
 		}
 		return SosConstants.CONTENT_TYPE_OM_2;
 	}
-	
+
 	/** Sets a content type */
 	public void setContentType(String contentType) {
 		this.contentType = contentType;

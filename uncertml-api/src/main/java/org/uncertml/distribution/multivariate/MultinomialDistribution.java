@@ -8,9 +8,9 @@ import org.uncertml.util.Validate;
 /**
  * Class representing a multinomial distribution with parameters number of trials
  * and probabilities.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Multinomial}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -22,7 +22,7 @@ public class MultinomialDistribution implements IMultivariateDistribution {
     /**
      * Constructor taking a single number of trials and an array of doubles for
      * the probabilities.
-     * 
+     *
      * @param numberOfTrials the number of trials parameter.
      * @param probabilities an array of doubles representing the probabilities parameter.
      */
@@ -33,7 +33,7 @@ public class MultinomialDistribution implements IMultivariateDistribution {
     /**
      * Constructor taking a single number of trials and a list of doubles for
      * the probabilities.
-     * 
+     *
      * @param numberOfTrials the number of trials parameter.
      * @param probabilities a list of doubles representing the probabilities parameter.
      */
@@ -47,7 +47,7 @@ public class MultinomialDistribution implements IMultivariateDistribution {
     }
 
     /**
-     * 
+     *
      * @return the number of trials parameter.
      */
     public int getNumberOfTrials() {
@@ -55,7 +55,7 @@ public class MultinomialDistribution implements IMultivariateDistribution {
     }
 
     /**
-     * 
+     *
      * @return the probabilities parameter.
      */
     public List<Double> getProbabilities() {

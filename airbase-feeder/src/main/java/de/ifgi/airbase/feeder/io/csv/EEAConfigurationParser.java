@@ -27,7 +27,7 @@ class EEAConfigurationParser {
 			int count = 0;
 			while ((line = reader.readNext()) != null) {
 				EEAConfiguration config = parseConfigurationLine(line);
-				
+
 				if (Utils.isAcceptableStation(config.getStationCode())) {
 					EEAStation station = stations.get(config.getStationCode());
 					config.setStation(station);
@@ -43,7 +43,7 @@ class EEAConfigurationParser {
 			}
 		}
 	}
-	
+
 	private static EEAConfiguration parseConfigurationLine(String[] line) {
 		EEAConfiguration config = new EEAConfiguration();
 		config.setStationCode(line[0]);

@@ -39,7 +39,7 @@
         </dependency>
 
         <!-- Geotools ###################################################### -->
-        
+
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-wkt</artifactId>
@@ -64,7 +64,7 @@
             <artifactId>jersey-servlet</artifactId>
             <scope>runtime</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -92,7 +92,7 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>com.vividsolutions</groupId>
             <artifactId>jts</artifactId>
@@ -143,7 +143,7 @@
             <artifactId>jersey-test-framework-core</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
 
         <!-- MongoDB & Morphia############################################### -->
         <dependency>
@@ -159,7 +159,7 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
@@ -184,7 +184,7 @@
             <groupId>net.java.dev.jsr-275</groupId>
             <artifactId>jsr-275</artifactId>
         </dependency>
-       
+
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>

@@ -22,18 +22,18 @@ import ucar.nc2.NetcdfFile;
 
 /**
  * parser for NetCDF-U inputs
- * 
+ *
  * @author staschc
  *
  */
 public class NetCDFParser extends AbstractUwParser {
 	private static Logger log = Logger.getLogger(NetCDFParser.class);
-	
+
 	public NetCDFParser() {
 		super(
-			new HashSet<String>(), 
+			new HashSet<String>(),
 			set(ENCODING_BINARY,ENCODING_UTF_8),
-			set(MIME_TYPE_NETCDFX, MIME_TYPE_NETCDF), 
+			set(MIME_TYPE_NETCDFX, MIME_TYPE_NETCDF),
 			UwCollectionUtils.<Class<?>>set(NetCDFBinding.class)
 		);
 	}

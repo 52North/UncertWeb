@@ -11,7 +11,7 @@ import net.opengis.gml.x32.TimeInstantPropertyType;
 import net.opengis.gml.x32.TimePeriodPropertyType;
 
 /**
- * Dummy interface to handle different O&M implementations 
+ * Dummy interface to handle different O&M implementations
  * @author Kiesow
  *
  */

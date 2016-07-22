@@ -14,30 +14,30 @@ package org.uncertweb.impl;
 public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements org.uncertweb.InputReferenceType
 {
     private static final long serialVersionUID = 1L;
-    
+
     public InputReferenceTypeImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType);
     }
-    
-    private static final javax.xml.namespace.QName HEADER$0 = 
+
+    private static final javax.xml.namespace.QName HEADER$0 =
         new javax.xml.namespace.QName("http://www.uncertweb.org", "Header");
-    private static final javax.xml.namespace.QName BODY$2 = 
+    private static final javax.xml.namespace.QName BODY$2 =
         new javax.xml.namespace.QName("http://www.uncertweb.org", "Body");
-    private static final javax.xml.namespace.QName BODYREFERENCE$4 = 
+    private static final javax.xml.namespace.QName BODYREFERENCE$4 =
         new javax.xml.namespace.QName("http://www.uncertweb.org", "BodyReference");
-    private static final javax.xml.namespace.QName HREF$6 = 
+    private static final javax.xml.namespace.QName HREF$6 =
         new javax.xml.namespace.QName("http://www.w3.org/1999/xlink", "href");
-    private static final javax.xml.namespace.QName METHOD$8 = 
+    private static final javax.xml.namespace.QName METHOD$8 =
         new javax.xml.namespace.QName("", "method");
-    private static final javax.xml.namespace.QName MIMETYPE$10 = 
+    private static final javax.xml.namespace.QName MIMETYPE$10 =
         new javax.xml.namespace.QName("", "mimeType");
-    private static final javax.xml.namespace.QName ENCODING$12 = 
+    private static final javax.xml.namespace.QName ENCODING$12 =
         new javax.xml.namespace.QName("", "encoding");
-    private static final javax.xml.namespace.QName SCHEMA$14 = 
+    private static final javax.xml.namespace.QName SCHEMA$14 =
         new javax.xml.namespace.QName("", "schema");
-    
-    
+
+
     /**
      * Gets array of all "Header" elements
      */
@@ -53,7 +53,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return result;
         }
     }
-    
+
     /**
      * Gets ith "Header" element
      */
@@ -71,7 +71,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * Returns number of "Header" element
      */
@@ -83,7 +83,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return get_store().count_elements(HEADER$0);
         }
     }
-    
+
     /**
      * Sets array of all "Header" element
      */
@@ -95,7 +95,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             arraySetterHelper(headerArray, HEADER$0);
         }
     }
-    
+
     /**
      * Sets ith "Header" element
      */
@@ -113,7 +113,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.set(header);
         }
     }
-    
+
     /**
      * Inserts and returns a new empty value (as xml) as the ith "Header" element
      */
@@ -127,7 +127,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * Appends and returns a new empty value (as xml) as the last "Header" element
      */
@@ -141,7 +141,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * Removes the ith "Header" element
      */
@@ -153,7 +153,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             get_store().remove_element(HEADER$0, i);
         }
     }
-    
+
     /**
      * Gets the "Body" element
      */
@@ -171,7 +171,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * True if has "Body" element
      */
@@ -183,7 +183,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return get_store().count_elements(BODY$2) != 0;
         }
     }
-    
+
     /**
      * Sets the "Body" element
      */
@@ -201,7 +201,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.set(body);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "Body" element
      */
@@ -215,7 +215,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * Unsets the "Body" element
      */
@@ -227,7 +227,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             get_store().remove_element(BODY$2, 0);
         }
     }
-    
+
     /**
      * Gets the "BodyReference" element
      */
@@ -245,7 +245,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * True if has "BodyReference" element
      */
@@ -257,7 +257,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return get_store().count_elements(BODYREFERENCE$4) != 0;
         }
     }
-    
+
     /**
      * Sets the "BodyReference" element
      */
@@ -275,7 +275,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.set(bodyReference);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "BodyReference" element
      */
@@ -289,7 +289,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * Unsets the "BodyReference" element
      */
@@ -301,7 +301,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             get_store().remove_element(BODYREFERENCE$4, 0);
         }
     }
-    
+
     /**
      * Gets the "href" attribute
      */
@@ -319,7 +319,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target.getStringValue();
         }
     }
-    
+
     /**
      * Gets (as xml) the "href" attribute
      */
@@ -333,7 +333,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * Sets the "href" attribute
      */
@@ -351,7 +351,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.setStringValue(href);
         }
     }
-    
+
     /**
      * Sets (as xml) the "href" attribute
      */
@@ -369,7 +369,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.set(href);
         }
     }
-    
+
     /**
      * Gets the "method" attribute
      */
@@ -391,7 +391,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return (org.uncertweb.InputReferenceType.Method.Enum)target.getEnumValue();
         }
     }
-    
+
     /**
      * Gets (as xml) the "method" attribute
      */
@@ -409,7 +409,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * True if has "method" attribute
      */
@@ -421,7 +421,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return get_store().find_attribute_user(METHOD$8) != null;
         }
     }
-    
+
     /**
      * Sets the "method" attribute
      */
@@ -439,7 +439,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.setEnumValue(method);
         }
     }
-    
+
     /**
      * Sets (as xml) the "method" attribute
      */
@@ -457,7 +457,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.set(method);
         }
     }
-    
+
     /**
      * Unsets the "method" attribute
      */
@@ -469,7 +469,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             get_store().remove_attribute(METHOD$8);
         }
     }
-    
+
     /**
      * Gets the "mimeType" attribute
      */
@@ -487,7 +487,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target.getStringValue();
         }
     }
-    
+
     /**
      * Gets (as xml) the "mimeType" attribute
      */
@@ -501,7 +501,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * True if has "mimeType" attribute
      */
@@ -513,7 +513,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return get_store().find_attribute_user(MIMETYPE$10) != null;
         }
     }
-    
+
     /**
      * Sets the "mimeType" attribute
      */
@@ -531,7 +531,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.setStringValue(mimeType);
         }
     }
-    
+
     /**
      * Sets (as xml) the "mimeType" attribute
      */
@@ -549,7 +549,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.set(mimeType);
         }
     }
-    
+
     /**
      * Unsets the "mimeType" attribute
      */
@@ -561,7 +561,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             get_store().remove_attribute(MIMETYPE$10);
         }
     }
-    
+
     /**
      * Gets the "encoding" attribute
      */
@@ -579,7 +579,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target.getStringValue();
         }
     }
-    
+
     /**
      * Gets (as xml) the "encoding" attribute
      */
@@ -593,7 +593,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * True if has "encoding" attribute
      */
@@ -605,7 +605,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return get_store().find_attribute_user(ENCODING$12) != null;
         }
     }
-    
+
     /**
      * Sets the "encoding" attribute
      */
@@ -623,7 +623,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.setStringValue(encoding);
         }
     }
-    
+
     /**
      * Sets (as xml) the "encoding" attribute
      */
@@ -641,7 +641,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.set(encoding);
         }
     }
-    
+
     /**
      * Unsets the "encoding" attribute
      */
@@ -653,7 +653,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             get_store().remove_attribute(ENCODING$12);
         }
     }
-    
+
     /**
      * Gets the "schema" attribute
      */
@@ -671,7 +671,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target.getStringValue();
         }
     }
-    
+
     /**
      * Gets (as xml) the "schema" attribute
      */
@@ -685,7 +685,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return target;
         }
     }
-    
+
     /**
      * True if has "schema" attribute
      */
@@ -697,7 +697,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             return get_store().find_attribute_user(SCHEMA$14) != null;
         }
     }
-    
+
     /**
      * Sets the "schema" attribute
      */
@@ -715,7 +715,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.setStringValue(schema);
         }
     }
-    
+
     /**
      * Sets (as xml) the "schema" attribute
      */
@@ -733,7 +733,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
             target.set(schema);
         }
     }
-    
+
     /**
      * Unsets the "schema" attribute
      */
@@ -753,18 +753,18 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
     public static class HeaderImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements org.uncertweb.InputReferenceType.Header
     {
         private static final long serialVersionUID = 1L;
-        
+
         public HeaderImpl(org.apache.xmlbeans.SchemaType sType)
         {
             super(sType);
         }
-        
-        private static final javax.xml.namespace.QName KEY$0 = 
+
+        private static final javax.xml.namespace.QName KEY$0 =
             new javax.xml.namespace.QName("", "key");
-        private static final javax.xml.namespace.QName VALUE$2 = 
+        private static final javax.xml.namespace.QName VALUE$2 =
             new javax.xml.namespace.QName("", "value");
-        
-        
+
+
         /**
          * Gets the "key" attribute
          */
@@ -782,7 +782,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
                 return target.getStringValue();
             }
         }
-        
+
         /**
          * Gets (as xml) the "key" attribute
          */
@@ -796,7 +796,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
                 return target;
             }
         }
-        
+
         /**
          * Sets the "key" attribute
          */
@@ -814,7 +814,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
                 target.setStringValue(key);
             }
         }
-        
+
         /**
          * Sets (as xml) the "key" attribute
          */
@@ -832,7 +832,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
                 target.set(key);
             }
         }
-        
+
         /**
          * Gets the "value" attribute
          */
@@ -850,7 +850,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
                 return target.getStringValue();
             }
         }
-        
+
         /**
          * Gets (as xml) the "value" attribute
          */
@@ -864,7 +864,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
                 return target;
             }
         }
-        
+
         /**
          * Sets the "value" attribute
          */
@@ -882,7 +882,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
                 target.setStringValue(value);
             }
         }
-        
+
         /**
          * Sets (as xml) the "value" attribute
          */
@@ -909,16 +909,16 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
     public static class BodyReferenceImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements org.uncertweb.InputReferenceType.BodyReference
     {
         private static final long serialVersionUID = 1L;
-        
+
         public BodyReferenceImpl(org.apache.xmlbeans.SchemaType sType)
         {
             super(sType);
         }
-        
-        private static final javax.xml.namespace.QName HREF$0 = 
+
+        private static final javax.xml.namespace.QName HREF$0 =
             new javax.xml.namespace.QName("http://www.w3.org/1999/xlink", "href");
-        
-        
+
+
         /**
          * Gets the "href" attribute
          */
@@ -936,7 +936,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
                 return target.getStringValue();
             }
         }
-        
+
         /**
          * Gets (as xml) the "href" attribute
          */
@@ -950,7 +950,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
                 return target;
             }
         }
-        
+
         /**
          * Sets the "href" attribute
          */
@@ -968,7 +968,7 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
                 target.setStringValue(href);
             }
         }
-        
+
         /**
          * Sets (as xml) the "href" attribute
          */
@@ -995,12 +995,12 @@ public class InputReferenceTypeImpl extends org.apache.xmlbeans.impl.values.XmlC
     public static class MethodImpl extends org.apache.xmlbeans.impl.values.JavaStringEnumerationHolderEx implements org.uncertweb.InputReferenceType.Method
     {
         private static final long serialVersionUID = 1L;
-        
+
         public MethodImpl(org.apache.xmlbeans.SchemaType sType)
         {
             super(sType, false);
         }
-        
+
         protected MethodImpl(org.apache.xmlbeans.SchemaType sType, boolean b)
         {
             super(sType, b);

@@ -34,7 +34,7 @@ XmlUtils = (function() {
 		},
 
 		xml2console: function (doc) {
-			console.log(vkbeautify.xml(XmlUtils.xml2string(doc)));    
+			console.log(vkbeautify.xml(XmlUtils.xml2string(doc)));
 		},
 
 		createExecute: function(options) {
@@ -68,9 +68,9 @@ XmlUtils = (function() {
 						var reference = doc.createElement("wps:Reference");
 						for (var key in value) {
 							if (value[key]) {
-								reference.setAttribute(key, value[key]);	
+								reference.setAttribute(key, value[key]);
 							}
-							
+
 						}
 						input.appendChild(reference);
 					}
@@ -81,8 +81,8 @@ XmlUtils = (function() {
 					data.appendChild(literalData);
 					input.appendChild(data);
 				}
-				
-				
+
+
 				inputs.appendChild(input);
 			}
 			for (var key in options.inputs) {
@@ -195,21 +195,21 @@ XmlUtils = (function() {
 				result.appendChild(doc.createTextNode(true));
 				observation.appendChild(result);
 				doc.schema = "http://schemas.opengis.net/om/2.0/observation.xsd";
-				doc.documentElement.appendChild(observation)	
+				doc.documentElement.appendChild(observation)
 			}
 			return doc;
 		},
 
 		isException: function(e) {
-			if (e.documentElement.namespaceURI === ns.wps 
+			if (e.documentElement.namespaceURI === ns.wps
 			 && e.documentElement.localName === "ExecuteResponse") {
 				return false;
 			}
-			if (e.documentElement.namespaceURI === ns.ows 
+			if (e.documentElement.namespaceURI === ns.ows
 			 && e.documentElement.localName === "ExceptionReport") {
 				return true;
 			}
-			if (e.documentElement.namespaceURI === ns.om 
+			if (e.documentElement.namespaceURI === ns.om
 			 && e.documentElement.localName === "OM_ObservationCollection") {
 				return false;
 			}
@@ -253,7 +253,7 @@ XmlUtils = (function() {
 					"xlink:href": h,
 					"mimeType": "application/x-om-u+xml",
 					"encoding": "UTF-8",
-					"schema": "http://schemas.opengis.net/om/2.0/observation.xsd"	
+					"schema": "http://schemas.opengis.net/om/2.0/observation.xsd"
 				};
 			});
 		}

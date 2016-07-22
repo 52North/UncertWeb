@@ -13,28 +13,28 @@ import org.apache.log4j.Logger;
  *
  */
 public class ProjectFile {
-	
+
 	protected static Logger log = Logger.getLogger(ProjectFile.class);
-	
-	
+
+
 	private String genpopHouseholds;
 	private String rwdataHouseholds;
 	private String municipalities;
 	private String zones;
 	private String postcodeAreas;
-	
+
 	private String fileLocation;
 	private String dataLocation;
-	
+
 	private String projectFileName;
-	
+
 	private File projectFile;
-	
+
 	private Boolean randomNumberSeed;
-	
+
 	/**
 	 * Creates a new ProjectFile. It can be accessed by {@link ProjectFile#getProjectFile()}
-	 * 
+	 *
 	 * @param projectFileName name of the project file
 	 * @param fileLocation the location of the project file (should be next to the *.exe)
 	 * @param dataLocation location of the data (the data referenced inside the project file)
@@ -45,26 +45,26 @@ public class ProjectFile {
 	 * @param postcodeAreas
 	 */
 	public ProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas, Boolean randomNumberSeed) {
-		
+
 		this.fileLocation = fileLocation;
 		this.dataLocation = dataLocation+File.separator;
-				
+
 		this.genpopHouseholds = genpopHouseholds;
 		this.rwdataHouseholds = rwdataHouseholds;
 		this.municipalities = municipalities;
 		this.zones = zones;
 		this.postcodeAreas = postcodeAreas;
-		
+
 		this.projectFileName = projectFileName;
-		
-		//in our case datalocation and file location are the same 
+
+		//in our case datalocation and file location are the same
 		this.dataLocation = fileLocation+File.separator;
-		
+
 		this.randomNumberSeed = randomNumberSeed;
-		
+
 		projectFile = new File(this.fileLocation+File.separator+projectFileName);
-		
-		
+
+
 		try {
 			projectFile.createNewFile();
 			this.fillProjectFile(projectFile);
@@ -72,8 +72,8 @@ public class ProjectFile {
 			log.info("Error while writing project file: "+e.getLocalizedMessage());
 			throw new RuntimeException("Error while writing project file: "+e.getLocalizedMessage());
 		}
-		
-		
+
+
 	}
 
 	public String getProjectFileName() {
@@ -86,19 +86,19 @@ public class ProjectFile {
 	 * @throws IOException
 	 */
 	public File getProjectFile(){
-		
+
 		return this.projectFile;
 	}
-	
+
 	private void fillProjectFile(File f) throws IOException{
 		PrintWriter out = null;
 		try {
-			out = new PrintWriter(new BufferedWriter(new FileWriter(f))); 
-		
+			out = new PrintWriter(new BufferedWriter(new FileWriter(f)));
+
 		/**
 		 * (just model uncertainty first line=0, or just input uncertainty (first line=not 0
 		 */
-		
+
 		if (randomNumberSeed){
 			 out.println("0");
 		}
@@ -111,7 +111,7 @@ public class ProjectFile {
 		out.println(postcodeAreas);
 		out.println(zones);
 		out.println(municipalities);
-		
+
 		out.println(dataLocation+"locindex+.bin");
 		out.println(dataLocation+"afst-nl-car.bin");
 		out.println(dataLocation+"afst-nl-slow.bin");
@@ -130,7 +130,7 @@ public class ProjectFile {
 		out.println(dataLocation+"Syspars_test.txt");
 		out.println(dataLocation+"PADTdata.bin");
 		} catch (Exception e){
-			
+
 		}
 		finally{
 			if (out!=null){
@@ -139,24 +139,24 @@ public class ProjectFile {
 			}
 		}
 	}
-	
+
 	public static void newInputDrawProjectFile(String projectFileName, String fileLocation, String dataLocation, String genpopHouseholds, String rwdataHouseholds, String municipalities, String zones, String postcodeAreas, Boolean isModelUncertainty){
-		
+
 		File projectFile = new File(fileLocation+File.separator+projectFileName);
-		
+
 		PrintWriter out = null;
-		
+
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(projectFile)));
-		
-		
-		
+
+
+
 		dataLocation += File.separator;
-		
+
 		/**
 		 * (just model uncertainty first line=0, or just input uncertainty (first line=not 0
 		 */
-		
+
 		if (isModelUncertainty){
 			 out.println("0");
 		}
@@ -169,20 +169,20 @@ public class ProjectFile {
 		out.println(postcodeAreas);
 		out.println(zones);
 		out.println(municipalities);
-		
+
 		out.println(dataLocation+"locindex+.bin");
 		out.println(dataLocation+"afst-nl-car.bin");
 		out.println(dataLocation+"afst-nl-slow.bin");
-		
+
 		//this file will be written
 		out.println("tijd-nl-car.bin");
-		
+
 		out.println(dataLocation+"reach-alt-nl-car.bin");
 		out.println(dataLocation+"zonedist-ext-Base.bin");
-		
+
 		//this file will be written
 		out.println("locs-nl.bin");
-		
+
 		out.println(dataLocation+"times-nl.bin");
 		out.println(dataLocation+"exportBin.bin");
 		out.println(dataLocation+"test.prd");
@@ -193,18 +193,18 @@ public class ProjectFile {
 		out.println(dataLocation+"dtrees-NL.dta");
 		out.println(dataLocation+"Syspars_test.txt");
 		out.println(dataLocation+"PADTdata.bin");
-		
+
 		} catch (IOException e) {
 			log.info("Error while writing InputDraw project file: "+e.getLocalizedMessage());
 			throw new RuntimeException("Error while writing InputDraw project file: "+e.getLocalizedMessage());
-		} 
+		}
 		finally {
 			if (out!=null){
 				out.flush();
 				out.close();
 			}
 		}
-		
-		
+
+
 	}
 }

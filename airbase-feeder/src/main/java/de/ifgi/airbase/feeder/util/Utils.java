@@ -28,9 +28,9 @@ import de.ifgi.airbase.feeder.io.filter.TimeRangeFilter;
 
 /**
  * Utility class.
- * 
+ *
  * @author Christian Autermann
- * 
+ *
  */
 public class Utils {
 
@@ -71,7 +71,7 @@ public class Utils {
 
 	/**
 	 * Formats the time elapsed since @ start}
-	 * 
+	 *
 	 * @param start
 	 *            the start point
 	 * @return a {@link String} describing the elapsed time
@@ -89,7 +89,7 @@ public class Utils {
 
 	/**
 	 * Loads a configuration property.
-	 * 
+	 *
 	 * @param key
 	 *            the property key
 	 * @return the property
@@ -114,7 +114,7 @@ public class Utils {
 	public static boolean shouldBeIgnored(int componentCode) {
 		return !Utils.getComponentsToParse().contains(new Integer(componentCode));
 	}
-	
+
 	private static Set<String> getStationsToParse() {
 		if (stationsToParse == null) {
 			String prop = Utils.get(STATIONS_TO_PARSE_PROPERTY);
@@ -160,7 +160,7 @@ public class Utils {
 						String[] split = comp.split("-");
 						int begin = Integer.valueOf(split[0]).intValue();
 						int end = Integer.valueOf(split[0]).intValue();
-						if (end > begin) 
+						if (end > begin)
 							throw new Error("Can not parse component range. First value has to be smaller than the second.");
 						for (int i = begin; i <= end; i++)
 							components.add(Integer.valueOf(i));
@@ -227,7 +227,7 @@ public class Utils {
 		}
 		return false;
 	}
-    
+
 	private static final String AIRBASE_TEMP_FOLDER = "AirBase_Feeder_TEMP";
     private static final String EEA_TEMP_DIR_KEY = "eea.download.directory";
     private static String tempDir = null;

@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing the beta distribution with parameters alpha and beta.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Beta}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -22,7 +22,7 @@ public class BetaDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single alpha and beta parameter.
-     * 
+     *
      * @param alpha the alpha parameter
      * @param beta the beta parameter
      */
@@ -32,14 +32,14 @@ public class BetaDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes an array of doubles for alpha and beta parameters.
-     * Each alpha and beta pair represents a unique beta distribution. This is 
-     * in line with the UncertML syntax whereby a collection of types can be 
-     * represented by a single entity. Both arrays must be of equal length and 
+     * Each alpha and beta pair represents a unique beta distribution. This is
+     * in line with the UncertML syntax whereby a collection of types can be
+     * represented by a single entity. Both arrays must be of equal length and
      * contain no null elements.
-     * 
+     *
      * @param alpha an array of doubles representing the alpha parameter of n
      * beta distributions.
-     * @param beta an array of doubles representing the beta parameter of n 
+     * @param beta an array of doubles representing the beta parameter of n
      * beta distributions.
      */
     public BetaDistribution(double[] alpha, double[] beta) {
@@ -48,14 +48,14 @@ public class BetaDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a list of doubles for alpha and beta parameters.
-     * Each alpha and beta pair represents a unique beta distribution. This is 
-     * in line with the UncertML syntax whereby a collection of types can be 
-     * represented by a single entity. Both Lists must be of equal length and 
+     * Each alpha and beta pair represents a unique beta distribution. This is
+     * in line with the UncertML syntax whereby a collection of types can be
+     * represented by a single entity. Both Lists must be of equal length and
      * contain no null elements.
-     * 
+     *
      * @param alpha a list of doubles representing the alpha parameter of n
      * beta distributions.
-     * @param beta a list of doubles representing the beta parameter of n 
+     * @param beta a list of doubles representing the beta parameter of n
      * beta distributions.
      */
     public BetaDistribution(List<Double> alpha, List<Double> beta) {
@@ -71,8 +71,8 @@ public class BetaDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
-     * @return the alpha parameter of each beta distributions represented 
+     *
+     * @return the alpha parameter of each beta distributions represented
      * by this object.
      */
     public List<Double> getAlpha() {
@@ -80,8 +80,8 @@ public class BetaDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
-     * @return the beta parameter of each beta distributions represented 
+     *
+     * @return the beta parameter of each beta distributions represented
      * by this object.
      */
     public List<Double> getBeta() {

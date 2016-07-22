@@ -8,8 +8,8 @@
  48155 Muenster, Germany
  info@52north.org
 
- This program is free software; you can redistribute and/or modify it under 
- the terms of the GNU General Public License version 2 as published by the 
+ This program is free software; you can redistribute and/or modify it under
+ the terms of the GNU General Public License version 2 as published by the
  Free Software Foundation.
 
  This program is distributed WITHOUT ANY WARRANTY; even without the implied
@@ -37,14 +37,14 @@ import org.n52.sos.ogc.swe.simpleType.SosSweText;
 
 /**
  * Encoder class for SWE Common 1.0.1
- * 
+ *
  * @author Carsten Hollmann
  * @version 1.0.0
  */
 public class Swe101Encoder {
     /**
      * Adds values to SWE text
-     * 
+     *
      * @param xbText
      *            SWE text
      * @param text
@@ -64,7 +64,7 @@ public class Swe101Encoder {
 
     /**
      * Adds values to SWE quantity
-     * 
+     *
      * @param xbQuantity
      *            SWE Quantity
      * @param quantity
@@ -93,7 +93,7 @@ public class Swe101Encoder {
 
     /**
      * Adds values to SWE coordinates
-     * 
+     *
      * @param xbCoordinate
      *            SWE coordinate
      * @param coordinate

@@ -63,7 +63,7 @@ public abstract class AbstractTransactionalSosClient extends SosClient {
     private String path = null;
     private String failedPath = Utils.getFailedRequestPrintPath();
     private HttpUrlConnectionClient client;
-    
+
     protected boolean processInvalidXml(InputStream response) throws IOException {
         BufferedReader br = null;
         try {
@@ -153,14 +153,14 @@ public abstract class AbstractTransactionalSosClient extends SosClient {
             throw new RuntimeException(se);
         }
     }
-    
+
     protected InputStream post(String xml) throws IOException {
         if (client == null) {
             client = new HttpUrlConnectionClient(getUrl());
         }
         return client.post(xml);
     }
-    
+
     protected URL getUrl() {
         if (this.url == null) {
             String urlProp = Utils.get(SOS_URL_PROPERTY);
@@ -175,15 +175,15 @@ public abstract class AbstractTransactionalSosClient extends SosClient {
         }
         return this.url;
     }
-    
+
     protected InputStream request(String req) throws IOException {
         InputStream in;
         while ((in = post(req)) == null) {
             log.warn("Connection failed. Trying again.");
         }
         return in;
-    }    
-    
+    }
+
     protected String getPath() {
         if (this.path != null) {
             String p = Utils.get(SOS_PRINT_PATH_PROPERTY);
@@ -197,7 +197,7 @@ public abstract class AbstractTransactionalSosClient extends SosClient {
         }
         return this.path;
     }
-    
+
     protected String printRequest(String string, String p, String... filenameComponents) throws IOException {
         if (p != null) {
             BufferedWriter bw = null;
@@ -231,7 +231,7 @@ public abstract class AbstractTransactionalSosClient extends SosClient {
     public String getFailedPath() {
         return failedPath;
     }
-    
+
     public InputStream nodeToInputStream(Node node) {
         StringWriter sw = null;
         try {
@@ -286,10 +286,10 @@ public abstract class AbstractTransactionalSosClient extends SosClient {
             }
         }
     }
-    
+
      /*
      * (non-Javadoc)
-     * 
+     *
      * @see de.ifgi.airbase.feeder.io.sos.http.SosClient#insertObservations(de.ifgi
      * .airbase.feeder.data.EEARawDataFile)
      */
@@ -315,7 +315,7 @@ public abstract class AbstractTransactionalSosClient extends SosClient {
         }
         log.info("Processed {} in {}", file.getFileName(), Utils.timeElapsed(start));
     }
-    
+
     protected abstract void insertObservations(int req, EEARawDataFile file, List<EEAMeasurement> valuesToInsert) throws IOException, RequestFailedException;
-    
+
 }

@@ -6,9 +6,9 @@ import java.util.List;
 /**
  * Utility class that contains static validation methods. Extends the Apache commons
  * Validate class.
- * 
+ *
  * @see org.apache.commons.lang.Validate
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -16,7 +16,7 @@ public class Validate extends org.apache.commons.lang.Validate {
 
     /**
      * Method that ensures all elements of a <code>List</code> are between 2 specified values.
-     * 
+     *
      * @param values the list to validate.
      * @param lower the lowest value allowed.
      * @param upper the highest value allowed.
@@ -28,7 +28,7 @@ public class Validate extends org.apache.commons.lang.Validate {
     /**
      * Method that ensures all elements of a <code>List</code> are between 2 specified values.
      * The user can specify a custom error message.
-     * 
+     *
      * @param values the list to validate.
      * @param lower the lowest value allowed.
      * @param upper the highest value allowed.
@@ -46,7 +46,7 @@ public class Validate extends org.apache.commons.lang.Validate {
     /**
      * Method that ensures all supplied lists contain the same amount of elements.
      * A custom error message can be passed.
-     * 
+     *
      * @param lists an array of List objects to validate.
      * @param message a custom error message to include in the IllegalArgumentException
      * when the validation fails
@@ -65,7 +65,7 @@ public class Validate extends org.apache.commons.lang.Validate {
 
     /**
      * Method that ensures all supplied lists contain the same amount of elements.
-     * 
+     *
      * @param lists an array of List objects to validate.
      */
     public static void allListsEqualLength(List<?>[] lists) {
@@ -75,7 +75,7 @@ public class Validate extends org.apache.commons.lang.Validate {
     /**
      * Method that ensures all elements of a <code>Collection</code> are greater than
      * a specified value.
-     * 
+     *
      * @param values the collection to validate.
      * @param threshold the value allowed of which all elements must be greater than.
      */
@@ -87,7 +87,7 @@ public class Validate extends org.apache.commons.lang.Validate {
      * Method that ensures all elements of a <code>Collection</code> are greater than
      * a specified value.
      * A custom error message can be supplied.
-     * 
+     *
      * @param values the collection to validate.
      * @param threshold the value allowed of which all elements must be greater than.
      * @param message a custom error message to include in the IllegalArgumentException
@@ -104,7 +104,7 @@ public class Validate extends org.apache.commons.lang.Validate {
     /**
      * Method that ensures all elements of a <code>Collection</code> are greater than
      * a specified value.
-     * 
+     *
      * @param values the collection to validate.
      * @param threshold the value allowed of which all elements must be greater than.
      */
@@ -116,7 +116,7 @@ public class Validate extends org.apache.commons.lang.Validate {
      * Method that ensures all elements of a <code>Collection</code> are greater than
      * a specified value.
      * A custom error message can be supplied.
-     * 
+     *
      * @param values the collection to validate.
      * @param threshold the value allowed of which all elements must be greater than.
      * @param message a custom error message to include in the IllegalArgumentException

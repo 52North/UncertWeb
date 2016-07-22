@@ -77,13 +77,13 @@ import com.vividsolutions.jts.io.WKTReader;
  *
  */
 public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
-	
+
 	private static Logger logger = Logger.getLogger(UPSAlbatrossProcessFull.class);
-	
+
 	/*
 	 * how often to call the WPS
-	 */	
-	private int numberOfRealisations = -999;	
+	 */
+	private int numberOfRealisations = -999;
 
 	/*
 	 * identifier for number of realisations
@@ -93,211 +93,211 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 	/**
 	 * identifier for model service URL (Albatross)
 	 */
-	private static final String INPUT_ID_MODEL_SERVICE_URL = "AlbatrossServiceURL";	
-	
-	
+	private static final String INPUT_ID_MODEL_SERVICE_URL = "AlbatrossServiceURL";
+
+
 	/**
 	 * identifier for syn pop service URL
 	 */
-	private static final String INPUT_ID_SYN_POP_MODEL_SERVICE_URL = "SynPopServiceURL";	
-	
+	private static final String INPUT_ID_SYN_POP_MODEL_SERVICE_URL = "SynPopServiceURL";
+
 
 	/**
 	 * identifier for process identifier of the simulated process/model (Albatross)
 	 */
-	private static final String INPUT_ID_SIMULATION_PROCESS_IDENTIFIER = "IdentifierAlbatrossProcess"; 
-	
-	
+	private static final String INPUT_ID_SIMULATION_PROCESS_IDENTIFIER = "IdentifierAlbatrossProcess";
+
+
 	/**
 	 * identifier for process identifier of the simulated process/model
 	 */
-	private static final String INPUT_ID_SYN_POP_PROCESS_IDENTIFIER = "IdentifierSynPopProcess"; 
-	
-	
+	private static final String INPUT_ID_SYN_POP_PROCESS_IDENTIFIER = "IdentifierSynPopProcess";
+
+
 	/**
 	 * identifier for static input: Number of houses created by genpop
-	 */	
-	private static final String INPUT_ID_GENPOP = "genpop-households"; 
-	
-	private static final String INPUT_ID_HOUSEHOLD_FRACTION = "households-fraction"; 
-	
-	
+	 */
+	private static final String INPUT_ID_GENPOP = "genpop-households";
+
+	private static final String INPUT_ID_HOUSEHOLD_FRACTION = "households-fraction";
+
+
 	/**
 	 * identifier for static input: Number of household activity sets created by rwdata
-	 */	
-	private static final String INPUT_ID_RWDATA = "rwdata-households"; 
-	
-	
+	 */
+	private static final String INPUT_ID_RWDATA = "rwdata-households";
+
+
 	/**
 	 * identifier for static input: Number of postal code areas (PC4)
-	 */	
-	private static final String INPUT_ID_POSTAL_CODE_AREAS = "postcode-areas"; 
-	
-	
+	 */
+	private static final String INPUT_ID_POSTAL_CODE_AREAS = "postcode-areas";
+
+
 	/**
 	 * identifier for static input: Number of (larger) zones
-	 */	
-	private static final String INPUT_ID_ZONES = "zones"; 
-	
-	
+	 */
+	private static final String INPUT_ID_ZONES = "zones";
+
+
 	/**
 	 * identifier for static input: Number of municipalities
-	 */	
-	private static final String INPUT_ID_MUNICIPALITIES = "municipalities"; 
-	
-	
+	 */
+	private static final String INPUT_ID_MUNICIPALITIES = "municipalities";
+
+
 	/**
 	 * identifier for the path to the export file created by syn-pop
-	 */	
-	private static final String INPUT_ID_EXPORT_FILE= "export-file"; 
-	
-	
+	 */
+	private static final String INPUT_ID_EXPORT_FILE= "export-file";
+
+
 	/**
 	 * identifier for the path to the binary export file created by syn-pop
-	 */	
-	private static final String INPUT_ID_EXPORT_FILE_BIN = "export-file-bin";    
-	
-	
+	 */
+	private static final String INPUT_ID_EXPORT_FILE_BIN = "export-file-bin";
+
+
 	/**
 	 * identifier for the bootstrapping flag
-	 */	
-	private static final String INPUT_ID_IS_BOOTSTRAPPING = "isBootstrapping";  
-	
+	 */
+	private static final String INPUT_ID_IS_BOOTSTRAPPING = "isBootstrapping";
+
 	/**
 	 * identifier for the model uncertainty flag
-	 */	
-	private static final String INPUT_ID_IS_MODEL_UNCERTAINTY = "isModelUncertainty";  
-	
-	
+	 */
+	private static final String INPUT_ID_IS_MODEL_UNCERTAINTY = "isModelUncertainty";
+
+
 	/**
 	 * identifier for the random number seed
-	 */	
-	private static final String INPUT_ID_RANDOM_NUMBER_SEED = "randomNumberSeed";    
+	 */
+	private static final String INPUT_ID_RANDOM_NUMBER_SEED = "randomNumberSeed";
 
 	private final String INPUT_ID_UNCERT_LINK = "uncert-link";
-	
+
 	private final String INPUT_ID_UNCERT_AREA = "uncert-area";
-	
+
 	private final String inputIDNoCases = "noCases";
-	
+
 	private final String inputIDNoCasesNew = "noCasesNew";
-	
-	
+
+
 	/**
 	 * identifier for the first Albatross output
 	 */
 	private static final String OUTPUT_ID_OD_MATRIX = "ODmatrix";
-	
-	
+
+
 	/**
 	 * identifier for the second Albatross output
 	 */
 	private static final String OUTPUT_ID_INDICATORS = "indicators";
-	
+
 	private static final String OUTPUT_ID_SCHEDULES = "om_schedules";
-	
-	
+
+
 	/**
 	 * List of errors that occurred during the execution of the process
 	 */
 	private List<String> errors;
-	
-	
+
+
 	@Override
 	public Map<String, IData> run(Map<String, List<IData>> inputData) {
-		
+
 		errors = new ArrayList<String>();
-		
+
 		/*
 		 * This UPS process will perform the following steps.
-		 * 
-		 * This is a simplified (testing) version without using 
+		 *
+		 * This is a simplified (testing) version without using
 		 * extra uncertainty parameters and just one realization run.
 		 */
-		
+
 		//1 parse input data for the syn pop model WPS and Albatross model WPS
 		//2 execute syn pop WPS
 		//3 extract results
 		//4 execute Albatross model WPS and return results
-		
-		
+
+
 		/*
 		 * 1: Parse input data
 		 */
-		
+
 		HashMap<String, Object> inputsSynPop = new HashMap<String, Object>();
 		HashMap<String, Object> inputsAlbatross = new HashMap<String, Object>();
-		
+
 		// Retrieve syn pop model service URL from input. Must exist!
 		IData iData = inputData.get(INPUT_ID_SYN_POP_MODEL_SERVICE_URL).get(0);
 		String popModelServiceURL = (String) iData.getPayload();
-		
+
 		// Retrieve model service URL from input. Must exist!
 		iData = inputData.get(INPUT_ID_MODEL_SERVICE_URL).get(0);
 		String modelServiceURL = (String) iData.getPayload();
-		
-		
+
+
 		// Retrieve syn pop model process identifier URL from input. Must exist!
 		iData = inputData.get(INPUT_ID_SYN_POP_PROCESS_IDENTIFIER).get(0);
 		String synPopProcessID = iData.getPayload().toString();
-		
+
 		// Retrieve model process identifier URL from input. Must exist!
 		iData = inputData.get(INPUT_ID_SIMULATION_PROCESS_IDENTIFIER).get(0);
 		String modelProcessID = iData.getPayload().toString();
-		
-		
+
+
 		// Retrieve genpop-households from input. Must exist!
 		iData = inputData.get(INPUT_ID_GENPOP).get(0);
 		inputsAlbatross.put(INPUT_ID_GENPOP, iData.getPayload());
-		
+
 		// Retrieve genpop-households from input. Must exist!
 		iData = inputData.get(INPUT_ID_HOUSEHOLD_FRACTION).get(0);
 		inputsSynPop.put(INPUT_ID_HOUSEHOLD_FRACTION, iData.getPayload());
-		
+
 		// Retrieve rwdata-households from input. Must exist!
 		iData = inputData.get(INPUT_ID_RWDATA).get(0);
 		inputsAlbatross.put(INPUT_ID_RWDATA, iData.getPayload());
 		inputsSynPop.put(INPUT_ID_RWDATA, iData.getPayload());
-		
+
 		// Retrieve postcode-areas from input. Must exist!
 		iData = inputData.get(INPUT_ID_POSTAL_CODE_AREAS).get(0);
 		inputsAlbatross.put(INPUT_ID_POSTAL_CODE_AREAS, iData.getPayload());
 		inputsSynPop.put(INPUT_ID_POSTAL_CODE_AREAS, iData.getPayload());
-		
+
 		// Retrieve zones from input. Must exist!
 		iData = inputData.get(INPUT_ID_ZONES).get(0);
 		inputsAlbatross.put(INPUT_ID_ZONES, iData.getPayload());
 		inputsSynPop.put(INPUT_ID_ZONES, iData.getPayload());
-		
+
 		// Retrieve municipalities from input. Must exist!
 		iData = inputData.get(INPUT_ID_MUNICIPALITIES).get(0);
 		inputsAlbatross.put(INPUT_ID_MUNICIPALITIES, iData.getPayload());
 		inputsSynPop.put(INPUT_ID_MUNICIPALITIES, iData.getPayload());
-		
+
 		// Retrieve municipalities from input. Must exist!
 		iData = inputData.get(INPUT_ID_IS_MODEL_UNCERTAINTY).get(0);
 		inputsAlbatross.put(INPUT_ID_IS_MODEL_UNCERTAINTY, iData.getPayload());
 		inputsSynPop.put(INPUT_ID_IS_MODEL_UNCERTAINTY, iData.getPayload());
-		
+
 		// Retrieve municipalities from input. Must exist!
 		iData = inputData.get(inputIDNoCases).get(0);
 		inputsAlbatross.put(inputIDNoCases, iData.getPayload());
 		inputsSynPop.put(inputIDNoCases, iData.getPayload());
-		
+
 		// Retrieve municipalities from input. Must exist!
 		iData = inputData.get(inputIDNoCasesNew).get(0);
 		inputsAlbatross.put(inputIDNoCasesNew, iData.getPayload());
 		inputsSynPop.put(inputIDNoCasesNew, iData.getPayload());
-		
+
 		// Retrieve realisations from input. Must exist!
 		iData = inputData.get(INPUT_ID_NUMBER_OF_REALISATIONS).get(0);
 		numberOfRealisations = (Integer) iData.getPayload();
-		
+
 		// set 'isBootstrapping' to true (as default)
 		inputsSynPop.put(INPUT_ID_IS_BOOTSTRAPPING, new Boolean(true));
-		
+
 		List<IData> zeroToNInputs = null;
-		
+
 		try{
 			zeroToNInputs = inputData.get(INPUT_ID_UNCERT_LINK);
 			if(zeroToNInputs != null){
@@ -306,8 +306,8 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		}catch (Exception e) {
 			logger.info("No uncert links provided");
 		}
-		
-		try {			
+
+		try {
 			zeroToNInputs = inputData.get(INPUT_ID_UNCERT_AREA);
 			if(zeroToNInputs != null){
 				inputsAlbatross.put(INPUT_ID_UNCERT_AREA, zeroToNInputs);
@@ -315,93 +315,93 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		} catch (Exception e) {
 			logger.info("No uncert areas provided");
 		}
-		
-		
+
+
 		//build result
 		HashMap<String, IData> result = new HashMap<String, IData>();
-		
+
 		List<ContinuousRealisation> realisations = new ArrayList<ContinuousRealisation>(numberOfRealisations);
-		
+
 		int maxTries = numberOfRealisations * 2;
-		
+
 		int tries = 0;
-		
+
 		for (int i = 0; i < numberOfRealisations;) {
-			
+
 			if(tries == maxTries){
-				logger.debug("reached maximum tries of " + maxTries);	
-				logger.debug("breaking loop and continuing returning " + i + " realisations");					
+				logger.debug("reached maximum tries of " + maxTries);
+				logger.debug("breaking loop and continuing returning " + i + " realisations");
 				break;
 			}
-			
+
 			logger.debug("Try to create realisation no. " + i);
-			
+
 			/*
 			 * 2: Execute syn pop WPS
 			 */
-			
+
 			//build execute document
 			ExecuteDocument execDoc = this.createExecuteDocument(popModelServiceURL, synPopProcessID, inputsSynPop);
-			
-			
+
+
 			//execute operation
 			ExecuteResponseDocument response = this.executeRequest(execDoc, popModelServiceURL);
-					
+
 
 			if(response == null){
 				logger.debug("something went wrong while creating realisation no. " + i);
 				tries++;
-				logger.debug("setting current tries to " + tries);				
-				continue;				
+				logger.debug("setting current tries to " + tries);
+				continue;
 			}
-			
+
 			/*
 			 * 3: extract results from syn pop model run
 			 */
-			
+
 			String exportPath = this.extractProperty(response, INPUT_ID_EXPORT_FILE);
 			String exportBinPath = this.extractProperty(response, INPUT_ID_EXPORT_FILE_BIN);
-			
+
 			if (exportBinPath == null || exportPath == null) {
 				this.errors.add("could not extract results from syn-pop-WPS response");
 				return new HashMap<String, IData>();
 			}
-			
+
 			//adjust inputs map
 			inputsAlbatross.put(INPUT_ID_EXPORT_FILE, exportPath);
 			inputsAlbatross.put(INPUT_ID_EXPORT_FILE_BIN, exportBinPath);
 			inputsAlbatross.put(INPUT_ID_RANDOM_NUMBER_SEED, new Integer(1));
 			inputsAlbatross.remove(INPUT_ID_IS_BOOTSTRAPPING);
-			
-			
+
+
 			/*
 			 * 4: execute Albatross model and return results
-			 * 
+			 *
 			 */
-			
+
 			//build execute document
 			execDoc = this.createExecuteDocument(modelServiceURL, modelProcessID, inputsAlbatross, new String []{"om_schedules"});
-			
-			
+
+
 			//execute request
-			response = this.executeRequest(execDoc, modelServiceURL);		
+			response = this.executeRequest(execDoc, modelServiceURL);
 
 			if(response == null){
 				logger.debug("something went wrong while creating realisation no. " + i);
 				tries++;
-				logger.debug("setting current tries to " + tries);				
-				continue;				
+				logger.debug("setting current tries to " + tries);
+				continue;
 			}
-			
+
 			/*
 			 * gather om_schedules
 			 */
 			try {
-			
+
 			String schedulesString = this.extractProperty(response, OUTPUT_ID_SCHEDULES);
 
 			File baseDir = new File(System.getProperty("catalina.base") + File.separator + "webapps/public");
-			
+
 			if(!baseDir.exists()){
 				try {
 					baseDir.mkdir();
@@ -409,45 +409,45 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 					logger.error(e);
 				}
 			}
-			
+
 			String baseDirPath = baseDir.getAbsolutePath();
-			
+
 			/*
 			 * Save the realisations in a public folder of tomcat
 			 * use UUID as name
 			 */
 			String uuidString = UUID.randomUUID().toString().substring(0, 5);
-			
+
 			StringBuffer sb = new StringBuffer(schedulesString);
-			
+
 			File file = new File(baseDirPath + File.separator + uuidString + ".xml");
-			
+
 			BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-			
+
 			bw.write(schedulesString);
-			
+
 			bw.flush();
-			
+
 			bw.close();
-			
+
 			/*
-			 * TODO: save the result somewhere... 
+			 * TODO: save the result somewhere...
 			 */
 			String host = WPSConfig.getInstance().getWPSConfig().getServer().getHostname();
 			String hostPort = WPSConfig.getInstance().getWPSConfig().getServer().getHostport();
-			
+
 			String urlString = "http://" + host + ":" + hostPort+ "/" + "public/" + file.getName();
-			
+
 //			URL url = new URL("file://C:/UncertWeb/Albatross/Neuer Ordner/albatross_response4_schedules3_only_obscoll.xml");
 			URL url = new URL(urlString);
 //			URL url = file.toURI().toURL();
-				
+
 			ContinuousRealisation cr = new ContinuousRealisation(url);
-			
+
 			realisations.add(cr);
-			
+
 			i++;
-			
+
 			} catch (MalformedURLException e) {
 				logger.error(e.getMessage());
 				logger.error("Realisation " + (i - 1) + " will be ommitted due to previous errors");
@@ -457,7 +457,7 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 				logger.error("Realisation " + (i - 1) + " will be ommitted due to previous errors");
 			}
 		}
-		
+
 		/*
 		 * create uncertml doc with schedules as realisation reference
 		 */
@@ -476,18 +476,18 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 	/**
 	 * Creates a {@link MeasurementCollection} object form an XML Beans
 	 * {@link OMMeasurementCollectionDocument}.
-	 * 
+	 *
 	 * @param mcDoc the XML Beans document
-	 * 
+	 *
 	 * @return the om-api measurement collection object
-	 * 
+	 *
 	 * @throws URISyntaxException in case of bad URIs
 	 * @throws ParseException in case of WKT geometry parsing errors
 	 */
 	private MeasurementCollection buildMeasurementCollection(OMMeasurementCollectionDocument mcDoc) throws URISyntaxException, ParseException {
 		//build measurement collection object
 		MeasurementCollection measurementCollection = new MeasurementCollection();
-		
+
 		//measurement and content types
 		Measurement measurementObj;
 		UWMeasurementType measurement;
@@ -498,12 +498,12 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		SpatialSamplingFeature featureOfInterest;
 		MeasureResult measureResult;
 		String s;
-		
+
 		//parse each measurement in the measurement collection
 		UWMeasurementType[] measurements = mcDoc.getOMMeasurementCollection().getOMMeasurementArray();
 		for (int i = 0; i < measurements.length; i++) {
 			measurement = measurements[i];
-			
+
 			//phenomenon time
 			if (measurement.getPhenomenonTime().isSetAbstractTimePrimitive()) {
 				//parse phenomenon time
@@ -517,7 +517,7 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 				s = measurement.getPhenomenonTime().getHref();
 				phenomenonTime = new TimeObject(new URI(s));
 			}
-			
+
 			//result time
 			if (measurement.getResultTime().isSetTimeInstant()) {
 				//parse result time
@@ -529,24 +529,24 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 				s = measurement.getResultTime().getHref();
 				resultTime = new TimeObject(new URI(s));
 			}
-			
+
 			//procedure
 			s = measurement.getProcedure().getHref();
 			procedure = new URI(s);
-			
+
 			//observed property
 			s = measurement.getObservedProperty().getHref();
 			observedProperty = new URI(s);
-			
+
 			//feature of interest
 			featureOfInterest = this.createSamplngFeature(measurement.getFeatureOfInterest());
-			
+
 			//result
 			measureResult = new MeasureResult(measurement.getResult().getDoubleValue(), measurement.getResult().getUom());
-			
+
 			//build representation
 			measurementObj = new Measurement(phenomenonTime, resultTime, procedure, observedProperty, featureOfInterest, measureResult);
-			
+
 			//add to collection implementation
 			measurementCollection.addObservation(measurementObj);
 		}
@@ -557,11 +557,11 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 	/**
 	 * Parses an XML Beans text observation collection document to
 	 * a {@link TextObservationCollection} object.
-	 * 
+	 *
 	 * @param ocDoc the XML Beans document
-	 * 
+	 *
 	 * @return the om-api object
-	 * 
+	 *
 	 * @throws URISyntaxException in case of bad URIs in the document
 	 * @throws ParseException in case of WKT to Geometry parsing errors
 	 */
@@ -569,7 +569,7 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			ParseException {
 		//build representations for each observation and add to result collection
 		TextObservationCollection textObservationCollection = new TextObservationCollection();
-		
+
 		//observation and content types
 		TextObservation textObservation;
 		UWTextObservationType observation;
@@ -580,65 +580,65 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		URI observedProperty;
 		SpatialSamplingFeature featureOfInterest;
 		TextResult textResult;
-		
+
 		//parse each observation in result collection
 		UWTextObservationType[] observations = ocDoc.getOMTextObservationCollection().getOMTextObservationArray();
 		for (int i = 0; i < observations.length; i++) {
 			observation = observations[i];
-			
+
 			//phenomenon time
 			s = observation.getPhenomenonTime().getAbstractTimePrimitive().xmlText();
 			s = s.split(">")[2];
 			s = s.substring(0, s.indexOf("</"));
 			phenomenonTime = new TimeObject(s);
-			
+
 			//result time
 			s = observation.getResultTime().getTimeInstant().getTimePosition().getStringValue();
 			resultTime = new TimeObject(s);
-			
+
 			//procedure
 			s = observation.getProcedure().getHref();
 			procedure = new URI(s);
-			
+
 			//observed property
 			s = observation.getObservedProperty().getHref();
 			observedProperty = new URI(s);
-			
+
 			//feature of interest
 			featureOfInterest = createSamplngFeature(observation.getFeatureOfInterest());
-			
+
 			//text result
 			s = observation.getResult();
 			textResult = new TextResult(s);
-			
+
 			//build representation
 			textObservation = new TextObservation(phenomenonTime , resultTime, procedure, observedProperty, featureOfInterest, textResult);
-			
+
 			//add to collection representation
 			textObservationCollection.addObservation(textObservation);
 		}
 		return textObservationCollection;
 	}
-	
-	
+
+
 	/**
 	 * Creates a {@link SpatialSamplingFeature} from an O&M Observation
-	 * 
+	 *
 	 * @param observation the observation as {@link UWTextObservationType}
-	 * 
+	 *
 	 * @return the sampling feature object
 	 * @throws URISyntaxException in case of malformed href URIs
 	 * @throws ParseException in case of WKT geometry parsing problems
 	 */
 	private SpatialSamplingFeature createSamplngFeature(FoiPropertyType foi) throws URISyntaxException, ParseException {
-		
+
 		if (foi.isSetHref()) {
 			//just href
 			return new SpatialSamplingFeature(new URI(foi.getHref()));
 		}
-		
+
 		SFSpatialSamplingFeatureType spatialSamplingFeatureType = foi.getSFSpatialSamplingFeature();
-		
+
 		String sampledFeature;
 		if (spatialSamplingFeatureType.getSampledFeature().isNil()) {
 			sampledFeature = null;
@@ -646,46 +646,46 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		else {
 			sampledFeature = spatialSamplingFeatureType.getSampledFeature().xmlText();
 		}
-		
+
 		Geometry shape = parseGeometry(spatialSamplingFeatureType);
-		
+
 		if (spatialSamplingFeatureType.isSetIdentifier()) {
 			//add identifier
 			URI codeSpace = new URI(spatialSamplingFeatureType.getIdentifier().getCodeSpace());
 			Identifier identifier = new Identifier(codeSpace, spatialSamplingFeatureType.getIdentifier().getStringValue());
-			
-			
+
+
 			if (spatialSamplingFeatureType.isSetBoundedBy()) {
 				//also add bounded by
 				//TODO implement, bounded by is optional and ignored by now
 //				return new SpatialSamplingFeature(identifier, boundedBy, sampledFeature, shape);
 			}
-			
+
 			return new SpatialSamplingFeature(identifier, sampledFeature, shape);
 		}
-		
+
 		return new SpatialSamplingFeature(sampledFeature, shape);
 	}
 
 
 	/**
 	 * parses a {@link Geometry} from the shape information of a spatial sampling feature
-	 * 
+	 *
 	 * @param spatialSamplingFeatureType the sampling feature
-	 * 
+	 *
 	 * @return a {@link Polygon} of the feature shape
 	 * @throws ParseException in case the WKT text could not be parsed
 	 */
 	private Geometry parseGeometry(SFSpatialSamplingFeatureType spatialSamplingFeatureType) throws ParseException {
 		ShapeType shape = spatialSamplingFeatureType.getShape();
-		
+
 		String s = shape.getAbstractGeometry().xmlText();
-		
+
 		//cut by posList
 		String[] sArray = s.split("posList");
 		s = sArray[1];
 		s = s.substring(1, s.indexOf("</"));
-		
+
 		//add ',' between each coordinate pair
 		sArray = s.split(" ");
 		s = "";
@@ -693,10 +693,10 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			s += sArray[i] + " " + sArray[i + 1] + ", ";
 		}
 		s += sArray[sArray.length - 2] + " " + sArray[sArray.length - 1];
-		
+
 		//build WKT polygon
 		s = "Polygon ((" + s + "))";
-		
+
 		WKTReader reader = new WKTReader();
 		return reader.read(s);
 	}
@@ -704,10 +704,10 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 
 	/**
 	 * Extracts the String value of a Property from a WPS execute response
-	 * 
+	 *
 	 * @param response the WPS response document
 	 * @param propertyID the ID of the property
-	 * 
+	 *
 	 * @return the property value as string or <code>null</code> in case of errors
 	 */
 	private String extractProperty(ExecuteResponseDocument response, String propertyID) {
@@ -715,7 +715,7 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			OutputDataType[] outputs = response.getExecuteResponse().getProcessOutputs().getOutputArray();
 			OutputDataType output = null;
 			String outputID;
-			
+
 			//find output
 			for (int i = 0; i < outputs.length; i++) {
 				output = outputs[i];
@@ -725,16 +725,16 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 					break;
 				}
 			}
-			
+
 			if (output == null) {
 				return null;
 			}
 			if (!output.isSetData()) {
 				return null;
 			}
-			
+
 			DataType data = output.getData();
-			
+
 			//get data content
 			if (data.isSetLiteralData()) {
 				return data.getLiteralData().getStringValue();
@@ -742,15 +742,15 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			else if (data.isSetComplexData()) {
 				//get complex data
 				String complexData = data.getComplexData().getDomNode().getFirstChild().getNodeValue();
-				
+
 				if(complexData == null){
 					complexData = nodeToString(data.getComplexData().getDomNode().getFirstChild());
 				}
-					
-				
+
+
 				//extract from CDATA caption
 				complexData = this.removeCDATA(complexData);
-				
+
 				return complexData;
 			}
 		}
@@ -758,17 +758,17 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			this.errors.add(t.getMessage());
 			return null;
 		}
-		
+
 		return null;
 	}
 
 
 	/**
-	 * Removes a CDATA caption from a XML text and 
+	 * Removes a CDATA caption from a XML text and
 	 * replaces &lt; and &gt; by '<' and '>'
-	 * 
+	 *
 	 * @param xmlText the XML ass text string
-	 * 
+	 *
 	 * @return the updated text
 	 */
 	private String removeCDATA(String xmlText) {
@@ -778,29 +778,29 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		Matcher matcher = pattern.matcher(text);
 		text = matcher.replaceAll("");
 		text = text.replaceAll("]]", "");
-		
+
 		//replace encoded < and >
 		text = text.replaceAll("&lt;", "<");
 		text = text.replaceAll("&gt;", ">");
-		
+
 		return text;
 	}
 
 
 	/**
 	 * Executes a WPS execute request.
-	 * 
+	 *
 	 * @param execDoc the execute request document
 	 * @param wpsURL the WPS service URL
-	 * 
+	 *
 	 * @return the WPS response or <code>null</code> in case of errors
 	 */
 	private ExecuteResponseDocument executeRequest(ExecuteDocument execDoc, String wpsURL) {
 		try {
-			
+
 			Object responseObject = WPSClientSession.getInstance().execute(wpsURL, execDoc);
-			if(responseObject instanceof ExecuteResponseDocument){				
-				return (ExecuteResponseDocument) responseObject;				
+			if(responseObject instanceof ExecuteResponseDocument){
+				return (ExecuteResponseDocument) responseObject;
 			}else if(responseObject instanceof ExceptionReport){
 				logger.debug(responseObject);
 				logger.debug(((ExceptionReport)responseObject).getExceptionArray(0).toString());
@@ -815,8 +815,8 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 			return null;
 		}
 	}
-	
-	
+
+
 	@Override
 	public List<String> getErrors() {
 		return this.errors;
@@ -826,10 +826,10 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 	public Class<? extends IData> getInputDataType(String id) {
 		if (id.equals(INPUT_ID_MODEL_SERVICE_URL)) {
 			return LiteralStringBinding.class;
-		} 
+		}
 		else if (id.equals(INPUT_ID_SYN_POP_MODEL_SERVICE_URL)) {
 			return LiteralStringBinding.class;
-		} 
+		}
 		else if (id.equals(INPUT_ID_SIMULATION_PROCESS_IDENTIFIER)) {
 			return LiteralStringBinding.class;
 		}
@@ -882,27 +882,27 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * This method creates an <c>ExecuteDocument</c>.
-	 * 
+	 *
 	 * @param urlString the URL of the WPS that is executed
 	 * @param processID Identifier of the WPS process
 	 * @param inputs a map holding the identifiers of the inputs and the values
-	 * 
+	 *
 	 * @return an execute document to send to the WPS or <code>null</code> in case of Exceptions
 	 */
-	public ExecuteDocument createExecuteDocument(String urlString, String processID, HashMap<String, Object> inputs) {		
+	public ExecuteDocument createExecuteDocument(String urlString, String processID, HashMap<String, Object> inputs) {
 		//get process description from WPS
 		ProcessDescriptionType processDescription;
 		try {
 			processDescription = WPSClientSession.getInstance().getProcessDescription(urlString, processID);
-			
+
 			//create execute request builder
 			org.n52.wps.client.ExecuteRequestBuilder executeBuilder = new org.n52.wps.client.ExecuteRequestBuilder(
 					processDescription);
-			
+
 			//add all input data
 			InputDescriptionType input;
 			InputDescriptionType[] inputArray = processDescription.getDataInputs().getInputArray();
@@ -916,17 +916,17 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 					continue;
 				}
 				inputValue = inputs.get(inputName);
-				
+
 				if(inputValue instanceof List<?>){
-					
+
 					String encoding = input.getComplexData().getDefault().getFormat().getEncoding();
 					String mimeType = input.getComplexData().getDefault().getFormat().getMimeType();
 					String schema = input.getComplexData().getDefault().getFormat().getSchema();
-					
+
 					List<?> inputList = (List<?> )inputValue;
-					
+
 					for (Object object : inputList) {
-						
+
 						if(object instanceof IData){
 							try {
 								executeBuilder.addComplexData(inputName,(IData)object, schema, encoding, mimeType);
@@ -935,39 +935,39 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 							}
 						}
 					}
-					
+
 				}else{
 					executeBuilder.addLiteralData(inputName,inputValue.toString());
 				}
 			}
-			
+
 			return executeBuilder.getExecute();
-		} 
+		}
 		catch (IOException e) {
 			this.errors.add(e.getMessage());
 			return null;
 		}
 	}
-	
+
 	/**
 	 * This method creates an <c>ExecuteDocument</c>.
-	 * 
+	 *
 	 * @param urlString the URL of the WPS that is executed
 	 * @param processID Identifier of the WPS process
 	 * @param inputs a map holding the identifiers of the inputs and the values
-	 * 
+	 *
 	 * @return an execute document to send to the WPS or <code>null</code> in case of Exceptions
 	 */
-	public ExecuteDocument createExecuteDocument(String urlString, String processID, HashMap<String, Object> inputs, String[] outputIds) {		
+	public ExecuteDocument createExecuteDocument(String urlString, String processID, HashMap<String, Object> inputs, String[] outputIds) {
 		//get process description from WPS
 		ProcessDescriptionType processDescription;
 		try {
 			processDescription = WPSClientSession.getInstance().getProcessDescription(urlString, processID);
-			
+
 			//create execute request builder
 			org.n52.wps.client.ExecuteRequestBuilder executeBuilder = new org.n52.wps.client.ExecuteRequestBuilder(
 					processDescription);
-			
+
 			//add all input data
 			InputDescriptionType input;
 			InputDescriptionType[] inputArray = processDescription.getDataInputs().getInputArray();
@@ -981,17 +981,17 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 					continue;
 				}
 				inputValue = inputs.get(inputName);
-				
+
 				if(inputValue instanceof List<?>){
-					
+
 					String encoding = input.getComplexData().getDefault().getFormat().getEncoding();
 					String mimeType = input.getComplexData().getDefault().getFormat().getMimeType();
 					String schema = input.getComplexData().getDefault().getFormat().getSchema();
-					
+
 					List<?> inputList = (List<?> )inputValue;
-					
+
 					for (Object object : inputList) {
-						
+
 						if(object instanceof IData){
 							try {
 								executeBuilder.addComplexData(inputName,(IData)object, schema, encoding, mimeType);
@@ -1000,28 +1000,28 @@ public class UPSAlbatrossProcessFull extends AbstractAlgorithm {
 							}
 						}
 					}
-					
+
 				}else{
 					executeBuilder.addLiteralData(inputName,inputValue.toString());
 				}
 			}
-			
+
 			ResponseFormType responseForm = executeBuilder.getExecute().getExecute().addNewResponseForm();
-			
+
 			ResponseDocumentType responseDoc = responseForm.addNewResponseDocument();
-			
+
 			for (String id : outputIds) {
 				responseDoc.addNewOutput().addNewIdentifier().setStringValue(id);
 			}
-			
+
 			return executeBuilder.getExecute();
-		} 
+		}
 		catch (IOException e) {
 			this.errors.add(e.getMessage());
 			return null;
 		}
 	}
-	
+
 	private String nodeToString(Node node)
 			throws TransformerFactoryConfigurationError, TransformerException {
 		StringWriter stringWriter = new StringWriter();

@@ -2,7 +2,7 @@
 JSXML 0.2.2 (2012-07-18)
 
 JavaScript XML/XSLT Library
- 
+
 Copyright (c) 2007-2012, Anton Zorko
 All rights reserved.
 
@@ -28,7 +28,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
- 
+
 (function(cfg){
     var defaults = {
         context: window,
@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     for (var i in defaults)
         if (cfg[i]) defaults[i] = cfg[i];
     cfg = defaults;
-    
+
     // conveyor is used to build and execute callback chains
     var conveyor = function(cb){
         if (cb) this.cb = cb;
@@ -60,7 +60,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             $this.exe(i+1);
         }); else if (typeof(this.cb) == 'function') this.cb();
     };
-    
+
     var lib = function(){},
         pro = {
             ajax: function(cfg){
@@ -111,7 +111,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     };
                 } else this._throw(this._msgs.noajax);
             },
-            
+
             /* The following two pieces of code are taken from http://www.alistapart.com/articles/crossbrowserscripting */
             nodeTypes: {
                 ELEMENT_NODE: 1,
@@ -127,7 +127,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 DOCUMENT_FRAGMENT_NODE: 11,
                 NOTATION_NODE: 12
             },
-            
+
             importNode: function(document, node, allChildren) {
                 /* find the node type to import */
                 switch (node.nodeType) {
@@ -153,7 +153,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         break;
                 }
             },
-            
+
             getMsDom: function () {
                 // create IE xml DOM without ActiveX, submitted by alfalabs.net@gmail.com
                 var xml = document.createElement('xml');
@@ -163,7 +163,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 document.body.removeChild(xml);
                 return xmlDocument;
             },
-            
+
             newDoc: function(node){
                 var d = window.ActiveXObject ? this.getMsDom() : document.implementation.createDocument("", node && !node.tagName ? node : 'test', null);
                 if (window.ActiveXObject) {
@@ -181,15 +181,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 };
                 return d;
             },
-            
+
             copy: function(obj){
                 return this.fromString(this.toXml(obj));
             },
-            
+
             fromStringOrObject: function(src) {
                 return this.fromString(src) || this._fromObject(src);
             },
-            
+
             fromString: function(str, checkXmlDeclaration) {
                 if (typeof(str) != 'string') return false;
                 checkXmlDeclaration = checkXmlDeclaration == undefined ? true : checkXmlDeclaration;
@@ -212,7 +212,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     } else return o;
                 };
             },
-            
+
             fromFile: function(file, callback, scope) {
                 var cl = this._cache_loading,
                     c = this._cache,
@@ -258,7 +258,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 if (o) callback.call(scope ? scope : o, o);
                 else this.fromFile(source, callback, scope);
             },
-            
+
             toXml: function(source, xmlHeaderNeeded){
                 xmlHeaderNeeded = xmlHeaderNeeded == false ? false : true;
                 var xml = typeof(source) == 'string' ? source : (source.xml ? source.xml : new XMLSerializer().serializeToString(source)),
@@ -268,11 +268,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 if (!xmlHeaderNeeded && xmlHeaderPresent) return xml.replace(/^<\?xml[^<]+/, '');
                 return xml;
             },
-            
+
             _borrowRootName: function(names){
                 return names ? ( this._isA(names) ? names.shift() : names ) : 'root';
             },
-            
+
             toDom: function(o, names, parentNode){
                 rootName = this._borrowRootName(names);
                 if (parentNode) parentNode = parentNode.appendChild(parentNode.ownerDocument.createElement(rootName));
@@ -308,14 +308,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 };
                 return parentNode.ownerDocument.documentElement == parentNode ? parentNode.ownerDocument : parentNode;
             },
-            
+
             trans: function(xmlSrc, xslSrc, callback, nativeResult, doc){
                 var $this = this;
                 this.load(xmlSrc, function(xml){
                     $this._trans2(xml, xslSrc, callback, nativeResult, doc);
                 });
             },
-            
+
             transReady: function(xmlSrc, xslSrc, nativeResult, doc){
                 var xmlSrc = this.fromStringOrObject(xmlSrc),
                     xslSrc = this.fromStringOrObject(xslSrc),
@@ -336,14 +336,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 };
                 return nativeResult ? r : this.toXml(r, false);
             },
-            
+
             getXslWrap: function(cfg){
                 cfg = cfg || {};
                 cfg.indent = cfg.indent ? cfg.indent : 'yes';
                 cfg.method = cfg.method ? cfg.method : 'html';
                 return ['<?xml version="1.0" encoding="UTF-8"?><xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"><xsl:output encoding="UTF-8" indent="' + cfg.indent + '" method="' + cfg.method + '" />', '</xsl:stylesheet>'];
             },
-            
+
             _trans2: function(xml, xslSrc, callback, nativeResult, doc){
                 this.load(xslSrc, function(xsl){
                     var scope;
@@ -354,7 +354,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     callback.call(scope, this.transReady(xml, xsl, nativeResult, doc));
                 }, this);
             },
-            
+
             _throw: function(msg){
                 var sourceAppName = 'JSXML';
                 switch (cfg.errors) {

@@ -5,11 +5,11 @@ import org.n52.wps.io.data.IComplexData;
 public class AlbatrossUInputBinding implements IComplexData{
 
 	private AlbatrossUInput payload;
-	
+
 	public AlbatrossUInputBinding(AlbatrossUInput payload){
 		this.payload = payload;
 	}
-	
+
 	@Override
 	public Object getPayload() {
 		return payload;

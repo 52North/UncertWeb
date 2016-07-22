@@ -13,14 +13,14 @@ import org.n52.wps.io.data.IData;
 import org.n52.wps.io.data.binding.complex.UncertWebIODataBinding;
 
 public abstract class DelegatingParser extends DelegatingHandler implements IParser {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DelegatingParser.class);
 
 	private final Set<IParser> parsers;
-	
+
 	public DelegatingParser(IParser... parsers) {
 		super(parsers);
-		
+
 		//add generic UncertWebIODataBinding to supported Formats
 		List<Class<?>> bindings = UwCollectionUtils.asList(super.supportedBindings);
 		bindings.add(UncertWebIODataBinding.class);
@@ -37,7 +37,7 @@ public abstract class DelegatingParser extends DelegatingHandler implements IPar
 	public IData parseBase64(InputStream input, String mimeType, String schema) {
 		return findParser(mimeType, schema).parseBase64(input, mimeType, schema);
 	}
-	
+
 	private IParser findParser(String mimeType, String schema) {
 		log.info("Searching for Parser. Mime-Type: {}, Schema: {}", mimeType, schema);
 		for (IParser g : parsers) {
@@ -49,7 +49,7 @@ public abstract class DelegatingParser extends DelegatingHandler implements IPar
 		}
 		throw new RuntimeException("No applicable parser found.");
 	}
-	
+
 	public boolean isSupportedSchema(String schema){
 		if (schema==null){
 			return true;

@@ -6,9 +6,9 @@ import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Class representing a centred moment statistic.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/CentredMoment}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -17,7 +17,7 @@ public class CentredMoment extends Moment {
     /**
      * Constructor that takes a single integer order and double value of a centred moment
      * statistic.
-     * 
+     *
      * @param order the order of the centred moment, e.g. 1st order.
      * @param value the value of the centred moment.
      */
@@ -30,7 +30,7 @@ public class CentredMoment extends Moment {
      * doubles for the value of a centred moment statistic. Each value represents a single
      * centred moment statistic. This is in line with the UncertML syntax whereby a collection
      * of types can be represented by a single entity.
-     * 
+     *
      * @param order the order of the centred moment, e.g. 1st order.
      * @param values an array of doubles representing the value of n
      * centred moment statistics.
@@ -44,7 +44,7 @@ public class CentredMoment extends Moment {
      * doubles for the value of a centred moment statistic. Each value represents a single
      * centred moment statistic. This is in line with the UncertML syntax whereby a collection
      * of types can be represented by a single entity.
-     * 
+     *
      * @param order the order of the centred moment, e.g. 1st order.
      * @param values a <code>List</code> of doubles representing the value of n
      * centred moment statistics.

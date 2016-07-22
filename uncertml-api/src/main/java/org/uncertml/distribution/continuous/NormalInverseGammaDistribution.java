@@ -8,11 +8,11 @@ import org.apache.commons.lang.ArrayUtils;
 import org.uncertml.util.Validate;
 
 /**
- * Class representing the normal inverse gamma distribution with mean, variance 
+ * Class representing the normal inverse gamma distribution with mean, variance
  * scaling, shape and scale parameters.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/NormalInverseGamma}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -26,7 +26,7 @@ public class NormalInverseGammaDistribution implements IContinuousDistribution {
     /**
      * Constructor that takes a single mean, variance scaling, shape and scale
      * parameter.
-     * 
+     *
      * @param mean the mean parameter.
      * @param varianceScaling the variance scaling parameter.
      * @param shape the shape parameter.
@@ -38,11 +38,11 @@ public class NormalInverseGammaDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes an array of doubles for the mean, variance scaling
-     * shape and scale parameters. Each shape and scale pair represents a unique 
+     * shape and scale parameters. Each shape and scale pair represents a unique
      * normal inverse gamma distribution. This is in line with the UncertML syntax
-     * whereby a collection of types can be represented by a single entity. 
+     * whereby a collection of types can be represented by a single entity.
      * The arrays must be of equal length.
-     * 
+     *
      * @param mean an array of doubles representing the mean parameter of n normal
      * inverse gamma distributions.
      * @param varianceScaling an array of doubles representing the variance scaling
@@ -58,11 +58,11 @@ public class NormalInverseGammaDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a list of doubles for the mean, variance scaling
-     * shape and scale parameters. Each shape and scale pair represents a unique 
+     * shape and scale parameters. Each shape and scale pair represents a unique
      * normal inverse gamma distribution. This is in line with the UncertML syntax
-     * whereby a collection of types can be represented by a single entity. 
+     * whereby a collection of types can be represented by a single entity.
      * The lists must be of equal length and must not contain any null elements.
-     * 
+     *
      * @param mean a list of doubles representing the mean parameter of n normal
      * inverse gamma distributions.
      * @param varianceScaling a list of doubles representing the variance scaling
@@ -94,7 +94,7 @@ public class NormalInverseGammaDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the scale parameter of each normal inverse gamma distribution
      * represented by this object.
      */
@@ -103,7 +103,7 @@ public class NormalInverseGammaDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the shape parameter of each normal inverse gamma distribution
      * represented by this object.
      */
@@ -112,7 +112,7 @@ public class NormalInverseGammaDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the variance scaling parameter of each normal inverse gamma distribution
      * represented by this object.
      */
@@ -121,7 +121,7 @@ public class NormalInverseGammaDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the mean parameter of each normal inverse gamma distribution represented
      * by this object.
      */

@@ -18,7 +18,7 @@ public class ActivityMapping {
 	// Albatross activityType: 0:Work, 1: Business, 2: Bring/Get goods and persons, 3: shop from one store, 4: shop from multiple store, 5: service, 6: social, 7: leisure, 8;tour, 9:at home
 	// Albatross travelMode: 0: car driver, 1: slow(bike or walk), 2: public, 3: car passenger
 	// Albatross isHome: 0: not at home, 1: at home
-	
+
 	// activity2emissionSource mapping:
 
 	/*
@@ -41,7 +41,7 @@ public class ActivityMapping {
 			put("9", "at home");
 		}
 	};
-	
+
 	public static final Map<String,String> ALBATROSS_TRAVELMODE2ACTIVITY = new HashMap<String,String>(){
 		private static final long serialVersionUID = 6107971476316773428L;
 
@@ -53,12 +53,12 @@ public class ActivityMapping {
 			put("3", "car passenger");
 		}
 	};
-	
-	
+
+
 	/*
 	 * Mappings from generic activities to exposure relevant activities and microenvironments
 	 */
-	
+
 	private static final Map<String,String> ACTIVITY2EXPOSURE_ACTIVITY = new HashMap<String,String>(){
 		private static final long serialVersionUID = 3161110991333967276L;
 		// Activities: smoke, cook, neutral, aerate, human
@@ -83,7 +83,7 @@ public class ActivityMapping {
 			put("walking","human");
 		}
 	};
-	
+
 	private static final Map<String,String> ACTIVITY2MICROENVIRONMENT = new HashMap<String,String>(){
 		private static final long serialVersionUID = -1573329646301968442L;
 		// MEs: car, bus, train, home, other indoor, work, outdoor, restaurant, disco, pub
@@ -96,7 +96,7 @@ public class ActivityMapping {
 			put("transport", "bus");
 			put("bike", "outdoor");
 			put("walk", "outdoor");
-			
+
 			// indoors
 			put("home", "home");
 			put("Home", "home");
@@ -107,7 +107,7 @@ public class ActivityMapping {
 			put("Business", "work");
 			put("store", "otherindoor");
 			put("other indoor", "otherindoor");
-			
+
 			// specific indoors
 			put("restaurant", "restaurant");
 			put("bar", "pub");
@@ -116,7 +116,7 @@ public class ActivityMapping {
 			put("club", "club");
 		}
 	};
-	
+
 
 	/**
 	 * Maps from a list of activity attributes to exposure relevant activities and microenvironments
@@ -127,13 +127,13 @@ public class ActivityMapping {
 		ArrayList<String> activityList = new ArrayList<String>();
 		// albatross: actionNumber, activityType, travelMode, isHome
 		// ms: io, microenvironment, microenvironmentDetail, activity, noOfPersons, smoker, windowOpen
-		
+
 		Set<String> activityIDs = rawActivities.keySet();
 		for(String id : activityIDs){
 			String value = rawActivities.get(id);
-			
+
 			//*********************************************************************
-			// TODO: THIS IS A WORKAROUND AS LONG AS WE ONLY GET THE CODES FROM THE ALBATROSS MODEL 
+			// TODO: THIS IS A WORKAROUND AS LONG AS WE ONLY GET THE CODES FROM THE ALBATROSS MODEL
 			// check if we have Albatross codes and convert them if necessary
 //			if(id.contains("travelMode")){
 //				value = ALBATROSS_TRAVELMODE2ACTIVITY.get(value);
@@ -145,9 +145,9 @@ public class ActivityMapping {
 //				if(value.equals("1")||value.equals("true"))
 //					value = "home";
 //			}
-			
+
 			//*********************************************************************
-			
+
 			if(id.contains("activity")){
 				Set<String> keys = ACTIVITY2EXPOSURE_ACTIVITY.keySet();
 				for(String s : keys){
@@ -171,12 +171,12 @@ public class ActivityMapping {
 						activityList.add(ACTIVITY2EXPOSURE_ACTIVITY.get(s));
 					}
 				}
-			}		
+			}
 		}
-		
+
 		return activityList;
 	}
-	
+
 	/**
 	 * Maps from a list of activity attributes to exposure relevant activities and microenvironments
 	 * @param rawActivities
@@ -186,13 +186,13 @@ public class ActivityMapping {
 		String me = "";
 		// albatross: actionNumber, activityType, travelMode, isHome
 		// ms: io, microenvironment, microenvironmentDetail, activity, noOfPersons, smoker, windowOpen
-				
+
 		Set<String> activityIDs = rawActivities.keySet();
 		for(String id : activityIDs){
 			String value = rawActivities.get(id);
-					
+
 			//*********************************************************************
-			// TODO: THIS IS A WORKAROUND AS LONG AS WE ONLY GET THE CODES FROM THE ALBATROSS MODEL 
+			// TODO: THIS IS A WORKAROUND AS LONG AS WE ONLY GET THE CODES FROM THE ALBATROSS MODEL
 			// check if we have Albatross codes and convert them if necessary
 //			if(id.contains("travelMode")){
 //				value = ALBATROSS_TRAVELMODE2ACTIVITY.get(value);
@@ -204,9 +204,9 @@ public class ActivityMapping {
 //				if(value.equals("1")||value.equals("true"))
 //					value = "home";
 //			}
-					
+
 			//*********************************************************************
-					
+
 			if(id.contains("microenvironment")||id.contains("activity")||id.contains("travel")){
 				Set<String> keys = ACTIVITY2MICROENVIRONMENT.keySet();
 				for(String s : keys){
@@ -215,13 +215,13 @@ public class ActivityMapping {
 					}
 				}
 			}
-			
+
 		}
-		
+
 		return me;
 	}
-	
-	
+
+
 //	public static String mapActivitytoExposureActivity(String activity){
 //		Set<String> keys = ACTIVITY2EXPOSURE_ACTIVITY.keySet();
 //		for(String s : keys){
@@ -231,7 +231,7 @@ public class ActivityMapping {
 //		}
 //		return null;
 //	}
-//	
+//
 //	public static String mapActivitytoMicroenvironment(String activity){
 //		Set<String> keys = ACTIVITY2MICROENVIRONMENT.keySet();
 //		for(String s : keys){

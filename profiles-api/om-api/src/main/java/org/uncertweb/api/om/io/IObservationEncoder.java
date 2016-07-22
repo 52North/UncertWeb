@@ -11,7 +11,7 @@ import org.uncertweb.api.om.observation.collections.IObservationCollection;
 
 /**
  * Interface for encoding observations
- * 
+ *
  * @author Kiesow
  *
  */
@@ -19,35 +19,35 @@ public interface IObservationEncoder {
 
 	/**
 	 * encodes an {@link OMObservationCollectionDocument}
-	 * 
+	 *
 	 * @param obsCol
 	 *            observation collection
 	 * @return observation collections's xml document as formatted String
-	 * @throws UncertaintyEncoderException 
+	 * @throws UncertaintyEncoderException
 	 * 			if encoding of uncertainty fails
 	 * @throws UnsupportedUncertaintyTypeException
-	 * 			if type of uncertainty is not supported 
-	 * @throws XmlException 
+	 * 			if type of uncertainty is not supported
+	 * @throws XmlException
 	 * 			if encoding fails
 	 * @throws IllegalArgumentException
 	 *          if encoding fails
-	 * @throws JSONException 
+	 * @throws JSONException
 	 */
 	public String encodeObservationCollection(IObservationCollection obsCol) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException, JSONException;
 
 
 	/**
 	 * encodes an {@link OMObservationDocument}
-	 * 
+	 *
 	 * @param obs
 	 *            observation
 	 * @return observation's xml document as formatted String
-	 * @throws UncertaintyEncoderException 
+	 * @throws UncertaintyEncoderException
 	 * 			if encoding of uncertainty fails
 	 * @throws UnsupportedUncertaintyTypeException
-	 * 			if type of uncertainty is not supported 
-	 * @throws XmlException 
-	 * 			if encoding fails		
+	 * 			if type of uncertainty is not supported
+	 * @throws XmlException
+	 * 			if encoding fails
 	 * @throws IllegalArgumentException
 	 *          if encoding fails
 	 * @throws JSONException

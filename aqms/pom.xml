@@ -5,12 +5,12 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
    <description>Project contains WPS Process for running models for air quality in Münster.</description>
-  
+
 <properties>
 <wps.version>2.0-RC8-SNAPSHOT</wps.version>
   </properties>
-	
-	
+
+
   <dependencies>
   		<dependency>
 			<groupId>org.jdom</groupId>
@@ -38,15 +38,15 @@
 			<version>1.6.1</version>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
 			<scope>runtime</scope>
 		</dependency>
-		
-		<!-- UncertWeb dependencies --> 	 
+
+		<!-- UncertWeb dependencies -->
     	<dependency>
        		<groupId>org.uncertweb</groupId>
        		<artifactId>52n-wps-io-uncertweb</artifactId>
@@ -57,24 +57,24 @@
   			<artifactId>shape-om-converter</artifactId>
   			<version>0.0.2-SNAPSHOT</version>
    		</dependency>
-   		
-<!--    	
+
+<!--
    		<dependency>
       		<groupId>org.uncertweb</groupId>
       		<artifactId>om-api</artifactId>
       		<version>0.0.5-SNAPSHOT</version>
-    	</dependency>   
+    	</dependency>
    		 <dependency>
 	    	<groupId>org.uncertml</groupId>
 	    	<artifactId>uncertml</artifactId>
 	    	<version>2.0-SNAPSHOT</version>
    		</dependency>
-   		<dependency> 
+   		<dependency>
 		    <groupId>org.uncertweb</groupId>
 			<artifactId>netcdf-u-api</artifactId>
 			<version>1.0-SNAPSHOT</version>
-		</dependency>--> 
-   		
+		</dependency>-->
+
    		<!--  SOS dependencies -->
    		<dependency>
 			<groupId>org.n52.swe.sos</groupId>
@@ -83,7 +83,7 @@
 			<scope>compile</scope>
 		</dependency>
 
-		
+
    		<!-- R dependencies -->
    		 <dependency>
     	<groupId>org.nuiton.thirdparty</groupId>
@@ -95,8 +95,8 @@
     	<artifactId>Rserve</artifactId>
     	<version>0.6-1</version>
     </dependency>
-    
-   		
+
+
     <!-- WPS dependencies -->
 
 		<dependency>
@@ -118,7 +118,7 @@
 			<artifactId>52n-wps-webapp</artifactId>
 			<version>${wps.version}</version> <scope>compile</scope>
 			<type>war</type> <exclusions>
-		
+
 			<!-- we don't need them ... -->
 			<exclusion> <groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-gridgain</artifactId> </exclusion> <exclusion>
@@ -137,9 +137,9 @@
 			<artifactId>52n-wps-grass</artifactId> </exclusion> </exclusions>
 			</dependency>
   </dependencies>
-  
+
   <!--  Repositories -->
-  
+
   <repositories>
 		<repository>
 			<id>n52-releases</id>
@@ -164,7 +164,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+
 	<build>
 		<resources>
 			<resource>

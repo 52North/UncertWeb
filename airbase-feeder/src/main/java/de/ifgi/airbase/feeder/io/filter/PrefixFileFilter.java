@@ -5,16 +5,16 @@ import java.io.FileFilter;
 
 /**
  * {@link FileFilter} which filters by a specified prefix.
- * 
+ *
  * @author Christian Autermann
- * 
+ *
  */
 public class PrefixFileFilter implements FileFilter {
 	private String prefix;
 
 	/**
 	 * Creates a new {@link PrefixFileFilter}.
-	 * 
+	 *
 	 * @param prefix
 	 *            the prefix
 	 */

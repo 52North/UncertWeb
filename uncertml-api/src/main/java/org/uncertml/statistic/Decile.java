@@ -7,11 +7,11 @@ import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Class representing a decile. A decile is a specification of a <code>Quantile</code>.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Decile}
- * 
+ *
  * @see org.uncertml.statistic.Quantile
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -24,7 +24,7 @@ public class Decile extends Quantile {
      * Constructs a decile from a specified level and a <code>List</code> of doubles.
      * Each double represents a single decile statistic. This is in line with the
      * UncertML syntax whereby a collection of types can be represented by a single entity.
-     * 
+     *
      * @param level an integer level of the set of deciles represented by this object.
      * Must be in the range 1 - 9 inclusive.
      * @param values a <code>List</code> of doubles representing the value of n
@@ -48,7 +48,7 @@ public class Decile extends Quantile {
      * Constructs a decile from a specified level and an array of doubles.
      * Each double represents a single decile statistic. This is in line with the
      * UncertML syntax whereby a collection of types can be represented by a single entity.
-     * 
+     *
      * @param level an integer level of the set of deciles represented by this object.
      * Must be in the range 1 - 9 inclusive.
      * @param values an array of doubles representing the value of n
@@ -61,7 +61,7 @@ public class Decile extends Quantile {
     /**
      * Constructor that takes a single level and value, representing a single decile
      * statistic.
-     * 
+     *
      * @param level the level of the decile, must be in the range 1 - 9.
      * @param value the value of the decile statistic.
      */
@@ -70,7 +70,7 @@ public class Decile extends Quantile {
     }
 
     /**
-     * 
+     *
      * @return the level of the decile as an integer in the range 1 - 9.
      */
     public int getDecileLevel() {
@@ -79,14 +79,14 @@ public class Decile extends Quantile {
 
     /**
      * Method that converts an integer level into a double representation.
-     * 
+     *
      * @see org.uncertml.statistic.Quantile#level
-     * 
+     *
      * @param level the integer level to convert.
      * @return a double representation of the integer level.
      */
     private static double convertLevel(int level) {
         return level / 100.0;
     }
- 
+
 }

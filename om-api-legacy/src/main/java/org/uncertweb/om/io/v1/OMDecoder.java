@@ -97,7 +97,7 @@ public class OMDecoder {
 
 	protected static final String[] FEATURE_OF_INTEREST_DEFINITION = {
 		UwConstants.URL.FEATURE_OF_INTEREST.value,
-		UwConstants.URN.FEATURE_DEFINITION.value 
+		UwConstants.URN.FEATURE_DEFINITION.value
 	};
 
 	protected static final String[] SAMPLING_TIME_DEFINITION = {
@@ -105,7 +105,7 @@ public class OMDecoder {
 		UwConstants.URN.ISO8601_DEFINITION.value
 	};
 
-	protected static final String[] EPSG_PREFIXES = { 
+	protected static final String[] EPSG_PREFIXES = {
 		UwConstants.URN.EPSG_SRS_PREFIX.value,
 		UwConstants.URN.EPSG_SRS_NO_VERSION_PREFIX.value,
 		UwConstants.URL.EPSG_SRS_PREFIX.value,
@@ -127,7 +127,7 @@ public class OMDecoder {
 			throw new OMParsingException(e);
 		}
 	}
-	
+
 	public IObservationCollection parse(InputStream is)
 			throws OMParsingException {
 		try {
@@ -474,8 +474,8 @@ public class OMDecoder {
 				throw new OMParsingException("Invalid date format: "
 						+ v[tstIdx].trim());
 			}
-			
-			
+
+
 			for (int j : phens.keySet()) {
 				URI phenId = phens.get(j);
 				SpatialSamplingFeature sap = foiMap.get(v[foiIdx]);
@@ -485,7 +485,7 @@ public class OMDecoder {
 									+ v[foiIdx]);
 				}
 				Identifier id = parseIdentifier(obsId + String.valueOf(idCount++));
-				
+
 				String phenValueType = valueTypes4Phens.get(phens.get(j)).name();
 				if (phenValueType.equalsIgnoreCase(ValueType.NUMERIC.name())
 						|| phenValueType.equalsIgnoreCase(ValueType.COUNT.name())) {
@@ -573,7 +573,7 @@ public class OMDecoder {
 			} else if (object instanceof SamplingFeatureType) {
 				sft = (SamplingFeatureType) object;
 			}
-			
+
 			return parseSpatialSamplingFeature(sft);
 		}
 	}
@@ -921,7 +921,7 @@ public class OMDecoder {
 	/**
 	 * parses XmlBeans Coordinates to a String with coordinates for WKT.
 	 * Replaces cs, decimal and ts if different from default.
-	 * 
+	 *
 	 * @param xb_coordinates
 	 *            XmlBeans generated Coordinates.
 	 * @return Returns String with coordinates for WKT.

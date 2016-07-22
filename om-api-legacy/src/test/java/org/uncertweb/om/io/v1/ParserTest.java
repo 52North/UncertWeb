@@ -13,12 +13,12 @@ import org.uncertweb.api.om.observation.AbstractObservation;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 
 public class ParserTest {
-	
+
 	@Test
 	public void testMeasurements() throws Exception {
 		testFile("/measurement.xml",false,false);
 	}
-	
+
 	@Test
 	public void testObservations() throws Exception {
 		testFile("/observation.xml",false,false);
@@ -29,7 +29,7 @@ public class ParserTest {
 		testFile("/samplingsurface.xml",false,true);
 	}
 
-	
+
 	private static void testFile(String file, boolean print, boolean printXml) throws Exception {
 		InputStream in = ParserTest.class.getResourceAsStream(file);
 		if (in == null) {
@@ -37,7 +37,7 @@ public class ParserTest {
 		}
 		testInputStream(in,print,printXml);
 	}
-	
+
 	private static void testInputStream(InputStream in, boolean print, boolean printXml) throws Exception {
 		OMDecoder dec = new OMDecoder();
 		IObservationCollection ioc = dec.parse(in);
@@ -49,14 +49,14 @@ public class ParserTest {
 			}
 			if (printXml) {
 				printObservationAsXml(ao);
-			} 
+			}
 		}
 	}
-	
+
 	private static void printObservationAsXml(AbstractObservation ao) throws OMEncodingException {
 		System.out.println(new XBObservationEncoder().encodeObservation(ao));
 	}
-	
+
 	private static void printObservation(AbstractObservation ao) {
 		System.out.println("########################################### Observation:");
 		System.out.println("Identifier: " + ao.getIdentifier().toIdentifierString());
@@ -81,5 +81,5 @@ public class ParserTest {
 		assertNotNull(ao.getPhenomenonTime());
 		assertTrue(ao.getPhenomenonTime().isInstant() || ao.getPhenomenonTime().isInterval());
 	}
-	
+
 }

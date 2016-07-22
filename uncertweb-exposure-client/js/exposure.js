@@ -7,20 +7,20 @@ jQuery(document).ready(function($) {
         ]
 
         var app = new App(options, {
-            "ems": function() { 
-                this.showVisualizationLink("ems", "result"); 
+            "ems": function() {
+                this.showVisualizationLink("ems", "result");
             }
         });
 
-        var map = new Map({ 
-            div: "map", onChange: function() { 
-                $("#mapsave").disabled(!this.hasTrack()); 
+        var map = new Map({
+            div: "map", onChange: function() {
+                $("#mapsave").disabled(!this.hasTrack());
             }
         });
 
         $("a[href=#albatross], a[href=#map-form]").on("click", function() {
-            setTimeout(function() { 
-                map.getMap().invalidateSize(); /* FIXME ????? */ 
+            setTimeout(function() {
+                map.getMap().invalidateSize(); /* FIXME ????? */
             }, 10);
         })
         $("#mapsave").disabled().on("click", function() {

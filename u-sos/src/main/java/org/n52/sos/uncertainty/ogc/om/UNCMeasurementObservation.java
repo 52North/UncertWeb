@@ -13,11 +13,11 @@ import org.uncertweb.api.om.observation.Measurement;
 /**
  * Adapter class to handle O&M 2 measurement observations in O&M 1 observation
  * classes
- * 
+ *
  * @see Measurement
  * @see SosMeasurement
  * @author Kiesow
- * 
+ *
  */
 public class UNCMeasurementObservation extends SosMeasurement implements
 		IUncertainObservation {
@@ -27,12 +27,12 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 	 * identifier)
 	 */
 	private String identifier;
-	
+
 	/**
 	 * data quality as uncertainties, replacing om1 observations quality
 	 */
 	private DQ_UncertaintyResult[] uncQuality;
-	
+
 	/**
 	 * xml type name of this observation
 	 */
@@ -40,7 +40,7 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param identifier
 	 * 			  gml identifier
 	 * @param time
@@ -75,14 +75,14 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 			Collection<SosQuality> quality, DQ_UncertaintyResult[] uncQuality) {
 		super(time, obsID, procID, domainFeatureIDs, phenID, foi, offeringID,
 				mimeType, value, unitsOfMeasurement, quality);
-		
+
 		this.identifier = identifier;
 		this.uncQuality = uncQuality;
 	}
-	
+
 	/**
-	 * constructor 
-	 * 
+	 * constructor
+	 *
 	 * @param time
 	 *            time at which the observation event took place
 	 * @param obsID
@@ -113,7 +113,7 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 			Collection<SosQuality> quality) {
 		super(time, obsID, procID, domainFeatureIDs, phenID, foi, offeringID,
 				mimeType, value, unitsOfMeasurement, quality);
-		
+
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 	public String getIdentifier() {
 		return identifier;
 	}
-	
+
 	/**
 	 * sets gml identifier (not to be confused with observation id/obsID)
 	 */
@@ -136,14 +136,14 @@ public class UNCMeasurementObservation extends SosMeasurement implements
 	public DQ_UncertaintyResult[] getUncQuality() {
 		return uncQuality;
 	}
-	
+
 	/**
 	 * sets data quality as uncertainties, replacing om1 observations quality
 	 */
 	public void setUncQuality(DQ_UncertaintyResult[] resultQuality) {
 		this.uncQuality = resultQuality;
-	}	
-	
+	}
+
 	@Override
 	public String getName() {
 		return NAME;

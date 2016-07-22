@@ -30,7 +30,7 @@ import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 
 /**
  * encoder for UncertWeb O&M observations to JSON
- * 
+ *
  * @author staschc
  *
  */
@@ -40,7 +40,7 @@ public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSO
 	public JSONObservationEncoder() {
 		this(null);
 	}
-	
+
 	public JSONObservationEncoder(
 			Collection<EncoderHook<JSONObject>> hooks) {
 		super(hooks);
@@ -61,7 +61,7 @@ public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSO
 		}
 	}
 
-	
+
 
 	@Override
 	public String encodeObservationCollection(IObservationCollection obsCol) throws OMEncodingException {
@@ -81,10 +81,10 @@ public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSO
 		}
 		return writer.toString();
 	}
-	
+
 	/**
 	 * encodes an observation to JSON
-	 * 
+	 *
 	 * @param writer
 	 * @param obs
 	 * @throws JSONException
@@ -93,7 +93,7 @@ public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSO
 		writer.object();
 		writer.key(obs.getName());
 		writer.object();
-		
+
 		//encode identifier, if present
 		if (obs.getIdentifier()!=null){
 			writer.key("identifier");
@@ -117,19 +117,19 @@ public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSO
 		//encode observed property
 		writer.key("observedProperty");
 		writer.value(obs.getObservedProperty().toString());
-		
+
 		//encode procedure
 		writer.key("procedure");
 		writer.value(obs.getProcedure().toString());
-		
+
 		//encode foi
 		encodeSamplingFeature(writer,obs.getFeatureOfInterest());
-		
+
 		//encode resultQuality
 		if (obs.getResultQuality()!=null){
 			encodeResultQuality(writer,obs.getResultQuality());
 		}
-		
+
 		encodeResult(writer,obs.getResult());
 		writer.endObject();
 		writer.endObject();
@@ -163,7 +163,7 @@ public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSO
 		}
 		else if (result instanceof ReferenceResult){
 			writer.object();
-			
+
 			//TODO add further elements
 			writer.key("href");
 			writer.value(((ReferenceResult) result).getHref());
@@ -200,7 +200,7 @@ public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSO
 			writer.array();
 			for (int j=0;j<values.length;j++){
 				//writer.value(new JSONEncoder().encode(values[j]));
-				
+
 				JSONObject jsonUncertainty = new JSONObject(new JSONEncoder().encode(values[j]));
 				writer.value(jsonUncertainty);
 			}
@@ -232,7 +232,7 @@ public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSO
 			// FOI as a reference as when foi is NOT encoded in the observation
 			writer.key("href");
 			writer.value(foi.getHref());
-			
+
 		} else {
 			// full FOI
 			writer.key("type");
@@ -350,6 +350,6 @@ public class JSONObservationEncoder extends AbstractHookedObservationEncoder<JSO
 
 
 
-	
+
 
 }

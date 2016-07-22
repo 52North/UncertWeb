@@ -22,9 +22,9 @@ import org.uncertweb.utils.UwCollectionUtils;
 /**
  * Observation generator, producing observations encoded in XML according the
  * UncertWeb O&M profile; wraps {@link XBObservationEncoder}
- * 
+ *
  * @author Kiesow
- * 
+ *
  */
 public class OMXmlGenerator extends AbstractUwGenerator {
 	private static final Logger log = Logger.getLogger(OMXmlGenerator.class);
@@ -32,9 +32,9 @@ public class OMXmlGenerator extends AbstractUwGenerator {
 
 	public OMXmlGenerator() {
 		super(
-			set(SCHEMA_OM_V2,SCHEMA_OM_V1,SCHEMA_OMU, SCHEMA_OMU_52N), 
+			set(SCHEMA_OM_V2,SCHEMA_OM_V1,SCHEMA_OMU, SCHEMA_OMU_52N),
 			set(ENCODING_UTF_8),
-			set(MIME_TYPE_OMX_XML, MIME_TYPE_TEXT_XML), 
+			set(MIME_TYPE_OMX_XML, MIME_TYPE_TEXT_XML),
 			UwCollectionUtils.<Class<?>>set(OMBinding.class)
 		);
 	}

@@ -18,9 +18,9 @@ import org.uncertweb.sta.wps.api.SingleProcessInput;
 
 /**
  * class is superclass for error-aware spatio-temporal aggregation processes
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public abstract class AbstractUncertainAggregationProcess extends
 		AbstractAggregationProcess {
@@ -43,26 +43,26 @@ public abstract class AbstractUncertainAggregationProcess extends
 			"http://www.uncertml.org/samples/realisation");
 
 	/**
-	 * 
+	 *
 	 * @return the identifier of the process
 	 */
 	public abstract String getIdentifier();
-	
+
 	/**
-	 * 
+	 *
 	 * @return the identifier of the process
 	 */
 	public abstract List<String> getSupportedUncertaintyTypes();
-	
+
 	/**
-	 * 
+	 *
 	 * @return the identifier of the process
 	 */
 	public abstract Map<String, IData> runMonteCarlo(Map<String, List<IData>> inputData);
 
 	/**
 	 * returns the standard parameters of every error aware aggregation process
-	 * 
+	 *
 	 * @param inputData
 	 *            map containing the inputs as served by the 52N WPS framework
 	 * @return Returns {@link AggregationInputs} containing standard inputs of
@@ -106,7 +106,7 @@ public abstract class AbstractUncertainAggregationProcess extends
 
 	/**
 	 * returns type of data binding class for passed input identifier
-	 * 
+	 *
 	 * @param identifier
 	 *            identifier of input
 	 * @return data binding class
@@ -114,11 +114,11 @@ public abstract class AbstractUncertainAggregationProcess extends
 	protected Class<?> getCommonInputType(String identifier) {
 		if (identifier.equals(Constants.Process.Inputs.INPUT_DATA)) {
 			return UncertWebIODataBinding.class;
-		} 
+		}
 		else if (identifier.equals(Constants.Process.Inputs.VARIABLE)) {
 			return LiteralStringBinding.class;
 		}
-		
+
 		else if (identifier
 				.equals(Constants.Process.Inputs.SPATIAL_BEFORE_TEMPORAL)) {
 			return LiteralStringBinding.class;
@@ -126,31 +126,31 @@ public abstract class AbstractUncertainAggregationProcess extends
 
 		else if (identifier.equals(Constants.Process.Inputs.TARGET_SERVER)) {
 			return LiteralStringBinding.class;
-		} 
-		
+		}
+
 		else if (identifier
 				.equals(Constants.Process.Inputs.TARGET_SERVER_TYPE)) {
 			return LiteralStringBinding.class;
 		}
-		
+
 		////////////////////////////////////////////////
 		// inputs of error aware aggregation processes
 		else if (identifier.equals(Constants.Process.Inputs.NUMBER_REAL)) {
 			return LiteralIntBinding.class;
 		}
-		
+
 		else if (identifier
 				.equals(Constants.Process.Inputs.OUTPUT_UNCERTAINTY)) {
 			return LiteralStringBinding.class;
-		} 
-		
+		}
+
 		else
 			return null;
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @return {@link Set} containing the common process inputs of all
 	 *         aggregation processes
 	 */

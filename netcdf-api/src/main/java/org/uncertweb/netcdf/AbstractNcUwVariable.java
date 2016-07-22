@@ -270,14 +270,14 @@ abstract class AbstractNcUwVariable implements INcUwVariable {
 	public NcUwObservation getObservation(NcUwCoordinate c) {
 		IUncertainty u = getValue(c);
 		return new NcUwObservation(getTime(c), getProcedure(),
-				getObservedProperty(), getFeature(c), 
+				getObservedProperty(), getFeature(c),
 				getGridCoordinates(c), u, getUnit());
 	}
-	
+
 	protected IUncertainty getValue(NcUwCoordinate c) {
 		return NcUwUriParser.parse(getType(), getValueMap(c));
 	}
-	
+
 	protected AbstractNcUwVariable getParent() {
 		return parent;
 	}
@@ -287,6 +287,6 @@ abstract class AbstractNcUwVariable implements INcUwVariable {
 	protected abstract SpatialSamplingFeature getFeature(NcUwCoordinate c);
 	protected abstract TimeObject getTime(NcUwCoordinate c);
 
-	
-	
+
+
 }

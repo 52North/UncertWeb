@@ -14,7 +14,7 @@ import org.uncertweb.api.om.io.XBObservationParser;
 import org.uncertweb.api.om.observation.collections.IObservationCollection;
 
 public class StaxObservationParserTestCase {
-	
+
 	private String localPath = "D:/IfGI/Projekte/UncertWeb/Implementations/uw_workspace/profiles-api/om-api/";
 	private String pathToExamples = "src/test/resources";
 
@@ -28,7 +28,7 @@ public class StaxObservationParserTestCase {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void obsCol_yield() throws Exception {
 
 		// read XML example file
@@ -46,7 +46,7 @@ public class StaxObservationParserTestCase {
 		StaxObservationEncoder encoder = new StaxObservationEncoder();
 		System.out.println(encoder.encodeObservationCollection(oc));
 	}
-	
+
 	private void obsCol_Measurement() throws Exception {
 
 		// read XML example file

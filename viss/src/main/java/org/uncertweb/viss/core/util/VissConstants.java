@@ -35,30 +35,30 @@ public class VissConstants {
 			throw VissError.internal(e);
 		}
 	}
-	
+
 	public static final String CLEAN_UP_INTERVAL_DEFAULT = "PT2H";
 
 	public static final String CLEAN_UP_INTERVAL_KEY = "cleanup.interval";
-	
+
 	public static final String CONFIG_FILE = "/viss.properties";
-	
+
 	public static final String DELETE_OLDER_THAN_PERIOD_DEFAULT = "P1D";
-	
+
 	public static final String DELETE_OLDER_THAN_PERIOD_KEY = "cleanup.deleteBefore";
-	
+
 	public static final String PRETTY_PRINT_IO_DEFAULT = "false";
-	
+
 	public static final String PRETTY_PRINT_IO_KEY = "prettyPrintIO";
-	
+
 	public static final String RESOURCE_STORE_KEY = "implementation.resourceStore";
-	
+
 	public static final String SEARCH_PACKAGES_KEY = "visualizerSearchPackages";
-	
+
 	public static final String VISUALIZATION_KEY = "implementation.visualization";
-	
+
 	public static final String VISUALIZATION_REFERENCE_KEY = "implementation.visualizationReference";
-	
+
 	public static final String WMS_ADAPTER_KEY = "implementation.wmsAdapter";
-	
+
 	public static final String WORKING_DIR_KEY = "workingDir";
 }

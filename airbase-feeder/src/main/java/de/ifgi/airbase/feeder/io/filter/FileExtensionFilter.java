@@ -5,16 +5,16 @@ import java.io.FileFilter;
 
 /**
  * A {@link FileFilter} that filters by extension.
- * 
+ *
  * @author Christian Autermann
- * 
+ *
  */
 public class FileExtensionFilter implements FileFilter {
 	private String extension = ".";
 
 	/**
 	 * Creates a new {@code FileExtensionFilter}.
-	 * 
+	 *
 	 * @param extension
 	 *            the extension
 	 */

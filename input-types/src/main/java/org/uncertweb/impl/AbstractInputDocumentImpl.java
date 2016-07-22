@@ -15,23 +15,23 @@ package org.uncertweb.impl;
 public class AbstractInputDocumentImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements org.uncertweb.AbstractInputDocument
 {
     private static final long serialVersionUID = 1L;
-    
+
     public AbstractInputDocumentImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType);
     }
-    
-    private static final javax.xml.namespace.QName ABSTRACTINPUT$0 = 
+
+    private static final javax.xml.namespace.QName ABSTRACTINPUT$0 =
         new javax.xml.namespace.QName("http://www.uncertweb.org", "AbstractInput");
-    private static final org.apache.xmlbeans.QNameSet ABSTRACTINPUT$1 = org.apache.xmlbeans.QNameSet.forArray( new javax.xml.namespace.QName[] { 
+    private static final org.apache.xmlbeans.QNameSet ABSTRACTINPUT$1 = org.apache.xmlbeans.QNameSet.forArray( new javax.xml.namespace.QName[] {
         new javax.xml.namespace.QName("http://www.uncertweb.org", "AbstractStaticInput"),
         new javax.xml.namespace.QName("http://www.uncertweb.org", "AbstractInput"),
         new javax.xml.namespace.QName("http://www.uncertweb.org", "StaticInput"),
         new javax.xml.namespace.QName("http://www.uncertweb.org", "AbstractUncertainInput"),
         new javax.xml.namespace.QName("http://www.uncertweb.org", "UncertainInput"),
     });
-    
-    
+
+
     /**
      * Gets the "AbstractInput" element
      */
@@ -49,7 +49,7 @@ public class AbstractInputDocumentImpl extends org.apache.xmlbeans.impl.values.X
             return target;
         }
     }
-    
+
     /**
      * Sets the "AbstractInput" element
      */
@@ -67,7 +67,7 @@ public class AbstractInputDocumentImpl extends org.apache.xmlbeans.impl.values.X
             target.set(abstractInput);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "AbstractInput" element
      */

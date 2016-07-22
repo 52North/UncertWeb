@@ -89,9 +89,9 @@ public class FTPUtil {
 
 		return filenameList;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean download(String localResultFile, String id, String remoteSourceFile)
@@ -103,14 +103,14 @@ public class FTPUtil {
 		try {
 			ftpClient.connect(host, port);
 			logger.debug(ftpClient.getReplyString());
-			
+
 			resultOk &= ftpClient.login(usr, pwd);
 			logger.debug(ftpClient.getReplyString());
-			
+
 			fos = new FileOutputStream(localResultFile);
 			resultOk &= ftpClient.retrieveFile(resultsFolder + "/" + id + "/" + remoteSourceFile, fos);
 			logger.debug(ftpClient.getReplyString());
-			
+
 			resultOk &= ftpClient.logout();
 			logger.debug(ftpClient.getReplyString());
 		} finally {
@@ -127,7 +127,7 @@ public class FTPUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean upload(String localSourceFile, String remoteResultFile)

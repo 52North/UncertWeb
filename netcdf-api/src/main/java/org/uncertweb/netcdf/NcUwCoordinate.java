@@ -63,7 +63,7 @@ public class NcUwCoordinate implements Cloneable {
 	}
 
 	boolean hasDimension(NcUwDimension d) {
-		return this.values.containsKey(d) 
+		return this.values.containsKey(d)
 				&& this.values.get(d) != null
 				&& this.values.get(d).intValue() >= 0;
 	}
@@ -76,7 +76,7 @@ public class NcUwCoordinate implements Cloneable {
 		}
 		return true;
 	}
-	
+
 	public boolean isEmpty() {
 		for (NcUwDimension d : NcUwDimension.values()) {
 			if (hasDimension(d))
@@ -109,7 +109,7 @@ public class NcUwCoordinate implements Cloneable {
 		}
 		return index;
 	}
-	
+
 	@Override
 	public NcUwCoordinate clone() {
 		NcUwCoordinate clone = new NcUwCoordinate();
@@ -118,12 +118,12 @@ public class NcUwCoordinate implements Cloneable {
 		}
 		return clone;
 	}
-	
+
 	public NcUwCoordinate clear() {
 		this.values.clear();
 		return this;
 	}
-	
+
 	public NcUwCoordinate merge(NcUwCoordinate changes) {
 		for (NcUwDimension d : changes.getDimensions()) {
 			set(d, changes.get(d));
@@ -155,7 +155,7 @@ public class NcUwCoordinate implements Cloneable {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -166,5 +166,5 @@ public class NcUwCoordinate implements Cloneable {
 		sb.append("]");
 		return sb.toString();
 	}
-	
+
 }

@@ -66,7 +66,7 @@ public abstract class AbstractAnnotatedUncertaintyVisualizer extends
 		}
 		return Collections.emptySet();
 	}
-	
+
 	@Override
 	public String getDescription() {
 		Description t = findAnnotation(Description.class, getClass());

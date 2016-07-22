@@ -43,7 +43,7 @@ public class MongoOMDataSet extends
 		AbstractMongoDataSet<IObservationCollection> {
 
 	private String phenomenon;
-	
+
 	public MongoOMDataSet(MongoOMResource resource, URI phenomenon) {
 		super(resource);
 		this.phenomenon = phenomenon.toString();
@@ -121,7 +121,7 @@ public class MongoOMDataSet extends
 	@Override
 	public IObservationCollection getValue(Point p, TimeObject t) {
 		IObservationCollection col = new UncertaintyObservationCollection();
-		
+
 		for (AbstractObservation ao : getContent().getObservations()) {
 			IDataSet ds = ((IResource) ao.getResult().getValue()).getDataSets().iterator().next();
 			if ((p != null && !ds.hasPoint(p))
@@ -129,7 +129,7 @@ public class MongoOMDataSet extends
 				continue;
 			}
 			col.addObservationCollection(ds.getValue(p, (t != null && !ds.hasTime(t)) ? null : t));
-			
+
 		}
 		return col;
 	}

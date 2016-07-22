@@ -14,11 +14,11 @@ package org.uncertweb.impl;
 public class AbstractStaticInputTypeImpl extends org.uncertweb.impl.AbstractInputTypeImpl implements org.uncertweb.AbstractStaticInputType
 {
     private static final long serialVersionUID = 1L;
-    
+
     public AbstractStaticInputTypeImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType);
     }
-    
-    
+
+
 }

@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing the gamma distribution with parameters shape and scale.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Gamma}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -22,7 +22,7 @@ public class GammaDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single shape and scale parameter.
-     * 
+     *
      * @param shape the shape parameter
      * @param scale the scale parameter
      */
@@ -32,14 +32,14 @@ public class GammaDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes an array of doubles for shape and scale parameters.
-     * Each shape and scale pair represents a unique gamma distribution. This is 
-     * in line with the UncertML syntax whereby a collection of types can be 
-     * represented by a single entity. Both arrays must be of equal length and 
+     * Each shape and scale pair represents a unique gamma distribution. This is
+     * in line with the UncertML syntax whereby a collection of types can be
+     * represented by a single entity. Both arrays must be of equal length and
      * contain no null elements.
-     * 
+     *
      * @param shape an array of doubles representing the shape parameter of n
      * gamma distributions.
-     * @param scale an array of doubles representing the scale parameter of n 
+     * @param scale an array of doubles representing the scale parameter of n
      * gamma distributions.
      */
     public GammaDistribution(double[] shape, double[] scale) {
@@ -48,14 +48,14 @@ public class GammaDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a list of doubles for shape and scale parameters.
-     * Each shape and scale pair represents a unique gamma distribution. This is 
-     * in line with the UncertML syntax whereby a collection of types can be 
-     * represented by a single entity. Both lists must be of equal length and 
+     * Each shape and scale pair represents a unique gamma distribution. This is
+     * in line with the UncertML syntax whereby a collection of types can be
+     * represented by a single entity. Both lists must be of equal length and
      * contain no null elements.
-     * 
+     *
      * @param shape a list of doubles representing the shape parameter of n
      * gamma distributions.
-     * @param scale a list of doubles representing the scale parameter of n 
+     * @param scale a list of doubles representing the scale parameter of n
      * gamma distributions.
      */
     public GammaDistribution(List<Double> shape, List<Double> scale) {
@@ -71,7 +71,7 @@ public class GammaDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the scale parameter of each gamma distribution represented by this
      * object.
      */
@@ -80,7 +80,7 @@ public class GammaDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the shape parameter of each gamma distribution represented by this
      * object.
      */

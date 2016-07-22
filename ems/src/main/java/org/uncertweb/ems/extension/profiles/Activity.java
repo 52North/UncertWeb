@@ -12,6 +12,6 @@ public class Activity extends AbstractActivity {
 	public Activity(String description) {
 		super(description);
 	}
-	
-	
+
+
 }

@@ -10,9 +10,9 @@ import org.uncertml.util.Validate;
 /**
  * Class representing a hypergeometric distribution with parameters number of trials,
  * number of successes and population size.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Hypergeometric}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -25,7 +25,7 @@ public class HypergeometricDistribution implements IDiscreteDistribution {
     /**
      * Constructor that takes a single number of trials, number of successes and
      * population size parameter.
-     * 
+     *
      * @param numberOfTrials the number of trials parameter.
      * @param numberOfSuccesses the number of successes parameter.
      * @param populationSize the population size parameter.
@@ -35,12 +35,12 @@ public class HypergeometricDistribution implements IDiscreteDistribution {
     }
 
     /**
-     * Constructor that takes an array of integers for the number of trials, 
+     * Constructor that takes an array of integers for the number of trials,
      * number of successes and population size parameters. Each number of trials,
      * number of successes and population size represents a unique hypergeometric
      * distribution. This is in line with the UncertML syntax whereby a collection
      * of types can be represented by a single entity. The arrays must be of equal length.
-     * 
+     *
      * @param numberOfTrials an array of integers representing the number of trials parameter of n
      * hypergeometric distributions.
      * @param numberOfSuccesses an array of integers representing the number of successes parameter of n
@@ -53,13 +53,13 @@ public class HypergeometricDistribution implements IDiscreteDistribution {
     }
 
     /**
-     * Constructor that takes a list of integers for the number of trials, 
+     * Constructor that takes a list of integers for the number of trials,
      * number of successes and population size parameters. Each number of trials,
      * number of successes and population size represents a unique hypergeometric
      * distribution. This is in line with the UncertML syntax whereby a collection
      * of types can be represented by a single entity. The lists must be of equal length
      * and must not contain any null elements.
-     * 
+     *
      * @param numberOfTrials a list of integers representing the number of trials parameter of n
      * hypergeometric distributions.
      * @param numberOfSuccesses a list of integers representing the number of successes parameter of n
@@ -93,7 +93,7 @@ public class HypergeometricDistribution implements IDiscreteDistribution {
     }
 
     /**
-     * 
+     *
      * @return the number of successes parameter for each hypergeometric distribution
      * represented by this object.
      */
@@ -102,7 +102,7 @@ public class HypergeometricDistribution implements IDiscreteDistribution {
     }
 
     /**
-     * 
+     *
      * @return the number of trials parameter for each hypergeometric distribution
      * represented by this object.
      */
@@ -111,7 +111,7 @@ public class HypergeometricDistribution implements IDiscreteDistribution {
     }
 
     /**
-     * 
+     *
      * @return the population size parameter for each hypergeometric distribution
      * represented by this object.
      */

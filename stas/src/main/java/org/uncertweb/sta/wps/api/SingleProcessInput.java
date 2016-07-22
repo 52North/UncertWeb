@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software 
- *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24, 
+ * Copyright (C) 2011 52° North Initiative for Geospatial Open Source Software
+ *                   GmbH, Contact: Andreas Wytzisk, Martin-Luther-King-Weg 24,
  *                   48155 Muenster, Germany                  info@52north.org
  *
  * Author: Christian Autermann
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later 
+ * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -36,9 +36,9 @@ import org.uncertweb.sta.utils.Constants;
 
 /**
  * A single atomic process input.
- * 
+ *
  * @param <T> the Java type which this input produces.
- * 
+ *
  * @author Christian Autermann <autermann@uni-muenster.de>
  */
 public class SingleProcessInput<T> extends AbstractProcessInput<T> {
@@ -117,7 +117,7 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 
 	/**
 	 * Creates a new {@link SingleProcessInput}.
-	 * 
+	 *
 	 * @param id the id of this input
 	 * @param bindingClass the {@link IData} class for this input
 	 * @param min the minimal occurrence of this input
@@ -144,7 +144,7 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 				: handler;
 		this.handler.setNeededInputs(this.getProcessInputs());
 	}
-	
+
 	public SingleProcessInput(String id, String description, Class<? extends IData> bindingClass,
 			int min, int max, Set<String> allowedValues, T defaultValue,
 			ProcessInputHandler<T> handler) {
@@ -169,11 +169,11 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 	private static String getInputTitle(String id) {
 		return Constants.get("process.input." + id + ".title");
 	}
-	
+
 	/**
 	 * Creates a new {@link SingleProcessInput} with
 	 * {@link SingleProcessInputHandler} as handler.
-	 * 
+	 *
 	 * @param id the id of this input
 	 * @param bindingClass the {@link IData} class for this input
 	 * @param min the minimal occurrence of this input
@@ -189,7 +189,7 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 		this(identifier, bindingClass, min, max, allowedValues, defaultValue,
 				null);
 	}
-	
+
 	public SingleProcessInput(String identifier, String description,
 			Class<? extends IData> bindingClass, int min, int max,
 			Set<String> allowedValues, T defaultValue) {
@@ -244,7 +244,7 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 	/**
 	 * Generates an {@link AllowedValues} for this input (or <code>null</code>
 	 * if no allowed values are given).
-	 * 
+	 *
 	 * @return the allowed values
 	 */
 	public AllowedValues getAllowedValues() {
@@ -259,10 +259,10 @@ public class SingleProcessInput<T> extends AbstractProcessInput<T> {
 			return vals;
 		}
 	}
-	
+
 	/**
 	 * sets the description attribute
-	 * 
+	 *
 	 * @param description
 	 */
 	public void setDescription(String description){

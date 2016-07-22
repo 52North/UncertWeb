@@ -32,7 +32,7 @@ import org.uncertweb.api.om.TimeObject;
 public abstract class AbstractIrregularTemporalExtent extends AbstractTemporalInterval {
 
 	/**
-	 * 
+	 *
 	 * @param instants
 	 *          a list containing DateTime, TemporalInstant, TemporalInterval or
 	 *          Interval
@@ -66,7 +66,7 @@ public abstract class AbstractIrregularTemporalExtent extends AbstractTemporalIn
 	}
 	@Override
 	public abstract boolean contains(TimeObject t);
-	
+
 	@Override
 	public boolean contains(DateTime t) {
 		return contains(new TimeObject(t));

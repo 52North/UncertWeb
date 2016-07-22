@@ -31,15 +31,15 @@ import org.uncertweb.austalwps.util.austal.timeseries.MeteorologyTimeSeries;
  */
 
 public class Zeitreihe implements Serializable{
-	
+
 	private static final long serialVersionUID = -7019593949581207831L;
-	private final String SEPERATOR = System.getProperty("line.separator");	
+	private final String SEPERATOR = System.getProperty("line.separator");
 	private static Logger LOGGER = Logger.getLogger(Zeitreihe.class);
-	
-	// Parameters in the zeitreihe.dmna file	
+
+	// Parameters in the zeitreihe.dmna file
 	private List<String> forms = new ArrayList<String>();
 	private String locl = "\"C\"";
-	private String mode = "\"text\"";	
+	private String mode = "\"text\"";
 	private String artp = "\"ZA\"";
 	private String sequ = "\"i\"";
 	private String dims = "1";
@@ -49,20 +49,20 @@ public class Zeitreihe implements Serializable{
 	private String hghb;
 	private String z0;
 	private String d0; //6*z0
-	
+
 	// Strings to identify values in the timeseries
 	// "ra%5.0f" wind direction
 	// "ua%5.1f" wind speed
 	// "lm%7.1f" stability class
 	private String[] meteoIdentifiers = {"\"ra%5.0f\"","\"ua%5.1f\"","\"lm%7.1f\""};
-	// "te%20lt" timestamp 
+	// "te%20lt" timestamp
 	private String timeStampIdentifier = "\"te%20lt\"";
-	private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd.HH:mm:ss").withZone(DateTimeZone.UTC.forOffsetHours(1));		
-	
+	private DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd.HH:mm:ss").withZone(DateTimeZone.UTC.forOffsetHours(1));
+
 	//private List<TimeStamp> timestamps = new ArrayList<TimeStamp>();
 	private List<EmissionTimeSeries> emisList = new ArrayList<EmissionTimeSeries>();
 	private MeteorologyTimeSeries metList = new MeteorologyTimeSeries();
-	
+
 	/**
 	 * constructor for manual set-up
 	 */
@@ -71,9 +71,9 @@ public class Zeitreihe implements Serializable{
 		this.metList = meteoTS;
 		createEmissionTS(emissions);
 	}
-	
+
 	/**
-	 * Extracts emission time series from emission source list 
+	 * Extracts emission time series from emission source list
 	 * @param emissions
 	 */
 	private void createEmissionTS(List<EmissionSource> emissions){
@@ -88,12 +88,12 @@ public class Zeitreihe implements Serializable{
 	public Zeitreihe(File zeitreiheFile){
 		this.parseFile(zeitreiheFile, false);
 	}
-	
+
 	// constructor to create zeitreihe object from zeitreihe.dmna file
 	public Zeitreihe(InputStream in){
 		this.parseFile(in, false);
 	}
-	
+
 	// ***** PARSER *****
 	/**
 	 * Parses zeitreihe.dmna file
@@ -106,7 +106,7 @@ public class Zeitreihe implements Serializable{
 			while(!(line = br.readLine()).equals("*")){
 				this.parseHeader(line);
 			}
-			
+
 			while(!onlyHeader&&!(line = br.readLine()).equals("***")){
 				this.parseTimeStamps(line);
 			}
@@ -116,9 +116,9 @@ public class Zeitreihe implements Serializable{
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
-	
+
 	// ***** PARSER *****
 	/**
 	 * Parses zeitreihe.dmna file
@@ -132,7 +132,7 @@ public class Zeitreihe implements Serializable{
 			while(!(line = br.readLine()).equals("*")){
 				this.parseHeader(line);
 			}
-			
+
 			while(!onlyHeader&&!(line = br.readLine()).equals("***")){
 				this.parseTimeStamps(line);
 			}
@@ -142,12 +142,12 @@ public class Zeitreihe implements Serializable{
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
-	
+
 	private void parseTimeStamps(String line) {
 		if (line.length() ==0||line.equals(" ")) return;
-		
+
 		String lineNoDoubleSpaces = line;
 		//delete all double spaces
 		while(lineNoDoubleSpaces.indexOf("  ")!=-1){
@@ -156,36 +156,36 @@ public class Zeitreihe implements Serializable{
 		//delete first space
 		if(lineNoDoubleSpaces.startsWith(" "))
 			lineNoDoubleSpaces = lineNoDoubleSpaces.replaceFirst(" ", "");
-		
+
 		String[] timeStampTokens = lineNoDoubleSpaces.split(" ");
 		if(timeStampTokens.length == 1){
 			timeStampTokens = lineNoDoubleSpaces.split("\t");
 		}
-		
+
 		// check if line has same length as forms in header
 		if(timeStampTokens.length!=forms.size()){
 			LOGGER.debug("Length of header is "+forms.size()+" while lenght of line is "+timeStampTokens.length);
 			LOGGER.debug("Error for line "+ timeStampTokens[this.getFormIndex(timeStampIdentifier)].trim());
 		}
-		
+
 		// divide into meteorology and emissions
-		// timestamp 
+		// timestamp
 		String time = timeStampTokens[this.getFormIndex(timeStampIdentifier)].trim();
 		DateTime timeStamp = dateFormat.parseDateTime(time);
 
 		//String timeStamp = timeStampTokens[this.getFormIndex(timeStampIdentifier)];
-		
-		// meteorology				
+
+		// meteorology
 		String[] meteoVals = new String[3];
 		java.lang.System.arraycopy(timeStampTokens, this.getFormIndex(meteoIdentifiers[0]), meteoVals, 0, 3);
 		metList.addMeteorology(timeStamp, meteoIdentifiers, meteoVals);
-				
+
 		// emissions
 		// "01.pm-2%10.3e" ...
 		for(int i=0; i<emisList.size(); i++){
 			emisList.get(i).addEmissionValue(timeStamp, timeStampTokens[this.getFormIndex(emisList.get(i).getDynamicSourceIDToken())]);
 		}
-		
+
 		//timestamps.add(new TimeStamp(timeStampTokens));
 	}
 
@@ -200,19 +200,19 @@ public class Zeitreihe implements Serializable{
 			lineNoComment = lineNoComment.substring(0,lineNoComment.length()-1);
 		}
 		String[] lineTokens = lineNoComment.split("\t");
-		
+
 		String lineHeader = lineTokens[0];
 		if (!(lineHeader == null)){
 			if(lineHeader.equalsIgnoreCase("form")){
 				if(lineTokens.length<2) return;
 					String[] forms = lineTokens[1].split(" ");
 					for(int i = 0; i<forms.length; i++){
-						this.forms.add(forms[i]);					
+						this.forms.add(forms[i]);
 						// fill emission list with sources
 						if(forms[i].contains("pm-2")){
 							EmissionTimeSeries emis = new EmissionTimeSeries(forms[i]);
 							emisList.add(emis);
-						}		
+						}
 					}
 				return;
 			}
@@ -273,7 +273,7 @@ public class Zeitreihe implements Serializable{
 			}
 		}
 	}
-	
+
 	// ***** WRITER *****
 	/**
 	 * Writes emission and meteorology timeseries to new zeitreihe.dmna file
@@ -290,12 +290,12 @@ public class Zeitreihe implements Serializable{
 			while(start<(timestamps.size()-1)&&!dateFormat.print(timestamps.get(start)).contains(".01:00:00")){
 				start++;
 			}
-			
+
 			// get length of time series and emission sources
 			hghb = ""+(this.metList.getSize() - start);
 			size = ""+(emisList.size()*4 + 20);
 			d0 = ""+Double.parseDouble(this.z0)*6;
-			
+
 			FileWriter fw = new FileWriter(targetFile);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(buildFormsString()+SEPERATOR);
@@ -310,19 +310,19 @@ public class Zeitreihe implements Serializable{
 			bw.write("size\t"+size+SEPERATOR);
 			bw.write("lowb\t"+lowb+SEPERATOR);
 			bw.write("hghb\t"+hghb+SEPERATOR);
-			bw.write("*"+SEPERATOR);		
-			
+			bw.write("*"+SEPERATOR);
+
 			for(int i=start; i<timestamps.size(); i++){
 				String time = dateFormat.print(timestamps.get(i));
 				bw.write(time+" ");
 				bw.write(metList.getMeteorologyToString(i));
 				String e = "";
-				for(EmissionTimeSeries ts : emisList){	
+				for(EmissionTimeSeries ts : emisList){
 					double emis = ts.getEmissionValue(i);
 					if(emis==0)
 						e = e + " " + "0.000e+000";
 					else
-						e = e + " " + scientific.format(emis);									
+						e = e + " " + scientific.format(emis);
 				}
 				String eNew = e.replace(",", ".");
 				bw.write(eNew + SEPERATOR);
@@ -332,50 +332,50 @@ public class Zeitreihe implements Serializable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	// ***** MODIFICATION *****
 	//
 	public String getZ0(){
 		return z0;
 	}
-	
+
 	public void setZ0(String z0){
 		this.z0 = z0;
 	}
-	
+
 	// modify meteorology time series
 	public MeteorologyTimeSeries getMeteorologyTimeSeries(){
 		return metList;
 	}
-	
+
 	public void setMeteorologyTimeSeries(MeteorologyTimeSeries meteoTS){
 		this.metList = meteoTS;
 		this.hghb = "hghb\t"+(this.metList.getSize());
 	}
-	
+
 	// modify emission time series
 	public List<EmissionTimeSeries> getEmissionSourcesTimeSeries(){
 		return emisList;
 	}
-	
+
 	public void setEmissionSourcesTimeSeries(List<EmissionTimeSeries> emisListTS){
 		this.emisList = emisListTS;
 	}
-	
-	
+
+
 	//****** UTILITIES ******
 	// find index in the timestamp arrays for the respective parameter
 	private int getFormIndex(String formID){
-		// loop through forms to find respective string	
+		// loop through forms to find respective string
 		for(int i=0; i<forms.size(); i++){
 			if(formID.equalsIgnoreCase(forms.get(i)))
 				return i;
 		}
 		return -1;
 	}
-	
+
 	// creates new line from forms array
 	private String buildFormsString() {
 		String s = "form\t";
@@ -388,7 +388,7 @@ public class Zeitreihe implements Serializable{
 		for(EmissionTimeSeries emisTS : emisList){
 			String s2 = emisTS.getDynamicSourceIDToken();
 			s = s+s2+" ";
-			
+
 		}
 		return s;
 	}
@@ -396,7 +396,7 @@ public class Zeitreihe implements Serializable{
 	public String getTSlength(){
 		return hghb;
 	}
-	
+
 	public void setTimePeriod(DateTime start, DateTime end){
 		metList.cutTimePeriod(start, end);
 		for(int i=0; i<emisList.size(); i++){
@@ -404,7 +404,7 @@ public class Zeitreihe implements Serializable{
 		}
 		this.hghb = "hghb\t"+(this.metList.getSize());
 	}
-	
+
 //	public int getColumn(String s) {
 //		for(String form: forms){
 //			if(form.contains(s)){
@@ -413,5 +413,5 @@ public class Zeitreihe implements Serializable{
 //		}
 //		return -1;
 //	}
-	
+
 }

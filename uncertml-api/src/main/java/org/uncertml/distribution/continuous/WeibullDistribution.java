@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a Weibull distribution with parameters scale and shape.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Weibull}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -22,7 +22,7 @@ public class WeibullDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single scale and shape parameter.
-     * 
+     *
      * @param scale the scale parameter.
      * @param shape the shape parameter.
      */
@@ -36,7 +36,7 @@ public class WeibullDistribution implements IContinuousDistribution {
      * Each scale and shape pair represents a unique Weibull distribution.
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The arrays must be of equal length.
-     * 
+     *
      * @param scale an array of doubles representing the scale parameter of n
      * Weibull distributions.
      * @param shape an array of doubles representing the shape parameter of n
@@ -52,7 +52,7 @@ public class WeibullDistribution implements IContinuousDistribution {
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The lists must be of equal length and
      * must not contain any null elements.
-     * 
+     *
      * @param scale a list of doubles representing the scale parameter of n
      * Weibull distributions.
      * @param shape a list of doubles representing the shape parameter of n
@@ -76,8 +76,8 @@ public class WeibullDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
-     * @return the scale parameter of each Weibull distribution represented 
+     *
+     * @return the scale parameter of each Weibull distribution represented
      * by this object.
      */
     public List<Double> getScale() {
@@ -85,7 +85,7 @@ public class WeibullDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the shape parameter of each Weibull distribution represented
      * by this object.
      */

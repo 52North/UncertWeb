@@ -3,10 +3,10 @@ package org.uncertweb.api.om;
 import org.uncertweb.api.om.exceptions.OMParsingException;
 
 public class GeneralTimeInterval implements IGeneralTime{
-	
+
 	private GeneralTimeInstant start, end;
 	private final String INTERVAL_SEP="/";
-	
+
 	public GeneralTimeInterval(String timeString) throws OMParsingException{
 		if (timeString.contains(INTERVAL_SEP)){
 			String[] startNEnd = timeString.split(INTERVAL_SEP);
@@ -42,7 +42,7 @@ public class GeneralTimeInterval implements IGeneralTime{
 	public void setEnd(GeneralTimeInstant end) {
 		this.end = end;
 	}
-	
+
 	public String toString(){
 		return start.toString()+INTERVAL_SEP+end.toString();
 	}

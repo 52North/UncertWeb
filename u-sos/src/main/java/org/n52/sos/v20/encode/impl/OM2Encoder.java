@@ -8,8 +8,8 @@
  48155 Muenster, Germany
  info@52north.org
 
- This program is free software; you can redistribute and/or modify it under 
- the terms of the GNU General Public License version 2 as published by the 
+ This program is free software; you can redistribute and/or modify it under
+ the terms of the GNU General Public License version 2 as published by the
  Free Software Foundation.
 
  This program is distributed WITHOUT ANY WARRANTY; even without the implied
@@ -94,13 +94,13 @@ import org.n52.sos.utilities.SosUtilities;
 /**
  * Encoder for Observation and Measurements Documents / Elements, using
  * XMLBeans, implemented as singleton
- * 
+ *
  * ATTENTION: This class needs the XmlBeans lib and the libs generated from the
  * O&M schema files; the used classes which are generated from XMLBeans are
  * named with prefixed 'xb_'
- * 
+ *
  * @author Christoph Stasch
- * 
+ *
  */
 public class OM2Encoder implements IOMEncoder {
 
@@ -121,7 +121,7 @@ public class OM2Encoder implements IOMEncoder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sos.encode.IOMEncoder#createObservationCollection(org.n52.sos
      * .ogc.om.SosObservationCollection)
@@ -149,7 +149,7 @@ public class OM2Encoder implements IOMEncoder {
     /**
      * Creates XML representation of OM 2.0 observation type from SOS
      * observation.
-     * 
+     *
      * @param xbObs
      *            OM 2.0 observation
      * @param absObs
@@ -175,7 +175,7 @@ public class OM2Encoder implements IOMEncoder {
 
     /**
      * Creates XML representation of OM 2.0 Measurement from SOS observation.
-     * 
+     *
      * @param xbObs
      *            OM 2.0 Measurement
      * @param meas
@@ -237,7 +237,7 @@ public class OM2Encoder implements IOMEncoder {
     /**
      * Creates XML representation of OM 2.0 CategoryObservation from SOS
      * observation.
-     * 
+     *
      * @param xbObs
      *            OM 2.0 CategoryObservation
      * @param catObs
@@ -288,7 +288,7 @@ public class OM2Encoder implements IOMEncoder {
     /**
      * Creates XML representation of OM 2.0 GeometryObservation from SOS
      * observation.
-     * 
+     *
      * @param xbObs
      *            OM 2.0 SosSpatialObservation
      * @param spatialObs
@@ -341,7 +341,7 @@ public class OM2Encoder implements IOMEncoder {
     /**
      * Creates XML representation of OM 2.0 GenericObservation from SOS
      * observation.
-     * 
+     *
      * @param xbObs
      *            OM 2.0 GenericObservation
      * @param genObs
@@ -389,7 +389,7 @@ public class OM2Encoder implements IOMEncoder {
     /**
      * Creates a SWE 1.0.1 DataArray for the result element in
      * GenericObservation
-     * 
+     *
      * @param phenComponents
      *            List of all phenomenon of this observation
      * @param resultString
@@ -525,7 +525,7 @@ public class OM2Encoder implements IOMEncoder {
     /**
      * Creates XML representation of OM 2.0 SWEDataArrayObservation from SOS
      * observation.
-     * 
+     *
      * @param xbObs
      *            OM 2.0 SWEDataArrayObservation
      * @param meas
@@ -572,11 +572,11 @@ public class OM2Encoder implements IOMEncoder {
 
     /**
      * Creates a dataArray for the SWEArrayObservation.
-     * 
+     *
      * @param sosSweDataArray
      *            SOS internal representation
      * @return DataArray XmlObject representation
-     * @throws OwsExceptionReport 
+     * @throws OwsExceptionReport
      */
     private DataArrayDocument createDataArrayForSWEDataArrayObservation(SosSweDataArray sosSweDataArray) throws OwsExceptionReport {
 
@@ -642,7 +642,7 @@ public class OM2Encoder implements IOMEncoder {
     /**
      * creates a QuantityProperty representing the quality element for
      * observations
-     * 
+     *
      * @param qualityColl
      *            The Collection of qualities for the Observation.
      * @return Returns XMLBean representing the quality element for observations
@@ -670,7 +670,7 @@ public class OM2Encoder implements IOMEncoder {
     /**
      * creates a Text representing the quality element for observations in case
      * of quality type equals 'text'
-     * 
+     *
      * @param qualityType
      *            the quality, for which the quality element should be created
      * @return Returns XMLBean representing the quality element for observations
@@ -687,7 +687,7 @@ public class OM2Encoder implements IOMEncoder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sos.encode.IOMEncoder#createObservationCollectionMobile(org.n52
      * .sos.ogc.om.SosObservationCollection)
@@ -701,7 +701,7 @@ public class OM2Encoder implements IOMEncoder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sos.encode.IOMEncoder#createCompositePhenomenon(java.lang.String,
      * java.util.List)
@@ -715,7 +715,7 @@ public class OM2Encoder implements IOMEncoder {
     /**
      * Encodes a SosAbstractFeature to an SpatialSamplingFeature under
      * consideration of duplicated SpatialSamplingFeature in the XML document.
-     * 
+     *
      * @param xbObs
      *            XmlObject O&M observation
      * @param absObs

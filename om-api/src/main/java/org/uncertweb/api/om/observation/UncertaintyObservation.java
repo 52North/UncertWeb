@@ -13,23 +13,23 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Boolean observation contains uncertainty result and inherits other properties from AbstractObservation
- * 
+ *
  * @author Kiesow, staschc
  *
  */
 public class UncertaintyObservation extends AbstractObservation{
 
-	
+
 	/** uncertainty result of the observation */
 	private UncertaintyResult result;
-	
+
 	/**type name of this observation*/
 	public static final String NAME = "OM_UncertaintyObservation";
-	
-	
+
+
 	/**
 	 * Constructor with mandatory attributes
-	 * 
+	 *
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -52,7 +52,7 @@ public class UncertaintyObservation extends AbstractObservation{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param identifier
 	 *            gml id attribute
 	 * @param boundedBy
@@ -73,7 +73,7 @@ public class UncertaintyObservation extends AbstractObservation{
 	 *            result
 	 * @param resultQuality
 	 * 			  (optional) result qualities as UncertaintyResults
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public UncertaintyObservation(Identifier identifier, Envelope boundedBy,
 			TimeObject phenomenonTime, TimeObject resultTime,
@@ -96,7 +96,7 @@ public class UncertaintyObservation extends AbstractObservation{
 			this.result = (UncertaintyResult)result;
 		}
 		else throw new IllegalArgumentException("Result type of UncertaintyObservation has to be Uncertainty!");
-		
+
 	}
 
 	@Override

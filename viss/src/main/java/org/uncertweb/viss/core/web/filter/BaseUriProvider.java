@@ -53,8 +53,8 @@ public class BaseUriProvider implements ContainerRequestFilter {
 		}
 		return request;
 	}
-	
-	
+
+
 	public static URI getBaseURI() {
 		log.debug("BaseURI: {}", baseUri);
 		return baseUri;

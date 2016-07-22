@@ -18,25 +18,25 @@ import org.uncertweb.utils.UwCollectionUtils;
 
 /**
  * parser for UncertML uncertainties
- * 
+ *
  * @author staschc
  *
  */
 public class UncertMLXmlParser extends AbstractUwParser {
-	
-	
+
+
 	public UncertMLXmlParser() {
 		super(
-			set(SCHEMA_UNCERTML), 
+			set(SCHEMA_UNCERTML),
 			set(ENCODING_UTF_8),
-			set(MIME_TYPE_UNCERTML_XML), 
+			set(MIME_TYPE_UNCERTML_XML),
 			UwCollectionUtils.<Class<?>>set(UncertMLBinding.class)
 		);
 	}
 
 	private static Logger LOGGER = Logger.getLogger(UncertMLXmlParser.class);
-	
-	
+
+
 	@Override
 	public IData parse(InputStream stream, String mimeType) {
 		UncertMLBinding result = null;

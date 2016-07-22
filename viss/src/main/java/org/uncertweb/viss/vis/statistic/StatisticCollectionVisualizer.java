@@ -121,7 +121,7 @@ public class StatisticCollectionVisualizer extends AbstractAnnotatedUncertaintyV
 		try {
 			Map<String, JSONObject> options = super.getOptionsForDataSet(r);
 			options.put(STATISTIC_PARAMETER,
-						createStatisticOption().put(JSONSchema.Key.ENUM, 
+						createStatisticOption().put(JSONSchema.Key.ENUM,
 													new JSONArray(getStatistics(r))));
 			return options;
 		} catch (JSONException e) {

@@ -11,9 +11,9 @@ import org.uncertml.util.Validate;
 /**
  * Class representing a Student T distribution with parameters mean, variance and
  * degrees of freedom.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/StudentT}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -25,7 +25,7 @@ public class StudentTDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single mean, variance and degrees of freedom parameter.
-     * 
+     *
      * @param mean the mean parameter.
      * @param variance the variance parameter.
      * @param degreesOfFreedom the degrees of freedom parameter.
@@ -36,11 +36,11 @@ public class StudentTDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes an array of doubles for the mean, variance and
-     * degreed of freedom parameters. Each mean and variance pair represents a 
-     * unique Student T distribution. This is in line with the UncertML syntax 
-     * whereby a collection of types can be represented by a single entity. The 
+     * degreed of freedom parameters. Each mean and variance pair represents a
+     * unique Student T distribution. This is in line with the UncertML syntax
+     * whereby a collection of types can be represented by a single entity. The
      * arrays must be of equal length.
-     * 
+     *
      * @param mean an array of doubles representing the mean parameter of n
      * Student T distributions.
      * @param variance an array of doubles representing the variance parameter of n
@@ -54,11 +54,11 @@ public class StudentTDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a list of doubles for the mean, variance and
-     * degreed of freedom parameters. Each mean and variance pair represents a 
-     * unique Student T distribution. This is in line with the UncertML syntax 
-     * whereby a collection of types can be represented by a single entity. The 
+     * degreed of freedom parameters. Each mean and variance pair represents a
+     * unique Student T distribution. This is in line with the UncertML syntax
+     * whereby a collection of types can be represented by a single entity. The
      * lists must be of equal length and must not contain any null elements.
-     * 
+     *
      * @param mean a list of doubles representing the mean parameter of n
      * Student T distributions.
      * @param variance a list of doubles representing the variance parameter of n

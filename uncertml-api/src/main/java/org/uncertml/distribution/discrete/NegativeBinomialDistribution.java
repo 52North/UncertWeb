@@ -10,9 +10,9 @@ import org.uncertml.util.Validate;
 /**
  * Class representing a negative binomial distribution with parameters number of
  * failures and probability.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/NegativeBinomial}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -23,7 +23,7 @@ public class NegativeBinomialDistribution implements IDiscreteDistribution {
 
     /**
      * Constructor that takes a single number of failures and probability parameter.
-     * 
+     *
      * @param numberOfFailures the number of failures parameter.
      * @param probability the probability parameter.
      */
@@ -37,8 +37,8 @@ public class NegativeBinomialDistribution implements IDiscreteDistribution {
      * and probability pair represents a unique negative binomial distribution.
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The arrays must be of equal length.
-     * 
-     * @param numberOfFailures an array of integers representing the number of 
+     *
+     * @param numberOfFailures an array of integers representing the number of
      * failures parameter of n negative binomial distributions.
      * @param probability an array of doubles representing the probability parameter of n
      * negative binomial distributions.
@@ -54,8 +54,8 @@ public class NegativeBinomialDistribution implements IDiscreteDistribution {
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The lists must be of equal length and
      * must not contain any null elements.
-     * 
-     * @param numberOfFailures a list of integers representing the number of 
+     *
+     * @param numberOfFailures a list of integers representing the number of
      * failures parameter of n negative binomial distributions.
      * @param probability a list of doubles representing the probability parameter of n
      * negative binomial distributions.
@@ -76,7 +76,7 @@ public class NegativeBinomialDistribution implements IDiscreteDistribution {
     }
 
     /**
-     * 
+     *
      * @return the number of failures parameter of each negative binomial distribution
      * represented by this object.
      */
@@ -85,7 +85,7 @@ public class NegativeBinomialDistribution implements IDiscreteDistribution {
     }
 
     /**
-     * 
+     *
      * @return the probability parameter of each negative binomial distribution
      * represented by this object.
      */

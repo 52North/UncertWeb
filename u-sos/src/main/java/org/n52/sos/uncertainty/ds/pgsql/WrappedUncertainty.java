@@ -13,22 +13,22 @@ public final class WrappedUncertainty {
 	private final String gmlID;
 	private final String valueUnit;
 	private final IUncertainty unc;
-	
+
 	/**
 	 * constructor
-	 * @param observationID the corresponding observation's ID 
+	 * @param observationID the corresponding observation's ID
 	 * @param gmlID gml identifier
-	 * @param valueUnit value unit 
+	 * @param valueUnit value unit
 	 * @param uncertainty the uncertainty itself
 	 */
 	public WrappedUncertainty(String observationID, String gmlID, String valueUnit, IUncertainty uncertainty) {
-		
+
 		this.obsID = observationID;
 		this.gmlID = gmlID;
 		this.valueUnit = valueUnit;
 		this.unc = uncertainty;
 	}
-	
+
 	public String getObservationID() {
 		return obsID;
 	}

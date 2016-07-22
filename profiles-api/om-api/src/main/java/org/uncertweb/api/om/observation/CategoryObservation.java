@@ -12,17 +12,17 @@ import org.uncertweb.api.om.sampling.SpatialSamplingFeature;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class CategoryObservation extends AbstractObservation{
-	
+
 	/** measure result of the observation */
 	private CategoryResult result;
-	
+
 	/**type name of this observation*/
 	public static final String NAME = "OM_CategoryObservation";
-	
-	
+
+
 	/**
 	 * Constructor with mandatory attributes
-	 * 
+	 *
 	 * @param phenomenonTime
 	 *            phenomenon time property
 	 * @param resultTime
@@ -45,7 +45,7 @@ public class CategoryObservation extends AbstractObservation{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param identifier
 	 *            identifier of the observation
 	 * @param boundedBy
@@ -66,13 +66,13 @@ public class CategoryObservation extends AbstractObservation{
 	 *            result
 	 * @param resultQuality
 	 * 			  (optional) result qualities as UncertaintyResults
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public CategoryObservation(Identifier identifier, Envelope boundedBy, TimeObject phenomenonTime,
 			TimeObject resultTime, TimeObject validTime, URI procedure,
 			URI observedProperty, SpatialSamplingFeature featureOfInterest,
 			DQ_UncertaintyResult[] resultQuality, CategoryResult result){
-		
+
 		super(phenomenonTime,resultTime,procedure,observedProperty,featureOfInterest);
 		setIdentifier(identifier);
 		setBoundedBy(boundedBy);
@@ -92,7 +92,7 @@ public class CategoryObservation extends AbstractObservation{
 			this.result = (CategoryResult)result;
 		}
 		else throw new IllegalArgumentException("Result type of CategoryObservation has to be CategoryResult!");
-		
+
 	}
 
 	@Override

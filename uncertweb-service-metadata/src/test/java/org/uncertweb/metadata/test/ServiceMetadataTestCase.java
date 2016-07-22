@@ -15,16 +15,16 @@ import org.uncertweb.metadata.ServiceMetadata;
 import junit.framework.TestCase;
 
 public class ServiceMetadataTestCase extends TestCase {
-	
+
 	private String localPath = "D:/uncertwebWorkspace/uncertweb-service-metadata/";
 	private String pathToExamples = "src/test/resources";
-	
-	
+
+
 	@Test
 	public void testPeriodParsing() {
 		Properties p = new Properties();
 		File f;
-		
+
 		try {
 			 f = new File(pathToExamples+"/metadataTest.props");
 		}catch (Exception fe){

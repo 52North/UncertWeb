@@ -10,9 +10,9 @@ import org.uncertml.util.Validate;
 /**
  * Class representing a continuous uniform distribution with minimum and maximum
  * parameters.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/Uniform}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -23,7 +23,7 @@ public class UniformDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single minimum and maximum parameter.
-     * 
+     *
      * @param minimum the minimum parameter.
      * @param maximum the maximum parameter.
      */
@@ -36,7 +36,7 @@ public class UniformDistribution implements IContinuousDistribution {
      * Each minimum and maximum pair represents a unique uniform distribution.
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The arrays must be of equal length.
-     * 
+     *
      * @param minimum an array of doubles representing the minimum parameter of n
      * uniform distributions.
      * @param maximum an array of doubles representing the maximum parameter of n
@@ -52,7 +52,7 @@ public class UniformDistribution implements IContinuousDistribution {
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The lists must be of equal length and
      * must not contain any null elements.
-     * 
+     *
      * @param minimum a list of doubles representing the minimum parameter of n
      * uniform distributions.
      * @param maximum a list of doubles representing the maximum parameter of n
@@ -78,7 +78,7 @@ public class UniformDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the maximum parameter of each uniform distribution represented by
      * this object.
      */
@@ -87,7 +87,7 @@ public class UniformDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the minimum parameter of each uniform distribution represented by
      * this object.
      */

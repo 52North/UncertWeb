@@ -17,16 +17,16 @@ public class UncertMLJsonParser extends AbstractUwParser {
 
 	public UncertMLJsonParser() {
 		super(
-			set(SCHEMA_UNCERTML), 
+			set(SCHEMA_UNCERTML),
 			set(ENCODING_UTF_8),
-			set(MIME_TYPE_UNCERTML_JSON), 
+			set(MIME_TYPE_UNCERTML_JSON),
 			UwCollectionUtils.<Class<?>>set(UncertMLBinding.class)
 		);
 	}
 
 	@Override
 	protected IData parse(InputStream is, String mimeType) throws Exception {
-		return new UncertMLBinding(new JSONParser().parse(is));		
+		return new UncertMLBinding(new JSONParser().parse(is));
 	}
 
 }

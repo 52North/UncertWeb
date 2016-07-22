@@ -99,9 +99,9 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * encodes Observations by xmlBeans
- * 
+ *
  * @author Kiesow, staschc
- * 
+ *
  */
 public class XBObservationEncoder implements IObservationEncoder {
 
@@ -109,36 +109,36 @@ public class XBObservationEncoder implements IObservationEncoder {
 	// counters used for generating gml IDs
 	/**id counter for temporal elements; is resetted to 0, if encoding of a new observation collection starts.*/
 	private int timeIdCounter = 0;
-	
+
 	/**id counter for sampling features; only if the gml:identifier subelement of a sampling feature is equal, the gml:id is used for referencing the same feature*/
 	private int sfIdCounter = 0;
-	
+
 	/**id counter for observations; used to generate observation IDs*/
 	private int obsIdCounter = 0;
-	
+
 	private int unitIdCounter = 0;
-	
+
 	private String idPrefix = null;
-	
+
 	/**encoder for geometries*/
 	private XmlBeansGeometryEncoder encoder;
 
 
 	// maps used for caching information about already encoded geometries
-	
+
 	/**
 	 * map which stores TimeStrings as keys and gml IDs used for encoding these strings as values;
 	 * the timestrings are created in the following manner: if it is a single timestamp, this is used as string;
 	 * if the time is a time period, the string of the start date and the string of the end date are merged to one string
-	 * 
-	 * This map is used to check, whether a timeinstant or timeperiod with the same values has already been encoded in an observation or 
+	 *
+	 * This map is used to check, whether a timeinstant or timeperiod with the same values has already been encoded in an observation or
 	 * observation collection.
 	 */
 	private HashMap<String, String> gmlID4TimeStrings;
-	
+
 	/**
 	 * map which contains the identifiers of sampling features as keys and the gmlId as values
-	 * 
+	 *
 	 * This map is used to check whether a feature has already been encoded in an observation or
 	 * observation collection.
 	 */
@@ -150,10 +150,10 @@ public class XBObservationEncoder implements IObservationEncoder {
 	 * encoding just one observation or internally for encoding members of an observation collection.
 	 */
 	private boolean isCol;
-	
+
 	/**
 	 * constructor initializes geometry encoded
-	 * 
+	 *
 	 */
 	public XBObservationEncoder(){
 		encoder = new XmlBeansGeometryEncoder();
@@ -161,15 +161,15 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * encodes an observation collection
-	 * 
+	 *
 	 * @param obsCol
 	 *            observation collection
 	 * @return observation collections's xml document as formatted String
-	 * @throws UncertaintyEncoderException 
+	 * @throws UncertaintyEncoderException
 	 * 			if encoding of uncertainty fails
 	 * @throws UnsupportedUncertaintyTypeException
-	 * 			if type of uncertainty is not supported 
-	 * @throws XmlException 
+	 * 			if type of uncertainty is not supported
+	 * @throws XmlException
 	 * 			if encoding fails
 	 * @throws IllegalArgumentException
 	 *          if encoding fails
@@ -179,24 +179,24 @@ public class XBObservationEncoder implements IObservationEncoder {
 			IObservationCollection obsCol) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
 		return encodeObservationCollection(obsCol, null);
 	}
-	
+
 	public synchronized String encodeObservationCollection(
 		IObservationCollection obsCol, String idPrefix) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
 		return encodeObservationCollectionDocument(obsCol, idPrefix).xmlText(
 				getOMOptions());
 	}
-	
+
 	/**
 	 * encodes an {@link OMObservationDocument}
-	 * 
+	 *
 	 * @param obs
 	 *            observation
 	 * @return observation's xml document as formatted String
-	 * @throws UncertaintyEncoderException 
+	 * @throws UncertaintyEncoderException
 	 * 			if encoding of uncertainty fails
 	 * @throws UnsupportedUncertaintyTypeException
-	 * 			if type of uncertainty is not supported 
-	 * @throws XmlException 
+	 * 			if type of uncertainty is not supported
+	 * @throws XmlException
 	 * 			if encoding fails
 	 * @throws IllegalArgumentException
 	 *          if encoding fails
@@ -206,7 +206,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 	{
 		return encodeObservation(obs, null);
 	}
-	
+
 	public synchronized String encodeObservation(AbstractObservation obs, String idPrefix) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException
 	{
 		return encodeObservationDocument(obs, idPrefix).xmlText(getOMOptions());
@@ -214,15 +214,15 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * encodes an observation collection
-	 * 
+	 *
 	 * @param obsCol
 	 *            observation collection
 	 * @return observation collections's xml document
-	 * @throws UncertaintyEncoderException 
+	 * @throws UncertaintyEncoderException
 	 * 			if encoding of uncertainty fails
 	 * @throws UnsupportedUncertaintyTypeException
-	 * 			if type of uncertainty is not supported 
-	 * @throws XmlException 
+	 * 			if type of uncertainty is not supported
+	 * @throws XmlException
 	 * 			if encoding fails
 	 * @throws IllegalArgumentException
 	 *          if encoding fails
@@ -232,7 +232,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 	{
 		return encodeObservationCollectionDocument(obsCol, null);
 	}
-	
+
 	public synchronized XmlObject encodeObservationCollectionDocument(
 			IObservationCollection obsCol, String idPrefix) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
 		this.isCol = true;
@@ -376,19 +376,19 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	}
 
-	
+
 
 	/**
 	 * encodes an {@link OMObservationDocument}
-	 * 
+	 *
 	 * @param obs
 	 *            observation
 	 * @return observation's xml document
-	 * @throws UncertaintyEncoderException 
+	 * @throws UncertaintyEncoderException
 	 * 			if encoding of uncertainty fails
 	 * @throws UnsupportedUncertaintyTypeException
-	 * 			if type of uncertainty is not supported 
-	 * @throws XmlException 
+	 * 			if type of uncertainty is not supported
+	 * @throws XmlException
 	 * 			if encoding fails
 	 * @throws IllegalArgumentException
 	 *          if encoding fails
@@ -397,7 +397,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 		AbstractObservation obs) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
 		return encodeObservationDocument(obs, null);
 	}
-	
+
 	public synchronized OMObservationDocument encodeObservationDocument(
 			AbstractObservation obs, String idPrefix) throws IllegalArgumentException, XmlException, UnsupportedUncertaintyTypeException, UncertaintyEncoderException {
 
@@ -406,7 +406,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 			this.gmlID4TimeStrings = new HashMap<String, String>();
 			this.gmlID4sfIdentifier = new HashMap<String, String>();
 		}
-		
+
 		this.idPrefix = idPrefix;
 
 		// define observation type
@@ -504,7 +504,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * helper method for encoding the boundedBy property from an envelope
-	 * 
+	 *
 	 * @param xb_observation
 	 * 			XMLBeans representation to which the boundedBy property should be encoded
 	 * @param obs
@@ -525,7 +525,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * helper method for encoding the phenomenonTime property
-	 * 
+	 *
 	 * @param xb_observation
 	 * 			XMLBeans representation of observation to whcih the phenomenon time should be encoded
 	 * @param obs
@@ -637,7 +637,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * helper method for encoding the resultTime property
-	 * 
+	 *
 	 * @param xb_observation
 	 * 			XMLBeans representation of observation to which the result time should be encoded
 	 * @param obs
@@ -748,7 +748,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * helper method for encoding the validTime property
-	 * 
+	 *
 	 * @param xb_observation
 	 * 			XMLBeans representation of observation to which the valid time should be encoded
 	 * @param obs
@@ -832,7 +832,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * helper method for encoding featureOfInterest property
-	 * 
+	 *
 	 * @param xb_observation
 	 * 			XMLBeans representation whose feature should be encoded
 	 * @param obs
@@ -870,7 +870,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 			String gmlId = (idPrefix != null ? idPrefix + "_" : "") + "sf" + this.sfIdCounter;
 			this.sfIdCounter++;
 			xb_sfType.setId(gmlId);
-			
+
 
 			if (obs.getFeatureOfInterest().getBoundedBy() != null) {
 				// TODO add boundedBy
@@ -886,7 +886,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 			ReferenceType xb_rt = xb_sfType.addNewType();
 			xb_rt.setHref(obs.getFeatureOfInterest().getFeatureType());
 			ShapeType xb_shape = xb_sfType.addNewShape();
-			
+
 			XmlObject xb_geometry = null;
 			if (obs.getFeatureOfInterest().getShape() instanceof Point) {
 				xb_geometry = encoder.encodePoint2Doc((Point) obs
@@ -921,13 +921,13 @@ public class XBObservationEncoder implements IObservationEncoder {
 				throw new IllegalArgumentException(
 						"Geometry type is not supported by UncertWeb GML profile!");
 			}
-			
+
 			// set id prefix
 			if (idPrefix != null) {
 				AbstractGeometryType xb_geometry_type = ((AbstractGeometryDocument) xb_geometry).getAbstractGeometry();
 				xb_geometry_type.setId(idPrefix + "_" + xb_geometry_type.getId());
 			}
-			
+
 			xb_shape.set(xb_geometry);
 			if (identifier != null) {
 				CodeWithAuthorityType xb_identifier = xb_sfType.addNewIdentifier();
@@ -941,7 +941,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 	/**
 	 * helper method for encoding resultQuality property; ATTENTION: currently only DQ_UncertaintyResult (resultQuality carrying Uncertainty
 	 * encoded as UncertML is supported!!
-	 * 
+	 *
 	 * @param xb_observation
 	 * 			XMLBeans representation to which the resultQuality should be encoded
 	 * @param obs
@@ -964,7 +964,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 			DQUncertaintyResultType xb_dqUncRes = xb_dqURDoc
 					.addNewDQUncertaintyResult();
 
-			
+
 			// add value unit
 			UnitDefinitionType xb_vu = xb_dqUncRes.addNewValueUnit()
 						.addNewUnitDefinition();
@@ -995,7 +995,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * helper method for encoding result property
-	 * 
+	 *
 	 * @param xb_observation
 	 *            XmlBeans object to which the result should be written
 	 * @param obs
@@ -1080,7 +1080,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * helper method for encoding 2D coordinates not mentioning their order
-	 * 
+	 *
 	 * @param x
 	 *            Coordinate
 	 * @param y
@@ -1095,7 +1095,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * helper method used to encode uncertainty in UncertML
-	 * 
+	 *
 	 * @param uncertainty
 	 *            uncertainty which should be encoded in UncertML XML
 	 * @return String representing the uncertainty encoded as UncertML XML
@@ -1116,7 +1116,7 @@ public class XBObservationEncoder implements IObservationEncoder {
 
 	/**
 	 * helper methods for resetting member variables used for gml ID encoding
-	 * 
+	 *
 	 */
 	private void reset() {
 		this.gmlID4TimeStrings = null;
@@ -1131,9 +1131,9 @@ public class XBObservationEncoder implements IObservationEncoder {
 	/**
 	 * method returns XmlOptions which are used by XmlBeans for a proper
 	 * encoding
-	 * 
+	 *
 	 * @return XmlOptions used to encode the XML document with XMLBeans
-	 * 
+	 *
 	 */
 	private XmlOptions getOMOptions() {
 		XmlOptions xmlOptions = new XmlOptions();

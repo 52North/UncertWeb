@@ -17,7 +17,7 @@ import org.n52.sos.uncertainty.decode.impl.OM2Constants;
  * Implementation of the ISosResponse interface for a response to a
  * getObservation request, returning a single uncertainty enabled O&M 2
  * Observation.
- * 
+ *
  * @author Christoph Stasch, Martin Kiesow
  */
 public class SingleObservationResponse extends AbstractUncertaintyResponse implements ISosResponse {
@@ -30,7 +30,7 @@ public class SingleObservationResponse extends AbstractUncertaintyResponse imple
 
 	/**
 	 * Creates an ObservationResponse from a passed ObservationDoc.
-	 * 
+	 *
 	 * @param obsDoc
 	 *            the response doc
 	 * @param applyZipCompression
@@ -56,7 +56,7 @@ public class SingleObservationResponse extends AbstractUncertaintyResponse imple
 
 	/**
 	 * Creates an ObservationResponse from a passed ObservationDoc.
-	 * 
+	 *
 	 * @param obsDoc
 	 *            the response doc
 	 * @param applyZipCompression
@@ -67,7 +67,7 @@ public class SingleObservationResponse extends AbstractUncertaintyResponse imple
 		this.outputStream = docOutputStream;
 		super.setApplyGzipCompression(applyZipCompression);
 	}
-	
+
 	/**
 	 * @return Returns the response as byte[]
 	 * @throws IOException

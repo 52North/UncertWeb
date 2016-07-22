@@ -14,22 +14,22 @@ import org.apache.log4j.Logger;
  *
  */
 class UncertainOutputWriter {
-	
+
 	protected static Logger log = Logger.getLogger(UncertainOutputWriter.class);
-	
+
 	private UncertainOutputWriter() {}
-	
-	
+
+
 	/**
 	 * Writes the content into the given file. If the file does not exist the method creates a new file.
-	 * 
+	 *
 	 * @param f
 	 * @throws IOException
 	 */
 	public static void toFile(File f, List<String> lines) {
-		
+
 		if(!f.exists()){
-		
+
 			try {
 				f.createNewFile();
 			} catch (IOException e) {
@@ -38,7 +38,7 @@ class UncertainOutputWriter {
 			}
 		}
 		PrintWriter out = null;
-		
+
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(f)));
 				for(String currentLine : lines){
@@ -47,14 +47,14 @@ class UncertainOutputWriter {
 		} catch (IOException e) {
 			log.info ("Error while creating config file for uncertain input executable "+e.getLocalizedMessage());
 			throw new RuntimeException(e);
-		} 
+		}
 		finally {
 			if (out!=null){
 				out.flush();
 				out.close();
 			}
 		}
-		
+
 	}
 
 }

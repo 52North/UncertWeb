@@ -15,13 +15,13 @@ import org.n52.wps.server.observerpattern.ISubject;
  * http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html?page=4
  */
 public class StreamGobbler extends Thread{
-	
+
 	private static Logger LOGGER = Logger.getLogger(StreamGobbler.class);
 	InputStream is;
     String type;
     OutputStream os;
     ISubject subject;
-	
+
     public StreamGobbler(InputStream is, String type)
     {
         this(is, type, null);
@@ -32,7 +32,7 @@ public class StreamGobbler extends Thread{
         this.type = type;
         this.os = redirect;
     }
-    
+
     public void run()
     {
         try
@@ -40,7 +40,7 @@ public class StreamGobbler extends Thread{
             PrintWriter pw = null;
             if (os != null)
                 pw = new PrintWriter(os);
-                
+
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
             String line=null;
@@ -53,7 +53,7 @@ public class StreamGobbler extends Thread{
                 		subject.update(line);
                 	}
                 }
-                System.out.println(type + ">" + line);    
+                System.out.println(type + ">" + line);
             }
             if (pw != null){
                 pw.flush();
@@ -61,13 +61,13 @@ public class StreamGobbler extends Thread{
             }
         } catch (IOException ioe)
             {
-            ioe.printStackTrace();  
+            ioe.printStackTrace();
             }
-    }    
-    
+    }
+
     public void setSubject(ISubject subject) {
 		this.subject = subject;
 	}
 
-	
+
 }

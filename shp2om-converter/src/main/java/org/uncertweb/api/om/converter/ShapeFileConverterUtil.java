@@ -17,22 +17,22 @@ import com.vividsolutions.jts.geom.Point;
 
 /**
  * Util class which contains some helper methods which are used in several classes
- * 
+ *
  * @author staschc
  *
  */
 public class ShapeFileConverterUtil {
 
-	
+
 	/**
 	 * parses a timestring which can contain either just one single ISO 8601 String or two comma-seperated time strings
 	 *
-	 * 
+	 *
 	 * @param phenTime
 	 * 			timestring which can contain either just one single ISO 8601 String or two comma-seperated time strings
-	 * @return 
+	 * @return
 	 * 			represents the timeobject which has been parsed
-	 * @throws IOException 
+	 * @throws IOException
 	 * 			if timestring contains more than two time strings or if phenTime is empty string
 	 */
 	public static  TimeObject parsePhenTime(String phenTime) throws IOException {
@@ -54,19 +54,19 @@ public class ShapeFileConverterUtil {
 		else {
 			throw new IOException("PHENTIME property needs to be specified in properties file!!");
 		}
-		
+
 	}
-	
+
 	/**
 	 * helper method for creating SpatialSamplingFeature from featureID and JTS
 	 * geometry
-	 * 
+	 *
 	 * @param id
 	 *            gml id of the geometry
 	 * @param geom
 	 *            JTS geometry of the sampling feature
 	 * @return POJO representation of the SamplingFeature
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 *             if parsing fails
 	 */
 	public static SpatialSamplingFeature createSamplingFeature(String id,
@@ -107,7 +107,7 @@ public class ShapeFileConverterUtil {
 			Identifier identifier = new Identifier(new URI("http://www.uncertweb.org"),id);
 			sf = new SpatialSamplingFeature(identifier,null, geom);
 		}
-		// TODO add further geometry types	
+		// TODO add further geometry types
 		return sf;
 	}
 }

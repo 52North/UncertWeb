@@ -22,9 +22,9 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Utility class for DAOs. Parse and Create.
- * 
+ *
  * @author Carsten Hollmann, Martin Kiesow
- * 
+ *
  */
 public class ResultSetUtilities extends org.n52.sos.ds.pgsql.ResultSetUtilities {
 
@@ -42,7 +42,7 @@ public class ResultSetUtilities extends org.n52.sos.ds.pgsql.ResultSetUtilities 
 	/**
 	 * Creates a SosAbstractFeature (SosSamplingPoint, SosSamplingSurface,
 	 * SosDomainArea, SosGenericDomainFeature) from parameters.
-	 * 
+	 *
 	 * @param id
 	 * @param desc
 	 * @param name

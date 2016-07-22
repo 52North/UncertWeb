@@ -14,20 +14,20 @@ package org.uncertweb.impl;
 public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements org.uncertweb.ComplexDataType
 {
     private static final long serialVersionUID = 1L;
-    
+
     public ComplexDataTypeImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType);
     }
-    
-    private static final javax.xml.namespace.QName MIMETYPE$0 = 
+
+    private static final javax.xml.namespace.QName MIMETYPE$0 =
         new javax.xml.namespace.QName("", "mimeType");
-    private static final javax.xml.namespace.QName ENCODING$2 = 
+    private static final javax.xml.namespace.QName ENCODING$2 =
         new javax.xml.namespace.QName("", "encoding");
-    private static final javax.xml.namespace.QName SCHEMA$4 = 
+    private static final javax.xml.namespace.QName SCHEMA$4 =
         new javax.xml.namespace.QName("", "schema");
-    
-    
+
+
     /**
      * Gets the "mimeType" attribute
      */
@@ -45,7 +45,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             return target.getStringValue();
         }
     }
-    
+
     /**
      * Gets (as xml) the "mimeType" attribute
      */
@@ -59,7 +59,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             return target;
         }
     }
-    
+
     /**
      * True if has "mimeType" attribute
      */
@@ -71,7 +71,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             return get_store().find_attribute_user(MIMETYPE$0) != null;
         }
     }
-    
+
     /**
      * Sets the "mimeType" attribute
      */
@@ -89,7 +89,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             target.setStringValue(mimeType);
         }
     }
-    
+
     /**
      * Sets (as xml) the "mimeType" attribute
      */
@@ -107,7 +107,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             target.set(mimeType);
         }
     }
-    
+
     /**
      * Unsets the "mimeType" attribute
      */
@@ -119,7 +119,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             get_store().remove_attribute(MIMETYPE$0);
         }
     }
-    
+
     /**
      * Gets the "encoding" attribute
      */
@@ -137,7 +137,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             return target.getStringValue();
         }
     }
-    
+
     /**
      * Gets (as xml) the "encoding" attribute
      */
@@ -151,7 +151,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             return target;
         }
     }
-    
+
     /**
      * True if has "encoding" attribute
      */
@@ -163,7 +163,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             return get_store().find_attribute_user(ENCODING$2) != null;
         }
     }
-    
+
     /**
      * Sets the "encoding" attribute
      */
@@ -181,7 +181,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             target.setStringValue(encoding);
         }
     }
-    
+
     /**
      * Sets (as xml) the "encoding" attribute
      */
@@ -199,7 +199,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             target.set(encoding);
         }
     }
-    
+
     /**
      * Unsets the "encoding" attribute
      */
@@ -211,7 +211,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             get_store().remove_attribute(ENCODING$2);
         }
     }
-    
+
     /**
      * Gets the "schema" attribute
      */
@@ -229,7 +229,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             return target.getStringValue();
         }
     }
-    
+
     /**
      * Gets (as xml) the "schema" attribute
      */
@@ -243,7 +243,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             return target;
         }
     }
-    
+
     /**
      * True if has "schema" attribute
      */
@@ -255,7 +255,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             return get_store().find_attribute_user(SCHEMA$4) != null;
         }
     }
-    
+
     /**
      * Sets the "schema" attribute
      */
@@ -273,7 +273,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             target.setStringValue(schema);
         }
     }
-    
+
     /**
      * Sets (as xml) the "schema" attribute
      */
@@ -291,7 +291,7 @@ public class ComplexDataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComp
             target.set(schema);
         }
     }
-    
+
     /**
      * Unsets the "schema" attribute
      */

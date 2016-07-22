@@ -15,20 +15,20 @@ package org.uncertweb.impl;
 public class AbstractStaticInputDocumentImpl extends org.uncertweb.impl.AbstractInputDocumentImpl implements org.uncertweb.AbstractStaticInputDocument
 {
     private static final long serialVersionUID = 1L;
-    
+
     public AbstractStaticInputDocumentImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType);
     }
-    
-    private static final javax.xml.namespace.QName ABSTRACTSTATICINPUT$0 = 
+
+    private static final javax.xml.namespace.QName ABSTRACTSTATICINPUT$0 =
         new javax.xml.namespace.QName("http://www.uncertweb.org", "AbstractStaticInput");
-    private static final org.apache.xmlbeans.QNameSet ABSTRACTSTATICINPUT$1 = org.apache.xmlbeans.QNameSet.forArray( new javax.xml.namespace.QName[] { 
+    private static final org.apache.xmlbeans.QNameSet ABSTRACTSTATICINPUT$1 = org.apache.xmlbeans.QNameSet.forArray( new javax.xml.namespace.QName[] {
         new javax.xml.namespace.QName("http://www.uncertweb.org", "AbstractStaticInput"),
         new javax.xml.namespace.QName("http://www.uncertweb.org", "StaticInput"),
     });
-    
-    
+
+
     /**
      * Gets the "AbstractStaticInput" element
      */
@@ -46,7 +46,7 @@ public class AbstractStaticInputDocumentImpl extends org.uncertweb.impl.Abstract
             return target;
         }
     }
-    
+
     /**
      * Sets the "AbstractStaticInput" element
      */
@@ -64,7 +64,7 @@ public class AbstractStaticInputDocumentImpl extends org.uncertweb.impl.Abstract
             target.set(abstractStaticInput);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "AbstractStaticInput" element
      */

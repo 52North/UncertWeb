@@ -5,9 +5,9 @@ import java.net.URL;
 /**
  * class represents a reference to optional samples of a field; currently either
  * U-O&M or NetCDF-U are supported
- * 
+ *
  * @author staschc
- * 
+ *
  */
 public class SampleReference {
 
@@ -19,7 +19,7 @@ public class SampleReference {
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param mimeType
 	 * 			mimeType of samples
 	 * @param reference
@@ -33,7 +33,7 @@ public class SampleReference {
 
 	/**
 	 * helper method checks whether mimeType is supported (true) or not (false)
-	 * 
+	 *
 	 * @param mimeType2
 	 * 			mimeType that should be checked
 	 * @return true, if mimeType is supported, false if not.

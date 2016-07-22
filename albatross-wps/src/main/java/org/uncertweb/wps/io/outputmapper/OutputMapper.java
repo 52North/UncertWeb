@@ -37,17 +37,17 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * class maps Albatross outputs to U-O&M format
- * 
+ *
  * @author staschc
  *
  */
 public class OutputMapper {
-	
+
 	protected static Logger log = Logger.getLogger(AlbatrossProcess.class);
-	
+
 	/**
 	 * contains the observed properties
-	 * 
+	 *
 	 * @author staschc
 	 *
 	 */
@@ -58,34 +58,34 @@ public class OutputMapper {
 		public static final String NUM_OF_TRIPS_TOTAL = "http://www.uncertweb.org/variables/albatross/totalNumberOfTrips";
 		public static final String DIST_TRAVELED_TOTAL = "http://www.uncertweb.org/variables/albatross/totalDistanceTraveled";
 		public static final String RATIO_TRIPS_TOURS = "http://www.uncertweb.org/variables/albatross/ratioTripsTours";
-		
+
 		//Car Drivers
 		public static final String NUM_OF_TRIPS_CAR_DRIVER = "http://www.uncertweb.org/variables/albatross/numberOfTripsCarDrivers";
 		public static final String DIST_TRAVELED_CAR_DRIVER = "http://www.uncertweb.org/variables/albatross/distanceTraveledCarDrivers";
-		
+
 		//Slow Mode (Walk or Bike)
 		public static final String NUM_OF_TRIPS_SLOW_MODE = "http://www.uncertweb.org/variables/albatross/numberOfTripsSlowMode";
 		public static final String DIST_TRAVELED_SLOW_MODE = "http://www.uncertweb.org/variables/albatross/distanceTraveledSlowMode";
-		
+
 		//Public Transport
 		public static final String NUM_OF_TRIPS_PUB_TRANSPORT = "http://www.uncertweb.org/variables/albatross/numberOfTripsPublicTransport";
 		public static final String DIST_TRAVELED_PUB_TRANSPORT = "http://www.uncertweb.org/variables/albatross/distanceTraveledPublicTransport";
-		
+
 		//Car Passengers
 		public static final String NUM_OF_TRIPS_CAR_PASSENGERS = "http://www.uncertweb.org/variables/albatross/numberOfTripsCarPassengers";
 		public static final String DIST_TRAVELED_CAR_PASSENGERS = "http://www.uncertweb.org/variables/albatross/distanceTraveledCarPassengers";
-		
-		
+
+
 	}
-	
+
 	/**
 	 * identifier for the Albatross model
 	 */
 	public static final String PROC_ID_ALBATROSS = "http://www.uncertweb.org/models/albatross";
-	
+
 	/**
 	 * maps the O-D-Matrix output to an om:TextObservation with O-D-matrix as result value
-	 * 
+	 *
 	 * @param absoluteFilePath
 	 * 			absolute path to output file of Albatros model (OUT_odmatrix.csv)
 	 * @return observation collection that contains the observations
@@ -101,24 +101,24 @@ public class OutputMapper {
 			TimeObject resultTime = new TimeObject(new DateTime());
 			URI observedProperty = new URI(ObservedProperties.MOVEMENT);
 			URI procedure = new URI(PROC_ID_ALBATROSS);
-			
+
 			TextObservation to = new TextObservation(phenTime,resultTime,procedure,observedProperty,ssf,tr);
 			result = new TextObservationCollection();
-			result.addObservation(to);		
+			result.addObservation(to);
 		} catch (Exception e){
 			throw new OMEncodingException(e.getLocalizedMessage());
 		}
-		
+
 		return result;
 	}
 
 	/**
 	 * maps the O-D-Matrix output to an om:TextObservation with O-D-matrix as result value
-	 * 
+	 *
 	 * @param file
 	 * 			output file of Albatros model (OUT_indicators.csv)
 	 * @return absolute path to observation collection that contains the observations
-	 * @throws OMEncodingException 
+	 * @throws OMEncodingException
 	 */
 	public IObservationCollection encodeIndicators(String absoluteFilePath) throws OMEncodingException{
 		IObservationCollection result = new MeasurementCollection();
@@ -126,7 +126,7 @@ public class OutputMapper {
 		DataInputStream in = null;
 		BufferedReader br = null;
 		try {
-			
+
 			//load observation Properties
 			SpatialSamplingFeature ssf = new SpatialSamplingFeature(new Identifier(new URI("http://www.uncertweb.org"),"Netherlands_projected"),null, getNLGeometry());
 			URI procedure = new URI(PROC_ID_ALBATROSS);
@@ -134,7 +134,7 @@ public class OutputMapper {
 			TimeObject resultTime = new TimeObject(new DateTime());
 			URI obsProp = null;
 			MeasureResult obsResult = null;
-			
+
 			fstream = new FileInputStream(absoluteFilePath);
 			in = new DataInputStream(fstream);
 			br = new BufferedReader(new InputStreamReader(in));
@@ -143,7 +143,7 @@ public class OutputMapper {
 				String[] lineParts = strLine.split("\t");
 				//jump over empty lines and over line declaring mode columns
 				if (!lineParts[0].equals("\"\"")&&!lineParts[0].equals("\"mode\"")){
-					
+
 					if (lineParts.length==2){
 						obsProp = getObsProp4Identifier(lineParts[0]);
 						//set uom property; empty for all counts, km for distances
@@ -157,61 +157,61 @@ public class OutputMapper {
 						result.addObservation(new Measurement(phenTime,resultTime,procedure,obsProp,ssf,obsResult));
 					}
 					else if (lineParts.length==3){
-						
+
 						//check mode at first
 						String mode=lineParts[0];
 						String distResult = lineParts[1].replace("\"","").trim();
 						String numTripsResult = lineParts[2].replace("\"","").trim();
-						
+
 						//mode is Cardriver
 						if (mode.equals("\"0\"")){
 							obsProp = new URI(ObservedProperties.DIST_TRAVELED_CAR_DRIVER);
 							double resultValue = Double.parseDouble(distResult);
 							obsResult = new MeasureResult(resultValue,"km");
 							result.addObservation(new Measurement(phenTime,resultTime,procedure,obsProp,ssf,obsResult));
-							
+
 							obsProp = new URI(ObservedProperties.NUM_OF_TRIPS_CAR_DRIVER);
 							resultValue  = Double.parseDouble(numTripsResult);
 							obsResult = new MeasureResult(resultValue,"");
 						}
-						
+
 						//mode is slow mode (walk or bike)
 						else if (mode.equals("\"1\"")){
 							obsProp = new URI(ObservedProperties.DIST_TRAVELED_SLOW_MODE);
 							double resultValue = Double.parseDouble(distResult);
 							obsResult = new MeasureResult(resultValue,"km");
 							result.addObservation(new Measurement(phenTime,resultTime,procedure,obsProp,ssf,obsResult));
-							
+
 							obsProp = new URI(ObservedProperties.NUM_OF_TRIPS_SLOW_MODE);
 							resultValue  = Double.parseDouble(numTripsResult);
 							obsResult = new MeasureResult(resultValue,"");
 						}
-						
+
 						//mode is public transport
 						else if (mode.equals("\"2\"")){
 							obsProp = new URI(ObservedProperties.DIST_TRAVELED_PUB_TRANSPORT);
 							double resultValue = Double.parseDouble(distResult);
 							obsResult = new MeasureResult(resultValue,"km");
 							result.addObservation(new Measurement(phenTime,resultTime,procedure,obsProp,ssf,obsResult));
-							
+
 							obsProp = new URI(ObservedProperties.NUM_OF_TRIPS_PUB_TRANSPORT);
 							resultValue  = Double.parseDouble(numTripsResult);
 							obsResult = new MeasureResult(resultValue,"");
 						}
-						
+
 						//mode is car passenger
 						else if (mode.equals("\"3\"")){
 							obsProp = new URI(ObservedProperties.DIST_TRAVELED_CAR_PASSENGERS);
 							double resultValue = Double.parseDouble(distResult);
 							obsResult = new MeasureResult(resultValue,"km");
 							result.addObservation(new Measurement(phenTime,resultTime,procedure,obsProp,ssf,obsResult));
-							
+
 							obsProp = new URI(ObservedProperties.NUM_OF_TRIPS_CAR_PASSENGERS);
 							resultValue  = Double.parseDouble(numTripsResult);
 							obsResult = new MeasureResult(resultValue,"");
 						}
-						
-						
+
+
 					}
 				}
 			}
@@ -235,12 +235,12 @@ public class OutputMapper {
 				if (fstream!=null){
 					fstream.close();
 				}
-				
+
 			} catch (IOException e) {
 				log.info("Error while closing streams from OUT_indicators.csv file during postprocessing.");
 				throw new RuntimeException("Error while closing streams from OUT_indicators.csv file during postprocessing.");
 			}
-			
+
 		}
 		return result;
 	}
@@ -277,22 +277,22 @@ public class OutputMapper {
 			SimpleFeature sf = iter.next();
 			geom = (Geometry)sf.getDefaultGeometry();
 			geom.setSRID(28992);
-			
+
 			//and for all member of the collection
 			int nGeo = geom.getNumGeometries();
-			
+
 			for(int i = 0; i < nGeo; i++){
-				
+
 				geom.getGeometryN(i).setSRID(28992);
 			}
 		}
 		return geom;
 	}
-	
-	
+
+
 	/**
 	 * helper method for retrieving geometry of Rotterdam
-	 * 
+	 *
 	 * @return geometry of rotterdam
 	 * @throws IOException
 	 * 			if shp file containing geometry cannot be read
@@ -308,21 +308,21 @@ public class OutputMapper {
 			SimpleFeature sf = iter.next();
 			geom = (Geometry)sf.getDefaultGeometry();
 			geom.setSRID(28992);
-			
+
 			//and for all member of the collection
 			int nGeo = geom.getNumGeometries();
-			
+
 			for(int i = 0; i < nGeo; i++){
-				
+
 				geom.getGeometryN(i).setSRID(28992);
 			}
 		}
 		return geom;
 	}
-	
+
 	/**
 	 * helper method for reading file as string
-	 * 
+	 *
 	 * @param filePath
 	 * @return
 	 * @throws IOException
@@ -340,6 +340,6 @@ public class OutputMapper {
 	        if (f != null) try { f.close(); } catch (IOException ignored) { }
 	    }
 	    return result;
-	    
+
 	}
 }

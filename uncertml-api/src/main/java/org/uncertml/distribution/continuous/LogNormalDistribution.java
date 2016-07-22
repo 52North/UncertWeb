@@ -9,9 +9,9 @@ import org.uncertml.util.Validate;
 
 /**
  * Class representing a log-normal distribution with log-scale and shape parameters.
- * 
+ *
  * {@URL https://wiki.aston.ac.uk/foswiki/bin/view/UncertWeb/LogNormal}
- * 
+ *
  * @author Matthew Williams
  * @version 2.0
  */
@@ -22,7 +22,7 @@ public class LogNormalDistribution implements IContinuousDistribution {
 
     /**
      * Constructor that takes a single log-scale and shape parameter.
-     * 
+     *
      * @param logScale the log-scale parameter.
      * @param shape the shape parameter.
      */
@@ -35,7 +35,7 @@ public class LogNormalDistribution implements IContinuousDistribution {
      * Each log-scale and scale pair represents a unique log-normal distribution.
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The arrays must be of equal length.
-     * 
+     *
      * @param logScale an array of doubles representing the log-scale parameter of n
      * log-normal distributions.
      * @param shape an array of doubles representing the shape parameter of n
@@ -51,7 +51,7 @@ public class LogNormalDistribution implements IContinuousDistribution {
      * This is in line with the UncertML syntax whereby a collection of types can
      * be represented by a single entity. The lists must be of equal length and
      * must not contain any null elements.
-     * 
+     *
      * @param logScale a list of doubles representing the log-scale parameter of n
      * log-normal distributions.
      * @param shape a list of doubles representing the shape parameter of n
@@ -69,7 +69,7 @@ public class LogNormalDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the log-scale parameter of each log-normal distribution represented
      * by this object.
      */
@@ -78,7 +78,7 @@ public class LogNormalDistribution implements IContinuousDistribution {
     }
 
     /**
-     * 
+     *
      * @return the shape parameter of each log-normal distribution represented
      * by this object.
      */

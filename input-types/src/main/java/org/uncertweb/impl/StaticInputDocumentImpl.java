@@ -15,16 +15,16 @@ package org.uncertweb.impl;
 public class StaticInputDocumentImpl extends org.uncertweb.impl.AbstractStaticInputDocumentImpl implements org.uncertweb.StaticInputDocument
 {
     private static final long serialVersionUID = 1L;
-    
+
     public StaticInputDocumentImpl(org.apache.xmlbeans.SchemaType sType)
     {
         super(sType);
     }
-    
-    private static final javax.xml.namespace.QName STATICINPUT$0 = 
+
+    private static final javax.xml.namespace.QName STATICINPUT$0 =
         new javax.xml.namespace.QName("http://www.uncertweb.org", "StaticInput");
-    
-    
+
+
     /**
      * Gets the "StaticInput" element
      */
@@ -42,7 +42,7 @@ public class StaticInputDocumentImpl extends org.uncertweb.impl.AbstractStaticIn
             return target;
         }
     }
-    
+
     /**
      * Sets the "StaticInput" element
      */
@@ -60,7 +60,7 @@ public class StaticInputDocumentImpl extends org.uncertweb.impl.AbstractStaticIn
             target.set(staticInput);
         }
     }
-    
+
     /**
      * Appends and returns a new empty "StaticInput" element
      */
