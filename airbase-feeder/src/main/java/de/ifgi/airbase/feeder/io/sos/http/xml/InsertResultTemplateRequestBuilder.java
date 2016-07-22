@@ -4,9 +4,6 @@
  */
 package de.ifgi.airbase.feeder.io.sos.http.xml;
 
-import de.ifgi.airbase.feeder.data.EEAConfiguration;
-import de.ifgi.airbase.feeder.data.EEAStation;
-import de.ifgi.airbase.feeder.util.SOSNamespaceUtils;
 import net.opengis.gml.x32.CodeWithAuthorityType;
 import net.opengis.gml.x32.DirectPositionType;
 import net.opengis.gml.x32.PointType;
@@ -28,6 +25,10 @@ import net.opengis.swe.x20.TextEncodingType;
 import net.opengis.swe.x20.TimeDocument;
 import net.opengis.swe.x20.TimeType;
 
+import de.ifgi.airbase.feeder.data.EEAConfiguration;
+import de.ifgi.airbase.feeder.data.EEAStation;
+import de.ifgi.airbase.feeder.util.SOSNamespaceUtils;
+
 /**
  * @author Christian Autermann <c.autermann@52north.org>
  */
@@ -44,7 +45,7 @@ public class InsertResultTemplateRequestBuilder extends AbstractXmlBuilder<Inser
         this.configuration = configuration;
         return this;
     }
-    
+
     protected EEAStation getStation() {
         return station;
     }
@@ -52,7 +53,7 @@ public class InsertResultTemplateRequestBuilder extends AbstractXmlBuilder<Inser
     protected EEAConfiguration getConfiguration() {
         return configuration;
     }
-    
+
     @Override
     public InsertResultTemplateDocument build() {
         InsertResultTemplateDocument insertResultTemplateDocument = InsertResultTemplateDocument.Factory.newInstance();
@@ -75,8 +76,9 @@ public class InsertResultTemplateRequestBuilder extends AbstractXmlBuilder<Inser
         OMObservationType observationType = observationTemplate.addNewOMObservation();
         observationType.setId(TEMPLATE_NIL_REASON);
         observationType.addNewType().setHref(OM_2_MEASUREMENT_OBSERVATION);
-        observationType.addNewPhenomenonTime().setNilReason(TEMPLATE_NIL_REASON);
-        observationType.addNewResultTime().setNilReason(TEMPLATE_NIL_REASON);
+        // FIXME: where is the nilReason gone?
+        //observationType.addNewPhenomenonTime().setNilReason(TEMPLATE_NIL_REASON);
+        //observationType.addNewResultTime().setNilReason(TEMPLATE_NIL_REASON);
         observationType.addNewProcedure().setHref(getStationId(getStation()));
         observationType.addNewObservedProperty().setHref(getPhenomenonId(getConfiguration().getComponentCode()));
         buildFeatureOfInterest(observationType);
@@ -91,7 +93,7 @@ public class InsertResultTemplateRequestBuilder extends AbstractXmlBuilder<Inser
         textEncodingType.setTokenSeparator(SWE_DATA_ARRAY_TOKEN_SEPERATOR);
         resultTemplateType.addNewResultEncoding().set(textEncodingDocument);
     }
-   
+
     protected void buildResultStructure(ResultTemplateType resultTemplateType) {
         DataRecordDocument dataRecordDocument = DataRecordDocument.Factory.newInstance();
         DataRecordType dataRecordType = dataRecordDocument.addNewDataRecord();
@@ -102,7 +104,7 @@ public class InsertResultTemplateRequestBuilder extends AbstractXmlBuilder<Inser
         Field timeField = dataRecordType.addNewField();
         timeField.set(timeDocument);
         timeField.setName(PHENOMENON_TIME_FIELD);
-        
+
         QuantityDocument quantityDocument = QuantityDocument.Factory.newInstance();
         QuantityType quantityType = quantityDocument.addNewQuantity();
         quantityType.addNewUom().setCode(getConfiguration().getMeasurementUnit());
@@ -110,10 +112,10 @@ public class InsertResultTemplateRequestBuilder extends AbstractXmlBuilder<Inser
         Field quantityField = dataRecordType.addNewField();
         quantityField.set(quantityDocument);
         quantityField.setName(getOfferingName(getConfiguration().getComponentCode()));
-        
+
         resultTemplateType.addNewResultStructure().set(dataRecordDocument);
     }
-    
+
     protected void buildFeatureOfInterest(OMObservationType observationType) {
         SFSpatialSamplingFeatureDocument spatialSamplingFeatureDocument = SFSpatialSamplingFeatureDocument.Factory.newInstance();
         SFSpatialSamplingFeatureType spatialSamplingFeatureType = spatialSamplingFeatureDocument.addNewSFSpatialSamplingFeature();
