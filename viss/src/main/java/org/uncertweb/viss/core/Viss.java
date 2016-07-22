@@ -119,8 +119,8 @@ public class Viss {
 				}
 
 				IVisualizer v = VisualizerFactory.getVisualizer(visualizer);
-				
-				if (!v.getCompatibleMediaTypes().contains(resource.getMediaType())) { 
+
+				if (!v.getCompatibleMediaTypes().contains(resource.getMediaType())) {
 					throw VissError.incompatibleVisualizer("Incompatible mediatype");
 				}
 				if(!v.getCompatibleUncertaintyTypes().contains(ds.getType())) {
@@ -128,7 +128,7 @@ public class Viss {
 				}
 
 				IVisualization vis = v.visualize(ds, param);
-				
+
 
 				if (param != null && vis.getParameters() == null)
 					throw new NullPointerException();
@@ -189,15 +189,15 @@ public class Viss {
 	public Set<IVisualization> getVisualizations(ObjectId oid, ObjectId dataset) {
 		return getDataSet(oid, dataset).getVisualizations();
 	}
-	
+
 	public IDataSet getDataSet(ObjectId oid, ObjectId dataSet) {
 		return getDataset(getResource(oid), dataSet);
 	}
-	
+
 	public Set<IDataSet> getDataSetsForResource(ObjectId oid) {
 		return getResource(oid).getDataSets();
 	}
-	
+
 	public IDataSet getDataset(IResource r, ObjectId dataset) {
 		for (IDataSet ds : r.getDataSets()) {
 			if (ds.getId().equals(dataset)) {
@@ -213,8 +213,9 @@ public class Viss {
 
 	public IVisualization getVisualization(IResource r, ObjectId dataset, String vis) {
 		for (IVisualization v : getDataset(r, dataset).getVisualizations()) {
-			if (v.getId().equals(vis))
-				return v;
+			if (v.getId().equals(vis)) {
+                return v;
+            }
 		}
 		throw VissError.noSuchVisualization();
 	}
@@ -245,7 +246,7 @@ public class Viss {
 	public Set<IVisualizer> getVisualizers(ObjectId oid, ObjectId dataSet) {
 		return VisualizerFactory.getVisualizersForDataSet(getDataSet(oid, dataSet));
 	}
-	
+
 
 	protected VisualizationStyle getStyle(IVisualization vis, ObjectId style) {
 		for (VisualizationStyle s : vis.getStyles()) {
@@ -255,7 +256,7 @@ public class Viss {
 		}
 		throw VissError.noSuchStyle();
 	}
-	
+
 	public IVisualizer getVisualizer(ObjectId oid, ObjectId dataset, String visualizer) {
 		return VisualizerFactory.getVisualizerForDataSet(getDataSet(oid, dataset), visualizer);
 	}
@@ -268,7 +269,7 @@ public class Viss {
 		return getStyle(getVisualization(getResource(resource), dataset, vis), style);
 	}
 
-	
+
 	public void deleteStyle(ObjectId resource, ObjectId dataset, String vis, ObjectId style) {
 		IResource r = getResource(resource);
 		IVisualization v = getVisualization(r, dataset, vis);
@@ -287,7 +288,7 @@ public class Viss {
 		getStore().saveResource(r);
 		return s;
 	}
-	
+
 	public VisualizationStyle changeStyle(ObjectId resource, ObjectId dataset,
 			String vis, ObjectId style, StyledLayerDescriptorDocument sld) {
 		IResource r = getResource(resource);

@@ -98,9 +98,9 @@ public class MongoOMResource extends
 	}
 
 	private void processReference(ReferenceResult rr) throws IOException {
-		log.debug("Processing ReferenceResult");
+		LOG.debug("Processing ReferenceResult");
 		if (rr.getValue() != null) {
-			log.debug("ReferenceResult already loaded");
+			LOG.debug("ReferenceResult already loaded");
 			/* reference is already resolved */
 			if (!resources.contains(rr.getValue())) {
 				resources.add((AbstractMongoResource<?>) rr.getValue());
@@ -111,21 +111,21 @@ public class MongoOMResource extends
 		MongoResourceStore mrs = (MongoResourceStore) VissConfig.getInstance()
 				.getResourceStore();
 		MediaType mt = MediaType.valueOf(rr.getRole());
-		log.debug("Creating resource for {}", mt);
+		LOG.debug("Creating resource for {}", mt);
 		/* check whether we can resolve the reference */
 
 		/* check whether we have loaded the referenced file */
 		File f = resourceFiles.get(rr.getHref());
 		if (f == null) {
-			log.debug("Fetching referenced resource from {}", rr.getHref());
+			LOG.debug("Fetching referenced resource from {}", rr.getHref());
 			/* fetch the referenced file */
 			URL url = new URL(rr.getHref());
 			f = mrs.createResourceFile(getId(), mt);
 			UwIOUtils.saveToFile(f, url);
-			log.debug("Resource saved to {}", f.getAbsolutePath());
+			LOG.debug("Resource saved to {}", f.getAbsolutePath());
 			resourceFiles.put(rr.getHref(), f);
 		} else {
-			log.debug("Referenced resource is already saved");
+			LOG.debug("Referenced resource is already saved");
 		}
 		AbstractMongoResource<?> r = mrs.getResourceForMediaType(mt, f, getId(), -1);
 		r.setLastUsage(getLastUsage());
@@ -214,10 +214,10 @@ public class MongoOMResource extends
 
 	@Override
 	protected IObservationCollection loadContent() {
-		log.debug("Loading OM resource.");
+		LOG.debug("Loading OM resource.");
 
 		for (MongoResourceFile r : savedResourceFiles) {
-			log.debug("Loading previously saved resource file {}", r.getFile()
+			LOG.debug("Loading previously saved resource file {}", r.getFile()
 					.toString());
 			resourceFiles.put(r.getHref(), r.getFile());
 		}
@@ -242,7 +242,7 @@ public class MongoOMResource extends
 					throw VissError.internal(e);
 				}
 			}
-			log.debug("{}: {}: {}", new Object[] {
+			LOG.debug("{}: {}: {}", new Object[] {
 					ao.getClass().getSimpleName(),
 					ao.getResult().getClass().getSimpleName(),
 					ao.getResult().getValue() });

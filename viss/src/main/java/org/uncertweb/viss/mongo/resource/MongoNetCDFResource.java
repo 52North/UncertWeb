@@ -48,10 +48,10 @@ public class MongoNetCDFResource extends AbstractMongoResource<NcUwFile> {
 
 	@Override
 	protected Set<IDataSet> createDataSets() {
-		log.debug("Loading Datasets.");
+		LOG.debug("Loading Datasets.");
 		Set<IDataSet> dss = UwCollectionUtils.set();
 		for (INcUwVariable v : getContent().getPrimaryVariables()) {
-			log.debug("Creating dataset from Variable '{}'", v.getName());
+			LOG.debug("Creating dataset from Variable '{}'", v.getName());
 			if (v.isUncertaintyVariable()) {
 				dss.add(new MongoNetCDFDataSet(this, v));
 			}
@@ -61,7 +61,7 @@ public class MongoNetCDFResource extends AbstractMongoResource<NcUwFile> {
 
 	@Override
 	protected NcUwFile loadContent() {
-		log.debug("Size: {}", getFile().length());
+		LOG.debug("Size: {}", getFile().length());
 		String path = getFile().getAbsolutePath();
 		try {
 			return new NcUwFile(path);
@@ -73,8 +73,10 @@ public class MongoNetCDFResource extends AbstractMongoResource<NcUwFile> {
 	@Override
 	public void close() {
 		try {
-			if (getNullContent() != null)
-				getNullContent().close();
+            NcUwFile content = getContentIfLoaded();
+			if (content != null) {
+                content.close();
+            }
 		} catch (IOException e) {
 		}
 	}

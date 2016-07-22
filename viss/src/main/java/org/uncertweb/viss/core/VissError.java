@@ -58,7 +58,7 @@ public class VissError extends WebApplicationException {
 	public static VissError internal(String messageFormat, Object... o) {
 		return new VissError(Status.INTERNAL_SERVER_ERROR, String.format(messageFormat, o));
 	}
-	
+
 	public static VissError internal(String message) {
 		return new VissError(Status.INTERNAL_SERVER_ERROR, message);
 	}
@@ -68,8 +68,9 @@ public class VissError extends WebApplicationException {
 	}
 
 	public static VissError internal(Throwable cause) {
-		if (cause != null && cause instanceof VissError)
-			return (VissError) cause;
+		if (cause != null && cause instanceof VissError) {
+            return (VissError) cause;
+        }
 		return new VissError(Status.INTERNAL_SERVER_ERROR, cause);
 	}
 
@@ -88,7 +89,7 @@ public class VissError extends WebApplicationException {
 	public static VissError noSuchVisualizer() {
 		return notFound("No such Visualizer.");
 	}
-	
+
 	public static VissError noSuchStyle() {
 		return notFound("No such VisualizationStyle.");
 	}
@@ -96,7 +97,7 @@ public class VissError extends WebApplicationException {
 	public static VissError noSuchVisualization() {
 		return notFound("No such Visualization.");
 	}
-	
+
 	public static VissError noSuchDataSet() {
 		return notFound("No such DataSet.");
 	}
@@ -108,7 +109,7 @@ public class VissError extends WebApplicationException {
 	public static VissError incompatibleVisualizer() {
 		return new VissError(Status.BAD_REQUEST, "Visualizer is not compatible");
 	}
-	
+
 	public static VissError incompatibleVisualizer(String message) {
 		return new VissError(Status.BAD_REQUEST, "Visualizer is not compatible: "+ message);
 	}
@@ -119,5 +120,5 @@ public class VissError extends WebApplicationException {
 	public static VissError badRequest(Throwable cause) {
 		return new VissError(Status.BAD_REQUEST, cause);
 	}
-	
+
 }

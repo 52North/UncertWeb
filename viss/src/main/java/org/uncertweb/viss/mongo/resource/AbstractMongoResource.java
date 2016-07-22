@@ -22,6 +22,7 @@
 package org.uncertweb.viss.mongo.resource;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
@@ -47,138 +48,137 @@ import com.github.jmkgreen.morphia.annotations.Transient;
 @Polymorphic
 @Entity("resources")
 public abstract class AbstractMongoResource<T> implements IResource {
+    protected static final Logger LOG = LoggerFactory.getLogger(AbstractMongoResource.class);
+    public static final String TIME_PROPERTY = "lastUsage";
+    public static final String CHECKSUM_PROPERTY = "checksum";
+    public static final String MEDIA_TYPE_PROPERTY = "mediaType";
 
-	protected static final Logger log = LoggerFactory.getLogger(AbstractMongoResource.class);
+    @Id
+    private ObjectId oid;
 
-	public static final String TIME_PROPERTY = "lastUsage";
-	public static final String CHECKSUM_PROPERTY = "checksum";
-	public static final String MEDIA_TYPE_PROPERTY = "mediaType";
+    @Property(MEDIA_TYPE_PROPERTY)
+    private MediaType mediaType;
 
-	@Id
-	private ObjectId oid;
+    @Indexed
+    @Property(TIME_PROPERTY)
+    private DateTime lastUsage;
+    private File file;
 
-	@Property(MEDIA_TYPE_PROPERTY)
-	private MediaType mediaType;
+    @Indexed(unique = true)
+    @Property(CHECKSUM_PROPERTY)
+    private long checksum;
 
-	@Indexed
-	@Property(TIME_PROPERTY)
-	private DateTime lastUsage;
-	private File file;
+    @Reference
+    private Set<IDataSet> dataSets;
 
-	@Indexed(unique = true)
-	@Property(CHECKSUM_PROPERTY)
-	private long checksum;
+    @Transient
+    private T content;
 
-	@Reference
-	private Set<IDataSet> dataSets;
+    public AbstractMongoResource(MediaType mt, File f, ObjectId oid, long checksum) {
+        setMediaType(mt);
+        setFile(f);
+        setId(oid);
+        setChecksum(checksum);
+    }
 
-	@Transient
-	private T content;
+    public AbstractMongoResource(MediaType mt) {
+        setMediaType(mt);
+    }
 
-	public AbstractMongoResource(MediaType mt, File f, ObjectId oid, long checksum) {
-		setMediaType(mt);
-		setFile(f);
-		setId(oid);
-		setChecksum(checksum);
-	}
+    public AbstractMongoResource() {
+    }
 
-	public AbstractMongoResource(MediaType mt) {
-		setMediaType(mt);
-	}
+    @Override
+    public void setMediaType(MediaType mt) {
+        this.mediaType = mt;
+    }
 
-	public AbstractMongoResource() {
-	}
+    @Override
+    public MediaType getMediaType() {
+        return this.mediaType;
+    }
 
-	@Override
-	public void setMediaType(MediaType mt) {
-		this.mediaType = mt;
-	}
+    @Override
+    public ObjectId getId() {
+        return this.oid;
+    }
 
-	@Override
-	public ObjectId getId() {
-		return this.oid;
-	}
+    public void setId(ObjectId oid) {
+        this.oid = oid;
+    }
 
-	public void setId(ObjectId oid) {
-		this.oid = oid;
-	}
+    @Override
+    public Object getResource() {
+        return this.content;
+    }
 
-	@Override
-	public MediaType getMediaType() {
-		return this.mediaType;
-	}
+    public File getFile() {
+        return file;
+    }
 
-	@Override
-	public Object getResource() {
-		return this.content;
-	}
+    public void setFile(File file) {
+        this.file = file;
+    }
 
-	public File getFile() {
-		return file;
-	}
+    public DateTime getLastUsage() {
+        return lastUsage;
+    }
 
-	public void setFile(File file) {
-		this.file = file;
-	}
+    public void setLastUsage(DateTime lastUsage) {
+        this.lastUsage = lastUsage;
+    }
 
-	public DateTime getLastUsage() {
-		return lastUsage;
-	}
+    public T getContent() {
+        if (content == null) {
+            content = loadContent();
+        }
+        return content;
+    }
 
-	public void setLastUsage(DateTime lastUsage) {
-		this.lastUsage = lastUsage;
-	}
+    public void setContent(T content) {
+        this.content = content;
+    }
 
-	public T getContent() {
-		if (content == null)
-			content = loadContent();
-		return content;
-	}
+    protected T getContentIfLoaded() {
+        return content;
+    }
 
-	protected T getNullContent() {
-		return content;
-	}
+    public long getChecksum() {
+        return checksum;
+    }
 
-	public void setContent(T content) {
-		this.content = content;
-	}
+    public void setChecksum(long checksum) {
+        this.checksum = checksum;
+    }
 
-	public long getChecksum() {
-		return checksum;
-	}
+    @PrePersist
+    public void prePersist() {
+        setLastUsage(new DateTime());
+    }
 
-	public void setChecksum(long checksum) {
-		this.checksum = checksum;
-	}
+    @PostLoad
+    public void postLoad() {
+        setLastUsage(new DateTime());
+    }
 
-	@PrePersist
-	public void prePersist() {
-		setLastUsage(new DateTime());
-	}
+    @Override
+    public Set<IDataSet> getDataSets() {
+        if (dataSets == null) {
+            dataSets = createDataSets();
+        }
+        return Collections.unmodifiableSet(dataSets);
+    }
 
-	@PostLoad
-	public void postLoad() {
-		setLastUsage(new DateTime());
-	}
+    public void setDataSets(Set<IDataSet> dataSets) {
+        this.dataSets = dataSets;
+    }
 
+    protected abstract T loadContent();
 
-	@Override
-	public Set<IDataSet> getDataSets() {
-		if (dataSets == null) {
-			dataSets = createDataSets();
-		}
-		return dataSets;
-	}
+    protected abstract Set<IDataSet> createDataSets();
 
-	protected abstract T loadContent();
-	protected abstract Set<IDataSet> createDataSets();
-
-	public void setDataSets(Set<IDataSet> dataSets) {
-		this.dataSets = dataSets;
-	}
-
-	protected void finalize() {
-		UwIOUtils.closeQuietly(this);
-	}
+    protected void finalize() {
+        UwIOUtils.closeQuietly(this);
+    }
 
 }

@@ -33,9 +33,6 @@ import org.uncertweb.api.om.TimeObject;
 import org.uncertweb.utils.UwCollectionUtils;
 
 public abstract class AbstractTemporalExtent {
-	public static interface CanBeInterval {}
-	public static interface CanBeInstant {}
-	public static interface CanBeBoth {}
 
 	public static final AbstractTemporalExtent NO_TEMPORAL_EXTENT = new NoTemporalExtent();
 
@@ -48,13 +45,13 @@ public abstract class AbstractTemporalExtent {
 			return false;
 		}
 	}
-	
+
 	public abstract JSONObject toJson() throws JSONException;
 	public abstract Interval toInterval();
 	public abstract boolean contains(DateTime t);
 	public abstract boolean contains(Interval i);
 	public abstract Set<TimeObject> toInstances();
-		
+
 	public static AbstractTemporalExtent getExtent(Iterable<? extends TimeObject> times) {
 		if (times == null) {
 			return AbstractTemporalExtent.NO_TEMPORAL_EXTENT;
@@ -64,13 +61,13 @@ public abstract class AbstractTemporalExtent {
 		for (TimeObject time : times) {
 			if (time.isInstant()) {
 				instants.add(time.getDateTime());
-			} else { 
-				intervals.add(time.getInterval()); 
-			}	
+			} else {
+				intervals.add(time.getInterval());
+			}
 		}
 		return getExtent(instants, intervals);
 	}
-	
+
 	public static AbstractTemporalExtent getExtent(Set<DateTime> instants, Set<Interval> intervals) {
 		if (instants == null || instants.isEmpty()) {
 			if (intervals == null || intervals.isEmpty()) {
@@ -85,9 +82,8 @@ public abstract class AbstractTemporalExtent {
 					for (Interval i : intervals) {
 						if (!irregular) {
 							if (duration == null) {
-								duration = Long.valueOf(i.toDurationMillis());
-							} else if (i.toDurationMillis() != duration
-									.longValue()) {
+								duration = i.toDurationMillis();
+							} else if (i.toDurationMillis() != duration) {
 								irregular = true;
 								break;
 							}
@@ -100,11 +96,9 @@ public abstract class AbstractTemporalExtent {
 						}
 					}
 					if (irregular) {
-						return new IrregularTemporalIntervals(
-								UwCollectionUtils.asList(intervals));
+						return new IrregularTemporalIntervals(UwCollectionUtils.asList(intervals));
 					} else {
-						return new RegularTemporalIntervals(begin, end,
-								new Duration(duration.longValue()));
+						return new RegularTemporalIntervals(begin, end, new Duration(duration));
 					}
 				}
 			}
@@ -142,5 +136,9 @@ public abstract class AbstractTemporalExtent {
 			}
 		}
 	}
+
+    public static interface CanBeInterval {}
+    public static interface CanBeInstant {}
+    public static interface CanBeBoth {}
 
 }

@@ -42,7 +42,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
-class CoverageIterator extends MultiDimensionalIterator<NcUwObservation> {
+public class CoverageIterator extends MultiDimensionalIterator<NcUwObservation> {
 	private final GeometryFactory f = new GeometryFactory();
 	private final Point2D temp = new Point2D.Double();
 	private final GridGeometry2D gridGeometry;
@@ -69,8 +69,9 @@ class CoverageIterator extends MultiDimensionalIterator<NcUwObservation> {
 	protected NcUwObservation value(int[] index) {
 		try {
 			GridCoordinates2D gp = new GridCoordinates2D(index[0], index[1]);
-			for (double d : coverage.evaluate(gp, sampleBuffer))
-				uriMap.add(mainUri, Double.valueOf(d));
+			for (double d : coverage.evaluate(gp, sampleBuffer)) {
+                uriMap.add(mainUri, d);
+            }
 			IUncertainty u = NcUwUriParser.parse(mainUri, uriMap);
 			transformation.transform(gp, temp);
 			Point p = f.createPoint(new Coordinate(temp.getY(), temp.getX()));

@@ -43,7 +43,7 @@ public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent i
 		}
 		return ti;
 	}
-	
+
 	protected static List<TimeObject> toTimeObjects(Iterable<DateTime> instants, Iterable<Interval> intervals) {
 		List<TimeObject> l = UwCollectionUtils.list();
 		for (DateTime dt : instants) {
@@ -54,7 +54,7 @@ public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent i
 		}
 		return l;
 	}
-	
+
 	private List<TemporalInstant> instants;
 
 	public IrregularTemporalInstants() {
@@ -86,7 +86,7 @@ public class IrregularTemporalInstants extends AbstractIrregularTemporalExtent i
 		}
 		return false;
 	}
-	
+
 	@Override
 	public Set<TimeObject> toInstances() {
 		Set<TimeObject> to = UwCollectionUtils.set();

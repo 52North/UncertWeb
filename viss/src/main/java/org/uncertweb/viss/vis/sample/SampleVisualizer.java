@@ -58,24 +58,24 @@ public class SampleVisualizer extends
 
 	public static final String SAMPLE_PARAMETER = "sample";
 	public static final String SAMPLE_PARAMETER_DESCRIPTION = "The sample to visualize";
-	
+
 	@Override
 	protected double evaluate(IUncertainty u) {
 		return valueAt(u, getSampleIndex(), getRealisationIndex());
 	}
-	
+
 	protected double valueAt(IUncertainty u, int sample, int realisation) {
 		AbstractSample as = (AbstractSample) u;
 		AbstractRealisation ar = as.getRealisations().get(sample);
 		ContinuousRealisation cr = (ContinuousRealisation) ar;
-		return cr.getValues().get(realisation).doubleValue();
+		return cr.getValues().get(realisation);
 	}
 
 	@Override
 	public Map<String, JSONObject> getOptions() {
 		Map<String, JSONObject> j = super.getOptions();
 		try {
-			j.put(SAMPLE_PARAMETER, 
+			j.put(SAMPLE_PARAMETER,
 					new JSONObject()
 							.put(JSONSchema.Key.TYPE, JSONSchema.Type.INTEGER)
 							.put(JSONSchema.Key.MINIMUM, 0)
@@ -90,12 +90,12 @@ public class SampleVisualizer extends
 			throw VissError.internal(e);
 		}
 	}
-	
+
 	@Override
 	public Map<String, JSONObject> getOptionsForDataSet(IDataSet r) {
 		try {
 			Map<String, JSONObject> options = super.getOptionsForDataSet(r);
-			
+
 			AbstractSample as = null;
 			Iterator<NcUwObservation> i = ((INcUwVariable) r.getContent()).iterator();
 			while (as == null && i.hasNext()) {
@@ -107,18 +107,18 @@ public class SampleVisualizer extends
 			if (as == null) {
 				throw VissError.internal("No valid sample found");
 			}
-			
+
 			AbstractRealisation ar = as.getRealisations().get(0);
 			ContinuousRealisation cr = (ContinuousRealisation) ar;
-			
+
 			options.get(SAMPLE_PARAMETER).put(JSONSchema.Key.MAXIMUM, as.getRealisations().size() - 1);
 			options.get(REALISATION_PARAMETER).put(JSONSchema.Key.MAXIMUM, cr.getValues().size() - 1);
-			
+
 			return options;
 		} catch (JSONException e) {
 			throw VissError.internal(e);
 		}
-		
+
 	}
 
 	protected int getSampleIndex() {
@@ -128,7 +128,7 @@ public class SampleVisualizer extends
 			throw VissError.invalidParameter(SAMPLE_PARAMETER);
 		}
 	}
-	
+
 	protected int getRealisationIndex() {
 		try {
 			return getParams().getInt(REALISATION_PARAMETER);
@@ -138,11 +138,11 @@ public class SampleVisualizer extends
 	}
 
 	public static void main(String[] args) {
-		IUncertainty u = new RandomSample(new AbstractRealisation[] { 
+		IUncertainty u = new RandomSample(new AbstractRealisation[] {
 			new ContinuousRealisation(new double[] { 1.1, 1.2, 1.3 }),
 			new ContinuousRealisation(new double[] { 1.0, 1.1, 1.2 })
 		});
 		System.out.println(new JSONEncoder().encode(u));
 	}
-	
+
 }

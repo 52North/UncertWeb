@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Map;
@@ -101,12 +102,12 @@ public class RESTServlet {
 	public static final String RESOURCE_PARAM_P = "{" + RESOURCE_PARAM + "}";
 	public static final String RESOURCES = "/resources";
 	public static final String RESOURCE = RESOURCES + "/" + RESOURCE_PARAM_P;
-	
+
 	public static final String VISUALIZER_PARAM = "visualizer";
 	public static final String VISUALIZER_PARAM_P = "{" + VISUALIZER_PARAM + "}";
 	public static final String VISUALIZERS = "/visualizers";
 	public static final String VISUALIZER = VISUALIZERS + "/" + VISUALIZER_PARAM_P;
-	
+
 	public static final String DATASET_PARAM = "dataset";
 	public static final String DATASET_PARAM_P = "{" + DATASET_PARAM + "}";
 	public static final String DATASETS = RESOURCE + "/datasets";
@@ -119,18 +120,21 @@ public class RESTServlet {
 
 	public static final String VISUALIZERS_FOR_DATASET = DATASET + VISUALIZERS;
 	public static final String VISUALIZER_FOR_DATASET = DATASET + VISUALIZER;
-	
+
 	public static final String VALUE_OF_DATASET = DATASET + "/value";
-	
+
 	public static final String STYLE_PARAM = "style";
 	public static final String STYLE_PARAM_P = "{" + STYLE_PARAM + "}";
 	public static final String STYLES_FOR_VISUALIZATION = VISUALIZATION + "/styles";
 	public static final String STYLE_FOR_VISUALIZATION = STYLES_FOR_VISUALIZATION + "/" + STYLE_PARAM_P;
 	public static final String SLD_FOR_STYLE = STYLE_FOR_VISUALIZATION + "/sld";
 	public static final String SCHEMA = "/schema";
-	
+
 	private static Logger log = LoggerFactory.getLogger(RESTServlet.class);
-	
+
+    private static final Lock schemaLock = new ReentrantLock();
+    private static final Map<MediaType, JSONObject> schemas = UwCollectionUtils.map();
+
 	@GET
 	public Response root(@Context UriInfo uriI) {
 		URI uri = uriI.getBaseUriBuilder().path(RESOURCES).build();
@@ -156,45 +160,28 @@ public class RESTServlet {
 		URI uri = uriI.getBaseUriBuilder().path(RESOURCE).build(r.getId());
 		return Response.created(uri).entity(r).build();
 	}
-	
+
 	@POST
 	@Path(RESOURCES)
 	@Produces(JSON_RESOURCE)
 	@Consumes(JSON_REQUEST)
 	public Response createResourceFromReference(JSONObject j, @Context UriInfo uriI) {
 		log.debug("Putting Resource.");
-		IResource r = null;
 		try {
+
+            MediaType mt = MediaType.valueOf(j.getString(JSONConstants.RESPONSE_MEDIA_TYPE_KEY));
 			log.debug("Fetching resource described as json: {}\n", j.toString(4));
-			URL url = new URL(j.getString(JSONConstants.URL_KEY));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			String method = j.optString(JSONConstants.METHOD_KEY, null);
-			String req = j.optString(JSONConstants.REQUEST_KEY, null);
-			if (method == null || method.trim().isEmpty()) {
-				method = (req == null || req.trim().isEmpty()) ? HttpMethod.GET : HttpMethod.POST;
-			}
-			con.setRequestMethod(method);
-			if (req != null && !req.trim().isEmpty()) {
-				String reqMt = j.optString(JSONConstants.REQUEST_MEDIA_TYPE_KEY, null);
-				if (reqMt != null) {
-					con.setRequestProperty("Content-Type", reqMt);
-				}
-				con.setDoOutput(true);
-				OutputStream os = null;
-				try {
-					os = con.getOutputStream();
-					IOUtils.write(req, os);
-				} finally {
-					IOUtils.closeQuietly(os);
-				}
-			}
-			MediaType mt = MediaType.valueOf(j.getString(JSONConstants.RESPONSE_MEDIA_TYPE_KEY));
-			r = Viss.getInstance().createResource(con.getInputStream(), mt);
-		} catch (Exception e) {
+			InputStream stream = getInputStreamForReference(j, mt);
+			IResource r = Viss.getInstance().createResource(stream, mt);
+            URI uri = uriI.getBaseUriBuilder().path(RESOURCE).build(r.getId());
+            return Response.created(uri).entity(r).build();
+		} catch (JSONException e) {
 			throw VissError.internal(e);
-		}
-		URI uri = uriI.getBaseUriBuilder().path(RESOURCE).build(r.getId());
-		return Response.created(uri).entity(r).build();
+		} catch (IOException e) {
+            throw VissError.internal(e);
+        } catch (IllegalArgumentException e) {
+            throw VissError.internal(e);
+        }
 	}
 
 	@GET
@@ -211,7 +198,7 @@ public class RESTServlet {
 		log.debug("Deleting Resource with ObjectId \"{}\".", oid);
 		Viss.getInstance().delete(oid);
 	}
-	
+
 	@GET
 	@Path(DATASETS)
 	@Produces(JSON_DATASET_LIST)
@@ -219,7 +206,7 @@ public class RESTServlet {
 		log.debug("Getting DataSets for Resource with ObjectId \"{}\".", oid);
 		return Viss.getInstance().getDataSetsForResource(oid);
 	}
-	
+
 	@GET
 	@Path(DATASET)
 	@Produces(JSON_DATASET)
@@ -270,7 +257,7 @@ public class RESTServlet {
 	@Path(VISUALIZATIONS)
 	@Produces(JSON_VISUALIZATION_LIST)
 	public Set<IVisualization> getVisualizations(
-			@PathParam(RESOURCE_PARAM) ObjectId oid, 
+			@PathParam(RESOURCE_PARAM) ObjectId oid,
 			@PathParam(DATASET_PARAM) ObjectId dataset) {
 		log.debug("Getting Visualizations of resource with ObjectId \"{}\"", oid);
 		return Viss.getInstance().getVisualizations(oid, dataset);
@@ -290,7 +277,7 @@ public class RESTServlet {
 		IVisualization v = Viss.getInstance().getVisualization(visualizer, oid, dataset, options);
 		URI uri = uriI.getBaseUriBuilder().path(VISUALIZATION).build(
 				v.getDataSet().getResource().getId(),
-				v.getDataSet().getId(), 
+				v.getDataSet().getId(),
 				v.getId());
 		log.debug("Created URI: {}",uri);
 		return Response.created(uri).entity(v).build();
@@ -317,13 +304,6 @@ public class RESTServlet {
 		Viss.getInstance().deleteVisualization(oid, dataset, vis);
 	}
 
-	
-	
-	
-	
-	
-	
-	
 	@GET
 	@Path(STYLES_FOR_VISUALIZATION)
 	@Produces(JSON_VISUALIZATION_STYLE_LIST)
@@ -346,7 +326,7 @@ public class RESTServlet {
 		log.debug("Getting Style {} for visualization \"{}\"", style, vis);
 		return Viss.getInstance().getStyle(resource, dataset, vis, style);
 	}
-	
+
 	@GET
 	@Path(SLD_FOR_STYLE)
 	@Produces(STYLED_LAYER_DESCRIPTOR)
@@ -377,7 +357,7 @@ public class RESTServlet {
 	public Response addStyle(
 			@PathParam(RESOURCE_PARAM) ObjectId resource,
 			@PathParam(DATASET_PARAM) ObjectId dataset,
-			@PathParam(VISUALIZATION_PARAM) String vis, 
+			@PathParam(VISUALIZATION_PARAM) String vis,
 			@Context UriInfo uriI,
 			StyledLayerDescriptorDocument sld) {
 		log.debug("Adding Style for visualization \"{}\"", vis);
@@ -393,13 +373,13 @@ public class RESTServlet {
 	public VisualizationStyle changeStyle(
 			@PathParam(RESOURCE_PARAM) ObjectId resource,
 			@PathParam(DATASET_PARAM) ObjectId dataset,
-			@PathParam(VISUALIZATION_PARAM) String vis, 
+			@PathParam(VISUALIZATION_PARAM) String vis,
 			@PathParam(STYLE_PARAM) ObjectId style,
 			StyledLayerDescriptorDocument sld) {
 		log.debug("Changing Style for visualization \"{}\"", vis);
 		return Viss.getInstance().changeStyle(resource, dataset, vis, style, sld);
 	}
-	
+
 	@POST
 	@Path(VALUE_OF_DATASET)
 	@Produces(JSON_OBSERVATION_COLLECTION)
@@ -410,11 +390,9 @@ public class RESTServlet {
 			ValueRequest req) {
 		return Viss.getInstance().getValue(resource, dataset, req);
 	}
-	
-	
-	private static final Lock schemaLock = new ReentrantLock();
-	private static final Map<MediaType, JSONObject> schemas = UwCollectionUtils.map();
-	
+
+
+
 	@POST
 	@Path(SCHEMA)
 	@Produces(JSON_SCHEMA)
@@ -452,7 +430,37 @@ public class RESTServlet {
 			schemaLock.unlock();
 		}
 	}
-	
-	
+
+    private InputStream getInputStreamForReference(JSONObject j, MediaType mt)
+            throws MalformedURLException, JSONException, IOException {
+        URL url = new URL(j.getString(JSONConstants.URL_KEY));
+        String method = j.optString(JSONConstants.METHOD_KEY, null);
+        String req = j.optString(JSONConstants.REQUEST_KEY, null);
+        String reqMt = j.optString(JSONConstants.REQUEST_MEDIA_TYPE_KEY, null);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+        if (method == null || method.trim().isEmpty()) {
+            method = (req == null || req.trim().isEmpty()) ? HttpMethod.GET : HttpMethod.POST;
+        }
+        con.setRequestMethod(method);
+        con.setRequestProperty("Accept", mt.toString());
+        if (req != null && !req.trim().isEmpty()) {
+
+            if (reqMt != null) {
+                con.setRequestProperty("Content-Type", reqMt);
+            }
+            con.setDoOutput(true);
+            OutputStream os = null;
+            try {
+                os = con.getOutputStream();
+                IOUtils.write(req, os);
+            } finally {
+                IOUtils.closeQuietly(os);
+            }
+        }
+        return con.getInputStream();
+    }
+
+
 
 }

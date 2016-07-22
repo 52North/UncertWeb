@@ -69,4 +69,29 @@ public class VisualizationStyle {
 	public void setVis(IVisualization vis) {
 		this.vis = vis;
 	}
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + (this.oid != null ? this.oid.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final VisualizationStyle other = (VisualizationStyle) obj;
+        if (this.oid != other.oid && (this.oid == null || !this.oid.equals(other.oid))) {
+            return false;
+        }
+        return true;
+    }
 }

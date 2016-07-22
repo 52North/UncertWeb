@@ -42,85 +42,90 @@ import org.uncertweb.viss.core.VissConfig;
 import org.uncertweb.viss.core.VissError;
 
 public class Utils {
+    private Utils() {
+    }
+
+    public static File to(File dir, String sub) {
+        if (dir == null || sub == null || !dir.isDirectory()) {
+            return null;
+        }
+        return new File(dir.getAbsolutePath() + File.separator + sub);
+    }
+
+    public static long saveToFileWithChecksum(File f, InputStream is)
+            throws IOException {
+        CheckedOutputStream cos = null;
+        try {
+            cos = new CheckedOutputStream(new FileOutputStream(f), new Adler32());
+            IOUtils.copy(is, cos);
+            return cos.getChecksum().getValue();
+        } finally {
+            IOUtils.closeQuietly(cos);
+        }
+    }
+
+    public static void writeAsGeoTIFF(GridCoverage coverage, String file) {
+        writeAsGeoTIFF(coverage, new File(file));
+    }
+
+    public static void writeAsGeoTIFF(GridCoverage coverage, File file) {
+        try {
+            writeAsGeoTIFF(coverage, new FileOutputStream(file));
+        } catch (FileNotFoundException e) {
+            throw VissError.internal(e);
+        }
+    }
+
+    public static void writeAsGeoTIFF(GridCoverage coverage, OutputStream out) {
+        try {
+            new GeoTiffWriter(out).write(coverage, null);
+        } catch (IOException e) {
+            throw VissError.internal(e);
+        } finally {
+        }
+    }
+
+    public static URI getUncertURI(Class<?> c) {
+        try {
+            return new URI(UncertML.getURI(c));
+        } catch (URISyntaxException e) {
+            return null;
+        }
+    }
+
+    public static String stringifyJson(JSONObject json) throws JSONException {
+        if (VissConfig.getInstance().doPrettyPrint()) {
+            return json.toString(4);
+        } else {
+            return json.toString();
+        }
+    }
+
+    /**
+     *
+     * <pre>
+     * flatJSON(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;, &quot;four&quot;)
+     * </pre>
+     * creates
+     * <pre> { "one": { "two": { "three": "four" } } } </pre>
+     *
+     * @param s
+     *
+     * @return
+     *
+     * @throws JSONException
+     */
+    public static JSONObject flatJSON(String... s) throws JSONException {
+        int l = s.length;
+        if (s.length < 2) {
+            throw VissError.internal("Invalid parameter number");
+        }
+        JSONObject j = new JSONObject().put(s[l - 2], s[l - 1]);
+        for (int i = l - 3; i >= 0; --i) {
+            j = new JSONObject().put(s[i], j);
+        }
+        return j;
+    }
 
 
-	public static File to(File dir, String sub) {
-		if (dir == null || sub == null || !dir.isDirectory())
-			return null;
-		return new File(dir.getAbsolutePath() + File.separator + sub);
-	}
-
-	public static long saveToFileWithChecksum(File f, InputStream is)
-	    throws IOException {
-		CheckedOutputStream cos = null;
-		try {
-			cos = new CheckedOutputStream(new FileOutputStream(f), new Adler32());
-			IOUtils.copy(is, cos);
-			return cos.getChecksum().getValue();
-		} finally {
-			IOUtils.closeQuietly(cos);
-		}
-	}
-
-	public static void writeAsGeoTIFF(GridCoverage coverage, String file) {
-		writeAsGeoTIFF(coverage, new File(file));
-	}
-
-	public static void writeAsGeoTIFF(GridCoverage coverage, File file) {
-		try {
-			writeAsGeoTIFF(coverage, new FileOutputStream(file));
-		} catch (FileNotFoundException e) {
-			throw VissError.internal(e);
-		}
-	}
-
-	public static void writeAsGeoTIFF(GridCoverage coverage, OutputStream out) {
-		try {
-			new GeoTiffWriter(out).write(coverage, null);
-		} catch (IOException e) {
-			throw VissError.internal(e);
-		} finally {
-		}
-	}
-
-	public static URI getUncertURI(Class<?> c) {
-		try {
-			return new URI(UncertML.getURI(c));
-		} catch (URISyntaxException e) {
-			return null;
-		}
-	}
-
-	public static String stringifyJson(JSONObject json) throws JSONException {
-		if (VissConfig.getInstance().doPrettyPrint())
-			return json.toString(4);
-		else
-			return json.toString();
-	}
-
-	
-
-	/**
-	 * 
-	 * <pre>
-	 * flatJSON(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;, &quot;four&quot;)
-	 * </pre>
-	 * creates <pre> { "one": { "two": { "three": "four" } } } </pre>
-	 * 
-	 * @param s
-	 * @return
-	 * @throws JSONException
-	 */
-	public static final JSONObject flatJSON(String... s) throws JSONException {
-		int l = s.length;
-		if (s.length < 2)
-			throw VissError.internal("Invalid parameter number");
-		JSONObject j = new JSONObject().put(s[l - 2], s[l - 1]);
-		for (int i = l - 3; i >= 0; --i) {
-			j = new JSONObject().put(s[i], j);
-		}
-		return j;
-	}
-
-	
 }

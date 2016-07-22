@@ -54,7 +54,7 @@ public abstract class AbstractVisualizer implements IVisualizer {
 	public static final String TIME_PARAMETER_DESCRIPTION_INSTANT = "The time to visualize; a datetime";
 	public static final String TIME_PARAMETER_DESCRIPTION_INTERVAL = "The time to visualize; an interval represented by two datetimes";
 	protected static final Logger log = LoggerFactory.getLogger(AbstractVisualizer.class);
-	private Set<MediaType> compatibleTypes;
+	private final Set<MediaType> compatibleTypes;
 	private IDataSet resource;
 	private JSONObject params;
 

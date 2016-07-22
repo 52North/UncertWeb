@@ -36,5 +36,7 @@ dist/
 nbdist/
 nbactions.xml
 .nb-gradle/
+nb-configuration.xml
+src/main/webapp/META-INF/context.xml
 
 

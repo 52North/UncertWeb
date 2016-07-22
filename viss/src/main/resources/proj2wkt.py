@@ -8,7 +8,7 @@ import osgeo.osr
 def main(argv = None):
 	if argv is None:
 		argv = sys.argv
-	if (len(argv) <> 2):
+	if len(argv) != 2:
 		print('Usage: proj2wkt.py [Proj4 Projection Text]')
 		return 1
 	else:
@@ -20,5 +20,5 @@ def main(argv = None):
 		except:
 			return 1
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	sys.exit(main())

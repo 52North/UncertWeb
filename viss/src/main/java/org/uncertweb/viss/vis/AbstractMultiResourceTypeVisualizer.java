@@ -126,11 +126,11 @@ public abstract class AbstractMultiResourceTypeVisualizer extends
 			if (nv != null && nv.hasValue()) {
 				double v = evaluate(nv.getResult().getValue());
 				if (!Double.isNaN(v) && !Double.isInfinite(v)) {
-					value = Double.valueOf(v);
-					if (min == null || min.doubleValue() > v) {
+					value = v;
+					if (min == null || min > v) {
 						min = value;
 					}
-					if (max == null || max.doubleValue() < v) {
+					if (max == null || max < v) {
 						max = value;
 					}
 				}

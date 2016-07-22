@@ -28,7 +28,7 @@ import org.uncertweb.api.om.observation.collections.IObservationCollection;
 import org.uncertweb.netcdf.NcUwObservation;
 import org.uncertweb.viss.core.resource.IResource;
 
-class OMIterator implements Iterator<NcUwObservation> {
+public class OMIterator implements Iterator<NcUwObservation> {
 
 	private final Iterator<? extends AbstractObservation> resultIterator;
 	private Iterator<NcUwObservation> valueIterator;

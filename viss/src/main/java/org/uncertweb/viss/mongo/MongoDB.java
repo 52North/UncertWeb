@@ -21,6 +21,7 @@
  */
 package org.uncertweb.viss.mongo;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -34,26 +35,19 @@ import com.github.jmkgreen.morphia.Morphia;
 import com.github.jmkgreen.morphia.converters.DefaultConverters;
 import com.github.jmkgreen.morphia.converters.TypeConverter;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 
 public class MongoDB {
-	private static final Logger log = LoggerFactory.getLogger(MongoDB.class);
-
+	private static final Logger LOG = LoggerFactory.getLogger(MongoDB.class);
 	private static final String PROPERTIES_FILE = "/mongo.properties";
-
 	private static final String HOST_PROPERTY = "host";
 	private static final String PORT_PROPERTY = "port";
 	private static final String AUTH_PROPERTY = "auth";
 	private static final String USER_PROPERTY = "user";
 	private static final String PASS_PROPERTY = "pass";
 	private static final String DATABASE_PROPERTY = "database";
-
 	private static MongoDB instance;
-
-	public static MongoDB getInstance() {
-		return (instance == null) ? instance = new MongoDB() : instance;
-	}
-
 	private final Mongo mongo;
 	private final Morphia morphia;
 	private final Datastore datastore;
@@ -77,24 +71,23 @@ public class MongoDB {
 			host = (host == null || host.trim().isEmpty()) ? "localhost" : host;
 			String port = p.getProperty(PORT_PROPERTY);
 			port = (port == null || port.trim().isEmpty()) ? "27017" : port;
-
-            this.mongo = new Mongo(new ServerAddress(host, Integer.valueOf(port)));
+            this.mongo = new MongoClient(new ServerAddress(host, Integer.valueOf(port)));
 
 			this.morphia = new Morphia();
 			String pkg = getClass().getPackage().getName();
 			Reflections r = new Reflections(pkg);
-			log.info("Search for Converters in {}", pkg);
+			LOG.info("Search for Converters in {}", pkg);
 			DefaultConverters dc = this.morphia.getMapper().getConverters();
 			for (Class<? extends TypeConverter> c : r
 			    .getSubTypesOf(TypeConverter.class)) {
-				log.info("Registering Morphia TypeConverter {}", c.getName());
+				LOG.info("Registering Morphia TypeConverter {}", c.getName());
 				dc.addConverter(c);
 			}
 
 			String auth = p.getProperty(AUTH_PROPERTY);
-			auth = (auth == null || auth.trim().isEmpty()) ? "false" : auth;
+			auth = (auth == null || auth.trim().isEmpty()) ? "false" : auth.trim();
 			String dbna = p.getProperty(DATABASE_PROPERTY);
-			this.database = (auth == null || dbna.trim().isEmpty()) ? "viss" : dbna;
+            this.database = dbna.trim().isEmpty() ? "viss" : dbna;
 
 			if (Boolean.valueOf(auth)) {
 				this.datastore = this.morphia.createDatastore(this.mongo,
@@ -104,9 +97,11 @@ public class MongoDB {
 				this.datastore = this.morphia
 				    .createDatastore(this.mongo, this.database);
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
-		}
+		} catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
 	}
 
 	public Mongo getMongo() {
@@ -124,4 +119,7 @@ public class MongoDB {
 	public String getDatabase() {
 		return this.database;
 	}
+    public static MongoDB getInstance() {
+        return (instance == null) ? instance = new MongoDB() : instance;
+    }
 }

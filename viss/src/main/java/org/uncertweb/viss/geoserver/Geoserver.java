@@ -60,13 +60,13 @@ public class Geoserver {
 	private static final Logger log = LoggerFactory
 			.getLogger(GeoserverAdapter.class);
 
-	private String baseUrl;
-	private URL wmsUrl;
-	private boolean cacheWorkspaceList;
-	private boolean sameServer;
-	private File path;
-	private String pass;
-	private String user;
+	private final String baseUrl;
+	private final URL wmsUrl;
+	private final boolean cacheWorkspaceList;
+	private final boolean sameServer;
+	private final File path;
+	private final String pass;
+	private final String user;
 
 	private Set<String> workspaces = null;
 
@@ -153,8 +153,7 @@ public class Geoserver {
 				return Collections.emptyList();
 			}
 
-			JSONArray styles;
-			styles = new JSONObject(IOUtils.toString(con.getInputStream()))
+			JSONArray styles = new JSONObject(IOUtils.toString(con.getInputStream()))
 					.getJSONObject("styles").getJSONArray("style");
 			List<String> res = UwCollectionUtils.list();
 			for (int i = 0; i < styles.length(); ++i) {
@@ -253,8 +252,7 @@ public class Geoserver {
 			log.debug("Setting style '{}' for layer '{}'", style, layer);
 			HttpURLConnection con;
 
-			JSONObject j = new JSONObject().put(
-					"layer", new JSONObject()
+			JSONObject j = new JSONObject().put("layer", new JSONObject()
 						.put("enabled", true)
 						.put("defaultStyle", new JSONObject()
 							.put("name", style)));
@@ -291,7 +289,7 @@ public class Geoserver {
 		if (sameServer && path != null) {
 			UwIOUtils.deleteRecursively(new File(getWorkspacePath(ws)));
 		}
-		
+
 		// delete styles...
 		for (String s : getStyles()) {
 			if (s.startsWith(ws)) {
@@ -326,8 +324,7 @@ public class Geoserver {
 			return Collections.emptySet();
 		}
 
-		Object cs = new JSONObject(IOUtils.toString(con.getInputStream()))
-				.get("coverageStores");
+		Object cs = new JSONObject(IOUtils.toString(con.getInputStream())).get("coverageStores");
 
 		if (cs instanceof String) {
 			return Collections.emptySet();
@@ -346,15 +343,14 @@ public class Geoserver {
 		return res;
 	}
 
-	public boolean insertCoverage(String ws, String cs, String mime,
-			InputStream is) throws IOException {
-		if (createCoverage(ws, cs, mime, is)) {
-			return enableLayer(ws, cs, true);
+	public boolean insertCoverage(String workspace, String coverageStore, String mimeType, InputStream inputStream) throws IOException {
+		if (createCoverage(workspace, coverageStore, mimeType, inputStream)) {
+			return enableLayer(workspace, coverageStore, true);
 		}
 		return false;
 	}
 
-	private boolean enableLayer(String ws, String layerName, boolean enable)
+	private boolean enableLayer(String workspace, String layerName, boolean enable)
 			throws IOException {
 		log.debug("Enabling layer {}", layerName);
 		try {
@@ -363,7 +359,7 @@ public class Geoserver {
 			JSONObject j = Utils.flatJSON("layer", "enabled",
 					String.valueOf(enable));
 
-			con = RestBuilder.path(url("layers/%s:%s.json"), ws, layerName)
+			con = RestBuilder.path(url("layers/%s:%s.json"), workspace, layerName)
 					.auth(this.user, this.pass)
 					.contentType(APPLICATION_JSON_TYPE)
 					.responseType(APPLICATION_JSON_TYPE).entity(j).put();
@@ -377,47 +373,55 @@ public class Geoserver {
 		}
 	}
 
-	private String getWorkspacePath(String ws) {
-		return UwStringUtils.join(File.separator, path.getAbsolutePath(), ws);
+	private String getWorkspacePath(String workspace) {
+		return UwStringUtils.join(File.separator, path.getAbsolutePath(), workspace);
 	}
 
-	private File getCoverageFile(String ws, String c) {
-		return new File(UwStringUtils.join(File.separator,
-				getWorkspacePath(ws), c));
+	private File getCoverageFile(String workspace, String coverageStore) {
+		return new File(UwStringUtils.join(File.separator, getWorkspacePath(workspace), coverageStore));
 	}
 
-	private boolean createCoverage(String ws, String cs, String mime,
-			InputStream is) throws IOException {
-		String name = "file";
-		String contentType = mime;
-		Object content = is;
-		HttpURLConnection con;
-		try {
+	private boolean createCoverage(String workspace, String coverageStore, String mime, InputStream is) throws IOException {
+		final String name;
+		final String contentType;
+		final Object content;
+
+        HttpURLConnection con;
+
+        try {
 			if (sameServer && path != null) {
-				OutputStream os = null;
+                name = "external";
+                contentType = TEXT_PLAIN;
+
+                OutputStream os = null;
 				try {
-					String dirName = getWorkspacePath(ws);
+					String dirName = getWorkspacePath(workspace);
 					File dir = new File(dirName);
 					if (!dir.exists()) {
 						dir.mkdirs();
 					}
-					File f = getCoverageFile(ws, cs);
+					File f = getCoverageFile(workspace, coverageStore);
 					log.info("Saving Coverage to file: " + f.getAbsolutePath());
 					os = new FileOutputStream(f);
 					IOUtils.copy(is, os);
 					content = f.toURI();
-					name = "external";
-					contentType = TEXT_PLAIN;
+
 				} finally {
 					IOUtils.closeQuietly(os);
 				}
-			}
+			} else {
+                name = "file";
+                contentType = mime;
+                content = is;
+            }
 
 			con = RestBuilder
-					.path(url("workspaces/%s/coveragestores/%s/%s.geotiff"),
-							ws, cs, name).auth(this.user, this.pass)
+					.path(url("workspaces/%s/coveragestores/%s/%s.geotiff"), workspace, coverageStore, name)
+                    .auth(this.user, this.pass)
 					.contentType(valueOf(contentType))
-					.responseType(APPLICATION_JSON_TYPE).entity(content).put();
+					.responseType(APPLICATION_JSON_TYPE)
+                    .entity(content)
+                    .put();
 
 			logCon("Coverage creation", con);
 
@@ -449,8 +453,7 @@ public class Geoserver {
 				return Collections.emptySet();
 			}
 
-			JSONArray a = j.getJSONObject("workspaces").getJSONArray(
-					"workspace");
+			JSONArray a = j.getJSONObject("workspaces").getJSONArray("workspace");
 
 			HashSet<String> list = new HashSet<String>(a.length());
 			for (int i = 0; i < a.length(); i++) {
@@ -500,8 +503,7 @@ public class Geoserver {
 		return isStatus(con, Status.OK);
 	}
 
-	protected static boolean isCreated(HttpURLConnection con)
-			throws IOException {
+	protected static boolean isCreated(HttpURLConnection con) throws IOException {
 		return isStatus(con, Status.CREATED);
 	}
 

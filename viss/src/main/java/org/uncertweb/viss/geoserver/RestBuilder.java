@@ -57,8 +57,7 @@ public class RestBuilder {
 	public RestBuilder auth(String user, String pass) {
 		this.user = user;
 		this.pass = pass;
-		this.auth = "Basic "
-					+ Base64.encodeBase64String((user + ":" + pass).getBytes());
+		this.auth = "Basic " + Base64.encodeBase64String((user + ":" + pass).getBytes());
 		return this;
 	}
 
@@ -145,7 +144,7 @@ public class RestBuilder {
 		}
 
 		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-		httpCon.setRequestMethod(method.toString());
+		httpCon.setRequestMethod(method);
 
 		if (response != null) {
 			httpCon.setRequestProperty("Accept", response.toString());
@@ -201,7 +200,7 @@ public class RestBuilder {
 				sb.append(":").append(pass);
 			}
 		}
-		sb.append(" -X").append(method);
+		sb.append(" -X ").append(method);
 		if (mediaType != null) {
 			sb.append(" -H 'Content-Type: ").append(mediaType).append("'");
 		}

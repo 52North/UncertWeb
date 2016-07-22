@@ -114,7 +114,19 @@ public class MongoResourceStore implements IResourceStore {
 		ObjectId oid = new ObjectId();
 		try {
 			File f = createResourceFile(oid, mt);
-			long crc = Utils.saveToFileWithChecksum(f, is);
+			long crc;
+            crc = Utils.saveToFileWithChecksum(f, is);
+//            FileOutputStream fileOutputStream = null;
+//            try {
+//                fileOutputStream = new FileOutputStream(f);
+//                IOUtils.copy(is, fileOutputStream);
+//                crc = f.hashCode();
+//            } finally {
+//                if (fileOutputStream!= null) {
+//                    fileOutputStream.close();
+//                }
+//            }
+
 			AbstractMongoResource<?> r = getResourceWithChecksum(crc);
 			if (r == null) {
 				r = getResourceForMediaType(mt, f, oid, crc);
@@ -127,9 +139,11 @@ public class MongoResourceStore implements IResourceStore {
 				throw VissError.internal("No Datasets.");
 			}
 			return r;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw VissError.internal(e);
-		}
+		} catch (VissError e) {
+            throw e;
+        }
 	}
 
 	public AbstractMongoResource<?> getResourceForMediaType(MediaType mt, File f, ObjectId oid, long checksum)
