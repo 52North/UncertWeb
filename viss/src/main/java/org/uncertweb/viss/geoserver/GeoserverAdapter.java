@@ -28,8 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Set;
@@ -39,6 +38,7 @@ import javax.media.jai.JAI;
 import net.opengis.sld.StyledLayerDescriptorDocument;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.xmlbeans.XmlException;
 import org.codehaus.jettison.json.JSONException;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.gce.geotiff.GeoTiffFormat;
@@ -58,85 +58,55 @@ import org.uncertweb.viss.core.vis.DefaultVisualizationReference;
 import org.uncertweb.viss.core.vis.IVisualization;
 import org.uncertweb.viss.core.vis.IVisualizationReference;
 import org.uncertweb.viss.core.vis.VisualizationStyle;
-import org.uncertweb.viss.core.web.filter.BaseUriProvider;
 import org.uncertweb.viss.core.wms.WMSAdapter;
 
 public class GeoserverAdapter implements WMSAdapter {
-
-	private static final Logger log = LoggerFactory.getLogger(GeoserverAdapter.class);
-
-	private static final URI DEFAULT_GEOSERVER_URI = URI.create("http://localhost:8080/geoserver");
-
+	private static final Logger LOG = LoggerFactory.getLogger(GeoserverAdapter.class);
 	private static final String PROPERTIES_FILE = "/geoserver.properties";
-	private static final String USER_PROPERTY = "user";
-	private static final String PASS_PROPERTY = "pass";
-	private static final String CACHE_PROPERTY = "cacheWorkspaceList";
-	private static final String PATH_PROPERTY = "path";
-
-	private static final String URL_HOST_PROPERTY = "url.host";
-	private static final String URL_PORT_PROPERTY = "url.port";
-	private static final String URL_SECURE_PROPERTY = "url.secure";
-	private static final String URL_PATH_PROPERTY = "url.path";
+	private static final String USER_PROPERTY = "geoserver.user";
+	private static final String PASS_PROPERTY = "geoserver.pass";
+	private static final String CACHE_PROPERTY = "geoserver.cache";
+    private static final String SAME_SERVER = "geoserver.local";
+	private static final String URL_PROPERTY = "geoserver.uri";
+	private static final String EXTERNAL_URL_PROPERTY = "geoserver.uri.external";
 
 	private static Properties p;
 	private Geoserver wms;
+    private final URL wmsURL;
 
-	protected static String getProp(String key) {
-		if (p == null) {
-			InputStream is = GeoserverAdapter.class.getResourceAsStream(PROPERTIES_FILE);
-			if (is == null)
-				throw new RuntimeException("Can not find configuration file");
-			p = new Properties();
-			try {
-				p.load(is);
-			} catch (IOException e) {
-				log.error("Unknown error", e);
-				throw new RuntimeException("Can not load configuration file");
-			} finally {
-				IOUtils.closeQuietly(is);
-			}
-		}
-		return p.getProperty(key);
-	}
+    public GeoserverAdapter() {
+        String user = getProp(USER_PROPERTY);
+        String pass = getProp(PASS_PROPERTY);
+        boolean sameServer = Boolean.valueOf(getProp(SAME_SERVER));
+
+        File path = null;
+        if (sameServer) {
+            path = new File(System.getProperty("java.io.tmpdir"), "geoserver");
+        }
+
+        String uri = getProp(URL_PROPERTY);
+        boolean cache = Boolean.valueOf(getProp(CACHE_PROPERTY));
+        String externalURI;
+        if (getProp(EXTERNAL_URL_PROPERTY) == null || getProp(EXTERNAL_URL_PROPERTY).isEmpty()) {
+            externalURI = uri;
+        } else  {
+            externalURI = getProp(EXTERNAL_URL_PROPERTY);
+        }
+
+        try {
+            this.wmsURL = new URL(externalURI + "/wms");
+            this.wms = new Geoserver(user, pass, uri, cache, path);
+        } catch (IOException ex) {
+            throw VissError.internal(ex);
+        } catch (JSONException ex) {
+            throw VissError.internal(ex);
+        }
+    }
 
 	protected Geoserver getGeoserver() {
 		return this.wms;
 	}
 
-	public GeoserverAdapter() {
-		String user = getProp(USER_PROPERTY);
-		String pass = getProp(PASS_PROPERTY);
-		String path = getProp(PATH_PROPERTY);
-		boolean cache = Boolean.valueOf(getProp(CACHE_PROPERTY));
-		try {
-			String uri = getBaseURI(BaseUriProvider.getBaseURI()).toString();
-			log.debug("Creating new Geoserver (uri={}, tmppath={})",uri, path);
-			wms = new Geoserver(user, pass, uri, cache, (path != null && !path.trim().isEmpty()) ? new File(path) : null);
-		} catch (Exception e) {
-			throw VissError.internal(e);
-		}
-	}
-
-	private static URI getBaseURI(URI rq) throws URISyntaxException {
-		rq = (rq == null) ? DEFAULT_GEOSERVER_URI : rq;
-
-		String hostS = getProp(URL_HOST_PROPERTY);
-		String portS = getProp(URL_PORT_PROPERTY);
-		String secureS = getProp(URL_SECURE_PROPERTY);
-		String pathS = getProp(URL_PATH_PROPERTY);
-
-		String scheme = ((secureS == null || secureS.isEmpty()) ? (rq.getScheme() == null ? false : rq.getScheme().equals("https")) : Boolean.valueOf(secureS)) ? "https" : "http";
-		String host = (hostS == null || hostS.isEmpty()) ? (rq.getHost() == null ? "localhost" : rq.getHost()) : hostS.trim();
-		int port = (portS == null || portS.isEmpty()) ? (rq.getPort() < 0 ? 8080 : rq.getPort()) : Integer.valueOf(portS);
-		String path = "/" + (pathS == null ? "geoserver" : pathS);
-		return new URI(scheme, null, host, port, path, null, null);
-	}
-
-
-	public static void main(String[] args) throws URISyntaxException {
-		URI rq = URI.create("http://giv-uw.uni-muenster.de:9090/viss/resources/0/datasets/1?asdf=2#asdf");
-		System.out.println(getBaseURI(rq));
-	}
 
 	@Override
 	public IVisualizationReference addVisualization(IVisualization vis) {
@@ -173,12 +143,15 @@ public class GeoserverAdapter implements WMSAdapter {
 				layerNames = layers.toArray(new String[layers.size()]);
 			}
 
-			return new DefaultVisualizationReference(
-					getGeoserver().getUrl(), UwCollectionUtils.set(layerNames));
+			return new DefaultVisualizationReference(this.wmsURL, UwCollectionUtils.set(layerNames));
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw VissError.internal(e);
-		}
+		} catch (JSONException e) {
+            throw VissError.internal(e);
+        } catch (VissError e) {
+            throw VissError.internal(e);
+        }
 	}
 
 	private void insertCoverage(String ws, String cs, InputStream is)
@@ -228,9 +201,11 @@ public class GeoserverAdapter implements WMSAdapter {
 			}
 
 			return getGeoserver().deleteWorkspace(resource.getId().toString());
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw VissError.internal(e);
-		}
+		} catch (JSONException e) {
+            throw VissError.internal(e);
+        }
 	}
 
 	@Override
@@ -263,9 +238,11 @@ public class GeoserverAdapter implements WMSAdapter {
 		StyledLayerDescriptorDocument sld;
 		try {
 			sld = getGeoserver().getStyle(vis.getId().toString());
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw VissError.internal(e);
-		}
+		} catch (XmlException e) {
+            throw VissError.internal(e);
+        }
 		if (sld == null) {
 			throw VissError.notFound("No attached SLD");
 		}
@@ -293,5 +270,24 @@ public class GeoserverAdapter implements WMSAdapter {
 			throw VissError.internal(e);
 		}
 	}
+
+    protected static String getProp(String key) {
+        if (p == null) {
+            InputStream is = GeoserverAdapter.class.getResourceAsStream(PROPERTIES_FILE);
+            if (is == null) {
+                throw new RuntimeException("Can not find configuration file");
+            }
+            p = new Properties();
+            try {
+                p.load(is);
+            } catch (IOException e) {
+                LOG.error("Unknown error", e);
+                throw new RuntimeException("Can not load configuration file");
+            } finally {
+                IOUtils.closeQuietly(is);
+            }
+        }
+        return p.getProperty(key);
+    }
 
 }

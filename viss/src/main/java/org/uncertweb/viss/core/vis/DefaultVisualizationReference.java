@@ -22,44 +22,46 @@
 package org.uncertweb.viss.core.vis;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.Set;
 
 public class DefaultVisualizationReference implements IVisualizationReference {
 
-	private URL wmsUrl;
-	private Set<String> layers;
+    private URL wmsUrl;
+    private Set<String> layers;
 
-	/**
-	 * @param wmsUrl
-	 *          the url of the WMS
-	 * @param layers
-	 *          the layers
-	 */
-	public DefaultVisualizationReference(URL wmsUrl, Set<String> layers) {
-		this.wmsUrl = wmsUrl;
-		this.layers = layers;
-	}
+    /**
+     * @param wmsUrl
+     *               the url of the WMS
+     * @param layers
+     *               the layers
+     */
+    public DefaultVisualizationReference(URL wmsUrl, Set<String> layers) {
+        this.wmsUrl = wmsUrl;
+        this.layers = layers;
+    }
 
-	public DefaultVisualizationReference() {}
+    public DefaultVisualizationReference() {
+    }
 
-	@Override
-  public URL getWmsUrl() {
-		return wmsUrl;
-	}
+    @Override
+    public URL getWmsUrl() {
+        return wmsUrl;
+    }
 
-	@Override
-  public Set<String> getLayers() {
-		return layers;
-	}
+    @Override
+    public void setWmsUrl(URL wmsUrl) {
+        this.wmsUrl = wmsUrl;
+    }
 
-	@Override
-  public void setWmsUrl(URL wmsUrl) {
-		this.wmsUrl = wmsUrl;
-	}
+    @Override
+    public Set<String> getLayers() {
+        return Collections.unmodifiableSet(layers);
+    }
 
-	@Override
-  public void setLayers(Set<String> layers) {
-		this.layers = layers;
-	}
+    @Override
+    public void setLayers(Set<String> layers) {
+        this.layers = layers;
+    }
 
 }

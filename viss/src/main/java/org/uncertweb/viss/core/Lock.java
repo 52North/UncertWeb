@@ -30,15 +30,9 @@ import org.uncertweb.viss.core.resource.IResource;
 
 public class Lock {
 	private static Lock instance;
-
-	public static synchronized Lock getInstance() {
-		return (instance == null) ? instance = new Lock() : instance;
-	}
-
-	private Lock() {}
-
-	private Map<ObjectId, Integer> useCounts = UwCollectionUtils.map();
-	private ReentrantLock useCountsLock = new ReentrantLock();
+	private final Map<ObjectId, Integer> useCounts = UwCollectionUtils.map();
+	private final ReentrantLock useCountsLock = new ReentrantLock();
+    private Lock() {}
 
 	public void usingResources(boolean allowed) {
 
@@ -49,18 +43,18 @@ public class Lock {
 		try {
 			if (use) {
 				Integer count = useCounts.get(resource.getId());
-				if (count != null && count.intValue() < 0) {
+				if (count != null && count < 0) {
 					return false;
 				}
-				count = Integer.valueOf((count == null) ? 1 : count.intValue() + 1);
+				count = (count == null) ? 1 : count + 1;
 				useCounts.put(resource.getId(), count);
 				return true;
 			} else {
 				Integer count = useCounts.get(resource.getId());
-				if (count == null || count.intValue() < 1) {
+				if (count == null || count < 1) {
 					return false;
 				}
-				count = Integer.valueOf(count.intValue() - 1);
+				count -= 1;
 				useCounts.put(resource.getId(), count);
 				return true;
 			}
@@ -83,8 +77,8 @@ public class Lock {
 		useCountsLock.lock();
 		try {
 			Integer count = useCounts.get(resource.getId());
-			if (count == null || count.intValue() == 0) {
-				count = Integer.valueOf(-1);
+			if (count == null || count == 0) {
+				count = -1;
 				useCounts.put(resource.getId(), count);
 				return true;
 			} else {
@@ -94,4 +88,7 @@ public class Lock {
 			useCountsLock.unlock();
 		}
 	}
+    public static synchronized Lock getInstance() {
+        return (instance == null) ? instance = new Lock() : instance;
+    }
 }

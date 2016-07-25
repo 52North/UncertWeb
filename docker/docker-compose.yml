@@ -1,0 +1,51 @@
+version: '2'
+services:
+    viss:
+        container_name: viss
+        image: uncertweb/viss:latest
+        build: ../viss
+        links:
+            - mongo:mongo
+        volumes:
+            - ./viss/mongo.properties:/usr/local/tomcat/webapps/viss/WEB-INF/classes/mongo.properties
+            - ./viss/geoserver.properties:/usr/local/tomcat/webapps/viss/WEB-INF/classes/geoserver.properties
+            - ./viss/viss.properties:/usr/local/tomcat/webapps/viss/WEB-INF/classes/viss.properties
+    omcs:
+        container_name: omcs
+        build: ../om-conversion-service
+        image: uncertweb/omcs:latest
+    geoserver:
+        container_name: geoserver
+        image: uncertweb/geoserver:2.1.1
+        build: ./geoserver
+        volumes:
+            - geoserver:/data/geoserver
+    greenland:
+        container_name: greenland
+        build: ../greenland
+        image: uncertweb/greenland:latest
+        volumes:
+            - ./greenland/settings.js:/usr/src/app/dist/scripts/settings.js
+        depends_on:
+            - omcs
+            - viss
+    nginx:
+        container_name: uncertweb-frontend
+        image: nginx
+        ports:
+            - 8080:80
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        links:
+            - geoserver:geoserver
+            - viss:viss
+            - greenland:greenland
+            - omcs:omcs
+    mongo:
+        container_name: viss-mongodb
+        image: mongo:2.6
+        volumes:
+            - mongo:/data/db
+volumes:
+    mongo: {}
+    geoserver: {}

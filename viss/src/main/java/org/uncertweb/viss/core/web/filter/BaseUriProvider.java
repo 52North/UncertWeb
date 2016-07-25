@@ -34,29 +34,29 @@ import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 
 public class BaseUriProvider implements ContainerRequestFilter {
-	private static final Logger log = LoggerFactory.getLogger(BaseUriProvider.class);
-	private static final ReentrantLock lock = new ReentrantLock();
-	@Context private UriInfo uriInfo;
-	private static URI baseUri = null;
+    private static final Logger LOG = LoggerFactory.getLogger(BaseUriProvider.class);
+    private static final ReentrantLock LOCK = new ReentrantLock();
+    private static URI baseUri = null;
+    @Context
+    private UriInfo uriInfo;
 
-	@Override
-	public ContainerRequest filter(ContainerRequest request) {
-		if (baseUri == null) {
-			lock.lock();
-			try {
-				if (baseUri == null) {
-					baseUri = uriInfo.getBaseUri();
-				}
-			} finally {
-				lock.unlock();
-			}
-		}
-		return request;
-	}
+    @Override
+    public ContainerRequest filter(ContainerRequest request) {
+        if (baseUri == null) {
+            LOCK.lock();
+            try {
+                if (baseUri == null) {
+                    baseUri = uriInfo.getBaseUri();
+                }
+            } finally {
+                LOCK.unlock();
+            }
+        }
+        return request;
+    }
 
-
-	public static URI getBaseURI() {
-		log.debug("BaseURI: {}", baseUri);
-		return baseUri;
-	}
+    public static URI getBaseURI() {
+        LOG.debug("BaseURI: {}", baseUri);
+        return baseUri;
+    }
 }
