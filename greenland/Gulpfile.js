@@ -97,7 +97,6 @@ gulp.task('scripts', function() {
 			'js/ext/resourcewindow.js',
 			'js/ext/layersettingswindow.js',
 			'js/ext/featurewindow.js',
-			'js/settings.js',
 			'js/parser/jsom.js',
 			'js/parser/om.js',
 			'js/parser/om2.js',
@@ -177,12 +176,19 @@ gulp.task('serve', ['build'], function() {
   	});
 });
 
+gulp.task('copy:config', function() {
+	gulp.src(['js/settings.js'])
+		.pipe(gulp.dest('dist/scripts'))
+		.pipe(connect.reload());
+});
+
 gulp.task('copy:extjs', function() {
 	return gulp.src([
 			'lib/ExtJs/resources/images/**',
 			'lib/ExtUx/images/**'
 		])
-		.pipe(gulp.dest('dist/images'));
+		.pipe(gulp.dest('dist/images'))
+		.pipe(connect.reload());
 });
 
 gulp.task('copy:openlayer', function() {
@@ -192,7 +198,8 @@ gulp.task('copy:openlayer', function() {
 
 gulp.task('copy:data', function() {
 	return gulp.src('data/**')
-		.pipe(gulp.dest('dist/data'));
+		.pipe(gulp.dest('dist/data'))
+		.pipe(connect.reload());
 });
 
 
@@ -210,7 +217,7 @@ gulp.task('images', function() {
 gulp.task('watch', ['serve'], function() {
   gulp.watch(['styles/**'], ['styles']);
   gulp.watch(['img/**'], ['images']);
-  gulp.watch(['js/**'], ['scripts']);
+  gulp.watch(['js/**'], ['scripts', 'copy:config']);
   gulp.watch(['*.html'], ['html']);
   gulp.watch(['data/**'], ['copy:data']);
 });
@@ -220,6 +227,7 @@ gulp.task('build', [
 	'copy:extjs',
 	'copy:openlayer',
 	'copy:data',
+	'copy:config',
 	'images',
 	'libstyles',
 	'styles',
