@@ -1,5 +1,7 @@
 var http = require('./http');
+var util = require('./util');
 var Style = require('./style');
+var Promise = require('any-promise');
 
 function Visualization(parent, options) {
   this.id = options.id;
@@ -51,31 +53,29 @@ Visualization.prototype.getResource = function() {
 };
 
 Visualization.prototype.getStyles = function() {
-  return http.get({
-    url: this.href + '/styles',
-    headers: {
-      'Accept': 'application/vnd.org.uncertweb.viss.visualization-style.list+json'
-    }
-  }).then(function(response) {
-    return response.styles;
-  }).then((function(styles) {
-    return Promise.all(styles.map((function(style) {
+
+  var getStyle = function(style) {
+    return http.get({
+      url: style.href,
+      headers: { 'Accept': 'application/vnd.org.uncertweb.viss.visualization-style+json' }
+    }).then(function(style) {
       return http.get({
         url: style.href,
-        headers: {
-          'Accept': 'application/vnd.org.uncertweb.viss.visualization-style+json'
-        }
-      }).then((function(style) {
-        return http.get({
-          url: style.href,
-          headers: { 'Accept': 'application/vnd.ogc.sld+xml' },
-          type: 'text'
-        }).then((function(sld) {
-          return new Style(this, style.id, sld);
-        }).bind(this));
-      }).bind(this));
-    }).bind(this)));
-  }).bind(this));
+        headers: { 'Accept': 'application/vnd.ogc.sld+xml' },
+        type: 'text'
+      }).then(function(sld) {
+        return new Style(this, style.id, sld);
+      }.bind(this));
+    }.bind(this));
+  }.bind(this);
+
+  return http.get({
+    url: this.href + '/styles',
+    headers: { 'Accept': 'application/vnd.org.uncertweb.viss.visualization-style.list+json' }
+  })
+  .then(util.f.property('styles'))
+  .then(function(styles) { return styles.map(getStyle); })
+  .then(Promise.all.bind(Promise));
 };
 
 Visualization.prototype.addStyle = function(sld) {
@@ -86,22 +86,18 @@ Visualization.prototype.addStyle = function(sld) {
       'Content-Type': 'application/vnd.ogc.sld+xml'
     },
     body: sld
-  }).then((function(response) {
-    return new Style(this, response.id, sld);
-  }).bind(this));
+  }).then(function(response) { return new Style(this, response.id, sld); }.bind(this));
 };
 
 Visualization.prototype.deleteAllStyles = function() {
-  return this.getStyles().then(function(styles) {
-    return styles.map(function(style) {
-      return style.delete();
-    });
-  }).then(Promise.all);
+  return this.getStyles()
+    .then(function(styles) { return styles.map(util.f.call('delete')); })
+    .then(Promise.all.bind(Promise));
 };
 
 Visualization.prototype.delete = function() {
   return http.del({url: this.href})
-    .then((function(){ return this; }).bind(this));
+    .then(util.f.constant(this));
 };
 
 module.exports = Visualization;

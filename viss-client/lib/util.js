@@ -1,25 +1,54 @@
+Object.defineProperty(global, '__stack', {
+  get: function() {
+    var orig = Error.prepareStackTrace;
+    Error.prepareStackTrace = function(_, stack) {
+        return stack;
+    };
+    var err = new Error();
+    Error.captureStackTrace(err, arguments.callee);
+    var stack = err.stack;
+    Error.prepareStackTrace = orig;
+    return stack;
+  }
+});
 
-module.exports.byProperty = function byProperty(property, array) {
-  return array.reduce(function(object, value) {
-    object[value[property]] = value;
-    return object;
-  }, {});
-};
+Object.defineProperty(global, '__line', {
+  get: function() { return __stack[2].getLineNumber(); }
+});
 
-module.exports.toArray = function toArray(object) {
-  var array = [];
-  for (var key in object) {
-    if (object.hasOwnProperty(key)) {
-      array.push(object[key]);
+Object.defineProperty(global, '__function', {
+  get: function() { return __stack[2].getFunctionName(); }
+});
+
+module.exports = {
+  byProperty: function byProperty(property, array) {
+    return array.reduce(function(object, value) {
+      object[value[property]] = value;
+      return object;
+    }, {});
+  },
+  toArray: function toArray(object) {
+    var array = [];
+    for (var key in object) {
+      if (object.hasOwnProperty(key)) {
+        array.push(object[key]);
+      }
+    }
+    return array;
+  },
+  f: {
+    constant: function constantFunction(val) {
+      return function() { return val; };
+    },
+    call: function callFunction(name) {
+      var args = Array.prototype.slice.call(arguments, 1);
+      return function(x) { return x[name].apply(x, args); };
+    },
+    property: function propertyFunction(name) {
+      return function(x) { return x[name]; };
     }
   }
-  return array;
 };
-
-module.exports.constant = function constant(val) {
-  return function() { return val; };
-};
-
 
 function parseIntervals(intervals) {
   function parseIsoInterval(isostr) {
@@ -68,3 +97,4 @@ function parseIntervals(intervals) {
 
   return instances;
 }
+

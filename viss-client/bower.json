@@ -1,0 +1,19 @@
+{
+  "name": "viss-client",
+  "description": "VISS client library",
+  "authors": [
+    "Christian Autermann <c.autermann@52north.org>"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/52North/UncertWeb",
+  "private": true,
+  "type": "node",
+  "main": "lib/viss.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

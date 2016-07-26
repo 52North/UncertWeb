@@ -1,28 +1,24 @@
-var color = require('../color');
-var SVG = require('../color/names/svg');
+var color = require('color');
 var sld = require('./sld');
 
 function Symbolizer(options) {
-  this.outOfBoundsColor = SVG.white;
+  this.outOfBoundsColor = color("white");
 
   this.opacity = ('opacity' in options) ? options.opacity : 1.0;
   this.numIntervals = options.numIntervals;
 
   this.minValue = options.minValue;
   this.maxValue = options.maxValue;
-  this.minColor = (options.minColor || SVG.white).toHSV();
-  this.maxColor = (options.maxColor || SVG.black).toHSV();
-  console.log(this.minColor, this.maxColor);
+  this.minColor = options.minColor || color("white");
+  this.maxColor = options.maxColor || color("black");
   this.intervals = new Array(this.numIntervals);
   this.intervalSize = (this.maxValue - this.minValue) / this.numIntervals;
-  console.log(this.minValue, this.maxValue);
   for (var i = 0; i < this.numIntervals; i++) {
     this.intervals[i] = [
       this.minValue + i * this.intervalSize,
       this.maxValue + (i + 1) * this.intervalSize
     ];
   }
-  console.log(this.intervals);
   this.colorMap = this.createColorMap();
 }
 
@@ -87,43 +83,41 @@ Symbolizer.prototype.getIntervalIndex = function(value) {
 };
 
 Symbolizer.prototype.getColor = function(value) {
-  var min = this.minColor.toArray();
-  var max = this.maxColor.toArray();
-    var segment = Math.floor((value - this.minValue) / this.intervalSize);
+  var min = this.minColor.hsvArray();
+  var max = this.maxColor.hsvArray();
+  var segment = Math.floor((value - this.minValue) / this.intervalSize);
   var numIntervals = this.numIntervals;
-  return color.hsv.apply(null, min.map(function(_, index) {
+  return color().hsv(min.map(function(_, index) {
     return min[index] + (segment * (max[index]-min[index])/numIntervals);
-  })).toRGB();
+  }));
 };
 
 Symbolizer.prototype.createColorMap = function() {
-  var entries = [];
+  var ints = this.getIntervals();
+  var entries = new Array(ints.length + 2);
 
   // everything below this.minValue
-  entries.push({
+  entries[0] = {
     color: this.outOfBoundsColor,
     opacity: 0,
     quantity: this.getMinValue()
-  });
+  };
 
-  var ints = this.getIntervals();
-  for (var i = 0; i < ints.length; ++i) {
-    var min = ints[i][0];
-    var max = ints[i][1];
-    entries.push({
-      color: this.getColor(min),
-      quantity: max,
+  ints.forEach(function(interval, idx) {
+    entries[idx+1] = {
+      color: this.getColor(interval[0]),
+      quantity: interval[1],
       opacity: this.getOpacity()
-    });
-  }
+    };
+  }.bind(this));
 
   // everything above this.maxValue
-  entries.push({
+  entries[entries.length-1] = {
     color: this.outOfBoundsColor,
     opacity: 0,
     quantity: Number.MAX_VALUE
-  });
-  console.dir(entries);
+  };
+
   return entries;
 };
 

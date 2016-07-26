@@ -29,7 +29,7 @@ Style.prototype.getResource = function() {
 };
 
 Style.prototype.delete = function() {
-  return http.del({ url: this.href }).then(util.constant(this));
+  return http.del({ url: this.href }).then(util.f.constant(this));
 };
 
 Style.prototype.update = function(sld) {
@@ -40,7 +40,7 @@ Style.prototype.update = function(sld) {
       'Content-Type': 'application/vnd.ogc.sld+xml'
     },
     body: sld
-  }).then(util.constant(this));
+  }).then(util.f.constant(this));
 };
 
 module.exports = Style;

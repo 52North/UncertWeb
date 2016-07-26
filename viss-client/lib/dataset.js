@@ -1,7 +1,7 @@
 var http = require('./http');
 var util = require('./util');
 var Visualizer = require('./visualizer');
-
+var Promise = require('any-promise');
 
 function Dataset(parent, options) {
   this.id = options.id;
@@ -54,9 +54,7 @@ Dataset.prototype.getSpatialExtent = function() {
 };
 
 Dataset.prototype.getVisualizer = function(id) {
-  return this.visualizers.then(function(visualizers) {
-    return visualizers[id];
-  });
+  return this.visualizers.then(util.f.property(id));
 };
 
 Dataset.prototype.getVisualizers = function() {
@@ -67,23 +65,23 @@ Dataset.prototype.requestVisualizer = function(id) {
   return http.get({
     url: this.href + '/visualizers/' + id,
     headers: { 'Accept': 'application/vnd.org.uncertweb.viss.visualizer+json' }
-  }).then((function(response) {
+  }).then(function(response) {
     return new Visualizer(this, response);
-  }).bind(this));
+  }.bind(this));
 };
-
 
 Dataset.prototype.requestVisualizers = function() {
   return http.get({
     url: this.href + '/visualizers',
     headers: { 'Accept': 'application/vnd.org.uncertweb.viss.visualizer.list+json' }
   })
-  .then(function(response) { return response.visualizers; })
-  .then((function(visualizers) {
-    return Promise.all(visualizers.map((function(visualizer) {
+  .then(util.f.property('visualizers'))
+  .then(function(visualizers) {
+    return visualizers.map(function(visualizer) {
       return this.requestVisualizer(visualizer.id);
-    }).bind(this)));
-  }).bind(this));
+    }.bind(this));
+  }.bind(this))
+  .then(Promise.all.bind(Promise));
 };
 
 Dataset.prototype.getValue = function(lon, lat, epsgCode) {
@@ -94,16 +92,7 @@ Dataset.prototype.getValue = function(lon, lat, epsgCode) {
       'Accept': "application/vnd.ogc.om+json",
       'Content-Type': 'application/vnd.org.uncertweb.viss.value-request+json',
     },
-    body: {
-      type : 'Point',
-      coordinates : [ lon, lat ],
-      crs : {
-        type : 'name',
-        properties : {
-          name : 'http://www.opengis.net/def/crs/EPSG/0/' + epsgCode
-        }
-      }
-    }
+    body: createPoint(lon, lat, epsgCode)
   });
 };
 
@@ -131,7 +120,9 @@ Dataset.prototype.getTimeExtents = function() {
 
             if (interval !== 0 || separator !== 0) {
                 // TODO types
-                for (time = beginDate.getTime(); time <= endDate.getTime(); time += interval + separator) {
+                for (time = beginDate.getTime();
+                     time <= endDate.getTime();
+                     time += interval + separator) {
                     extents.push([ time, time + interval ]);
                 }
             }
@@ -150,5 +141,18 @@ Dataset.prototype.getTimeExtents = function() {
   }
   return extents;
 };
+
+function createPoint(lon, lat, epsgCode) {
+  return {
+    type : 'Point',
+    coordinates : [ lon, lat ],
+    crs : {
+      type : 'name',
+      properties : {
+        name : 'http://www.opengis.net/def/crs/EPSG/0/' + epsgCode
+      }
+    }
+  };
+}
 
 module.exports = Dataset;

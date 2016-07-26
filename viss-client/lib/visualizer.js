@@ -1,5 +1,6 @@
 var http = require('./http');
 var Visualization = require('./visualization');
+var Promise = require('any-promise');
 
 function Visualizer(parent, options) {
   this.dataset = parent;
@@ -48,9 +49,9 @@ Visualizer.prototype.execute = function(parameters) {
       'Content-Type' : 'application/vnd.org.uncertweb.viss.create+json'
     },
     body: parameters
-  }).then((function(response) {
+  }).then(function(response) {
     return new Visualization(this, response);
-  }).bind(this));
+  }.bind(this));
 };
 
 Visualizer.prototype.checkParameters = function(p) {

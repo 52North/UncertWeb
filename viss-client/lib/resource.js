@@ -1,6 +1,7 @@
 var http = require('./http');
 var util =require('./util');
 var Dataset = require('./dataset');
+var Promise = require('any-promise');
 
 function Resource(parent, options) {
   this.id = options.id;
@@ -32,29 +33,29 @@ Resource.prototype.getDatasets = function() {
 };
 
 Resource.prototype.requestDatasets = function() {
-
   return http.get({
     url: this.href + '/datasets',
     headers: { 'Accept': 'application/vnd.org.uncertweb.viss.dataset.list+json' }
-  }).then((function(response) {
-    return Promise.all(response.dataSets.map((function(dataset) {
+  }).then(function(response) {
+    return response.dataSets.map(function(dataset) {
       return this.requestDataset(dataset.id);
-    }).bind(this)));
-  }).bind(this));
+    }.bind(this));
+  }.bind(this))
+  .then(Promise.all.bind(Promise));
 };
 
 Resource.prototype.requestDataset = function(id) {
   return http.get({
     url: this.href + '/datasets/' + id,
     headers: { 'Accept': 'application/vnd.org.uncertweb.viss.dataset+json' }
-  }).then((function(response) {
+  }).then(function(response) {
     return new Dataset(this, response);
-  }).bind(this));
+  }.bind(this));
 };
 
 Resource.prototype.delete = function() {
   return http.del({ url: this.href })
-    .then((function(){ return this; }).bind(this));
+    .then(util.f.constant(this));
 };
 
 

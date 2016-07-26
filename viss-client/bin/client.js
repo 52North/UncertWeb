@@ -3,7 +3,7 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var Viss = require('../lib/viss');
-var SVG = require('../lib/color/names/svg');
+var color = require('color');
 
 var viss = Viss('http://localhost:8080/viss');
 
@@ -14,8 +14,8 @@ function createSymbolizer(visualization) {
     minValue: visualization.getMinValue(),
     maxValue: visualization.getMaxValue(),
     numIntervals: 5,
-    minColor: SVG.green,
-    maxColor: SVG.red
+    minColor: color("green"),
+    maxColor: color("red")
   });
 }
 

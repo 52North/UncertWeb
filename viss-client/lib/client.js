@@ -1,6 +1,8 @@
 var http = require('./http');
+var util = require('./util');
 var Resource = require('./resource');
-
+var Promise = require('any-promise');
+var fs = require('fs');
 
 function Client(endpoint) {
   this.href = endpoint + '/resources';
@@ -31,13 +33,13 @@ Client.prototype.createResourceFromReference = function(reference, mimeType) {
       'Content-Type': 'application/vnd.org.uncertweb.viss.request+json'
     },
     body: body
-  }).then((function(response) {
+  }).then(function(response) {
     return this.getResource(response.id);
-  }).bind(this));
+  }.bind(this));
 };
 
 Client.prototype.createResourceFromFile = function(file, mimeType) {
-  return this.createResource(require('fs').createReadStream(file), mimeType);
+  return this.createResource(fs.createReadStream(file, {encoding: 'binary'}), mimeType);
 };
 
 Client.prototype.createResource = function(content, mimeType) {
@@ -48,18 +50,18 @@ Client.prototype.createResource = function(content, mimeType) {
       'Content-Type': mimeType
     },
     body: content
-  }).then((function(response) {
+  }).then(function(response) {
     return this.getResource(response.id);
-  }).bind(this));
+  }.bind(this));
 };
 
 Client.prototype.getResource = function(id) {
   return http.get({
     url: this.href + '/' + id,
     headers: { 'Accept': 'application/vnd.org.uncertweb.viss.resource+json' }
-  }).then((function(response) {
+  }).then(function(response) {
     return new Resource(this, response);
-  }).bind(this));
+  }.bind(this));
 };
 
 Client.prototype.getResources = function() {
@@ -67,12 +69,13 @@ Client.prototype.getResources = function() {
     url: this.href,
     headers: { 'Accept': 'application/vnd.org.uncertweb.viss.resource.list+json' }
   })
-  .then(function(response) { return response.resources; })
-  .then((function(response) {
-    return Promise.all(resources.map((function(resource) {
+  .then(util.f.property('resources'))
+  .then(function(response) {
+    return resources.map(function(resource) {
       return this.getResource(resource.id);
-    }).bind(this)));
-  }).bind(this));
+    }.bind(this));
+  }.bind(this))
+  .then(Promise.all.bind(Promise));
 };
 
 module.exports = Client;

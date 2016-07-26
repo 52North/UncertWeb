@@ -4,13 +4,17 @@
   "description": "VISS client library",
   "main": "lib/viss.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "./bin/client.js"
   },
   "author": "Christian Autermann <c.autermann@52north.org>",
   "license": "Apache-2.0",
   "dependencies": {
-    "es6-promise": "^3.2.1",
+    "any-promise": "^1.3.0",
+    "color": "^0.11.3",
     "popsicle": "^8.0.0",
     "xmldom": "^0.1.22"
+  },
+  "browser": {
+    "lib/xml.js": "lib/xml.browser.js"
   }
 }

@@ -47,27 +47,26 @@ SLDEncoder.prototype.create = function(colorMap) {
 
   colorMap.forEach(function(entry) {
     colorMapNode.appendChild(elem('ColorMapEntry', {
-      color: entry.color.toHex(),
+      color: entry.color.hexString(),
       opacity: entry.opacity,
       quantity: entry.quantity
     }));
   });
-  var string = XML.write(doc);
-  console.log(string);
-  return string;
+  return XML.write(doc);
 };
 
 SLDEncoder.prototype.createDocument = function(prefix, namespace, name) {
-  var xml;
+  var xml = '<';
   if (namespace) {
     if (prefix) {
-      xml = '<' + prefix + ':' + name + ' xmlns:' + prefix + '="' + namespace + '"/>';
+      xml +=  prefix + ':' + name + ' xmlns:' + prefix + '="' + namespace + '"';
     } else {
-      xml = '<' + name + ' xmlns="' + namespace + '"/>';
+      xml += name + ' xmlns="' + namespace + '"';
     }
   } else {
-    xml = '<' + name + '/>';
+    xml += name ;
   }
+  xml += '/>';
   return XML.read(xml);
 
 };
