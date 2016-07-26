@@ -29,6 +29,9 @@ services:
         depends_on:
             - omcs
             - viss
+    helgoland:
+        container_name: helgoland
+        image: uncertweb/helgoland:latest
     nginx:
         container_name: uncertweb-frontend
         image: nginx
@@ -39,8 +42,9 @@ services:
         links:
             - geoserver:geoserver
             - viss:viss
-            - greenland:greenland
             - omcs:omcs
+            - greenland:greenland
+            - helgoland:helgoland
     mongo:
         container_name: viss-mongodb
         image: mongo:2.6
