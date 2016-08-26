@@ -39,7 +39,7 @@ Client.prototype.createResourceFromReference = function(reference, mimeType) {
 };
 
 Client.prototype.createResourceFromFile = function(file, mimeType) {
-  return this.createResource(fs.createReadStream(file, {encoding: 'binary'}), mimeType);
+  return this.createResource(fs.createReadStream(file), mimeType);
 };
 
 Client.prototype.createResource = function(content, mimeType) {
