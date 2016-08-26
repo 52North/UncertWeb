@@ -28,44 +28,11 @@ VIS.threddsProxy = "threddsproxy";
 
 // Resources to show by default
 VIS.defaultResources = [
-/*
-// ncWMS
 {
-    url : 'http://geoviqua.dev.52north.org/WMSQAdapter/local/wms',
-    mime : 'ncwms'
-}, {
-    url : 'http://geoviqua.dev.52north.org/ncWMS/wms',
-    mime : 'ncwms'
-}, {
-    url : 'http://behemoth.nerc-essc.ac.uk/ncWMS/wms',
-    mime : 'ncwms'
-},
-
-// VISS
-{
-	url : 'http://localhost:3000/data/netCDF/no2_conc_rotterdam_20110418.nc',
+    url : 'http://data/netCDF/targetNetCDF.nc',
     mime : 'application/netcdf'
 },
 
-// Client vector
-{
-    url : 'http://giv-uw.uni-muenster.de/vis/v2/data/json/uncertainty-collection.json',
-    mime : 'application/vnd.org.uncertweb.viss.uncertainty-collection+json'
-}, {
-    url : 'data/json/gaussian.json',
-    mime : 'application/x-om-u+json'
-},
-
-// Conversion service
-{
-    // absolute path required for conversion service
-    url : 'http://giv-uw.uni-muenster.de/vis/v2/data/xml/cropallocations_realisations.xml',
-    mime : 'application/x-om-u+xml'
-}, {
-    url : 'http://giv-uw.uni-muenster.de/data/om/MS_points_PM10.xml',
-    mime : 'application/x-om-u+xml'
-},
-*/
 ];
 
 VIS.nextResourceId = 0;

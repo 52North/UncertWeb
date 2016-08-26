@@ -1,7 +1,7 @@
 version: '2'
 services:
     viss:
-        container_name: viss
+        container_name: uncertweb-viss
         image: uncertweb/viss:latest
         build: ../viss
         links:
@@ -10,18 +10,21 @@ services:
             - ./viss/mongo.properties:/usr/local/tomcat/webapps/viss/WEB-INF/classes/mongo.properties
             - ./viss/geoserver.properties:/usr/local/tomcat/webapps/viss/WEB-INF/classes/geoserver.properties
             - ./viss/viss.properties:/usr/local/tomcat/webapps/viss/WEB-INF/classes/viss.properties
+            #- viss:/tmp/viss
+        links:
+          - data:data
     omcs:
-        container_name: omcs
+        container_name: uncertweb-omcs
         build: ../om-conversion-service
         image: uncertweb/omcs:latest
     geoserver:
-        container_name: geoserver
+        container_name: uncertweb-geoserver
         image: uncertweb/geoserver:2.1.1
         build: ./geoserver
-        volumes:
-            - geoserver:/data/geoserver
+        #volumes:
+            #- geoserver:/data/geoserver
     greenland:
-        container_name: greenland
+        container_name: uncertweb-greenland
         build: ../greenland
         image: uncertweb/greenland:latest
         volumes:
@@ -29,8 +32,10 @@ services:
         depends_on:
             - omcs
             - viss
+        links:
+          - data:data
     helgoland:
-        container_name: helgoland
+        container_name: uncertweb-helgoland
         image: uncertweb/helgoland:latest
     nginx:
         container_name: uncertweb-frontend
@@ -45,11 +50,17 @@ services:
             - omcs:omcs
             - greenland:greenland
             - helgoland:helgoland
-    mongo:
-        container_name: viss-mongodb
-        image: mongo:2.6
+    data:
+        container_name: uncertweb-data
+        image: nginx
         volumes:
-            - mongo:/data/db
-volumes:
-    mongo: {}
-    geoserver: {}
+            - ./data:/usr/share/nginx/html:ro
+    mongo:
+        container_name: uncertweb-viss-mongodb
+        image: mongo:2.6
+        #volumes:
+            #- mongo:/data/db
+#volumes:
+    #mongo: {}
+    #geoserver: {}
+    #viss: {}
