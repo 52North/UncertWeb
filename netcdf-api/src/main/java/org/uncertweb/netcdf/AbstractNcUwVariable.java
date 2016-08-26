@@ -160,11 +160,15 @@ abstract class AbstractNcUwVariable implements INcUwVariable {
 		final Variable var = v.getVariable(gm, true);
 		final String proj4 = NcUwHelper.getStringAttribute(var, NcUwConstants.Attributes.PROJ4, false);
 		final String wkt = NcUwHelper.getStringAttribute(var, NcUwConstants.Attributes.WKT, false);
-		final String epsg = NcUwHelper.getStringAttribute(var, NcUwConstants.Attributes.EPSG_CODE, false);
+		String epsg = NcUwHelper.getStringAttribute(var, NcUwConstants.Attributes.EPSG_CODE, false);
 
 		try {
 			if (epsg != null) {
 				log.debug("Decoding EPSG Code {}", epsg);
+                int idx = epsg.lastIndexOf(':');
+                if (idx > 0) {
+                    epsg = epsg.substring(idx+1);
+                }
 				return NcUwHelper.decodeEpsgCode(Integer.valueOf(epsg.trim()));
 			} else if (wkt != null) {
 				log.debug("Decoding WKT string {}", wkt);
