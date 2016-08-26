@@ -3,7 +3,6 @@ var sld = require('./sld');
 
 function Symbolizer(options) {
   this.outOfBoundsColor = color("white");
-
   this.opacity = ('opacity' in options) ? options.opacity : 1.0;
   this.numIntervals = options.numIntervals;
 
@@ -13,10 +12,10 @@ function Symbolizer(options) {
   this.maxColor = options.maxColor || color("black");
   this.intervals = new Array(this.numIntervals);
   this.intervalSize = (this.maxValue - this.minValue) / this.numIntervals;
-  for (var i = 0; i < this.numIntervals; i++) {
+  for (var i = 0; i < this.numIntervals; ++i) {
     this.intervals[i] = [
       this.minValue + i * this.intervalSize,
-      this.maxValue + (i + 1) * this.intervalSize
+      this.minValue + (i + 1) * this.intervalSize
     ];
   }
   this.colorMap = this.createColorMap();
