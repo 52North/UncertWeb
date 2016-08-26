@@ -7,7 +7,7 @@ var color = require('color');
 
 var viss = Viss('http://localhost:8080/viss');
 
-var path = '/home/autermann/Source/uncertweb/greenland/data/netCDF/biotemperature_normalDistr.nc';
+var path = '/home/autermann/Source/uncertweb/docker/data/netCDF/targetNetCDF.nc';
 
 function createSymbolizer(visualization) {
   return new Viss.Symbolizer({
@@ -27,7 +27,11 @@ viss.createResourceFromFile(path, 'application/netcdf')
     return Promise.all(datasets.map(function(dataset) {
       return dataset.getVisualizer('Distribution-Normal-Mean')
         .then(function(visualizer) {
-          return visualizer.execute({});
+          return visualizer.execute({
+
+
+
+          });
         });
     }));
   })
