@@ -95,9 +95,9 @@ public class Utils {
 
     public static String stringifyJson(JSONObject json) throws JSONException {
         if (VissConfig.getInstance().doPrettyPrint()) {
-            return json.toString(4);
+            return JSONSerializer.toString(json, 4);
         } else {
-            return json.toString();
+            return JSONSerializer.toString(json);
         }
     }
 
