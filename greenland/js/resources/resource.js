@@ -615,11 +615,6 @@ OpenLayers.VIS.Visualization = OpenLayers.Class(OpenLayers.VIS.Symbology.Vector,
         var data = sld.xml || new XMLSerializer().serializeToString(sld);
         // IE has no XMLSerializer, but xml attribute
 
-        // TODO
-        while (data.match(/xmlns:sld="http:\/\/www.opengis.net\/sld"/g).length > 1) {
-            data = data.replace(/xmlns:sld="http:\/\/www.opengis.net\/sld"/, '');
-        }
-
         return data;
     },
 
