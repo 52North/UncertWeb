@@ -101,7 +101,7 @@ OpenLayers.VIS.Resource = OpenLayers.Class({
      * @param callback
      */
     getResource : function(callback) {
-        if (this.resource !== null) {
+        if (this.resource != null) {
             callback.call(this, this.resource);
         } else {
             this.createResource(callback);
@@ -115,7 +115,7 @@ OpenLayers.VIS.Resource = OpenLayers.Class({
      *          function to take array of OpenLayers.VIS.DataSet objects
      */
     getDataSets : function(callback) {
-        if (this.dataSets !== null) {
+        if (this.dataSets != null) {
             callback.call(this, this.dataSets);
         } else {
             OpenLayers.Request.GET({
@@ -180,7 +180,7 @@ OpenLayers.VIS.DataSet = OpenLayers.Class({
      *          function to which the request result gets passed
      */
     getDataSet : function(callback) {
-        if (this.dataSetInfo !== null) {
+        if (this.dataSetInfo != null) {
             callback.call(this, this.dataSetInfo);
         } else {
             OpenLayers.Request.GET({
@@ -213,7 +213,7 @@ OpenLayers.VIS.DataSet = OpenLayers.Class({
      *          function to take array of OpenLayers.VIS.Visualizer objects
      */
     getVisualizers : function(callback) {
-        if (this.visualizers !== null) {
+        if (this.visualizers != null) {
             callback.call(this, this.visualizers);
         } else {
             OpenLayers.Request.GET({
@@ -296,14 +296,14 @@ OpenLayers.VIS.DataSet = OpenLayers.Class({
                     var beginDate = OpenLayers.Date.parse(temporalExtent.begin), endDate = OpenLayers.Date
                             .parse(temporalExtent.end);
                     var interval = 0, separator = 0;
-                    if (temporalExtent.intervalSize !== null) {
+                    if (temporalExtent.intervalSize != null) {
                         interval = temporalExtent.intervalSize;
                     }
-                    if (temporalExtent.seperator !== null) {
+                    if (temporalExtent.seperator != null) {
                         separator = temporalExtent.seperator;
                     }
 
-                    if (interval !== 0 || separator !== 0) {
+                    if (interval != 0 || separator != 0) {
                         // TODO types
                         for (var time = beginDate.getTime(); time <= endDate.getTime(); time += interval + separator) {
                             extents.push([ time, time + interval ]);
@@ -371,7 +371,7 @@ OpenLayers.VIS.Visualizer = OpenLayers.Class({
             for ( var key in v.options) {
                 var option = v.options[key];
 
-                if (option.required !== false && key != 'time') {
+                if (option.required != false && key != 'time') {
                     if (option["default"] !== undefined) {
                         option.value = option["default"];
                     } else if (option.type === "number" || option.type === "integer") {
@@ -486,7 +486,7 @@ OpenLayers.VIS.Visualization = OpenLayers.Class(OpenLayers.VIS.Symbology.Vector,
         var cachedValue = options.time ? this.timeVisualizationMap[options.time] : null;
         var refParams = cachedValue ? cachedValue.params : this.params;
 
-        if (refParams !== null) {
+        if (refParams != null) {
             // Check if request parameters of current visualization differ from
             // current or cached object state
             var equalParams = true;
@@ -599,7 +599,7 @@ OpenLayers.VIS.Visualization = OpenLayers.Class(OpenLayers.VIS.Symbology.Vector,
     },
 
     isValid : function() {
-        return this.maxValue !== null && this.minValue !== null;
+        return this.maxValue != null && this.minValue != null;
     },
 
     // mergable : function(other) {
