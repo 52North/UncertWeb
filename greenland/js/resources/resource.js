@@ -67,7 +67,7 @@ OpenLayers.VIS.Resource = OpenLayers.Class({
         this.loading = true;
         OpenLayers.Request.POST({
             headers : {
-                'Content-Type' : 'application/vnd.org.uncertweb.viss.request+json'
+                'Content-Type' : 'application/json'
             },
             url : this.vissUrl + '/resources',
             data : new OpenLayers.Format.JSON().write(req),
@@ -245,7 +245,7 @@ OpenLayers.VIS.DataSet = OpenLayers.Class({
 
         OpenLayers.Request.POST({
             headers : {
-                'Content-Type' : 'application/vnd.org.uncertweb.viss.value-request+json'
+                'Content-Type' : 'application/json'
             },
             url : this.href + '/value',
             data : JSON.stringify({ location : location }),
@@ -530,7 +530,7 @@ OpenLayers.VIS.Visualization = OpenLayers.Class(OpenLayers.VIS.Symbology.Vector,
 
         this.visualizationRequest = OpenLayers.Request.POST({
             headers : {
-                'Content-Type' : 'application/vnd.org.uncertweb.viss.create+json'
+                'Content-Type' : 'application/json'
             },
             url : this.visualizer.href,
             data : new OpenLayers.Format.JSON().write(options),
