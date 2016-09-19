@@ -43,70 +43,44 @@ public class MediaTypes {
     private static final String VALUE_REQUEST = PRE + "value-request";
     private static final String UNCERTAINTY_COLLECTION = PRE + "uncertainty-collection";
 
-    public static final String JSON_RESOURCE = RESOURCE + "+json";
+    public static final String JSON_RESOURCE = "application/json"; //RESOURCE + "+json";
     public static final MediaType JSON_RESOURCE_TYPE = valueOf(JSON_RESOURCE);
-    public static final String XML_RESOURCE = RESOURCE + "+xml";
-    public static final MediaType XML_RESOURCE_TYPE = valueOf(XML_RESOURCE);
 
-    public static final String JSON_RESOURCE_LIST = RESOURCE_LIST + "+json";
+    public static final String JSON_RESOURCE_LIST = "application/json"; //RESOURCE_LIST + "+json";
     public static final MediaType JSON_RESOURCE_LIST_TYPE = valueOf(JSON_RESOURCE_LIST);
-    public static final String XML_RESOURCE_LIST = RESOURCE_LIST + "+xml";
-    public static final MediaType XML_RESOURCE_LIST_TYPE = valueOf(XML_RESOURCE_LIST);
 
-    public static final String JSON_VISUALIZER = VISUALIZER + "+json";
+    public static final String JSON_VISUALIZER = "application/json"; //VISUALIZER + "+json";
     public static final MediaType JSON_VISUALIZER_TYPE = valueOf(JSON_VISUALIZER);
-    public static final String XML_VISUALIZER = VISUALIZER + "+xml";
-    public static final MediaType XML_VISUALIZER_TYPE = valueOf(XML_VISUALIZER);
 
-    public static final String JSON_VISUALIZER_LIST = VISUALIZER_LIST + "+json";
+    public static final String JSON_VISUALIZER_LIST = "application/json"; //VISUALIZER_LIST + "+json";
     public static final MediaType JSON_VISUALIZER_LIST_TYPE = valueOf(JSON_VISUALIZER_LIST);
-    public static final String XML_VISUALIZER_LIST = VISUALIZER_LIST + "+xml";
-    public static final MediaType XML_VISUALIZER_LIST_TYPE = valueOf(XML_VISUALIZER_LIST);
 
-    public static final String JSON_DATASET = DATASET + "+json";
+    public static final String JSON_DATASET = "application/json"; //DATASET + "+json";
     public static final MediaType JSON_DATASET_TYPE = valueOf(JSON_DATASET);
-    public static final String XML_DATASET = DATASET + "+xml";
-    public static final MediaType XML_DATASET_TYPE = valueOf(XML_DATASET);
 
-    public static final String JSON_DATASET_LIST = DATASET_LIST + "+json";
+    public static final String JSON_DATASET_LIST = "application/json"; //DATASET_LIST + "+json";
     public static final MediaType JSON_DATASET_LIST_TYPE = valueOf(JSON_DATASET_LIST);
-    public static final String XML_DATASET_LIST = DATASET_LIST + "+xml";
-    public static final MediaType XML_DATASET_LIST_TYPE = valueOf(XML_DATASET_LIST);
 
-    public static final String JSON_VISUALIZATION = VISUALIZATION + "+json";
+    public static final String JSON_VISUALIZATION = "application/json"; //VISUALIZATION + "+json";
     public static final MediaType JSON_VISUALIZATION_TYPE = valueOf(JSON_VISUALIZATION);
-    public static final String XML_VISUALIZATION = VISUALIZATION + "+xml";
-    public static final MediaType XML_VISUALIZATION_TYPE = valueOf(XML_VISUALIZATION);
 
-    public static final String JSON_VISUALIZATION_LIST = VISUALIZATION_LIST + "+json";
+    public static final String JSON_VISUALIZATION_LIST = "application/json"; //VISUALIZATION_LIST + "+json";
     public static final MediaType JSON_VISUALIZATION_LIST_TYPE = valueOf(JSON_VISUALIZATION_LIST);
-    public static final String XML_VISUALIZATION_LIST = VISUALIZATION_LIST + "+xml";
-    public static final MediaType XML_VISUALIZATION_LIST_TYPE = valueOf(XML_VISUALIZATION_LIST);
 
-    public static final String JSON_VISUALIZATION_STYLE = VISUALIZATION_STYLE + "+json";
+    public static final String JSON_VISUALIZATION_STYLE = "application/json"; //VISUALIZATION_STYLE + "+json";
     public static final MediaType JSON_VISUALIZATION_STYLE_TYPE = valueOf(JSON_VISUALIZATION_STYLE);
-    public static final String XML_VISUALIZATION_STYLE = VISUALIZATION_STYLE + "+xml";
-    public static final MediaType XML_VISUALIZATION_STYLE_TYPE = valueOf(XML_VISUALIZATION_STYLE);
 
-    public static final String JSON_VISUALIZATION_STYLE_LIST = VISUALIZATION_STYLE_LIST + "+json";
+    public static final String JSON_VISUALIZATION_STYLE_LIST = "application/json"; //VISUALIZATION_STYLE_LIST + "+json";
     public static final MediaType JSON_VISUALIZATION_STYLE_LIST_TYPE = valueOf(JSON_VISUALIZATION_STYLE_LIST);
-    public static final String XML_VISUALIZATION_STYLE_LIST = VISUALIZATION_STYLE_LIST + "+xml";
-    public static final MediaType XML_VISUALIZATION_STYLE_LIST_TYPE = valueOf(XML_VISUALIZATION_STYLE_LIST);
 
-    public static final String JSON_CREATE = CREATE + "+json";
+    public static final String JSON_CREATE = "application/json"; //CREATE + "+json";
     public static final MediaType JSON_CREATE_TYPE = valueOf(JSON_CREATE);
-    public static final String XML_CREATE = CREATE + "+xml";
-    public static final MediaType XML_CREATE_TYPE = valueOf(XML_CREATE);
 
-    public static final String JSON_REQUEST = REQUEST + "+json";
+    public static final String JSON_REQUEST = "application/json"; //REQUEST + "+json";
     public static final MediaType JSON_REQUEST_TYPE = valueOf(JSON_REQUEST);
-    public static final String XML_REQUEST = REQUEST + "+xml";
-    public static final MediaType XML_REQUEST_TYPE = valueOf(XML_REQUEST);
 
-    public static final String JSON_VALUE_REQUEST = VALUE_REQUEST + "+json";
+    public static final String JSON_VALUE_REQUEST = "application/json"; //VALUE_REQUEST + "+json";
     public static final MediaType JSON_VALUE_REQUEST_TYPE = valueOf(JSON_VALUE_REQUEST);
-    public static final String XML_VALUE_REQUEST = VALUE_REQUEST + "+xml";
-    public static final MediaType XML_VALUE_REQUEST_TYPE = valueOf(XML_VALUE_REQUEST);
 
     public static final String NETCDF = "application/netcdf";
     public static final MediaType NETCDF_TYPE = valueOf(NETCDF);
